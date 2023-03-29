@@ -1,5 +1,6 @@
 """Console script for whombat."""
 import sys
+
 import click
 
 
