@@ -2,13 +2,11 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import async_sessionmaker  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from whombat.database import models
+from whombat.database import utils
 
 __all__ = [
     "create",
@@ -66,12 +64,7 @@ async def create(
     keyword.
 
     """
-    engine = create_async_engine(db_url)
-
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
-
-    async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
-
-    async with async_session_maker() as session:
+    engine = utils.create_db_engine(db_url)
+    await utils.create_db_and_tables(engine)
+    async with utils.get_async_session(engine) as session:
         yield session

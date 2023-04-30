@@ -1,10 +1,11 @@
 """Test the database API module."""
-from typing import AsyncGenerator
 import uuid
+from typing import AsyncGenerator
 
 import pytest
+from sqlalchemy.engine import Engine
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound  # type: ignore
 from sqlalchemy.future import select
 
 from whombat.database import api, models
@@ -30,6 +31,8 @@ async def test_session_was_created_with_default_db_url():
     """Test that the session was created with the default database URL."""
     async with api.sessions.create() as session:
         engine = session.get_bind()
+        if not isinstance(engine, Engine):
+            raise TypeError("engine is not an instance of Engine")
         assert str(engine.url) == "sqlite+aiosqlite://"
 
 

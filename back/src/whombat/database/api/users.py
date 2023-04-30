@@ -4,15 +4,14 @@ from contextlib import asynccontextmanager
 from os import name
 from typing import AsyncGenerator
 
-from fastapi_users import BaseUserManager
 from fastapi_users.exceptions import UserNotExists
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from sqlalchemy.exc import NoResultFound  # type: ignore
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.future import select
 
 from whombat import schemas
-from whombat.database import models
+from whombat.database.models.user import User, UserManager
 
 __all__ = [
     "create",
@@ -20,36 +19,12 @@ __all__ = [
 ]
 
 
-# TODO: Manage this secret better
-SECRET = "SECRET"
-
-
-class UserManager(BaseUserManager):
-    """UserManager class.
-
-    This class is used to manage users in the database. It is a subclass of the
-    BaseUserManager class from the fastapi-users package.
-    """
-
-    def __init__(
-        self,
-        *args,
-        reset_password_token_secret: str = SECRET,
-        verification_token_secret: str = SECRET,
-        **kwargs,
-    ):
-        """Initialize the UserManager class."""
-        super().__init__(*args, **kwargs)
-        self.reset_password_token_secret = reset_password_token_secret
-        self.verification_token_secret = verification_token_secret
-
-
 @asynccontextmanager
 async def _get_user_db_context(
     session: AsyncSession,
 ) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
     """Get a SQLAlchemyUserDatabase context."""
-    yield SQLAlchemyUserDatabase(session, models.User)
+    yield SQLAlchemyUserDatabase(session, User)
 
 
 @asynccontextmanager
@@ -76,7 +51,7 @@ async def create(
     password: str,
     email: str,
     is_superuser: bool = False,
-) -> models.User:
+) -> User:
     """Create a user.
 
     This function creates a user in the database.
@@ -134,7 +109,7 @@ async def create(
         )
 
 
-async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> models.User:
+async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> User:
     """Get a user by id.
 
     Parameters
@@ -160,7 +135,7 @@ async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> models.User:
         raise NoResultFound from error
 
 
-async def get_by_username(session: AsyncSession, username: str) -> models.User:
+async def get_by_username(session: AsyncSession, username: str) -> User:
     """Get a user by username.
 
     Parameters
@@ -180,12 +155,12 @@ async def get_by_username(session: AsyncSession, username: str) -> models.User:
         If no user with the given username exists.
 
     """
-    q = select(models.User).where(models.User.username == username)
+    q = select(User).where(User.username == username)
     result = await session.execute(q)
     return result.scalars().one()
 
 
-async def get_by_email(session: AsyncSession, email: str) -> models.User:
+async def get_by_email(session: AsyncSession, email: str) -> User:
     """Get a user by email.
 
     Parameters

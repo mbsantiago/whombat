@@ -1,4 +1,5 @@
 """Base module for the database."""
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import Depends
@@ -6,21 +7,18 @@ from fastapi_users.authentication.strategy.db import (
     AccessTokenDatabase,
     DatabaseStrategy,
 )
-from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyAccessTokenDatabase,
 )
+from sqlalchemy.ext.asyncio import async_sessionmaker  # type: ignore
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
-    async_sessionmaker,
     create_async_engine,
 )
 
 from whombat.database import models
-
-DATABASE_URL = "sqlite+aiosqlite://"
-
 
 __all__ = [
     "models",
@@ -29,7 +27,7 @@ __all__ = [
 ]
 
 
-def create_db_engine(database_url: str):
+def create_db_engine(database_url: str) -> AsyncEngine:
     """Create the database engine.
 
     Parameters
@@ -44,18 +42,25 @@ def create_db_engine(database_url: str):
     If using sqlite, you need to install the `aiosqlite` package and
     include `+aiosqlite` in the url to support asynchronous operations.
 
+    Returns
+    -------
+    AsyncEngine
+        The database engine.
+
     """
     return create_async_engine(database_url)
 
 
 async def create_db_and_tables(engine: AsyncEngine):
     """Create the database and tables."""
+    # TODO: Use alembic to create the tables instead
     async with engine.begin() as conn:
         await conn.run_sync(models.Base.metadata.create_all)
 
 
+@asynccontextmanager
 async def get_async_session(
-    engine: AsyncEngine = Depends(create_db_engine),
+    engine: AsyncEngine,
 ) -> AsyncGenerator[AsyncSession, None]:
     """Get a session to the database asynchronously."""
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)

@@ -3,11 +3,12 @@
 All whombat models should inherit from this class.
 """
 
-from sqlalchemy.orm import declarative_base
+import sqlalchemy.orm as orm
 
 __all__ = [
-    "Base"
+    "Base",
 ]
 
-Base = declarative_base()
-"""Base class for SqlAlchemy Models."""
+
+class Base(orm.DeclarativeBase):
+    """Base class for SqlAlchemy Models."""

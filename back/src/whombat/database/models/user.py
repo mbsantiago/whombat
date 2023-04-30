@@ -12,10 +12,22 @@ information is a username, which is used to identify the user.
 Additional information can be added, such as a full name, email,
 and affiliation. This information is not required.
 """
+import uuid
+
+from fastapi_users import BaseUserManager, UUIDIDMixin
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
 from sqlalchemy import Column, String
 
 from whombat.database.models.base import Base
+
+
+__all__ = [
+    "User",
+    "UserManager",
+]
+
+# TODO: Manage this secret better and make it cryptographically secure
+SECRET = "SECRET"
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
@@ -46,7 +58,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         SQLAlchemy. The User class inherits from the
         SQLAlchemyBaseUserTableUUID class, which provides
         the id, email, hashed_password, is_active, and
-        is_superuser attributes. The username and name 
+        is_superuser attributes. The username and name
         attribute is added to the User class.
 
     """
@@ -56,3 +68,27 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 
     name = Column(String, nullable=True)
     """The full name of the user."""
+
+    def __init__(self, *_, **kwargs):
+        """Initialize the User class."""
+        super().__init__(**kwargs)
+
+
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
+    """UserManager class.
+
+    This class is used to manage users in the database. It is a subclass of the
+    BaseUserManager class from the fastapi-users package.
+    """
+
+    def __init__(
+        self,
+        *args,
+        reset_password_token_secret: str = SECRET,
+        verification_token_secret: str = SECRET,
+        **kwargs,
+    ):
+        """Initialize the UserManager class."""
+        super().__init__(*args, **kwargs)
+        self.reset_password_token_secret = reset_password_token_secret
+        self.verification_token_secret = verification_token_secret

@@ -8,10 +8,11 @@ having to import the entire database module.
 """
 from whombat.database.models.base import Base
 from whombat.database.models.token import AccessToken
-from whombat.database.models.user import User
+from whombat.database.models.user import User, UserManager
 
 __all__ = [
     "User",
+    "UserManager",
     "Base",
     "AccessToken",
 ]

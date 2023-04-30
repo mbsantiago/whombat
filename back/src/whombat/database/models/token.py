@@ -17,3 +17,15 @@ class AccessToken(SQLAlchemyBaseAccessTokenTableUUID, Base):
     and authorization. It is a subclass of the
     SQLAlchemyBaseAccessTokenTableUUID class from the fastapi-users package.
     """
+
+    def __init__(self, *_, **kwargs):
+        """Initialize the AccessToken model.
+
+        Parameters
+        ----------
+        **kwargs
+            The keyword arguments to pass to the SQLAlchemyBaseAccessTokenTableUUID
+            class.
+
+        """
+        super().__init__(**kwargs)
