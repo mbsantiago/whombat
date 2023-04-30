@@ -15,7 +15,7 @@ export default defineConfig({
       port: FRONTEND_DEV_PORT,
       proxy: {
         "/api": `http://localhost:${BACKEND_DEV_PORT}/`,
-        "/login": `http://localhost:${BACKEND_DEV_PORT}/`,
+        "/auth": `http://localhost:${BACKEND_DEV_PORT}/`,
       },
     },
   },

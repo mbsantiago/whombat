@@ -7,25 +7,36 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "jest"
   },
   "dependencies": {
     "@astrojs/react": "^2.0.2",
     "@astrojs/tailwind": "^3.0.1",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.16",
+    "@hookform/resolvers": "^3.1.0",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "astro": "^2.0.17",
+    "axios": "^1.4.0",
+    "classnames": "^2.3.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-hook-form": "^7.43.9",
     "react-query": "^3.39.3",
     "tailwindcss": "^3.0.24",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/node": "^18.16.3",
+    "jest": "^29.5.0",
     "prettier": "^2.8.4",
     "prettier-plugin-astro": "^0.8.0",
-    "prettier-plugin-tailwindcss": "^0.2.4"
+    "prettier-plugin-tailwindcss": "^0.2.4",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1"
   }
 }

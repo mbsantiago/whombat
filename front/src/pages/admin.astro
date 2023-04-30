@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import LoginForm from "../components/LoginForm";
+---
+
+<Layout title="Welcome to Whombat.">
+  <div class="mx-auto my-32 w-1/2">
+    <LoginForm client:load />
+  </div>
+</Layout>
