@@ -43,6 +43,10 @@ from sqlalchemy import UniqueConstraint
 
 from whombat.database.models.base import Base
 
+__all__ = [
+    "Tag",
+]
+
 
 class Tag(Base):
     """Tag model for tag table.

@@ -30,10 +30,15 @@ machine learning models that can detect these events automatically.
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
-from whombat.database.models.recording import Recording
+from whombat.database.models.recording import Recording, Tag
+
+__all__ = [
+    "SoundEvent",
+    "SoundEventTag",
+]
 
 
 class SoundEvent(Base):
@@ -66,3 +71,42 @@ class SoundEvent(Base):
 
     The geometry is a JSON string that contains the coordinates of the mark.
     """
+
+
+class SoundEventTag(Base):
+    """SoundEventTag model for sound_event_tag table.
+
+    Tags can be added to sound event to provide additional information about the
+    sound event. For example, a tag could be used to indicate that a sound event
+    is a bird call of a particular species.
+
+    """
+
+    __tablename__ = "sound_event_tag"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the sound event tag."""
+
+    sound_event_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("sound_event.id"),
+        nullable=False,
+    )
+    """The id of the sound event to which the tag belongs."""
+
+    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
+
+    tag_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("tag.id"),
+        nullable=False,
+    )
+    """The id of the tag."""
+
+    tag: orm.Mapped[Tag] = orm.relationship()
+    """The tag."""
+
+    __table_args__ = (
+        UniqueConstraint(
+            "sound_event_id",
+            "tag_id",
+        ),
+    )

@@ -20,6 +20,10 @@ import sqlalchemy.orm as orm
 
 from whombat.database.models.base import Base
 
+__all__ = [
+    "Dataset",
+]
+
 
 class Dataset(Base):
     """Dataset model for dataset table.

@@ -20,10 +20,18 @@ import os
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
 from whombat.database.models.dataset import Dataset
+from whombat.database.models.note import Note
+from whombat.database.models.tag import Tag
+
+__all__ = [
+    "Recording",
+    "RecordingNote",
+    "RecordingTag",
+]
 
 
 class Recording(Base):
@@ -39,7 +47,7 @@ class Recording(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """The id of the recording."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
     """The UUID of the recording."""
 
     dataset_id: orm.Mapped[int] = orm.mapped_column(
@@ -49,6 +57,7 @@ class Recording(Base):
     """The id of the dataset to which the recording belongs."""
 
     dataset: orm.Mapped[Dataset] = orm.relationship()
+    """The dataset to which the recording belongs."""
 
     path: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The path to the recording file. 
@@ -85,3 +94,76 @@ class Recording(Base):
     def relative_path(self):
         """Get the relative path to the recording file."""
         return os.path.relpath(self.full_path, self.dataset.audio_dir)
+
+
+class RecordingNote(Base):
+    """RecordingNote model for recording_note table.
+
+    This model represents the recording_note table in the database. It contains
+    the all the information about a note that is associated with a recording.
+
+    """
+
+    __tablename__ = "recording_note"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the recording note."""
+
+    recording_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("recording.id"),
+        nullable=False,
+    )
+    """The id of the recording to which the note belongs."""
+
+    recording: orm.Mapped[Recording] = orm.relationship()
+    """The recording to which the note belongs."""
+
+    note_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("note.id"),
+        nullable=False,
+    )
+    """The id of the note."""
+
+    note: orm.Mapped[Note] = orm.relationship()
+    """The note."""
+
+    __table_args__ = (
+        UniqueConstraint("recording_id", "note_id"),
+    )
+
+
+class RecordingTag(Base):
+    """RecordingTag model for recording_tag table.
+
+    Tags can be added to recordings to indicate that they have certain
+    characteristics. They can be used to organize recordings into groups
+    based on their characteristics.
+
+    """
+
+    __tablename__ = "recording_tag"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the recording tag."""
+
+    recording_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("recording.id"),
+        nullable=False,
+    )
+    """The id of the recording to which the tag belongs."""
+
+    recording: orm.Mapped[Recording] = orm.relationship()
+    """The recording to which the tag belongs."""
+
+    tag_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("tag.id"),
+        nullable=False,
+    )
+    """The id of the tag."""
+
+    tag: orm.Mapped[Tag] = orm.relationship()
+    """The tag."""
+
+    __table_args__ = (
+        UniqueConstraint("recording_id", "tag_id"),
+    )

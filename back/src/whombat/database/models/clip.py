@@ -18,10 +18,16 @@ identify relevant sound events with greater ease.
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
 from whombat.database.models.recording import Recording
+from whombat.database.models.tag import Tag
+
+__all__ = [
+    "Clip",
+    "ClipTag",
+]
 
 
 class Clip(Base):
@@ -51,3 +57,44 @@ class Clip(Base):
 
     end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The end time of the clip in seconds."""
+
+
+class ClipTag(Base):
+    """ClipTag model for clip_tag table.
+
+    Tags can be added to clips to indicate the presence of a sound event in the
+    clip, or to describe the clip in some way. For example, a tag could be used
+    to indicate that a clip contains a bird call, or that it contains a
+    particular species of bird.
+
+    """
+
+    __tablename__ = "clip_tag"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the clip tag."""
+
+    clip_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("clip.id"),
+        nullable=False,
+    )
+    """The id of the clip to which the tag belongs."""
+
+    clip: orm.Mapped[Clip] = orm.relationship()
+    """The clip to which the tag belongs."""
+
+    tag_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("tag.id"),
+        nullable=False,
+    )
+    """The id of the tag."""
+
+    tag: orm.Mapped[Tag] = orm.relationship()
+    """The tag."""
+
+    __table_args__ = (
+        UniqueConstraint(
+            "clip_id",
+            "tag_id",
+        ),
+    )
