@@ -2,7 +2,8 @@
 
 from sqlalchemy.exc import NoResultFound
 
-from whombat.database import api, utils
+from whombat import api
+from whombat.database import utils
 from whombat.settings import Settings
 
 __all__ = [

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from whombat import schemas
-from whombat.database.models.user import User, UserManager
+from whombat.database import models
 
 __all__ = [
     "create",
@@ -24,21 +24,21 @@ async def _get_user_db_context(
     session: AsyncSession,
 ) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
     """Get a SQLAlchemyUserDatabase context."""
-    yield SQLAlchemyUserDatabase(session, User)
+    yield SQLAlchemyUserDatabase(session, models.User)
 
 
 @asynccontextmanager
 async def _get_user_manager(
     user_database: SQLAlchemyUserDatabase,
-) -> AsyncGenerator[UserManager, None]:
+) -> AsyncGenerator[models.UserManager, None]:
     """Get a UserManager context."""
-    yield UserManager(user_database)
+    yield models.UserManager(user_database)
 
 
 @asynccontextmanager
 async def _get_user_manager_from_session(
     session: AsyncSession,
-) -> AsyncGenerator[UserManager, None]:
+) -> AsyncGenerator[models.UserManager, None]:
     """Get a UserManager context from a database session."""
     async with _get_user_db_context(session) as user_db:
         async with _get_user_manager(user_db) as user_manager:
@@ -51,7 +51,7 @@ async def create(
     password: str,
     email: str,
     is_superuser: bool = False,
-) -> User:
+) -> models.User:
     """Create a user.
 
     This function creates a user in the database.
@@ -109,7 +109,7 @@ async def create(
         )
 
 
-async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> User:
+async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> models.User:
     """Get a user by id.
 
     Parameters
@@ -135,7 +135,7 @@ async def get_by_id(session: AsyncSession, user_id: uuid.UUID) -> User:
         raise NoResultFound from error
 
 
-async def get_by_username(session: AsyncSession, username: str) -> User:
+async def get_by_username(session: AsyncSession, username: str) -> models.User:
     """Get a user by username.
 
     Parameters
@@ -155,12 +155,12 @@ async def get_by_username(session: AsyncSession, username: str) -> User:
         If no user with the given username exists.
 
     """
-    q = select(User).where(User.username == username)
+    q = select(models.User).where(models.User.username == username)
     result = await session.execute(q)
     return result.scalars().one()
 
 
-async def get_by_email(session: AsyncSession, email: str) -> User:
+async def get_by_email(session: AsyncSession, email: str) -> models.User:
     """Get a user by email.
 
     Parameters
@@ -185,3 +185,53 @@ async def get_by_email(session: AsyncSession, email: str) -> User:
             return await user_manager.get_by_email(email)
     except UserNotExists as error:
         raise NoResultFound from error
+
+
+async def update(
+    session: AsyncSession,
+    data: schemas.users.UserUpdate,
+    user: models.User,
+) -> models.User:
+    """Update a user.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    data : schemas.users.UserUpdate
+        The data to update.
+    user : models.User
+        The user to update.
+
+    Returns
+    -------
+    user : models.User
+
+    Raises
+    ------
+    sqlalchemy.exc.NoResultFound
+        If no user with the given id exists.
+
+    """
+    async with _get_user_manager_from_session(session) as user_manager:
+        return await user_manager.update(data, user)
+
+
+async def delete(session: AsyncSession, user: models.User) -> None:
+    """Delete a user.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    user : models.User
+        The user to delete.
+
+    Raises
+    ------
+    sqlalchemy.exc.NoResultFound
+        If no user with the given id exists.
+
+    """
+    async with _get_user_manager_from_session(session) as user_manager:
+        await user_manager.delete(user)

@@ -5,7 +5,7 @@ import uuid
 from fastapi_users import schemas
 
 
-class UserRead(schemas.BaseUser[uuid.UUID]):
+class User(schemas.BaseUser[uuid.UUID]):
     """Schema for User objects returned to the user."""
 
     username: str

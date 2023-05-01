@@ -8,7 +8,8 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from whombat.database import api, models
+from whombat import api
+from whombat.database import models
 
 
 @pytest.fixture
