@@ -18,6 +18,12 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
 from whombat.database.models.sound_event import SoundEvent
+from whombat.database.models.tag import Tag
+
+__all__ = [
+    "TrainingGuess",
+    "TrainingGuessTags",
+]
 
 
 class TrainingGuess(Base):
@@ -46,9 +52,6 @@ class TrainingGuess(Base):
     )
     """Sound event."""
 
-    tags: orm.Mapped[list[str]] = orm.mapped_column(nullable=False)
-    """Tags selected by the user for the sound event."""
-
     score: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """Score for the training guess.
 
@@ -59,10 +62,43 @@ class TrainingGuess(Base):
 
     """
 
+    tags: orm.Mapped[list[Tag]] = orm.relationship(
+        "Tag",
+        secondary="training_guess_tags",
+    )
+    """Tags selected by the user for the sound event."""
+
     __table_args__ = (
         UniqueConstraint(
             "training_session_id",
             "sound_event_id",
             name="unique_training_guess",
+        ),
+    )
+
+
+class TrainingGuessTags(Base):
+    """Training Guess Tag model."""
+
+    __tablename__ = "training_guess_tags"
+
+    training_guess_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("training_guess.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    """Training guess ID."""
+
+    tag_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("tag.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    """Tag ID."""
+
+    __table_args__ = (
+        UniqueConstraint(
+            "training_guess_id",
+            "tag_id",
         ),
     )

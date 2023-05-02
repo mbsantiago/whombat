@@ -28,6 +28,12 @@ from whombat.database.models.tag import Tag
 from whombat.database.models.sound_event import SoundEvent
 
 
+__all__ = [
+    "TrainingSet",
+    "TrainingSetTag",
+]
+
+
 class TrainingSet(Base):
     """Training Set model."""
 

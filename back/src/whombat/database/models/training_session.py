@@ -21,6 +21,11 @@ from sqlalchemy import ForeignKey
 from whombat.database.models.base import Base
 
 
+__all__ = [
+    "TrainingSession",
+]
+
+
 class TrainingSession(Base):
     """Training Session model."""
 

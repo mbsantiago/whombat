@@ -26,6 +26,11 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.database.models.base import Base
 from whombat.database.models.tag import Tag
 
+__all__ = [
+    "Evaluation",
+    "EvaluationTag",
+]
+
 
 class Evaluation(Base):
     """Evaluation model."""
@@ -77,5 +82,3 @@ class EvaluationTag(Base):
             "tag_id",
         ),
     )
-
-

@@ -18,11 +18,19 @@ from whombat.database.models.annotation_project import (
 from whombat.database.models.base import Base
 from whombat.database.models.clip import Clip
 from whombat.database.models.dataset import Dataset
+from whombat.database.models.evaluated_clip import EvaluatedClip
+from whombat.database.models.evaluated_sound_event import EvaluatedSoundEvent
+from whombat.database.models.evaluation import Evaluation, EvaluationTag
 from whombat.database.models.model_run import ModelRun, ModelRunNote
 from whombat.database.models.note import Note
 from whombat.database.models.predicted_sound_event import (
     PredictedSoundEvent,
     PredictedSoundEventPredictedTag,
+)
+from whombat.database.models.processed_clip import (
+    ProcessedClip,
+    ProcessedClipNote,
+    ProcessedClipPredictedTag,
 )
 from whombat.database.models.recording import (
     Recording,
@@ -33,6 +41,13 @@ from whombat.database.models.sound_event import SoundEvent, SoundEventTag
 from whombat.database.models.tag import Tag
 from whombat.database.models.task import Task, TaskNote, TaskTag
 from whombat.database.models.token import AccessToken
+from whombat.database.models.training_guess import (
+    TrainingGuess,
+    TrainingGuessTags,
+)
+from whombat.database.models.training_session import TrainingSession
+from whombat.database.models.training_set import TrainingSet, TrainingSetTag
+from whombat.database.models.training_sound_event import TrainingSoundEvent
 from whombat.database.models.user import User, UserManager
 
 __all__ = [
@@ -45,11 +60,18 @@ __all__ = [
     "Base",
     "Clip",
     "Dataset",
+    "EvaluatedClip",
+    "EvaluatedSoundEvent",
+    "Evaluation",
+    "EvaluationTag",
     "ModelRun",
     "ModelRunNote",
     "Note",
     "PredictedSoundEvent",
     "PredictedSoundEventPredictedTag",
+    "ProcessedClip",
+    "ProcessedClipNote",
+    "ProcessedClipPredictedTag",
     "Recording",
     "RecordingNote",
     "RecordingTag",
@@ -59,6 +81,12 @@ __all__ = [
     "Task",
     "TaskNote",
     "TaskTag",
+    "TrainingGuess",
+    "TrainingGuessTags",
+    "TrainingSession",
+    "TrainingSet",
+    "TrainingSetTag",
+    "TrainingSoundEvent",
     "User",
     "UserManager",
 ]

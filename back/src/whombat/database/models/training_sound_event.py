@@ -32,6 +32,10 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.database.models.base import Base
 from whombat.database.models.sound_event import SoundEvent
 
+__all__ = [
+    "TrainingSoundEvent",
+]
+
 
 class TrainingSoundEvent(Base):
     """Training Sound Event model."""

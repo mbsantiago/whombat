@@ -10,10 +10,14 @@ possible on clips that have been fully annotated by users.
 
 """
 
-from sqlalchemy import ForeignKey, UniqueConstraint
 import sqlalchemy.orm as orm
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
+
+__all__ = [
+    "EvaluatedClip",
+]
 
 
 class EvaluatedClip(Base):

@@ -17,6 +17,10 @@ import sqlalchemy.orm as orm
 
 from whombat.database.models.base import Base
 
+__all__ = [
+    "EvaluatedSoundEvent",
+]
+
 
 class EvaluatedSoundEvent(Base):
     """Evaluated Sound Event model."""
