@@ -12,8 +12,8 @@ the evaluation.
 
 """
 
-from sqlalchemy import ForeignKey, UniqueConstraint
 import sqlalchemy.orm as orm
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
 
