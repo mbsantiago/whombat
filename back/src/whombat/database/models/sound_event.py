@@ -38,6 +38,7 @@ from whombat.database.models.recording import Recording, Tag
 __all__ = [
     "SoundEvent",
     "SoundEventTag",
+    "SoundEventFeature",
 ]
 
 
@@ -108,5 +109,46 @@ class SoundEventTag(Base):
         UniqueConstraint(
             "sound_event_id",
             "tag_id",
+        ),
+    )
+
+
+class SoundEventFeature(Base):
+    """Sound Event Feature model.
+
+    In sound events, features are useful for providing basic information about the
+    sound event, such as its duration or bandwidth, or for providing more detailed
+    information that can be extracted using a deep learning model.
+    """
+
+    __tablename__ = "sound_event_feature"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+
+    sound_event_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("sound_event.id"),
+        nullable=False,
+    )
+    """The id of the sound event to which the feature belongs."""
+
+    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
+    """The sound event."""
+
+    feature_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature.id"),
+        nullable=False,
+    )
+    """The id of the feature."""
+
+    feature: orm.Mapped[Tag] = orm.relationship()
+    """The feature."""
+
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the feature."""
+
+    __table_args__ = (
+        UniqueConstraint(
+            "sound_event_id",
+            "feature_id",
         ),
     )

@@ -12,6 +12,7 @@ Welcome to Whombat's documentation!
    contributing
    authors
    history
+   glossary
 
 Indices and tables
 ==================

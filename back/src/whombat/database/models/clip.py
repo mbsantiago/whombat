@@ -27,6 +27,7 @@ from whombat.database.models.tag import Tag
 __all__ = [
     "Clip",
     "ClipTag",
+    "ClipFeature",
 ]
 
 
@@ -96,5 +97,46 @@ class ClipTag(Base):
         UniqueConstraint(
             "clip_id",
             "tag_id",
+        ),
+    )
+
+
+class ClipFeature(Base):
+    """ClipFeature model for clip_feature table.
+
+    In clips, features are useful for describing the acoustic
+    content of the entire soundscape, such as the signal-to-noise
+    ratio or acoustic indices.
+    """
+
+    __tablename__ = "clip_feature"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the clip feature."""
+
+    clip_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("clip.id"),
+        nullable=False,
+    )
+    """The id of the clip to which the feature belongs."""
+
+    clip: orm.Mapped[Clip] = orm.relationship()
+    """The clip to which the feature belongs."""
+
+    feature_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature.id"),
+        nullable=False,
+    )
+    """The id of the feature."""
+
+    feature: orm.Mapped[Tag] = orm.relationship()
+    """The feature."""
+
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "clip_id",
+            "feature_id",
         ),
     )

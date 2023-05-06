@@ -3,7 +3,7 @@
 Features are numerical values that can be attached to sound events, clips, and
 recordings. They provide additional information to the objects they are
 attached to and are useful for searching and organizing your data. Each feature
-consists of a key and a value, where the key describes the feature and the
+consists of a name and a value, where the name describes the feature and the
 value is its numeric representation.
 
 In sound events, features are useful for providing basic information about the
@@ -41,8 +41,5 @@ class Feature(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """Unique identifier of the feature."""
 
-    key: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """Key of the feature."""
-
-    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    """Value of the feature."""
+    name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    """Name of the feature."""

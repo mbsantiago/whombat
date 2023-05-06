@@ -31,6 +31,7 @@ __all__ = [
     "Recording",
     "RecordingNote",
     "RecordingTag",
+    "RecordingFeature",
 ]
 
 
@@ -166,4 +167,42 @@ class RecordingTag(Base):
 
     __table_args__ = (
         UniqueConstraint("recording_id", "tag_id"),
+    )
+
+
+class RecordingFeature(Base):
+    """RecordingFeature model.
+
+    In recordings, features can provide important contextual
+    information of a numeric type, such as temperature or wind
+    speed at the time of recording, or the height of the recorder.
+    """
+
+    __tablename__ = "recording_feature"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The id of the recording feature."""
+
+    recording_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("recording.id"),
+        nullable=False,
+    )
+    """The id of the recording to which the feature belongs."""
+
+    recording: orm.Mapped[Recording] = orm.relationship()
+    """The recording to which the feature belongs."""
+
+    feature_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature.id"),
+        nullable=False,
+    )
+    """The id of the feature."""
+
+    feature: orm.Mapped[Tag] = orm.relationship()
+    """The feature."""
+
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("recording_id", "feature_id"),
     )

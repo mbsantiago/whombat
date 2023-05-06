@@ -16,7 +16,7 @@ from whombat.database.models.annotation_project import (
     AnnotationProjectTag,
 )
 from whombat.database.models.base import Base
-from whombat.database.models.clip import Clip
+from whombat.database.models.clip import Clip, ClipFeature, ClipTag
 from whombat.database.models.dataset import Dataset
 from whombat.database.models.evaluated_clip import EvaluatedClip
 from whombat.database.models.evaluated_sound_event import EvaluatedSoundEvent
@@ -34,10 +34,15 @@ from whombat.database.models.processed_clip import (
 )
 from whombat.database.models.recording import (
     Recording,
+    RecordingFeature,
     RecordingNote,
     RecordingTag,
 )
-from whombat.database.models.sound_event import SoundEvent, SoundEventTag
+from whombat.database.models.sound_event import (
+    SoundEvent,
+    SoundEventFeature,
+    SoundEventTag,
+)
 from whombat.database.models.tag import Tag
 from whombat.database.models.task import Task, TaskNote, TaskTag
 from whombat.database.models.token import AccessToken
@@ -59,6 +64,8 @@ __all__ = [
     "AnnotationTag",
     "Base",
     "Clip",
+    "ClipFeature",
+    "ClipTag",
     "Dataset",
     "EvaluatedClip",
     "EvaluatedSoundEvent",
@@ -73,9 +80,11 @@ __all__ = [
     "ProcessedClipNote",
     "ProcessedClipPredictedTag",
     "Recording",
+    "RecordingFeature",
     "RecordingNote",
     "RecordingTag",
     "SoundEvent",
+    "SoundEventFeature",
     "SoundEventTag",
     "Tag",
     "Task",
