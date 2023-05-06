@@ -189,17 +189,11 @@ class RecordingFeature(Base):
     )
     """The id of the recording to which the feature belongs."""
 
-    recording: orm.Mapped[Recording] = orm.relationship()
-    """The recording to which the feature belongs."""
-
     feature_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature.id"),
         nullable=False,
     )
     """The id of the feature."""
-
-    feature: orm.Mapped[Tag] = orm.relationship()
-    """The feature."""
 
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 

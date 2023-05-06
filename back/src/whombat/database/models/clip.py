@@ -120,18 +120,11 @@ class ClipFeature(Base):
     )
     """The id of the clip to which the feature belongs."""
 
-    clip: orm.Mapped[Clip] = orm.relationship()
-    """The clip to which the feature belongs."""
-
     feature_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature.id"),
         nullable=False,
     )
     """The id of the feature."""
-
-    feature: orm.Mapped[Tag] = orm.relationship()
-    """The feature."""
-
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 
     __table_args__ = (

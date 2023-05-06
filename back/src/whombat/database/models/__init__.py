@@ -21,6 +21,7 @@ from whombat.database.models.dataset import Dataset
 from whombat.database.models.evaluated_clip import EvaluatedClip
 from whombat.database.models.evaluated_sound_event import EvaluatedSoundEvent
 from whombat.database.models.evaluation import Evaluation, EvaluationTag
+from whombat.database.models.feature import Feature
 from whombat.database.models.model_run import ModelRun, ModelRunNote
 from whombat.database.models.note import Note
 from whombat.database.models.predicted_sound_event import (
@@ -71,6 +72,7 @@ __all__ = [
     "EvaluatedSoundEvent",
     "Evaluation",
     "EvaluationTag",
+    "Feature",
     "ModelRun",
     "ModelRunNote",
     "Note",

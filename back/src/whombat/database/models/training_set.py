@@ -82,16 +82,4 @@ class TrainingSetTag(Base):
     )
     """Tag ID."""
 
-    training_set: orm.Mapped[TrainingSet] = orm.relationship(
-        TrainingSet,
-        backref=orm.backref("tags", cascade="all, delete-orphan"),
-    )
-    """Training set."""
-
-    tag: orm.Mapped[Tag] = orm.relationship(
-        Tag,
-        backref=orm.backref("training_sets", cascade="all, delete-orphan"),
-    )
-    """Tag."""
-
     __table_args__ = (UniqueConstraint("training_set_id", "tag_id"),)

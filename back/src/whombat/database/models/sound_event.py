@@ -131,17 +131,11 @@ class SoundEventFeature(Base):
     )
     """The id of the sound event to which the feature belongs."""
 
-    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
-    """The sound event."""
-
     feature_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature.id"),
         nullable=False,
     )
     """The id of the feature."""
-
-    feature: orm.Mapped[Tag] = orm.relationship()
-    """The feature."""
 
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The value of the feature."""
