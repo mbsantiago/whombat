@@ -22,5 +22,5 @@ class UserCreate(schemas.BaseUserCreate):
 class UserUpdate(schemas.BaseUserUpdate):
     """Schema for User objects updated by the user."""
 
-    username: str
+    username: str | None
     name: str | None

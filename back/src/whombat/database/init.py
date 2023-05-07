@@ -17,9 +17,9 @@ async def init_database(settings: Settings) -> None:
     await utils.create_db_and_tables(engine)
     async with utils.get_async_session(engine) as session:
         try:
-            await api.users.get_by_email(session, settings.admin_email)
+            await api.users.get_user_by_email(session, settings.admin_email)
         except NoResultFound:
-            await api.users.create(
+            await api.users.create_user(
                 session,
                 username=settings.admin_username,
                 email=settings.admin_email,

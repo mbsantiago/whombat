@@ -37,16 +37,16 @@ class Dataset(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """The id of the dataset."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
     """The UUID of the dataset."""
 
-    name: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """The name of the dataset."""
 
     description: orm.Mapped[str] = orm.mapped_column(nullable=True)
     """The description of the dataset."""
 
-    audio_dir: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    audio_dir: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """The path to the audio directory of the dataset.
 
     This is the directory that contains all the recordings of the dataset.
