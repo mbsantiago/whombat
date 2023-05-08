@@ -58,7 +58,7 @@ async def test_create_user():
         )
 
     # Assert
-    assert isinstance(user, schemas.users.User)
+    assert isinstance(user, schemas.User)
     assert user.username == "test"
     assert user.email == "foo@bar.com"
     assert user.is_active
@@ -80,7 +80,7 @@ async def test_create_user_with_is_superuser():
         )
 
     # Assert
-    assert isinstance(user, schemas.users.User)
+    assert isinstance(user, schemas.User)
     assert user.username == "test"
     assert user.email == "foo@gmail.com"
     assert user.is_active
@@ -212,7 +212,7 @@ async def test_get_all_users():
         assert len(users) == 2
 
         for user in users:
-            assert isinstance(user, schemas.users.User)
+            assert isinstance(user, schemas.User)
 
         # Act
         users = await api.users.get_users(session=session, limit=1)
