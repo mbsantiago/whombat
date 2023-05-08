@@ -1,5 +1,6 @@
 """Test suite for the notes Python API module."""
 import datetime
+from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
@@ -16,7 +17,7 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
     note = await notes.create_note(
         session,
         message="test",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -28,30 +29,30 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
 
     # Make sure it is in the database
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note.id)
+        select(models.Note).where(models.Note.uuid == note.uuid)
     )
     assert results.scalar_one_or_none() is not None
 
-    db_note = await notes.get_note_by_id(session, id=note.id)
+    db_note = await notes.get_note_by_uuid(session, uuid=note.uuid)
     assert db_note == note
 
 
-async def test_get_note_by_id(session: AsyncSession, user: schemas.User):
-    """Test getting a note by id."""
+async def test_get_note_by_uuid(session: AsyncSession, user: schemas.User):
+    """Test getting a note by uuid."""
     # Arrange
     note = await notes.create_note(
         session,
         message="test",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     # Act
-    db_note = await notes.get_note_by_id(session, id=note.id)
+    db_note = await notes.get_note_by_uuid(session, uuid=note.uuid)
 
     # Assert
     assert isinstance(db_note, schemas.Note)
-    assert db_note.id == note.id
+    assert db_note.uuid == note.uuid
     assert db_note.message == note.message
     assert db_note.is_issue == note.is_issue
     assert db_note.created_by == user.username
@@ -64,7 +65,7 @@ async def test_get_note_by_id_fails_if_note_does_not_exist(
     """Test that getting a note by id fails if the note does not exist."""
     # Act / Assert
     with pytest.raises(exceptions.NotFoundError):
-        await notes.get_note_by_id(session, id=999)
+        await notes.get_note_by_uuid(session, uuid=uuid4())
 
 
 async def test_delete_note(session: AsyncSession, user: schemas.User):
@@ -73,7 +74,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     note = await notes.create_note(
         session,
         message="test",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -82,7 +83,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
 
     # Assert
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note.id)
+        select(models.Note).where(models.Note.uuid == note.uuid)
     )
     assert results.scalar_one_or_none() is None
 
@@ -93,14 +94,13 @@ async def test_delete_note_does_not_fail_if_note_does_not_exist(
     """Test that deleting a note does not fail if the note does not exist."""
     # Arrange
     note = schemas.Note(
-        id=999,
         message="test",
         created_by="test",
         is_issue=False,
     )
 
     with pytest.raises(exceptions.NotFoundError):
-        await notes.get_note_by_id(session, id=note.id)
+        await notes.get_note_by_uuid(session, uuid=note.uuid)
 
     await notes.delete_note(
         session,
@@ -114,14 +114,14 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -131,24 +131,24 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 2
-    assert db_notes[0] == note1
-    assert db_notes[1] == note2
+    assert db_notes[0].uuid == note2.uuid
+    assert db_notes[1].uuid == note1.uuid
 
 
 async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     """Test getting all notes with a limit."""
     # Arrange
-    note1 = await notes.create_note(
+    await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
-    await notes.create_note(
+    note = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -158,25 +158,26 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 1
-    assert db_notes[0] == note1
+    assert db_notes[0] == note
 
 
 async def test_get_notes_with_offset(
-    session: AsyncSession, user: schemas.User
+    session: AsyncSession,
+    user: schemas.User,
 ):
     """Test getting all notes with an offset."""
     # Arrange
-    await notes.create_note(
+    note = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
-    note2 = await notes.create_note(
+    await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -186,7 +187,7 @@ async def test_get_notes_with_offset(
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 1
-    assert db_notes[0] == note2
+    assert db_notes[0] == note
 
 
 async def test_get_notes_that_are_issues(
@@ -197,14 +198,14 @@ async def test_get_notes_that_are_issues(
     await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=True,
     )
 
@@ -226,14 +227,14 @@ async def test_get_notes_that_are_not_issues(
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=True,
     )
 
@@ -259,21 +260,21 @@ async def test_get_notes_from_user(session: AsyncSession, user: schemas.User):
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     await notes.create_note(
         session,
         message="test3",
-        created_by=another_user.username,
+        created_by=another_user,
         is_issue=False,
     )
 
@@ -283,8 +284,8 @@ async def test_get_notes_from_user(session: AsyncSession, user: schemas.User):
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 2
-    assert db_notes[0] == note1
-    assert db_notes[1] == note2
+    assert db_notes[1] == note1
+    assert db_notes[0] == note2
 
 
 async def test_get_notes_from_multiple_users(
@@ -310,21 +311,21 @@ async def test_get_notes_from_multiple_users(
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user1.username,
+        created_by=user1,
         is_issue=False,
     )
 
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user2.username,
+        created_by=user2,
         is_issue=False,
     )
 
     await notes.create_note(
         session,
         message="test3",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -337,8 +338,8 @@ async def test_get_notes_from_multiple_users(
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 2
-    assert db_notes[0] == note1
-    assert db_notes[1] == note2
+    assert db_notes[0] == note2
+    assert db_notes[1] == note1
 
 
 async def test_get_notes_before_date(
@@ -350,12 +351,12 @@ async def test_get_notes_before_date(
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note1.id)
+        select(models.Note).where(models.Note.uuid == note1.uuid)
     )
     db_note1 = results.scalars().first()
     assert db_note1 is not None
@@ -364,12 +365,12 @@ async def test_get_notes_before_date(
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note2.id)
+        select(models.Note).where(models.Note.uuid == note2.uuid)
     )
     db_note2 = results.scalars().first()
     assert db_note2 is not None
@@ -387,7 +388,7 @@ async def test_get_notes_before_date(
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 1
-    assert db_notes[0].id == note1.id
+    assert db_notes[0].uuid == note1.uuid
 
 
 async def test_get_notes_created_after(
@@ -399,12 +400,12 @@ async def test_get_notes_created_after(
     note1 = await notes.create_note(
         session,
         message="test1",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note1.id)
+        select(models.Note).where(models.Note.uuid == note1.uuid)
     )
     db_note1 = results.scalars().first()
     assert db_note1 is not None
@@ -413,12 +414,12 @@ async def test_get_notes_created_after(
     note2 = await notes.create_note(
         session,
         message="test2",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note2.id)
+        select(models.Note).where(models.Note.uuid == note2.uuid)
     )
     db_note2 = results.scalars().first()
     assert db_note2 is not None
@@ -436,7 +437,7 @@ async def test_get_notes_created_after(
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 1
-    assert db_notes[0].id == note2.id
+    assert db_notes[0].uuid == note2.uuid
 
 
 async def test_update_note_message(
@@ -448,7 +449,7 @@ async def test_update_note_message(
     note = await notes.create_note(
         session,
         message="test",
-        created_by=user.username,
+        created_by=user,
         is_issue=False,
     )
 
@@ -461,7 +462,7 @@ async def test_update_note_message(
 
     # Assert
     results = await session.execute(
-        select(models.Note).where(models.Note.id == note.id)
+        select(models.Note).where(models.Note.uuid == note.uuid)
     )
     db_note = results.scalars().first()
     assert db_note is not None

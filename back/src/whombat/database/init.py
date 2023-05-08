@@ -1,8 +1,8 @@
 """Function to initialize the database."""
 
-from sqlalchemy.exc import NoResultFound
 
 from whombat import api
+from whombat import exceptions
 from whombat.database import utils
 from whombat.settings import Settings
 
@@ -18,7 +18,7 @@ async def init_database(settings: Settings) -> None:
     async with utils.get_async_session(engine) as session:
         try:
             await api.users.get_user_by_email(session, settings.admin_email)
-        except NoResultFound:
+        except exceptions.NotFoundError:
             await api.users.create_user(
                 session,
                 username=settings.admin_username,

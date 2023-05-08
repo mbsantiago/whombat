@@ -18,6 +18,8 @@ or to ask for clarification about specific annotations.
 
 """
 
+from uuid import UUID, uuid4
+
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey
 
@@ -36,6 +38,9 @@ class Note(Base):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """The id of the note."""
+
+    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
+    """The uuid of the note."""
 
     message: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The message of the note."""

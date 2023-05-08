@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field, FilePath, validator
 
 from whombat.core import files
 from whombat.schemas.features import Feature
-from whombat.schemas.tags import Tag
 from whombat.schemas.notes import Note
+from whombat.schemas.tags import Tag
 
 __all__ = [
     "Recording",
@@ -24,10 +24,10 @@ class Recording(BaseModel):
     channels: int
     samplerate: int
 
-    date: datetime.date | None
-    time: datetime.time | None
-    latitude: float | None
-    longitude: float | None
+    date: datetime.date | None = None
+    time: datetime.time | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
     tags: list[Tag] = Field(default_factory=list)
     features: list[Feature] = Field(default_factory=list)
@@ -62,5 +62,5 @@ class RecordingUpdate(BaseModel):
 
     date: datetime.date | None
     time: datetime.time | None
-    latitude: float | None = Field(..., ge=-90, le=90)
-    longitude: float | None = Field(..., ge=-180, le=180)
+    latitude: float | None = Field(None, ge=-90, le=90)
+    longitude: float | None = Field(None, ge=-180, le=180)

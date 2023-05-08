@@ -1,21 +1,29 @@
 """API functions to interact with notes."""
 
 import datetime
+from uuid import UUID
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api import users
 from whombat.database import models
 from whombat.schemas.notes import NoteCreate, NoteUpdate
+
+__all__ = [
+    "create_note",
+    "delete_note",
+    "get_note_by_uuid",
+    "get_notes",
+    "update_note",
+]
 
 
 async def create_note(
     session: AsyncSession,
     message: str,
-    created_by: str,
-    is_issue: bool,
+    created_by: schemas.User,
+    is_issue: bool = False,
 ) -> schemas.Note:
     """Create a note.
 
@@ -43,33 +51,37 @@ async def create_note(
     """
     data = NoteCreate(
         message=message,
-        created_by=created_by,
+        created_by=created_by.username,
         is_issue=is_issue,
     )
 
-    user = await users.get_user_by_username(session, username=data.created_by)
+    query = select(models.User).where(models.User.username == data.created_by)
+    result = await session.execute(query)
+    db_user = result.scalar_one_or_none()
+    if db_user is None:
+        raise exceptions.NotFoundError("User does not exist.")
 
-    note = models.Note(
+    db_note = models.Note(
         message=data.message,
         is_issue=data.is_issue,
-        created_by_id=user.id,
+        created_by_id=db_user.id,
     )
 
-    session.add(note)
+    session.add(db_note)
     await session.commit()
-    await session.refresh(note)
+
     return schemas.Note(
-        id=note.id,
-        message=note.message,
-        is_issue=note.is_issue,
-        created_by=user.username,
-        created_at=note.created_at,
+        uuid=db_note.uuid,
+        message=db_note.message,
+        is_issue=db_note.is_issue,
+        created_by=data.created_by,
+        created_at=db_note.created_at,
     )
 
 
-async def get_note_by_id(
+async def get_note_by_uuid(
     session: AsyncSession,
-    id: int,
+    uuid: UUID,
 ) -> schemas.Note:
     """Get a note by its ID.
 
@@ -94,19 +106,19 @@ async def get_note_by_id(
     query = (
         select(models.Note, models.User)
         .join(models.Note.created_by)
-        .where(models.Note.id == id)
+        .where(models.Note.uuid == uuid)
     )
     result = await session.execute(query)
     row = result.one_or_none()
 
     if row is None:
         raise exceptions.NotFoundError(
-            f"Note with ID {id} does not exist.",
+            f"Note with ID {uuid} does not exist.",
         )
 
     note, user = row
     return schemas.Note(
-        id=note.id,
+        uuid=note.uuid,
         message=note.message,
         is_issue=note.is_issue,
         created_by=user.username,
@@ -131,7 +143,7 @@ async def delete_note(
     ----
     The function will not raise an error if the given note does not exist.
     """
-    query = delete(models.Note).where(models.Note.id == note.id)
+    query = delete(models.Note).where(models.Note.uuid == note.uuid)
     await session.execute(query)
     await session.commit()
 
@@ -215,7 +227,7 @@ async def get_notes(
     result = await session.execute(query)
     return [
         schemas.Note(
-            id=note.id,
+            uuid=note.uuid,
             message=note.message,
             is_issue=note.is_issue,
             created_by=user,
@@ -262,7 +274,7 @@ async def update_note(
 
     query = (
         update(models.Note)
-        .where(models.Note.id == note.id)
+        .where(models.Note.uuid == note.uuid)
         .values(
             **data.dict(exclude_none=True),
         )

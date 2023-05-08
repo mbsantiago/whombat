@@ -42,10 +42,8 @@ async def client(database_test: Path, settings: Settings):
     database_test.unlink()
 
 
-@pytest.mark.asyncio
-async def test_admin_can_login(client):
+async def test_admin_can_login(client: TestClient):
     """Test that the admin user can login."""
-    client = await client.asend(None)
     response = client.post(
         "/auth/login",
         data={

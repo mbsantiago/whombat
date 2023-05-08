@@ -1,4 +1,4 @@
-"""Common fixtures for Whombat core tests."""""
+"""Common fixtures for Whombat tests."""""
 import os
 import random
 import string

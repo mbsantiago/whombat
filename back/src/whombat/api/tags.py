@@ -8,6 +8,15 @@ from whombat import exceptions, schemas
 from whombat.database import models
 from whombat.schemas.tags import TagCreate, TagUpdate
 
+__all__ = [
+    "create_tag",
+    "delete_tag",
+    "get_tag_by_key_and_value",
+    "get_tags",
+    "update_tag",
+    "get_tags_by_key",
+]
+
 
 async def create_tag(
     session: AsyncSession,
@@ -64,40 +73,12 @@ async def delete_tag(
     -----
     This function will not raise an exception if the tag does not exist.
     """
-    stmt = delete(models.Tag).where(models.Tag.id == tag.id)
+    stmt = delete(models.Tag).where(
+        models.Tag.key == tag.key,
+        models.Tag.value == tag.value,
+    )
     await session.execute(stmt)
     await session.commit()
-
-
-async def get_tag_by_id(
-    session: AsyncSession,
-    tag_id: int,
-) -> schemas.Tag:
-    """Get a tag by its ID.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    tag_id : int
-        The ID of the tag.
-
-    Returns
-    -------
-    schemas.Tag
-        The tag.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the tag does not exist.
-    """
-    stmt = select(models.Tag).where(models.Tag.id == tag_id)
-    result = await session.execute(stmt)
-    tag = result.scalar()
-    if tag is None:
-        raise exceptions.NotFoundError("Tag not found.")
-    return schemas.Tag.from_orm(tag)
 
 
 async def get_tag_by_key_and_value(
@@ -231,7 +212,10 @@ async def update_tag(
     data = TagUpdate(key=key, value=value)
     stmt = (
         update(models.Tag)
-        .where(models.Tag.id == tag.id)
+        .where(
+            models.Tag.key == tag.key,
+            models.Tag.value == tag.value,
+        )
         .values(**data.dict(exclude_none=True))
     )
     await session.execute(stmt)

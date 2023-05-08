@@ -60,9 +60,13 @@ class Base(orm.DeclarativeBase):
     created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(
         name="created_at",
         nullable=False,
-        default=func.now(),
+        default=datetime.datetime.now,
     )
 
     type_annotation_map = {
         uuid.UUID: GUID,
+    }
+
+    __mapper_args__ = {
+        "eager_defaults": True,
     }

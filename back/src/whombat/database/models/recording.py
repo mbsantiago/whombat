@@ -21,6 +21,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
+from whombat.database.models.feature import Feature
 from whombat.database.models.note import Note
 from whombat.database.models.tag import Tag
 
@@ -77,6 +78,21 @@ class Recording(Base):
     longitude: orm.Mapped[float] = orm.mapped_column(nullable=True)
     """The longitude of the recording site."""
 
+    notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
+        "RecordingNote",
+        back_populates="recording",
+    )
+
+    tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
+        "RecordingTag",
+        back_populates="recording",
+    )
+
+    features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
+        "RecordingFeature",
+        back_populates="recording",
+    )
+
 
 class RecordingNote(Base):
     """RecordingNote model for recording_note table.
@@ -97,7 +113,9 @@ class RecordingNote(Base):
     )
     """The id of the recording to which the note belongs."""
 
-    recording: orm.Mapped[Recording] = orm.relationship()
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="notes",
+    )
     """The recording to which the note belongs."""
 
     note_id: orm.Mapped[int] = orm.mapped_column(
@@ -132,7 +150,9 @@ class RecordingTag(Base):
     )
     """The id of the recording to which the tag belongs."""
 
-    recording: orm.Mapped[Recording] = orm.relationship()
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="tags",
+    )
     """The recording to which the tag belongs."""
 
     tag_id: orm.Mapped[int] = orm.mapped_column(
@@ -166,11 +186,17 @@ class RecordingFeature(Base):
     )
     """The id of the recording to which the feature belongs."""
 
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="features",
+    )
+
     feature_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature.id"),
         nullable=False,
     )
     """The id of the feature."""
+
+    feature: orm.Mapped[Feature] = orm.relationship()
 
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 

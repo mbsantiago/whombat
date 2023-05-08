@@ -1,6 +1,7 @@
 """Schemas for handling Notes."""
 
 import datetime
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
@@ -10,7 +11,7 @@ __all__ = ["Note", "NoteUpdate", "NoteCreate"]
 class Note(BaseModel):
     """Schema for Note objects returned to the user."""
 
-    id: int
+    uuid: UUID = Field(default_factory=uuid4)
     """The id of the note."""
 
     message: str
@@ -29,6 +30,10 @@ class Note(BaseModel):
         """Pydantic configuration."""
 
         orm_mode = True
+
+    def __hash__(self):
+        """Hash the Note object."""
+        return hash(self.uuid)
 
 
 class NoteCreate(BaseModel):
