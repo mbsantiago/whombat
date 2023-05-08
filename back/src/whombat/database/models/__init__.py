@@ -17,7 +17,7 @@ from whombat.database.models.annotation_project import (
 )
 from whombat.database.models.base import Base
 from whombat.database.models.clip import Clip, ClipFeature, ClipTag
-from whombat.database.models.dataset import Dataset
+from whombat.database.models.dataset import Dataset, DatasetRecording
 from whombat.database.models.evaluated_clip import EvaluatedClip
 from whombat.database.models.evaluated_sound_event import EvaluatedSoundEvent
 from whombat.database.models.evaluation import Evaluation, EvaluationTag
@@ -68,6 +68,7 @@ __all__ = [
     "ClipFeature",
     "ClipTag",
     "Dataset",
+    "DatasetRecording",
     "EvaluatedClip",
     "EvaluatedSoundEvent",
     "Evaluation",

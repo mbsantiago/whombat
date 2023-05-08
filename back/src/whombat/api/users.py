@@ -12,6 +12,7 @@ from sqlalchemy.future import select
 
 from whombat import exceptions, schemas
 from whombat.database import models
+from whombat.schemas.users import UserCreate, UserUpdate
 
 __all__ = [
     "create_user",
@@ -56,7 +57,7 @@ async def create_user(
     password: str,
     email: str,
     is_superuser: bool = False,
-) -> schemas.users.User:
+) -> schemas.User:
     """Create a user.
 
     This function creates a user in the database.
@@ -104,7 +105,7 @@ async def create_user(
     """
     async with _get_user_manager_from_session(session) as user_manager:
         db_user = await user_manager.create(
-            schemas.users.UserCreate(
+            UserCreate(
                 username=username,
                 password=password,
                 email=email,  # type: ignore
@@ -112,13 +113,15 @@ async def create_user(
                 name=name,
             )
         )
-        return schemas.users.User.from_orm(db_user)
+        session.add(db_user)
+        await session.commit()
+        return schemas.User.from_orm(db_user)
 
 
 async def get_user_by_id(
     session: AsyncSession,
     user_id: uuid.UUID,
-) -> schemas.users.User:
+) -> schemas.User:
     """Get a user by id.
 
     Parameters
@@ -139,7 +142,7 @@ async def get_user_by_id(
     try:
         async with _get_user_manager_from_session(session) as user_manager:
             db_user = await user_manager.get(user_id)
-            return schemas.users.User.from_orm(db_user)
+            return schemas.User.from_orm(db_user)
     except UserNotExists as error:
         raise exceptions.NotFoundError from error
 
@@ -147,7 +150,7 @@ async def get_user_by_id(
 async def get_user_by_username(
     session: AsyncSession,
     username: str,
-) -> schemas.users.User:
+) -> schemas.User:
     """Get a user by username.
 
     Parameters
@@ -172,13 +175,13 @@ async def get_user_by_username(
         db_user = result.scalars().one()
     except NoResultFound as error:
         raise exceptions.NotFoundError("User not found") from error
-    return schemas.users.User.from_orm(db_user)
+    return schemas.User.from_orm(db_user)
 
 
 async def get_user_by_email(
     session: AsyncSession,
     email: str,
-) -> schemas.users.User:
+) -> schemas.User:
     """Get a user by email.
 
     Parameters
@@ -200,16 +203,16 @@ async def get_user_by_email(
     try:
         async with _get_user_manager_from_session(session) as user_manager:
             db_user = await user_manager.get_by_email(email)
-            return schemas.users.User.from_orm(db_user)
+            return schemas.User.from_orm(db_user)
     except UserNotExists as error:
         raise exceptions.NotFoundError("No user with that email") from error
 
 
 async def update_user(
     session: AsyncSession,
-    user: schemas.users.User,
+    user: schemas.User,
     **kwargs: Any,
-) -> schemas.users.User:
+) -> schemas.User:
     """Update a user.
 
     Parameters
@@ -230,18 +233,18 @@ async def update_user(
         If no user with the given id exists.
 
     """
-    data = schemas.users.UserUpdate(**kwargs)
+    data = UserUpdate(**kwargs)
     async with _get_user_manager_from_session(session) as user_manager:
         db_user = await user_manager.get(user.id)
         db_user = await user_manager.update(data, db_user)
-        return schemas.users.User.from_orm(db_user)
+        return schemas.User.from_orm(db_user)
 
 
 async def get_users(
     session: AsyncSession,
     offset: int = 0,
     limit: int = 100,
-) -> list[schemas.users.User]:
+) -> list[schemas.User]:
     """Get all users.
 
     Parameters
@@ -261,10 +264,10 @@ async def get_users(
     select_query = select(models.User).offset(offset).limit(limit)
     result = await session.execute(select_query)
     db_users = result.scalars().all()
-    return [schemas.users.User.from_orm(db_user) for db_user in db_users]
+    return [schemas.User.from_orm(db_user) for db_user in db_users]
 
 
-async def delete_user(session: AsyncSession, user: schemas.users.User) -> None:
+async def delete_user(session: AsyncSession, user: schemas.User) -> None:
     """Delete a user.
 
     Parameters

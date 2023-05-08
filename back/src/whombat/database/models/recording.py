@@ -3,7 +3,7 @@
 A recording is the primary source of data in the app, representing a
 single audio file. Currently, the app supports only WAV files, although
 support for additional file formats may be added in the future. Recordings
-are part of a dataset, and each recording has a unique identifier (UUID)
+are part of a dataset, and each recording has a unique identifier (hash)
 and a path that points to the audio file relative to the dataset root
 directory.
 
@@ -16,14 +16,11 @@ where they were recorded.
 """
 
 import datetime
-import os
-from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
-from whombat.database.models.dataset import Dataset
 from whombat.database.models.note import Note
 from whombat.database.models.tag import Tag
 
@@ -48,22 +45,16 @@ class Recording(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """The id of the recording."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
-    """The UUID of the recording."""
+    hash: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    """The sha256 hash of the recording.
 
-    dataset_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("dataset.id"),
-        nullable=False,
-    )
-    """The id of the dataset to which the recording belongs."""
+    The hash is used to uniquely identify the recording. It is calculated
+    from the recording file and is used to check if a recording has been
+    registered before.
 
-    dataset: orm.Mapped[Dataset] = orm.relationship()
-    """The dataset to which the recording belongs."""
-
-    path: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """The path to the recording file. 
-
-    This is a relative path to the dataset root directory."""
+    The hash function SHOULD be computed using the
+    whombat.core.files.compute_hash function.
+    """
 
     duration: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The duration of the recording in seconds."""
@@ -85,16 +76,6 @@ class Recording(Base):
 
     longitude: orm.Mapped[float] = orm.mapped_column(nullable=True)
     """The longitude of the recording site."""
-
-    @property
-    def full_path(self):
-        """Get the full path to the recording file."""
-        return os.path.join(self.dataset.audio_dir, self.path)
-
-    @property
-    def relative_path(self):
-        """Get the relative path to the recording file."""
-        return os.path.relpath(self.full_path, self.dataset.audio_dir)
 
 
 class RecordingNote(Base):
@@ -128,9 +109,7 @@ class RecordingNote(Base):
     note: orm.Mapped[Note] = orm.relationship()
     """The note."""
 
-    __table_args__ = (
-        UniqueConstraint("recording_id", "note_id"),
-    )
+    __table_args__ = (UniqueConstraint("recording_id", "note_id"),)
 
 
 class RecordingTag(Base):
@@ -165,9 +144,7 @@ class RecordingTag(Base):
     tag: orm.Mapped[Tag] = orm.relationship()
     """The tag."""
 
-    __table_args__ = (
-        UniqueConstraint("recording_id", "tag_id"),
-    )
+    __table_args__ = (UniqueConstraint("recording_id", "tag_id"),)
 
 
 class RecordingFeature(Base):
@@ -197,6 +174,4 @@ class RecordingFeature(Base):
 
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 
-    __table_args__ = (
-        UniqueConstraint("recording_id", "feature_id"),
-    )
+    __table_args__ = (UniqueConstraint("recording_id", "feature_id"),)

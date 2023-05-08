@@ -1,9 +1,7 @@
 """API functions for interacting with datasets."""
 import uuid
-from enum import Enum
 from pathlib import Path
 
-from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import exceptions, schemas
 from whombat.core import files
 from whombat.database import models
+from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
 __all__ = [
     "get_dataset_by_name",
@@ -26,7 +25,7 @@ __all__ = [
 async def get_dataset_by_name(
     session: AsyncSession,
     name: str,
-) -> schemas.datasets.Dataset:
+) -> schemas.Dataset:
     """Get a dataset by name.
 
     Parameters
@@ -53,13 +52,13 @@ async def get_dataset_by_name(
         raise exceptions.NotFoundError(
             "No dataset with the given name exists."
         )
-    return schemas.datasets.Dataset.from_orm(dataset)
+    return schemas.Dataset.from_orm(dataset)
 
 
 async def get_dataset_by_uuid(
     session: AsyncSession,
     uuid: uuid.UUID,
-) -> schemas.datasets.Dataset:
+) -> schemas.Dataset:
     """Get a dataset by UUID.
 
     Parameters
@@ -86,13 +85,13 @@ async def get_dataset_by_uuid(
         raise exceptions.NotFoundError(
             "No dataset with the given UUID exists."
         )
-    return schemas.datasets.Dataset.from_orm(dataset)
+    return schemas.Dataset.from_orm(dataset)
 
 
 async def get_dataset_by_audio_dir(
     session: AsyncSession,
     audio_dir: Path,
-) -> schemas.datasets.Dataset:
+) -> schemas.Dataset:
     """Get a dataset by audio directory.
 
     Parameters
@@ -121,14 +120,14 @@ async def get_dataset_by_audio_dir(
         raise exceptions.NotFoundError(
             "No dataset with the given audio directory exists."
         )
-    return schemas.datasets.Dataset.from_orm(dataset)
+    return schemas.Dataset.from_orm(dataset)
 
 
 async def get_datasets(
     session: AsyncSession,
     limit: int = 100,
     offset: int = 0,
-) -> list[schemas.datasets.Dataset]:
+) -> list[schemas.Dataset]:
     """Get all datasets.
 
     Parameters
@@ -148,7 +147,7 @@ async def get_datasets(
     query = select(models.Dataset).limit(limit).offset(offset)
     result = await session.execute(query)
     datasets = result.scalars().all()
-    return [schemas.datasets.Dataset.from_orm(dataset) for dataset in datasets]
+    return [schemas.Dataset.from_orm(dataset) for dataset in datasets]
 
 
 async def create_dataset(
@@ -156,7 +155,7 @@ async def create_dataset(
     name: str,
     audio_dir: Path,
     description: str = "",
-) -> schemas.datasets.Dataset:
+) -> schemas.Dataset:
     """Create a dataset.
 
     Parameters
@@ -182,7 +181,7 @@ async def create_dataset(
         If the given audio directory does not exist.
 
     """
-    data = schemas.datasets.DatasetCreate(
+    data = DatasetCreate(
         name=name,
         audio_dir=audio_dir,
         description=description,
@@ -207,16 +206,16 @@ async def create_dataset(
                     "A dataset with the given audio directory already exists."
                 )
         raise error
-    return schemas.datasets.Dataset.from_orm(db_dataset)
+    return schemas.Dataset.from_orm(db_dataset)
 
 
 async def update_dataset(
     session: AsyncSession,
-    dataset: schemas.datasets.Dataset,
+    dataset: schemas.Dataset,
     name: str | None = None,
     audio_dir: Path | None = None,
     description: str | None = None,
-) -> schemas.datasets.Dataset:
+) -> schemas.Dataset:
     """Update a dataset.
 
     Parameters
@@ -243,7 +242,7 @@ async def update_dataset(
         If no dataset with the given UUID exists.
 
     """
-    data = schemas.datasets.DatasetUpdate(
+    data = DatasetUpdate(
         name=name,
         audio_dir=audio_dir,
         description=description,
@@ -263,12 +262,12 @@ async def update_dataset(
     if data.description is not None:
         db_dataset.description = data.description
     await session.flush()
-    return schemas.datasets.Dataset.from_orm(db_dataset)
+    return schemas.Dataset.from_orm(db_dataset)
 
 
 async def delete_dataset(
     session: AsyncSession,
-    dataset: schemas.datasets.Dataset,
+    dataset: schemas.Dataset,
 ) -> None:
     """Delete a dataset.
 
@@ -294,45 +293,10 @@ async def delete_dataset(
     await session.flush()
 
 
-class FileState(Enum):
-    """The state of a file in a dataset.
-
-    Datasets can contain files that are not registered in the database. This
-    can happen if the file was added to the dataset directory after the
-    dataset was registered. Additionally, files can be registered in the
-    database but missing from the dataset directory. This can happen if the
-    file was removed from the dataset directory after the dataset was
-    registered.
-
-    The state of a file can be one of the following:
-
-    - ``missing``: The file is not registered in the database and is missing.
-
-    - ``registered``: The file is registered in the database and is present.
-
-    - ``unregistered``: The file is not registered in the database but is
-        present in the dataset directory.
-    """
-
-    MISSING = "missing"
-    """If the recording is registered but the file is missing."""
-
-    REGISTERED = "registered"
-    """If the recording is registered and the file is present."""
-
-    UNREGISTERED = "unregistered"
-    """If the recording is not registered but the file is present."""
-
-
-class DatasetFileState(BaseModel):
-    path: Path
-    state: FileState
-
-
 async def get_dataset_files(
     session: AsyncSession,
-    dataset: schemas.datasets.Dataset,
-) -> list[DatasetFileState]:
+    dataset: schemas.Dataset,
+) -> list[schemas.DatasetFile]:
     """Get the files in a dataset.
 
     When a dataset is created, the files in the dataset directory are
@@ -355,7 +319,7 @@ async def get_dataset_files(
 
     Returns
     -------
-    files : list[DatasetFileState]
+    files : list[schemas.datasets.DatasetFile]
 
     """
     # Get the files in the dataset directory.
@@ -363,7 +327,7 @@ async def get_dataset_files(
 
     # Get the files in the database.
     query = (
-        select(models.Recording.path)
+        select(models.DatasetRecording.path)
         .join(models.Dataset)
         .where(models.Dataset.uuid == dataset.uuid)
     )
@@ -377,12 +341,27 @@ async def get_dataset_files(
 
     ret = []
     for path in existing_files:
-        ret.append(DatasetFileState(path=path, state=FileState.REGISTERED))
+        ret.append(
+            schemas.DatasetFile(
+                path=path,
+                state=schemas.FileState.REGISTERED,
+            )
+        )
 
     for path in missing_files:
-        ret.append(DatasetFileState(path=path, state=FileState.MISSING))
+        ret.append(
+            schemas.DatasetFile(
+                path=path,
+                state=schemas.FileState.MISSING,
+            )
+        )
 
     for path in unregistered_files:
-        ret.append(DatasetFileState(path=path, state=FileState.UNREGISTERED))
+        ret.append(
+            schemas.DatasetFile(
+                path=path,
+                state=schemas.FileState.UNREGISTERED,
+            )
+        )
 
     return ret

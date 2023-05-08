@@ -1,4 +1,5 @@
 """File handling functions."""
+import hashlib
 import re
 import wave
 from collections import namedtuple
@@ -8,6 +9,7 @@ __all__ = [
     "is_audio_file",
     "get_audio_files_in_folder",
     "get_media_info",
+    "compute_hash",
     "MediaInfo",
 ]
 
@@ -99,3 +101,33 @@ def get_media_info(path: Path) -> MediaInfo:
             channels=params.nchannels,
             sampwidth=params.sampwidth,
         )
+
+
+BLOCKSIZE = 65536
+"""Size of the block to read from the file when computing hash."""
+
+
+def compute_hash(path: Path) -> str:
+    """Compute the SHA256 hash of a file.
+
+    Will read the file in blocks of 65536 bytes to avoid loading the entire
+    file into memory.
+
+    Parameters
+    ----------
+    path: Path
+        Path to the file.
+
+    Returns
+    -------
+    hash: str
+        The SHA256 hash of the file.
+    """
+    sha256 = hashlib.sha256()
+    with path.open("rb") as file:
+        while True:
+            data = file.read(BLOCKSIZE)
+            if not data:
+                break
+            sha256.update(data)
+    return sha256.hexdigest()

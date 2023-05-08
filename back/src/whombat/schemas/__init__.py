@@ -14,10 +14,26 @@ the database.
 
 """
 
-from whombat.schemas import users
-from whombat.schemas import datasets
+from whombat.schemas.datasets import (
+    Dataset,
+    DatasetFile,
+    DatasetRecording,
+    FileState,
+)
+from whombat.schemas.features import Feature
+from whombat.schemas.recordings import Recording
+from whombat.schemas.tags import Tag
+from whombat.schemas.users import User
+from whombat.schemas.notes import Note
 
 __all__ = [
-    "users",
-    "datasets",
+    "Dataset",
+    "DatasetFile",
+    "DatasetRecording",
+    "Feature",
+    "FileState",
+    "Note",
+    "Recording",
+    "Tag",
+    "User",
 ]

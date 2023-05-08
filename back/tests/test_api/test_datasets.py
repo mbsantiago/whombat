@@ -21,7 +21,7 @@ async def test_create_dataset(session: AsyncSession, tmp_path: Path):
         description="This is a test dataset.",
         audio_dir=audio_dir,
     )
-    assert isinstance(dataset, schemas.datasets.Dataset)
+    assert isinstance(dataset, schemas.Dataset)
     assert dataset.name == "test_dataset"
     assert dataset.description == "This is a test dataset."
     assert dataset.audio_dir == audio_dir
@@ -118,7 +118,7 @@ async def test_get_dataset_by_uuid(session: AsyncSession, tmp_path: Path):
         session,
         dataset.uuid,
     )
-    assert isinstance(retrieved_dataset, schemas.datasets.Dataset)
+    assert isinstance(retrieved_dataset, schemas.Dataset)
     assert retrieved_dataset == dataset
 
 
@@ -146,7 +146,7 @@ async def test_get_dataset_by_name(session: AsyncSession, tmp_path: Path):
     retrieved_dataset = await datasets.get_dataset_by_name(
         session, dataset.name
     )
-    assert isinstance(retrieved_dataset, schemas.datasets.Dataset)
+    assert isinstance(retrieved_dataset, schemas.Dataset)
     assert retrieved_dataset == dataset
 
 
@@ -174,7 +174,7 @@ async def test_get_dataset_by_audio_dir(session: AsyncSession, tmp_path: Path):
     retrieved_dataset = await datasets.get_dataset_by_audio_dir(
         session, dataset.audio_dir
     )
-    assert isinstance(retrieved_dataset, schemas.datasets.Dataset)
+    assert isinstance(retrieved_dataset, schemas.Dataset)
     assert retrieved_dataset == dataset
 
 
@@ -250,7 +250,7 @@ async def test_update_dataset_name(session: AsyncSession, tmp_path: Path):
         dataset,
         name="updated_dataset",
     )
-    assert isinstance(updated_dataset, schemas.datasets.Dataset)
+    assert isinstance(updated_dataset, schemas.Dataset)
     assert updated_dataset.name == "updated_dataset"
 
 
@@ -272,7 +272,7 @@ async def test_update_dataset_description(
         dataset,
         description="This is an updated test dataset.",
     )
-    assert isinstance(updated_dataset, schemas.datasets.Dataset)
+    assert isinstance(updated_dataset, schemas.Dataset)
     assert updated_dataset.description == "This is an updated test dataset."
 
 
@@ -293,7 +293,7 @@ async def test_update_dataset_audio_dir(session: AsyncSession, tmp_path: Path):
         dataset,
         audio_dir=audio_dir_2,
     )
-    assert isinstance(updated_dataset, schemas.datasets.Dataset)
+    assert isinstance(updated_dataset, schemas.Dataset)
     assert updated_dataset.audio_dir == audio_dir_2
 
 

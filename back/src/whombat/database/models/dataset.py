@@ -17,11 +17,14 @@ recordings from the app.
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
+from whombat.database.models.recording import Recording
 
 __all__ = [
     "Dataset",
+    "DatasetRecording",
 ]
 
 
@@ -51,3 +54,59 @@ class Dataset(Base):
 
     This is the directory that contains all the recordings of the dataset.
     """
+
+
+class DatasetRecording(Base):
+    """Dataset Recording Model.
+
+    Notes
+    -----
+    The dataset recording model is a many-to-many relationship between the
+    dataset and recording models. This means that a recording can be part of
+    multiple datasets. This is useful when a recording is used in multiple
+    studies or deployments. However, as we do not want to duplicate recordings
+    in the database, we use a many-to-many relationship to link recordings to
+    datasets.
+    """
+
+    __tablename__ = "dataset_recording"
+
+    dataset_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("dataset.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    """The id of the dataset."""
+
+    recording_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("recording.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    """The id of the recording."""
+
+    path: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """The path to the recording within the dataset.
+
+    This is the path to the recording relative to the dataset audio directory.
+    """
+
+    dataset: orm.Mapped[Dataset] = orm.relationship(
+        Dataset,
+        backref=orm.backref(
+            "dataset_recordings",
+            cascade="all, delete-orphan",
+        ),
+    )
+    """The dataset."""
+
+    recording: orm.Mapped[Recording] = orm.relationship(
+        Recording,
+        backref=orm.backref(
+            "dataset_recordings",
+            cascade="all, delete-orphan",
+        ),
+    )
+    """The recording."""
+
+    __table_args__ = (UniqueConstraint("dataset_id", "recording_id", "path"),)
