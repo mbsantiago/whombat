@@ -47,12 +47,15 @@ bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
 def get_database_strategy(
-    access_token_db: AccessTokenDatabase[models.AccessToken] = Depends(
+    access_token_db: AccessTokenDatabase[models.AccessToken] = Depends(  # type: ignore
         get_access_token_db
     ),
 ) -> DatabaseStrategy:
     """Get the database strategy for the auth backend."""
-    return DatabaseStrategy(access_token_db, lifetime_seconds=60 * 60 * 24)
+    return DatabaseStrategy(
+        access_token_db,  # type: ignore
+        lifetime_seconds=60 * 60 * 24,
+    )
 
 
 def get_jwt_strategy() -> JWTStrategy:

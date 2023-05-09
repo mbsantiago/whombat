@@ -18,7 +18,7 @@ auth_router = APIRouter()
 users_router = APIRouter()
 
 
-fastapi_users = FastAPIUsers[models.User, uuid.UUID](
+fastapi_users = FastAPIUsers[models.User, uuid.UUID](  # type: ignore
     get_user_manager,
     [db_auth_backend],
 )

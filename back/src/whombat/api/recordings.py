@@ -10,9 +10,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api import notes, tags
 from whombat.core import files
 from whombat.database import models
+from whombat.filters.base import Filter
 from whombat.schemas.recordings import RecordingCreate, RecordingUpdate
 
 __all__ = [
@@ -27,8 +27,6 @@ __all__ = [
     "remove_feature_from_recording",
     "remove_note_from_recording",
     "remove_tag_from_recording",
-    "set_features_for_recording",
-    "set_tags_for_recording",
 ]
 
 A = TypeVar("A")
@@ -112,6 +110,45 @@ async def create_recording(
     )
 
 
+def _convert_recording_to_schema(
+    recording: models.Recording,
+) -> schemas.Recording:
+    return schemas.Recording(
+        hash=recording.hash,
+        duration=recording.duration,
+        channels=recording.channels,
+        samplerate=recording.samplerate,
+        date=recording.date,
+        time=recording.time,
+        latitude=recording.latitude,
+        longitude=recording.longitude,
+        features=[
+            schemas.Feature(
+                name=feature.feature_name.name,
+                value=feature.value,
+            )
+            for feature in recording.features
+        ],
+        notes=[
+            schemas.Note(
+                uuid=note.note.uuid,
+                message=note.note.message,
+                created_at=note.note.created_at,
+                created_by=note.note.created_by.username,
+                is_issue=note.note.is_issue,
+            )
+            for note in recording.notes
+        ],
+        tags=[
+            schemas.Tag(
+                key=tag.tag.key,
+                value=tag.tag.value,
+            )
+            for tag in recording.tags
+        ],
+    )
+
+
 async def get_recording_by_hash(
     session: AsyncSession,
     hash: str,
@@ -160,42 +197,7 @@ async def get_recording_by_hash(
         )
 
     recording = recording[0]
-
-    return schemas.Recording(
-        hash=recording.hash,
-        duration=recording.duration,
-        channels=recording.channels,
-        samplerate=recording.samplerate,
-        date=recording.date,
-        time=recording.time,
-        latitude=recording.latitude,
-        longitude=recording.longitude,
-        features=[
-            schemas.Feature(
-                name=feature.feature_name.name,
-                value=feature.value,
-            )
-            for feature in recording.features
-        ],
-        notes=[
-            schemas.Note(
-                uuid=note.note.uuid,
-                message=note.note.message,
-                created_at=note.note.created_at,
-                created_by=note.note.created_by.username,
-                is_issue=note.note.is_issue,
-            )
-            for note in recording.notes
-        ],
-        tags=[
-            schemas.Tag(
-                key=tag.tag.key,
-                value=tag.tag.value,
-            )
-            for tag in recording.tags
-        ],
-    )
-
+    return _convert_recording_to_schema(recording)
 
 async def update_recording(
     session: AsyncSession,
@@ -246,6 +248,7 @@ async def get_recordings(
     session: AsyncSession,
     limit: int = 1000,
     offset: int = 0,
+    filters: list[Filter] | None = None,
 ) -> list[schemas.Recording]:
     """Get all recordings.
 
@@ -267,15 +270,30 @@ async def get_recordings(
     """
     query = (
         select(models.Recording)
-        .join(models.RecordingFeature)
-        .join(models.RecordingNote)
-        .join(models.RecordingTag)
-        .limit(limit)
-        .offset(offset)
+        .options(
+            orm.joinedload(models.Recording.features).subqueryload(
+                models.RecordingFeature.feature_name
+            ),
+            orm.joinedload(models.Recording.notes)
+            .subqueryload(models.RecordingNote.note)
+            .subqueryload(models.Note.created_by),
+            orm.joinedload(models.Recording.tags).subqueryload(
+                models.RecordingTag.tag
+            ),
+        )
     )
+
+    if filters is None:
+        filters = []
+
+    for filter in filters:
+        query = filter.filter(query)
+
+    query = query.limit(limit).offset(offset)
     result = await session.execute(query)
     return [
-        schemas.Recording.from_orm(recording) for recording in result.scalars()
+        _convert_recording_to_schema(recording)
+        for recording in result.unique().scalars()
     ]
 
 
@@ -769,11 +787,3 @@ async def remove_feature_from_recording(
             ],
         }
     )
-
-
-async def set_tags_for_recording():
-    pass
-
-
-async def set_features_for_recording():
-    pass

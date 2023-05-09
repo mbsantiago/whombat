@@ -321,3 +321,149 @@ async def test_get_or_create_tag_existing_should_get(
     assert isinstance(retrieved_tag, schemas.Tag)
     assert retrieved_tag.key == "test_key"
     assert retrieved_tag.value == "test_value"
+
+
+async def test_get_tags(
+    session: AsyncSession,
+):
+    """Test getting tags."""
+    await tags.create_tag(
+        session=session,
+        key="test_key1",
+        value="test_value1",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key2",
+        value="test_value2",
+    )
+    retrieved_tags = await tags.get_tags(session)
+    assert isinstance(retrieved_tags, list)
+    assert len(retrieved_tags) == 2
+    assert retrieved_tags[0].key == "test_key1"
+    assert retrieved_tags[0].value == "test_value1"
+    assert retrieved_tags[1].key == "test_key2"
+    assert retrieved_tags[1].value == "test_value2"
+
+
+async def test_get_tags_with_offset(
+    session: AsyncSession,
+):
+    """Test getting tags with an offset."""
+    await tags.create_tag(
+        session=session,
+        key="test_key1",
+        value="test_value1",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key2",
+        value="test_value2",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key3",
+        value="test_value3",
+    )
+    retrieved_tags = await tags.get_tags(
+        session=session,
+        offset=1,
+    )
+    assert isinstance(retrieved_tags, list)
+    assert len(retrieved_tags) == 2
+    assert retrieved_tags[0].key == "test_key2"
+    assert retrieved_tags[0].value == "test_value2"
+    assert retrieved_tags[1].key == "test_key3"
+    assert retrieved_tags[1].value == "test_value3"
+
+
+async def test_get_tags_with_limit(
+    session: AsyncSession,
+):
+    """Test getting tags with a limit."""
+    await tags.create_tag(
+        session=session,
+        key="test_key1",
+        value="test_value1",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key2",
+        value="test_value2",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key3",
+        value="test_value3",
+    )
+    retrieved_tags = await tags.get_tags(
+        session=session,
+        limit=2,
+    )
+    assert isinstance(retrieved_tags, list)
+    assert len(retrieved_tags) == 2
+    assert retrieved_tags[0].key == "test_key1"
+    assert retrieved_tags[0].value == "test_value1"
+    assert retrieved_tags[1].key == "test_key2"
+    assert retrieved_tags[1].value == "test_value2"
+
+
+async def test_get_tags_with_search(
+    session: AsyncSession,
+):
+    """Test getting tags with a search."""
+    await tags.create_tag(
+        session=session,
+        key="a",
+        value="b",
+    )
+    await tags.create_tag(
+        session=session,
+        key="b",
+        value="c",
+    )
+    await tags.create_tag(
+        session=session,
+        key="c",
+        value="d",
+    )
+    retrieved_tags = await tags.get_tags(
+        session=session,
+        search="b",
+    )
+    assert isinstance(retrieved_tags, list)
+    assert len(retrieved_tags) == 2
+    assert retrieved_tags[0].key == "a"
+    assert retrieved_tags[0].value == "b"
+    assert retrieved_tags[1].key == "b"
+    assert retrieved_tags[1].value == "c"
+
+
+async def test_get_tags_by_key_with_search(
+    session: AsyncSession,
+):
+    """Test getting tags by key with a search."""
+    await tags.create_tag(
+        session=session,
+        key="a",
+        value="b",
+    )
+    await tags.create_tag(
+        session=session,
+        key="c",
+        value="b",
+    )
+    await tags.create_tag(
+        session=session,
+        key="c",
+        value="d",
+    )
+    retrieved_tags = await tags.get_tags_by_key(
+        session=session,
+        key="c",
+        search="b",
+    )
+    assert isinstance(retrieved_tags, list)
+    assert len(retrieved_tags) == 1
+    assert retrieved_tags[0].key == "c"
+    assert retrieved_tags[0].value == "b"

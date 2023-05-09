@@ -6,12 +6,10 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from whombat import api, schemas
+from whombat import api, exceptions, schemas
 from whombat.database import models
-from whombat import exceptions
 
 
-@pytest.mark.asyncio
 async def test_create_session():
     """Test creating a database session."""
     async with api.sessions.create_session() as session:
@@ -19,43 +17,38 @@ async def test_create_session():
         assert session.is_active
 
 
-@pytest.mark.asyncio
-async def test_session_was_created_with_default_db_url():
+async def test_session_was_created_with_default_db_url(session: AsyncSession):
     """Test that the session was created with the default database URL."""
-    async with api.sessions.create_session() as session:
-        engine = session.get_bind()
-        if not isinstance(engine, Engine):
-            raise TypeError("engine is not an instance of Engine")
-        assert str(engine.url) == "sqlite+aiosqlite://"
+    engine = session.get_bind()
+    if not isinstance(engine, Engine):
+        raise TypeError("engine is not an instance of Engine")
+    assert str(engine.url) == "sqlite+aiosqlite://"
 
 
-@pytest.mark.asyncio
-async def test_tables_are_setup_correctly_when_creating_session():
+async def test_tables_are_setup_correctly_when_creating_session(
+    session: AsyncSession,
+):
     """Test that the tables are setup correctly."""
-    async with api.sessions.create_session() as session:
-        # Check that the user table exists and is empty
-        q = select(models.User)
-        result = await session.execute(q)
-        assert result.scalar_one_or_none() is None
+    # Check that the user table exists and is empty
+    q = select(models.User)
+    result = await session.execute(q)
+    assert result.scalar_one_or_none() is None
 
-        # Check that the access token table exists and is empty
-        q = select(models.AccessToken)
-        result = await session.execute(q)
-        assert result.scalar_one_or_none() is None
+    # Check that the access token table exists and is empty
+    q = select(models.AccessToken)
+    result = await session.execute(q)
+    assert result.scalar_one_or_none() is None
 
 
-@pytest.mark.asyncio
-async def test_create_user():
+async def test_create_user(session: AsyncSession):
     """Test creating a user."""
-    # Arrange
-    async with api.sessions.create_session() as session:
-        # Act
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@bar.com",  # type: ignore
-        )
+    # Act
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@bar.com",  # type: ignore
+    )
 
     # Assert
     assert isinstance(user, schemas.User)
@@ -65,19 +58,16 @@ async def test_create_user():
     assert not user.is_superuser
 
 
-@pytest.mark.asyncio
-async def test_create_user_with_is_superuser():
+async def test_create_user_with_is_superuser(session: AsyncSession):
     """Test creating a user with is_superuser set to True."""
-    # Arrange
-    async with api.sessions.create_session() as session:
-        # Act
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@gmail.com",
-            is_superuser=True,
-        )
+    # Act
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@gmail.com",
+        is_superuser=True,
+    )
 
     # Assert
     assert isinstance(user, schemas.User)
@@ -87,200 +77,204 @@ async def test_create_user_with_is_superuser():
     assert user.is_superuser
 
 
-@pytest.mark.asyncio
-async def test_get_user_by_username():
+async def test_get_user_by_username(session: AsyncSession):
     """Test getting a user by username."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@gmail.com",
-        )
-        user_id = user.id
+    # Arrange
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@gmail.com",
+    )
+    user_id = user.id
 
-        # Act
-        queried_user = await api.users.get_user_by_username(
-            session=session,
-            username="test",
-        )
+    # Act
+    queried_user = await api.users.get_user_by_username(
+        session=session,
+        username="test",
+    )
 
-        # Assert
-        assert queried_user.id == user_id
+    # Assert
+    assert queried_user.id == user_id
 
 
-@pytest.mark.asyncio
-async def test_raises_no_result_found_when_getting_user_by_username():
+async def test_raises_no_result_found_when_getting_user_by_username(
+    session: AsyncSession,
+):
     """Test that NoResultFound is raised when getting a user by username."""
-    async with api.sessions.create_session() as session:
-        with pytest.raises(exceptions.NotFoundError):
-            await api.users.get_user_by_username(
-                session=session,
-                username="test",
-            )
+    with pytest.raises(exceptions.NotFoundError):
+        await api.users.get_user_by_username(
+            session=session,
+            username="test",
+        )
 
 
-@pytest.mark.asyncio
-async def test_get_user_by_id():
+async def test_get_user_by_id(session: AsyncSession):
     """Test getting a user by id."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@gmail.com",
-        )
+    # Arrange
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@gmail.com",
+    )
 
-        # Act
-        queried_user = await api.users.get_user_by_id(
-            session=session,
-            user_id=user.id,
-        )
+    # Act
+    queried_user = await api.users.get_user_by_id(
+        session=session,
+        user_id=user.id,
+    )
 
-        # Assert
-        assert user == queried_user
+    # Assert
+    assert user == queried_user
 
 
-@pytest.mark.asyncio
-async def test_raises_no_result_found_when_getting_user_by_id():
+async def test_raises_no_result_found_when_getting_user_by_id(
+    session: AsyncSession,
+):
     """Test that NoResultFound is raised when getting a user by id."""
-    async with api.sessions.create_session() as session:
-        with pytest.raises(exceptions.NotFoundError):
-            await api.users.get_user_by_id(
-                session=session,
-                user_id=uuid.uuid4(),
-            )
+    with pytest.raises(exceptions.NotFoundError):
+        await api.users.get_user_by_id(
+            session=session,
+            user_id=uuid.uuid4(),
+        )
 
 
-@pytest.mark.asyncio
-async def test_get_user_by_email():
+async def test_get_user_by_email(session: AsyncSession):
     """Test getting a user by email."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@bar.com",
-        )
+    # Arrange
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@bar.com",
+    )
 
-        # Act
-        queried_user = await api.users.get_user_by_email(
-            session=session,
-            email="foo@bar.com",
-        )
+    # Act
+    queried_user = await api.users.get_user_by_email(
+        session=session,
+        email="foo@bar.com",
+    )
 
-        # Assert
-        assert user == queried_user
+    # Assert
+    assert user == queried_user
 
 
-@pytest.mark.asyncio
-async def test_raises_no_result_found_when_getting_user_by_email():
+async def test_raises_no_result_found_when_getting_user_by_email(
+    session: AsyncSession,
+):
     """Test that NoResultFound is raised when getting a user by email."""
-    async with api.sessions.create_session() as session:
-        with pytest.raises(exceptions.NotFoundError):
-            await api.users.get_user_by_email(
-                session=session,
-                email="foo@bar.com",
-            )
+    with pytest.raises(exceptions.NotFoundError):
+        await api.users.get_user_by_email(
+            session=session,
+            email="foo@bar.com",
+        )
 
 
-@pytest.mark.asyncio
-async def test_get_all_users():
+async def test_get_all_users(session: AsyncSession):
     """Test getting all users."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="test1@whombat.com",
-        )
-        await api.users.create_user(
-            session=session,
-            username="test2",
-            password="test",
-            email="test2@whombat.com",
-        )
+    # Arrange
+    await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="test1@whombat.com",
+    )
+    await api.users.create_user(
+        session=session,
+        username="test2",
+        password="test",
+        email="test2@whombat.com",
+    )
 
-        # Act
-        users = await api.users.get_users(session=session)
+    # Act
+    users = await api.users.get_users(session=session)
 
-        # Assert
-        assert len(users) == 2
+    # Assert
+    assert len(users) == 2
 
-        for user in users:
-            assert isinstance(user, schemas.User)
+    for user in users:
+        assert isinstance(user, schemas.User)
 
-        # Act
-        users = await api.users.get_users(session=session, limit=1)
+    # Act
+    users = await api.users.get_users(session=session, limit=1)
 
-        # Assert
-        assert len(users) == 1
-        assert users[0].username == "test"
+    # Assert
+    assert len(users) == 1
+    assert users[0].username == "test"
 
-        # Act
-        users = await api.users.get_users(session=session, offset=1)
+    # Act
+    users = await api.users.get_users(session=session, offset=1)
 
-        # Assert
-        assert len(users) == 1
-        assert users[0].username == "test2"
+    # Assert
+    assert len(users) == 1
+    assert users[0].username == "test2"
 
 
-@pytest.mark.asyncio
-async def test_update_user():
+async def test_update_user(session: AsyncSession):
     """Test updating a user."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="test@whombat.com",
-        )
+    # Arrange
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="test@whombat.com",
+    )
 
-        assert user.email == "test@whombat.com"
+    assert user.email == "test@whombat.com"
 
-        # Act
-        updated_user = await api.users.update_user(
-            session=session, user=user, email="foo@whombat.com"
-        )
+    # Act
+    updated_user = await api.users.update_user(
+        session=session, user=user, email="foo@whombat.com"
+    )
 
-        # Assert
-        assert updated_user.email == "foo@whombat.com"
+    # Assert
+    assert updated_user.email == "foo@whombat.com"
 
-        # Make sure the changes were saved to the database
-        queried_user = await api.users.get_user_by_id(
+    # Make sure the changes were saved to the database
+    queried_user = await api.users.get_user_by_id(
+        session=session,
+        user_id=user.id,
+    )
+
+    assert queried_user.email == "foo@whombat.com"
+
+
+async def test_delete_user(session: AsyncSession):
+    """Test deleting a user."""
+    # Arrange
+    user = await api.users.create_user(
+        session=session,
+        username="test",
+        password="test",
+        email="foo@whombat.com",
+    )
+
+    # Make sure the user exists
+    await api.users.get_user_by_id(session=session, user_id=user.id)
+
+    # Act
+    await api.users.delete_user(session=session, user=user)
+
+    # Assert
+    with pytest.raises(exceptions.NotFoundError):
+        await api.users.get_user_by_id(
             session=session,
             user_id=user.id,
         )
 
-        assert queried_user.email == "foo@whombat.com"
 
+async def test_delete_user_fails_if_nonexistent(
+    session: AsyncSession,
+):
+    """Test that deleting a nonexistent user fails."""
+    # Arrange
+    user = schemas.User(
+        id=uuid.uuid4(),
+        username="test",
+        email="test@whombat.com",  # type: ignore
+    )
 
-@pytest.mark.asyncio
-async def test_delete_user():
-    """Test deleting a user."""
-    async with api.sessions.create_session() as session:
-        # Arrange
-        user = await api.users.create_user(
-            session=session,
-            username="test",
-            password="test",
-            email="foo@whombat.com",
-        )
-
-        # Make sure the user exists
-        await api.users.get_user_by_id(session=session, user_id=user.id)
-
-        # Act
-        await api.users.delete_user(session=session, user=user)
-
-        # Assert
-        with pytest.raises(exceptions.NotFoundError):
-            await api.users.get_user_by_id(
-                session=session,
-                user_id=user.id,
-            )
+    # Act/Assert
+    with pytest.raises(exceptions.NotFoundError):
+        await api.users.delete_user(session, user=user)

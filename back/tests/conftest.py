@@ -1,13 +1,16 @@
-"""Common fixtures for Whombat tests."""""
+"""Common fixtures for Whombat tests.""" ""
 import os
 import random
 import string
 from pathlib import Path
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 import numpy as np
 import pytest
 import wavio
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from whombat import api, schemas
 
 
 def random_string():
@@ -38,6 +41,7 @@ def write_random_wav(
 @pytest.fixture
 def random_wav_factory(tmp_path: Path):
     """Produce a random wav file."""
+
     def wav_factory(
         path: Optional[Path] = None,
         samplerate: int = 22100,
@@ -63,3 +67,22 @@ def random_wav_factory(tmp_path: Path):
         return path
 
     return wav_factory
+
+
+@pytest.fixture
+async def session() -> AsyncGenerator[AsyncSession, None]:
+    """Create a session that uses an in-memory database."""
+    async with api.sessions.create_session() as sess:
+        yield sess
+
+
+@pytest.fixture
+async def user(session: AsyncSession) -> schemas.User:
+    """Create a user for tests."""
+    user = await api.users.create_user(
+        session,
+        username="test",
+        password="test",
+        email="test@whombat.com",
+    )
+    return user

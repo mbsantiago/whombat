@@ -123,6 +123,7 @@ async def get_tags_by_key(
     key: str,
     limit: int = 1000,
     offset: int = 0,
+    search: str | None = None,
 ) -> list[schemas.Tag]:
     """Get all tags with a given key.
 
@@ -134,21 +135,24 @@ async def get_tags_by_key(
         The key of the tags.
     limit : int, optional
         The maximum number of tags to return, by default 1000.
+        If -1 is given, all tags will be returned.
     offset : int, optional
         The number of tags to skip, by default 0.
+    search : str, optional
+        A search string to filter tags by, by default None. If None, no
+        filtering will be done. The search string is matched against the
+        value of each tag.
 
     Returns
     -------
     list[schemas.Tag]
         The tags.
     """
-    stmt = (
-        select(models.Tag)
-        .where(models.Tag.key == key)
-        .limit(limit)
-        .offset(offset)
-    )
-    result = await session.execute(stmt)
+    query = select(models.Tag).where(models.Tag.key == key)
+    if search is not None:
+        query = query.where(models.Tag.value.ilike(f"%{search}%"))
+    query = query.order_by(models.Tag.value).limit(limit).offset(offset)
+    result = await session.execute(query)
     tags = result.scalars()
     return [schemas.Tag.from_orm(tag) for tag in tags]
 
@@ -157,6 +161,7 @@ async def get_tags(
     session: AsyncSession,
     limit: int = 1000,
     offset: int = 0,
+    search: str | None = None,
 ) -> list[schemas.Tag]:
     """Get all tags.
 
@@ -165,16 +170,27 @@ async def get_tags(
     session : AsyncSession
         The database session.
     limit : int, optional
-        The maximum number of tags to return, by default 1000.
+        The maximum number of tags to return, by default 1000. If
+        -1 is given, all tags will be returned.
     offset : int, optional
+        The number of tags to skip, by default 0.
+    search : str, optional
+        A search string to filter tags by, by default None. If None, no
+        filtering will be done. The search string is matched against the
+        concatenation of the key and value of each tag.
 
     Returns
     -------
     list[schemas.Tag]
         The tags.
     """
-    stmt = select(models.Tag).limit(limit).offset(offset)
-    result = await session.execute(stmt)
+    query = select(models.Tag)
+    if search is not None:
+        query = query.where(
+            models.Tag.key.concat(models.Tag.value).ilike(f"%{search}%")
+        )
+    query = query.limit(limit).offset(offset)
+    result = await session.execute(query)
     tags = result.scalars()
     return [schemas.Tag.from_orm(tag) for tag in tags]
 

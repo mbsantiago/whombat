@@ -21,7 +21,7 @@ class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
         name="created_at",
         nullable=False,
         init=False,
-        default_factory=datetime.datetime.now,
+        default_factory=datetime.datetime.utcnow,
     )
 
     # Add a type annotation map to allow for custom types.

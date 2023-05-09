@@ -1,9 +1,8 @@
 """Module for defining the AccessToken Model."""
-import datetime
 from uuid import UUID
 
 import sqlalchemy.orm as orm
-from fastapi_users_db_sqlalchemy.generics import GUID, TIMESTAMPAware, now_utc
+from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy import String, ForeignKey
 
 from whombat.database.models.base import Base
@@ -33,23 +32,3 @@ class AccessToken(Base):
         ForeignKey("user.id", ondelete="cascade"),
         nullable=False,
     )
-
-    created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        TIMESTAMPAware(timezone=True),
-        index=True,
-        nullable=False,
-        default_factory=now_utc,
-        init=False,
-    )
-
-    def __init__(self, *_, **kwargs):
-        """Initialize the AccessToken model.
-
-        Parameters
-        ----------
-        **kwargs
-            The keyword arguments to pass to the SQLAlchemyBaseAccessTokenTableUUID
-            class.
-
-        """
-        super().__init__(**kwargs)
