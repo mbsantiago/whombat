@@ -21,7 +21,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
-from whombat.database.models.feature import Feature
+from whombat.database.models.feature import FeatureName
 from whombat.database.models.note import Note
 from whombat.database.models.tag import Tag
 
@@ -43,7 +43,7 @@ class Recording(Base):
 
     __tablename__ = "recording"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the recording."""
 
     hash: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
@@ -66,31 +66,34 @@ class Recording(Base):
     channels: orm.Mapped[int] = orm.mapped_column(nullable=False)
     """The number of channels of the recording."""
 
-    date: orm.Mapped[datetime.date] = orm.mapped_column(nullable=True)
+    date: orm.Mapped[datetime.date | None] = orm.mapped_column(nullable=True)
     """The date at which the recording was made."""
 
-    time: orm.Mapped[datetime.time] = orm.mapped_column(nullable=True)
+    time: orm.Mapped[datetime.time | None] = orm.mapped_column(nullable=True)
     """The time at which the recording was made."""
 
-    latitude: orm.Mapped[float] = orm.mapped_column(nullable=True)
+    latitude: orm.Mapped[float | None] = orm.mapped_column(nullable=True)
     """The latitude of the recording site."""
 
-    longitude: orm.Mapped[float] = orm.mapped_column(nullable=True)
+    longitude: orm.Mapped[float | None] = orm.mapped_column(nullable=True)
     """The longitude of the recording site."""
 
     notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
         "RecordingNote",
         back_populates="recording",
+        default_factory=list,
     )
 
     tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
         "RecordingTag",
         back_populates="recording",
+        default_factory=list,
     )
 
     features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
         "RecordingFeature",
         back_populates="recording",
+        default_factory=list,
     )
 
 
@@ -104,27 +107,31 @@ class RecordingNote(Base):
 
     __tablename__ = "recording_note"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the recording note."""
-
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the recording to which the note belongs."""
-
-    recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="notes",
-    )
-    """The recording to which the note belongs."""
 
     note_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("note.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the note."""
 
-    note: orm.Mapped[Note] = orm.relationship()
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="notes",
+        init=False,
+        repr=False,
+    )
+    """The recording to which the note belongs."""
+
+    note: orm.Mapped[Note] = orm.relationship(
+        init=False,
+        repr=False,
+    )
     """The note."""
 
     __table_args__ = (UniqueConstraint("recording_id", "note_id"),)
@@ -141,27 +148,28 @@ class RecordingTag(Base):
 
     __tablename__ = "recording_tag"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the recording tag."""
-
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the recording to which the tag belongs."""
-
-    recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="tags",
-    )
-    """The recording to which the tag belongs."""
 
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the tag."""
 
-    tag: orm.Mapped[Tag] = orm.relationship()
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="tags",
+        init=False,
+        repr=False,
+    )
+    """The recording to which the tag belongs."""
+
+    tag: orm.Mapped[Tag] = orm.relationship(init=False, repr=False)
     """The tag."""
 
     __table_args__ = (UniqueConstraint("recording_id", "tag_id"),)
@@ -177,27 +185,37 @@ class RecordingFeature(Base):
 
     __tablename__ = "recording_feature"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the recording feature."""
-
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the recording to which the feature belongs."""
 
-    recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="features",
-    )
-
-    feature_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("feature.id"),
+    feature_name_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature_name.id", ondelete="CASCADE"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the feature."""
 
-    feature: orm.Mapped[Feature] = orm.relationship()
-
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 
-    __table_args__ = (UniqueConstraint("recording_id", "feature_id"),)
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="features",
+        init=False,
+        repr=False,
+    )
+
+    feature_name: orm.Mapped[FeatureName] = orm.relationship(
+        back_populates="recording_features",
+        init=False,
+        repr=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "recording_id",
+            "feature_name_id",
+        ),
+    )

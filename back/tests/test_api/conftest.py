@@ -10,7 +10,7 @@ from whombat import api, schemas
 @pytest.fixture
 async def session() -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
-    async with api.sessions.create() as sess:
+    async with api.sessions.create_session() as sess:
         yield sess
 
 

@@ -33,6 +33,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
+from whombat.database.models.feature import FeatureName
 from whombat.database.models.recording import Recording, Tag
 
 __all__ = [
@@ -50,10 +51,12 @@ class SoundEvent(Base):
 
     __tablename__ = "sound_event"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the sound event."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4, init=False
+    )
     """The uuid of the sound event."""
 
     recording_id: orm.Mapped[int] = orm.mapped_column(
@@ -85,12 +88,10 @@ class SoundEventTag(Base):
 
     __tablename__ = "sound_event_tag"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the sound event tag."""
-
     sound_event_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the sound event to which the tag belongs."""
 
@@ -99,6 +100,7 @@ class SoundEventTag(Base):
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the tag."""
 
@@ -123,19 +125,25 @@ class SoundEventFeature(Base):
 
     __tablename__ = "sound_event_feature"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-
     sound_event_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the sound event to which the feature belongs."""
 
-    feature_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("feature.id"),
+    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
+    """The sound event."""
+
+    feature_name_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature_name.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the feature."""
+
+    feature_name: orm.Mapped[FeatureName] = orm.relationship()
+    """The feature."""
 
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The value of the feature."""
@@ -143,6 +151,6 @@ class SoundEventFeature(Base):
     __table_args__ = (
         UniqueConstraint(
             "sound_event_id",
-            "feature_id",
+            "feature_name_id",
         ),
     )

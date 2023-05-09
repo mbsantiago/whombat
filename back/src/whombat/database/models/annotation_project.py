@@ -39,10 +39,14 @@ class AnnotationProject(Base):
 
     __tablename__ = "annotation_project"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """Unique identifier of the annotation project."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        init=False,
+        unique=True,
+    )
     """Unique identifier of the annotation project."""
 
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)

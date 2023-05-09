@@ -20,10 +20,12 @@ class Note(BaseModel):
     created_by: str
     """The username of the user who created the note."""
 
-    is_issue: bool
+    is_issue: bool = False
     """Whether the note is an issue."""
 
-    created_at: datetime.datetime = datetime.datetime.now()
+    created_at: datetime.datetime = Field(
+        default_factory=datetime.datetime.now
+    )
     """The time at which the note was created."""
 
     class Config:

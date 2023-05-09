@@ -16,3 +16,7 @@ class Feature(BaseModel):
         """Pydantic configuration."""
 
         orm_mode = True
+
+    def __hash__(self):
+        """Hash the Feature object."""
+        return hash((self.name, self.value))

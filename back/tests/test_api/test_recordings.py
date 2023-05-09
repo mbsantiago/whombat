@@ -2,6 +2,7 @@
 import datetime
 from collections.abc import Callable
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -9,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api import notes, recordings, tags
+from whombat.api import notes, recordings, tags, features
 from whombat.core.files import compute_hash
 from whombat.database import models
 
@@ -429,25 +430,54 @@ async def test_add_tag_to_recording(
         duration=1,
     )
     recording = await recordings.create_recording(session, path)
+    tag = await tags.get_or_create_tag(session, key="key", value="value")
 
     # Act
-    recording, tag = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag_to_recording(
         session,
+        tag,
         recording,
-        key="key",
-        value="value",
     )
 
     # Assert
     assert tag in recording.tags
-    assert isinstance(tag, schemas.Tag)
     assert isinstance(recording, schemas.Recording)
-    assert tag.key == "key"
-    assert tag.value == "value"
 
     # Get the recording again to make sure the tag was added
     recording = await recordings.get_recording_by_hash(session, recording.hash)
     assert tag in recording.tags
+
+
+async def test_add_tag_to_recording_is_idempotent(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a tag to a recording is idempotent."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+    tag = await tags.get_or_create_tag(session, key="key", value="value")
+    recording = await recordings.add_tag_to_recording(
+        session,
+        tag,
+        recording,
+    )
+    assert len(recording.tags) == 1
+
+    # Act
+    recording = await recordings.add_tag_to_recording(
+        session,
+        tag,
+        recording,
+    )
+
+    # Assert
+    assert len(recording.tags) == 1
+
 
 
 async def test_add_note_to_recording(
@@ -464,19 +494,286 @@ async def test_add_note_to_recording(
     )
     recording = await recordings.create_recording(session, path)
 
-    # Act
-    recording, note = await recordings.add_note_to_recording(
+    note = await notes.create_note(
         session,
-        recording,
         message="message",
         created_by=user,
     )
 
+    # Act
+    recording = await recordings.add_note_to_recording(
+        session,
+        note,
+        recording,
+    )
+
     # Assert
-    assert isinstance(note, schemas.Note)
     assert isinstance(recording, schemas.Recording)
     assert note in recording.notes
 
     # Get the recording again to make sure the note was added
     recording = await recordings.get_recording_by_hash(session, recording.hash)
     assert note in recording.notes
+
+
+async def test_add_note_to_recording_is_idempotent(
+    session: AsyncSession,
+    user: schemas.User,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a note to a recording is idempotent."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    note = await notes.create_note(
+        session,
+        message="message",
+        created_by=user,
+    )
+
+    recording = await recordings.add_note_to_recording(
+        session,
+        note,
+        recording,
+    )
+    assert len(recording.notes) == 1
+
+    # Act
+    recording = await recordings.add_note_to_recording(
+        session,
+        note,
+        recording,
+    )
+
+    # Assert
+    assert len(recording.notes) == 1
+
+
+async def test_remove_note_from_recording(
+    session: AsyncSession,
+    user: schemas.User,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test removing a note from a recording."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    recording = await recordings.create_recording(session, path)
+
+    note = await notes.create_note(
+        session,
+        message="message",
+        created_by=user,
+    )
+
+    recording = await recordings.add_note_to_recording(
+        session,
+        note,
+        recording,
+    )
+
+    # Act
+    recording = await recordings.remove_note_from_recording(
+        session,
+        note,
+        recording,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert note not in recording.notes
+
+    # Get the recording again to make sure the note was removed
+    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    assert note not in recording.notes
+
+
+async def test_remove_note_from_recording_fails_if_recording_does_not_exist(
+    session: AsyncSession,
+    user: schemas.User,
+):
+    """Test removing a note from a recording fails if the recording does not exist."""
+    # Arrange
+    recording = schemas.Recording(
+        hash="hash",
+        duration=1,
+        channels=1,
+        samplerate=44100,
+    )
+
+    note = await notes.create_note(
+        session,
+        message="message",
+        created_by=user,
+    )
+
+    # Act
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.remove_note_from_recording(
+            session,
+            note,
+            recording,
+        )
+
+
+async def test_remove_note_from_recording_fails_if_note_does_not_exist(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test removing a note from a recording fails if the note does not exist."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    recording = await recordings.create_recording(session, path)
+
+    note = schemas.Note(
+        uuid=uuid4(),
+        message="message",
+        created_by="username",
+    )
+
+    # Act
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.remove_note_from_recording(
+            session,
+            note,
+            recording,
+        )
+
+
+async def test_remove_note_from_recording_is_idempotent(
+    session: AsyncSession,
+    user: schemas.User,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test removing a note from a recording is idempotent."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    recording = await recordings.create_recording(session, path)
+
+    note = await notes.create_note(
+        session,
+        message="message",
+        created_by=user,
+    )
+
+    recording = await recordings.add_note_to_recording(
+        session,
+        note,
+        recording,
+    )
+    assert len(recording.notes) == 1
+
+    # Act
+    recording = await recordings.remove_note_from_recording(
+        session,
+        note,
+        recording,
+    )
+
+    # Assert
+    assert len(recording.notes) == 0
+
+    # Act
+    recording = await recordings.remove_note_from_recording(
+        session,
+        note,
+        recording,
+    )
+
+    # Assert
+    assert len(recording.notes) == 0
+
+
+async def test_add_feature_to_recording(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a feature to a recording."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    feature = await features.create_feature(
+        session,
+        name="name",
+        value=10,
+    )
+
+    # Act
+    recording = await recordings.add_feature_to_recording(
+        session,
+        feature,
+        recording,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert feature in recording.features
+
+    # Get the recording again to make sure the feature was added
+    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    assert feature in recording.features
+
+
+async def test_add_feature_to_recording_is_idempotent(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a feature to a recording is idempotent."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    feature = await features.create_feature(
+        session,
+        name="name",
+        value=10,
+    )
+
+    recording = await recordings.add_feature_to_recording(
+        session,
+        feature,
+        recording,
+    )
+    assert len(recording.features) == 1
+
+    # Act
+    recording = await recordings.add_feature_to_recording(
+        session,
+        feature,
+        recording,
+    )
+
+    # Assert
+    assert len(recording.features) == 1
+
+    # Get the recording again to make sure no features were added
+    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    assert len(recording.features) == 1

@@ -63,12 +63,6 @@ class Task(Base):
     clip: orm.Mapped[Clip] = orm.relationship()
     """Audio clip to be annotated."""
 
-    completed: orm.Mapped[bool] = orm.mapped_column(
-        nullable=False,
-        default=False,
-    )
-    """Whether the task has been completed."""
-
     completed_by_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("user.id"),
         nullable=True,
@@ -89,6 +83,12 @@ class Task(Base):
         secondary="task_tag",
     )
     """Tags attached to the clip during the task."""
+
+    completed: orm.Mapped[bool] = orm.mapped_column(
+        nullable=False,
+        default=False,
+    )
+    """Whether the task has been completed."""
 
 
 class TaskNote(Base):

@@ -37,6 +37,27 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
     assert db_note == note
 
 
+async def test_create_note_fails_if_username_does_not_exist(
+    session: AsyncSession,
+):
+    """Test that creating a note fails if the username does not exist."""
+    # Arrange
+    user = schemas.User(
+        id=uuid4(),
+        email="test@whombat.com",  # type: ignore
+        username="test",
+    )
+
+    # Act / Assert
+    with pytest.raises(exceptions.NotFoundError):
+        await notes.create_note(
+            session,
+            message="test",
+            created_by=user,
+            is_issue=False,
+        )
+
+
 async def test_get_note_by_uuid(session: AsyncSession, user: schemas.User):
     """Test getting a note by uuid."""
     # Arrange
@@ -59,7 +80,7 @@ async def test_get_note_by_uuid(session: AsyncSession, user: schemas.User):
     assert db_note.created_at == note.created_at
 
 
-async def test_get_note_by_id_fails_if_note_does_not_exist(
+async def test_get_note_by_uuid_fails_if_note_does_not_exist(
     session: AsyncSession,
 ):
     """Test that getting a note by id fails if the note does not exist."""
@@ -467,3 +488,43 @@ async def test_update_note_message(
     db_note = results.scalars().first()
     assert db_note is not None
     assert db_note.message == "new message"
+
+
+async def test_get_notes_by_search(
+    session: AsyncSession,
+    user: schemas.User,
+):
+    """Test getting notes by search."""
+    # Arrange
+    note1 = await notes.create_note(
+        session,
+        message="ab",
+        created_by=user,
+        is_issue=False,
+    )
+
+    note2 = await notes.create_note(
+        session,
+        message="bc",
+        created_by=user,
+        is_issue=False,
+    )
+
+    await notes.create_note(
+        session,
+        message="cd",
+        created_by=user,
+        is_issue=False,
+    )
+
+    # Act
+    db_notes = await notes.get_notes(
+        session,
+        search="b",
+    )
+
+    # Assert
+    assert isinstance(db_notes, list)
+    assert len(db_notes) == 2
+    assert db_notes[0].uuid == note2.uuid
+    assert db_notes[1].uuid == note1.uuid

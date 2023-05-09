@@ -14,12 +14,12 @@ and affiliation. This information is not required.
 """
 import uuid
 
+import sqlalchemy.orm as orm
 from fastapi_users import BaseUserManager, UUIDIDMixin
-from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
-from sqlalchemy import Column, String
+from fastapi_users_db_sqlalchemy.generics import GUID
+from sqlalchemy import Boolean, String
 
 from whombat.database.models.base import Base
-
 
 __all__ = [
     "User",
@@ -29,8 +29,10 @@ __all__ = [
 # TODO: Manage this secret better and make it cryptographically secure
 SECRET = "SECRET"
 
+UUID_ID = uuid.UUID
 
-class User(SQLAlchemyBaseUserTableUUID, Base):
+
+class User(Base):
     """Model for a user.
 
     Attributes
@@ -63,18 +65,56 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 
     """
 
-    username = Column(String, unique=True, nullable=False)
+    __tablename__ = "user"
+
+    id: orm.Mapped[UUID_ID] = orm.mapped_column(
+        GUID,
+        primary_key=True,
+        default_factory=uuid.uuid4,
+        init=False,
+    )
+
+    email: orm.Mapped[str] = orm.mapped_column(
+        String(length=320),
+        unique=True,
+        index=True,
+        nullable=False,
+    )
+
+    hashed_password: orm.Mapped[str] = orm.mapped_column(
+        String(length=1024),
+        nullable=False,
+    )
+
+    username: orm.Mapped[str] = orm.mapped_column(
+        nullable=False,
+        unique=True,
+    )
     """The username of the user."""
 
-    name = Column(String, nullable=True)
+    name: orm.Mapped[str] = orm.mapped_column(nullable=True)
     """The full name of the user."""
 
-    def __init__(self, *_, **kwargs):
-        """Initialize the User class."""
-        super().__init__(**kwargs)
+    is_active: orm.Mapped[bool] = orm.mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
+
+    is_superuser: orm.Mapped[bool] = orm.mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
+    is_verified: orm.Mapped[bool] = orm.mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
 
-class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):  # type: ignore
     """UserManager class.
 
     This class is used to manage users in the database. It is a subclass of the

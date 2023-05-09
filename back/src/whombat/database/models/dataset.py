@@ -37,10 +37,14 @@ class Dataset(Base):
 
     __tablename__ = "dataset"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the dataset."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        unique=True,
+        init=False,
+    )
     """The UUID of the dataset."""
 
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)

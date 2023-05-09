@@ -32,14 +32,26 @@ import sqlalchemy.orm as orm
 
 from whombat.database.models.base import Base
 
+__all__ = [
+    "FeatureName",
+]
 
-class Feature(Base):
+
+class FeatureName(Base):
     """Feature model."""
 
-    __tablename__ = "feature"
+    __tablename__ = "feature_name"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """Unique identifier of the feature."""
 
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """Name of the feature."""
+
+    recording_features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
+        "RecordingFeature",
+        back_populates="feature_name",
+        cascade="all, delete-orphan",
+        init=False,
+        default_factory=list,
+    )

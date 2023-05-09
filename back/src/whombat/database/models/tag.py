@@ -56,7 +56,7 @@ class Tag(Base):
 
     __tablename__ = "tag"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the tag."""
 
     key: orm.Mapped[str] = orm.mapped_column(nullable=False)

@@ -6,6 +6,7 @@ from typing import TypeVar
 
 import sqlalchemy.orm as orm
 from sqlalchemy import delete, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
@@ -139,7 +140,7 @@ async def get_recording_by_hash(
         select(models.Recording)
         .options(
             orm.joinedload(models.Recording.features).subqueryload(
-                models.RecordingFeature.feature
+                models.RecordingFeature.feature_name
             ),
             orm.joinedload(models.Recording.notes)
             .subqueryload(models.RecordingNote.note)
@@ -171,7 +172,7 @@ async def get_recording_by_hash(
         longitude=recording.longitude,
         features=[
             schemas.Feature(
-                name=feature.feature.name,
+                name=feature.feature_name.name,
                 value=feature.value,
             )
             for feature in recording.features
@@ -310,11 +311,9 @@ async def delete_recording(
 
 async def add_note_to_recording(
     session: AsyncSession,
+    note: schemas.Note,
     recording: schemas.Recording,
-    message: str,
-    created_by: schemas.User,
-    is_issue: bool = False,
-) -> tuple[schemas.Recording, schemas.Note]:
+) -> schemas.Recording:
     """Add a note to a recording.
 
     Parameters
@@ -330,8 +329,6 @@ async def add_note_to_recording(
     -------
     recording : schemas.recordings.Recording
         The updated recording.
-    note : schemas.notes.Note
-        The added note.
 
     Raises
     ------
@@ -349,56 +346,79 @@ async def add_note_to_recording(
             "No recording with the given hash exists."
         )
 
-    db_note = models.Note(
-        message=message,
-        created_by_id=created_by.id,
-        is_issue=is_issue,
-    )
-    session.add(db_note)
-    recording_note = models.RecordingNote(
-        recording=db_recording,
-        note=db_note,
-    )
-    session.add(recording_note)
-    await session.commit()
+    # Check if the note already exists
+    query = select(models.Note).where(models.Note.uuid == note.uuid)
+    result = await session.execute(query)
+    db_note = result.scalar_one_or_none()
 
-    note = schemas.Note(
+    if db_note is None:
+        # Otherwise, create a new note
+
+        # Get the user who created the note
+        query = select(models.User).where(
+            models.User.username == note.created_by
+        )
+        result = await session.execute(query)
+        created_by = result.scalar_one_or_none()
+
+        if created_by is None:
+            raise exceptions.NotFoundError(
+                "No user with the given username exists."
+            )
+
+        db_note = models.Note(
+            message=note.message,
+            created_by_id=created_by.id,
+            is_issue=note.is_issue,
+        )
+        session.add(db_note)
+        await session.commit()
+
+    try:
+        # Add the note to the recording
+        db_recording_note = models.RecordingNote(
+            recording_id=db_recording.id,
+            note_id=db_note.id,
+        )
+        session.add(db_recording_note)
+        await session.commit()
+    except IntegrityError:
+        # The note already exists, so just
+        # return the recording
+        await session.rollback()
+        return recording
+
+    updated_note = schemas.Note(
         uuid=db_note.uuid,
         message=db_note.message,
         created_at=db_note.created_at,
-        created_by=created_by.username,
+        created_by=note.created_by,
         is_issue=db_note.is_issue,
     )
-    updated_notes = _remove_duplicates(recording.notes + [note])
-    return (
-        schemas.Recording(
-            **{
-                **recording.dict(),
-                "notes": updated_notes,
-            }
-        ),
-        note,
+    updated_notes = _remove_duplicates(recording.notes + [updated_note])
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "notes": updated_notes,
+        }
     )
 
 
 async def add_tag_to_recording(
     session: AsyncSession,
+    tag: schemas.Tag,
     recording: schemas.Recording,
-    key: str,
-    value: str,
-) -> tuple[schemas.Recording, schemas.Tag]:
+) -> schemas.Recording:
     """Add a tag to a recording.
 
     Parameters
     ----------
     session : AsyncSession
         The database session to use.
+    tag : schemas.tags.Tag
+        The tag to add.
     recording : schemas.recordings.Recording
         The recording to add the tag to.
-    key : str
-        The key of the tag.
-    value : str
-        The value of the tag.
 
     Returns
     -------
@@ -410,6 +430,11 @@ async def add_tag_to_recording(
     whombat.exceptions.NotFoundError
         If no recording with the given hash exists.
 
+    Note
+    ----
+    The tag will only be added if it does not already exist.
+    Otherwise it will be ignored.
+
     """
     query = select(models.Recording).where(
         models.Recording.hash == recording.hash
@@ -421,20 +446,26 @@ async def add_tag_to_recording(
             "No recording with the given hash exists."
         )
 
-    query = select(models.Tag).filter_by(key=key, value=value)
+    # Check if the tag already exists
+    query = select(models.Tag).filter_by(key=tag.key, value=tag.value)
     result = await session.execute(query)
     db_tag = result.scalar_one_or_none()
     if db_tag is None:
-        db_tag = models.Tag(key=key, value=value)
+        db_tag = models.Tag(key=tag.key, value=tag.value)
         session.add(db_tag)
         await session.commit()
 
-    recording_tag = models.RecordingTag(
-        recording_id=db_recording.id,
-        tag_id=db_tag.id,
-    )
-    session.add(recording_tag)
-    await session.commit()
+    try:
+        recording_tag = models.RecordingTag(
+            recording_id=db_recording.id,
+            tag_id=db_tag.id,
+        )
+        session.add(recording_tag)
+        await session.commit()
+    except IntegrityError:
+        # This tag already exists for this recording
+        await session.rollback()
+        return recording
 
     tag = schemas.Tag(
         key=db_tag.key,
@@ -444,14 +475,11 @@ async def add_tag_to_recording(
         recording.tags + [tag]
     )
 
-    return (
-        schemas.Recording(
-            **{
-                **recording.dict(),
-                "tags": updated_tags,
-            }
-        ),
-        tag,
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "tags": updated_tags,
+        }
     )
 
 
@@ -493,14 +521,46 @@ async def add_feature_to_recording(
             "No recording with the given hash exists."
         )
 
-    recording_feature = models.RecordingFeature(
-        recording_id=db_recording.id,
-        feature_id=feature.id,
+    # Check if the feature name already exists
+    query = select(models.FeatureName).where(
+        models.FeatureName.name == feature.name
     )
-    session.add(recording_feature)
-    await session.commit()
+    result = await session.execute(query)
+    db_feature = result.scalar_one_or_none()
 
-    return schemas.Recording.from_orm(db_recording)
+    if db_feature is None:
+        # Create the feature name if it does not exist
+        db_feature = models.FeatureName(name=feature.name)
+        session.add(db_feature)
+        await session.commit()
+
+    try:
+        recording_feature = models.RecordingFeature(
+            recording_id=db_recording.id,
+            feature_name_id=db_feature.id,
+            value=feature.value,
+        )
+        session.add(recording_feature)
+        await session.commit()
+    except IntegrityError:
+        # This feature already exists for this recording
+        await session.rollback()
+        return recording
+
+    feature = schemas.Feature(
+        name=db_feature.name,
+        value=recording_feature.value,
+    )
+    updated_features: list[schemas.Feature] = _remove_duplicates(
+        recording.features + [feature]
+    )
+
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "features": updated_features,
+        }
+    )
 
 
 async def remove_note_from_recording(
@@ -527,37 +587,188 @@ async def remove_note_from_recording(
     Raises
     ------
     whombat.exceptions.NotFoundError
-        If no recording with the given hash exists.
+        If no recording with the given hash exists or if no note with the
+        given uuid exists.
 
+    Note
+    ----
+    The note will only be removed from the recording if it exists,
+    otherwise it will be ignored.
     """
     query = select(models.Recording).where(
         models.Recording.hash == recording.hash
     )
     result = await session.execute(query)
     db_recording = result.scalar_one_or_none()
-
     if db_recording is None:
         raise exceptions.NotFoundError(
             "No recording with the given hash exists."
         )
 
-    stmt = (
-        delete(models.RecordingNote)
-        .where(models.RecordingNote.recording_id == db_recording.id)
-        .where(models.RecordingNote.note_id == note.id)
+    query = select(models.Note).where(models.Note.uuid == note.uuid)
+    result = await session.execute(query)
+    db_note = result.scalar_one_or_none()
+    if db_note is None:
+        raise exceptions.NotFoundError("No note with the given uuid exists.")
+
+    stmt = delete(models.RecordingNote).where(
+        models.RecordingNote.recording_id == db_recording.id,
+        models.RecordingNote.note_id == db_note.id,
     )
     await session.execute(stmt)
     await session.commit()
 
-    return schemas.Recording.from_orm(db_recording)
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "notes": [
+                note for note in recording.notes if note.uuid != db_note.uuid
+            ],
+        }
+    )
 
 
-async def remove_tag_from_recording():
-    pass
+async def remove_tag_from_recording(
+    session: AsyncSession,
+    tag: schemas.Tag,
+    recording: schemas.Recording,
+) -> schemas.Recording:
+    """Remove a tag from a recording.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    tag : schemas.tags.Tag
+        The tag to remove.
+    recording : schemas.recordings.Recording
+        The recording to remove the tag from.
+
+    Returns
+    -------
+    recording : schemas.recordings.Recording
+        The updated recording.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If no recording with the given hash exists or if no tag with the
+        given key and value exists.
+
+    Note
+    ----
+    The tag will only be removed from the recording if it exists,
+    otherwise it will be ignored.
+    """
+    query = select(models.Recording).where(
+        models.Recording.hash == recording.hash
+    )
+    result = await session.execute(query)
+    db_recording = result.scalar_one_or_none()
+    if db_recording is None:
+        raise exceptions.NotFoundError(
+            "No recording with the given hash exists."
+        )
+
+    query = select(models.Tag).where(
+        models.Tag.key == tag.key,
+        models.Tag.value == tag.value,
+    )
+    result = await session.execute(query)
+    db_tag = result.scalar_one_or_none()
+    if db_tag is None:
+        raise exceptions.NotFoundError(
+            "No tag with the given key and value exists."
+        )
+
+    stmt = delete(models.RecordingTag).where(
+        models.RecordingTag.recording_id == db_recording.id,
+        models.RecordingTag.tag_id == db_tag.id,
+    )
+    await session.execute(stmt)
+    await session.commit()
+
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "tags": [
+                tag
+                for tag in recording.tags
+                if (tag.key != db_tag.key) or (tag.value != db_tag.value)
+            ],
+        }
+    )
 
 
-async def remove_feature_from_recording():
-    pass
+async def remove_feature_from_recording(
+    session: AsyncSession,
+    feature: schemas.Feature,
+    recording: schemas.Recording,
+):
+    """Remove a feature from a recording.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    feature : schemas.features.Feature
+        The feature to remove.
+    recording : schemas.recordings.Recording
+        The recording to remove the feature from.
+
+    Returns
+    -------
+    recording : schemas.recordings.Recording
+        The updated recording.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If no recording with the given hash exists or if no feature with the
+        given name exists.
+
+    Note
+    ----
+    The feature will only be removed from the recording if it exists,
+    otherwise it will be ignored.
+    """
+    query = select(models.Recording).where(
+        models.Recording.hash == recording.hash
+    )
+    result = await session.execute(query)
+    db_recording = result.scalar_one_or_none()
+    if db_recording is None:
+        raise exceptions.NotFoundError(
+            "No recording with the given hash exists."
+        )
+
+    query = select(models.FeatureName).where(
+        models.FeatureName.name == feature.name
+    )
+    result = await session.execute(query)
+    db_feature = result.scalar_one_or_none()
+    if db_feature is None:
+        raise exceptions.NotFoundError(
+            "No feature with the given name exists."
+        )
+
+    stmt = delete(models.RecordingFeature).where(
+        models.RecordingFeature.recording_id == db_recording.id,
+        models.RecordingFeature.feature_name_id == db_feature.id,
+    )
+    await session.execute(stmt)
+    await session.commit()
+
+    return schemas.Recording(
+        **{
+            **recording.dict(),
+            "features": [
+                feature
+                for feature in recording.features
+                if (feature.name != db_feature.name)
+            ],
+        }
+    )
 
 
 async def set_tags_for_recording():

@@ -36,26 +36,32 @@ class Note(Base):
 
     __tablename__ = "note"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the note."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4, unique=True)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        init=False,
+        unique=True,
+    )
     """The uuid of the note."""
 
     message: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The message of the note."""
+
+    created_by_id: orm.Mapped[UUID] = orm.mapped_column(
+        ForeignKey("user.id"),
+        nullable=False,
+    )
+    """The id of the user who created the note."""
+
+    created_by: orm.Mapped[User] = orm.relationship(
+        init=False,
+    )
+    """The user who created the note."""
 
     is_issue: orm.Mapped[bool] = orm.mapped_column(
         nullable=False,
         default=False,
     )
     """Whether the note is an issue."""
-
-    created_by_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("user.id"),
-        nullable=False,
-    )
-    """The id of the user who created the note."""
-
-    created_by: orm.Mapped[User] = orm.relationship()
-    """The user who created the note."""

@@ -21,6 +21,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
+from whombat.database.models.feature import FeatureName
 from whombat.database.models.recording import Recording
 from whombat.database.models.tag import Tag
 
@@ -40,10 +41,13 @@ class Clip(Base):
 
     __tablename__ = "clip"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the clip."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default=uuid4)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        init=False,
+    )
     """The UUID of the clip."""
 
     recording_id: orm.Mapped[int] = orm.mapped_column(
@@ -111,25 +115,32 @@ class ClipFeature(Base):
 
     __tablename__ = "clip_feature"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the clip feature."""
-
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the clip to which the feature belongs."""
 
-    feature_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("feature.id"),
+    clip: orm.Mapped[Clip] = orm.relationship()
+    """The clip to which the feature belongs."""
+
+    feature_name_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature_name.id"),
         nullable=False,
+        primary_key=True,
     )
+    """The id of the feature name."""
+
+    feature_name: orm.Mapped[FeatureName] = orm.relationship()
+    """The name of the feature."""
+
     """The id of the feature."""
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
             "clip_id",
-            "feature_id",
+            "feature_name_id",
         ),
     )

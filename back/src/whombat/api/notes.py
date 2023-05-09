@@ -33,8 +33,8 @@ async def create_note(
         The database session to use.
     message : str
         The message of the note.
-    created_by : str
-        The username of the user who created the note.
+    created_by : schemas.users.User
+        The user who created the note.
     is_issue : bool
         Whether the note is an issue.
 
@@ -55,16 +55,21 @@ async def create_note(
         is_issue=is_issue,
     )
 
-    query = select(models.User).where(models.User.username == data.created_by)
+    # Check if the user exists.
+    query = select(models.User.id).where(
+        models.User.id == created_by.id  # type: ignore
+    )
     result = await session.execute(query)
-    db_user = result.scalar_one_or_none()
-    if db_user is None:
-        raise exceptions.NotFoundError("User does not exist.")
+    row = result.one_or_none()
+    if row is None:
+        raise exceptions.NotFoundError(
+            f"User with ID {created_by.id} does not exist.",
+        )
 
     db_note = models.Note(
         message=data.message,
         is_issue=data.is_issue,
-        created_by_id=db_user.id,
+        created_by_id=created_by.id,
     )
 
     session.add(db_note)

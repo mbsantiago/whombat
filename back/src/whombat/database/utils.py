@@ -70,19 +70,22 @@ async def get_async_session(
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
     """Get the user database."""
-    yield SQLAlchemyUserDatabase(session, models.User)
+    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
 
 
 async def get_access_token_db(
     session: AsyncSession = Depends(get_async_session),
 ):
     """Get the access token database."""
-    yield SQLAlchemyAccessTokenDatabase(session, models.AccessToken)
+    yield SQLAlchemyAccessTokenDatabase(session, models.AccessToken)  # type: ignore
 
 
 def get_database_strategy(
-    access_token_db: AccessTokenDatabase[models.AccessToken] = Depends(
+    access_token_db: AccessTokenDatabase[models.AccessToken] = Depends(  # type: ignore
         get_access_token_db
     ),
 ) -> DatabaseStrategy:
-    return DatabaseStrategy(access_token_db, lifetime_seconds=60 * 60 * 24)
+    return DatabaseStrategy(
+        access_token_db,  # type: ignore
+        lifetime_seconds=60 * 60 * 24,
+    )

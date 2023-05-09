@@ -14,7 +14,7 @@ from whombat import exceptions
 @pytest.mark.asyncio
 async def test_create_session():
     """Test creating a database session."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         assert isinstance(session, AsyncSession)
         assert session.is_active
 
@@ -22,7 +22,7 @@ async def test_create_session():
 @pytest.mark.asyncio
 async def test_session_was_created_with_default_db_url():
     """Test that the session was created with the default database URL."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         engine = session.get_bind()
         if not isinstance(engine, Engine):
             raise TypeError("engine is not an instance of Engine")
@@ -32,7 +32,7 @@ async def test_session_was_created_with_default_db_url():
 @pytest.mark.asyncio
 async def test_tables_are_setup_correctly_when_creating_session():
     """Test that the tables are setup correctly."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Check that the user table exists and is empty
         q = select(models.User)
         result = await session.execute(q)
@@ -48,7 +48,7 @@ async def test_tables_are_setup_correctly_when_creating_session():
 async def test_create_user():
     """Test creating a user."""
     # Arrange
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Act
         user = await api.users.create_user(
             session=session,
@@ -69,7 +69,7 @@ async def test_create_user():
 async def test_create_user_with_is_superuser():
     """Test creating a user with is_superuser set to True."""
     # Arrange
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Act
         user = await api.users.create_user(
             session=session,
@@ -90,7 +90,7 @@ async def test_create_user_with_is_superuser():
 @pytest.mark.asyncio
 async def test_get_user_by_username():
     """Test getting a user by username."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         user = await api.users.create_user(
             session=session,
@@ -113,7 +113,7 @@ async def test_get_user_by_username():
 @pytest.mark.asyncio
 async def test_raises_no_result_found_when_getting_user_by_username():
     """Test that NoResultFound is raised when getting a user by username."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         with pytest.raises(exceptions.NotFoundError):
             await api.users.get_user_by_username(
                 session=session,
@@ -124,7 +124,7 @@ async def test_raises_no_result_found_when_getting_user_by_username():
 @pytest.mark.asyncio
 async def test_get_user_by_id():
     """Test getting a user by id."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         user = await api.users.create_user(
             session=session,
@@ -146,7 +146,7 @@ async def test_get_user_by_id():
 @pytest.mark.asyncio
 async def test_raises_no_result_found_when_getting_user_by_id():
     """Test that NoResultFound is raised when getting a user by id."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         with pytest.raises(exceptions.NotFoundError):
             await api.users.get_user_by_id(
                 session=session,
@@ -157,7 +157,7 @@ async def test_raises_no_result_found_when_getting_user_by_id():
 @pytest.mark.asyncio
 async def test_get_user_by_email():
     """Test getting a user by email."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         user = await api.users.create_user(
             session=session,
@@ -179,7 +179,7 @@ async def test_get_user_by_email():
 @pytest.mark.asyncio
 async def test_raises_no_result_found_when_getting_user_by_email():
     """Test that NoResultFound is raised when getting a user by email."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         with pytest.raises(exceptions.NotFoundError):
             await api.users.get_user_by_email(
                 session=session,
@@ -190,7 +190,7 @@ async def test_raises_no_result_found_when_getting_user_by_email():
 @pytest.mark.asyncio
 async def test_get_all_users():
     """Test getting all users."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         await api.users.create_user(
             session=session,
@@ -232,7 +232,7 @@ async def test_get_all_users():
 @pytest.mark.asyncio
 async def test_update_user():
     """Test updating a user."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         user = await api.users.create_user(
             session=session,
@@ -263,7 +263,7 @@ async def test_update_user():
 @pytest.mark.asyncio
 async def test_delete_user():
     """Test deleting a user."""
-    async with api.sessions.create() as session:
+    async with api.sessions.create_session() as session:
         # Arrange
         user = await api.users.create_user(
             session=session,
