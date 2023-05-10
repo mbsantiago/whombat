@@ -11,13 +11,18 @@ from whombat.database.models.base import Base
 
 __all__ = [
     "Filter",
-    "null_filter",
     "integer_filter",
+    "optional_integer_filter",
     "float_filter",
+    "optional_float_filter",
     "string_filter",
+    "optional_string_filter",
     "boolean_filter",
+    "optional_boolean_filter",
     "date_filter",
+    "optional_date_filter",
     "time_filter",
+    "optional_time_filter",
     "search_filter",
 ]
 
@@ -25,39 +30,95 @@ __all__ = [
 Model = TypeVar("Model", bound=Base)
 
 
+def lt_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: int | float | datetime.date | datetime.time,
+) -> Select:
+    """Filter a query by a less than condition."""
+    return query.where(field <= value)
+
+
+def gt_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: int | float | datetime.date | datetime.time,
+) -> Select:
+    """Filter a query by a greater than condition."""
+    return query.where(field >= value)
+
+
+def is_null_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: bool,
+) -> Select:
+    """Filter a query by a null condition."""
+    if value:
+        return query.where(field.is_(None))
+    return query.where(field.isnot(None))
+
+
+def eq_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: int | float | str | bool | datetime.date | datetime.time,
+) -> Select:
+    """Filter a query by an equality condition."""
+    return query.where(field == value)
+
+
+def has_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: str,
+) -> Select:
+    """Filter a query by a has condition."""
+    return query.where(field.ilike(f"%{value}%"))
+
+
 class Filter(BaseModel):
     """A filter to use on a query."""
 
-    def filter(self, query: Select) -> Select:
+    _filter_mapping = {
+        "eq": eq_filter,
+        "lt": lt_filter,
+        "gt": gt_filter,
+        "is_null": is_null_filter,
+        "has": has_filter,
+        "before": lt_filter,
+        "after": gt_filter,
+        "on": eq_filter,
+    }
+
+    def filter(self, _: Select) -> Select:
         """Filter a query."""
         raise NotImplementedError
 
 
-class NullFilter(Filter):
-    """A filter for null values."""
-
-    is_null: bool
+F = TypeVar("F", bound=Filter)
 
 
-def null_filter(
+def create_filter_from_field_and_model(
     field: MappedColumn | InstrumentedAttribute,
-) -> Type[NullFilter]:
-    """Create a filter for null values."""
+    model: Type[F],
+) -> Type[F]:
+    """Create a filter from a field and model."""
 
-    class _NullFilter(NullFilter):
-        """A filter for non-null values."""
+    class _Filter(model):  # type: ignore
+        """A filter for a field."""
 
         def filter(self, query: Select) -> Select:
-            """Filter a query."""
-            if self.is_null is not None:
-                if self.is_null:
-                    query = query.where(field.isnot(None))
-                else:
-                    query = query.where(field.is_(None))
+            """Filter the query."""
+            for field_name in model.__fields__:
+                filter_fn = self._filter_mapping[field_name]
+                value = getattr(self, field_name)
+                if value is not None:
+                    query = filter_fn(query, field, value)
 
             return query
 
-    return _NullFilter
+    return _Filter
 
 
 class IntegerFilter(Filter):
@@ -72,24 +133,23 @@ def integer_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[IntegerFilter]:
     """Create a filter for integers."""
+    return create_filter_from_field_and_model(field, IntegerFilter)
 
-    class _IntegerFilter(IntegerFilter):
-        """A filter for equality."""
 
-        def filter(self, query: Select) -> Select:
-            """Filter the query."""
-            if self.eq is not None:
-                query = query.where(field == self.eq)
+class OptionalIntegerFilter(Filter):
+    """A filter for integers."""
 
-            if self.lt is not None:
-                query = query.where(field <= self.lt)
+    eq: int | None = None
+    lt: int | None = None
+    gt: int | None = None
+    is_null: bool | None = None
 
-            if self.gt is not None:
-                query = query.where(field >= self.gt)
 
-            return query
-
-    return _IntegerFilter
+def optional_integer_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalIntegerFilter]:
+    """Create a filter for an optional integer column."""
+    return create_filter_from_field_and_model(field, OptionalIntegerFilter)
 
 
 class FloatFilter(Filter):
@@ -101,21 +161,22 @@ def float_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[FloatFilter]:
     """Create a filter for floats."""
+    return create_filter_from_field_and_model(field, FloatFilter)
 
-    class _FloatFilter(FloatFilter):
-        """A filter for a range of values."""
 
-        def filter(self, query: Select) -> Select:
-            """Filter a query."""
-            if self.lt is not None:
-                query = query.where(field <= self.lt)
+class OptionalFloatFilter(Filter):
+    """A filter for optional floats."""
 
-            if self.gt is not None:
-                query = query.where(field >= self.gt)
+    lt: float | None = None
+    gt: float | None = None
+    is_null: bool | None = None
 
-            return query
 
-    return _FloatFilter
+def optional_float_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalFloatFilter]:
+    """Create a filter for optional floats."""
+    return create_filter_from_field_and_model(field, OptionalFloatFilter)
 
 
 class DateFilter(Filter):
@@ -128,28 +189,21 @@ def date_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[DateFilter]:
     """Create a filter for dates."""
+    return create_filter_from_field_and_model(field, DateFilter)
 
-    class _DateFilter(DateFilter):
-        """Filter by dates."""
 
-        before: datetime.date | None = None
-        after: datetime.date | None = None
-        on: datetime.date | None = None
+class OptionalDateFilter(Filter):
+    before: datetime.date | None = None
+    after: datetime.date | None = None
+    on: datetime.date | None = None
+    is_null: bool | None = None
 
-        def filter(self, query: Select) -> Select:
-            """Filter the query."""
-            if self.before is not None:
-                query = query.where(field <= self.before)
 
-            if self.after is not None:
-                query = query.where(field >= self.after)
-
-            if self.on is not None:
-                query = query.where(field == self.on)
-
-            return query
-
-    return _DateFilter
+def optional_date_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalDateFilter]:
+    """Create a filter for optional dates."""
+    return create_filter_from_field_and_model(field, OptionalDateFilter)
 
 
 class TimeFilter(Filter):
@@ -161,21 +215,20 @@ def time_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[TimeFilter]:
     """Create a filter for times."""
+    return create_filter_from_field_and_model(field, TimeFilter)
 
-    class _TimeFilter(TimeFilter):
-        """Filter by times."""
 
-        def filter(self, query: Select) -> Select:
-            """Filter the query."""
-            if self.before is not None:
-                query = query.where(field <= self.before)
+class OptionalTimeFilter(Filter):
+    before: datetime.time | None = None
+    after: datetime.time | None = None
+    is_null: bool | None = None
 
-            if self.after is not None:
-                query = query.where(field >= self.after)
 
-            return query
-
-    return _TimeFilter
+def optional_time_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalTimeFilter]:
+    """Create a filter for optional times."""
+    return create_filter_from_field_and_model(field, OptionalTimeFilter)
 
 
 class StringFilter(Filter):
@@ -189,21 +242,49 @@ def string_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[StringFilter]:
     """Create a filter for strings."""
+    return create_filter_from_field_and_model(field, StringFilter)
 
-    class _StringFilter(StringFilter):
-        """Filter by strings."""
 
-        def filter(self, query: Select) -> Select:
-            """Filter the query."""
-            if self.eq is not None:
-                query = query.where(field == self.eq)
+class OptionalStringFilter(Filter):
+    """Filter by strings."""
 
-            if self.has is not None:
-                query = query.where(field.ilike(f"%{self.has}%"))
+    eq: str | None = None
+    has: str | None = None
+    is_null: bool | None = None
 
-            return query
 
-    return _StringFilter
+def optional_string_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalStringFilter]:
+    """Create a filter for optional strings."""
+    return create_filter_from_field_and_model(field, OptionalStringFilter)
+
+
+class BooleanFilter(Filter):
+    """Filter by a boolean value."""
+
+    is_true: bool
+
+
+def boolean_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[BooleanFilter]:
+    """Create a filter for booleans."""
+    return create_filter_from_field_and_model(field, BooleanFilter)
+
+
+class OptionalBooleanFilter(Filter):
+    """Filter by a boolean value."""
+
+    is_true: bool | None = None
+    is_null: bool | None = None
+
+
+def optional_boolean_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[OptionalBooleanFilter]:
+    """Create a filter for optional booleans."""
+    return create_filter_from_field_and_model(field, OptionalBooleanFilter)
 
 
 class SearchFilter(Filter):
@@ -228,24 +309,3 @@ def search_filter(
             )
 
     return _SearchFilter
-
-
-class BooleanFilter(Filter):
-    """Filter by a boolean value."""
-
-    is_true: bool
-
-
-def boolean_filter(
-    field: MappedColumn | InstrumentedAttribute,
-) -> Type[BooleanFilter]:
-    """Create a filter for booleans."""
-
-    class _BooleanFilter(BooleanFilter):
-        """Filter by a boolean value."""
-
-        def filter(self, query: Select) -> Select:
-            """Filter a query."""
-            return query.where(field == self.is_true)
-
-    return _BooleanFilter

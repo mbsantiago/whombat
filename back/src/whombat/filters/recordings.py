@@ -8,45 +8,37 @@ from whombat.database import models
 from whombat.filters import base
 
 __all__ = [
-    "DurationFilter",
-    "SamplerateFilter",
     "ChannelsFilter",
-    "HasLatitudeFilter",
-    "HasLongitudeFilter",
+    "DateFilter",
+    "DurationFilter",
+    "IssuesFilter",
     "LatitudeFilter",
     "LongitudeFilter",
-    "HasDate",
-    "DateFilter",
-    "HasTime",
+    "SamplerateFilter",
     "TimeFilter",
-    "SearchFilter",
-    "IssuesFilter",
 ]
 
 
 DurationFilter = base.float_filter(models.Recording.duration)
+"""Filter recordings by duration."""
 
 SamplerateFilter = base.integer_filter(models.Recording.samplerate)
+"""Filter recordings by samplerate."""
 
 ChannelsFilter = base.integer_filter(models.Recording.channels)
+"""Filter recordings by channels."""
 
-HasLatitudeFilter = base.null_filter(models.Recording.latitude)
+LatitudeFilter = base.optional_float_filter(models.Recording.latitude)
+"""Filter recordings by latitude."""
 
-HasLongitudeFilter = base.null_filter(models.Recording.longitude)
+LongitudeFilter = base.optional_float_filter(models.Recording.longitude)
+"""Filter recordings by longitude."""
 
-LatitudeFilter = base.float_filter(models.Recording.latitude)
+DateFilter = base.optional_date_filter(models.Recording.date)
+"""Filter recordings by date."""
 
-LongitudeFilter = base.float_filter(models.Recording.longitude)
-
-HasDate = base.null_filter(models.Recording.date)
-
-DateFilter = base.date_filter(models.Recording.date)
-
-HasTime = base.null_filter(models.Recording.time)
-
-TimeFilter = base.time_filter(models.Recording.time)
-
-SearchFilter = base.search_filter([models.Recording.hash])
+TimeFilter = base.optional_time_filter(models.Recording.time)
+"""Filter recordings by time."""
 
 
 class IssuesFilter(base.Filter):
