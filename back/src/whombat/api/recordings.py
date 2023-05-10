@@ -16,17 +16,19 @@ from whombat.filters.base import Filter
 from whombat.schemas.recordings import RecordingCreate, RecordingUpdate
 
 __all__ = [
-    "create_recording",
-    "get_recording_by_hash",
-    "update_recording",
-    "get_recordings",
-    "delete_recording",
     "add_feature_to_recording",
     "add_note_to_recording",
     "add_tag_to_recording",
+    "create_recording",
+    "delete_recording",
+    "get_recording_by_hash",
+    "get_recording_by_path",
+    "get_recordings",
     "remove_feature_from_recording",
     "remove_note_from_recording",
     "remove_tag_from_recording",
+    "update_recording",
+    "update_recording_path",
 ]
 
 A = TypeVar("A")
@@ -84,21 +86,29 @@ async def create_recording(
     hash = files.compute_hash(path)
     media_info = files.get_media_info(path)
 
-    recording = models.Recording(
-        hash=hash,
-        duration=media_info.duration,
-        channels=media_info.channels,
-        samplerate=media_info.samplerate,
-        date=data.date,
-        time=data.time,
-        latitude=data.latitude,
-        longitude=data.longitude,
-    )
-
-    session.add(recording)
-    await session.commit()
+    try:
+        recording = models.Recording(
+            hash=hash,
+            path=str(path.absolute()),
+            duration=media_info.duration,
+            channels=media_info.channels,
+            samplerate=media_info.samplerate,
+            date=data.date,
+            time=data.time,
+            latitude=data.latitude,
+            longitude=data.longitude,
+        )
+        session.add(recording)
+        await session.commit()
+    except IntegrityError:
+        # TODO: Make this more specific
+        await session.rollback()
+        raise exceptions.DuplicateObjectError(
+            "A recording with the given path or hash already exists."
+        )
 
     return schemas.Recording(
+        path=Path(recording.path),
         hash=recording.hash,
         duration=recording.duration,
         channels=recording.channels,
@@ -114,6 +124,7 @@ def _convert_recording_to_schema(
     recording: models.Recording,
 ) -> schemas.Recording:
     return schemas.Recording(
+        path=Path(recording.path),
         hash=recording.hash,
         duration=recording.duration,
         channels=recording.channels,
@@ -199,6 +210,7 @@ async def get_recording_by_hash(
     recording = recording[0]
     return _convert_recording_to_schema(recording)
 
+
 async def update_recording(
     session: AsyncSession,
     recording: schemas.Recording,
@@ -268,19 +280,16 @@ async def get_recordings(
         The requested recordings.
 
     """
-    query = (
-        select(models.Recording)
-        .options(
-            orm.joinedload(models.Recording.features).subqueryload(
-                models.RecordingFeature.feature_name
-            ),
-            orm.joinedload(models.Recording.notes)
-            .subqueryload(models.RecordingNote.note)
-            .subqueryload(models.Note.created_by),
-            orm.joinedload(models.Recording.tags).subqueryload(
-                models.RecordingTag.tag
-            ),
-        )
+    query = select(models.Recording).options(
+        orm.joinedload(models.Recording.features).subqueryload(
+            models.RecordingFeature.feature_name
+        ),
+        orm.joinedload(models.Recording.notes)
+        .subqueryload(models.RecordingNote.note)
+        .subqueryload(models.Note.created_by),
+        orm.joinedload(models.Recording.tags).subqueryload(
+            models.RecordingTag.tag
+        ),
     )
 
     if filters is None:
@@ -787,3 +796,118 @@ async def remove_feature_from_recording(
             ],
         }
     )
+
+
+async def get_recording_by_path(
+    session: AsyncSession,
+    path: Path,
+) -> schemas.Recording:
+    """Get a recording by its path.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    path : Path
+        The path of the recording to get.
+
+    Returns
+    -------
+    recording : schemas.Recording
+        The recording with the given path.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If no recording with the given path exists.
+
+    Notes
+    -----
+    This function does not check if the hash of the
+    recording matches the hash of the file at the given path.
+
+    """
+    query = (
+        select(models.Recording)
+        .options(
+            orm.joinedload(models.Recording.features).subqueryload(
+                models.RecordingFeature.feature_name
+            ),
+            orm.joinedload(models.Recording.notes)
+            .subqueryload(models.RecordingNote.note)
+            .subqueryload(models.Note.created_by),
+            orm.joinedload(models.Recording.tags).subqueryload(
+                models.RecordingTag.tag
+            ),
+        )
+        .where(models.Recording.path == str(path.absolute()))
+    )
+    result = await session.execute(query)
+    db_recording = result.unique().scalar_one_or_none()
+    if db_recording is None:
+        raise exceptions.NotFoundError(
+            "No recording with the given path exists."
+        )
+
+    return _convert_recording_to_schema(db_recording)
+
+
+async def update_recording_path(
+    session: AsyncSession,
+    recording: schemas.Recording,
+    path: Path,
+) -> schemas.Recording:
+    """Change the path to the recording.
+
+    Specially useful if the recording has moved place.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    recording : schemas.Recording
+        The recording to update.
+    path : Path
+        The new path to the recording.
+
+    Returns
+    -------
+    recording : schemas.Recording
+
+    Raises
+    ------
+    ValueError
+        If the given path is not an existing file on the file system.
+        Or if the hash of the given path does not match the hash of the
+        recording in the database.
+
+    exceptions.NotFoundError
+        If the provided recording does not exist in the database.
+
+    """
+    if not path.is_file():
+        raise ValueError(
+            f"The given path {path} does not exist on the file system."
+        )
+
+    hash = files.compute_hash(path)
+
+    query = select(models.Recording).where(
+        models.Recording.path == str(recording.path)
+    )
+    result = await session.execute(query)
+    db_recording = result.scalar_one_or_none()
+    if db_recording is None:
+        raise exceptions.NotFoundError(
+            "No recording with the given hash exists."
+        )
+
+    if not db_recording.hash == hash:
+        raise ValueError(
+            f"The hash of the given path {path} does not match the hash of "
+            f"the recording in the database."
+        )
+
+    db_recording.path = str(path.absolute())
+    await session.commit()
+    return schemas.Recording(**{**recording.dict(), "path": str(path)})

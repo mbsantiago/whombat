@@ -7,18 +7,23 @@ from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
+from whombat.api import recordings
 from whombat.core import files
 from whombat.database import models
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
 __all__ = [
+    "add_file_to_dataset",
+    "add_recording_to_dataset",
+    "create_dataset",
+    "create_empty_dataset",
+    "delete_dataset",
+    "get_dataset_by_audio_dir",
     "get_dataset_by_name",
     "get_dataset_by_uuid",
-    "get_datasets",
-    "create_dataset",
-    "update_dataset",
-    "delete_dataset",
     "get_dataset_files",
+    "get_datasets",
+    "update_dataset",
 ]
 
 
@@ -37,7 +42,7 @@ async def get_dataset_by_name(
 
     Returns
     -------
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
 
     Raises
     ------
@@ -70,7 +75,7 @@ async def get_dataset_by_uuid(
 
     Returns
     -------
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
 
     Raises
     ------
@@ -103,7 +108,7 @@ async def get_dataset_by_audio_dir(
 
     Returns
     -------
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
 
     Raises
     ------
@@ -141,7 +146,7 @@ async def get_datasets(
 
     Returns
     -------
-    datasets : list[schemas.datasets.Dataset]
+    datasets : list[schemas.Dataset]
 
     """
     query = select(models.Dataset).limit(limit).offset(offset)
@@ -150,7 +155,7 @@ async def get_datasets(
     return [schemas.Dataset.from_orm(dataset) for dataset in datasets]
 
 
-async def create_dataset(
+async def create_empty_dataset(
     session: AsyncSession,
     name: str,
     audio_dir: Path,
@@ -171,7 +176,7 @@ async def create_dataset(
 
     Returns
     -------
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
 
     Raises
     ------
@@ -186,10 +191,11 @@ async def create_dataset(
         audio_dir=audio_dir,
         description=description,
     )
+
     db_dataset = models.Dataset(
         name=data.name,
         audio_dir=str(data.audio_dir),
-        description=data.description,
+        description=data.description,  # type: ignore
     )
 
     try:
@@ -222,7 +228,7 @@ async def update_dataset(
     ----------
     session : AsyncSession
         The database session to use.
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
         The dataset to update.
     name : str, optional
         The new name of the dataset, by default None
@@ -234,7 +240,7 @@ async def update_dataset(
 
     Returns
     -------
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
 
     Raises
     ------
@@ -275,7 +281,7 @@ async def delete_dataset(
     ----------
     session : AsyncSession
         The database session to use.
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
         The dataset to delete.
 
     Raises
@@ -314,12 +320,12 @@ async def get_dataset_files(
     ----------
     session : AsyncSession
         The database session to use.
-    dataset : schemas.datasets.Dataset
+    dataset : schemas.Dataset
         The dataset to get the files of.
 
     Returns
     -------
-    files : list[schemas.datasets.DatasetFile]
+    files : list[schemas.DatasetFile]
 
     """
     # Get the files in the dataset directory.
@@ -365,3 +371,200 @@ async def get_dataset_files(
         )
 
     return ret
+
+
+async def add_file_to_dataset(
+    session: AsyncSession,
+    path: Path,
+    dataset: schemas.Dataset,
+    **kwargs,
+) -> schemas.Recording:
+    """Add a file to a dataset.
+
+    This function adds a file to a dataset. The file is registered as a
+    recording and is added to the dataset. If the file is already registered
+    in the database, it is only added to the dataset.
+
+    You can pass additional keyword arguments to the recording. These are
+    passed the the `create_recording` function and are used to set
+    some of the recording's metadata.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    path : Path
+        Path to the file to add.
+    dataset : schemas.Dataset
+        The dataset to add the file to.
+
+    Returns
+    -------
+    recording : schemas.Recording
+        The recording that was added to the dataset.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If the file does not exist.
+
+    ValueError
+        If the file is not part of the dataset audio directory.
+
+    """
+    # Make sure the file is part of the dataset audio dir
+    if not path.is_relative_to(dataset.audio_dir):
+        raise ValueError(
+            "The file is not part of the dataset audio directory."
+        )
+
+    try:
+        recording = await recordings.get_recording_by_path(session, path)
+    except exceptions.NotFoundError:
+        recording = await recordings.create_recording(session, path, **kwargs)
+
+    await add_recording_to_dataset(
+        session,
+        recording,
+        dataset,
+    )
+
+    return recording
+
+
+async def add_recording_to_dataset(
+    session: AsyncSession,
+    recording: schemas.Recording,
+    dataset: schemas.Dataset,
+) -> Path:
+    """Add a recording to a dataset.
+
+    This function adds a recording to a dataset. The recording is added to
+    the dataset. If the recording is already registered in the database, it
+    is only added to the dataset.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    recording : schemas.Recording
+        The recording to add.
+    dataset : schemas.Dataset
+        The dataset to add the recording to.
+
+    Returns
+    -------
+    relative_path : Path
+        The relative path of the recording in the dataset audio directory.
+
+    Raises
+    ------
+    ValueError
+        If the recording is not part of the dataset audio directory.
+
+    exceptions.NotFoundError
+        If the recording is not registered in the database.
+
+    Notes
+    -----
+    If the recording is already part of the dataset, this function does
+    nothing.
+
+    """
+    if not recording.path.is_relative_to(dataset.audio_dir):
+        raise ValueError(
+            "The recording is not part of the dataset audio directory."
+        )
+
+    query = select(models.Recording).where(
+        models.Recording.path == str(recording.path)
+    )
+    result = await session.execute(query)
+    db_recording = result.scalar_one_or_none()
+    if db_recording is None:
+        raise exceptions.NotFoundError(
+            "The recording is not registered in the database."
+        )
+
+    query = select(models.Dataset).where(models.Dataset.uuid == dataset.uuid)
+    result = await session.execute(query)
+    db_dataset = result.scalar_one_or_none()
+    if db_dataset is None:
+        raise exceptions.NotFoundError(
+            "The dataset is not registered in the database."
+        )
+
+    relative_path = recording.path.relative_to(dataset.audio_dir)
+
+    try:
+        db_dataset_recording = models.DatasetRecording(
+            dataset_id=db_dataset.id,
+            recording_id=db_recording.id,
+            path=str(relative_path),
+        )
+        session.add(db_dataset_recording)
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+
+    return relative_path
+
+
+async def create_dataset(
+    session: AsyncSession,
+    name: str,
+    audio_dir: Path,
+    description: str = "",
+) -> tuple[schemas.Dataset, list[schemas.Recording]]:
+    """Create a dataset.
+
+    This function will create a dataset and populate it with the audio files
+    found in the given directory. It will look recursively for audio files
+    within the directory.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    name : str
+        The name of the dataset.
+    audio_dir : Path
+        The path to the directory containing the audio files.
+    description : str, optional
+        A description of the dataset, by default ""
+
+    Returns
+    -------
+    dataset : schemas.Dataset
+
+    Raises
+    ------
+    ValueError
+        If a dataset with the given name or audio directory already exists.
+    pydantic.ValidationError
+        If the given audio directory does not exist.
+
+    """
+    from tqdm import tqdm
+
+    dataset = await create_empty_dataset(
+        session=session,
+        name=name,
+        audio_dir=audio_dir,
+        description=description,
+    )
+
+    file_list = files.get_audio_files_in_folder(audio_dir)
+    recordings = [] 
+    for path in tqdm(file_list):
+        try:
+            recording = await add_file_to_dataset(
+                session=session,
+                path=audio_dir / path,
+                dataset=dataset,
+            )
+            recordings.append(recording)
+        except exceptions.DuplicateObjectError:
+            pass
+
+    return dataset, recordings

@@ -46,7 +46,11 @@ class Recording(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the recording."""
 
-    hash: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    hash: orm.Mapped[str] = orm.mapped_column(
+        nullable=False,
+        unique=True,
+        index=True,
+    )
     """The sha256 hash of the recording.
 
     The hash is used to uniquely identify the recording. It is calculated
@@ -55,6 +59,19 @@ class Recording(Base):
 
     The hash function SHOULD be computed using the
     whombat.core.files.compute_hash function.
+    """
+
+    path: orm.Mapped[str] = orm.mapped_column(
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+    """The path of the dataset.
+
+    This path should be absolute and should point to the recording file.
+    Never use the absolute path when providing the path through the REST API,
+    as this may expose sensitive information. Instead, use the relative path
+    to the dataset root directory.
     """
 
     duration: orm.Mapped[float] = orm.mapped_column(nullable=False)

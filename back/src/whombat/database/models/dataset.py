@@ -97,6 +97,8 @@ class DatasetRecording(Base):
 
     dataset: orm.Mapped[Dataset] = orm.relationship(
         Dataset,
+        init=False,
+        repr=False,
         backref=orm.backref(
             "dataset_recordings",
             cascade="all, delete-orphan",
@@ -106,6 +108,8 @@ class DatasetRecording(Base):
 
     recording: orm.Mapped[Recording] = orm.relationship(
         Recording,
+        init=False,
+        repr=False,
         backref=orm.backref(
             "dataset_recordings",
             cascade="all, delete-orphan",

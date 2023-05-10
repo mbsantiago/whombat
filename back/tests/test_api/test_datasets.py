@@ -15,7 +15,7 @@ async def test_create_dataset(session: AsyncSession, tmp_path: Path):
     """Test the creation of a dataset."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -34,7 +34,7 @@ async def test_create_dataset_fails_when_audio_dir_does_not_exist(
     """Test that creating a dataset fails when the audio directory does not exist."""
     audio_dir = tmp_path / "audio"
     with pytest.raises(ValidationError):
-        await datasets.create_dataset(
+        await datasets.create_empty_dataset(
             session,
             name="test_dataset",
             description="This is a test dataset.",
@@ -50,7 +50,7 @@ async def test_create_dataset_fails_when_audio_dir_is_not_a_directory(
     audio_dir = tmp_path / "audio"
     audio_dir.touch()
     with pytest.raises(ValidationError):
-        await datasets.create_dataset(
+        await datasets.create_empty_dataset(
             session,
             name="test_dataset",
             description="This is a test dataset.",
@@ -67,14 +67,14 @@ async def test_create_dataset_fails_if_name_is_not_unique(
     audio_dir2 = tmp_path / "audio2"
     audio_dir1.mkdir()
     audio_dir2.mkdir()
-    await datasets.create_dataset(
+    await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
         audio_dir=audio_dir1,
     )
     with pytest.raises(ValueError):
-        await datasets.create_dataset(
+        await datasets.create_empty_dataset(
             session,
             name="test_dataset",
             description="This is a test dataset.",
@@ -89,14 +89,14 @@ async def test_create_dataset_fails_if_audio_dir_is_not_unique(
     """Test that creating a dataset fails if the audio directory is not unique."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    await datasets.create_dataset(
+    await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
         audio_dir=audio_dir,
     )
     with pytest.raises(ValueError):
-        await datasets.create_dataset(
+        await datasets.create_empty_dataset(
             session,
             name="test_dataset_2",
             description="This is a test dataset.",
@@ -108,7 +108,7 @@ async def test_get_dataset_by_uuid(session: AsyncSession, tmp_path: Path):
     """Test getting a dataset by UUID."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -137,7 +137,7 @@ async def test_get_dataset_by_name(session: AsyncSession, tmp_path: Path):
     """Test getting a dataset by name."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -165,7 +165,7 @@ async def test_get_dataset_by_audio_dir(session: AsyncSession, tmp_path: Path):
     """Test getting a dataset by audio directory."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -196,7 +196,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     # Arrange
     audio_dir_1 = tmp_path / "audio_1"
     audio_dir_1.mkdir()
-    dataset1 = await datasets.create_dataset(
+    dataset1 = await datasets.create_empty_dataset(
         session,
         name="test_dataset_1",
         description="This is a test dataset.",
@@ -204,7 +204,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     )
     audio_dir_2 = tmp_path / "audio_2"
     audio_dir_2.mkdir()
-    dataset2 = await datasets.create_dataset(
+    dataset2 = await datasets.create_empty_dataset(
         session,
         name="test_dataset_2",
         description="This is a test dataset.",
@@ -239,7 +239,7 @@ async def test_update_dataset_name(session: AsyncSession, tmp_path: Path):
     """Test updating a dataset's name."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -261,7 +261,7 @@ async def test_update_dataset_description(
     """Test updating a dataset's description."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -282,7 +282,7 @@ async def test_update_dataset_audio_dir(session: AsyncSession, tmp_path: Path):
     audio_dir_1.mkdir()
     audio_dir_2 = tmp_path / "audio_2"
     audio_dir_2.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -301,7 +301,7 @@ async def test_delete_dataset(session: AsyncSession, tmp_path: Path):
     """Test deleting a dataset."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",
@@ -318,7 +318,7 @@ async def test_get_dataset_files(session: AsyncSession, tmp_path: Path):
     # Arrange
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset = await datasets.create_dataset(
+    dataset = await datasets.create_empty_dataset(
         session,
         name="test_dataset",
         description="This is a test dataset.",

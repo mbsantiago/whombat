@@ -19,6 +19,8 @@ __all__ = [
 class Recording(BaseModel):
     """Schema for Recording objects returned to the user."""
 
+    path: FilePath
+
     hash: str
     duration: float
     channels: int

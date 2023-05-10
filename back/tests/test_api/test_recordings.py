@@ -1,5 +1,6 @@
 """Test suite for the notes Python API module."""
 import datetime
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
@@ -34,6 +35,7 @@ async def test_create_recording(
 
     # Assert
     assert isinstance(recording, schemas.Recording)
+    assert recording.path == path.absolute()
     assert recording.channels == 1
     assert recording.samplerate == 44100
     assert recording.duration == 1
@@ -363,10 +365,14 @@ async def test_update_recording_fails_with_bad_coordinates(
 
 async def test_update_recording_nonexistent_succeeds(
     session: AsyncSession,
+    tmp_path: Path,
 ):
     """Test updating a nonexistent recording succeeds."""
     # Arrange
+    path = tmp_path / "path.wav"
+    path.touch()
     recording = schemas.Recording(
+        path=path,
         hash="hash",
         duration=1,
         channels=1,
@@ -404,10 +410,14 @@ async def test_delete_recording(
 
 async def test_delete_recording_unexistent_succeeds(
     session: AsyncSession,
+    tmp_path: Path,
 ):
     """Test deleting a nonexistent recording succeeds."""
     # Arrange
+    path = tmp_path / "path.wav"
+    path.touch()
     recording = schemas.Recording(
+        path=path,
         hash="hash",
         duration=1,
         channels=1,
@@ -675,10 +685,14 @@ async def test_remove_note_from_recording(
 async def test_remove_note_from_recording_fails_if_recording_does_not_exist(
     session: AsyncSession,
     user: schemas.User,
+    tmp_path: Path,
 ):
     """Test removing a recording note fails if the recording does not exist."""
     # Arrange
+    path = tmp_path / "path.wav"
+    path.touch()
     recording = schemas.Recording(
+        path=path,
         hash="hash",
         duration=1,
         channels=1,
@@ -825,10 +839,14 @@ async def test_remove_tag_from_recording(
 
 async def test_remove_tag_from_recording_fails_with_nonexistent_recording(
     session: AsyncSession,
+    tmp_path: Path,
 ):
     """Test removing a recording tag fails with a nonexistent recording."""
     # Arrange
+    path = tmp_path / "path.wav"
+    path.touch()
     recording = schemas.Recording(
+        path=path,
         hash="hash",
         duration=1,
         channels=1,
@@ -973,10 +991,14 @@ async def test_remove_feature_from_recording(
 
 async def test_remove_feature_from_recording_fails_with_nonexistent_recording(
     session: AsyncSession,
+    tmp_path: Path,
 ):
     """Test removing a recording feature fails with a nonexistent recording."""
     # Arrange
+    path = tmp_path / "path.wav"
+    path.touch()
     recording = schemas.Recording(
+        path=path,
         hash="hash",
         duration=1,
         channels=1,
@@ -1158,7 +1180,7 @@ async def test_get_recordings_with_offset(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create_recording(session, path1)
+    await recordings.create_recording(session, path1)
 
     path2 = random_wav_factory(
         channels=1,
@@ -1182,3 +1204,152 @@ async def test_get_recordings_with_offset(
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 0
+
+
+async def test_get_recording_by_path(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test getting a recording by path."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    created_recording = await recordings.create_recording(session, path)
+
+    # Act
+    retrieved_recording = await recordings.get_recording_by_path(session, path)
+
+    # Assert
+    assert isinstance(retrieved_recording, schemas.Recording)
+    assert retrieved_recording.path == path
+    assert created_recording.hash == retrieved_recording.hash
+
+
+async def test_get_recording_by_path_fails_if_not_found(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test getting a recording by path fails if not found."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    # Act
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.get_recording_by_path(session, path)
+
+
+async def test_update_recording_path(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test updating a recording path."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    new_path = path.parent / "new_path.wav"
+    shutil.move(path, new_path)
+
+    # Act
+    recording = await recordings.update_recording_path(
+        session,
+        recording,
+        new_path,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert recording.path == new_path
+
+
+async def test_update_recording_path_fails_if_no_file_exist(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test updating a recording path fails if no file exists."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    new_path = path.parent / "new_path.wav"
+
+    # Act
+    with pytest.raises(ValueError):
+        await recordings.update_recording_path(
+            session,
+            recording,
+            new_path,
+        )
+
+async def test_update_recording_path_fails_if_hash_does_not_coincide(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test updating a recording path fails if the hash does not coincide."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    new_path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    # Act
+    with pytest.raises(ValueError):
+        await recordings.update_recording_path(
+            session,
+            recording,
+            new_path,
+        )
+
+
+async def test_update_recording_fails_if_recording_does_not_exist(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test updating a recording fails if the recording does not exist."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    hash = compute_hash(path)
+
+    recording = schemas.Recording(
+        hash=hash,
+        path=path,
+        duration=1,
+        samplerate=44100,
+        channels=1,
+    )
+
+    # Act
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.update_recording_path(
+            session,
+            recording,
+            path,
+        )
