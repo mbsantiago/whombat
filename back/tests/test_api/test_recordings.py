@@ -62,6 +62,26 @@ async def test_create_recording(
     assert db_recording.hash == hash
 
 
+async def test_create_recording_fails_if_already_exists(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating a recording fails if it already exists."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+
+    # Act
+    await recordings.create_recording(session, path)
+
+    # Assert
+    with pytest.raises(exceptions.DuplicateObjectError):
+        await recordings.create_recording(session, path)
+
+
 async def test_create_recording_with_date(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
@@ -489,6 +509,40 @@ async def test_add_tag_to_recording_is_idempotent(
     assert len(recording.tags) == 1
 
 
+async def test_add_tag_to_recording_creates_tag_if_not_exists(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a tag to a recording creates the tag if it doesn't exist."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+    tag = schemas.Tag(key="key", value="value")
+
+    # Act
+    recording = await recordings.add_tag_to_recording(
+        session,
+        tag,
+        recording,
+    )
+
+    # Assert
+    assert tag in recording.tags
+    assert isinstance(recording, schemas.Recording)
+
+    # make sure the tag was created
+    query = select(models.Tag).where(
+        models.Tag.key == tag.key,
+        models.Tag.value == tag.value,
+    )
+    result = await session.execute(query)
+    assert result.scalars().first()
+
+
 async def test_add_note_to_recording(
     session: AsyncSession,
     user: schemas.User,
@@ -637,6 +691,78 @@ async def test_add_feature_to_recording_is_idempotent(
     # Get the recording again to make sure no features were added
     recording = await recordings.get_recording_by_hash(session, recording.hash)
     assert len(recording.features) == 1
+
+
+async def test_add_feature_to_recording_creates_feature_name_if_not_exist(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding recording features creates feature name if nonexistent."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    feature = schemas.Feature(
+        name="name",
+        value=10,
+    )
+
+    # Act
+    recording = await recordings.add_feature_to_recording(
+        session,
+        feature,
+        recording,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert feature in recording.features
+
+    # Make sure the feature name was created
+    query = select(models.FeatureName).where(
+        models.FeatureName.name == feature.name,
+    )
+    result = await session.execute(query)
+    assert result.scalars().first()
+
+
+async def test_add_note_to_recording_creates_note_if_it_doesnt_exist(
+    session: AsyncSession,
+    user: schemas.User,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test adding a recording note creates the note if it doesn't exist."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=1,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    # Act
+    recording = await recordings.add_note_to_recording(
+        session,
+        schemas.Note(
+            message="message",
+            created_by=user.username,
+        ),
+        recording,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert len(recording.notes) == 1
+
+    # Make sure the note was created
+    query = select(models.Note).where(models.Note.message == "message")
+    result = await session.execute(query)
+    note = result.scalars().first()
+    assert note is not None
 
 
 async def test_remove_note_from_recording(
@@ -1296,6 +1422,7 @@ async def test_update_recording_path_fails_if_no_file_exist(
             new_path,
         )
 
+
 async def test_update_recording_path_fails_if_hash_does_not_coincide(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
@@ -1353,3 +1480,156 @@ async def test_update_recording_fails_if_recording_does_not_exist(
             recording,
             path,
         )
+
+
+async def test_create_recordings(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings."""
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = random_wav_factory()
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 2
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert isinstance(recording_list[1], schemas.Recording)
+    assert recording_list[0].path == path1
+    assert recording_list[1].path == path2
+
+
+async def test_create_recordings_ignores_non_existing_files(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings ignores non-existing files."""
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = Path("non_existing_file.wav")
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 1
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert recording_list[0].path == path1
+
+
+async def test_create_recordings_ignores_non_audio_files(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    tmp_path: Path,
+):
+    """Test creating multiple recordings ignores non-audio files."""
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = tmp_path / "non_audio_file.txt"
+    path2.touch()
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 1
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert recording_list[0].path == path1
+
+
+async def test_create_recordings_ignores_files_already_in_the_dataset(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings ignores existing ones."""
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = random_wav_factory()
+
+    await recordings.create_recording(session, path1)
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 1
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert recording_list[0].path == path2
+
+
+async def test_create_recordings_removes_hash_duplicates(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings avoids hash duplication.
+
+    Make sure that if two provided files have the same hash, only one
+    is registered.
+    """
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = path1.parent / "copy.wav"
+    shutil.copy(path1, path2)
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 1
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert recording_list[0].path == path1
+
+
+async def test_create_recording_avoids_hash_duplicates(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings omits pre-registered hashes.
+
+    Make sure that if a hash is already registered in the database, it is not
+    registered again.
+    """
+    # Arrange
+    path1 = random_wav_factory()
+    path2 = random_wav_factory()
+
+    path3 = path2.parent / "copy.wav"
+    shutil.copy(path2, path3)
+
+    # Pre register recording at path3
+    await recordings.create_recording(session, path3)
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 1
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert recording_list[0].path == path1

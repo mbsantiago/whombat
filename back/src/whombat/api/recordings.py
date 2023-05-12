@@ -1,16 +1,17 @@
 """API functions for interacting with recordings."""
 
 import datetime
+from multiprocessing import Pool
 from pathlib import Path
-from typing import TypeVar
 
 import sqlalchemy.orm as orm
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
 from whombat.core import files
+from whombat.core.common import remove_duplicates
 from whombat.database import models
 from whombat.filters.base import Filter
 from whombat.schemas.recordings import RecordingCreate, RecordingUpdate
@@ -31,12 +32,6 @@ __all__ = [
     "update_recording_path",
 ]
 
-A = TypeVar("A")
-
-
-def _remove_duplicates(objects: list[A]) -> list[A]:
-    """Remove duplicates from a list of objects."""
-    return [obj for obj in set(objects)]
 
 
 async def create_recording(
@@ -118,6 +113,102 @@ async def create_recording(
         latitude=recording.latitude,
         longitude=recording.longitude,
     )
+
+
+async def create_recordings(
+    session: AsyncSession,
+    paths: list[Path],
+) -> list[schemas.Recording]:
+    """Create recordings.
+
+    If you want to create a single recording, use `create_recording`.
+    However if you want to create multiple recordings, it is more efficient
+    to use this function.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    paths : list[Path]
+        The paths to the recording files.
+
+    Returns
+    -------
+    recordings : list[schemas.recordings.Recording]
+        The created recordings.
+
+    Notes
+    -----
+    This function will only create recordings for files that:
+    - exist in the filesystem
+    - are audio files (according to `files.is_audio_file`)
+    - media info can be extracted from it.
+    - do not already exist in the database.
+
+    Any files that do not meet these criteria will be silently ignored.
+
+    """
+    paths = remove_duplicates(paths)
+
+    with Pool() as pool:
+        file_info = pool.map(
+            files.get_file_info,
+            paths,
+        )
+
+    # Need to make sure that the hashes are unique
+    audio_files = remove_duplicates(
+        [
+            info
+            for info in file_info
+            if info.exists and info.is_audio and (info.media_info is not None)
+        ],
+        key=lambda x: x.hash,
+    )
+
+    # Get the hashes of the recordings that already exist
+    hashes = [info.hash for info in audio_files]
+    query = select(models.Recording.hash).where(
+        models.Recording.hash.in_(hashes)
+    )
+    results = await session.execute(query)
+    existing_hashes = {result for result in results.scalars()}
+
+    # Use the current time as the created_at time for all recordings
+    now = datetime.datetime.now()
+
+    # Create values for bulk insert of recordings that don't already exist
+    values = [
+        {
+            "hash": info.hash,
+            "path": str(info.path.absolute()),
+            "duration": info.media_info.duration,  # type: ignore
+            "channels": info.media_info.channels,  # type: ignore
+            "samplerate": info.media_info.samplerate,  # type: ignore
+            "created_at": now,
+        }
+        for info in audio_files
+        if info.hash not in existing_hashes
+    ]
+
+    if not values:
+        return []
+
+    # Make bulk insert
+    query = insert(models.Recording).values(values)
+    await session.execute(query)
+    await session.commit()
+
+    return [
+        schemas.Recording(
+            path=Path(recording["path"]),
+            hash=recording["hash"],
+            duration=recording["duration"],
+            channels=recording["channels"],
+            samplerate=recording["samplerate"],
+        )
+        for recording in values
+    ]
 
 
 def _convert_recording_to_schema(
@@ -422,7 +513,7 @@ async def add_note_to_recording(
         created_by=note.created_by,
         is_issue=db_note.is_issue,
     )
-    updated_notes = _remove_duplicates(recording.notes + [updated_note])
+    updated_notes = remove_duplicates(recording.notes + [updated_note])
     return schemas.Recording(
         **{
             **recording.dict(),
@@ -498,7 +589,7 @@ async def add_tag_to_recording(
         key=db_tag.key,
         value=db_tag.value,
     )
-    updated_tags: list[schemas.Tag] = _remove_duplicates(
+    updated_tags: list[schemas.Tag] = remove_duplicates(
         recording.tags + [tag]
     )
 
@@ -578,7 +669,7 @@ async def add_feature_to_recording(
         name=db_feature.name,
         value=recording_feature.value,
     )
-    updated_features: list[schemas.Feature] = _remove_duplicates(
+    updated_features: list[schemas.Feature] = remove_duplicates(
         recording.features + [feature]
     )
 

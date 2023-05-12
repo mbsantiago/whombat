@@ -1,15 +1,19 @@
 """API functions for interacting with datasets."""
+import datetime
 import uuid
 from pathlib import Path
 
-from sqlalchemy import select
+import sqlalchemy.orm as orm
+from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
 from whombat.api import recordings
 from whombat.core import files
+from whombat.core.common import remove_duplicates
 from whombat.database import models
+from whombat.filters.base import Filter
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
 __all__ = [
@@ -462,13 +466,11 @@ async def add_recording_to_dataset(
     ValueError
         If the recording is not part of the dataset audio directory.
 
-    exceptions.NotFoundError
-        If the recording is not registered in the database.
-
     Notes
     -----
     If the recording is already part of the dataset, this function does
-    nothing.
+    nothing. If the recording is not registered in the database, it is
+    created first.
 
     """
     if not recording.path.is_relative_to(dataset.audio_dir):
@@ -482,9 +484,19 @@ async def add_recording_to_dataset(
     result = await session.execute(query)
     db_recording = result.scalar_one_or_none()
     if db_recording is None:
-        raise exceptions.NotFoundError(
-            "The recording is not registered in the database."
+        db_recording = models.Recording(
+            path=str(recording.path),
+            hash=recording.hash,
+            duration=recording.duration,
+            samplerate=recording.samplerate,
+            channels=recording.channels,
+            date=recording.date,
+            time=recording.time,
+            latitude=recording.latitude,
+            longitude=recording.longitude,
         )
+        session.add(db_recording)
+        await session.commit()
 
     query = select(models.Dataset).where(models.Dataset.uuid == dataset.uuid)
     result = await session.execute(query)
@@ -508,6 +520,121 @@ async def add_recording_to_dataset(
         await session.rollback()
 
     return relative_path
+
+
+async def add_recordings_to_dataset(
+    session: AsyncSession,
+    recordings: list[schemas.Recording],
+    dataset: schemas.Dataset,
+) -> list[Path]:
+    """Add recordings to a dataset.
+
+    Use this function to efficiently add multiple recordings to a dataset.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    recordings : list[schemas.Recording]
+        The recordings to add.
+
+    Returns
+    -------
+    relative_paths : list[Path]
+        The relative paths of the recordings in the dataset audio directory.
+
+    Note
+    ----
+    Only recordings that meet the following criteria are added to the dataset:
+
+    - The recording is registered in the database.
+    - The recording is part of the dataset audio directory.
+    - The recording is not already part of the dataset.
+
+    """
+    # Get the dataset ID
+    query = select(models.Dataset).where(models.Dataset.uuid == dataset.uuid)
+    result = await session.execute(query)
+    db_dataset = result.scalar_one_or_none()
+    if db_dataset is None:
+        raise exceptions.NotFoundError(
+            "The dataset is not registered in the database."
+        )
+
+    # Remove duplicates
+    recordings = remove_duplicates(recordings, key=lambda x: x.hash)
+
+    # Filter all paths that are not part of the dataset audio dir
+    recordings = [
+        recording
+        for recording in recordings
+        if recording.path.is_relative_to(dataset.audio_dir)
+    ]
+
+    if not recordings:
+        return []
+
+    # Get recordings that are registered in the database
+    query = select(models.Recording.hash, models.Recording.id).where(
+        models.Recording.hash.in_(recording.hash for recording in recordings)
+    )
+    result = await session.execute(query)
+    recording_hashes = {row[0]: row[1] for row in result.all()}
+
+    # Filter recordings that are not registered in the database
+    recordings = [
+        recording
+        for recording in recordings
+        if recording.hash in recording_hashes
+    ]
+
+    if not recordings:
+        return []
+
+    # Get recordings that are not already part of the dataset
+    query = (
+        select(models.Recording.hash)
+        .join(models.DatasetRecording)
+        .where(
+            models.Recording.hash.in_(
+                recording.hash for recording in recordings
+            ),
+            models.DatasetRecording.dataset_id == db_dataset.id,
+        )
+    )
+    result = await session.execute(query)
+    existing_hashes = {row[0] for row in result.all()}
+
+    # Filter recordings that are already part of the dataset
+    recordings = [
+        recording
+        for recording in recordings
+        if recording.hash not in existing_hashes
+    ]
+
+    if not recordings:
+        return []
+
+    now = datetime.datetime.now()
+
+    # Add recordings to the dataset
+    values = [
+        {
+            "dataset_id": db_dataset.id,
+            "recording_id": recording_hashes[recording.hash],
+            "path": str(recording.path.relative_to(dataset.audio_dir)),
+            "created_at": now,
+        }
+        for recording in recordings
+    ]
+    query = insert(models.DatasetRecording).values(values)
+    await session.execute(query)
+    await session.commit()
+
+    return [
+        recording.path.relative_to(dataset.audio_dir)
+        for recording in recordings
+    ]
 
 
 async def create_dataset(
@@ -545,8 +672,6 @@ async def create_dataset(
         If the given audio directory does not exist.
 
     """
-    from tqdm import tqdm
-
     dataset = await create_empty_dataset(
         session=session,
         name=name,
@@ -554,17 +679,134 @@ async def create_dataset(
         description=description,
     )
 
-    file_list = files.get_audio_files_in_folder(audio_dir)
-    recordings = [] 
-    for path in tqdm(file_list):
-        try:
-            recording = await add_file_to_dataset(
-                session=session,
-                path=audio_dir / path,
-                dataset=dataset,
-            )
-            recordings.append(recording)
-        except exceptions.DuplicateObjectError:
-            pass
+    file_list = files.get_audio_files_in_folder(audio_dir, relative=False)
 
-    return dataset, recordings
+    recording_list = await recordings.create_recordings(session, file_list)
+
+    await add_recordings_to_dataset(
+        session=session,
+        recordings=recording_list,
+        dataset=dataset,
+    )
+
+    # Make all the paths relative to audio_dir
+    for recording in recording_list:
+        recording.path = recording.path.relative_to(audio_dir)
+
+    return dataset, recording_list
+
+
+def _convert_recording_to_schema(
+    recording: models.Recording,
+    path: Path,
+) -> schemas.Recording:
+    # NOTE: We are using the `construct` method here to avoid validation
+    # of the `path` field. This is because the path is relative
+    # to the dataset audio directory, which is not known at this point.
+    # Also data should have been validated before it was inserted into
+    # the database.
+    return schemas.Recording(
+        path=path,
+        hash=recording.hash,
+        duration=recording.duration,
+        channels=recording.channels,
+        samplerate=recording.samplerate,
+        date=recording.date,
+        time=recording.time,
+        latitude=recording.latitude,
+        longitude=recording.longitude,
+        features=[
+            schemas.Feature(
+                name=feature.feature_name.name,
+                value=feature.value,
+            )
+            for feature in recording.features
+        ],
+        notes=[
+            schemas.Note(
+                uuid=note.note.uuid,
+                message=note.note.message,
+                created_at=note.note.created_at,
+                created_by=note.note.created_by.username,
+                is_issue=note.note.is_issue,
+            )
+            for note in recording.notes
+        ],
+        tags=[
+            schemas.Tag(
+                key=tag.tag.key,
+                value=tag.tag.value,
+            )
+            for tag in recording.tags
+        ],
+    )
+
+
+async def get_dataset_recordings(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+    limit: int = 1000,
+    offset: int = 0,
+    filters: list[Filter] | None = None,
+) -> list[schemas.Recording]:
+    """Get all recordings of a dataset.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    dataset : schemas.Dataset
+        The dataset.
+    limit : int, optional
+        The maximum number of recordings to return, by default 1000.
+        If set to -1, all recordings will be returned.
+    offset : int, optional
+        The number of recordings to skip, by default 0.
+    filters : list[Filter], optional
+        A list of filters to apply to the query, by default None.
+
+    Returns
+    -------
+    recordings : list[schemas.Recording]
+
+    """
+    # Get the dataset ID
+    query = select(models.Dataset).where(models.Dataset.uuid == dataset.uuid)
+    results = await session.execute(query)
+    db_dataset = results.scalar_one_or_none()
+    if db_dataset is None:
+        raise exceptions.NotFoundError(
+            "The dataset is not registered in the database."
+        )
+
+    query = (
+        select(models.Recording, models.DatasetRecording.path)
+        .options(
+            orm.joinedload(models.Recording.features).subqueryload(
+                models.RecordingFeature.feature_name
+            ),
+            orm.joinedload(models.Recording.notes)
+            .subqueryload(models.RecordingNote.note)
+            .subqueryload(models.Note.created_by),
+            orm.joinedload(models.Recording.tags).subqueryload(
+                models.RecordingTag.tag
+            ),
+        )
+        .join(models.DatasetRecording)
+        .where(models.DatasetRecording.dataset_id == db_dataset.id)
+    )
+
+    if filters is None:
+        filters = []
+
+    for filter in filters:
+        query = filter.filter(query)
+
+    query = query.limit(limit).offset(offset)
+
+    result = await session.execute(query)
+
+    return [
+        _convert_recording_to_schema(recording, path)
+        for recording, path in result.unique().all()
+    ]

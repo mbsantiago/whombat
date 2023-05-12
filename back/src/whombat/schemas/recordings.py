@@ -1,5 +1,6 @@
 """Schemas for handling Recordings."""
 
+from pathlib import Path
 import datetime
 
 from pydantic import BaseModel, Field, FilePath, validator
@@ -19,7 +20,7 @@ __all__ = [
 class Recording(BaseModel):
     """Schema for Recording objects returned to the user."""
 
-    path: FilePath
+    path: Path
 
     hash: str
     duration: float
@@ -39,6 +40,29 @@ class Recording(BaseModel):
         """Pydantic configuration."""
 
         orm_mode = True
+
+    def __hash__(self):
+        """Hash function."""
+        return hash(self.hash)
+
+    @classmethod
+    def from_file(cls, path: FilePath):
+        """Create a Recording object from a file."""
+        info = files.get_file_info(path)
+        if (
+            not info.exists
+            or not info.is_audio
+            or info.media_info is None
+            or info.hash is None
+        ):
+            raise ValueError("Not an audio file.")
+        return cls(
+            path=path,
+            hash=info.hash,
+            duration=info.media_info.duration,
+            channels=info.media_info.channels,
+            samplerate=info.media_info.samplerate,
+        )
 
 
 class RecordingCreate(BaseModel):
