@@ -36,6 +36,7 @@ async def test_create_recording(
     # Assert
     assert isinstance(recording, schemas.Recording)
     assert recording.path == path.absolute()
+    assert recording.time_expansion == 1.0
     assert recording.channels == 1
     assert recording.samplerate == 44100
     assert recording.duration == 1
@@ -60,6 +61,32 @@ async def test_create_recording(
     assert db_recording.latitude is None
     assert db_recording.longitude is None
     assert db_recording.hash == hash
+
+
+async def test_create_recording_with_time_expansion(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating a recording with time expansion."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=10,
+    )
+
+    # Act
+    recording = await recordings.create_recording(
+        session,
+        path,
+        time_expansion=10.0,
+    )
+
+    # Assert
+    assert isinstance(recording, schemas.Recording)
+    assert recording.time_expansion == 10
+    assert recording.duration == 1
+    assert recording.samplerate == 441000
 
 
 async def test_create_recording_fails_if_already_exists(
@@ -381,6 +408,32 @@ async def test_update_recording_fails_with_bad_coordinates(
             latitude=latitude,
             longitude=longitude,
         )
+
+
+async def test_update_recording_time_expansion(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test updating a recording's time expands the recording."""
+    # Arrange
+    path = random_wav_factory(
+        channels=1,
+        samplerate=44100,
+        duration=10,
+    )
+    recording = await recordings.create_recording(session, path)
+
+    # Act
+    updated_recording = await recordings.update_recording(
+        session,
+        recording,
+        time_expansion=10,
+    )
+
+    # Assert
+    assert updated_recording.duration == 1
+    assert updated_recording.samplerate == 441000
+    assert updated_recording.time_expansion == 10
 
 
 async def test_update_recording_nonexistent_succeeds(
@@ -1633,3 +1686,34 @@ async def test_create_recording_avoids_hash_duplicates(
     assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
     assert recording_list[0].path == path1
+
+
+async def test_create_recordings_with_time_expansion(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+):
+    """Test creating multiple recordings with time expansion."""
+    # Arrange
+    path1 = random_wav_factory(duration=1, samplerate=8000)
+    path2 = random_wav_factory(duration=2, samplerate=16000)
+
+    # Act
+    recording_list = await recordings.create_recordings(
+        session,
+        [path1, path2],
+        time_expansion=5,
+    )
+
+    # Assert
+    assert isinstance(recording_list, list)
+    assert len(recording_list) == 2
+    assert isinstance(recording_list[0], schemas.Recording)
+    assert isinstance(recording_list[1], schemas.Recording)
+    assert recording_list[0].path == path1
+    assert recording_list[1].path == path2
+    assert recording_list[0].time_expansion == 5
+    assert recording_list[1].time_expansion == 5
+    assert recording_list[0].duration == 1 / 5
+    assert recording_list[1].duration == 2 / 5
+    assert recording_list[0].samplerate == 8000 * 5
+    assert recording_list[1].samplerate == 16000 * 5

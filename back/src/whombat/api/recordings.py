@@ -33,7 +33,6 @@ __all__ = [
 ]
 
 
-
 async def create_recording(
     session: AsyncSession,
     path: Path,
@@ -41,6 +40,7 @@ async def create_recording(
     time: datetime.time | None = None,
     latitude: float | None = None,
     longitude: float | None = None,
+    time_expansion: float = 1,
 ) -> schemas.Recording:
     """Create a recording.
 
@@ -58,6 +58,10 @@ async def create_recording(
         The latitude of the recording, by default None
     longitude : float, optional
         The longitude of the recording, by default None
+    time_expansion : float, optional
+        The time expansion factor, by default 1. When target sound events
+        are ultrasonic it is common to time expand the recording to make
+        them audible.
 
     Returns
     -------
@@ -76,6 +80,7 @@ async def create_recording(
         time=time,
         latitude=latitude,
         longitude=longitude,
+        time_expansion=time_expansion,
     )
 
     hash = files.compute_hash(path)
@@ -85,9 +90,10 @@ async def create_recording(
         recording = models.Recording(
             hash=hash,
             path=str(path.absolute()),
-            duration=media_info.duration,
+            duration=media_info.duration / time_expansion,
             channels=media_info.channels,
-            samplerate=media_info.samplerate,
+            samplerate=media_info.samplerate * time_expansion,
+            time_expansion=data.time_expansion,
             date=data.date,
             time=data.time,
             latitude=data.latitude,
@@ -108,6 +114,7 @@ async def create_recording(
         duration=recording.duration,
         channels=recording.channels,
         samplerate=recording.samplerate,
+        time_expansion=recording.time_expansion,
         date=recording.date,
         time=recording.time,
         latitude=recording.latitude,
@@ -118,6 +125,7 @@ async def create_recording(
 async def create_recordings(
     session: AsyncSession,
     paths: list[Path],
+    time_expansion: float = 1,
 ) -> list[schemas.Recording]:
     """Create recordings.
 
@@ -131,6 +139,9 @@ async def create_recordings(
         The database session to use.
     paths : list[Path]
         The paths to the recording files.
+    time_expansion : float, optional
+        The time expansion factor, by default 1. This will be
+        applied to all recordings.
 
     Returns
     -------
@@ -182,10 +193,11 @@ async def create_recordings(
         {
             "hash": info.hash,
             "path": str(info.path.absolute()),
-            "duration": info.media_info.duration,  # type: ignore
+            "duration": info.media_info.duration / time_expansion,  # type: ignore
             "channels": info.media_info.channels,  # type: ignore
-            "samplerate": info.media_info.samplerate,  # type: ignore
+            "samplerate": info.media_info.samplerate * time_expansion,  # type: ignore
             "created_at": now,
+            "time_expansion": time_expansion,
         }
         for info in audio_files
         if info.hash not in existing_hashes
@@ -206,6 +218,7 @@ async def create_recordings(
             duration=recording["duration"],
             channels=recording["channels"],
             samplerate=recording["samplerate"],
+            time_expansion=recording["time_expansion"],
         )
         for recording in values
     ]
@@ -220,6 +233,7 @@ def _convert_recording_to_schema(
         duration=recording.duration,
         channels=recording.channels,
         samplerate=recording.samplerate,
+        time_expansion=recording.time_expansion,
         date=recording.date,
         time=recording.time,
         latitude=recording.latitude,
@@ -329,20 +343,24 @@ async def update_recording(
 
     """
     data = RecordingUpdate(**kwargs)
+    values = data.dict(exclude_none=True, exclude_unset=True)
+
+    if data.time_expansion is not None:
+        factor = data.time_expansion / recording.time_expansion
+        values["duration"] = recording.duration / factor
+        values["samplerate"] = recording.samplerate * factor
 
     stmt = (
         update(models.Recording)
         .where(models.Recording.hash == recording.hash)
-        .values(
-            **data.dict(exclude_none=True, exclude_unset=True),
-        )
+        .values(**values)
     )
     await session.execute(stmt)
     await session.commit()
     return schemas.Recording(
         **{
             **recording.dict(),
-            **data.dict(exclude_none=True, exclude_unset=True),
+            **values,
         }
     )
 
@@ -589,9 +607,7 @@ async def add_tag_to_recording(
         key=db_tag.key,
         value=db_tag.value,
     )
-    updated_tags: list[schemas.Tag] = remove_duplicates(
-        recording.tags + [tag]
-    )
+    updated_tags: list[schemas.Tag] = remove_duplicates(recording.tags + [tag])
 
     return schemas.Recording(
         **{

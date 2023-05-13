@@ -26,6 +26,7 @@ class Recording(BaseModel):
     duration: float
     channels: int
     samplerate: int
+    time_expansion: float = 1.0
 
     date: datetime.date | None = None
     time: datetime.time | None = None
@@ -74,6 +75,7 @@ class RecordingCreate(BaseModel):
     time: datetime.time | None
     latitude: float | None = Field(..., ge=-90, le=90)
     longitude: float | None = Field(..., ge=-180, le=180)
+    time_expansion: float = Field(1.0, gt=0)
 
     @validator("path")
     def is_an_audio_file(cls, v):
@@ -90,3 +92,4 @@ class RecordingUpdate(BaseModel):
     time: datetime.time | None
     latitude: float | None = Field(None, ge=-90, le=90)
     longitude: float | None = Field(None, ge=-180, le=180)
+    time_expansion: float | None = Field(None, gt=0)

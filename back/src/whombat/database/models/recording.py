@@ -95,6 +95,12 @@ class Recording(Base):
     longitude: orm.Mapped[float | None] = orm.mapped_column(nullable=True)
     """The longitude of the recording site."""
 
+    time_expansion: orm.Mapped[float] = orm.mapped_column(
+        nullable=False,
+        default=1.0,
+    )
+    """The time expansion factor of the recording."""
+
     notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
         "RecordingNote",
         back_populates="recording",
