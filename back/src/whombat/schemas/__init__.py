@@ -14,6 +14,7 @@ the database.
 
 """
 
+from whombat.schemas.clips import Clip
 from whombat.schemas.datasets import (
     Dataset,
     DatasetFile,
@@ -21,11 +22,11 @@ from whombat.schemas.datasets import (
     FileState,
 )
 from whombat.schemas.features import Feature
+from whombat.schemas.notes import Note
 from whombat.schemas.recordings import Recording
+from whombat.schemas.sound_events import SoundEvent
 from whombat.schemas.tags import Tag
 from whombat.schemas.users import User
-from whombat.schemas.notes import Note
-from whombat.schemas.clips import Clip
 
 __all__ = [
     "Clip",
@@ -36,6 +37,7 @@ __all__ = [
     "FileState",
     "Note",
     "Recording",
+    "SoundEvent",
     "Tag",
     "User",
 ]

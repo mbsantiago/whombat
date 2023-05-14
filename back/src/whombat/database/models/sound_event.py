@@ -55,7 +55,8 @@ class SoundEvent(Base):
     """The id of the sound event."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
-        default_factory=uuid4, init=False
+        default_factory=uuid4,
+        init=False,
     )
     """The uuid of the sound event."""
 
@@ -65,8 +66,6 @@ class SoundEvent(Base):
     )
     """The id of the recording to which the sound event belongs."""
 
-    recording: orm.Mapped[Recording] = orm.relationship()
-
     geometry_type: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The type of geometry used to mark the sound event."""
 
@@ -75,6 +74,32 @@ class SoundEvent(Base):
 
     The geometry is a JSON string that contains the coordinates of the mark.
     """
+
+    recording: orm.Mapped[Recording] = orm.relationship(
+        init=False,
+        repr=False,
+    )
+    """The recording to which the sound event belongs."""
+
+    tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+        "SoundEventTag",
+        back_populates="sound_event",
+        cascade="all, delete-orphan",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+    """The tags associated with the sound event."""
+
+    features: orm.Mapped[list["SoundEventFeature"]] = orm.relationship(
+        "SoundEventFeature",
+        back_populates="sound_event",
+        cascade="all, delete-orphan",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+    """The features associated with the sound event."""
 
 
 class SoundEventTag(Base):
@@ -95,8 +120,6 @@ class SoundEventTag(Base):
     )
     """The id of the sound event to which the tag belongs."""
 
-    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
-
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         nullable=False,
@@ -104,8 +127,17 @@ class SoundEventTag(Base):
     )
     """The id of the tag."""
 
-    tag: orm.Mapped[Tag] = orm.relationship()
+    tag: orm.Mapped[Tag] = orm.relationship(
+        init=False,
+        repr=False,
+    )
     """The tag."""
+
+    sound_event: orm.Mapped[SoundEvent] = orm.relationship(
+        init=False,
+        repr=False,
+        back_populates="tags",
+    )
 
     __table_args__ = (
         UniqueConstraint(
@@ -132,9 +164,6 @@ class SoundEventFeature(Base):
     )
     """The id of the sound event to which the feature belongs."""
 
-    sound_event: orm.Mapped[SoundEvent] = orm.relationship()
-    """The sound event."""
-
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
@@ -142,11 +171,21 @@ class SoundEventFeature(Base):
     )
     """The id of the feature."""
 
-    feature_name: orm.Mapped[FeatureName] = orm.relationship()
-    """The feature."""
-
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The value of the feature."""
+
+    sound_event: orm.Mapped[SoundEvent] = orm.relationship(
+        init=False,
+        repr=False,
+        back_populates="features",
+    )
+    """The sound event."""
+
+    feature_name: orm.Mapped[FeatureName] = orm.relationship(
+        init=False,
+        repr=False,
+    )
+    """The feature."""
 
     __table_args__ = (
         UniqueConstraint(

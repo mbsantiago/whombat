@@ -13,19 +13,6 @@ from whombat.api import clips, features, recordings, tags
 from whombat.database import models
 
 
-@pytest.fixture
-async def recording(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-) -> schemas.Recording:
-    """Create a recording for testing."""
-    recording = await recordings.create_recording(
-        session,
-        random_wav_factory(),
-    )
-    return recording
-
-
 async def test_create_clip(
     session: AsyncSession,
     recording: schemas.Recording,
@@ -891,23 +878,28 @@ async def test_delete_clip_deletes_associated_tags_and_features(
     assert result.scalars().first() is None
 
     # Clip tag was deleted
-    query = select(models.ClipTag).join(models.ClipTag.clip).join(
-        models.ClipTag.tag
-    ).where(
-        models.Tag.key == "test_key",
-        models.Tag.value == "test_tag",
-        models.Clip.uuid == created_clip.uuid,
-
+    query = (
+        select(models.ClipTag)
+        .join(models.ClipTag.clip)
+        .join(models.ClipTag.tag)
+        .where(
+            models.Tag.key == "test_key",
+            models.Tag.value == "test_tag",
+            models.Clip.uuid == created_clip.uuid,
+        )
     )
     result = await session.execute(query)
     assert result.scalars().first() is None
 
     # Clip feature was deleted
-    query = select(models.ClipFeature).join(models.ClipFeature.clip).join(
-        models.ClipFeature.feature_name
-    ).where(
-        models.FeatureName.name == "test_feature",
-        models.Clip.uuid == created_clip.uuid,
+    query = (
+        select(models.ClipFeature)
+        .join(models.ClipFeature.clip)
+        .join(models.ClipFeature.feature_name)
+        .where(
+            models.FeatureName.name == "test_feature",
+            models.Clip.uuid == created_clip.uuid,
+        )
     )
     result = await session.execute(query)
     assert result.scalars().first() is None

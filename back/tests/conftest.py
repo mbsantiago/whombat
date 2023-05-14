@@ -2,6 +2,7 @@
 import os
 import random
 import string
+from collections.abc import Callable
 from pathlib import Path
 from typing import AsyncGenerator, Optional
 
@@ -86,3 +87,16 @@ async def user(session: AsyncSession) -> schemas.User:
         email="test@whombat.com",
     )
     return user
+
+
+@pytest.fixture
+async def recording(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+) -> schemas.Recording:
+    """Create a recording for testing."""
+    recording = await api.recordings.create_recording(
+        session,
+        random_wav_factory(),
+    )
+    return recording

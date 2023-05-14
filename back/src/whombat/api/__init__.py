@@ -13,9 +13,24 @@ can also be used directly to interact with the database and the models. This
 can be useful if you wish to integrate your annotated data into your own
 scripts or applications.
 """
-from whombat.api import sessions, users
+from whombat.api import (
+    clips,
+    features,
+    notes,
+    recordings,
+    sessions,
+    sound_events,
+    tags,
+    users,
+)
 
 __all__ = [
+    "clips",
+    "features",
+    "notes",
+    "recordings",
     "sessions",
+    "sound_events",
+    "tags",
     "users",
 ]

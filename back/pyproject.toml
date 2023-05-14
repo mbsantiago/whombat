@@ -26,6 +26,7 @@ dependencies = [
     "passlib[bcrypt]>=1.7.4",
     "numpy>=1.24.3",
     "wavio>=0.0.7",
+    "shapely>=2.0.1",
 ]
 requires-python = ">=3.11,<3.12"
 readme = "README.rst"
