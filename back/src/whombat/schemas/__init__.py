@@ -25,8 +25,10 @@ from whombat.schemas.recordings import Recording
 from whombat.schemas.tags import Tag
 from whombat.schemas.users import User
 from whombat.schemas.notes import Note
+from whombat.schemas.clips import Clip
 
 __all__ = [
+    "Clip",
     "Dataset",
     "DatasetFile",
     "DatasetRecording",

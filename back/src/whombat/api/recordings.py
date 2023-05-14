@@ -5,7 +5,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 import sqlalchemy.orm as orm
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import Select, delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -265,6 +265,24 @@ def _convert_recording_to_schema(
     )
 
 
+def _add_associated_objects_to_recording(query: Select) -> Select:
+    """Get the base query for retrieving recordings.
+
+    Preloads all features, notes and tags.
+    """
+    return query.options(
+        orm.joinedload(models.Recording.features).subqueryload(
+            models.RecordingFeature.feature_name
+        ),
+        orm.joinedload(models.Recording.notes)
+        .subqueryload(models.RecordingNote.note)
+        .subqueryload(models.Note.created_by),
+        orm.joinedload(models.Recording.tags).subqueryload(
+            models.RecordingTag.tag
+        ),
+    )
+
+
 async def get_recording_by_hash(
     session: AsyncSession,
     hash: str,
@@ -289,21 +307,9 @@ async def get_recording_by_hash(
         If no recording with the given hash exists.
 
     """
-    query = (
+    query = _add_associated_objects_to_recording(
         select(models.Recording)
-        .options(
-            orm.joinedload(models.Recording.features).subqueryload(
-                models.RecordingFeature.feature_name
-            ),
-            orm.joinedload(models.Recording.notes)
-            .subqueryload(models.RecordingNote.note)
-            .subqueryload(models.Note.created_by),
-            orm.joinedload(models.Recording.tags).subqueryload(
-                models.RecordingTag.tag
-            ),
-        )
-        .where(models.Recording.hash == hash)
-    )
+    ).where(models.Recording.hash == hash)
     result = await session.execute(query)
     recording = result.first()
 
@@ -389,17 +395,7 @@ async def get_recordings(
         The requested recordings.
 
     """
-    query = select(models.Recording).options(
-        orm.joinedload(models.Recording.features).subqueryload(
-            models.RecordingFeature.feature_name
-        ),
-        orm.joinedload(models.Recording.notes)
-        .subqueryload(models.RecordingNote.note)
-        .subqueryload(models.Note.created_by),
-        orm.joinedload(models.Recording.tags).subqueryload(
-            models.RecordingTag.tag
-        ),
-    )
+    query = _add_associated_objects_to_recording(select(models.Recording))
 
     if filters is None:
         filters = []
@@ -934,21 +930,9 @@ async def get_recording_by_path(
     recording matches the hash of the file at the given path.
 
     """
-    query = (
+    query = _add_associated_objects_to_recording(
         select(models.Recording)
-        .options(
-            orm.joinedload(models.Recording.features).subqueryload(
-                models.RecordingFeature.feature_name
-            ),
-            orm.joinedload(models.Recording.notes)
-            .subqueryload(models.RecordingNote.note)
-            .subqueryload(models.Note.created_by),
-            orm.joinedload(models.Recording.tags).subqueryload(
-                models.RecordingTag.tag
-            ),
-        )
-        .where(models.Recording.path == str(path.absolute()))
-    )
+    ).where(models.Recording.path == str(path.absolute()))
     result = await session.execute(query)
     db_recording = result.unique().scalar_one_or_none()
     if db_recording is None:

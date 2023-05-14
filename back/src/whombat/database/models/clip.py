@@ -41,7 +41,10 @@ class Clip(Base):
 
     __tablename__ = "clip"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    id: orm.Mapped[int] = orm.mapped_column(
+        primary_key=True,
+        init=False,
+    )
     """The id of the clip."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
@@ -55,13 +58,41 @@ class Clip(Base):
         nullable=False,
     )
 
-    recording: orm.Mapped[Recording] = orm.relationship()
-
     start_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The start time of the clip in seconds."""
 
     end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
     """The end time of the clip in seconds."""
+
+    recording: orm.Mapped[Recording] = orm.relationship(
+        init=False,
+        repr=False,
+    )
+    """The recording to which the clip belongs."""
+
+    tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
+        "ClipTag",
+        back_populates="clip",
+        default_factory=list,
+        cascade="all, delete-orphan",
+    )
+    """The tags associated with the clip."""
+
+    features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
+        "ClipFeature",
+        back_populates="clip",
+        default_factory=list,
+        cascade="all, delete-orphan",
+    )
+    """The features associated with the clip."""
+
+    __table_args__ = (
+        UniqueConstraint(
+            "recording_id",
+            "start_time",
+            "end_time",
+        ),
+    )
 
 
 class ClipTag(Base):
@@ -76,25 +107,30 @@ class ClipTag(Base):
 
     __tablename__ = "clip_tag"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
-    """The id of the clip tag."""
-
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the clip to which the tag belongs."""
-
-    clip: orm.Mapped[Clip] = orm.relationship()
-    """The clip to which the tag belongs."""
 
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         nullable=False,
+        primary_key=True,
     )
     """The id of the tag."""
 
-    tag: orm.Mapped[Tag] = orm.relationship()
+    clip: orm.Mapped[Clip] = orm.relationship(
+        init=False,
+        repr=False,
+    )
+    """The clip to which the tag belongs."""
+
+    tag: orm.Mapped[Tag] = orm.relationship(
+        init=False,
+        repr=False,
+    )
     """The tag."""
 
     __table_args__ = (
@@ -122,9 +158,6 @@ class ClipFeature(Base):
     )
     """The id of the clip to which the feature belongs."""
 
-    clip: orm.Mapped[Clip] = orm.relationship()
-    """The clip to which the feature belongs."""
-
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
@@ -132,11 +165,20 @@ class ClipFeature(Base):
     )
     """The id of the feature name."""
 
-    feature_name: orm.Mapped[FeatureName] = orm.relationship()
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the feature."""
+
+    feature_name: orm.Mapped[FeatureName] = orm.relationship(
+        init=False,
+        repr=False,
+    )
     """The name of the feature."""
 
-    """The id of the feature."""
-    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    clip: orm.Mapped[Clip] = orm.relationship(
+        init=False,
+        repr=False,
+    )
+    """The clip to which the feature belongs."""
 
     __table_args__ = (
         UniqueConstraint(

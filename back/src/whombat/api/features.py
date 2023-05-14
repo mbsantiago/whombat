@@ -42,10 +42,11 @@ async def create_feature_name(
     """
     # Create the feature.
     feature = models.FeatureName(name=name)
-    session.add(feature)
     try:
+        session.add(feature)
         await session.commit()
     except IntegrityError as e:
+        await session.rollback()
         raise exceptions.DuplicateObjectError(
             f"A feature with the name '{name}' already exists."
         ) from e
@@ -182,7 +183,9 @@ async def get_feature_names(
 
 
 async def create_feature(
-    session: AsyncSession, name: str, value: float
+    session: AsyncSession,
+    name: str,
+    value: float,
 ) -> schemas.Feature:
     """Create a feature.
 
@@ -211,3 +214,29 @@ async def create_feature(
         name=name,
         value=value,
     )
+
+
+async def get_or_create_feature_name(
+    session: AsyncSession,
+    name: str,
+) -> str:
+    """Get or create a feature name.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    name : str
+        The name of the feature.
+
+    Returns
+    -------
+    name : str
+        The name of the feature.
+
+    """
+    try:
+        name = await create_feature_name(session, name)
+        return name
+    except exceptions.DuplicateObjectError:
+        return name
