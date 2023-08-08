@@ -41,6 +41,7 @@ __all__ = [
     "MultiPoint",
     "MultiLineString",
     "MultiPolygon",
+    "validate_geometry",
 ]
 
 GeometryType = Literal[
@@ -516,3 +517,28 @@ class MultiPolygon(Geometry):
             polygon = geometry.Polygon(shell, holes)
             polgons.append(polygon)
         return geometry.MultiPolygon(polgons)
+
+
+def validate_geometry(
+    geometry_type: str,
+    json_geometry: str,
+) -> tuple[GeometryType, Geometry]:
+    """Parse and validate a geometry from a JSON string."""
+    if geometry_type not in GEOMETRIES:
+        raise ValueError(f"Unknown geometry type: {geometry_type}")
+
+    geometry_cls = GEOMETRIES[geometry_type]
+    return geometry_type, geometry_cls.model_validate_json(json_geometry)
+
+
+GEOMETRIES: dict[GeometryType, type[Geometry]] = {
+    "TimeStamp": TimeStamp,
+    "TimeInterval": TimeInterval,
+    "BoundingBox": BoundingBox,
+    "Point": Point,
+    "LineString": LineString,
+    "Polygon": Polygon,
+    "MultiPoint": MultiPoint,
+    "MultiLineString": MultiLineString,
+    "MultiPolygon": MultiPolygon,
+}

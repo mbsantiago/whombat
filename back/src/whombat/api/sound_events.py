@@ -30,6 +30,21 @@ __all__ = [
 ]
 
 
+def _add_associated_objects_to_sound_event(query: Select) -> Select:
+    """Get the base query for retrieving recordings.
+
+    Preloads all features, notes and tags.
+    """
+    return query.options(
+        orm.joinedload(models.SoundEvent.features).subqueryload(
+            models.SoundEventFeature.feature_name
+        ),
+        orm.joinedload(models.SoundEvent.tags).subqueryload(
+            models.SoundEventTag.tag
+        ),
+    )
+
+
 async def create_sound_event(
     session: AsyncSession,
     recording: schemas.Recording,
@@ -205,3 +220,54 @@ async def update_sound_event(
         tags=sound_event.tags,
         features=sound_event.features,
     )
+
+
+async def get_sound_events(
+    session: AsyncSession,
+    limit: int = 1000,
+    offset: int = 0,
+    filters: list[Filter] | None = None,
+) -> list[schemas.SoundEvent]:
+    """Get a list of sound events.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    limit : int, optional
+        The maximum number of sound events to return, by default 1000.
+    offset : int, optional
+        The number of sound events to skip, by default 0.
+    filters : list[Filter], optional
+        A list of filters to apply to the sound events, by default None.
+
+    Returns
+    -------
+    list[schemas.SoundEvent]
+        The list of sound events.
+    """
+    query = _add_associated_objects_to_sound_event(select(models.SoundEvent))
+    query = query.order_by(models.SoundEvent.id)
+
+    for filter in filters or []:
+        query = filter.filter(query)
+
+    query = query.limit(limit).offset(offset)
+    result = await session.execute(query)
+    db_sound_events = result.unique().scalars()
+
+    ret = []
+    for db_sound_event in db_sound_events:
+        geometry_type, geometry = geometries.validate_geometry(
+            db_sound_event.geometry_type,
+            db_sound_event.geometry,
+        )
+        sound_event = schemas.SoundEvent(
+            uuid=db_sound_event.uuid,
+            geometry_type=geometry_type,
+            geometry=geometry,
+            tags=[],
+            features=[],
+        )
+        ret.append(sound_event)
+    return ret
