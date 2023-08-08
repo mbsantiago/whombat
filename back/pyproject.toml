@@ -27,7 +27,8 @@ dependencies = [
     "numpy>=1.24.3",
     "wavio>=0.0.7",
     "shapely>=2.0.1",
-    "pydantic>=2.1.1",
+    "pydantic[email]>=2.1.1",
+    "pydantic-settings>=2.0.2",
 ]
 requires-python = ">=3.11,<3.12"
 readme = "README.rst"
