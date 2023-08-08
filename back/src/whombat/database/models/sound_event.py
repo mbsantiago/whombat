@@ -27,6 +27,7 @@ diverse set of sound events, the app can help users efficiently generate
 machine learning models that can detect these events automatically.
 """
 
+import typing
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -35,6 +36,9 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.database.models.base import Base
 from whombat.database.models.feature import FeatureName
 from whombat.database.models.recording import Recording, Tag
+
+if typing.TYPE_CHECKING:
+    from whombat.database.models.training_sound_event import TrainingSoundEvent
 
 __all__ = [
     "SoundEvent",
@@ -100,6 +104,14 @@ class SoundEvent(Base):
         default_factory=list,
     )
     """The features associated with the sound event."""
+
+    training_sets: orm.Mapped[list["TrainingSoundEvent"]] = orm.relationship(
+        "TrainingSoundEvent",
+        back_populates="sound_event",
+        init=False,
+        repr=False,
+    )
+    """The training sets to which the sound event belongs."""
 
 
 class SoundEventTag(Base):

@@ -26,11 +26,15 @@ annotators can quickly learn how to identify and label sound events
 accurately and consistently.
 """
 
+import typing
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
 from whombat.database.models.sound_event import SoundEvent
+
+if typing.TYPE_CHECKING:
+    from whombat.database.models.training_set import TrainingSet
 
 __all__ = [
     "TrainingSoundEvent",
@@ -56,9 +60,18 @@ class TrainingSoundEvent(Base):
     )
     """Sound event ID."""
 
+    training_set: orm.Mapped["TrainingSet"] = orm.relationship(
+        "TrainingSet",
+        init=False,
+        repr=False,
+        back_populates="sound_events",
+    )
+
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
         "SoundEvent",
-        backref="training_sound_events",
+        init=False,
+        repr=False,
+        back_populates="training_sets",
     )
     """Sound event."""
 

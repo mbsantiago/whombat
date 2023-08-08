@@ -135,8 +135,6 @@ async def create_sound_event(
         await session.rollback()
         raise e
 
-    session.refresh(sound_event)
-
     return _convert_sound_event_to_schema(sound_event)
 
 

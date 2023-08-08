@@ -18,14 +18,16 @@ A well-designed training set can improve the accuracy and consistency of the
 annotations in an annotation project, leading to better machine learning models
 and more accurate results.
 """
-
+import typing
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.database.models.base import Base
-from whombat.database.models.sound_event import SoundEvent
 from whombat.database.models.tag import Tag
+
+if typing.TYPE_CHECKING:
+    from whombat.database.models.training_sound_event import TrainingSoundEvent
 
 __all__ = [
     "TrainingSet",
@@ -56,9 +58,9 @@ class TrainingSet(Base):
     Only these tags will be used during training sessions.
     """
 
-    sound_events: orm.Mapped[list[SoundEvent]] = orm.relationship(
-        "SoundEvent",
-        secondary="training_sound_event",
+    sound_events: orm.Mapped[list["TrainingSoundEvent"]] = orm.relationship(
+        "TrainingSoundEvent",
+        back_populates="training_set",
     )
     """Training set sound events."""
 
