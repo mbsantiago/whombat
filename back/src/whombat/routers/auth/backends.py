@@ -46,10 +46,11 @@ cookie_transport = CookieTransport(cookie_max_age=60 * 60 * 24)
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
+DBToken = AccessTokenDatabase[models.AccessToken]  # type: ignore
+
+
 def get_database_strategy(
-    access_token_db: AccessTokenDatabase[models.AccessToken] = Depends(  # type: ignore
-        get_access_token_db
-    ),
+    access_token_db: DBToken = Depends(get_access_token_db),
 ) -> DatabaseStrategy:
     """Get the database strategy for the auth backend."""
     return DatabaseStrategy(

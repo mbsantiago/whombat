@@ -14,8 +14,7 @@ def test_timestamp_geometry():
     )
 
     assert (
-        timestamp.model_dump_json()
-        == '{"type":"TimeStamp","coordinates":1.0}'
+        timestamp.model_dump_json() == '{"type":"TimeStamp","coordinates":1.0}'
     )
 
 
@@ -52,8 +51,7 @@ def test_point_geometry():
     assert point.type == "Point"
     assert point.geom == shapely.geometry.Point(1.0, 2.0)
     assert (
-        point.model_dump_json()
-        == '{"type":"Point","coordinates":[1.0,2.0]}'
+        point.model_dump_json() == '{"type":"Point","coordinates":[1.0,2.0]}'
     )
 
 
@@ -88,8 +86,7 @@ def test_polygon_geometry():
         [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]
     )
     assert polygon.model_dump_json() == (
-        '{"type":"Polygon","coordinates":[[[1.0,2.0],'
-        "[3.0,4.0],[5.0,6.0]]]}"
+        '{"type":"Polygon","coordinates":[[[1.0,2.0],' "[3.0,4.0],[5.0,6.0]]]}"
     )
 
 

@@ -1114,7 +1114,7 @@ async def test_remove_feature_from_clip_ignores_nonexisting_clip_feature(
     session: AsyncSession,
     recording: schemas.Recording,
 ):
-    """Test removing a feature from a clip ignores a nonexisting clip feature."""
+    """Test removing a clip feature ignores a nonexisting clip feature."""
     # Arrange
     created_clip = await clips.create_clip(
         session,

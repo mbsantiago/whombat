@@ -188,17 +188,22 @@ async def create_recordings(
     # Use the current time as the created_at time for all recordings
     now = datetime.datetime.now()
 
-    # Create values for bulk insert of recordings that don't already exist
-    values = [
-        {
+    def _get_values_from_info(info):
+        duration = info.media_info.duration / time_expansion
+        samplerate = info.media_info.samplerate * time_expansion
+        return {
             "hash": info.hash,
             "path": str(info.path.absolute()),
-            "duration": info.media_info.duration / time_expansion,  # type: ignore
+            "duration": duration,
             "channels": info.media_info.channels,  # type: ignore
-            "samplerate": info.media_info.samplerate * time_expansion,  # type: ignore
+            "samplerate": samplerate,
             "created_at": now,
             "time_expansion": time_expansion,
         }
+
+    # Create values for bulk insert of recordings that don't already exist
+    values = [
+        _get_values_from_info(info)
         for info in audio_files
         if info.hash not in existing_hashes
     ]

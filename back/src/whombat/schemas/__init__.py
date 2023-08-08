@@ -1,6 +1,6 @@
 """Schemas for Whombat data models.
 
-The Whombat Python API returns these schemas to the user, and 
+The Whombat Python API returns these schemas to the user, and
 they are the main way that the user interacts with the data.
 
 Schemas are defined using Pydantic, and are used to

@@ -215,8 +215,8 @@ class TimeInterval(Geometry):
 class Point(Geometry):
     """Point geometry type.
 
-    This geometry type is used to mark a sound event with a single point in time
-    and frequency. Useful to mark interesting points in spectrograms.
+    This geometry type is used to mark a sound event with a single point in
+    time and frequency. Useful to mark interesting points in spectrograms.
     """
 
     type: Literal["Point"] = "Point"

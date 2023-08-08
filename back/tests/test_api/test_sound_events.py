@@ -290,7 +290,7 @@ async def test_create_sound_events_with_different_geometries(
     session: AsyncSession,
     recording: schemas.Recording,
 ):
-    """Test creating multiple sound events at once with different geometries."""
+    """Test creating multiple sound events with different geometries."""
     geometries_to_create = [
         geometries.TimeStamp(
             coordinates=0.5,

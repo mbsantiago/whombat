@@ -48,7 +48,9 @@ class FeatureName(Base):
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """Name of the feature."""
 
-    recording_features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
+    recording_features: orm.Mapped[
+        list["RecordingFeature"]  # noqa: F821
+    ] = orm.relationship(
         "RecordingFeature",
         back_populates="feature_name",
         cascade="all, delete-orphan",

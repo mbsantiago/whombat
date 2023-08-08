@@ -105,10 +105,9 @@ class SoundEvent(Base):
 class SoundEventTag(Base):
     """SoundEventTag model for sound_event_tag table.
 
-    Tags can be added to sound event to provide additional information about the
-    sound event. For example, a tag could be used to indicate that a sound event
-    is a bird call of a particular species.
-
+    Tags can be added to sound event to provide additional information about
+    the sound event. For example, a tag could be used to indicate that a sound
+    event is a bird call of a particular species.
     """
 
     __tablename__ = "sound_event_tag"
@@ -150,9 +149,9 @@ class SoundEventTag(Base):
 class SoundEventFeature(Base):
     """Sound Event Feature model.
 
-    In sound events, features are useful for providing basic information about the
-    sound event, such as its duration or bandwidth, or for providing more detailed
-    information that can be extracted using a deep learning model.
+    In sound events, features are useful for providing basic information about
+    the sound event, such as its duration or bandwidth, or for providing more
+    detailed information that can be extracted using a deep learning model.
     """
 
     __tablename__ = "sound_event_feature"

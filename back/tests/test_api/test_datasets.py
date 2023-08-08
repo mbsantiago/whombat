@@ -416,7 +416,6 @@ async def test_get_dataset_files_with_missing_files(
     assert retrieved_files[0].state == schemas.FileState.MISSING
 
 
-
 async def test_add_recording_to_dataset(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
@@ -1097,7 +1096,7 @@ async def test_create_dataset_registers_all_recordings(
     random_wav_factory: Callable[..., Path],
     tmp_path: Path,
 ):
-    """Test creating dataset registers all recordings in the audio directory."""
+    """Test creating dataset registers all recordings in the directory."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
 
