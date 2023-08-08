@@ -3,13 +3,15 @@
 import datetime
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 __all__ = ["Note", "NoteUpdate", "NoteCreate"]
 
 
 class Note(BaseModel):
     """Schema for Note objects returned to the user."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     uuid: UUID = Field(default_factory=uuid4)
     """The id of the note."""
@@ -27,11 +29,6 @@ class Note(BaseModel):
         default_factory=datetime.datetime.now
     )
     """The time at which the note was created."""
-
-    class Config:
-        """Pydantic configuration."""
-
-        orm_mode = True
 
     def __hash__(self):
         """Hash the Note object."""

@@ -2,7 +2,7 @@
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from whombat.geometries import Geometry, GeometryType
 from whombat.schemas.features import Feature
@@ -15,6 +15,8 @@ __all__ = [
 
 class SoundEvent(BaseModel):
     """Public schema for handling sound events."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     uuid: UUID = Field(default_factory=uuid4)
     """The UUID of the sound event."""

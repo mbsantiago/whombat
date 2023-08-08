@@ -2,12 +2,11 @@
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from whombat.schemas.features import Feature
-from whombat.schemas.tags import Tag
 from whombat.schemas.recordings import Recording
-
+from whombat.schemas.tags import Tag
 
 __all__ = [
     "Clip",
@@ -18,6 +17,8 @@ __all__ = [
 class Clip(BaseModel):
     """Schema for Clip objects returned to the user."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     recording: Recording
     start_time: float
     end_time: float
@@ -26,12 +27,7 @@ class Clip(BaseModel):
     tags: list[Tag] = Field(default_factory=list)
     features: list[Feature] = Field(default_factory=list)
 
-    class Config:
-        """Pydantic configuration."""
-
-        orm_mode = True
-
-    @root_validator
+    @model_validator(mode="before")
     def validate_times(cls, values):
         """Validate that start_time < end_time."""
         if values["start_time"] > values["end_time"]:

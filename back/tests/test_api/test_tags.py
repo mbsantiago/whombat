@@ -467,3 +467,95 @@ async def test_get_tags_by_key_with_search(
     assert len(retrieved_tags) == 1
     assert retrieved_tags[0].key == "c"
     assert retrieved_tags[0].value == "b"
+
+
+async def test_get_or_create_tags_with_nonexisting_tags(session: AsyncSession):
+    """Test getting or creating tags."""
+    # Arrange
+    tags_to_create = [
+        schemas.Tag(key="test_key1", value="test_value1"),
+        schemas.Tag(key="test_key2", value="test_value2"),
+    ]
+
+    # Act
+    created_tags = await tags.get_or_create_tags(
+        session=session,
+        tags=tags_to_create,
+    )
+
+    # Assert
+    assert isinstance(created_tags, list)
+    assert len(created_tags) == 2
+    assert isinstance(created_tags[0], schemas.Tag)
+    assert created_tags[0].key == "test_key1"
+    assert created_tags[0].value == "test_value1"
+    assert isinstance(created_tags[1], schemas.Tag)
+    assert created_tags[1].key == "test_key2"
+    assert created_tags[1].value == "test_value2"
+
+
+async def test_get_or_create_tags_with_existing_tags(session: AsyncSession):
+    """Test getting or creating tags."""
+    # Arrange
+    tags_to_create = [
+        schemas.Tag(key="test_key1", value="test_value1"),
+        schemas.Tag(key="test_key2", value="test_value2"),
+    ]
+    await tags.create_tag(
+        session=session,
+        key="test_key1",
+        value="test_value1",
+    )
+    await tags.create_tag(
+        session=session,
+        key="test_key2",
+        value="test_value2",
+    )
+
+    # Act
+    created_tags = await tags.get_or_create_tags(
+        session=session,
+        tags=tags_to_create,
+    )
+
+    # Assert
+    assert isinstance(created_tags, list)
+    assert len(created_tags) == 2
+    assert isinstance(created_tags[0], schemas.Tag)
+    assert created_tags[0].key == "test_key1"
+    assert created_tags[0].value == "test_value1"
+    assert isinstance(created_tags[1], schemas.Tag)
+    assert created_tags[1].key == "test_key2"
+    assert created_tags[1].value == "test_value2"
+
+
+async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
+    session: AsyncSession,
+):
+    """Test getting or creating tags, when some exist and others dont."""
+    # Arrange
+    tags_to_create = [
+        schemas.Tag(key="test_key1", value="test_value1"),
+        schemas.Tag(key="test_key2", value="test_value2"),
+    ]
+    await tags.create_tag(
+        session=session,
+        key="test_key1",
+        value="test_value1",
+    )
+
+    # Act
+    created_tags = await tags.get_or_create_tags(
+        session=session,
+        tags=tags_to_create,
+    )
+
+    # Assert
+    assert isinstance(created_tags, list)
+    assert len(created_tags) == 2
+    assert isinstance(created_tags[0], schemas.Tag)
+    assert created_tags[0].key == "test_key1"
+    assert created_tags[0].value == "test_value1"
+    assert isinstance(created_tags[1], schemas.Tag)
+    assert created_tags[1].key == "test_key2"
+    assert created_tags[1].value == "test_value2"

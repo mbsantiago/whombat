@@ -1,9 +1,9 @@
 """Schemas for handling Recordings."""
 
-from pathlib import Path
 import datetime
+from pathlib import Path
 
-from pydantic import BaseModel, Field, FilePath, validator
+from pydantic import BaseModel, ConfigDict, Field, FilePath, field_validator
 
 from whombat.core import files
 from whombat.schemas.features import Feature
@@ -19,6 +19,8 @@ __all__ = [
 
 class Recording(BaseModel):
     """Schema for Recording objects returned to the user."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     path: Path
 
@@ -36,11 +38,6 @@ class Recording(BaseModel):
     tags: list[Tag] = Field(default_factory=list)
     features: list[Feature] = Field(default_factory=list)
     notes: list[Note] = Field(default_factory=list)
-
-    class Config:
-        """Pydantic configuration."""
-
-        orm_mode = True
 
     def __hash__(self):
         """Hash function."""
@@ -71,13 +68,13 @@ class RecordingCreate(BaseModel):
 
     path: FilePath
 
-    date: datetime.date | None
-    time: datetime.time | None
+    date: datetime.date | None = None
+    time: datetime.time | None = None
     latitude: float | None = Field(..., ge=-90, le=90)
     longitude: float | None = Field(..., ge=-180, le=180)
     time_expansion: float = Field(1.0, gt=0)
 
-    @validator("path")
+    @field_validator("path")
     def is_an_audio_file(cls, v):
         """Validate that the given path is an audio file."""
         if not files.is_audio_file(v):
@@ -88,8 +85,8 @@ class RecordingCreate(BaseModel):
 class RecordingUpdate(BaseModel):
     """Schema for Recording objects updated by the user."""
 
-    date: datetime.date | None
-    time: datetime.time | None
+    date: datetime.date | None = None
+    time: datetime.time | None = None
     latitude: float | None = Field(None, ge=-90, le=90)
     longitude: float | None = Field(None, ge=-180, le=180)
     time_expansion: float | None = Field(None, gt=0)

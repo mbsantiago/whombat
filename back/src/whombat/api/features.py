@@ -16,6 +16,45 @@ __all__ = [
 ]
 
 
+async def _get_or_create_feature_names(
+    session: AsyncSession,
+    feature_names: list[str],
+) -> dict[str, models.FeatureName]:
+    """Get or create feature names.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    feature_names : list[str]
+        The names of the features.
+
+    Returns
+    -------
+    feature_names : list[models.FeatureName]
+        The feature names.
+
+    """
+    # Get or create the feature names.
+    query = select(models.FeatureName).where(
+        models.FeatureName.name.in_(feature_names)
+    )
+    result = await session.execute(query)
+    db_feature_names = result.scalars().all()
+    db_feature_names = {f.name: f for f in db_feature_names}
+
+    # Create the feature names that do not exist.
+    missing_feature_names = set(feature_names) - set(db_feature_names.keys())
+    if missing_feature_names:
+        for name in missing_feature_names:
+            feature = models.FeatureName(name=name)
+            session.add(feature)
+            db_feature_names[name] = feature
+        await session.commit()
+
+    return db_feature_names
+
+
 async def create_feature_name(
     session: AsyncSession,
     name: str,
@@ -235,8 +274,5 @@ async def get_or_create_feature_name(
         The name of the feature.
 
     """
-    try:
-        name = await create_feature_name(session, name)
-        return name
-    except exceptions.DuplicateObjectError:
-        return name
+    await _get_or_create_feature_names(session, [name])
+    return name

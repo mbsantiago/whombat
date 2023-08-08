@@ -13,7 +13,10 @@ def test_timestamp_geometry():
         1.0, 0.0, 1.0, geometries.MAX_FREQUENCY
     )
 
-    assert timestamp.json() == '{"type": "TimeStamp", "coordinates": 1.0}'
+    assert (
+        timestamp.model_dump_json()
+        == '{"type":"TimeStamp","coordinates":1.0}'
+    )
 
 
 def test_timeinterval_geometry():
@@ -27,8 +30,19 @@ def test_timeinterval_geometry():
     )
 
     assert (
-        timeinterval.json()
-        == '{"type": "TimeInterval", "coordinates": [1.0, 2.0]}'
+        timeinterval.model_dump_json()
+        == '{"type":"TimeInterval","coordinates":[1.0,2.0]}'
+    )
+
+
+def test_bounding_box_geometry():
+    """Test the bounding box geometry schema."""
+    bounding_box = geometries.BoundingBox(coordinates=(1.0, 2.0, 3.0, 4.0))
+    assert bounding_box.type == "BoundingBox"
+    assert bounding_box.geom == shapely.geometry.box(1.0, 2.0, 3.0, 4.0)
+    assert (
+        bounding_box.model_dump_json()
+        == '{"type":"BoundingBox","coordinates":[1.0,2.0,3.0,4.0]}'
     )
 
 
@@ -37,7 +51,10 @@ def test_point_geometry():
     point = geometries.Point(coordinates=(1.0, 2.0))
     assert point.type == "Point"
     assert point.geom == shapely.geometry.Point(1.0, 2.0)
-    assert point.json() == '{"type": "Point", "coordinates": [1.0, 2.0]}'
+    assert (
+        point.model_dump_json()
+        == '{"type":"Point","coordinates":[1.0,2.0]}'
+    )
 
 
 def test_linestring_geometry():
@@ -50,8 +67,8 @@ def test_linestring_geometry():
         [(1.0, 2.0), (3.0, 4.0)]
     )
     assert (
-        linestring.json()
-        == '{"type": "LineString", "coordinates": [[1.0, 2.0], [3.0, 4.0]]}'
+        linestring.model_dump_json()
+        == '{"type":"LineString","coordinates":[[1.0,2.0],[3.0,4.0]]}'
     )
 
 
@@ -70,9 +87,9 @@ def test_polygon_geometry():
     assert polygon.geom == shapely.geometry.Polygon(
         [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]
     )
-    assert polygon.json() == (
-        '{"type": "Polygon", "coordinates": [[[1.0, 2.0], '
-        "[3.0, 4.0], [5.0, 6.0]]]}"
+    assert polygon.model_dump_json() == (
+        '{"type":"Polygon","coordinates":[[[1.0,2.0],'
+        "[3.0,4.0],[5.0,6.0]]]}"
     )
 
 
@@ -86,8 +103,8 @@ def test_multipoint_geometry():
         [(1.0, 2.0), (3.0, 4.0)]
     )
     assert (
-        multipoint.json()
-        == '{"type": "MultiPoint", "coordinates": [[1.0, 2.0], [3.0, 4.0]]}'
+        multipoint.model_dump_json()
+        == '{"type":"MultiPoint","coordinates":[[1.0,2.0],[3.0,4.0]]}'
     )
 
 
@@ -103,9 +120,9 @@ def test_multilinestring_geometry():
     assert multilinestring.geom == shapely.geometry.MultiLineString(
         [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0), (7.0, 8.0)]]
     )
-    assert multilinestring.json() == (
-        '{"type": "MultiLineString", "coordinates": [[[1.0, 2.0], '
-        "[3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]]}"
+    assert multilinestring.model_dump_json() == (
+        '{"type":"MultiLineString","coordinates":[[[1.0,2.0],'
+        "[3.0,4.0]],[[5.0,6.0],[7.0,8.0]]]}"
     )
 
 
@@ -124,7 +141,7 @@ def test_multipolygon_geometry():
             shapely.geometry.Polygon([(7.0, 8.0), (9.0, 10.0), (11.0, 12.0)]),
         ]
     )
-    assert multipolygon.json() == (
-        '{"type": "MultiPolygon", "coordinates": [[[[1.0, 2.0], '
-        "[3.0, 4.0], [5.0, 6.0]]], [[[7.0, 8.0], [9.0, 10.0], [11.0, 12.0]]]]}"
+    assert multipolygon.model_dump_json() == (
+        '{"type":"MultiPolygon","coordinates":[[[[1.0,2.0],'
+        "[3.0,4.0],[5.0,6.0]]],[[[7.0,8.0],[9.0,10.0],[11.0,12.0]]]]}"
     )

@@ -18,6 +18,44 @@ __all__ = [
 ]
 
 
+async def _create_tag(
+    session: AsyncSession,
+    key: str,
+    value: str,
+) -> models.Tag:
+    """Create a new tag.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    key : str
+        The key of the tag.
+    value : str
+        The value of the tag.
+
+    Returns
+    -------
+    models.Tag
+        The created tag.
+
+    Raises
+    ------
+    exceptions.DuplicateObjectError
+        If a tag with the same key and value already exists.
+    """
+    data = TagCreate(key=key, value=value)
+    tag = models.Tag(**data.model_dump())
+
+    try:
+        session.add(tag)
+        await session.commit()
+    except IntegrityError as e:
+        raise exceptions.DuplicateObjectError("Tag already exists.") from e
+
+    return tag
+
+
 async def create_tag(
     session: AsyncSession,
     key: str,
@@ -44,16 +82,8 @@ async def create_tag(
     exceptions.DuplicateObjectError
         If a tag with the same key and value already exists.
     """
-    data = TagCreate(key=key, value=value)
-    tag = models.Tag(**data.dict())
-
-    try:
-        session.add(tag)
-        await session.commit()
-    except IntegrityError as e:
-        raise exceptions.DuplicateObjectError("Tag already exists.") from e
-
-    return schemas.Tag.from_orm(tag)
+    tag = await _create_tag(session, key, value)
+    return schemas.Tag.model_validate(tag)
 
 
 async def delete_tag(
@@ -79,6 +109,43 @@ async def delete_tag(
     )
     await session.execute(stmt)
     await session.commit()
+
+
+async def _get_tag_by_key_and_value(
+    session: AsyncSession,
+    key: str,
+    value: str,
+) -> models.Tag:
+    """Get a tag by its key and value.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    key : str
+        The key of the tag.
+    value : str
+        The value of the tag.
+
+    Returns
+    -------
+    models.Tag
+        The tag.
+
+    Raises
+    ------
+    exceptions.NotFoundError
+        If the tag does not exist.
+    """
+    stmt = select(models.Tag).where(
+        models.Tag.key == key,
+        models.Tag.value == value,
+    )
+    result = await session.execute(stmt)
+    tag = result.scalar()
+    if tag is None:
+        raise exceptions.NotFoundError("Tag not found.")
+    return tag
 
 
 async def get_tag_by_key_and_value(
@@ -107,15 +174,8 @@ async def get_tag_by_key_and_value(
     exceptions.NotFoundError
         If the tag does not exist.
     """
-    stmt = select(models.Tag).where(
-        models.Tag.key == key,
-        models.Tag.value == value,
-    )
-    result = await session.execute(stmt)
-    tag = result.scalar()
-    if tag is None:
-        raise exceptions.NotFoundError("Tag not found.")
-    return schemas.Tag.from_orm(tag)
+    tag = await _get_tag_by_key_and_value(session, key, value)
+    return schemas.Tag.model_validate(tag)
 
 
 async def get_tags_by_key(
@@ -154,7 +214,7 @@ async def get_tags_by_key(
     query = query.order_by(models.Tag.value).limit(limit).offset(offset)
     result = await session.execute(query)
     tags = result.scalars()
-    return [schemas.Tag.from_orm(tag) for tag in tags]
+    return [schemas.Tag.model_validate(tag) for tag in tags]
 
 
 async def get_tags(
@@ -192,7 +252,7 @@ async def get_tags(
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)
     tags = result.scalars()
-    return [schemas.Tag.from_orm(tag) for tag in tags]
+    return [schemas.Tag.model_validate(tag) for tag in tags]
 
 
 async def update_tag(
@@ -232,16 +292,44 @@ async def update_tag(
             models.Tag.key == tag.key,
             models.Tag.value == tag.value,
         )
-        .values(**data.dict(exclude_none=True))
+        .values(**data.model_dump(exclude_none=True))
     )
     await session.execute(stmt)
     await session.commit()
     return schemas.Tag(
         **{
-            **tag.dict(),
-            **data.dict(exclude_none=True),
+            **tag.model_dump(),
+            **data.model_dump(exclude_none=True),
         }
     )
+
+
+async def _get_or_create_tag(
+    session: AsyncSession,
+    key: str,
+    value: str,
+) -> models.Tag:
+    """Get a tag by its key and value, or create it if it does not exist.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    key : str
+        The key of the tag.
+    value : str
+        The value of the tag.
+
+    Returns
+    -------
+    models.Tag
+        The tag.
+    """
+    try:
+        tag = await _get_tag_by_key_and_value(session, key, value)
+    except exceptions.NotFoundError:
+        tag = await _create_tag(session, key, value)
+    return tag
 
 
 async def get_or_create_tag(
@@ -265,8 +353,76 @@ async def get_or_create_tag(
     schemas.Tag
         The tag.
     """
-    try:
-        tag = await get_tag_by_key_and_value(session, key, value)
-    except exceptions.NotFoundError:
-        tag = await create_tag(session, key, value)
-    return tag
+    tag = await _get_or_create_tag(session, key, value)
+    return schemas.Tag.model_validate(tag)
+
+
+async def _get_or_create_tags(
+    session: AsyncSession,
+    tags: list[schemas.Tag],
+) -> list[models.Tag]:
+    """Create multiple tags simultaneously.
+
+    This function does not raise an exception if a tag already exists.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    tags : list[schemas.Tag]
+        The tags to create.
+
+    Returns
+    -------
+    list[schemas.Tag]
+        The created tags.
+    """
+    tag_keys = [tag.key for tag in tags]
+    tag_values = [tag.value for tag in tags]
+
+    # Get existing tags
+    query = select(models.Tag).where(
+        models.Tag.key.in_(tag_keys),
+        models.Tag.value.in_(tag_values),
+    )
+    result = await session.execute(query)
+    existing_tags = {(tag.key, tag.value): tag for tag in result.scalars()}
+
+    # Collect tags to create
+    missing_tags = [
+        tag for tag in tags if (tag.key, tag.value) not in existing_tags
+    ]
+
+    if missing_tags:
+        for tag in missing_tags:
+            mtag = models.Tag(**tag.model_dump())
+            existing_tags[(tag.key, tag.value)] = mtag
+            session.add(mtag)
+
+        await session.commit()
+
+    return [existing_tags[(tag.key, tag.value)] for tag in tags]
+
+
+async def get_or_create_tags(
+    session: AsyncSession,
+    tags: list[schemas.Tag],
+) -> list[schemas.Tag]:
+    """Create multiple tags simultaneously.
+
+    This function does not raise an exception if a tag already exists.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    tags : list[schemas.Tag]
+        The tags to create.
+
+    Returns
+    -------
+    list[schemas.Tag]
+        The created tags.
+    """
+    mtags = await _get_or_create_tags(session, tags)
+    return [schemas.Tag.model_validate(tag) for tag in mtags]

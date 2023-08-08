@@ -4,7 +4,7 @@ from enum import Enum
 from pathlib import Path
 from uuid import UUID
 
-from pydantic import BaseModel, DirectoryPath, Field
+from pydantic import BaseModel, ConfigDict, DirectoryPath, Field
 
 from whombat.schemas.recordings import Recording
 
@@ -20,15 +20,12 @@ __all__ = [
 class Dataset(BaseModel):
     """Schema for Dataset objects returned to the user."""
 
+    model_config = ConfigDict(from_attributes=True)
+
     uuid: UUID
     name: str
     description: str | None
     audio_dir: DirectoryPath
-
-    class Config:
-        """Pydantic configuration."""
-
-        orm_mode = True
 
 
 class DatasetCreate(BaseModel):
@@ -90,7 +87,4 @@ class DatasetRecording(BaseModel):
 
     recording: Recording
 
-    class Config:
-        """Pydantic configuration."""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

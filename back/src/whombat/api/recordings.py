@@ -349,7 +349,7 @@ async def update_recording(
 
     """
     data = RecordingUpdate(**kwargs)
-    values = data.dict(exclude_none=True, exclude_unset=True)
+    values = data.model_dump(exclude_none=True, exclude_unset=True)
 
     if data.time_expansion is not None:
         factor = data.time_expansion / recording.time_expansion
@@ -365,7 +365,7 @@ async def update_recording(
     await session.commit()
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             **values,
         }
     )
@@ -530,7 +530,7 @@ async def add_note_to_recording(
     updated_notes = remove_duplicates(recording.notes + [updated_note])
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "notes": updated_notes,
         }
     )
@@ -607,7 +607,7 @@ async def add_tag_to_recording(
 
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "tags": updated_tags,
         }
     )
@@ -687,7 +687,7 @@ async def add_feature_to_recording(
 
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "features": updated_features,
         }
     )
@@ -750,7 +750,7 @@ async def remove_note_from_recording(
 
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "notes": [
                 note for note in recording.notes if note.uuid != db_note.uuid
             ],
@@ -820,7 +820,7 @@ async def remove_tag_from_recording(
 
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "tags": [
                 tag
                 for tag in recording.tags
@@ -891,7 +891,7 @@ async def remove_feature_from_recording(
 
     return schemas.Recording(
         **{
-            **recording.dict(),
+            **recording.model_dump(),
             "features": [
                 feature
                 for feature in recording.features
@@ -1001,4 +1001,4 @@ async def update_recording_path(
 
     db_recording.path = str(path.absolute())
     await session.commit()
-    return schemas.Recording(**{**recording.dict(), "path": str(path)})
+    return schemas.Recording(**{**recording.model_dump(), "path": str(path)})

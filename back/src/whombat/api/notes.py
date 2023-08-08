@@ -281,7 +281,7 @@ async def update_note(
         update(models.Note)
         .where(models.Note.uuid == note.uuid)
         .values(
-            **data.dict(exclude_none=True),
+            **data.model_dump(exclude_none=True),
         )
     )
 
@@ -290,7 +290,7 @@ async def update_note(
 
     return schemas.Note(
         **{
-            **note.dict(),
-            **data.dict(exclude_none=True),
+            **note.model_dump(),
+            **data.model_dump(exclude_none=True),
         }
     )

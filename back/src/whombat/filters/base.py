@@ -110,7 +110,7 @@ def create_filter_from_field_and_model(
 
         def filter(self, query: Select) -> Select:
             """Filter the query."""
-            for field_name in model.__fields__:
+            for field_name in model.model_fields:
                 filter_fn = self._filter_mapping[field_name]
                 value = getattr(self, field_name)
                 if value is not None:

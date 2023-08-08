@@ -167,7 +167,7 @@ async def add_feature_to_clip(
 
     return schemas.Clip(
         **{
-            **clip.dict(),
+            **clip.model_dump(),
             "features": clip.features + [feature],
         }
     )
@@ -522,7 +522,7 @@ async def add_tag_to_clip(
 
     return schemas.Clip(
         **{
-            **clip.dict(),
+            **clip.model_dump(),
             "tags": clip.tags + [tag],
         }
     )
@@ -611,7 +611,7 @@ async def remove_tag_from_clip(
     await session.commit()
     return schemas.Clip(
         **{
-            **clip.dict(),
+            **clip.model_dump(),
             "tags": [
                 t
                 for t in clip.tags
@@ -671,7 +671,7 @@ async def remove_feature_from_clip(
     await session.commit()
     return schemas.Clip(
         **{
-            **clip.dict(),
+            **clip.model_dump(),
             "features": [f for f in clip.features if f.name != feature.name],
         }
     )

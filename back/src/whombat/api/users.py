@@ -30,7 +30,7 @@ async def _get_user_db_context(
     session: AsyncSession,
 ) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
     """Get a SQLAlchemyUserDatabase context."""
-    yield SQLAlchemyUserDatabase(session, models.User)
+    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
 
 
 @asynccontextmanager
@@ -115,7 +115,7 @@ async def create_user(
         )
         session.add(db_user)
         await session.commit()
-        return schemas.User.from_orm(db_user)
+        return schemas.User.model_validate(db_user)
 
 
 async def get_user_by_id(
@@ -142,7 +142,7 @@ async def get_user_by_id(
     try:
         async with _get_user_manager_from_session(session) as user_manager:
             db_user = await user_manager.get(user_id)
-            return schemas.User.from_orm(db_user)
+            return schemas.User.model_validate(db_user)
     except UserNotExists as error:
         raise exceptions.NotFoundError from error
 
@@ -175,7 +175,7 @@ async def get_user_by_username(
         db_user = result.scalars().one()
     except NoResultFound as error:
         raise exceptions.NotFoundError("User not found") from error
-    return schemas.User.from_orm(db_user)
+    return schemas.User.model_validate(db_user)
 
 
 async def get_user_by_email(
@@ -203,7 +203,7 @@ async def get_user_by_email(
     try:
         async with _get_user_manager_from_session(session) as user_manager:
             db_user = await user_manager.get_by_email(email)
-            return schemas.User.from_orm(db_user)
+            return schemas.User.model_validate(db_user)
     except UserNotExists as error:
         raise exceptions.NotFoundError("No user with that email") from error
 
@@ -237,7 +237,7 @@ async def update_user(
     async with _get_user_manager_from_session(session) as user_manager:
         db_user = await user_manager.get(user.id)
         db_user = await user_manager.update(data, db_user)
-        return schemas.User.from_orm(db_user)
+        return schemas.User.model_validate(db_user)
 
 
 async def get_users(
@@ -264,7 +264,7 @@ async def get_users(
     select_query = select(models.User).offset(offset).limit(limit)
     result = await session.execute(select_query)
     db_users = result.scalars().all()
-    return [schemas.User.from_orm(db_user) for db_user in db_users]
+    return [schemas.User.model_validate(db_user) for db_user in db_users]
 
 
 async def delete_user(session: AsyncSession, user: schemas.User) -> None:

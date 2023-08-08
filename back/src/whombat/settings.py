@@ -3,7 +3,7 @@
 We are using pydantic to define our settings.
 """
 from functools import lru_cache
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 __all__ = ["Settings"]
 

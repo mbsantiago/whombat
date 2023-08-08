@@ -61,7 +61,7 @@ async def get_dataset_by_name(
         raise exceptions.NotFoundError(
             "No dataset with the given name exists."
         )
-    return schemas.Dataset.from_orm(dataset)
+    return schemas.Dataset.model_validate(dataset)
 
 
 async def get_dataset_by_uuid(
@@ -94,7 +94,7 @@ async def get_dataset_by_uuid(
         raise exceptions.NotFoundError(
             "No dataset with the given UUID exists."
         )
-    return schemas.Dataset.from_orm(dataset)
+    return schemas.Dataset.model_validate(dataset)
 
 
 async def get_dataset_by_audio_dir(
@@ -129,7 +129,7 @@ async def get_dataset_by_audio_dir(
         raise exceptions.NotFoundError(
             "No dataset with the given audio directory exists."
         )
-    return schemas.Dataset.from_orm(dataset)
+    return schemas.Dataset.model_validate(dataset)
 
 
 async def get_datasets(
@@ -156,7 +156,7 @@ async def get_datasets(
     query = select(models.Dataset).limit(limit).offset(offset)
     result = await session.execute(query)
     datasets = result.scalars().all()
-    return [schemas.Dataset.from_orm(dataset) for dataset in datasets]
+    return [schemas.Dataset.model_validate(dataset) for dataset in datasets]
 
 
 async def create_empty_dataset(
@@ -216,7 +216,7 @@ async def create_empty_dataset(
                     "A dataset with the given audio directory already exists."
                 )
         raise error
-    return schemas.Dataset.from_orm(db_dataset)
+    return schemas.Dataset.model_validate(db_dataset)
 
 
 async def update_dataset(
@@ -272,7 +272,7 @@ async def update_dataset(
     if data.description is not None:
         db_dataset.description = data.description
     await session.flush()
-    return schemas.Dataset.from_orm(db_dataset)
+    return schemas.Dataset.model_validate(db_dataset)
 
 
 async def delete_dataset(
