@@ -6,18 +6,12 @@ authors = [
     {name = "Santiago Martinez", email = "santiago.mbal@gmail.com"},
 ]
 dependencies = [
-    "fastapi>=0.92.0",
     "uvicorn[standard]>=0.20.0",
-    "sqlalchemy[asyncio]>=2.0.7",
-    "fastapi-users[sqlalchemy]>=10.4.1",
     "aiosqlite>=0.18.0",
-    "alembic>=1.10.2",
     "passlib[bcrypt]>=1.7.4",
-    "numpy>=1.24.3",
-    "wavio>=0.0.7",
-    "shapely>=2.0.1",
-    "pydantic[email]>=2.1.1",
-    "pydantic-settings>=2.0.2",
+    "sqlmodel @ git+https://github.com/mbsantiago/sqlmodel.git@main",
+    "soundevent>=0.4.0",
+    "fastapi>=0.101.0",
 ]
 requires-python = ">=3.11,<3.12"
 readme = "README.rst"
