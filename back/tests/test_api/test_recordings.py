@@ -7,12 +7,12 @@ from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
+from soundevent.audio import compute_md5_checksum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
 from whombat.api import features, notes, recordings, tags
-from whombat.core.files import compute_hash
 from whombat.database import models
 
 
@@ -28,7 +28,7 @@ async def test_create_recording(
         duration=1,
     )
 
-    hash = compute_hash(path)
+    hash = compute_md5_checksum(path)
 
     # Act
     recording = await recordings.create_recording(session, path)
@@ -260,7 +260,7 @@ async def test_get_recording_by_hash(
         samplerate=44100,
         duration=1,
     )
-    hash = compute_hash(path)
+    hash = compute_md5_checksum(path)
     await recordings.create_recording(session, path)
 
     # Act
@@ -1516,7 +1516,7 @@ async def test_update_recording_fails_if_recording_does_not_exist(
         duration=1,
     )
 
-    hash = compute_hash(path)
+    hash = compute_md5_checksum(path)
 
     recording = schemas.Recording(
         hash=hash,

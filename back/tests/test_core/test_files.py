@@ -5,22 +5,36 @@ from pathlib import Path
 from whombat.core import files
 
 
-def test_is_audio_file():
+def test_is_audio_file(tmp_path: Path):
     """Test the function to check if a file is an audio file."""
     # Only accept wav files for now
-    assert files.is_audio_file(Path("recording.WAV"))
-    assert files.is_audio_file(Path("recording.wav"))
-    assert files.is_audio_file(Path("directory/recording.WAV"))
-    assert files.is_audio_file(Path("directory/recording.wav"))
-    assert not files.is_audio_file(Path("recording.Wav"))
-    assert not files.is_audio_file(Path("recording.mp3"))
-    assert not files.is_audio_file(Path("recording.mp4"))
-    assert not files.is_audio_file(Path("recording.aac"))
-    assert not files.is_audio_file(Path("recording.txt"))
-    assert not files.is_audio_file(Path("recording.csv"))
-    assert not files.is_audio_file(Path("recording.flac"))
-    assert not files.is_audio_file(Path("recording.ogg"))
-    assert not files.is_audio_file(Path("recording.webm"))
+    audio_files = [
+        tmp_path / "recording.WAV",
+        tmp_path / "recording.wav",
+        tmp_path / "directory/recording.WAV",
+        tmp_path / "directory/recording.wav",
+    ]
+
+    non_audio_files = [
+        tmp_path / "recording.mp3",
+        tmp_path / "recording.mp4",
+        tmp_path / "recording.aac",
+        tmp_path / "recording.txt",
+        tmp_path / "recording.csv",
+        tmp_path / "recording.flac",
+        tmp_path / "recording.ogg",
+        tmp_path / "recording.webm",
+    ]
+
+    for path in audio_files:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+        assert files.is_audio_file(path)
+
+    for path in non_audio_files:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+        assert not files.is_audio_file(path)
 
 
 def test_get_audio_files_in_folder(

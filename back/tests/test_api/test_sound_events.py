@@ -6,10 +6,11 @@ from uuid import UUID
 
 import pytest
 import sqlalchemy.orm as orm
+from soundevent.data import geometries
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, geometries, schemas
+from whombat import exceptions, schemas
 from whombat.api import sound_events
 from whombat.database import models
 
@@ -58,14 +59,14 @@ async def test_create_a_timeinterval_sound_event(
         session,
         recording=recording,
         geometry=geometries.TimeInterval(
-            coordinates=(0.5, 0.6),
+            coordinates=[0.5, 0.6],
         ),
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "TimeInterval"
     assert sound_event.geometry == geometries.TimeInterval(
-        coordinates=(0.5, 0.6),
+        coordinates=[0.5, 0.6],
     )
 
     # make sure the sound event is in the database
@@ -91,14 +92,14 @@ async def test_create_a_bbox_sound_event(
         session,
         recording=recording,
         geometry=geometries.BoundingBox(
-            coordinates=(0.5, 0.6, 0.7, 0.8),
+            coordinates=[0.5, 0.6, 0.7, 0.8],
         ),
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "BoundingBox"
     assert sound_event.geometry == geometries.BoundingBox(
-        coordinates=(0.5, 0.6, 0.7, 0.8),
+        coordinates=[0.5, 0.6, 0.7, 0.8],
     )
 
     # make sure the sound event is in the database
@@ -124,14 +125,14 @@ async def test_create_a_point_sound_event(
         session,
         recording=recording,
         geometry=geometries.Point(
-            coordinates=(0.5, 0.6),
+            coordinates=[0.5, 0.6],
         ),
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "Point"
     assert sound_event.geometry == geometries.Point(
-        coordinates=(0.5, 0.6),
+        coordinates=[0.5, 0.6],
     )
 
     # make sure the sound event is in the database
@@ -156,14 +157,14 @@ async def test_create_a_linestring_sound_event(
         session,
         recording=recording,
         geometry=geometries.LineString(
-            coordinates=[(0.5, 0.6), (0.7, 0.8)],
+            coordinates=[[0.5, 0.6], [0.7, 0.8]],
         ),
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "LineString"
     assert sound_event.geometry == geometries.LineString(
-        coordinates=[(0.5, 0.6), (0.7, 0.8)],
+        coordinates=[[0.5, 0.6], [0.7, 0.8]],
     )
 
     # make sure the sound event is in the database
@@ -190,14 +191,14 @@ async def test_create_a_polygon_sound_event(
         session,
         recording=recording,
         geometry=geometries.Polygon(
-            coordinates=[[(0.5, 0.6), (0.7, 0.8), (0.9, 1.0)]],
+            coordinates=[[[0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]],
         ),
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "Polygon"
     assert sound_event.geometry == geometries.Polygon(
-        coordinates=[[(0.5, 0.6), (0.7, 0.8), (0.9, 1.0)]],
+        coordinates=[[[0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]],
     )
 
     # make sure the sound event is in the database
@@ -296,7 +297,7 @@ async def test_create_sound_events_with_different_geometries(
             coordinates=0.5,
         ),
         geometries.Point(
-            coordinates=(0.5, 0.6),
+            coordinates=[0.5, 0.6],
         ),
     ]
 

@@ -8,7 +8,7 @@ from typing import AsyncGenerator, Optional
 
 import numpy as np
 import pytest
-import wavio
+from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, schemas
@@ -25,18 +25,12 @@ def write_random_wav(
     samplerate: int = 22100,
     duration: float = 0.1,
     channels: int = 1,
-    sampwidth: int = 2,
 ) -> None:
     """Write a random wav file to disk."""
     frames = int(samplerate * duration)
     shape = (frames, channels)
-    wav = np.random.random(size=shape)
-    wavio.write(
-        str(path),
-        wav,
-        rate=samplerate,
-        sampwidth=sampwidth,
-    )
+    wav = np.random.random(size=shape).astype(np.float32)
+    wavfile.write(path, samplerate, wav)
 
 
 @pytest.fixture
@@ -48,7 +42,6 @@ def random_wav_factory(tmp_path: Path):
         samplerate: int = 22100,
         duration: float = 0.1,
         channels: int = 1,
-        sampwidth: int = 2,
     ) -> Path:
         if path is None:
             path = tmp_path / (random_string() + ".wav")
@@ -62,7 +55,6 @@ def random_wav_factory(tmp_path: Path):
             samplerate=samplerate,
             duration=duration,
             channels=channels,
-            sampwidth=sampwidth,
         )
 
         return path

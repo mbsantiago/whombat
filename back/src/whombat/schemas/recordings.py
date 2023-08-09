@@ -57,9 +57,9 @@ class Recording(BaseModel):
         return cls(
             path=path,
             hash=info.hash,
-            duration=info.media_info.duration,
+            duration=info.media_info.duration_s,
             channels=info.media_info.channels,
-            samplerate=info.media_info.samplerate,
+            samplerate=info.media_info.samplerate_hz,
         )
 
 

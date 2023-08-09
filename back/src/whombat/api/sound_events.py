@@ -3,15 +3,17 @@
 from uuid import UUID
 
 import sqlalchemy.orm as orm
+from soundevent.data import geometries
+from soundevent.features import compute_geometric_features
+from soundevent.geometry import geometry_validate
 from sqlalchemy import Select, select, tuple_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, geometries, schemas
+from whombat import exceptions, schemas
 from whombat.api.features import _get_or_create_feature_names
 from whombat.api.tags import _get_or_create_tags
 from whombat.core.common import remove_duplicates
-from whombat.core.geometries import compute_geometry_features
 from whombat.database import models
 from whombat.filters.base import Filter
 
@@ -42,6 +44,25 @@ def _add_associated_objects_to_sound_event(query: Select) -> Select:
             models.SoundEventTag.tag
         ),
     )
+
+
+def get_sound_event_features(
+    geometry: geometries.Geometry,
+) -> list[schemas.Feature]:
+    """Get the features of a sound event.
+
+    Parameters
+    ----------
+    geometry : geometries.Geometry
+        The geometry of the sound event.
+
+    Returns
+    -------
+    list[schemas.Feature]
+        The features of the sound event.
+    """
+    features = compute_geometric_features(geometry)
+    return [schemas.Feature(name=f.name, value=f.value) for f in features]
 
 
 async def create_sound_event(
@@ -84,10 +105,10 @@ async def create_sound_event(
         )
 
     if features is None:
-        features = compute_geometry_features(geometry)
+        features = get_sound_event_features(geometry)
     else:
         features = remove_duplicates(
-            compute_geometry_features(geometry) + features,
+            get_sound_event_features(geometry) + features,
             key=lambda f: f.name,
         )
 
@@ -230,13 +251,10 @@ async def update_sound_event(
 def _convert_sound_event_to_schema(
     db_sound_event: models.SoundEvent,
 ) -> schemas.SoundEvent:
-    geometry_type, geometry = geometries.validate_geometry(
-        db_sound_event.geometry_type,
-        db_sound_event.geometry,
-    )
+    geometry = geometry_validate(db_sound_event.geometry, mode="json")
     return schemas.SoundEvent(
         uuid=db_sound_event.uuid,
-        geometry_type=geometry_type,
+        geometry_type=geometry.type,
         geometry=geometry,
         tags=[
             schemas.Tag(

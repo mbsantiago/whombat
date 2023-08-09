@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from whombat.geometries import Geometry, GeometryType
+from soundevent.data.geometries import Geometry, GeometryType
 from whombat.schemas.features import Feature
 from whombat.schemas.tags import Tag
 

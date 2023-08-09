@@ -5,6 +5,8 @@ from multiprocessing import Pool
 from pathlib import Path
 
 import sqlalchemy.orm as orm
+from soundevent.data import Recording
+from soundevent.audio import compute_md5_checksum
 from sqlalchemy import Select, delete, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -83,16 +85,24 @@ async def create_recording(
         time_expansion=time_expansion,
     )
 
-    hash = files.compute_hash(path)
-    media_info = files.get_media_info(path)
+    recording = Recording.from_file(
+        path,
+        time_expansion=time_expansion,
+        compute_hash=True,
+    )
+
+    hash = recording.hash
+    duration = recording.duration
+    channels = recording.channels
+    samplerate = recording.samplerate
 
     try:
         recording = models.Recording(
-            hash=hash,
+            hash=hash,  # type: ignore
             path=str(path.absolute()),
-            duration=media_info.duration / time_expansion,
-            channels=media_info.channels,
-            samplerate=media_info.samplerate * time_expansion,
+            duration=duration,
+            channels=channels,
+            samplerate=samplerate,
             time_expansion=data.time_expansion,
             date=data.date,
             time=data.time,
@@ -188,14 +198,15 @@ async def create_recordings(
     # Use the current time as the created_at time for all recordings
     now = datetime.datetime.now()
 
-    def _get_values_from_info(info):
-        duration = info.media_info.duration / time_expansion
-        samplerate = info.media_info.samplerate * time_expansion
+    def _get_values_from_info(info: files.FileInfo):
+        assert info.media_info is not None
+        duration = info.media_info.duration_s / time_expansion
+        samplerate = info.media_info.samplerate_hz * time_expansion
         return {
             "hash": info.hash,
             "path": str(info.path.absolute()),
             "duration": duration,
-            "channels": info.media_info.channels,  # type: ignore
+            "channels": info.media_info.channels,
             "samplerate": samplerate,
             "created_at": now,
             "time_expansion": time_expansion,
@@ -986,7 +997,7 @@ async def update_recording_path(
             f"The given path {path} does not exist on the file system."
         )
 
-    hash = files.compute_hash(path)
+    hash = compute_md5_checksum(path)
 
     query = select(models.Recording).where(
         models.Recording.path == str(recording.path)
