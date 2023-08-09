@@ -118,7 +118,7 @@ def create_filter_from_field_and_model(
 
             return query
 
-    return _Filter
+    return _Filter  # type: ignore
 
 
 class IntegerFilter(Filter):

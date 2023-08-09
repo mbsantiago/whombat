@@ -114,7 +114,10 @@ class User(Base):
     )
 
 
-class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):  # type: ignore
+class UserManager(
+    UUIDIDMixin,
+    BaseUserManager[User, uuid.UUID],  # type: ignore
+):
     """UserManager class.
 
     This class is used to manage users in the database. It is a subclass of the

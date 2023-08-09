@@ -1,7 +1,7 @@
 """Annotation model.
 
-Annotations are user created sound events that are attached to audio clips. They
-are created by annotators as part of an annotation task and can be used to
+Annotations are user created sound events that are attached to audio clips.
+They are created by annotators as part of an annotation task and can be used to
 identify specific sound events or audio features, such as the presence of a
 particular species or the location of a specific sound source.
 

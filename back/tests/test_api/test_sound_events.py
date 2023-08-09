@@ -1,4 +1,5 @@
 """Test suit for the Sound Events Python API module."""
+import logging
 from collections.abc import Callable
 from pathlib import Path
 from uuid import UUID
@@ -11,6 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import exceptions, geometries, schemas
 from whombat.api import sound_events
 from whombat.database import models
+
+logging.getLogger("aiosqlite").setLevel(logging.ERROR)
 
 
 async def test_create_a_timestamp_sound_event(
@@ -235,7 +238,7 @@ async def test_create_sound_events(
     recording: schemas.Recording,
 ):
     """Test creating multiple sound events at once."""
-    geometries_to_create = [
+    geometries_to_create: list[geometries.Geometry] = [
         geometries.TimeStamp(
             coordinates=0.5,
         ),
@@ -274,16 +277,20 @@ async def test_create_sound_events(
     for db_sound_event in db_sound_events:
         assert db_sound_event is not None
         assert db_sound_event.geometry_type == "TimeStamp"
-        assert (
-            db_sound_event.geometry == '{"type":"TimeStamp","coordinates":0.5}'
-        )
+
+    assert (
+        db_sound_events[0].geometry == '{"type":"TimeStamp","coordinates":0.5}'
+    )
+    assert (
+        db_sound_events[1].geometry == '{"type":"TimeStamp","coordinates":0.6}'
+    )
 
 
 async def test_create_sound_events_with_different_geometries(
     session: AsyncSession,
     recording: schemas.Recording,
 ):
-    """Test creating multiple sound events at once with different geometries."""
+    """Test creating multiple sound events with different geometries."""
     geometries_to_create = [
         geometries.TimeStamp(
             coordinates=0.5,
@@ -325,12 +332,12 @@ async def test_create_sound_events_with_tags(
 ):
     """Test creating sound events with associated list of tags."""
     # Arrange
-    geometries_to_create = [
+    geometries_to_create: list[geometries.Geometry] = [
         geometries.TimeStamp(coordinates=0.5),
         geometries.TimeStamp(coordinates=0.6),
     ]
 
-    tags_to_use = [
+    tags_to_use: list[list[schemas.Tag] | None] = [
         [schemas.Tag(key="key1", value="value1")],
         [schemas.Tag(key="key2", value="value2")],
     ]
@@ -345,8 +352,8 @@ async def test_create_sound_events_with_tags(
 
     # Assert
     assert len(created_sound_events) == 2
-    assert created_sound_events[0].tags == [tags_to_use[0]]
-    assert created_sound_events[1].tags == [tags_to_use[1]]
+    assert created_sound_events[0].tags == tags_to_use[0]
+    assert created_sound_events[1].tags == tags_to_use[1]
 
     # Make sure the sound event tags are in the database
     stmt = (
@@ -368,19 +375,18 @@ async def test_create_sound_events_with_tags(
     assert db_sound_event_tags[1].tag.value == "value2"
 
 
-async def create_sound_events_with_features(
+async def test_create_sound_events_with_features(
     session: AsyncSession,
     recording: schemas.Recording,
 ):
     """Test create_sound_events function with features added."""
-
     # Arrange
-    geometries_to_create = [
+    geometries_to_create: list[geometries.Geometry] = [
         geometries.TimeStamp(coordinates=0.5),
         geometries.TimeStamp(coordinates=0.6),
     ]
 
-    features_to_add = [
+    features_to_add: list[list[schemas.Feature] | None] = [
         [schemas.Feature(name="feature1", value=1)],
         [schemas.Feature(name="feature2", value=3)],
     ]
@@ -395,8 +401,14 @@ async def create_sound_events_with_features(
 
     # Assert
     assert len(created_sound_events) == 2
-    assert created_sound_events[0].features == [features_to_add[0]]
-    assert created_sound_events[1].features == [features_to_add[1]]
+    assert all(
+        feat in created_sound_events[0].features
+        for feat in features_to_add[0] or []
+    )
+    assert all(
+        feat in created_sound_events[1].features
+        for feat in features_to_add[1] or []
+    )
 
     # Make sure the Feature Names are in the database
     stmt = select(models.FeatureName).where(

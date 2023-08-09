@@ -28,6 +28,8 @@ through community plugins.
 
 """
 
+import typing
+
 import sqlalchemy.orm as orm
 
 from whombat.database.models.base import Base
@@ -35,6 +37,9 @@ from whombat.database.models.base import Base
 __all__ = [
     "FeatureName",
 ]
+
+if typing.TYPE_CHECKING:
+    from whombat.database.models.recording import RecordingFeature
 
 
 class FeatureName(Base):
@@ -48,7 +53,9 @@ class FeatureName(Base):
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """Name of the feature."""
 
-    recording_features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
+    recording_features: orm.Mapped[
+        list["RecordingFeature"]  # noqa: F821 type: ignore
+    ] = orm.relationship(
         "RecordingFeature",
         back_populates="feature_name",
         cascade="all, delete-orphan",

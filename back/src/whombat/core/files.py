@@ -36,7 +36,9 @@ def is_audio_file(filename: Path) -> bool:
     return AUDIO_FILE_PATTERN.search(str(filename)) is not None
 
 
-def get_audio_files_in_folder(audio_dir: Path, relative: bool = True) -> list[Path]:
+def get_audio_files_in_folder(
+    audio_dir: Path, relative: bool = True
+) -> list[Path]:
     """Get all path to audio files in a directory recursively.
 
     Only files with a .wav extension are considered recordings.

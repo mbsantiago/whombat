@@ -509,7 +509,6 @@ async def test_tag_filter(
     tag2 = await tags.create_tag(session=session, key="key1", value="value2")
     tag3 = await tags.create_tag(session=session, key="key2", value="value1")
 
-
     await recordings.add_tag_to_recording(
         session=session,
         tag=tag1,

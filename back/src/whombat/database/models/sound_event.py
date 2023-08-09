@@ -27,6 +27,7 @@ diverse set of sound events, the app can help users efficiently generate
 machine learning models that can detect these events automatically.
 """
 
+import typing
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -35,6 +36,9 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.database.models.base import Base
 from whombat.database.models.feature import FeatureName
 from whombat.database.models.recording import Recording, Tag
+
+if typing.TYPE_CHECKING:
+    from whombat.database.models.training_sound_event import TrainingSoundEvent
 
 __all__ = [
     "SoundEvent",
@@ -101,14 +105,21 @@ class SoundEvent(Base):
     )
     """The features associated with the sound event."""
 
+    training_sets: orm.Mapped[list["TrainingSoundEvent"]] = orm.relationship(
+        "TrainingSoundEvent",
+        back_populates="sound_event",
+        init=False,
+        repr=False,
+    )
+    """The training sets to which the sound event belongs."""
+
 
 class SoundEventTag(Base):
     """SoundEventTag model for sound_event_tag table.
 
-    Tags can be added to sound event to provide additional information about the
-    sound event. For example, a tag could be used to indicate that a sound event
-    is a bird call of a particular species.
-
+    Tags can be added to sound event to provide additional information about
+    the sound event. For example, a tag could be used to indicate that a sound
+    event is a bird call of a particular species.
     """
 
     __tablename__ = "sound_event_tag"
@@ -150,9 +161,9 @@ class SoundEventTag(Base):
 class SoundEventFeature(Base):
     """Sound Event Feature model.
 
-    In sound events, features are useful for providing basic information about the
-    sound event, such as its duration or bandwidth, or for providing more detailed
-    information that can be extracted using a deep learning model.
+    In sound events, features are useful for providing basic information about
+    the sound event, such as its duration or bandwidth, or for providing more
+    detailed information that can be extracted using a deep learning model.
     """
 
     __tablename__ = "sound_event_feature"

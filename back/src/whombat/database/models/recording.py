@@ -231,7 +231,6 @@ class RecordingFeature(Base):
     )
 
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
-        back_populates="recording_features",
         init=False,
         repr=False,
     )

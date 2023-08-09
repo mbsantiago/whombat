@@ -69,6 +69,9 @@ lint/pyright: ## check style with pyright
 
 lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/pyright ## check style
 
+format: ## format code with black
+	black src tests
+
 test: ## run tests quickly with the default Python
 	pytest
 
