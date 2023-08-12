@@ -1,12 +1,12 @@
 """API functions to interact with tags."""
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
 from whombat.database import models
-from whombat.schemas.tags import TagCreate, TagUpdate
+from whombat.filters.base import Filter
 
 __all__ = [
     "create_tag",
@@ -14,14 +14,12 @@ __all__ = [
     "get_tag_by_key_and_value",
     "get_tags",
     "update_tag",
-    "get_tags_by_key",
 ]
 
 
 async def _create_tag(
     session: AsyncSession,
-    key: str,
-    value: str,
+    data: schemas.TagCreate,
 ) -> models.Tag:
     """Create a new tag.
 
@@ -44,7 +42,6 @@ async def _create_tag(
     exceptions.DuplicateObjectError
         If a tag with the same key and value already exists.
     """
-    data = TagCreate(key=key, value=value)
     tag = models.Tag(**data.model_dump())
 
     try:
@@ -58,8 +55,7 @@ async def _create_tag(
 
 async def create_tag(
     session: AsyncSession,
-    key: str,
-    value: str,
+    data: schemas.TagCreate,
 ) -> schemas.Tag:
     """Create a new tag.
 
@@ -82,7 +78,7 @@ async def create_tag(
     exceptions.DuplicateObjectError
         If a tag with the same key and value already exists.
     """
-    tag = await _create_tag(session, key, value)
+    tag = await _create_tag(session, data)
     return schemas.Tag.model_validate(tag)
 
 
@@ -178,50 +174,11 @@ async def get_tag_by_key_and_value(
     return schemas.Tag.model_validate(tag)
 
 
-async def get_tags_by_key(
-    session: AsyncSession,
-    key: str,
-    limit: int = 1000,
-    offset: int = 0,
-    search: str | None = None,
-) -> list[schemas.Tag]:
-    """Get all tags with a given key.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    key : str
-        The key of the tags.
-    limit : int, optional
-        The maximum number of tags to return, by default 1000.
-        If -1 is given, all tags will be returned.
-    offset : int, optional
-        The number of tags to skip, by default 0.
-    search : str, optional
-        A search string to filter tags by, by default None. If None, no
-        filtering will be done. The search string is matched against the
-        value of each tag.
-
-    Returns
-    -------
-    list[schemas.Tag]
-        The tags.
-    """
-    query = select(models.Tag).where(models.Tag.key == key)
-    if search is not None:
-        query = query.where(models.Tag.value.ilike(f"%{search}%"))
-    query = query.order_by(models.Tag.value).limit(limit).offset(offset)
-    result = await session.execute(query)
-    tags = result.scalars()
-    return [schemas.Tag.model_validate(tag) for tag in tags]
-
-
 async def get_tags(
     session: AsyncSession,
     limit: int = 1000,
     offset: int = 0,
-    search: str | None = None,
+    filters: list[Filter] | None = None,
 ) -> list[schemas.Tag]:
     """Get all tags.
 
@@ -245,10 +202,10 @@ async def get_tags(
         The tags.
     """
     query = select(models.Tag)
-    if search is not None:
-        query = query.where(
-            models.Tag.key.concat(models.Tag.value).ilike(f"%{search}%")
-        )
+
+    for filter_ in filters or []:
+        query = filter_.filter(query)
+
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)
     tags = result.scalars()
@@ -257,9 +214,8 @@ async def get_tags(
 
 async def update_tag(
     session: AsyncSession,
-    tag: schemas.Tag,
-    key: str | None = None,
-    value: str | None = None,
+    tag_id: int,
+    data: schemas.TagUpdate,
 ) -> schemas.Tag:
     """Update a tag.
 
@@ -281,33 +237,34 @@ async def update_tag(
     schemas.Tag
         The updated tag.
 
-    Notes
-    -----
-    This function will not raise an exception if the tag does not exist.
+    Raises
+    ------
+    exceptions.NotFoundError
+        If the tag does not exist.
+
     """
-    data = TagUpdate(key=key, value=value)
-    stmt = (
-        update(models.Tag)
-        .where(
-            models.Tag.key == tag.key,
-            models.Tag.value == tag.value,
-        )
-        .values(**data.model_dump(exclude_none=True))
-    )
-    await session.execute(stmt)
+    # Get the tag by id
+    query = select(models.Tag).where(models.Tag.id == tag_id)
+    result = await session.execute(query)
+    tag = result.scalar()
+
+    if tag is None:
+        raise exceptions.NotFoundError("Tag not found.")
+
+    # Update the tag
+    if data.key is not None:
+        tag.key = data.key
+
+    if data.value is not None:
+        tag.value = data.value
+
     await session.commit()
-    return schemas.Tag(
-        **{
-            **tag.model_dump(),
-            **data.model_dump(exclude_none=True),
-        }
-    )
+    return schemas.Tag.model_validate(tag)
 
 
 async def _get_or_create_tag(
     session: AsyncSession,
-    key: str,
-    value: str,
+    data: schemas.TagCreate,
 ) -> models.Tag:
     """Get a tag by its key and value, or create it if it does not exist.
 
@@ -326,16 +283,15 @@ async def _get_or_create_tag(
         The tag.
     """
     try:
-        tag = await _get_tag_by_key_and_value(session, key, value)
+        tag = await _get_tag_by_key_and_value(session, data.key, data.value)
     except exceptions.NotFoundError:
-        tag = await _create_tag(session, key, value)
+        tag = await _create_tag(session, data)
     return tag
 
 
 async def get_or_create_tag(
     session: AsyncSession,
-    key: str,
-    value: str,
+    data: schemas.TagCreate,
 ) -> schemas.Tag:
     """Get a tag by its key and value, or create it if it does not exist.
 
@@ -353,13 +309,13 @@ async def get_or_create_tag(
     schemas.Tag
         The tag.
     """
-    tag = await _get_or_create_tag(session, key, value)
+    tag = await _get_or_create_tag(session, data)
     return schemas.Tag.model_validate(tag)
 
 
 async def _get_or_create_tags(
     session: AsyncSession,
-    tags: list[schemas.Tag],
+    tags: list[schemas.TagCreate],
 ) -> list[models.Tag]:
     """Create multiple tags simultaneously.
 
@@ -406,7 +362,7 @@ async def _get_or_create_tags(
 
 async def get_or_create_tags(
     session: AsyncSession,
-    tags: list[schemas.Tag],
+    tags: list[schemas.TagCreate],
 ) -> list[schemas.Tag]:
     """Create multiple tags simultaneously.
 

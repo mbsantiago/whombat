@@ -2,7 +2,16 @@
 
 import uuid
 
+from whombat.schemas.base import BaseSchema
 from fastapi_users import schemas
+
+
+class SimpleUser(BaseSchema):
+    """Schema for User objects returned to the user."""
+
+    id: uuid.UUID
+    username: str
+    name: str | None = None
 
 
 class User(schemas.BaseUser[uuid.UUID]):

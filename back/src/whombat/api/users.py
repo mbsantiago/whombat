@@ -1,8 +1,7 @@
 """Whombat Python API to interact with user objects in the database."""
 import uuid
 from contextlib import asynccontextmanager
-from os import name
-from typing import Any, AsyncGenerator
+from typing import AsyncGenerator
 
 from fastapi_users.exceptions import UserNotExists
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
@@ -12,7 +11,6 @@ from sqlalchemy.future import select
 
 from whombat import exceptions, schemas
 from whombat.database import models
-from whombat.schemas.users import UserCreate, UserUpdate
 
 __all__ = [
     "create_user",
@@ -53,10 +51,7 @@ async def _get_user_manager_from_session(
 
 async def create_user(
     session: AsyncSession,
-    username: str,
-    password: str,
-    email: str,
-    is_superuser: bool = False,
+    data: schemas.UserCreate,
 ) -> schemas.User:
     """Create a user.
 
@@ -66,18 +61,13 @@ async def create_user(
     ----------
     session : AsyncSession
         The database session to use.
-    username : str
-        The username to use.
-    password : str
-        The password to use.
-    email : str
-        The email to use.
-    is_superuser : bool, optional
-        Whether the user is a superuser, by default False.
+
+    data : schemas.UserCreate
+        The data to use for the user creation.
 
     Returns
     -------
-    user : models.User
+    user : schemas.User
 
     Notes
     -----
@@ -104,15 +94,7 @@ async def create_user(
 
     """
     async with _get_user_manager_from_session(session) as user_manager:
-        db_user = await user_manager.create(
-            UserCreate(
-                username=username,
-                password=password,
-                email=email,  # type: ignore
-                is_superuser=is_superuser,
-                name=name,
-            )
-        )
+        db_user = await user_manager.create(data)
         session.add(db_user)
         await session.commit()
         return schemas.User.model_validate(db_user)
@@ -128,12 +110,13 @@ async def get_user_by_id(
     ----------
     session : AsyncSession
         The database session to use.
+
     user_id : uuid.UUID
         The id to use.
 
     Returns
     -------
-    user : models.User
+    user : schemas.User
 
     Raises
     ------
@@ -157,12 +140,13 @@ async def get_user_by_username(
     ----------
     session : AsyncSession
         The database session to use.
+
     username : str
         The username to use.
 
     Returns
     -------
-    user : models.User
+    user : schemas.User
 
     Raises
     ------
@@ -188,12 +172,13 @@ async def get_user_by_email(
     ----------
     session : AsyncSession
         The database session to use.
+
     email : str
         The email to use.
 
     Returns
     -------
-    user : models.User
+    user : schemas.User
 
     Raises
     ------
@@ -210,8 +195,8 @@ async def get_user_by_email(
 
 async def update_user(
     session: AsyncSession,
-    user: schemas.User,
-    **kwargs: Any,
+    user_id: uuid.UUID,
+    data: schemas.UserUpdate,
 ) -> schemas.User:
     """Update a user.
 
@@ -220,12 +205,15 @@ async def update_user(
     session : AsyncSession
         The database session to use.
 
-    user : models.User
-        The user to update.
+    user_id : uuid.UUID
+        The id of the user to update.
+
+    data : schemas.UserUpdate
+        The data to update the user with.
 
     Returns
     -------
-    user : models.User
+    user : schemas.User
 
     Raises
     ------
@@ -233,9 +221,8 @@ async def update_user(
         If no user with the given id exists.
 
     """
-    data = UserUpdate(**kwargs)
     async with _get_user_manager_from_session(session) as user_manager:
-        db_user = await user_manager.get(user.id)
+        db_user = await user_manager.get(user_id)
         db_user = await user_manager.update(data, db_user)
         return schemas.User.model_validate(db_user)
 
@@ -251,14 +238,16 @@ async def get_users(
     ----------
     session : AsyncSession
         The database session to use.
+
     offset : int, optional
         The number of users to skip, by default 0.
+
     limit : int, optional
         The number of users to get, by default 100.
 
     Returns
     -------
-    users : List[models.User]
+    users : List[schemas.User]
 
     """
     select_query = select(models.User).offset(offset).limit(limit)
@@ -274,7 +263,8 @@ async def delete_user(session: AsyncSession, user: schemas.User) -> None:
     ----------
     session : AsyncSession
         The database session to use.
-    user : models.User
+
+    user : schemas.User
         The user to delete.
 
     Raises

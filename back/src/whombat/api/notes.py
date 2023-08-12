@@ -1,19 +1,18 @@
 """API functions to interact with notes."""
 
-import datetime
-from uuid import UUID
-
-from sqlalchemy import delete, select, update
+import sqlalchemy.orm as orm
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
+from whombat.api import users
 from whombat.database import models
-from whombat.schemas.notes import NoteCreate, NoteUpdate
+from whombat.filters.base import Filter
 
 __all__ = [
     "create_note",
     "delete_note",
-    "get_note_by_uuid",
+    "get_note_by_id",
     "get_notes",
     "update_note",
 ]
@@ -21,9 +20,7 @@ __all__ = [
 
 async def create_note(
     session: AsyncSession,
-    message: str,
-    created_by: schemas.User,
-    is_issue: bool = False,
+    data: schemas.NoteCreate,
 ) -> schemas.Note:
     """Create a note.
 
@@ -49,45 +46,51 @@ async def create_note(
         If the given user does not exist.
 
     """
-    data = NoteCreate(
-        message=message,
-        created_by=created_by.username,
-        is_issue=is_issue,
-    )
-
-    # Check if the user exists.
-    query = select(models.User.id).where(
-        models.User.id == created_by.id  # type: ignore
-    )
-    result = await session.execute(query)
-    row = result.one_or_none()
-    if row is None:
+    try:
+        await users.get_user_by_id(session, user_id=data.created_by_id)
+    except exceptions.NotFoundError as e:
         raise exceptions.NotFoundError(
-            f"User with ID {created_by.id} does not exist.",
-        )
+            f"User with ID {data.created_by_id} does not exist.",
+        ) from e
 
-    db_note = models.Note(
-        message=data.message,
-        is_issue=data.is_issue,
-        created_by_id=created_by.id,
-    )
-
+    db_note = models.Note(**data.model_dump())
     session.add(db_note)
     await session.commit()
-
-    return schemas.Note(
-        uuid=db_note.uuid,
-        message=db_note.message,
-        is_issue=db_note.is_issue,
-        created_by=data.created_by,
-        created_at=db_note.created_at,
-    )
+    return await get_note_by_id(session, db_note.id)
 
 
-async def get_note_by_uuid(
-    session: AsyncSession,
-    uuid: UUID,
-) -> schemas.Note:
+async def _get_note(session: AsyncSession, note_id: int) -> models.Note:
+    """Get a note by its ID.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    id : int
+        The ID of the note.
+
+    Returns
+    -------
+    note : models.notes.Note
+        The note with the given id.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If the given note does not exist.
+
+    """
+    query = select(models.Note).where(models.Note.id == note_id)
+    result = await session.execute(query)
+    row = result.scalar_one_or_none()
+    if row is None:
+        raise exceptions.NotFoundError(
+            f"Note with ID {note_id} does not exist.",
+        )
+    return row
+
+
+async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     """Get a note by its ID.
 
     Parameters
@@ -108,27 +111,8 @@ async def get_note_by_uuid(
         If the given note does not exist.
 
     """
-    query = (
-        select(models.Note, models.User)
-        .join(models.Note.created_by)
-        .where(models.Note.uuid == uuid)
-    )
-    result = await session.execute(query)
-    row = result.one_or_none()
-
-    if row is None:
-        raise exceptions.NotFoundError(
-            f"Note with ID {uuid} does not exist.",
-        )
-
-    note, user = row
-    return schemas.Note(
-        uuid=note.uuid,
-        message=note.message,
-        is_issue=note.is_issue,
-        created_by=user.username,
-        created_at=note.created_at,
-    )
+    row = await _get_note(session, note_id)
+    return schemas.Note.model_validate(row)
 
 
 async def delete_note(
@@ -157,11 +141,7 @@ async def get_notes(
     session: AsyncSession,
     limit: int = 100,
     offset: int = 0,
-    created_by: list[str] | str | None = None,
-    is_issue: bool | None = None,
-    created_before: datetime.datetime | None = None,
-    created_after: datetime.datetime | None = None,
-    search: str | None = None,
+    filters: list[Filter] | None = None,
 ) -> list[schemas.Note]:
     """Get all notes.
 
@@ -197,31 +177,10 @@ async def get_notes(
         The requested notes.
 
     """
-    query = select(models.Note, models.User.username).join(
-        models.Note.created_by
-    )
+    query = select(models.Note).options(orm.joinedload(models.Note.created_by))
 
-    if created_by is not None:
-        if isinstance(created_by, str):
-            created_by = [created_by]
-
-        query = query.where(
-            models.Note.created_by.has(
-                models.User.username.in_(created_by),
-            )
-        )
-
-    if is_issue is not None:
-        query = query.where(models.Note.is_issue == is_issue)
-
-    if created_before is not None:
-        query = query.where(models.Note.created_at < created_before)
-
-    if created_after is not None:
-        query = query.where(models.Note.created_at > created_after)
-
-    if search is not None:
-        query = query.where(models.Note.message.ilike(f"%{search}%"))
+    for filter_ in filters or []:
+        query = filter_.filter(query)
 
     query = (
         query.limit(limit)
@@ -230,23 +189,13 @@ async def get_notes(
     )
 
     result = await session.execute(query)
-    return [
-        schemas.Note(
-            uuid=note.uuid,
-            message=note.message,
-            is_issue=note.is_issue,
-            created_by=user,
-            created_at=note.created_at,
-        )
-        for note, user in result.all()
-    ]
+    return [schemas.Note.model_validate(note) for note in result.scalars()]
 
 
 async def update_note(
     session: AsyncSession,
-    note: schemas.Note,
-    message: str | None = None,
-    is_issue: bool | None = None,
+    note_id: int,
+    data: schemas.NoteUpdate,
 ) -> schemas.Note:
     """Update a note.
 
@@ -254,12 +203,12 @@ async def update_note(
     ----------
     session : AsyncSession
         The database session to use.
-    note : schemas.notes.Note
-        The note to update.
-    message : str | None, optional
-        The new message of the note.
-    is_issue : bool | None, optional
-        Whether the note is an issue.
+
+    note_id : int
+        The ID of the note to update.
+
+    data:
+        The data to update the note with.
 
     Returns
     -------
@@ -272,25 +221,9 @@ async def update_note(
         If the given note does not exist.
 
     """
-    data = NoteUpdate(
-        message=message,
-        is_issue=is_issue,
-    )
+    db_note = await _get_note(session, note_id)
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(db_note, field, value)
 
-    query = (
-        update(models.Note)
-        .where(models.Note.uuid == note.uuid)
-        .values(
-            **data.model_dump(exclude_none=True),
-        )
-    )
-
-    await session.execute(query)
     await session.commit()
-
-    return schemas.Note(
-        **{
-            **note.model_dump(),
-            **data.model_dump(exclude_none=True),
-        }
-    )
+    return schemas.Note.model_validate(db_note)

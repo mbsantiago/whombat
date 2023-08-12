@@ -1,4 +1,5 @@
 """Common fixtures for Whombat tests.""" ""
+import logging
 import os
 import random
 import string
@@ -12,6 +13,9 @@ from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, schemas
+
+logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+logging.getLogger("asyncio").setLevel(logging.WARNING)
 
 
 def random_string():
@@ -74,9 +78,11 @@ async def user(session: AsyncSession) -> schemas.User:
     """Create a user for tests."""
     user = await api.users.create_user(
         session,
-        username="test",
-        password="test",
-        email="test@whombat.com",
+        data=schemas.UserCreate(
+            username="test",
+            password="test",
+            email="test@whombat.com",
+        ),
     )
     return user
 
@@ -89,6 +95,40 @@ async def recording(
     """Create a recording for testing."""
     recording = await api.recordings.create_recording(
         session,
-        random_wav_factory(),
+        data=schemas.RecordingCreate(path=random_wav_factory()),
     )
     return recording
+
+
+@pytest.fixture
+async def tag(session: AsyncSession) -> schemas.Tag:
+    """Create a tag for testing."""
+    tag = await api.tags.create_tag(
+        session,
+        data=schemas.TagCreate(key="test_key", value="test_value"),
+    )
+    return tag
+
+
+@pytest.fixture
+async def feature(session: AsyncSession) -> schemas.Feature:
+    """Create a feature for testing."""
+    feature = await api.features.get_or_create_feature(
+        session,
+        name="test_feature",
+        value=10,
+    )
+    return feature
+
+
+@pytest.fixture
+async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
+    """Create a note for testing."""
+    note = await api.notes.create_note(
+        session,
+        data=schemas.NoteCreate(
+            message="test_message",
+            created_by_id=user.id,
+        ),
+    )
+    return note

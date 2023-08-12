@@ -16,6 +16,8 @@ where they were recorded.
 """
 
 import datetime
+from pathlib import Path
+from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
@@ -61,7 +63,7 @@ class Recording(Base):
     whombat.core.files.compute_hash function.
     """
 
-    path: orm.Mapped[str] = orm.mapped_column(
+    path: orm.Mapped[Path] = orm.mapped_column(
         nullable=False,
         unique=True,
         index=True,
@@ -75,10 +77,18 @@ class Recording(Base):
     """
 
     duration: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    """The duration of the recording in seconds."""
+    """The duration of the recording in seconds.
+
+    If the time expansion factor is not 1.0, the duration is the duration of
+    original recording, not the expanded recording.
+    """
 
     samplerate: orm.Mapped[int] = orm.mapped_column(nullable=False)
-    """The samplerate of the recording in Hz."""
+    """The samplerate of the recording in Hz.
+
+    If the time expansion factor is not 1.0, the samplerate is the samplerate of
+    original recording, not the expanded recording.
+    """
 
     channels: orm.Mapped[int] = orm.mapped_column(nullable=False)
     """The number of channels of the recording."""
@@ -101,22 +111,51 @@ class Recording(Base):
     )
     """The time expansion factor of the recording."""
 
-    notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
-        "RecordingNote",
-        back_populates="recording",
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        nullable=False,
+        default_factory=uuid4,
+    )
+
+    notes: orm.Mapped[list[Note]] = orm.relationship(
+        Note,
+        secondary="recording_note",
+        lazy="joined",
+        viewonly=True,
+        back_populates="recordings",
         default_factory=list,
     )
 
-    tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
-        "RecordingTag",
+    recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
+        "RecordingNote",
+        lazy="joined",
         back_populates="recording",
         default_factory=list,
+        cascade="all, delete-orphan",
+    )
+
+    tags: orm.Mapped[list[Tag]] = orm.relationship(
+        Tag,
+        lazy="joined",
+        viewonly=True,
+        secondary="recording_tag",
+        back_populates="recordings",
+        default_factory=list,
+    )
+
+    recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
+        "RecordingTag",
+        lazy="joined",
+        back_populates="recording",
+        default_factory=list,
+        cascade="all, delete-orphan",
     )
 
     features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
         "RecordingFeature",
+        lazy="joined",
         back_populates="recording",
         default_factory=list,
+        cascade="all, delete-orphan",
     )
 
 
@@ -145,15 +184,17 @@ class RecordingNote(Base):
     """The id of the note."""
 
     recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="notes",
+        back_populates="recording_notes",
         init=False,
         repr=False,
     )
     """The recording to which the note belongs."""
 
     note: orm.Mapped[Note] = orm.relationship(
+        back_populates="recording_notes",
         init=False,
         repr=False,
+        lazy="joined",
     )
     """The note."""
 
@@ -186,13 +227,18 @@ class RecordingTag(Base):
     """The id of the tag."""
 
     recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="tags",
+        back_populates="recording_tags",
         init=False,
         repr=False,
     )
     """The recording to which the tag belongs."""
 
-    tag: orm.Mapped[Tag] = orm.relationship(init=False, repr=False)
+    tag: orm.Mapped[Tag] = orm.relationship(
+        back_populates="recording_tags",
+        init=False,
+        repr=False,
+        lazy="joined",
+    )
     """The tag."""
 
     __table_args__ = (UniqueConstraint("recording_id", "tag_id"),)
@@ -231,8 +277,10 @@ class RecordingFeature(Base):
     )
 
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
+        back_populates="recordings",
         init=False,
         repr=False,
+        lazy="joined",
     )
 
     __table_args__ = (

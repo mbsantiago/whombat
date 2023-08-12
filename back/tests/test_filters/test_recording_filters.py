@@ -505,9 +505,15 @@ async def test_tag_filter(
         path=path3,
     )
 
-    tag1 = await tags.create_tag(session=session, key="key1", value="value1")
-    tag2 = await tags.create_tag(session=session, key="key1", value="value2")
-    tag3 = await tags.create_tag(session=session, key="key2", value="value1")
+    tag1 = await tags.create_tag(
+        session=session, data=schemas.TagCreate(key="key1", value="value1")
+    )
+    tag2 = await tags.create_tag(
+        session=session, data=schemas.TagCreate(key="key1", value="value2")
+    )
+    tag3 = await tags.create_tag(
+        session=session, data=schemas.TagCreate(key="key2", value="value1")
+    )
 
     await recordings.add_tag_to_recording(
         session=session,

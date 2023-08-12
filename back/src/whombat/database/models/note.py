@@ -18,6 +18,7 @@ or to ask for clarification about specific annotations.
 
 """
 
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -31,6 +32,10 @@ __all__ = [
 ]
 
 
+if TYPE_CHECKING:
+    from whombat.database.models.recording import Recording, RecordingNote
+
+
 class Note(Base):
     """Note model."""
 
@@ -38,13 +43,6 @@ class Note(Base):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the note."""
-
-    uuid: orm.Mapped[UUID] = orm.mapped_column(
-        default_factory=uuid4,
-        init=False,
-        unique=True,
-    )
-    """The uuid of the note."""
 
     message: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The message of the note."""
@@ -56,6 +54,9 @@ class Note(Base):
     """The id of the user who created the note."""
 
     created_by: orm.Mapped[User] = orm.relationship(
+        User,
+        back_populates="notes",
+        lazy="joined",
         init=False,
     )
     """The user who created the note."""
@@ -65,3 +66,27 @@ class Note(Base):
         default=False,
     )
     """Whether the note is an issue."""
+
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        unique=True,
+    )
+    """The uuid of the note."""
+
+    recordings: orm.Mapped[list["Recording"]] = orm.relationship(
+        "Recording",
+        secondary="recording_note",
+        init=False,
+        repr=False,
+        viewonly=True,
+        back_populates="notes",
+        default_factory=list,
+    )
+
+    recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
+        "RecordingNote",
+        init=False,
+        repr=False,
+        back_populates="note",
+        default_factory=list,
+    )

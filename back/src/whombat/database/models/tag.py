@@ -36,12 +36,15 @@ recordings and their associated objects within the app. By attaching tags to
 these objects, users can more easily organize, filter, and analyze audio data,
 making it simpler to extract meaningful insights and information.
 """
-
+from typing import TYPE_CHECKING
 
 import sqlalchemy.orm as orm
 from sqlalchemy import UniqueConstraint
 
 from whombat.database.models.base import Base
+
+if TYPE_CHECKING:
+    from whombat.database.models.recording import Recording, RecordingTag
 
 __all__ = [
     "Tag",
@@ -64,5 +67,21 @@ class Tag(Base):
 
     value: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The value of the tag."""
+
+    recordings: orm.Mapped[list["Recording"]] = orm.relationship(
+        back_populates="tags",
+        secondary="recording_tag",
+        init=False,
+        repr=False,
+        viewonly=True,
+        default_factory=list,
+    )
+
+    recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
 
     __table_args__ = (UniqueConstraint("key", "value"),)

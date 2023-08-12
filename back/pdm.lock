@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:52fc4b6668b0e4fb2d046c6f3de74095b1d5a092074008e90449c88ee47403d5"
+content_hash = "sha256:401cef475648044203d18e7db40cc0a97716bcd7716632c80b36d3e2a6b202e9"
 
 [[package]]
 name = "aiosqlite"
@@ -1142,19 +1142,6 @@ files = [
     {file = "SQLAlchemy-2.0.11-cp311-cp311-win_amd64.whl", hash = "sha256:62835d8cd6713458c032466c38a43e56503e19ea6e54b0e73295c6ab281fc0b1"},
     {file = "SQLAlchemy-2.0.11-py3-none-any.whl", hash = "sha256:1d28e8278d943d9111d44720f92cc338282e956ed68849bfcee053c06bde4f39"},
     {file = "SQLAlchemy-2.0.11.tar.gz", hash = "sha256:c3cbff7cced3c42dbe71448ce6bf4202b4a2d305e78dd77e3f280ba6cd245138"},
-]
-
-[[package]]
-name = "sqlmodel"
-version = "0"
-requires_python = ">=3.7,<4.0"
-git = "https://github.com/mbsantiago/sqlmodel.git"
-ref = "main"
-revision = "c99c1a9b1ea2f6492ad9ceee8a4ce6dc7b8b8f18"
-summary = "SQLModel, SQL databases in Python, designed for simplicity, compatibility, and robustness."
-dependencies = [
-    "SQLAlchemy<=2.0.11,>=2.0.0",
-    "pydantic<3.0.0,>=2.1.1",
 ]
 
 [[package]]

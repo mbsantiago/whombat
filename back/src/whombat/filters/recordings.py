@@ -40,6 +40,9 @@ DateFilter = base.optional_date_filter(models.Recording.date)
 TimeFilter = base.optional_time_filter(models.Recording.time)
 """Filter recordings by time."""
 
+HashFilter = base.string_filter(models.Recording.hash)
+"""Filter recordings by hash."""
+
 
 class IssuesFilter(base.Filter):
     """Filter recordings by their status.

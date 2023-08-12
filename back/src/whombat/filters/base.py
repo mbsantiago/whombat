@@ -4,7 +4,7 @@ import datetime
 from typing import Type, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import Select
+from sqlalchemy import Select, or_
 from sqlalchemy.orm import InstrumentedAttribute, MappedColumn
 
 from whombat.database.models.base import Base
@@ -77,6 +77,15 @@ def has_filter(
     return query.where(field.ilike(f"%{value}%"))
 
 
+def isin_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: list[int | float | str | bool | datetime.date | datetime.time],
+) -> Select:
+    """Filter a query by an isin condition."""
+    return query.where(field.in_(value))
+
+
 class Filter(BaseModel):
     """A filter to use on a query."""
 
@@ -89,6 +98,7 @@ class Filter(BaseModel):
         "before": lt_filter,
         "after": gt_filter,
         "on": eq_filter,
+        "isin": isin_filter,
     }
 
     def filter(self, _: Select) -> Select:
@@ -105,7 +115,7 @@ def create_filter_from_field_and_model(
 ) -> Type[F]:
     """Create a filter from a field and model."""
 
-    class _Filter(model):  # type: ignore
+    class _Filter(model):
         """A filter for a field."""
 
         def filter(self, query: Select) -> Select:
@@ -113,8 +123,10 @@ def create_filter_from_field_and_model(
             for field_name in model.model_fields:
                 filter_fn = self._filter_mapping[field_name]
                 value = getattr(self, field_name)
-                if value is not None:
-                    query = filter_fn(query, field, value)
+                if value is None:
+                    continue
+
+                query = filter_fn(query, field, value)
 
             return query
 
@@ -236,6 +248,7 @@ class StringFilter(Filter):
 
     eq: str | None = None
     has: str | None = None
+    isin: list[str] | None = None
 
 
 def string_filter(
@@ -304,8 +317,6 @@ def search_filter(
         def filter(self, query: Select) -> Select:
             """Filter a query."""
             term = f"%{self.query}%"
-            return query.where(
-                *(self.field.ilike(term) for self.field in fields)
-            )
+            return query.where(or_(*[field.ilike(term) for field in fields]))
 
     return _SearchFilter

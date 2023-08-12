@@ -3,27 +3,38 @@
 import datetime
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
+
+from whombat.schemas.base import BaseSchema
+from whombat.schemas.users import SimpleUser
 
 __all__ = ["Note", "NoteUpdate", "NoteCreate"]
 
 
-class Note(BaseModel):
-    """Schema for Note objects returned to the user."""
-
-    model_config = ConfigDict(from_attributes=True)
+class NoteCreate(BaseSchema):
+    """Schema for creating notes."""
 
     uuid: UUID = Field(default_factory=uuid4)
-    """The id of the note."""
+    """The uuid of the note."""
 
-    message: str
+    message: str = Field(min_length=1, max_length=1000)
     """The message of the note."""
 
-    created_by: str
-    """The username of the user who created the note."""
+    created_by_id: UUID
+    """The id of the user who created the note."""
 
     is_issue: bool = False
     """Whether the note is an issue."""
+
+
+class Note(NoteCreate):
+    """Schema for Note objects returned to the user."""
+
+    id: int
+    """The database id of the note."""
+
+    created_by: SimpleUser
+    """The user who created the note."""
 
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.now
@@ -35,24 +46,11 @@ class Note(BaseModel):
         return hash(self.uuid)
 
 
-class NoteCreate(BaseModel):
-    """Schema for creating notes."""
-
-    message: str = Field(..., min_length=1, max_length=1000)
-    """The message of the note."""
-
-    created_by: str = Field(..., min_length=1, max_length=100)
-    """The username of the user who created the note."""
-
-    is_issue: bool = False
-    """Whether the note is an issue."""
-
-
-class NoteUpdate(BaseModel):
+class NoteUpdate(BaseSchema):
     """Schema for updating notes."""
 
     message: str | None = Field(None, min_length=1, max_length=1000)
     """The message of the note."""
 
-    is_issue: bool | None
+    is_issue: bool | None = None
     """Whether the note is an issue."""

@@ -13,6 +13,7 @@ Additional information can be added, such as a full name, email,
 and affiliation. This information is not required.
 """
 import uuid
+from typing import TYPE_CHECKING
 
 import sqlalchemy.orm as orm
 from fastapi_users import BaseUserManager, UUIDIDMixin
@@ -25,6 +26,11 @@ __all__ = [
     "User",
     "UserManager",
 ]
+
+
+if TYPE_CHECKING:
+    from whombat.database.models.note import Note
+
 
 # TODO: Manage this secret better and make it cryptographically secure
 SECRET = "SECRET"
@@ -92,7 +98,9 @@ class User(Base):
     )
     """The username of the user."""
 
-    name: orm.Mapped[str] = orm.mapped_column(nullable=True)
+    name: orm.Mapped[str | None] = orm.mapped_column(
+        nullable=True, default=None
+    )
     """The full name of the user."""
 
     is_active: orm.Mapped[bool] = orm.mapped_column(
@@ -111,6 +119,12 @@ class User(Base):
         Boolean,
         default=False,
         nullable=False,
+    )
+
+    notes: orm.Mapped[list["Note"]] = orm.relationship(
+        "Note",
+        back_populates="created_by",
+        default_factory=list,
     )
 
 

@@ -1,11 +1,13 @@
 """Schemas for handling Recordings."""
 
+from uuid import UUID, uuid4
 import datetime
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field, FilePath, field_validator
+from pydantic import Field, FilePath, field_validator
 
 from whombat.core import files
+from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
 from whombat.schemas.notes import Note
 from whombat.schemas.tags import Tag
@@ -17,62 +19,29 @@ __all__ = [
 ]
 
 
-class Recording(BaseModel):
-    """Schema for Recording objects returned to the user."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    path: Path
-
-    hash: str
-    duration: float
-    channels: int
-    samplerate: int
-    time_expansion: float = 1.0
-
-    date: datetime.date | None = None
-    time: datetime.time | None = None
-    latitude: float | None = None
-    longitude: float | None = None
-
-    tags: list[Tag] = Field(default_factory=list)
-    features: list[Feature] = Field(default_factory=list)
-    notes: list[Note] = Field(default_factory=list)
-
-    def __hash__(self):
-        """Hash function."""
-        return hash(self.hash)
-
-    @classmethod
-    def from_file(cls, path: FilePath):
-        """Create a Recording object from a file."""
-        info = files.get_file_info(path)
-        if (
-            not info.exists
-            or not info.is_audio
-            or info.media_info is None
-            or info.hash is None
-        ):
-            raise ValueError("Not an audio file.")
-        return cls(
-            path=path,
-            hash=info.hash,
-            duration=info.media_info.duration_s,
-            channels=info.media_info.channels,
-            samplerate=info.media_info.samplerate_hz,
-        )
-
-
-class RecordingCreate(BaseModel):
+class RecordingCreate(BaseSchema):
     """Schema for Recording objects created by the user."""
 
     path: FilePath
+    """The path to the audio file."""
+
+    uuid: UUID = Field(default_factory=uuid4)
+    """The UUID of the recording."""
 
     date: datetime.date | None = None
+    """The date of the recording."""
+
     time: datetime.time | None = None
-    latitude: float | None = Field(..., ge=-90, le=90)
-    longitude: float | None = Field(..., ge=-180, le=180)
-    time_expansion: float = Field(1.0, gt=0)
+    """The time of the recording."""
+
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    """The latitude of the recording."""
+
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    """The longitude of the recording."""
+
+    time_expansion: float = Field(default=1.0, gt=0)
+    """The time expansion factor of the recording."""
 
     @field_validator("path")
     def is_an_audio_file(cls, v):
@@ -82,11 +51,33 @@ class RecordingCreate(BaseModel):
         return v
 
 
-class RecordingUpdate(BaseModel):
+class Recording(RecordingCreate):
+    """Schema for Recording objects returned to the user."""
+
+    path: Path
+    id: int
+
+    hash: str
+    duration: float
+    channels: int
+    samplerate: int
+    time_expansion: float = 1.0
+
+    tags: list[Tag] = Field(default_factory=list)
+    features: list[Feature] = Field(default_factory=list)
+    notes: list[Note] = Field(default_factory=list)
+
+    def __hash__(self):
+        """Hash function."""
+        return hash(self.hash)
+
+
+class RecordingUpdate(BaseSchema):
     """Schema for Recording objects updated by the user."""
 
+    path: FilePath | None = None
     date: datetime.date | None = None
     time: datetime.time | None = None
-    latitude: float | None = Field(None, ge=-90, le=90)
-    longitude: float | None = Field(None, ge=-180, le=180)
-    time_expansion: float | None = Field(None, gt=0)
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    time_expansion: float | None = Field(default=None, gt=0)

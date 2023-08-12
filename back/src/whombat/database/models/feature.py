@@ -40,6 +40,8 @@ __all__ = [
 
 if typing.TYPE_CHECKING:
     from whombat.database.models.recording import RecordingFeature
+    from whombat.database.models.clip import ClipFeature
+    from whombat.database.models.sound_event import SoundEventFeature
 
 
 class FeatureName(Base):
@@ -53,12 +55,32 @@ class FeatureName(Base):
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """Name of the feature."""
 
-    recording_features: orm.Mapped[
-        list["RecordingFeature"]  # noqa: F821 type: ignore
+    recordings: orm.Mapped[
+        list["RecordingFeature"]
     ] = orm.relationship(
         "RecordingFeature",
         back_populates="feature_name",
-        cascade="all, delete-orphan",
         init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    clips: orm.Mapped[
+        list["ClipFeature"]
+    ] = orm.relationship(
+        "ClipFeature",
+        back_populates="feature_name",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    sound_events: orm.Mapped[
+        list["SoundEventFeature"]
+    ] = orm.relationship(
+        "SoundEventFeature",
+        back_populates="feature_name",
+        init=False,
+        repr=False,
         default_factory=list,
     )

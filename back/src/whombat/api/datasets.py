@@ -681,7 +681,7 @@ async def create_dataset(
 
     file_list = files.get_audio_files_in_folder(audio_dir, relative=False)
 
-    recording_list = await recordings.create_recordings(session, file_list)
+    recording_list = await recordings.create_recordings_from_paths(session, file_list)
 
     await add_recordings_to_dataset(
         session=session,

@@ -3,7 +3,6 @@ import datetime
 import shutil
 from collections.abc import Callable
 from pathlib import Path
-from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -12,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api import features, notes, recordings, tags
+from whombat.api import recordings
 from whombat.database import models
 
 
@@ -31,7 +30,9 @@ async def test_create_recording(
     hash = compute_md5_checksum(path)
 
     # Act
-    recording = await recordings.create_recording(session, path)
+    recording = await recordings.create_recording(
+        session, data=schemas.RecordingCreate(path=path)
+    )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
@@ -78,8 +79,7 @@ async def test_create_recording_with_time_expansion(
     # Act
     recording = await recordings.create_recording(
         session,
-        path,
-        time_expansion=10.0,
+        data=schemas.RecordingCreate(path=path, time_expansion=10.0),
     )
 
     # Assert
@@ -102,11 +102,15 @@ async def test_create_recording_fails_if_already_exists(
     )
 
     # Act
-    await recordings.create_recording(session, path)
+    await recordings.create_recording(
+        session, data=schemas.RecordingCreate(path=path)
+    )
 
     # Assert
     with pytest.raises(exceptions.DuplicateObjectError):
-        await recordings.create_recording(session, path)
+        await recordings.create_recording(
+            session, data=schemas.RecordingCreate(path=path)
+        )
 
 
 async def test_create_recording_with_date(
@@ -123,7 +127,9 @@ async def test_create_recording_with_date(
     date = datetime.date(2021, 1, 1)
 
     # Act
-    recording = await recordings.create_recording(session, path, date=date)
+    recording = await recordings.create_recording(
+        session, data=schemas.RecordingCreate(path=path, date=date)
+    )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
@@ -147,7 +153,9 @@ async def test_create_recording_with_time(
     time = datetime.time(12, 0, 0)
 
     # Act
-    recording = await recordings.create_recording(session, path, time=time)
+    recording = await recordings.create_recording(
+        session, data=schemas.RecordingCreate(path=path, time=time)
+    )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
@@ -174,9 +182,11 @@ async def test_create_recording_with_coordinates(
     # Act
     recording = await recordings.create_recording(
         session,
-        path,
-        latitude=latitude,
-        longitude=longitude,
+        data=schemas.RecordingCreate(
+            path=path,
+            latitude=latitude,
+            longitude=longitude,
+        ),
     )
 
     # Assert
@@ -196,7 +206,9 @@ async def test_create_recording_fails_if_path_does_not_exist(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(session, path)
+        await recordings.create_recording(
+            session, schemas.RecordingCreate(path=path)
+        )
 
 
 async def test_create_recording_fails_if_path_is_not_an_audio_file(
@@ -210,7 +222,9 @@ async def test_create_recording_fails_if_path_is_not_an_audio_file(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(session, path)
+        await recordings.create_recording(
+            session, schemas.RecordingCreate(path=path)
+        )
 
 
 async def test_create_recording_with_bad_coordinates_fail(
@@ -231,9 +245,11 @@ async def test_create_recording_with_bad_coordinates_fail(
     with pytest.raises(ValidationError):
         await recordings.create_recording(
             session,
-            path,
-            latitude=latitude,
-            longitude=longitude,
+            data=schemas.RecordingCreate(
+                path=path,
+                latitude=latitude,
+                longitude=longitude,
+            ),
         )
 
     latitude = 1.0
@@ -243,32 +259,25 @@ async def test_create_recording_with_bad_coordinates_fail(
     with pytest.raises(ValidationError):
         await recordings.create_recording(
             session,
-            path,
-            latitude=latitude,
-            longitude=longitude,
+            data=schemas.RecordingCreate(
+                path=path,
+                latitude=latitude,
+                longitude=longitude,
+            ),
         )
 
 
 async def test_get_recording_by_hash(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test getting a recording by its hash."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    hash = compute_md5_checksum(path)
-    await recordings.create_recording(session, path)
-
     # Act
-    recording = await recordings.get_recording_by_hash(session, hash)
+    retrieved = await recordings.get_recording_by_hash(session, recording.hash)
 
     # Assert
-    assert isinstance(recording, schemas.Recording)
-    assert recording.hash == hash
+    assert isinstance(retrieved, schemas.Recording)
+    assert recording.hash == retrieved.hash
 
 
 async def test_get_recording_by_hash_fails_if_not_found(
@@ -285,24 +294,18 @@ async def test_get_recording_by_hash_fails_if_not_found(
 
 async def test_update_recording_date(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording's date."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
     date = datetime.date(2021, 1, 1)
-    recording = await recordings.create_recording(session, path)
     assert recording.date is None
 
     # Act
     updated_recording = await recordings.update_recording(
         session,
-        recording,
-        date=date,
+        recording_id=recording.id,
+        data=schemas.RecordingUpdate(date=date),
     )
 
     # Assert
@@ -314,24 +317,18 @@ async def test_update_recording_date(
 
 async def test_update_recording_time(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording's time."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
     time = datetime.time(12, 0, 0)
-    recording = await recordings.create_recording(session, path)
     assert recording.time is None
 
     # Act
     updated_recording = await recordings.update_recording(
         session,
-        recording,
-        time=time,
+        recording_id=recording.id,
+        data=schemas.RecordingUpdate(time=time),
     )
 
     # Assert
@@ -343,27 +340,23 @@ async def test_update_recording_time(
 
 async def test_update_recording_coordinates(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording's coordinates."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
     latitude = 1.0
     longitude = 2.0
-    recording = await recordings.create_recording(session, path)
     assert recording.latitude is None
     assert recording.longitude is None
 
     # Act
     updated_recording = await recordings.update_recording(
         session,
-        recording,
-        latitude=latitude,
-        longitude=longitude,
+        recording_id=recording.id,
+        data=schemas.RecordingUpdate(
+            latitude=latitude,
+            longitude=longitude,
+        ),
     )
 
     # Assert
@@ -375,26 +368,22 @@ async def test_update_recording_coordinates(
 
 async def test_update_recording_fails_with_bad_coordinates(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording's coordinates fails with bad coordinates."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
     latitude = 91.0
     longitude = 2.0
-    recording = await recordings.create_recording(session, path)
 
     # Act/Assert
     with pytest.raises(ValidationError):
         await recordings.update_recording(
             session,
-            recording,
-            latitude=latitude,
-            longitude=longitude,
+            recording_id=recording.id,
+            data=schemas.RecordingUpdate(
+                latitude=latitude,
+                longitude=longitude,
+            ),
         )
 
     latitude = 1.0
@@ -404,77 +393,56 @@ async def test_update_recording_fails_with_bad_coordinates(
     with pytest.raises(ValidationError):
         await recordings.update_recording(
             session,
-            recording,
-            latitude=latitude,
-            longitude=longitude,
+            recording_id=recording.id,
+            data=schemas.RecordingUpdate(
+                latitude=latitude,
+                longitude=longitude,
+            ),
         )
 
 
 async def test_update_recording_time_expansion(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording's time expands the recording."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=10,
-    )
-    recording = await recordings.create_recording(session, path)
-
     # Act
     updated_recording = await recordings.update_recording(
         session,
-        recording,
-        time_expansion=10,
+        recording_id=recording.id,
+        data=schemas.RecordingUpdate(time_expansion=10),
     )
 
     # Assert
-    assert updated_recording.duration == 1
-    assert updated_recording.samplerate == 441000
+    assert updated_recording.duration == recording.duration / 10
+    assert updated_recording.samplerate == recording.samplerate * 10
     assert updated_recording.time_expansion == 10
 
 
-async def test_update_recording_nonexistent_succeeds(
+async def test_update_nonexisting_recording_fails(
     session: AsyncSession,
-    tmp_path: Path,
 ):
     """Test updating a nonexistent recording succeeds."""
-    # Arrange
-    path = tmp_path / "path.wav"
-    path.touch()
-    recording = schemas.Recording(
-        path=path,
-        hash="hash",
-        duration=1,
-        channels=1,
-        samplerate=44100,
-    )
-
     # Act
-    recording = await recordings.update_recording(
-        session,
-        recording,
-        date=datetime.date(2021, 1, 1),
-    )
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.update_recording(
+            session,
+            recording_id=2,
+            data=schemas.RecordingUpdate(
+                date=datetime.date(2021, 1, 1),
+            ),
+        )
 
 
 async def test_delete_recording(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test deleting a recording."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
 
     # Act
-    await recordings.delete_recording(session, recording)
+    await recordings.delete_recording(session, recording_id=recording.id)
 
     # Assert
     with pytest.raises(exceptions.NotFoundError):
@@ -483,43 +451,23 @@ async def test_delete_recording(
 
 async def test_delete_recording_unexistent_succeeds(
     session: AsyncSession,
-    tmp_path: Path,
 ):
     """Test deleting a nonexistent recording succeeds."""
-    # Arrange
-    path = tmp_path / "path.wav"
-    path.touch()
-    recording = schemas.Recording(
-        path=path,
-        hash="hash",
-        duration=1,
-        channels=1,
-        samplerate=44100,
-    )
-
     # Act
-    await recordings.delete_recording(session, recording)
+    await recordings.delete_recording(session, recording_id=2)
 
 
 async def test_add_tag_to_recording(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    tag: schemas.Tag,
 ):
     """Test adding a tag to a recording."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-    tag = await tags.get_or_create_tag(session, key="key", value="value")
-
     # Act
     recording = await recordings.add_tag_to_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Assert
@@ -533,137 +481,65 @@ async def test_add_tag_to_recording(
 
 async def test_add_tag_to_recording_is_idempotent(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    tag: schemas.Tag,
 ):
     """Test adding a tag to a recording is idempotent."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-    tag = await tags.get_or_create_tag(session, key="key", value="value")
     recording = await recordings.add_tag_to_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
     assert len(recording.tags) == 1
 
     # Act
     recording = await recordings.add_tag_to_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Assert
     assert len(recording.tags) == 1
-
-
-async def test_add_tag_to_recording_creates_tag_if_not_exists(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test adding a tag to a recording creates the tag if it doesn't exist."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-    tag = schemas.Tag(key="key", value="value")
-
-    # Act
-    recording = await recordings.add_tag_to_recording(
-        session,
-        tag,
-        recording,
-    )
-
-    # Assert
-    assert tag in recording.tags
-    assert isinstance(recording, schemas.Recording)
-
-    # make sure the tag was created
-    query = select(models.Tag).where(
-        models.Tag.key == tag.key,
-        models.Tag.value == tag.value,
-    )
-    result = await session.execute(query)
-    assert result.scalars().first()
 
 
 async def test_add_note_to_recording(
     session: AsyncSession,
-    user: schemas.User,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    note: schemas.Note,
 ):
     """Test adding a note to a recording."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    note = await notes.create_note(
-        session,
-        message="message",
-        created_by=user,
-    )
-
     # Act
     recording = await recordings.add_note_to_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
-    assert note in recording.notes
-
-    # Get the recording again to make sure the note was added
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
     assert note in recording.notes
 
 
 async def test_add_note_to_recording_is_idempotent(
     session: AsyncSession,
-    user: schemas.User,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    note: schemas.Note,
 ):
     """Test adding a note to a recording is idempotent."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    note = await notes.create_note(
-        session,
-        message="message",
-        created_by=user,
-    )
-
     recording = await recordings.add_note_to_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
     assert len(recording.notes) == 1
 
     # Act
     recording = await recordings.add_note_to_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Assert
@@ -672,28 +548,15 @@ async def test_add_note_to_recording_is_idempotent(
 
 async def test_add_feature_to_recording(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    feature: schemas.Feature,
 ):
     """Test adding a feature to a recording."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    feature = await features.create_feature(
-        session,
-        name="name",
-        value=10,
-    )
-
     # Act
     recording = await recordings.add_feature_to_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature=feature,
     )
 
     # Assert
@@ -707,35 +570,23 @@ async def test_add_feature_to_recording(
 
 async def test_add_feature_to_recording_is_idempotent(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    feature: schemas.Feature,
 ):
     """Test adding a feature to a recording is idempotent."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    feature = await features.create_feature(
-        session,
-        name="name",
-        value=10,
-    )
-
     recording = await recordings.add_feature_to_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature=feature,
     )
     assert len(recording.features) == 1
 
     # Act
     recording = await recordings.add_feature_to_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature=feature,
     )
 
     # Assert
@@ -746,110 +597,24 @@ async def test_add_feature_to_recording_is_idempotent(
     assert len(recording.features) == 1
 
 
-async def test_add_feature_to_recording_creates_feature_name_if_not_exist(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test adding recording features creates feature name if nonexistent."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    feature = schemas.Feature(
-        name="name",
-        value=10,
-    )
-
-    # Act
-    recording = await recordings.add_feature_to_recording(
-        session,
-        feature,
-        recording,
-    )
-
-    # Assert
-    assert isinstance(recording, schemas.Recording)
-    assert feature in recording.features
-
-    # Make sure the feature name was created
-    query = select(models.FeatureName).where(
-        models.FeatureName.name == feature.name,
-    )
-    result = await session.execute(query)
-    assert result.scalars().first()
-
-
-async def test_add_note_to_recording_creates_note_if_it_doesnt_exist(
-    session: AsyncSession,
-    user: schemas.User,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test adding a recording note creates the note if it doesn't exist."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    # Act
-    recording = await recordings.add_note_to_recording(
-        session,
-        schemas.Note(
-            message="message",
-            created_by=user.username,
-        ),
-        recording,
-    )
-
-    # Assert
-    assert isinstance(recording, schemas.Recording)
-    assert len(recording.notes) == 1
-
-    # Make sure the note was created
-    query = select(models.Note).where(models.Note.message == "message")
-    result = await session.execute(query)
-    note = result.scalars().first()
-    assert note is not None
-
-
 async def test_remove_note_from_recording(
     session: AsyncSession,
-    user: schemas.User,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    note: schemas.Note,
 ):
     """Test removing a note from a recording."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    note = await notes.create_note(
-        session,
-        message="message",
-        created_by=user,
-    )
-
     recording = await recordings.add_note_to_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Act
     recording = await recordings.remove_note_from_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Assert
@@ -863,98 +628,50 @@ async def test_remove_note_from_recording(
 
 async def test_remove_note_from_recording_fails_if_recording_does_not_exist(
     session: AsyncSession,
-    user: schemas.User,
-    tmp_path: Path,
+    note: schemas.Note,
 ):
     """Test removing a recording note fails if the recording does not exist."""
-    # Arrange
-    path = tmp_path / "path.wav"
-    path.touch()
-    recording = schemas.Recording(
-        path=path,
-        hash="hash",
-        duration=1,
-        channels=1,
-        samplerate=44100,
-    )
-
-    note = await notes.create_note(
-        session,
-        message="message",
-        created_by=user,
-    )
-
     # Act
     with pytest.raises(exceptions.NotFoundError):
         await recordings.remove_note_from_recording(
             session,
-            note,
-            recording,
+            recording_id=3,
+            note_id=note.id,
         )
 
 
 async def test_remove_note_from_recording_fails_if_note_does_not_exist(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
 ):
     """Test removing a recording note fails if the note does not exist."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    note = schemas.Note(
-        uuid=uuid4(),
-        message="message",
-        created_by="username",
-    )
-
     # Act
     with pytest.raises(exceptions.NotFoundError):
         await recordings.remove_note_from_recording(
             session,
-            note,
-            recording,
+            recording_id=3,
+            note_id=3,
         )
 
 
 async def test_remove_note_from_recording_is_idempotent(
     session: AsyncSession,
-    user: schemas.User,
-    random_wav_factory: Callable[..., Path],
+    note: schemas.Note,
+    recording: schemas.Recording,
 ):
     """Test removing a note from a recording is idempotent."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    note = await notes.create_note(
-        session,
-        message="message",
-        created_by=user,
-    )
-
     recording = await recordings.add_note_to_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
     assert len(recording.notes) == 1
 
     # Act
     recording = await recordings.remove_note_from_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Assert
@@ -963,8 +680,8 @@ async def test_remove_note_from_recording_is_idempotent(
     # Act
     recording = await recordings.remove_note_from_recording(
         session,
-        note,
-        recording,
+        recording_id=recording.id,
+        note_id=note.id,
     )
 
     # Assert
@@ -973,28 +690,15 @@ async def test_remove_note_from_recording_is_idempotent(
 
 async def test_remove_tag_from_recording(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    tag: schemas.Tag,
 ):
     """Test removing a tag from a recording."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    tag = await tags.create_tag(
-        session,
-        key="name",
-        value="value",
-    )
-
     recording = await recordings.add_tag_to_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Make sure the tag was added
@@ -1003,8 +707,8 @@ async def test_remove_tag_from_recording(
     # Act
     recording = await recordings.remove_tag_from_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Assert
@@ -1018,95 +722,36 @@ async def test_remove_tag_from_recording(
 
 async def test_remove_tag_from_recording_fails_with_nonexistent_recording(
     session: AsyncSession,
-    tmp_path: Path,
 ):
     """Test removing a recording tag fails with a nonexistent recording."""
-    # Arrange
-    path = tmp_path / "path.wav"
-    path.touch()
-    recording = schemas.Recording(
-        path=path,
-        hash="hash",
-        duration=1,
-        channels=1,
-        samplerate=44100,
-    )
-
-    tag = await tags.create_tag(
-        session,
-        key="name",
-        value="value",
-    )
-
     # Act
     with pytest.raises(exceptions.NotFoundError):
         await recordings.remove_tag_from_recording(
             session,
-            tag,
-            recording,
-        )
-
-
-async def test_remove_tag_from_recording_fails_with_nonexistent_tag(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test removing a tag from a recording fails with a nonexistent tag."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    tag = schemas.Tag(
-        key="name",
-        value="value",
-    )
-
-    # Act
-    with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_tag_from_recording(
-            session,
-            tag,
-            recording,
+            recording_id=3,
+            tag_id=3,
         )
 
 
 async def test_remove_tag_from_recording_is_idempotent(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    tag: schemas.Tag,
 ):
     """Test removing a tag from a recording is idempotent."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    tag = await tags.create_tag(
-        session,
-        key="name",
-        value="value",
-    )
-
     recording = await recordings.add_tag_to_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
     assert len(recording.tags) == 1
 
     # Act
     recording = await recordings.remove_tag_from_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Assert
@@ -1115,8 +760,8 @@ async def test_remove_tag_from_recording_is_idempotent(
     # Act
     recording = await recordings.remove_tag_from_recording(
         session,
-        tag,
-        recording,
+        recording_id=recording.id,
+        tag_id=tag.id,
     )
 
     # Assert
@@ -1125,28 +770,14 @@ async def test_remove_tag_from_recording_is_idempotent(
 
 async def test_remove_feature_from_recording(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    feature: schemas.Feature,
 ):
     """Test removing a feature from a recording."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    feature = await features.create_feature(
-        session,
-        name="name",
-        value=10,
-    )
-
     recording = await recordings.add_feature_to_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature=feature,
     )
 
     # Make sure the feature was added
@@ -1155,8 +786,8 @@ async def test_remove_feature_from_recording(
     # Act
     recording = await recordings.remove_feature_from_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature_name_id=feature.feature_name.id,
     )
 
     # Assert
@@ -1170,95 +801,35 @@ async def test_remove_feature_from_recording(
 
 async def test_remove_feature_from_recording_fails_with_nonexistent_recording(
     session: AsyncSession,
-    tmp_path: Path,
 ):
     """Test removing a recording feature fails with a nonexistent recording."""
-    # Arrange
-    path = tmp_path / "path.wav"
-    path.touch()
-    recording = schemas.Recording(
-        path=path,
-        hash="hash",
-        duration=1,
-        channels=1,
-        samplerate=44100,
-    )
-
-    feature = await features.create_feature(
-        session,
-        name="name",
-        value=10,
-    )
-
     # Act
     with pytest.raises(exceptions.NotFoundError):
         await recordings.remove_feature_from_recording(
             session,
-            feature,
-            recording,
-        )
-
-
-async def test_remove_feature_from_recording_fails_with_nonexistent_feature(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test removing a recording feature fails with a nonexistent feature."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    feature = schemas.Feature(
-        name="name",
-        value=10,
-    )
-
-    # Act
-    with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_feature_from_recording(
-            session,
-            feature,
-            recording,
+            recording_id=3,
+            feature_name_id=3,
         )
 
 
 async def test_remove_feature_from_recording_is_idempotent(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
+    feature: schemas.Feature,
 ):
     """Test removing a feature from a recording is idempotent."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    recording = await recordings.create_recording(session, path)
-
-    feature = await features.create_feature(
-        session,
-        name="name",
-        value=10,
-    )
-
     recording = await recordings.add_feature_to_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature=feature,
     )
     assert len(recording.features) == 1
 
     # Act
     recording = await recordings.remove_feature_from_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature_name_id=feature.feature_name.id,
     )
 
     # Assert
@@ -1267,8 +838,8 @@ async def test_remove_feature_from_recording_is_idempotent(
     # Act
     recording = await recordings.remove_feature_from_recording(
         session,
-        feature,
-        recording,
+        recording_id=recording.id,
+        feature_name_id=feature.feature_name.id,
     )
 
     # Assert
@@ -1286,14 +857,18 @@ async def test_get_recordings(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create_recording(session, path1)
+    recording1 = await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path1)
+    )
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(session, path2)
+    recording2 = await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path2)
+    )
 
     # Act
     recording_list = await recordings.get_recordings(session)
@@ -1318,14 +893,18 @@ async def test_get_recordings_with_limit(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create_recording(session, path1)
+    recording1 = await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path1)
+    )
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(session, path2)
+    recording2 = await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path2)
+    )
 
     # Act
     recording_list = await recordings.get_recordings(session, limit=1)
@@ -1359,14 +938,18 @@ async def test_get_recordings_with_offset(
         samplerate=44100,
         duration=1,
     )
-    await recordings.create_recording(session, path1)
+    await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path1)
+    )
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(session, path2)
+    recording2 = await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path2)
+    )
 
     # Act
     recording_list = await recordings.get_recordings(session, offset=1)
@@ -1387,24 +970,18 @@ async def test_get_recordings_with_offset(
 
 async def test_get_recording_by_path(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test getting a recording by path."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    created_recording = await recordings.create_recording(session, path)
-
     # Act
-    retrieved_recording = await recordings.get_recording_by_path(session, path)
+    retrieved_recording = await recordings.get_recording_by_path(
+        session, recording.path
+    )
 
     # Assert
     assert isinstance(retrieved_recording, schemas.Recording)
-    assert retrieved_recording.path == path
-    assert created_recording.hash == retrieved_recording.hash
+    assert recording.hash == retrieved_recording.hash
+    assert retrieved_recording.path == recording.path
 
 
 async def test_get_recording_by_path_fails_if_not_found(
@@ -1426,25 +1003,19 @@ async def test_get_recording_by_path_fails_if_not_found(
 
 async def test_update_recording_path(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording path."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
+    path = recording.path
     new_path = path.parent / "new_path.wav"
     shutil.move(path, new_path)
 
     # Act
-    recording = await recordings.update_recording_path(
+    recording = await recordings.update_recording(
         session,
-        recording,
-        new_path,
+        recording_id=recording.id,
+        data=schemas.RecordingUpdate(path=new_path),
     )
 
     # Assert
@@ -1454,41 +1025,28 @@ async def test_update_recording_path(
 
 async def test_update_recording_path_fails_if_no_file_exist(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test updating a recording path fails if no file exists."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
-    new_path = path.parent / "new_path.wav"
+    new_path = recording.path.parent / "new_path.wav"
 
     # Act
     with pytest.raises(ValueError):
-        await recordings.update_recording_path(
+        await recordings.update_recording(
             session,
-            recording,
-            new_path,
+            recording_id=recording.id,
+            data=schemas.RecordingUpdate(path=new_path),
         )
 
 
 async def test_update_recording_path_fails_if_hash_does_not_coincide(
     session: AsyncSession,
+    recording: schemas.Recording,
     random_wav_factory: Callable[..., Path],
 ):
     """Test updating a recording path fails if the hash does not coincide."""
     # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-    recording = await recordings.create_recording(session, path)
-
     new_path = random_wav_factory(
         channels=1,
         samplerate=44100,
@@ -1497,41 +1055,24 @@ async def test_update_recording_path_fails_if_hash_does_not_coincide(
 
     # Act
     with pytest.raises(ValueError):
-        await recordings.update_recording_path(
+        await recordings.update_recording(
             session,
-            recording,
-            new_path,
+            recording_id=recording.id,
+            data=schemas.RecordingUpdate(path=new_path),
         )
 
 
 async def test_update_recording_fails_if_recording_does_not_exist(
     session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
+    tmp_path: Path,
 ):
     """Test updating a recording fails if the recording does not exist."""
-    # Arrange
-    path = random_wav_factory(
-        channels=1,
-        samplerate=44100,
-        duration=1,
-    )
-
-    hash = compute_md5_checksum(path)
-
-    recording = schemas.Recording(
-        hash=hash,
-        path=path,
-        duration=1,
-        samplerate=44100,
-        channels=1,
-    )
-
     # Act
-    with pytest.raises(exceptions.NotFoundError):
-        await recordings.update_recording_path(
+    with pytest.raises(ValidationError):
+        await recordings.update_recording(
             session,
-            recording,
-            path,
+            recording_id=3,
+            data=schemas.RecordingUpdate(path=tmp_path / "test.wav"),
         )
 
 
@@ -1545,7 +1086,7 @@ async def test_create_recordings(
     path2 = random_wav_factory()
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
@@ -1569,7 +1110,7 @@ async def test_create_recordings_ignores_non_existing_files(
     path2 = Path("non_existing_file.wav")
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
@@ -1593,7 +1134,7 @@ async def test_create_recordings_ignores_non_audio_files(
     path2.touch()
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
@@ -1608,25 +1149,27 @@ async def test_create_recordings_ignores_non_audio_files(
 async def test_create_recordings_ignores_files_already_in_the_dataset(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    recording: schemas.Recording,
 ):
     """Test creating multiple recordings ignores existing ones."""
     # Arrange
-    path1 = random_wav_factory()
+    path1 = recording.path
     path2 = random_wav_factory()
-
-    await recordings.create_recording(session, path1)
+    all_recordings = await recordings.get_recordings(session, limit=-1)
+    assert len(all_recordings) == 1
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
 
     # Assert
     assert isinstance(recording_list, list)
-    assert len(recording_list) == 1
-    assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path2
+    assert all(isinstance(obj, schemas.Recording) for obj in recording_list)
+
+    all_recordings = await recordings.get_recordings(session, limit=-1)
+    assert len(all_recordings) == 2
 
 
 async def test_create_recordings_removes_hash_duplicates(
@@ -1644,7 +1187,7 @@ async def test_create_recordings_removes_hash_duplicates(
     shutil.copy(path1, path2)
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
@@ -1673,19 +1216,19 @@ async def test_create_recording_avoids_hash_duplicates(
     shutil.copy(path2, path3)
 
     # Pre register recording at path3
-    await recordings.create_recording(session, path3)
+    await recordings.create_recording(
+        session, schemas.RecordingCreate(path=path3)
+    )
 
     # Act
-    recording_list = await recordings.create_recordings(
+    await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
     )
 
     # Assert
-    assert isinstance(recording_list, list)
-    assert len(recording_list) == 1
-    assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path1
+    all_recs = await recordings.get_recordings(session, limit=-1)
+    assert len(all_recs) == 2
 
 
 async def test_create_recordings_with_time_expansion(
@@ -1698,7 +1241,7 @@ async def test_create_recordings_with_time_expansion(
     path2 = random_wav_factory(duration=2, samplerate=16000)
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_recordings_from_paths(
         session,
         [path1, path2],
         time_expansion=5,

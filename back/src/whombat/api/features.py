@@ -1,6 +1,6 @@
 """API functions to interact with feature names."""
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,14 +12,13 @@ __all__ = [
     "delete_feature_name",
     "change_feature_name",
     "get_feature_names",
-    "create_feature",
 ]
 
 
 async def _get_or_create_feature_names(
     session: AsyncSession,
     feature_names: list[str],
-) -> dict[str, models.FeatureName]:
+) -> dict[str, schemas.FeatureName]:
     """Get or create feature names.
 
     Parameters
@@ -35,16 +34,18 @@ async def _get_or_create_feature_names(
         The feature names.
 
     """
-    # Get or create the feature names.
+    names = [feature_name for feature_name in feature_names]
+
+    # Get existing feature names.
     query = select(models.FeatureName).where(
-        models.FeatureName.name.in_(feature_names)
+        models.FeatureName.name.in_(names)
     )
     result = await session.execute(query)
     db_feature_names = result.scalars().all()
     db_feature_names = {f.name: f for f in db_feature_names}
 
     # Create the feature names that do not exist.
-    missing_feature_names = set(feature_names) - set(db_feature_names.keys())
+    missing_feature_names = set(names) - set(db_feature_names.keys())
     if missing_feature_names:
         for name in missing_feature_names:
             feature = models.FeatureName(name=name)
@@ -52,13 +53,15 @@ async def _get_or_create_feature_names(
             db_feature_names[name] = feature
         await session.commit()
 
-    return db_feature_names
+    return {
+        name: schemas.FeatureName.model_validate(f)
+        for name, f in db_feature_names.items()
+    }
 
 
 async def create_feature_name(
-    session: AsyncSession,
-    name: str,
-) -> str:
+    session: AsyncSession, name: str
+) -> schemas.FeatureName:
     """Create a feature.
 
     Parameters
@@ -90,12 +93,12 @@ async def create_feature_name(
             f"A feature with the name '{name}' already exists."
         ) from e
 
-    return name
+    return schemas.FeatureName.model_validate(feature)
 
 
 async def delete_feature_name(
     session: AsyncSession,
-    name: str,
+    feature_name: schemas.FeatureName,
 ) -> None:
     """Delete a feature.
 
@@ -122,30 +125,29 @@ async def delete_feature_name(
 
     """
     # Delete the feature.
-    query = select(models.FeatureName).where(models.FeatureName.name == name)
-    result = await session.execute(query)
-    feature = result.scalar_one_or_none()
+    stm = delete(models.FeatureName)
 
-    if feature is None:
-        return
+    if feature_name.id is not None:
+        stm = stm.where(models.FeatureName.id == feature_name.id)
+    else:
+        stm = stm.where(models.FeatureName.name == feature_name.name)
 
-    await session.delete(feature)
-    await session.commit()
+    await session.execute(stm)
 
 
 async def change_feature_name(
     session: AsyncSession,
-    old_name: str,
+    feature_name_id: int,
     new_name: str,
-) -> str:
+) -> schemas.FeatureName:
     """Change the name of a feature.
 
     Parameters
     ----------
     session : AsyncSession
         The database session to use.
-    old_name : str
-        The old name of the feature.
+    feature_name_id : int
+        The id of the feature name to change.
     new_name : str
         The new name of the feature.
 
@@ -163,26 +165,27 @@ async def change_feature_name(
 
     """
     # Change the name of the feature.
-    query = (
-        update(models.FeatureName)
-        .where(models.FeatureName.name == old_name)
-        .values(name=new_name)
+    query = select(models.FeatureName).where(
+        models.FeatureName.id == feature_name_id
     )
+    result = await session.execute(query)
+    feature_name = result.scalars().first()
+
+    if feature_name is None:
+        raise exceptions.NotFoundError(
+            f"A feature with the id '{feature_name_id}' does not exist."
+        )
 
     try:
-        result = await session.execute(query)
+        feature_name.name = new_name
+        session.add(feature_name)
         await session.commit()
     except IntegrityError as e:
         raise exceptions.DuplicateObjectError(
             f"A feature with the name '{new_name}' already exists."
         ) from e
 
-    if result.rowcount == 0:  # type: ignore
-        raise exceptions.NotFoundError(
-            f"A feature with the name '{old_name}' does not exist."
-        )
-
-    return new_name
+    return schemas.FeatureName.model_validate(feature_name)
 
 
 async def get_feature_names(
@@ -190,7 +193,7 @@ async def get_feature_names(
     search: str | None = None,
     limit: int = 1000,
     offset: int = 0,
-) -> list[str]:
+) -> list[schemas.FeatureName]:
     """Get all feature names.
 
     Parameters
@@ -211,54 +214,19 @@ async def get_feature_names(
         The names of all features.
 
     """
-    query = select(models.FeatureName.name)
+    query = select(models.FeatureName)
     if search is not None:
         query = query.where(models.FeatureName.name.ilike(f"%{search}%"))
     query = query.order_by(models.FeatureName.name.asc())
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)
-    rows = result.all()
-    return [row[0] for row in rows]
-
-
-async def create_feature(
-    session: AsyncSession,
-    name: str,
-    value: float,
-) -> schemas.Feature:
-    """Create a feature.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-    name : str
-        The name of the feature.
-    value : float
-        The value of the feature.
-
-    Returns
-    -------
-    feature : schemas.Feature
-        The created feature.
-
-    """
-    # Create the feature.
-    try:
-        name = await create_feature_name(session, name)
-    except exceptions.DuplicateObjectError:
-        pass
-
-    return schemas.Feature(
-        name=name,
-        value=value,
-    )
+    rows = result.scalars().all()
+    return [schemas.FeatureName.model_validate(r) for r in rows]
 
 
 async def get_or_create_feature_name(
-    session: AsyncSession,
-    name: str,
-) -> str:
+    session: AsyncSession, name: str
+) -> schemas.FeatureName:
     """Get or create a feature name.
 
     Parameters
@@ -274,5 +242,31 @@ async def get_or_create_feature_name(
         The name of the feature.
 
     """
-    await _get_or_create_feature_names(session, [name])
-    return name
+    feature_names = await _get_or_create_feature_names(session, [name])
+    return feature_names[name]
+
+
+async def get_or_create_feature(
+    session: AsyncSession,
+    name: str,
+    value: float,
+) -> schemas.Feature:
+    """Get or create a feature.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    name : str
+        The name of the feature.
+    value : float
+        The value of the feature.
+
+    Returns
+    -------
+    feature : schemas.Feature
+        The feature.
+
+    """
+    feature_name = await get_or_create_feature_name(session, name)
+    return schemas.Feature(feature_name=feature_name, value=value)

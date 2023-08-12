@@ -2,8 +2,9 @@
 
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import Field, model_validator
 
+from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
 from whombat.schemas.recordings import Recording
 from whombat.schemas.tags import Tag
@@ -14,18 +15,26 @@ __all__ = [
 ]
 
 
-class Clip(BaseModel):
-    """Schema for Clip objects returned to the user."""
+class ClipCreate(BaseSchema):
+    """Schema for creating a clip."""
 
-    model_config = ConfigDict(from_attributes=True)
+    uuid: UUID = Field(default_factory=uuid4)
+    """The unique identifier of the clip."""
 
-    recording: Recording
+    recording_id: int
+    """The id of the recording to which the clip belongs."""
+
     start_time: float
-    end_time: float
+    """The start time of the clip."""
 
-    uuid: UUID = uuid4()
+    end_time: float
+    """The end time of the clip."""
+
     tags: list[Tag] = Field(default_factory=list)
+    """The tags associated with the clip."""
+
     features: list[Feature] = Field(default_factory=list)
+    """The features associated with the clip."""
 
     @model_validator(mode="before")
     def validate_times(cls, values):
@@ -35,9 +44,11 @@ class Clip(BaseModel):
         return values
 
 
-class ClipCreate(BaseModel):
-    """Schema for creating a clip."""
+class Clip(ClipCreate):
+    """Schema for Clip objects returned to the user."""
 
-    recording_hash: str
-    start_time: float
-    end_time: float
+    id: int | None = None
+    """The database id of the clip."""
+
+    recording: Recording
+    """Recording information for the clip."""

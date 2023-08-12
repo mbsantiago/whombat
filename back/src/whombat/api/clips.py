@@ -9,10 +9,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api.recordings import (
-    _add_associated_objects_to_recording,
-    _convert_recording_to_schema,
-)
 from whombat.core.common import remove_duplicates
 from whombat.database import models
 from whombat.filters.base import Filter

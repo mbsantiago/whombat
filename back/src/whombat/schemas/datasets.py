@@ -2,10 +2,11 @@
 
 from enum import Enum
 from pathlib import Path
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, DirectoryPath, Field
+from pydantic import DirectoryPath, Field
 
+from whombat.schemas.base import BaseSchema
 from whombat.schemas.recordings import Recording
 
 __all__ = [
@@ -17,31 +18,35 @@ __all__ = [
 ]
 
 
-class Dataset(BaseModel):
-    """Schema for Dataset objects returned to the user."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    uuid: UUID
-    name: str
-    description: str | None
-    audio_dir: DirectoryPath
-
-
-class DatasetCreate(BaseModel):
+class DatasetCreate(BaseSchema):
     """Schema for Dataset objects created by the user."""
 
+    uuid: UUID = Field(default_factory=uuid4)
+    """The unique identifier of the dataset."""
+
     audio_dir: DirectoryPath
+    """The path to the directory containing the audio files."""
+
     name: str = Field(..., min_length=1)
+    """The name of the dataset."""
+
     description: str | None = Field(None)
+    """The description of the dataset."""
 
 
-class DatasetUpdate(BaseModel):
+class Dataset(DatasetCreate):
+    """Schema for Dataset objects returned to the user."""
+
+    id: int | None = None
+    """The database id of the dataset."""
+
+
+class DatasetUpdate(BaseSchema):
     """Schema for Dataset objects updated by the user."""
 
-    audio_dir: DirectoryPath | None
-    name: str | None = Field(..., min_length=1)
-    description: str | None = Field(None)
+    audio_dir: DirectoryPath | None = None
+    name: str | None = Field(default=None, min_length=1)
+    description: str | None = None
 
 
 class FileState(Enum):
@@ -74,17 +79,15 @@ class FileState(Enum):
     """If the recording is not registered but the file is present."""
 
 
-class DatasetFile(BaseModel):
+class DatasetFile(BaseSchema):
     path: Path
 
     state: FileState
 
 
-class DatasetRecording(BaseModel):
+class DatasetRecording(BaseSchema):
     """Schema for DatasetRecording objects returned to the user."""
 
     path: Path
 
     recording: Recording
-
-    model_config = ConfigDict(from_attributes=True)

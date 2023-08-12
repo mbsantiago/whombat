@@ -14,30 +14,50 @@ the database.
 
 """
 
-from whombat.schemas.clips import Clip
+from whombat.schemas.clips import Clip, ClipCreate
 from whombat.schemas.datasets import (
     Dataset,
     DatasetFile,
     DatasetRecording,
     FileState,
 )
-from whombat.schemas.features import Feature
-from whombat.schemas.notes import Note
-from whombat.schemas.recordings import Recording
-from whombat.schemas.sound_events import SoundEvent
-from whombat.schemas.tags import Tag
-from whombat.schemas.users import User
+from whombat.schemas.features import Feature, FeatureName, FeatureNameCreate
+from whombat.schemas.notes import Note, NoteCreate, NoteUpdate
+from whombat.schemas.recordings import (
+    Recording,
+    RecordingCreate,
+    RecordingUpdate,
+)
+from whombat.schemas.sound_events import (
+    SoundEvent,
+    SoundEventCreate,
+)
+from whombat.schemas.tags import Tag, TagCreate, TagUpdate
+from whombat.schemas.users import User, UserCreate, UserUpdate, SimpleUser
 
 __all__ = [
     "Clip",
+    "ClipCreate",
     "Dataset",
     "DatasetFile",
     "DatasetRecording",
     "Feature",
+    "FeatureName",
+    "FeatureNameCreate",
     "FileState",
     "Note",
+    "NoteCreate",
+    "NoteUpdate",
     "Recording",
+    "RecordingCreate",
+    "RecordingUpdate",
+    "SimpleUser",
     "SoundEvent",
+    "SoundEventCreate",
     "Tag",
+    "TagCreate",
+    "TagUpdate",
     "User",
+    "UserCreate",
+    "UserUpdate",
 ]
