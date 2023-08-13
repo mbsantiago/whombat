@@ -27,9 +27,11 @@ async def test_create_clip(
     # Act
     clip = await clips.create_clip(
         session,
-        recording,
-        start_time=0.0,
-        end_time=0.5,
+        data=schemas.ClipCreate(
+            recording_id=recording.id,
+            start_time=0.0,
+            end_time=0.5,
+        ),
     )
 
     # Assert

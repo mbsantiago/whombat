@@ -23,11 +23,10 @@ class PathType(types.TypeDecorator):
 
     cache_ok = True
 
-    def process_bind_param(self, value: Path, dialect) -> str:
+    def process_bind_param(self, value: Path, _) -> str:
         return str(value)
 
-    def process_result_value(self, value: str, dialect) -> Path:
-        print(value)
+    def process_result_value(self, value: str, _) -> Path:
         return Path(value)
 
 
@@ -36,9 +35,8 @@ class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
 
     created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(
         name="created_at",
-        nullable=False,
-        init=False,
         default_factory=datetime.datetime.utcnow,
+        kw_only=True,
     )
 
     # Add a type annotation map to allow for custom types.

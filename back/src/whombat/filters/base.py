@@ -32,13 +32,31 @@ __all__ = [
 Model = TypeVar("Model", bound=Base)
 
 
+def le_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: int | float | datetime.date | datetime.time,
+) -> Select:
+    """Filter a query by a less than or equal to condition."""
+    return query.where(field <= value)
+
+
 def lt_filter(
     query: Select,
     field: MappedColumn | InstrumentedAttribute,
     value: int | float | datetime.date | datetime.time,
 ) -> Select:
     """Filter a query by a less than condition."""
-    return query.where(field <= value)
+    return query.where(field < value)
+
+
+def ge_filter(
+    query: Select,
+    field: MappedColumn | InstrumentedAttribute,
+    value: int | float | datetime.date | datetime.time,
+) -> Select:
+    """Filter a query by a greater than or equal to condition."""
+    return query.where(field >= value)
 
 
 def gt_filter(
@@ -47,7 +65,7 @@ def gt_filter(
     value: int | float | datetime.date | datetime.time,
 ) -> Select:
     """Filter a query by a greater than condition."""
-    return query.where(field >= value)
+    return query.where(field > value)
 
 
 def is_null_filter(
@@ -93,8 +111,11 @@ class Filter(BaseModel):
 
     _filter_mapping = {
         "eq": eq_filter,
+        "le": le_filter,
+        "ge": ge_filter,
         "lt": lt_filter,
         "gt": gt_filter,
+        "is_true": eq_filter,
         "is_null": is_null_filter,
         "has": has_filter,
         "before": lt_filter,
@@ -139,8 +160,11 @@ class IntegerFilter(Filter):
     """A filter for integers."""
 
     eq: int | None = None
+    le: int | None = None
+    ge: int | None = None
     lt: int | None = None
     gt: int | None = None
+    isin: list[int] | None = None
 
 
 def integer_filter(
@@ -154,8 +178,11 @@ class OptionalIntegerFilter(Filter):
     """A filter for integers."""
 
     eq: int | None = None
+    le: int | None = None
+    ge: int | None = None
     lt: int | None = None
     gt: int | None = None
+    isin: list[int] | None = None
     is_null: bool | None = None
 
 
@@ -169,6 +196,8 @@ def optional_integer_filter(
 class FloatFilter(Filter):
     lt: float | None = None
     gt: float | None = None
+    le: float | None = None
+    ge: float | None = None
 
 
 def float_filter(
@@ -183,6 +212,8 @@ class OptionalFloatFilter(Filter):
 
     lt: float | None = None
     gt: float | None = None
+    le: float | None = None
+    ge: float | None = None
     is_null: bool | None = None
 
 
@@ -265,6 +296,7 @@ class OptionalStringFilter(Filter):
 
     eq: str | None = None
     has: str | None = None
+    isin: list[str] | None = None
     is_null: bool | None = None
 
 

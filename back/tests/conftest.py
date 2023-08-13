@@ -14,8 +14,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, schemas
 
+# Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 logging.getLogger("asyncio").setLevel(logging.WARNING)
+logging.getLogger("passlib").setLevel(logging.WARNING)
 
 
 def random_string():
@@ -120,9 +122,7 @@ async def feature_name(session: AsyncSession) -> schemas.FeatureName:
 
 
 @pytest.fixture
-async def note(
-    session: AsyncSession, user: schemas.User
-) -> schemas.Note:
+async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
     """Create a note for testing."""
     note = await api.notes.create_note(
         session,
@@ -132,3 +132,19 @@ async def note(
         ),
     )
     return note
+
+
+@pytest.fixture
+async def clip(
+    session: AsyncSession,
+    recording: schemas.Recording,
+) -> schemas.Clip:
+    """Create a clip for testing."""
+    return await api.clips.create_clip(
+        session,
+        data=schemas.ClipCreate(
+            recording_id=recording.id,
+            start_time=0.1,
+            end_time=0.2,
+        ),
+    )
