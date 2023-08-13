@@ -11,8 +11,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, schemas
-from whombat.api.features import _get_or_create_feature_names
-from whombat.api.tags import _get_or_create_tags
 from whombat.core.common import remove_duplicates
 from whombat.database import models
 from whombat.filters.base import Filter

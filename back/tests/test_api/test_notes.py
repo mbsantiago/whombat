@@ -117,7 +117,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     assert results.scalar_one_or_none() is None
 
 
-async def test_delete_note_does_not_fail_if_note_does_not_exist(
+async def test_delete_note_fails_if_note_does_not_exist(
     session: AsyncSession,
     user: schemas.User,
 ):
@@ -133,10 +133,11 @@ async def test_delete_note_does_not_fail_if_note_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await notes.get_note_by_id(session, note_id=note.id)
 
-    await notes.delete_note(
-        session,
-        note=note,
-    )
+    with pytest.raises(exceptions.NotFoundError):
+        await notes.delete_note(
+            session,
+            note=note,
+        )
 
 
 async def test_get_notes(session: AsyncSession, user: schemas.User):
@@ -231,4 +232,3 @@ async def test_get_notes_with_offset(
     assert isinstance(db_notes, list)
     assert len(db_notes) == 1
     assert db_notes[0] == note
-

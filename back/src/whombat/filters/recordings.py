@@ -1,6 +1,5 @@
 """Filters for Recordings."""
 
-
 from sqlalchemy import Select, select
 
 from whombat import schemas

@@ -4,6 +4,9 @@ from whombat.schemas.base import BaseSchema
 
 __all__ = [
     "Feature",
+    "FeatureName",
+    "FeatureNameCreate",
+    "FeatureNameUpdate",
 ]
 
 
@@ -19,6 +22,13 @@ class FeatureName(FeatureNameCreate):
 
     id: int
     """The database id of the feature name."""
+
+
+class FeatureNameUpdate(BaseSchema):
+    """Schema for FeatureName objects updated by the user."""
+
+    name: str
+    """The name of the feature."""
 
 
 class Feature(BaseSchema):

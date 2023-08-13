@@ -111,18 +111,18 @@ async def tag(session: AsyncSession) -> schemas.Tag:
 
 
 @pytest.fixture
-async def feature(session: AsyncSession) -> schemas.Feature:
+async def feature_name(session: AsyncSession) -> schemas.FeatureName:
     """Create a feature for testing."""
-    feature = await api.features.get_or_create_feature(
-        session,
-        name="test_feature",
-        value=10,
+    feature_name = await api.features.create_feature_name(
+        session, data=schemas.FeatureNameCreate(name="test_feature")
     )
-    return feature
+    return feature_name
 
 
 @pytest.fixture
-async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
+async def note(
+    session: AsyncSession, user: schemas.User
+) -> schemas.Note:
     """Create a note for testing."""
     note = await api.notes.create_note(
         session,

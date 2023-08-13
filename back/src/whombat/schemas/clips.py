@@ -30,12 +30,6 @@ class ClipCreate(BaseSchema):
     end_time: float
     """The end time of the clip."""
 
-    tags: list[Tag] = Field(default_factory=list)
-    """The tags associated with the clip."""
-
-    features: list[Feature] = Field(default_factory=list)
-    """The features associated with the clip."""
-
     @model_validator(mode="before")
     def validate_times(cls, values):
         """Validate that start_time < end_time."""
@@ -52,3 +46,9 @@ class Clip(ClipCreate):
 
     recording: Recording
     """Recording information for the clip."""
+
+    tags: list[Tag] = Field(default_factory=list)
+    """The tags associated with the clip."""
+
+    features: list[Feature] = Field(default_factory=list)
+    """The features associated with the clip."""

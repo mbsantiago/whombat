@@ -449,12 +449,13 @@ async def test_delete_recording(
         await recordings.get_recording_by_hash(session, recording.hash)
 
 
-async def test_delete_recording_unexistent_succeeds(
+async def test_delete_non_existing_recording_fails(
     session: AsyncSession,
 ):
     """Test deleting a nonexistent recording succeeds."""
     # Act
-    await recordings.delete_recording(session, recording_id=2)
+    with pytest.raises(exceptions.NotFoundError):
+        await recordings.delete_recording(session, recording_id=2)
 
 
 async def test_add_tag_to_recording(
@@ -549,36 +550,39 @@ async def test_add_note_to_recording_is_idempotent(
 async def test_add_feature_to_recording(
     session: AsyncSession,
     recording: schemas.Recording,
-    feature: schemas.Feature,
+    feature_name: schemas.FeatureName,
 ):
     """Test adding a feature to a recording."""
     # Act
+    value = 10
     recording = await recordings.add_feature_to_recording(
         session,
         recording_id=recording.id,
-        feature=feature,
+        feature_name_id=feature_name.id,
+        value=value,
     )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
-    assert feature in recording.features
-
-    # Get the recording again to make sure the feature was added
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
-    assert feature in recording.features
+    assert len(recording.features) == 1
+    feat = recording.features[0]
+    assert feat.feature_name == feature_name
+    assert feat.value == value
 
 
 async def test_add_feature_to_recording_is_idempotent(
     session: AsyncSession,
     recording: schemas.Recording,
-    feature: schemas.Feature,
+    feature_name: schemas.FeatureName,
 ):
     """Test adding a feature to a recording is idempotent."""
     # Arrange
+    value = 10
     recording = await recordings.add_feature_to_recording(
         session,
         recording_id=recording.id,
-        feature=feature,
+        feature_name_id=feature_name.id,
+        value=value,
     )
     assert len(recording.features) == 1
 
@@ -586,7 +590,8 @@ async def test_add_feature_to_recording_is_idempotent(
     recording = await recordings.add_feature_to_recording(
         session,
         recording_id=recording.id,
-        feature=feature,
+        feature_name_id=feature_name.id,
+        value=value,
     )
 
     # Assert
@@ -771,32 +776,27 @@ async def test_remove_tag_from_recording_is_idempotent(
 async def test_remove_feature_from_recording(
     session: AsyncSession,
     recording: schemas.Recording,
-    feature: schemas.Feature,
+    feature_name: schemas.FeatureName,
 ):
     """Test removing a feature from a recording."""
+    value = 10
     recording = await recordings.add_feature_to_recording(
         session,
         recording_id=recording.id,
-        feature=feature,
+        feature_name_id=feature_name.id,
+        value=value,
     )
-
-    # Make sure the feature was added
-    assert feature in recording.features
 
     # Act
     recording = await recordings.remove_feature_from_recording(
         session,
         recording_id=recording.id,
-        feature_name_id=feature.feature_name.id,
+        feature_name_id=feature_name.id,
     )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
-    assert feature not in recording.features
-
-    # Get the recording again to make sure the feature was removed
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
-    assert feature not in recording.features
+    assert len(recording.features) == 0
 
 
 async def test_remove_feature_from_recording_fails_with_nonexistent_recording(
@@ -815,13 +815,15 @@ async def test_remove_feature_from_recording_fails_with_nonexistent_recording(
 async def test_remove_feature_from_recording_is_idempotent(
     session: AsyncSession,
     recording: schemas.Recording,
-    feature: schemas.Feature,
+    feature_name: schemas.FeatureName,
 ):
     """Test removing a feature from a recording is idempotent."""
+    feature = schemas.Feature(feature_name=feature_name, value=1.0)
     recording = await recordings.add_feature_to_recording(
         session,
         recording_id=recording.id,
-        feature=feature,
+        feature_name_id=feature_name.id,
+        value=feature.value,
     )
     assert len(recording.features) == 1
 
@@ -1086,9 +1088,12 @@ async def test_create_recordings(
     path2 = random_wav_factory()
 
     # Act
-    recording_list = await recordings.create_recordings_from_paths(
+    recording_list = await recordings.create_recordings(
         session,
-        [path1, path2],
+        [
+            schemas.RecordingCreate(path=path1),
+            schemas.RecordingCreate(path=path2),
+        ],
     )
 
     # Assert
@@ -1096,54 +1101,7 @@ async def test_create_recordings(
     assert len(recording_list) == 2
     assert isinstance(recording_list[0], schemas.Recording)
     assert isinstance(recording_list[1], schemas.Recording)
-    assert recording_list[0].path == path1
-    assert recording_list[1].path == path2
-
-
-async def test_create_recordings_ignores_non_existing_files(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-):
-    """Test creating multiple recordings ignores non-existing files."""
-    # Arrange
-    path1 = random_wav_factory()
-    path2 = Path("non_existing_file.wav")
-
-    # Act
-    recording_list = await recordings.create_recordings_from_paths(
-        session,
-        [path1, path2],
-    )
-
-    # Assert
-    assert isinstance(recording_list, list)
-    assert len(recording_list) == 1
-    assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path1
-
-
-async def test_create_recordings_ignores_non_audio_files(
-    session: AsyncSession,
-    random_wav_factory: Callable[..., Path],
-    tmp_path: Path,
-):
-    """Test creating multiple recordings ignores non-audio files."""
-    # Arrange
-    path1 = random_wav_factory()
-    path2 = tmp_path / "non_audio_file.txt"
-    path2.touch()
-
-    # Act
-    recording_list = await recordings.create_recordings_from_paths(
-        session,
-        [path1, path2],
-    )
-
-    # Assert
-    assert isinstance(recording_list, list)
-    assert len(recording_list) == 1
-    assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path1
+    assert {recording_list[0].path, recording_list[1].path} == {path1, path2}
 
 
 async def test_create_recordings_ignores_files_already_in_the_dataset(
@@ -1159,9 +1117,12 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
     assert len(all_recordings) == 1
 
     # Act
-    recording_list = await recordings.create_recordings_from_paths(
+    recording_list = await recordings.create_recordings(
         session,
-        [path1, path2],
+        [
+            schemas.RecordingCreate(path=path1),
+            schemas.RecordingCreate(path=path2),
+        ],
     )
 
     # Assert
@@ -1187,9 +1148,12 @@ async def test_create_recordings_removes_hash_duplicates(
     shutil.copy(path1, path2)
 
     # Act
-    recording_list = await recordings.create_recordings_from_paths(
+    recording_list = await recordings.create_recordings(
         session,
-        [path1, path2],
+        [
+            schemas.RecordingCreate(path=path1),
+            schemas.RecordingCreate(path=path2),
+        ],
     )
 
     # Assert
@@ -1221,9 +1185,12 @@ async def test_create_recording_avoids_hash_duplicates(
     )
 
     # Act
-    await recordings.create_recordings_from_paths(
+    await recordings.create_recordings(
         session,
-        [path1, path2],
+        [
+            schemas.RecordingCreate(path=path1),
+            schemas.RecordingCreate(path=path2),
+        ],
     )
 
     # Assert
@@ -1238,25 +1205,20 @@ async def test_create_recordings_with_time_expansion(
     """Test creating multiple recordings with time expansion."""
     # Arrange
     path1 = random_wav_factory(duration=1, samplerate=8000)
-    path2 = random_wav_factory(duration=2, samplerate=16000)
 
     # Act
-    recording_list = await recordings.create_recordings_from_paths(
+    recording_list = await recordings.create_recordings(
         session,
-        [path1, path2],
-        time_expansion=5,
+        [
+            schemas.RecordingCreate(path=path1, time_expansion=5),
+        ],
     )
 
     # Assert
     assert isinstance(recording_list, list)
-    assert len(recording_list) == 2
+    assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
-    assert isinstance(recording_list[1], schemas.Recording)
     assert recording_list[0].path == path1
-    assert recording_list[1].path == path2
     assert recording_list[0].time_expansion == 5
-    assert recording_list[1].time_expansion == 5
     assert recording_list[0].duration == 1 / 5
-    assert recording_list[1].duration == 2 / 5
     assert recording_list[0].samplerate == 8000 * 5
-    assert recording_list[1].samplerate == 16000 * 5

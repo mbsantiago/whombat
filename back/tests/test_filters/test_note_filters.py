@@ -4,7 +4,7 @@ import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, filters, schemas
+from whombat import api, schemas
 from whombat.database import models
 
 

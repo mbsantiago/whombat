@@ -2,6 +2,7 @@
 
 import datetime
 from typing import Type, TypeVar
+from uuid import UUID
 
 from pydantic import BaseModel
 from sqlalchemy import Select, or_
@@ -11,19 +12,20 @@ from whombat.database.models.base import Base
 
 __all__ = [
     "Filter",
-    "integer_filter",
-    "optional_integer_filter",
-    "float_filter",
-    "optional_float_filter",
-    "string_filter",
-    "optional_string_filter",
     "boolean_filter",
-    "optional_boolean_filter",
     "date_filter",
+    "float_filter",
+    "integer_filter",
+    "optional_boolean_filter",
     "optional_date_filter",
-    "time_filter",
+    "optional_float_filter",
+    "optional_integer_filter",
+    "optional_string_filter",
     "optional_time_filter",
     "search_filter",
+    "string_filter",
+    "time_filter",
+    "uuid_filter",
 ]
 
 
@@ -115,7 +117,7 @@ def create_filter_from_field_and_model(
 ) -> Type[F]:
     """Create a filter from a field and model."""
 
-    class _Filter(model):
+    class _Filter(model):  # type: ignore
         """A filter for a field."""
 
         def filter(self, query: Select) -> Select:
@@ -271,6 +273,20 @@ def optional_string_filter(
 ) -> Type[OptionalStringFilter]:
     """Create a filter for optional strings."""
     return create_filter_from_field_and_model(field, OptionalStringFilter)
+
+
+class UUIDFilter(Filter):
+    """Filter by UUIDs."""
+
+    eq: UUID | None = None
+    isin: list[UUID] | None = None
+
+
+def uuid_filter(
+    field: MappedColumn | InstrumentedAttribute,
+) -> Type[UUIDFilter]:
+    """Create a filter for UUIDs."""
+    return create_filter_from_field_and_model(field, UUIDFilter)
 
 
 class BooleanFilter(Filter):

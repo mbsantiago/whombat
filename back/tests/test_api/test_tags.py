@@ -110,7 +110,7 @@ async def test_delete_tag(
     assert tag.key == "test_key"
 
     # Act
-    await tags.delete_tag(session=session, tag=created_tag)
+    await tags.delete_tag(session=session, tag_id=created_tag.id)
 
     # Assert
     # Check it is not in the database anymore
@@ -123,7 +123,7 @@ async def test_delete_tag(
     assert tag is None
 
 
-async def test_delete_tag_nonexistent_should_succeed(
+async def test_delete_tag_nonexistent_should_fail(
     session: AsyncSession,
 ) -> None:
     """Test deleting a tag that does not exist."""
@@ -138,7 +138,8 @@ async def test_delete_tag_nonexistent_should_succeed(
     db_tag = result.scalars().first()
     assert db_tag is None
 
-    await tags.delete_tag(session, tag=tag)
+    with pytest.raises(exceptions.NotFoundError):
+        await tags.delete_tag(session, tag_id=tag.id)
 
 
 async def test_get_tag_by_key_and_value(
@@ -371,9 +372,9 @@ async def test_get_or_create_tags_with_nonexisting_tags(session: AsyncSession):
     ]
 
     # Act
-    created_tags = await tags.get_or_create_tags(
+    created_tags = await tags.create_tags(
         session=session,
-        tags=tags_to_create,
+        data=tags_to_create,
     )
 
     # Assert
@@ -404,9 +405,9 @@ async def test_get_or_create_tags_with_existing_tags(session: AsyncSession):
     )
 
     # Act
-    created_tags = await tags.get_or_create_tags(
+    created_tags = await tags.create_tags(
         session=session,
-        tags=tags_to_create,
+        data=tags_to_create,
     )
 
     # Assert
@@ -435,9 +436,9 @@ async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
     )
 
     # Act
-    created_tags = await tags.get_or_create_tags(
+    created_tags = await tags.create_tags(
         session=session,
-        tags=tags_to_create,
+        data=tags_to_create,
     )
 
     # Assert

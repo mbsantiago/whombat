@@ -1,8 +1,8 @@
 """Schemas for handling Recordings."""
 
-from uuid import UUID, uuid4
 import datetime
 from pathlib import Path
+from uuid import UUID, uuid4
 
 from pydantic import Field, FilePath, field_validator
 
@@ -16,11 +16,15 @@ __all__ = [
     "Recording",
     "RecordingCreate",
     "RecordingUpdate",
+    "RecordingPreCreate",
 ]
 
 
 class RecordingCreate(BaseSchema):
-    """Schema for Recording objects created by the user."""
+    """Data for Recording creation.
+
+    This only contains data that is provided by the user.
+    """
 
     path: FilePath
     """The path to the audio file."""
@@ -51,17 +55,45 @@ class RecordingCreate(BaseSchema):
         return v
 
 
-class Recording(RecordingCreate):
+class RecordingPreCreate(RecordingCreate):
+    """Data for Recording creation.
+
+    This contains data that has also been extracted from the audio file.
+    """
+
+    hash: str
+    """The md5 hash of the audio file."""
+
+    duration: float
+    """The duration of the audio file in seconds.
+
+    This is the duration of the original audio file, not the time expanded
+    version. This can vary depending on the time expansion factor. If
+    the stored file has a duration of 10 seconds and a time expansion
+    factor is 2, this means that the original recording was 5 seconds
+    long. So the duration of the original recording is 5 seconds, not 10.
+    """
+
+    channels: int
+    """The number of channels in the audio file."""
+
+    samplerate: int
+    """The sample rate of the audio file in Hz.
+
+    This is the sample rate of the original audio file, not the time
+    expanded version. This can vary depending on the time expansion
+    factor. If the stored file has a sample rate of 44100 Hz and a time
+    expansion factor is 2, this means that the original recording had a
+    sample rate of 88200 Hz. So the sample rate of the original
+    recording is 88200 Hz, not 44100 Hz.
+    """
+
+
+class Recording(RecordingPreCreate):
     """Schema for Recording objects returned to the user."""
 
     path: Path
     id: int
-
-    hash: str
-    duration: float
-    channels: int
-    samplerate: int
-    time_expansion: float = 1.0
 
     tags: list[Tag] = Field(default_factory=list)
     features: list[Feature] = Field(default_factory=list)

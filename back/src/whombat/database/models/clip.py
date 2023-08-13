@@ -65,18 +65,28 @@ class Clip(Base):
     """The end time of the clip in seconds."""
 
     recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="clips",
+        lazy="joined",
         init=False,
         repr=False,
     )
     """The recording to which the clip belongs."""
 
-    tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
-        "ClipTag",
+    tags: orm.Mapped[list[Tag]] = orm.relationship(
+        secondary="clip_tag",
+        lazy="joined",
+        back_populates="clips",
+        default_factory=list,
+        viewonly=True,
+    )
+    """The tags associated with the clip."""
+
+    clip_tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
+        lazy="joined",
         back_populates="clip",
         default_factory=list,
         cascade="all, delete-orphan",
     )
-    """The tags associated with the clip."""
 
     features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
         "ClipFeature",

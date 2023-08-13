@@ -21,19 +21,22 @@ from whombat.schemas.datasets import (
     DatasetRecording,
     FileState,
 )
-from whombat.schemas.features import Feature, FeatureName, FeatureNameCreate
+from whombat.schemas.features import (
+    Feature,
+    FeatureName,
+    FeatureNameCreate,
+    FeatureNameUpdate,
+)
 from whombat.schemas.notes import Note, NoteCreate, NoteUpdate
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
+    RecordingPreCreate,
     RecordingUpdate,
 )
-from whombat.schemas.sound_events import (
-    SoundEvent,
-    SoundEventCreate,
-)
+from whombat.schemas.sound_events import SoundEvent, SoundEventCreate
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
-from whombat.schemas.users import User, UserCreate, UserUpdate, SimpleUser
+from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
     "Clip",
@@ -44,6 +47,7 @@ __all__ = [
     "Feature",
     "FeatureName",
     "FeatureNameCreate",
+    "FeatureNameUpdate",
     "FileState",
     "Note",
     "NoteCreate",
@@ -60,4 +64,5 @@ __all__ = [
     "User",
     "UserCreate",
     "UserUpdate",
+    "RecordingPreCreate",
 ]

@@ -105,7 +105,7 @@ async def test_change_feature_name(
 
     # Act.
     new_name = "new_test_feature"
-    await features.change_feature_name(
+    await features.update_feature_name(
         session,
         feature_name_id=feature_name.id,
         new_name=new_name,
@@ -141,7 +141,7 @@ async def test_change_feature_name_fails_if_duplicate(
 
     # Act.
     with pytest.raises(exceptions.DuplicateObjectError):
-        await features.change_feature_name(session, feature_name.id, new_name)
+        await features.update_feature_name(session, feature_name.id, new_name)
 
 
 async def test_change_feature_name_fails_if_nonexistent(
@@ -150,7 +150,7 @@ async def test_change_feature_name_fails_if_nonexistent(
     """Test changing a feature name fails if the feature does not exist."""
     # Act.
     with pytest.raises(exceptions.NotFoundError):
-        await features.change_feature_name(session, 1, "new_test_feature")
+        await features.update_feature_name(session, 1, "new_test_feature")
 
 
 async def test_get_feature_names(

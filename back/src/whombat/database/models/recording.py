@@ -17,6 +17,7 @@ where they were recorded.
 
 import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -26,6 +27,9 @@ from whombat.database.models.base import Base
 from whombat.database.models.feature import FeatureName
 from whombat.database.models.note import Note
 from whombat.database.models.tag import Tag
+
+if TYPE_CHECKING:
+    from whombat.database.models.clip import Clip  # noqa: F401
 
 __all__ = [
     "Recording",
@@ -48,11 +52,7 @@ class Recording(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """The id of the recording."""
 
-    hash: orm.Mapped[str] = orm.mapped_column(
-        nullable=False,
-        unique=True,
-        index=True,
-    )
+    hash: orm.Mapped[str] = orm.mapped_column(unique=True, index=True)
     """The sha256 hash of the recording.
 
     The hash is used to uniquely identify the recording. It is calculated
@@ -63,11 +63,7 @@ class Recording(Base):
     whombat.core.files.compute_hash function.
     """
 
-    path: orm.Mapped[Path] = orm.mapped_column(
-        nullable=False,
-        unique=True,
-        index=True,
-    )
+    path: orm.Mapped[Path] = orm.mapped_column(unique=True, index=True)
     """The path of the dataset.
 
     This path should be absolute and should point to the recording file.
@@ -76,45 +72,40 @@ class Recording(Base):
     to the dataset root directory.
     """
 
-    duration: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    duration: orm.Mapped[float]
     """The duration of the recording in seconds.
 
     If the time expansion factor is not 1.0, the duration is the duration of
     original recording, not the expanded recording.
     """
 
-    samplerate: orm.Mapped[int] = orm.mapped_column(nullable=False)
+    samplerate: orm.Mapped[int]
     """The samplerate of the recording in Hz.
 
     If the time expansion factor is not 1.0, the samplerate is the samplerate of
     original recording, not the expanded recording.
     """
 
-    channels: orm.Mapped[int] = orm.mapped_column(nullable=False)
+    channels: orm.Mapped[int]
     """The number of channels of the recording."""
 
-    date: orm.Mapped[datetime.date | None] = orm.mapped_column(nullable=True)
+    date: orm.Mapped[datetime.date | None] = orm.mapped_column(default=None)
     """The date at which the recording was made."""
 
-    time: orm.Mapped[datetime.time | None] = orm.mapped_column(nullable=True)
+    time: orm.Mapped[datetime.time | None] = orm.mapped_column(default=None)
     """The time at which the recording was made."""
 
-    latitude: orm.Mapped[float | None] = orm.mapped_column(nullable=True)
+    latitude: orm.Mapped[float | None] = orm.mapped_column(default=None)
     """The latitude of the recording site."""
 
-    longitude: orm.Mapped[float | None] = orm.mapped_column(nullable=True)
+    longitude: orm.Mapped[float | None] = orm.mapped_column(default=None)
     """The longitude of the recording site."""
 
-    time_expansion: orm.Mapped[float] = orm.mapped_column(
-        nullable=False,
-        default=1.0,
-    )
+    time_expansion: orm.Mapped[float] = orm.mapped_column(default=1.0)
     """The time expansion factor of the recording."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(
-        nullable=False,
-        default_factory=uuid4,
-    )
+    uuid: orm.Mapped[UUID] = orm.mapped_column(default_factory=uuid4)
+    """The UUID of the recording."""
 
     notes: orm.Mapped[list[Note]] = orm.relationship(
         Note,
@@ -153,6 +144,13 @@ class Recording(Base):
     features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
         "RecordingFeature",
         lazy="joined",
+        back_populates="recording",
+        default_factory=list,
+        cascade="all, delete-orphan",
+    )
+
+    clips: orm.Mapped[list["Clip"]] = orm.relationship(
+        "Clip",
         back_populates="recording",
         default_factory=list,
         cascade="all, delete-orphan",

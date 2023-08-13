@@ -24,7 +24,7 @@ async def setup_test(session: AsyncSession):
         schemas.TagCreate(key="ca", value="ab2"),
     ]
 
-    await api.tags.get_or_create_tags(session, tags_to_create)
+    await api.tags.create_tags(session, tags_to_create)
 
 
 async def test_filter_by_exact_key(session: AsyncSession):
