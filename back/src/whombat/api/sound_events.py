@@ -1,17 +1,14 @@
 """API functions to interact with sound events."""
 
+from typing import Sequence
 from uuid import UUID
 
-import sqlalchemy.orm as orm
-from soundevent.data import geometries
 from soundevent.features import compute_geometric_features
 from soundevent.geometry import geometry_validate
-from sqlalchemy import Select, select, tuple_
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
-from whombat.core.common import remove_duplicates
+from whombat import schemas
+from whombat.api import common, features
 from whombat.database import models
 from whombat.filters.base import Filter
 
@@ -20,8 +17,8 @@ __all__ = [
     "create_sound_events",
     "get_sound_events",
     "get_sound_event_by_uuid",
-    "add_tags_to_sound_event",
-    "add_features_to_sound_event",
+    "add_tag_to_sound_event",
+    "add_feature_to_sound_event",
     "remove_tags_from_sound_event",
     "remove_features_from_sound_event",
     "update_sound_event",
@@ -29,286 +26,35 @@ __all__ = [
 ]
 
 
-def _add_associated_objects_to_sound_event(query: Select) -> Select:
-    """Get the base query for retrieving recordings.
-
-    Preloads all features, notes and tags.
-    """
-    return query.options(
-        orm.joinedload(models.SoundEvent.features).subqueryload(
-            models.SoundEventFeature.feature_name
-        ),
-        orm.joinedload(models.SoundEvent.tags).subqueryload(
-            models.SoundEventTag.tag
-        ),
-    )
-
-
-def get_sound_event_features(
-    geometry: geometries.Geometry,
-) -> list[schemas.Feature]:
-    """Get the features of a sound event.
-
-    Parameters
-    ----------
-    geometry : geometries.Geometry
-        The geometry of the sound event.
-
-    Returns
-    -------
-    list[schemas.Feature]
-        The features of the sound event.
-    """
-    features = compute_geometric_features(geometry)
-    return [schemas.Feature(name=f.name, value=f.value) for f in features]
-
-
-async def create_sound_event(
+async def get_sound_event_by_id(
     session: AsyncSession,
-    recording: schemas.Recording,
-    geometry: geometries.Geometry,
-    features: list[schemas.Feature] | None = None,
-    tags: list[schemas.Tag] | None = None,
-):
-    """Create a sound event.
+    id: int,
+) -> schemas.SoundEvent:
+    """Get a sound event by its ID.
 
     Parameters
     ----------
     session : AsyncSession
         The database session.
-    recording : schemas.Recording
-        The recording to which the sound event belongs.
-    geometry : geometries.Geometry
-        The geometry of the sound event.
-    features : list[schemas.Feature], optional
-        The features of the sound event, by default None. If None, only
-        the geometry features are computed and stored.
-    tags : list[schemas.Tag], optional
-        The tags of the sound event, by default None. If None, no tags are
-        added.
+    id : int
+        The ID of the sound event.
 
     Returns
     -------
     schemas.SoundEvent
-        The created sound event.
-    """
-    query = select(models.Recording).where(
-        models.Recording.hash == recording.hash
-    )
-    result = await session.execute(query)
-    db_recording = result.scalars().first()
-    if db_recording is None:
-        raise exceptions.NotFoundError(
-            "Recording does not exist in the database."
-        )
-
-    if features is None:
-        features = get_sound_event_features(geometry)
-    else:
-        features = remove_duplicates(
-            get_sound_event_features(geometry) + features,
-            key=lambda f: f.name,
-        )
-
-    sound_event = models.SoundEvent(
-        geometry_type=geometry.type,
-        geometry=geometry.model_dump_json(),
-        recording_id=db_recording.id,
-    )
-    session.add(sound_event)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    feature_names = await _get_or_create_feature_names(
-        session=session,
-        feature_names=[f.name for f in features],
-    )
-
-    for feature in features:
-        models_feature = models.SoundEventFeature(
-            sound_event_id=sound_event.id,
-            feature_name_id=feature_names[feature.name].id,
-            value=feature.value,
-        )
-        sound_event.features.append(models_feature)
-        session.add(models_feature)
-
-    if tags:
-        db_tags = await _get_or_create_tags(session, tags)
-
-        for tag in db_tags:
-            models_tag = models.SoundEventTag(
-                sound_event_id=sound_event.id,
-                tag_id=tag.id,
-            )
-            sound_event.tags.append(models_tag)
-            session.add(models_tag)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return _convert_sound_event_to_schema(sound_event)
-
-
-async def create_sound_events(
-    session: AsyncSession,
-    recording: schemas.Recording,
-    geometries: list[geometries.Geometry],
-    features: list[list[schemas.Feature] | None] | None = None,
-    tags: list[list[schemas.Tag] | None] | None = None,
-) -> list[schemas.SoundEvent]:
-    """Create multiple sound events."""
-    if features is None:
-        features = [None for _ in geometries]
-
-    if tags is None:
-        tags = [None for _ in geometries]
-
-    sound_events = []
-    for geometry, feature_list, tag_list in zip(geometries, features, tags):
-        sound_event = await create_sound_event(
-            session=session,
-            recording=recording,
-            geometry=geometry,
-            features=feature_list,
-            tags=tag_list,
-        )
-        sound_events.append(sound_event)
-
-    return sound_events
-
-
-async def update_sound_event(
-    session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-    geometry: geometries.Geometry,
-):
-    """Update a sound event geometry.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    sound_event : schemas.SoundEvent
-        The sound event to update.
-    geometry : geometries.Geometry
-        The new geometry of the sound event.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
+        The sound event.
 
     Raises
     ------
     exceptions.NotFoundError
         If the sound event does not exist in the database.
-    ValueError
-        If the geometry types do not match.
     """
-    if sound_event.geometry_type != geometry.type:
-        raise ValueError(
-            "The geometry type of the sound event and the new geometry do not "
-            "match."
-        )
-
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    sound_event = await common.get_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == id,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            "Sound event does not exist in the database."
-        )
-
-    db_sound_event.geometry = geometry.model_dump_json()
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return schemas.SoundEvent(
-        uuid=db_sound_event.uuid,
-        geometry_type=geometry.type,
-        geometry=geometry,
-        tags=sound_event.tags,
-        features=sound_event.features,
-    )
-
-
-def _convert_sound_event_to_schema(
-    db_sound_event: models.SoundEvent,
-) -> schemas.SoundEvent:
-    geometry = geometry_validate(db_sound_event.geometry, mode="json")
-    return schemas.SoundEvent(
-        uuid=db_sound_event.uuid,
-        geometry_type=geometry.type,
-        geometry=geometry,
-        tags=[
-            schemas.Tag(
-                key=db_tag.tag.key,
-                value=db_tag.tag.value,
-            )
-            for db_tag in db_sound_event.tags
-        ],
-        features=[
-            schemas.Feature(
-                name=db_feature.feature_name.name,
-                value=db_feature.value,
-            )
-            for db_feature in db_sound_event.features
-        ],
-    )
-
-
-async def get_sound_events(
-    session: AsyncSession,
-    limit: int = 1000,
-    offset: int = 0,
-    filters: list[Filter] | None = None,
-) -> list[schemas.SoundEvent]:
-    """Get a list of sound events.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    limit : int, optional
-        The maximum number of sound events to return, by default 1000.
-    offset : int, optional
-        The number of sound events to skip, by default 0.
-    filters : list[Filter], optional
-        A list of filters to apply to the sound events, by default None.
-
-    Returns
-    -------
-    list[schemas.SoundEvent]
-        The list of sound events.
-    """
-    query = _add_associated_objects_to_sound_event(select(models.SoundEvent))
-    query = query.order_by(models.SoundEvent.id)
-
-    for filter in filters or []:
-        query = filter.filter(query)
-
-    query = query.limit(limit).offset(offset)
-    result = await session.execute(query)
-    db_sound_events = result.unique().scalars()
-
-    ret = []
-    for db_sound_event in db_sound_events:
-        ret.append(_convert_sound_event_to_schema(db_sound_event))
-    return ret
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
 async def get_sound_event_by_uuid(
@@ -334,64 +80,189 @@ async def get_sound_event_by_uuid(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = _add_associated_objects_to_sound_event(select(models.SoundEvent))
-    query = query.where(models.SoundEvent.uuid == uuid)
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
+    sound_event = await common.get_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.uuid == uuid,
+    )
+    return schemas.SoundEvent.model_validate(sound_event)
 
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            f"Sound event with UUID {uuid} does not exist in the database."
+
+async def get_sound_events(
+    session: AsyncSession,
+    limit: int = 1000,
+    offset: int = 0,
+    filters: list[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> list[schemas.SoundEvent]:
+    """Get a list of sound events.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    limit : int, optional
+        The maximum number of sound events to return, by default 1000.
+    offset : int, optional
+        The number of sound events to skip, by default 0.
+    filters : list[Filter], optional
+        A list of filters to apply to the sound events, by default None.
+
+    Returns
+    -------
+    list[schemas.SoundEvent]
+        The list of sound events.
+    """
+    sound_events = await common.get_objects(
+        session=session,
+        model=models.SoundEvent,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return [schemas.SoundEvent.model_validate(s) for s in sound_events]
+
+
+async def create_sound_event(
+    session: AsyncSession,
+    data: schemas.SoundEventCreate,
+):
+    """Create a sound event.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    data : schemas.SoundEventCreate
+        The data of the sound event.
+
+    Returns
+    -------
+    schemas.SoundEvent
+        The created sound event.
+    """
+    sound_event = await common.create_object(
+        session=session,
+        model=models.SoundEvent,
+        data=data,
+    )
+    await _create_sound_event_features(session, [sound_event])
+    await session.refresh(sound_event)
+    return schemas.SoundEvent.model_validate(sound_event)
+
+
+async def create_sound_events(
+    session: AsyncSession,
+    data: list[schemas.SoundEventCreate],
+) -> list[schemas.SoundEvent]:
+    """Create multiple sound events."""
+    sound_events = await common.create_objects_without_duplicates(
+        session=session,
+        model=models.SoundEvent,
+        data=data,
+        key=lambda x: x.uuid,
+        key_column=models.SoundEvent.uuid,
+    )
+
+    await _create_sound_event_features(session, sound_events)
+
+    sound_event_ids = [s.id for s in sound_events]
+    session.expire_all()
+
+    sound_events = await common.get_objects(
+        session=session,
+        model=models.SoundEvent,
+        limit=-1,
+        filters=[models.SoundEvent.id.in_(sound_event_ids)],
+    )
+    return [schemas.SoundEvent.model_validate(s) for s in sound_events]
+
+
+async def update_sound_event(
+    session: AsyncSession,
+    sound_event_id: int,
+    data: schemas.SoundEventUpdate,
+):
+    """Update a sound event geometry.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    data : schemas.SoundEventUpdate
+        The data to update the sound event with.
+
+    Returns
+    -------
+    schemas.SoundEvent
+        The updated sound event.
+    """
+    sound_event = await common.update_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        data=data,
+    )
+
+    if sound_event.geometry_type != data.geometry.type:
+        await session.rollback()
+        raise ValueError(
+            "The geometry type of the sound event and the new geometry do not "
+            "match."
         )
 
-    return _convert_sound_event_to_schema(db_sound_event)
+    new_features = compute_geometric_features(data.geometry)
+    for feature in new_features:
+        feature_name = await features.get_or_create_feature_name(
+            session, data=schemas.FeatureNameCreate(name=feature.name)
+        )
+        await common.update_feature_on_object(
+            session=session,
+            model=models.SoundEvent,
+            condition=models.SoundEvent.id == sound_event_id,
+            feature_name_id=feature_name.id,
+            value=feature.value,
+        )
+
+    await session.refresh(sound_event)
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
 async def delete_sound_event(
     session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-) -> schemas.SoundEvent:
+    sound_event_id: int,
+) -> None:
     """Delete a sound event.
 
     Parameters
     ----------
     session : AsyncSession
         The database session.
-    uuid : UUID
-        The UUID of the sound event.
 
-    Returns
-    -------
-    schemas.SoundEvent
-        The sound event.
+    sound_event_id : int
+        The ID of the sound event.
 
     Raises
     ------
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    await common.delete_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            f"Sound event with UUID {sound_event.uuid} does not "
-            "exist in the database."
-        )
-
-    await session.delete(db_sound_event)
-    await session.commit()
-
-    return _convert_sound_event_to_schema(db_sound_event)
 
 
-async def add_tags_to_sound_event(
+async def add_tag_to_sound_event(
     session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-    tags: list[schemas.Tag],
+    sound_event_id: int,
+    tag_id: int,
 ) -> schemas.SoundEvent:
     """Add tags to a sound event.
 
@@ -399,10 +270,12 @@ async def add_tags_to_sound_event(
     ----------
     session : AsyncSession
         The database session.
-    sound_event : schemas.SoundEvent
-        The sound event to update.
-    tags : list[schemas.Tag]
-        The tags to add to the sound event.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    tag_id : int
+        The ID of the tag.
 
     Returns
     -------
@@ -414,41 +287,20 @@ async def add_tags_to_sound_event(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    sound_event = await common.add_tag_to_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        tag_id=tag_id,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            "Sound event does not exist in the database."
-        )
-
-    db_tags = await _get_or_create_tags(session, tags)
-
-    for db_tag in db_tags:
-        if db_tag in db_sound_event.tags:
-            continue
-
-        tag = models.SoundEventTag(
-            sound_event_id=db_sound_event.id,
-            tag_id=db_tag.id,
-        )
-        session.add(tag)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return _convert_sound_event_to_schema(db_sound_event)
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
-async def add_features_to_sound_event(
+async def add_feature_to_sound_event(
     session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-    features: list[schemas.Feature],
+    sound_event_id: int,
+    feature_name_id: int,
+    value: float,
 ) -> schemas.SoundEvent:
     """Add features to a sound event.
 
@@ -456,10 +308,12 @@ async def add_features_to_sound_event(
     ----------
     session : AsyncSession
         The database session.
-    sound_event : schemas.SoundEvent
-        The sound event to update.
-    features : list[schemas.Feature]
-        The features to add to the sound event.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    feature_name_id : int
+        The ID of the feature name.
 
     Returns
     -------
@@ -471,42 +325,20 @@ async def add_features_to_sound_event(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    sound_event = await common.add_feature_to_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        feature_name_id=feature_name_id,
+        value=value,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            "Sound event does not exist in the database."
-        )
-
-    feature_names = await _get_or_create_feature_names(
-        session, [f.name for f in features]
-    )
-
-    for feature in features:
-        feature_name = feature_names[feature.name]
-        db_feature = models.SoundEventFeature(
-            sound_event_id=db_sound_event.id,
-            feature_name_id=feature_name.id,
-            value=feature.value,
-        )
-        session.add(db_feature)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return _convert_sound_event_to_schema(db_sound_event)
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
 async def remove_tags_from_sound_event(
     session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-    tags: list[schemas.Tag],
+    sound_event_id: int,
+    tag_id: int,
 ) -> schemas.SoundEvent:
     """Remove tags from a sound event.
 
@@ -514,10 +346,12 @@ async def remove_tags_from_sound_event(
     ----------
     session : AsyncSession
         The database session.
-    sound_event : schemas.SoundEvent
-        The sound event to update.
-    tags : list[schemas.Tag]
-        The tags to remove from the sound event.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    tag_id : int
+        The ID of the tag.
 
     Returns
     -------
@@ -529,49 +363,19 @@ async def remove_tags_from_sound_event(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    sound_event = await common.remove_tag_from_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        tag_id=tag_id,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            "Sound event does not exist in the database."
-        )
-
-    query = (
-        select(
-            models.SoundEventTag,
-        )
-        .join(
-            models.Tag,
-        )
-        .where(
-            models.SoundEventTag.sound_event_id == db_sound_event.id,
-            tuple_(models.Tag.key, models.Tag.value).in_(
-                [(t.key, t.value) for t in tags]
-            ),
-        )
-    )
-    result = await session.execute(query)
-
-    db_tags = result.scalars().all()
-    for db_tag in db_tags:
-        await session.delete(db_tag)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return _convert_sound_event_to_schema(db_sound_event)
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
 async def remove_features_from_sound_event(
     session: AsyncSession,
-    sound_event: schemas.SoundEvent,
-    features: list[schemas.Feature],
+    sound_event_id: int,
+    features_name_id: int,
 ) -> schemas.SoundEvent:
     """Remove features from a sound event.
 
@@ -579,10 +383,12 @@ async def remove_features_from_sound_event(
     ----------
     session : AsyncSession
         The database session.
-    sound_event : schemas.SoundEvent
-        The sound event to update.
-    features : list[schemas.Feature]
-        The features to remove from the sound event.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    features_name_id : int
+        The ID of the feature name.
 
     Returns
     -------
@@ -594,37 +400,55 @@ async def remove_features_from_sound_event(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    query = select(models.SoundEvent).where(
-        models.SoundEvent.uuid == sound_event.uuid
+    sound_event = await common.remove_feature_from_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        feature_name_id=features_name_id,
     )
-    result = await session.execute(query)
-    db_sound_event = result.scalars().first()
-    if db_sound_event is None:
-        raise exceptions.NotFoundError(
-            "Sound event does not exist in the database."
-        )
+    return schemas.SoundEvent.model_validate(sound_event)
 
-    query = (
-        select(
-            models.SoundEventFeature,
+
+async def _create_sound_event_features(
+    session: AsyncSession,
+    sound_events: Sequence[models.SoundEvent],
+) -> None:
+    """Create sound event features.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+
+    sound_events : list[schemas.SoundEvent]
+        The sound events.
+    """
+    all_features = []
+    for sound_event in sound_events:
+        geometry = geometry_validate(sound_event.geometry, mode="json")
+        feats = compute_geometric_features(geometry)
+        for feature in feats:
+            all_features.append((sound_event.id, feature.name, feature.value))
+
+    feature_names = {f[0] for f in all_features}
+    feature_mapping = {
+        name: await features.get_or_create_feature_name(
+            session, data=schemas.FeatureNameCreate(name=name)
         )
-        .join(models.FeatureName)
-        .where(
-            models.SoundEventFeature.sound_event_id == db_sound_event.id,
-            models.FeatureName.name.in_([f.name for f in features]),
+        for name in feature_names
+    }
+
+    data = [
+        schemas.SoundEventFeatureCreate(
+            sound_event_id=sound_event_id,
+            feature_name_id=feature_mapping[feature_name].id,
+            value=value,
         )
+        for sound_event_id, feature_name, value in all_features
+    ]
+
+    await common.create_objects(
+        session,
+        models.SoundEventFeature,
+        data=data,
     )
-
-    result = await session.execute(query)
-    db_features = result.scalars().all()
-
-    for db_feature in db_features:
-        await session.delete(db_feature)
-
-    try:
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise e
-
-    return _convert_sound_event_to_schema(db_sound_event)

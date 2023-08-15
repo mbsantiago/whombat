@@ -39,7 +39,12 @@ from whombat.schemas.recordings import (
     RecordingUpdate,
     RecordingWithoutPath,
 )
-from whombat.schemas.sound_events import SoundEvent, SoundEventCreate
+from whombat.schemas.sound_events import (
+    SoundEvent,
+    SoundEventCreate,
+    SoundEventFeatureCreate,
+    SoundEventUpdate,
+)
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
@@ -70,6 +75,8 @@ __all__ = [
     "SimpleUser",
     "SoundEvent",
     "SoundEventCreate",
+    "SoundEventFeatureCreate",
+    "SoundEventUpdate",
     "Tag",
     "TagCreate",
     "TagUpdate",

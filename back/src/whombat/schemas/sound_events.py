@@ -10,7 +10,10 @@ from whombat.schemas.features import Feature
 from whombat.schemas.tags import Tag
 
 __all__ = [
+    "SoundEventCreate",
     "SoundEvent",
+    "SoundEventUpdate",
+    "SoundEventFeatureCreate",
 ]
 
 
@@ -26,6 +29,16 @@ class SoundEventCreate(BaseSchema):
     geometry: Geometry
     """The geometry of the sound event."""
 
+
+class SoundEvent(SoundEventCreate):
+    """Public schema for handling sound events."""
+
+    id: int
+    """The id of the sound event."""
+
+    geometry_type: GeometryType
+    """The type of geometry used to mark the sound event."""
+
     tags: list[Tag] = Field(default_factory=list)
     """The tags associated with the sound event."""
 
@@ -33,11 +46,21 @@ class SoundEventCreate(BaseSchema):
     """The features associated with the sound event."""
 
 
-class SoundEvent(SoundEventCreate):
-    """Public schema for handling sound events."""
+class SoundEventUpdate(BaseSchema):
+    """Schema for SoundEvent objects updated by the user."""
 
-    id: int | None = None
-    """The id of the sound event."""
+    geometry: Geometry
+    """The geometry of the sound event."""
 
-    geometry_type: GeometryType
-    """The type of geometry used to mark the sound event."""
+
+class SoundEventFeatureCreate(BaseSchema):
+    """Schema for SoundEventFeature objects created by the user."""
+
+    sound_event_id: int
+    """The id of the sound event to be associated with the feature."""
+
+    feature_name_id: int
+    """The id of the feature name to be associated with the sound event."""
+
+    value: float
+    """The value of the feature."""

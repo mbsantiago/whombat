@@ -85,10 +85,19 @@ class SoundEvent(Base):
     )
     """The recording to which the sound event belongs."""
 
-    tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+    tags: orm.Mapped[list[Tag]] = orm.relationship(
+        back_populates="sound_events",
+        init=False,
+        repr=False,
+        viewonly=True,
+        lazy="joined",
+    )
+
+    soundevent_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
         "SoundEventTag",
         back_populates="sound_event",
         cascade="all, delete-orphan",
+        lazy="joined",
         init=False,
         repr=False,
         default_factory=list,
@@ -99,6 +108,7 @@ class SoundEvent(Base):
         "SoundEventFeature",
         back_populates="sound_event",
         cascade="all, delete-orphan",
+        lazy="joined",
         init=False,
         repr=False,
         default_factory=list,
@@ -148,6 +158,7 @@ class SoundEventTag(Base):
         init=False,
         repr=False,
         back_populates="tags",
+        cascade="all",
     )
 
     __table_args__ = (

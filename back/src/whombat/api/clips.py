@@ -303,6 +303,7 @@ async def create_clips(
     clips = await common.get_objects(
         session,
         models.Clip,
+        limit=-1,
         filters=[models.Clip.id.in_(clip_ids)],
     )
     return [schemas.Clip.model_validate(clip) for clip in clips]
