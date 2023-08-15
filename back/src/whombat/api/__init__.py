@@ -22,6 +22,7 @@ from whombat.api import (
     sound_events,
     tags,
     users,
+    datasets,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "sound_events",
     "tags",
     "users",
+    "datasets",
 ]

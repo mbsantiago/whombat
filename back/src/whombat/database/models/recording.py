@@ -29,7 +29,8 @@ from whombat.database.models.note import Note
 from whombat.database.models.tag import Tag
 
 if TYPE_CHECKING:
-    from whombat.database.models.clip import Clip  # noqa: F401
+    from whombat.database.models.clip import Clip
+    from whombat.database.models.dataset import DatasetRecording
 
 __all__ = [
     "Recording",
@@ -151,6 +152,14 @@ class Recording(Base):
         cascade="all, delete-orphan",
         init=False,
         repr=False,
+    )
+
+    recording_datasets: orm.Mapped[list["DatasetRecording"]] = orm.relationship(
+        init=False,
+        repr=False,
+        cascade="all, delete-orphan",
+        back_populates="recording",
+        default_factory=list,
     )
 
 

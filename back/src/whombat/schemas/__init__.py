@@ -17,8 +17,11 @@ the database.
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
+    DatasetCreate,
     DatasetFile,
     DatasetRecording,
+    DatasetRecordingCreate,
+    DatasetUpdate,
     FileState,
 )
 from whombat.schemas.features import (
@@ -33,6 +36,7 @@ from whombat.schemas.recordings import (
     RecordingCreate,
     RecordingPreCreate,
     RecordingUpdate,
+    RecordingWithoutPath,
 )
 from whombat.schemas.sound_events import SoundEvent, SoundEventCreate
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
@@ -41,9 +45,13 @@ from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 __all__ = [
     "Clip",
     "ClipCreate",
+    "ClipFeatureCreate",
     "Dataset",
+    "DatasetCreate",
     "DatasetFile",
     "DatasetRecording",
+    "DatasetRecordingCreate",
+    "DatasetUpdate",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",
@@ -54,7 +62,9 @@ __all__ = [
     "NoteUpdate",
     "Recording",
     "RecordingCreate",
+    "RecordingPreCreate",
     "RecordingUpdate",
+    "RecordingWithoutPath",
     "SimpleUser",
     "SoundEvent",
     "SoundEventCreate",
@@ -64,5 +74,4 @@ __all__ = [
     "User",
     "UserCreate",
     "UserUpdate",
-    "RecordingPreCreate",
 ]

@@ -77,6 +77,45 @@ async def get_object(
     return obj
 
 
+def get_sort_by_col_from_str(
+    model: type[A],
+    sort_by: str,
+) -> _ColumnExpressionArgument:
+    """Get a column from a model by name.
+
+    Parameters
+    ----------
+    model : type[A]
+        The model to get the column from.
+
+    sort_by : str
+        The name of the column. If a "-" is prepended, the column will be
+        sorted in descending order.
+
+    Returns
+    -------
+    _ColumnExpressionArgument
+        The column.
+    """
+    descending = sort_by.startswith("-")
+
+    if descending:
+        sort_by = sort_by[1:]
+
+    col = getattr(model, sort_by)
+
+    if not col:
+        raise ValueError(
+            f"The model {model.__name__} does not have a column named"
+            f" {sort_by}"
+        )
+
+    if descending:
+        col = col.desc()
+
+    return col
+
+
 async def get_objects(
     session: AsyncSession,
     model: type[A],
@@ -84,7 +123,7 @@ async def get_objects(
     limit: int = 1000,
     offset: int = 0,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
-    sort_by: _ColumnExpressionArgument | None = None,
+    sort_by: _ColumnExpressionArgument | str | None = None,
 ) -> Sequence[A]:
     """Get all objects.
 
@@ -122,6 +161,9 @@ async def get_objects(
     query = query.limit(limit).offset(offset)
 
     if sort_by is not None:
+        if isinstance(sort_by, str):
+            sort_by = get_sort_by_col_from_str(model, sort_by)
+
         query = query.order_by(sort_by)
 
     result = await session.execute(query)

@@ -17,7 +17,7 @@ recordings from the app.
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, func, inspect, select
 
 from whombat.database.models.base import Base
 from whombat.database.models.recording import Recording
@@ -59,6 +59,17 @@ class Dataset(Base):
     This is the directory that contains all the recordings of the dataset.
     """
 
+    dataset_recordings: orm.Mapped[
+        list["DatasetRecording"]
+    ] = orm.relationship(
+        "DatasetRecording",
+        init=False,
+        repr=False,
+        back_populates="dataset",
+        cascade="all, delete-orphan",
+        default_factory=list,
+    )
+
 
 class DatasetRecording(Base):
     """Dataset Recording Model.
@@ -89,20 +100,17 @@ class DatasetRecording(Base):
     )
     """The id of the recording."""
 
-    path: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    path: orm.Mapped[str]
     """The path to the recording within the dataset.
 
-    This is the path to the recording relative to the dataset audio directory.
+    This path is relative to the dataset's audio directory.
     """
 
     dataset: orm.Mapped[Dataset] = orm.relationship(
-        Dataset,
         init=False,
         repr=False,
-        backref=orm.backref(
-            "dataset_recordings",
-            cascade="all, delete-orphan",
-        ),
+        back_populates="dataset_recordings",
+        cascade="all",
     )
     """The dataset."""
 
@@ -110,11 +118,21 @@ class DatasetRecording(Base):
         Recording,
         init=False,
         repr=False,
-        backref=orm.backref(
-            "dataset_recordings",
-            cascade="all, delete-orphan",
-        ),
+        lazy="joined",
+        back_populates="recording_datasets",
+        cascade="all",
     )
     """The recording."""
 
     __table_args__ = (UniqueConstraint("dataset_id", "recording_id", "path"),)
+
+
+inspect(Dataset).add_property(
+    "recording_count",
+    orm.column_property(
+        select(func.count(DatasetRecording.recording_id))
+        .where(DatasetRecording.dataset_id == Dataset.id)
+        .correlate_except(DatasetRecording)
+        .scalar_subquery()
+    )
+)

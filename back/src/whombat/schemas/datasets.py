@@ -7,13 +7,14 @@ from uuid import UUID, uuid4
 from pydantic import DirectoryPath, Field
 
 from whombat.schemas.base import BaseSchema
-from whombat.schemas.recordings import Recording
+from whombat.schemas.recordings import RecordingWithoutPath
 
 __all__ = [
     "Dataset",
     "DatasetRecording",
     "DatasetCreate",
     "DatasetUpdate",
+    "DatasetRecordingCreate",
     "FileState",
 ]
 
@@ -37,8 +38,14 @@ class DatasetCreate(BaseSchema):
 class Dataset(DatasetCreate):
     """Schema for Dataset objects returned to the user."""
 
-    id: int | None = None
+    audio_dir: Path
+    """The path to the directory containing the audio files."""
+
+    id: int
     """The database id of the dataset."""
+
+    recording_count: int = 0
+    """The number of recordings in the dataset."""
 
 
 class DatasetUpdate(BaseSchema):
@@ -85,9 +92,22 @@ class DatasetFile(BaseSchema):
     state: FileState
 
 
-class DatasetRecording(BaseSchema):
-    """Schema for DatasetRecording objects returned to the user."""
+class DatasetRecordingCreate(BaseSchema):
+    """Schema for DatasetRecording objects created by the user."""
+
+    dataset_id: int
+    """The id of the dataset."""
+
+    recording_id: int
+    """The id of the recording."""
 
     path: Path
+    """The path to the recording in the dataset directory."""
 
-    recording: Recording
+
+class DatasetRecording(DatasetRecordingCreate):
+    """Schema for DatasetRecording objects returned to the user."""
+
+    recording: RecordingWithoutPath
+
+    state: FileState = Field(default=FileState.REGISTERED)

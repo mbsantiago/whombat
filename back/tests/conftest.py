@@ -148,3 +148,21 @@ async def clip(
             end_time=0.2,
         ),
     )
+
+
+@pytest.fixture
+async def dataset(session: AsyncSession, tmp_path: Path) -> schemas.Dataset:
+    """Create a dataset for testing."""
+    dataset_dir = tmp_path / "test_dataset"
+    audio_dir = dataset_dir / "audio"
+    audio_dir.mkdir(parents=True)
+
+    dataset, _ = await api.datasets.create_dataset(
+        session,
+        data=schemas.DatasetCreate(
+            name="test_dataset",
+            description="test_description",
+            audio_dir=audio_dir,
+        ),
+    )
+    return dataset
