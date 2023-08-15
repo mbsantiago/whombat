@@ -78,6 +78,7 @@ class Clip(Base):
         back_populates="clips",
         default_factory=list,
         viewonly=True,
+        repr=False,
     )
     """The tags associated with the clip."""
 
@@ -86,13 +87,16 @@ class Clip(Base):
         back_populates="clip",
         default_factory=list,
         cascade="all, delete-orphan",
+        repr=False,
     )
 
     features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
         "ClipFeature",
+        lazy="joined",
         back_populates="clip",
         default_factory=list,
         cascade="all, delete-orphan",
+        repr=False,
     )
     """The features associated with the clip."""
 
@@ -140,6 +144,7 @@ class ClipTag(Base):
     tag: orm.Mapped[Tag] = orm.relationship(
         init=False,
         repr=False,
+        lazy="joined",
     )
     """The tag."""
 
@@ -181,12 +186,14 @@ class ClipFeature(Base):
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
         init=False,
         repr=False,
+        lazy="joined",
     )
     """The name of the feature."""
 
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
         repr=False,
+        cascade="all",
     )
     """The clip to which the feature belongs."""
 

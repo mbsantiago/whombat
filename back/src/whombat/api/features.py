@@ -1,6 +1,6 @@
 """API functions to interact with feature names."""
 
-from typing import Sequence
+from typing import Any, Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +17,7 @@ __all__ = [
     "get_feature_name_by_name",
     "get_feature_names",
     "update_feature_name",
+    "find_feature",
 ]
 
 
@@ -175,11 +176,10 @@ async def create_feature_names(
         The feature names.
 
     """
-    feature_names = await common.create_objects(
+    feature_names = await common.create_objects_without_duplicates(
         session=session,
         model=models.FeatureName,
         data=data,
-        avoid_duplicates=True,
         key=lambda x: x.name,
         key_column=models.FeatureName.name,
     )
@@ -280,4 +280,33 @@ async def delete_feature_name(
         session=session,
         model=models.FeatureName,
         condition=models.FeatureName.id == feature_name_id,
+    )
+
+
+def find_feature(
+    features: Sequence[schemas.Feature],
+    feature_name: str,
+    default: Any = None,
+) -> schemas.Feature | None:
+    """Find a feature from a list of features by its name.
+
+    Helper function for finding a feature by name. Returns the first feature
+    with the given name, or a default value if no feature is found.
+
+    Parameters
+    ----------
+    features : Sequence[schemas.Feature]
+        The features to search.
+    feature_name : str
+        The name of the feature to find.
+    default : Any, optional
+        The default value to return if the feature is not found.
+
+    Returns
+    -------
+    feature : schemas.Feature | None
+        The feature, or the default value if the feature was not found.
+    """
+    return next(
+        (f for f in features if f.feature_name.name == feature_name), default
     )

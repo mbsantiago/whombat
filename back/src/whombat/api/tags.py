@@ -178,11 +178,10 @@ async def create_tags(
     list[schemas.Tag]
         Associated tags.
     """
-    tags = await common.create_objects(
+    tags = await common.create_objects_without_duplicates(
         session=session,
         model=models.Tag,
         data=data,
-        avoid_duplicates=True,
         key=lambda tag: (tag.key, tag.value),
         key_column=tuple_(models.Tag.key, models.Tag.value),
     )

@@ -265,11 +265,10 @@ async def create_recordings(
             _assemble_recording_data, data
         )
 
-    recordings = await common.create_objects(
+    recordings = await common.create_objects_without_duplicates(
         session,
         models.Recording,
         [rec for rec in all_data if rec is not None],
-        avoid_duplicates=True,
         key=lambda recording: recording.hash,
         key_column=models.Recording.hash,
     )

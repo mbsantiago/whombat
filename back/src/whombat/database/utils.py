@@ -93,3 +93,10 @@ def get_database_strategy(
         access_token_db,  # type: ignore
         lifetime_seconds=60 * 60 * 24,
     )
+
+
+def supports_returning(session: AsyncSession) -> bool:
+    """Check if the current database session suports insert with RETURNING."""
+    engine = session.get_bind()
+    dialect = engine.dialect
+    return dialect.insert_executemany_returning

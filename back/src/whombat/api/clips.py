@@ -1,18 +1,15 @@
 """API functions for interacting with audio clips."""
 
 from uuid import UUID
+from typing import Sequence
 
-from sqlalchemy import insert, select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql._typing import _ColumnExpressionArgument
 
-from whombat import exceptions, schemas
-from whombat.api import recordings
-from whombat.core.common import remove_duplicates
+from whombat import schemas
+from whombat.api import common, features, recordings
 from whombat.database import models
 from whombat.filters.base import Filter
-from whombat.filters.clips import UUIDFilter
 
 __all__ = [
     "add_feature_to_clip",
@@ -28,20 +25,49 @@ __all__ = [
 ]
 
 
-async def _get_clip(
-    session: AsyncSession,
-    condition: _ColumnExpressionArgument,
-) -> models.Clip:
-    query = select(models.Clip).where(condition)
-    result = await session.execute(query)
-    clip = result.scalar_one_or_none()
+DURATION = "duration"
+"""Name of duration feature."""
 
-    if clip is None:
-        raise exceptions.NotFoundError(
-            "A clip with the specified condition was not found"
-        )
 
-    return clip
+def compute_clip_duration(clip: schemas.Clip | models.Clip) -> float:
+    """Compute duration of clip.
+
+    Parameters
+    ----------
+    clip : schemas.Clip
+        Clip to compute duration for.
+
+    Returns
+    -------
+    float
+        Duration of clip.
+
+    """
+    return clip.end_time - clip.start_time
+
+
+CLIP_FEATURES = {
+    DURATION: compute_clip_duration,
+}
+
+
+def compute_clip_features(
+    clip: schemas.Clip | models.Clip,
+) -> dict[str, float]:
+    """Compute features for clip.
+
+    Parameters
+    ----------
+    clip : schemas.Clip
+        Clip to compute features for.
+
+    Returns
+    -------
+    dict[str, float]
+        Dictionary of feature names and values.
+
+    """
+    return {name: func(clip) for name, func in CLIP_FEATURES.items()}
 
 
 async def get_clip_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Clip:
@@ -66,8 +92,12 @@ async def get_clip_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Clip:
         Raised if clip with UUID `uuid` is not found.
 
     """
-    db_clip = await _get_clip(session, models.Clip.uuid == uuid)
-    return schemas.Clip.model_validate(db_clip)
+    clip = await common.get_object(
+        session,
+        models.Clip,
+        models.Clip.uuid == uuid,
+    )
+    return schemas.Clip.model_validate(clip)
 
 
 async def get_clip_by_id(session: AsyncSession, id: int) -> schemas.Clip:
@@ -92,8 +122,8 @@ async def get_clip_by_id(session: AsyncSession, id: int) -> schemas.Clip:
         Raised if clip with ID `id` is not found.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == id)
-    return schemas.Clip.model_validate(db_clip)
+    clip = await common.get_object(session, models.Clip, models.Clip.id == id)
+    return schemas.Clip.model_validate(clip)
 
 
 async def get_clips(
@@ -123,17 +153,56 @@ async def get_clips(
         List of clips.
 
     """
-    query = select(models.Clip)
+    clips = await common.get_objects(
+        session,
+        models.Clip,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+    )
+    return [schemas.Clip.model_validate(clip) for clip in clips]
 
-    for filter in filters or []:
-        query = filter.filter(query)
 
-    query = query.limit(limit).offset(offset)
-    result = await session.execute(query)
+async def _create_clip_features(
+    session: AsyncSession,
+    clips: Sequence[models.Clip],
+) -> None:
+    """Create features for clips.
 
-    return [
-        schemas.Clip.model_validate(clip) for clip in result.scalars().all()
+    Parameters
+    ----------
+    session : AsyncSession
+        Database session.
+    clips : list[schemas.Clip]
+        List of clips to create features for.
+
+    """
+    clip_features = [
+        (clip.id, name, value)
+        for clip in clips
+        for name, value in compute_clip_features(clip).items()
     ]
+
+    # Get feature names
+    names = {name for _, name, _ in clip_features}
+
+    feature_names: dict[str, schemas.FeatureName] = {
+        name: await features.get_or_create_feature_name(
+            session, data=schemas.FeatureNameCreate(name=name)
+        )
+        for name in names
+    }
+
+    data = [
+        schemas.ClipFeatureCreate(
+            clip_id=clip_id,
+            feature_name_id=feature_names[name].id,
+            value=value,
+        )
+        for clip_id, name, value in clip_features
+    ]
+
+    await common.create_objects(session, models.ClipFeature, data)
 
 
 async def create_clip(
@@ -164,21 +233,16 @@ async def create_clip(
         If recording does not exist.
 
     """
+    # Make sure recording exists
     await recordings.get_recording_by_id(session, data.recording_id)
 
-    db_clip = models.Clip(**data.model_dump(exclude_unset=True))
-    session.add(db_clip)
+    clip = await common.create_object(session, models.Clip, data)
+    clip_id = clip.id
 
-    try:
-        await session.commit()
-    except IntegrityError:
-        await session.rollback()
-        raise exceptions.DuplicateObjectError(
-            "Clip with same start and end time already exists "
-            "for the recording."
-        )
+    await _create_clip_features(session, [clip])
 
-    return await get_clip_by_id(session, db_clip.id)
+    session.expire(clip)
+    return await get_clip_by_id(session, clip_id)
 
 
 async def create_clips(
@@ -218,66 +282,30 @@ async def create_clips(
         If recording does not exist.
 
     """
-    # Make sure there are no duplicates
-    new_clips = remove_duplicates(
-        data,
-        key=lambda x: (x.recording_id, x.start_time, x.end_time),
-    )
-
-    # get existing recordings
-    recording_ids = remove_duplicates([clip.recording_id for clip in data])
-    query = select(models.Recording.id).where(
-        models.Recording.id.in_(recording_ids)
-    )
-    results = await session.execute(query)
-    existing_recordings = results.scalars().all()
-
-    # Filter out recordings that are not in the database
-    new_clips = [
-        clip for clip in data if clip.recording_id in existing_recordings
-    ]
-
-    if not new_clips:
-        # No new clips to create, as none of the recordings exist
-        return []
-
-    # Get existing clips
-    query = select(models.Clip).where(
-        models.Clip.recording_id.in_(existing_recordings)
-    )
-    results = await session.execute(query)
-    existing_clips = results.scalars().all()
-
-    existing_clip_keys = set(
-        (clip.recording_id, clip.start_time, clip.end_time)
-        for clip in existing_clips
-    )
-
-    # Only create clips that do not already exist
-    clips_to_create = [
-        clip
-        for clip in new_clips
-        if (clip.recording_id, clip.start_time, clip.end_time)
-        not in existing_clip_keys
-    ]
-
-    if not clips_to_create:
-        # No new clips to create as all clips already exist
-        return []
-
-    # Get values to create new clips
-    values = [clip.model_dump(exclude_unset=True) for clip in clips_to_create]
-
-    # Create new clips in bulk
-    stmt = insert(models.Clip).values(values)
-    await session.execute(stmt)
-    await session.commit()
-
-    # Get new clips
-    return await get_clips(
+    clips = await common.create_objects_without_duplicates(
         session,
-        filters=[UUIDFilter(isin=[clip.uuid for clip in clips_to_create])],
+        model=models.Clip,
+        data=data,
+        key=lambda x: (x.recording_id, x.start_time, x.end_time),
+        key_column=tuple_(
+            models.Clip.recording_id,
+            models.Clip.start_time,
+            models.Clip.end_time,
+        ),
     )
+
+    if clips:
+        await _create_clip_features(session, clips)
+
+    clip_ids = [clip.id for clip in clips]
+    session.expire_all()
+
+    clips = await common.get_objects(
+        session,
+        models.Clip,
+        filters=[models.Clip.id.in_(clip_ids)],
+    )
+    return [schemas.Clip.model_validate(clip) for clip in clips]
 
 
 async def delete_clip(
@@ -304,9 +332,7 @@ async def delete_clip(
         Raised if clip does not exist in the database.
 
     """
-    db_clip = _get_clip(session, models.Clip.id == clip_id)
-    await session.delete(db_clip)
-    await session.commit()
+    await common.delete_object(session, models.Clip, models.Clip.id == clip_id)
 
 
 async def add_tag_to_clip(
@@ -338,12 +364,13 @@ async def add_tag_to_clip(
         Raised if clip does not exist in the database.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == clip_id)
-    db_tag = await _get_tag(session, models.Tag.id == tag_id)
-    db_clip.tags.append(db_tag)
-    await session.commit()
-    session.expire(db_clip)
-    return await get_clip_by_id(session, clip_id)
+    clip = await common.add_tag_to_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+        tag_id,
+    )
+    return schemas.Clip.model_validate(clip)
 
 
 async def add_feature_to_clip(
@@ -379,16 +406,14 @@ async def add_feature_to_clip(
         If clip does not exist.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == clip_id)
-    db_feature = models.ClipFeature(
-        clip_id=clip_id,
-        feature_name_id=feature_name_id,
-        value=value,
+    clip = await common.add_feature_to_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+        feature_name_id,
+        value,
     )
-    db_clip.features.append(db_feature)
-    await session.commit()
-    session.expire(db_clip)
-    return await get_clip_by_id(session, clip_id)
+    return schemas.Clip.model_validate(clip)
 
 
 async def update_clip_feature(
@@ -426,27 +451,14 @@ async def update_clip_feature(
         Raised if clip does not exist in the database.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == clip_id)
-    db_feature = next(
-        (
-            feature
-            for feature in db_clip.features
-            if feature.feature_name_id == feature_name_id
-        ),
-        None,
+    clip = await common.update_feature_on_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+        feature_name_id,
+        value,
     )
-    if db_feature:
-        db_feature.value = value
-    else:
-        db_feature = models.ClipFeature(
-            clip_id=clip_id,
-            feature_name_id=feature_name_id,
-            value=value,
-        )
-        db_clip.features.append(db_feature)
-    await session.commit()
-    session.expire(db_clip)
-    return await get_clip_by_id(session, clip_id)
+    return schemas.Clip.model_validate(clip)
 
 
 async def remove_tag_from_clip(
@@ -478,14 +490,13 @@ async def remove_tag_from_clip(
         Raised if clip does not exist in the database.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == clip_id)
-    db_tag = next((tag for tag in db_clip.tags if tag.id == tag_id), None)
-    if db_tag is None:
-        return schemas.Clip.model_validate(db_clip)
-    db_clip.tags.remove(db_tag)
-    await session.commit()
-    session.expire(db_clip)
-    return await get_clip_by_id(session, clip_id)
+    clip = await common.remove_tag_from_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+        tag_id,
+    )
+    return schemas.Clip.model_validate(clip)
 
 
 async def remove_feature_from_clip(
@@ -517,18 +528,10 @@ async def remove_feature_from_clip(
         Raised if clip does not exist in the database.
 
     """
-    db_clip = await _get_clip(session, models.Clip.id == clip_id)
-    db_feature = next(
-        (
-            feature
-            for feature in db_clip.features
-            if feature.feature_name_id == feature_name_id
-        ),
-        None,
+    clip = await common.remove_feature_from_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+        feature_name_id,
     )
-    if db_feature is None:
-        return schemas.Clip.model_validate(db_clip)
-    db_clip.features.remove(db_feature)
-    await session.commit()
-    session.expire(db_clip)
-    return await get_clip_by_id(session, clip_id)
+    return schemas.Clip.model_validate(clip)

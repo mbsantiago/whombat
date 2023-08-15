@@ -17,7 +17,7 @@ from whombat.filters.base import Filter
 
 __all__ = [
     "create_object",
-    "create_objects",
+    "create_objects_without_duplicates",
     "get_object",
     "get_objects",
     "get_or_create_object",
@@ -70,7 +70,8 @@ async def get_object(
 
     if obj is None:
         raise exceptions.NotFoundError(
-            "A clip with the specified condition was not found"
+            f"A {model.__name__} with the specified condition was not found"
+            f" ({condition})"
         )
 
     return obj
@@ -166,9 +167,38 @@ async def create_objects(
     session: AsyncSession,
     model: type[A],
     data: Sequence[B],
-    avoid_duplicates: bool = False,
-    key: Callable[[A | B], Any] | None = None,
-    key_column: ColumnElement | InstrumentedAttribute | None = None,
+) -> None:
+    """Create multiple objects.
+
+    This function should be used when creating multiple objects at once, as it
+    will commit the session only once. Should be more efficient than calling
+    `object_create` multiple times, specially when creating many objects.
+
+    However this function does not check for duplicates nor does it return the
+    created objects. For that use `create_objects_without_duplicates`.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    model : type[A]
+        The model to create.
+
+    data : Sequence[B]
+        The data to use for creation of the objects.
+
+    """
+    stmt = insert(model).values([obj.model_dump() for obj in data])
+    await session.execute(stmt)
+
+
+async def create_objects_without_duplicates(
+    session: AsyncSession,
+    model: type[A],
+    data: Sequence[B],
+    key: Callable[[A | B], Any],
+    key_column: ColumnElement | InstrumentedAttribute,
 ) -> Sequence[A]:
     """Create multiple objects.
 
@@ -187,27 +217,19 @@ async def create_objects(
     data : Sequence[B]
         The data to use for creation of the objects.
 
-    avoid_duplicates : bool, optional
-        Whether to avoid creating duplicate objects, by default False
-        If True, a query will be performed to check which objects already exist
-        and only the ones that do not exist will be created.
+    key : Callable[[A | B], Any]
+        A function that returns a key for each object. If two objects have the
+        same key, only one will be created. Also this key value will be used to
+        query the database for existing objects.
 
-    key : Callable[[A | B], Any], optional
-        Only used if `avoid_duplicates` is True. A function that returns a key
-        for each object. If two objects have the same key, only one will be
-        created. Also this key value will be used to query the database for
-        existing objects.
-
-    key_column : InstrumentedAttribute, optional
-        Only used if `avoid_duplicates` is True. The column to use for
-        querying existing objects. Will raise an error if not provided
-        and `avoid_duplicates` is True.
+    key_column : InstrumentedAttribute
+        The column to use for querying existing objects. This is used in
+        conjunction with `key` to query the database for existing objects.
 
     Returns
     -------
     Sequence[A]
-        The objects associated to the data. Both created and existing objects
-        will be returned.
+        Will only return the created objects, not the existing ones.
 
     Raises
     ------
@@ -216,21 +238,6 @@ async def create_objects(
         not provided.
 
     """
-    if not avoid_duplicates:
-        stmt = (
-            insert(model)
-            .values([obj.model_dump() for obj in data])
-            .returning(model)
-        )
-        result = await session.execute(stmt)
-        return result.scalars().all()
-
-    if key is None or key_column is None:
-        raise ValueError(
-            "If `avoid_duplicates` is True, `key` and `key_column` must be"
-            " provided"
-        )
-
     # Remove duplicates from data
     data = remove_duplicates(list(data), key=key)
 
@@ -247,9 +254,10 @@ async def create_objects(
     missing = [obj for obj in data if key(obj) not in existing_keys]
 
     if not missing:
-        return existing
+        return []
 
     values = [obj.model_dump() for obj in missing]
+    keys = [key(obj) for obj in missing]
     stmt = insert(model).values(values)
     await session.execute(stmt)
 
@@ -428,9 +436,8 @@ async def add_note_to_object(
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj
 
 
 async def add_tag_to_object(
@@ -494,9 +501,8 @@ async def add_tag_to_object(
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj
 
 
 async def add_feature_to_object(
@@ -563,9 +569,8 @@ async def add_feature_to_object(
     )
     obj.features.append(feature)  # type: ignore
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj
 
 
 async def update_feature_on_object(
@@ -616,14 +621,15 @@ async def update_feature_on_object(
     )
 
     if feature is None:
-        return obj
+        return await add_feature_to_object(
+            session, model, condition, feature_name_id, value
+        )
 
     feature.value = value
 
     session.add(obj)
     await session.commit()
-
-    session.expire(obj)
+    await session.refresh(obj)
     return obj
 
 
@@ -677,11 +683,9 @@ async def remove_tag_from_object(
         return obj
 
     getattr(obj, relation_field_name).remove(tag)
-    session.add(obj)
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj
 
 
 async def remove_note_from_object(
@@ -736,9 +740,8 @@ async def remove_note_from_object(
     getattr(obj, relation_field).remove(note)
     session.add(obj)
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj
 
 
 async def remove_feature_from_object(
@@ -790,6 +793,5 @@ async def remove_feature_from_object(
     obj.features.remove(feature)  # type: ignore
     session.add(obj)
     await session.commit()
-
-    session.expire(obj)
-    return await get_object(session, model, condition)
+    await session.refresh(obj)
+    return obj

@@ -411,14 +411,7 @@ async def test_get_or_create_tags_with_existing_tags(session: AsyncSession):
     )
 
     # Assert
-    assert isinstance(created_tags, list)
-    assert len(created_tags) == 2
-    assert isinstance(created_tags[0], schemas.Tag)
-    assert created_tags[0].key == "test_key1"
-    assert created_tags[0].value == "test_value1"
-    assert isinstance(created_tags[1], schemas.Tag)
-    assert created_tags[1].key == "test_key2"
-    assert created_tags[1].value == "test_value2"
+    assert len(created_tags) == 0
 
 
 async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
@@ -442,11 +435,6 @@ async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
     )
 
     # Assert
-    assert isinstance(created_tags, list)
-    assert len(created_tags) == 2
-    assert isinstance(created_tags[0], schemas.Tag)
-    assert created_tags[0].key == "test_key1"
-    assert created_tags[0].value == "test_value1"
-    assert isinstance(created_tags[1], schemas.Tag)
-    assert created_tags[1].key == "test_key2"
-    assert created_tags[1].value == "test_value2"
+    assert len(created_tags) == 1
+    assert created_tags[0].key == "test_key2"
+    assert created_tags[0].value == "test_value2"

@@ -117,7 +117,6 @@ class Recording(Base):
     )
 
     recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
-        "RecordingNote",
         lazy="joined",
         back_populates="recording",
         default_factory=list,
@@ -125,7 +124,6 @@ class Recording(Base):
     )
 
     tags: orm.Mapped[list[Tag]] = orm.relationship(
-        Tag,
         lazy="joined",
         viewonly=True,
         secondary="recording_tag",
@@ -134,7 +132,6 @@ class Recording(Base):
     )
 
     recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
-        "RecordingTag",
         lazy="joined",
         back_populates="recording",
         default_factory=list,
@@ -142,7 +139,6 @@ class Recording(Base):
     )
 
     features: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
-        "RecordingFeature",
         lazy="joined",
         back_populates="recording",
         default_factory=list,
@@ -150,10 +146,11 @@ class Recording(Base):
     )
 
     clips: orm.Mapped[list["Clip"]] = orm.relationship(
-        "Clip",
         back_populates="recording",
         default_factory=list,
         cascade="all, delete-orphan",
+        init=False,
+        repr=False,
     )
 
 
@@ -185,6 +182,7 @@ class RecordingNote(Base):
         back_populates="recording_notes",
         init=False,
         repr=False,
+        cascade="all",
     )
     """The recording to which the note belongs."""
 
@@ -228,6 +226,7 @@ class RecordingTag(Base):
         back_populates="recording_tags",
         init=False,
         repr=False,
+        cascade="all",
     )
     """The recording to which the tag belongs."""
 
@@ -272,6 +271,7 @@ class RecordingFeature(Base):
         back_populates="features",
         init=False,
         repr=False,
+        cascade="all",
     )
 
     feature_name: orm.Mapped[FeatureName] = orm.relationship(

@@ -12,6 +12,7 @@ from whombat.schemas.tags import Tag
 __all__ = [
     "Clip",
     "ClipCreate",
+    "ClipFeatureCreate",
 ]
 
 
@@ -30,10 +31,10 @@ class ClipCreate(BaseSchema):
     end_time: float
     """The end time of the clip."""
 
-    @model_validator(mode="before")
+    @model_validator(mode="after")
     def validate_times(cls, values):
         """Validate that start_time < end_time."""
-        if values["start_time"] > values["end_time"]:
+        if values.start_time > values.end_time:
             raise ValueError("start_time must be less than end_time")
         return values
 
@@ -41,7 +42,7 @@ class ClipCreate(BaseSchema):
 class Clip(ClipCreate):
     """Schema for Clip objects returned to the user."""
 
-    id: int | None = None
+    id: int
     """The database id of the clip."""
 
     recording: Recording
@@ -52,3 +53,16 @@ class Clip(ClipCreate):
 
     features: list[Feature] = Field(default_factory=list)
     """The features associated with the clip."""
+
+
+class ClipFeatureCreate(BaseSchema):
+    """Schema for creating a clip feature."""
+
+    clip_id: int
+    """The id of the clip to which the feature belongs."""
+
+    feature_name_id: int
+    """The id of the feature to which the clip belongs."""
+
+    value: float
+    """The value of the feature."""

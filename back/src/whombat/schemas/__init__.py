@@ -14,7 +14,7 @@ the database.
 
 """
 
-from whombat.schemas.clips import Clip, ClipCreate
+from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
     DatasetFile,
