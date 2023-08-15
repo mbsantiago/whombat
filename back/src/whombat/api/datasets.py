@@ -30,7 +30,7 @@ __all__ = [
 async def get_dataset_by_id(
     session: AsyncSession,
     dataset_id: int,
-) -> schemas.Dataset:
+) -> schemas.DatasetWithCounts:
     """Get a dataset by ID.
 
     Parameters
@@ -55,13 +55,13 @@ async def get_dataset_by_id(
         models.Dataset,
         models.Dataset.id == dataset_id,
     )
-    return schemas.Dataset.model_validate(dataset)
+    return schemas.DatasetWithCounts.model_validate(dataset)
 
 
 async def get_dataset_by_name(
     session: AsyncSession,
     name: str,
-) -> schemas.Dataset:
+) -> schemas.DatasetWithCounts:
     """Get a dataset by name.
 
     Parameters
@@ -86,13 +86,13 @@ async def get_dataset_by_name(
         models.Dataset,
         models.Dataset.name == name,
     )
-    return schemas.Dataset.model_validate(dataset)
+    return schemas.DatasetWithCounts.model_validate(dataset)
 
 
 async def get_dataset_by_uuid(
     session: AsyncSession,
     uuid: uuid.UUID,
-) -> schemas.Dataset:
+) -> schemas.DatasetWithCounts:
     """Get a dataset by UUID.
 
     Parameters
@@ -117,13 +117,13 @@ async def get_dataset_by_uuid(
         models.Dataset,
         models.Dataset.uuid == uuid,
     )
-    return schemas.Dataset.model_validate(dataset)
+    return schemas.DatasetWithCounts.model_validate(dataset)
 
 
 async def get_dataset_by_audio_dir(
     session: AsyncSession,
     audio_dir: Path,
-) -> schemas.Dataset:
+) -> schemas.DatasetWithCounts:
     """Get a dataset by audio directory.
 
     Parameters
@@ -148,7 +148,7 @@ async def get_dataset_by_audio_dir(
         models.Dataset,
         models.Dataset.audio_dir == audio_dir,
     )
-    return schemas.Dataset.model_validate(dataset)
+    return schemas.DatasetWithCounts.model_validate(dataset)
 
 
 async def get_datasets(
@@ -158,7 +158,7 @@ async def get_datasets(
     offset: int = 0,
     filters: list[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.Dataset]:
+) -> list[schemas.DatasetWithCounts]:
     """Get all datasets.
 
     Parameters
@@ -183,13 +183,16 @@ async def get_datasets(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.Dataset.model_validate(dataset) for dataset in datasets]
+    return [
+        schemas.DatasetWithCounts.model_validate(dataset)
+        for dataset in datasets
+    ]
 
 
 async def create_dataset(
     session: AsyncSession,
     data: DatasetCreate,
-) -> tuple[schemas.Dataset, list[schemas.DatasetRecording]]:
+) -> tuple[schemas.DatasetWithCounts, list[schemas.DatasetRecording]]:
     """Create a dataset.
 
     This function will create a dataset and populate it with the audio files
@@ -235,14 +238,19 @@ async def create_dataset(
         recordings=recording_list,
     )
 
-    return dataset, dataset_recordigns
+    await session.refresh(db_dataset)
+
+    return (
+        schemas.DatasetWithCounts.model_validate(dataset),
+        dataset_recordigns,
+    )
 
 
 async def update_dataset(
     session: AsyncSession,
     dataset_id: int,
     data: DatasetUpdate,
-) -> schemas.Dataset:
+) -> schemas.DatasetWithCounts:
     """Update a dataset.
 
     Parameters
@@ -272,7 +280,7 @@ async def update_dataset(
         models.Dataset.id == dataset_id,
         data,
     )
-    return schemas.Dataset.model_validate(db_dataset)
+    return schemas.DatasetWithCounts.model_validate(db_dataset)
 
 
 async def delete_dataset(
@@ -409,7 +417,12 @@ async def add_recording_to_dataset(
         data,
     )
 
-    return schemas.DatasetRecording.model_validate(db_dataset_recording)
+    return schemas.DatasetRecording(
+        dataset_id=db_dataset_recording.dataset_id,
+        recording_id=db_dataset_recording.recording_id,
+        path=db_dataset_recording.path,
+        recording=schemas.RecordingWithoutPath.model_validate(recording),
+    )
 
 
 async def add_recordings_to_dataset(
@@ -436,7 +449,7 @@ async def add_recordings_to_dataset(
     data = []
     for recording in recordings:
         if not recording.path.is_relative_to(dataset.audio_dir):
-            pass
+            continue
 
         data.append(
             schemas.DatasetRecordingCreate(
@@ -496,6 +509,9 @@ async def get_dataset_recordings(
     recordings : list[schemas.DatasetRecording]
 
     """
+    # Get the dataset.
+    await get_dataset_by_id(session, dataset_id=dataset_id)
+
     dataset_recordings = await common.get_objects(
         session,
         models.DatasetRecording,

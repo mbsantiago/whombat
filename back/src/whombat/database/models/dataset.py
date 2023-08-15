@@ -15,6 +15,7 @@ recordings from the app.
 """
 
 from uuid import UUID, uuid4
+from pathlib import Path
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint, func, inspect, select
@@ -47,13 +48,13 @@ class Dataset(Base):
     )
     """The UUID of the dataset."""
 
-    name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    name: orm.Mapped[str] = orm.mapped_column(unique=True)
     """The name of the dataset."""
 
     description: orm.Mapped[str] = orm.mapped_column(nullable=True)
     """The description of the dataset."""
 
-    audio_dir: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    audio_dir: orm.Mapped[Path] = orm.mapped_column(unique=True)
     """The path to the audio directory of the dataset.
 
     This is the directory that contains all the recordings of the dataset.
@@ -100,7 +101,7 @@ class DatasetRecording(Base):
     )
     """The id of the recording."""
 
-    path: orm.Mapped[str]
+    path: orm.Mapped[Path]
     """The path to the recording within the dataset.
 
     This path is relative to the dataset's audio directory.
@@ -133,6 +134,7 @@ inspect(Dataset).add_property(
         select(func.count(DatasetRecording.recording_id))
         .where(DatasetRecording.dataset_id == Dataset.id)
         .correlate_except(DatasetRecording)
-        .scalar_subquery()
+        .scalar_subquery(),
+        deferred=False,
     )
 )

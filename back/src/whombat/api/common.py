@@ -416,6 +416,7 @@ async def update_object(
             " error. This is likely due to a unique constraint violation."
             f" Data: {data}"
         ) from e
+    await session.refresh(obj)
     return obj
 
 

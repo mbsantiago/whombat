@@ -22,6 +22,7 @@ from whombat.schemas.datasets import (
     DatasetRecording,
     DatasetRecordingCreate,
     DatasetUpdate,
+    DatasetWithCounts,
     FileState,
 )
 from whombat.schemas.features import (
@@ -52,6 +53,7 @@ __all__ = [
     "DatasetRecording",
     "DatasetRecordingCreate",
     "DatasetUpdate",
+    "DatasetWithCounts",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",

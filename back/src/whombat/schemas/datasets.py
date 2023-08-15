@@ -15,6 +15,7 @@ __all__ = [
     "DatasetCreate",
     "DatasetUpdate",
     "DatasetRecordingCreate",
+    "DatasetWithCounts",
     "FileState",
 ]
 
@@ -35,6 +36,11 @@ class DatasetCreate(BaseSchema):
     """The description of the dataset."""
 
 
+class WithCounts(BaseSchema):
+    recording_count: int = 0
+    """The number of recordings in the dataset."""
+
+
 class Dataset(DatasetCreate):
     """Schema for Dataset objects returned to the user."""
 
@@ -44,8 +50,11 @@ class Dataset(DatasetCreate):
     id: int
     """The database id of the dataset."""
 
-    recording_count: int = 0
-    """The number of recordings in the dataset."""
+
+class DatasetWithCounts(Dataset, WithCounts):
+    """Schema for Dataset objects returned to the user."""
+
+    pass
 
 
 class DatasetUpdate(BaseSchema):
