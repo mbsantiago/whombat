@@ -53,14 +53,6 @@ class Note(Base):
     )
     """The id of the user who created the note."""
 
-    created_by: orm.Mapped[User] = orm.relationship(
-        User,
-        back_populates="notes",
-        lazy="joined",
-        init=False,
-    )
-    """The user who created the note."""
-
     is_issue: orm.Mapped[bool] = orm.mapped_column(
         nullable=False,
         default=False,
@@ -69,9 +61,18 @@ class Note(Base):
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
+        kw_only=True,
         unique=True,
     )
     """The uuid of the note."""
+
+    created_by: orm.Mapped[User] = orm.relationship(
+        User,
+        back_populates="notes",
+        lazy="joined",
+        init=False,
+    )
+    """The user who created the note."""
 
     recordings: orm.Mapped[list["Recording"]] = orm.relationship(
         "Recording",

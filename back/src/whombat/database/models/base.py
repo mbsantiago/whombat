@@ -10,6 +10,7 @@ from pathlib import Path
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
 from fastapi_users_db_sqlalchemy.generics import GUID
+from soundevent import Geometry, geometry
 
 __all__ = [
     "Base",
@@ -30,6 +31,20 @@ class PathType(types.TypeDecorator):
         return Path(value)
 
 
+class GeometryType(types.TypeDecorator):
+    """SqlAlchemy type for soundevent.Geometry objects."""
+
+    impl = types.String
+
+    cache_ok = True
+
+    def process_bind_param(self, value: Geometry, _) -> str:
+        return value.model_dump_json()
+
+    def process_result_value(self, value: str, _) -> Geometry:
+        return geometry.geometry_validate(value, mode="json")
+
+
 class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
     """Base class for SqlAlchemy Models."""
 
@@ -43,6 +58,7 @@ class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
     type_annotation_map = {
         uuid.UUID: GUID,
         Path: PathType,
+        Geometry: GeometryType,
     }
 
     # This is needed to make the default values work with

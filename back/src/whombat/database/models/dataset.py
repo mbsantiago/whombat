@@ -44,7 +44,7 @@ class Dataset(Base):
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
-        init=False,
+        kw_only=True
     )
     """The UUID of the dataset."""
 

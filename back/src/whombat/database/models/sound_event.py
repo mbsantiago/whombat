@@ -30,6 +30,7 @@ machine learning models that can detect these events automatically.
 import typing
 from uuid import UUID, uuid4
 
+from soundevent import Geometry
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
@@ -60,7 +61,7 @@ class SoundEvent(Base):
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
-        init=False,
+        kw_only=True,
     )
     """The uuid of the sound event."""
 
@@ -73,10 +74,10 @@ class SoundEvent(Base):
     geometry_type: orm.Mapped[str] = orm.mapped_column(nullable=False)
     """The type of geometry used to mark the sound event."""
 
-    geometry: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    geometry: orm.Mapped[Geometry] = orm.mapped_column(nullable=False)
     """The geometry of the mark used to mark the sound event.
 
-    The geometry is a JSON string that contains the coordinates of the mark.
+    The geometry is stored as a JSON string.
     """
 
     recording: orm.Mapped[Recording] = orm.relationship(
@@ -87,6 +88,7 @@ class SoundEvent(Base):
 
     tags: orm.Mapped[list[Tag]] = orm.relationship(
         back_populates="sound_events",
+        secondary="sound_event_tag",
         init=False,
         repr=False,
         viewonly=True,
@@ -149,15 +151,16 @@ class SoundEventTag(Base):
     """The id of the tag."""
 
     tag: orm.Mapped[Tag] = orm.relationship(
+        back_populates="soundevent_tags",
         init=False,
         repr=False,
     )
     """The tag."""
 
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
+        back_populates="soundevent_tags",
         init=False,
         repr=False,
-        back_populates="tags",
         cascade="all",
     )
 
@@ -197,15 +200,17 @@ class SoundEventFeature(Base):
     """The value of the feature."""
 
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
+        back_populates="features",
+        cascade="all",
         init=False,
         repr=False,
-        back_populates="features",
     )
     """The sound event."""
 
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
         init=False,
         repr=False,
+        lazy="joined",
     )
     """The feature."""
 

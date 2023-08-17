@@ -2,7 +2,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
+from whombat import schemas
 from whombat.api import common, users
 from whombat.database import models
 from whombat.filters.base import Filter
@@ -16,47 +16,6 @@ __all__ = [
 ]
 
 
-async def create_note(
-    session: AsyncSession,
-    data: schemas.NoteCreate,
-) -> schemas.Note:
-    """Create a note.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-    message : str
-        The message of the note.
-    created_by : schemas.users.User
-        The user who created the note.
-    is_issue : bool
-        Whether the note is an issue.
-
-    Returns
-    -------
-    note : schemas.notes.Note
-        The created note.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If the given user does not exist.
-
-    """
-    try:
-        await users.get_user_by_id(session, user_id=data.created_by_id)
-    except exceptions.NotFoundError as e:
-        raise exceptions.NotFoundError(
-            f"User with ID {data.created_by_id} does not exist.",
-        ) from e
-
-    db_note = models.Note(**data.model_dump(exclude_unset=True))
-    session.add(db_note)
-    await session.commit()
-    return await get_note_by_id(session, db_note.id)
-
-
 async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     """Get a note by its ID.
 
@@ -64,7 +23,8 @@ async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     ----------
     session : AsyncSession
         The database session to use.
-    id : int
+
+    note_id : int
         The ID of the note.
 
     Returns
@@ -84,32 +44,13 @@ async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     return schemas.Note.model_validate(note)
 
 
-async def delete_note(
-    session: AsyncSession,
-    note: schemas.Note,
-) -> None:
-    """Delete a note.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-    note : schemas.notes.Note
-        The note to delete.
-
-    Note
-    ----
-    The function will not raise an error if the given note does not exist.
-    """
-    await common.delete_object(session, models.Note, models.Note.id == note.id)
-
-
 async def get_notes(
     session: AsyncSession,
     *,
     limit: int = 100,
     offset: int = 0,
     filters: list[Filter] | None = None,
+    sort_by: str | None = "-created_at",
 ) -> list[schemas.Note]:
     """Get all notes.
 
@@ -130,6 +71,9 @@ async def get_notes(
     filters : list[whombat.filters.base.Filter], optional
         A list of filters to apply to the notes.
 
+    sort_by : str, optional
+        The field to sort the notes by.
+
     Returns
     -------
     notes : schemas.notes.Notes
@@ -142,9 +86,40 @@ async def get_notes(
         limit=limit,
         offset=offset,
         filters=filters,
-        sort_by=models.Note.created_at.desc(),
+        sort_by=sort_by,
     )
     return [schemas.Note.model_validate(note) for note in notes]
+
+
+async def create_note(
+    session: AsyncSession,
+    data: schemas.NoteCreate,
+) -> schemas.Note:
+    """Create a note.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    data : schemas.notes.NoteCreate
+        The data to create the note with.
+
+    Returns
+    -------
+    note : schemas.notes.Note
+        The created note.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If the given user does not exist.
+
+    """
+    await users.get_user_by_id(session, user_id=data.created_by_id)
+    note = await common.create_object(session, models.Note, data)
+    await session.refresh(note)
+    return schemas.Note.model_validate(note)
 
 
 async def update_note(
@@ -183,3 +158,21 @@ async def update_note(
         data,
     )
     return schemas.Note.model_validate(note)
+
+
+async def delete_note(
+    session: AsyncSession,
+    note_id: int,
+) -> None:
+    """Delete a note.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    note_id : int
+        The ID of the note to delete.
+
+    """
+    await common.delete_object(session, models.Note, models.Note.id == note_id)

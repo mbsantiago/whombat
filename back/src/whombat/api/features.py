@@ -2,10 +2,12 @@
 
 from typing import Any, Sequence
 
+from cachetools import LRUCache
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import schemas
 from whombat.api import common
+from whombat import cache
 from whombat.database import models
 from whombat.filters.base import Filter
 
@@ -21,6 +23,11 @@ __all__ = [
 ]
 
 
+@cache.cached(
+    name="feature_name_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, feature_name_id: feature_name_id,
+)
 async def get_feature_name_by_id(
     session: AsyncSession,
     feature_name_id: int,
@@ -53,6 +60,11 @@ async def get_feature_name_by_id(
     return schemas.FeatureName.model_validate(db_feature_name)
 
 
+@cache.cached(
+    name="feature_name_by_name",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, feature_name: feature_name,
+)
 async def get_feature_name_by_name(
     session: AsyncSession,
     feature_name: str,
@@ -186,6 +198,10 @@ async def create_feature_names(
     return [schemas.FeatureName.model_validate(r) for r in feature_names]
 
 
+@cache.cached(
+    name="feature_name_by_name",
+    key=lambda _, data: data.name,
+)
 async def get_or_create_feature_name(
     session: AsyncSession,
     data: schemas.FeatureNameCreate,
@@ -276,11 +292,13 @@ async def delete_feature_name(
         The name of the feature.
 
     """
-    await common.delete_object(
+    obj = await common.delete_object(
         session=session,
         model=models.FeatureName,
         condition=models.FeatureName.id == feature_name_id,
     )
+    cache.clear_cache_key("feature_name_by_id", feature_name_id)
+    cache.clear_cache_key("feature_name_by_name", obj.name)
 
 
 def find_feature(

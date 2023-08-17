@@ -38,6 +38,27 @@ B = TypeVar("B", bound=BaseModel)
 F = TypeVar("F", bound=models.Base)
 
 
+def get_values(
+    data: BaseModel,
+) -> dict[str, Any]:
+    """Get the values of a model.
+
+    Parameters
+    ----------
+    data : BaseModel
+        The Pydantic object to get the values from.
+
+    Returns
+    -------
+    dict[str, Any]
+        The values.
+    """
+    values = dict(data)
+    for key in data.model_computed_fields:
+        values[key] = getattr(data, key)
+    return values
+
+
 async def get_object(
     session: AsyncSession,
     model: type[A],
@@ -191,7 +212,7 @@ async def create_object(
     A
         The created object.
     """
-    obj = model(**data.model_dump(exclude_unset=True))
+    obj = model(**get_values(data))
     try:
         session.add(obj)
         await session.commit()
@@ -231,7 +252,7 @@ async def create_objects(
         The data to use for creation of the objects.
 
     """
-    stmt = insert(model).values([obj.model_dump() for obj in data])
+    stmt = insert(model).values([get_values(obj) for obj in data])
     await session.execute(stmt)
 
 
@@ -298,7 +319,7 @@ async def create_objects_without_duplicates(
     if not missing:
         return []
 
-    values = [obj.model_dump() for obj in missing]
+    values = [get_values(obj) for obj in missing]
     keys = [key(obj) for obj in missing]
     stmt = insert(model).values(values)
     await session.execute(stmt)
@@ -315,7 +336,7 @@ async def delete_object(
     session: AsyncSession,
     model: type[A],
     condition: _ColumnExpressionArgument,
-) -> None:
+) -> A:
     """Delete an object based on some condition.
 
     Parameters
@@ -337,6 +358,7 @@ async def delete_object(
     obj = await get_object(session, model, condition)
     await session.delete(obj)
     await session.commit()
+    return obj
 
 
 async def get_or_create_object(
@@ -405,7 +427,8 @@ async def update_object(
         If the object was not found.
     """
     obj = await get_object(session, model, condition)
-    for key, value in data.model_dump(exclude_unset=True).items():
+    for key in data.model_fields_set:
+        value = getattr(data, key)
         setattr(obj, key, value)
     try:
         await session.commit()

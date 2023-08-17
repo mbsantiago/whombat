@@ -108,7 +108,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    await notes.delete_note(session, note=note)
+    await notes.delete_note(session, note_id=note.id)
 
     # Assert
     results = await session.execute(
@@ -136,7 +136,7 @@ async def test_delete_note_fails_if_note_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await notes.delete_note(
             session,
-            note=note,
+            note_id=note.id,
         )
 
 

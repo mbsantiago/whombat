@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:401cef475648044203d18e7db40cc0a97716bcd7716632c80b36d3e2a6b202e9"
+content_hash = "sha256:c80e8f68d74c1618c65d352b049f52fef135b937cd821c7d9b6860e53b94f955"
 
 [[package]]
 name = "aiosqlite"
@@ -40,6 +40,19 @@ dependencies = [
 files = [
     {file = "anyio-3.7.1-py3-none-any.whl", hash = "sha256:91dee416e570e92c64041bd18b900d1d6fa78dff7048769ce5ac5ddad004fbb5"},
     {file = "anyio-3.7.1.tar.gz", hash = "sha256:44a3c9aba0f5defa43261a8b3efb97891f2bd7d804e0e1f56419befa1adfc780"},
+]
+
+[[package]]
+name = "asyncache"
+version = "0.3.1"
+requires_python = ">=3.8,<4.0"
+summary = "Helpers to use cachetools with async code."
+dependencies = [
+    "cachetools<6.0.0,>=5.2.0",
+]
+files = [
+    {file = "asyncache-0.3.1-py3-none-any.whl", hash = "sha256:ef20a1024d265090dd1e0785c961cf98b9c32cc7d9478973dcf25ac1b80011f5"},
+    {file = "asyncache-0.3.1.tar.gz", hash = "sha256:9a1e60a75668e794657489bdea6540ee7e3259c483517b934670db7600bf5035"},
 ]
 
 [[package]]

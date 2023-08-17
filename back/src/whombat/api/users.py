@@ -3,14 +3,14 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi_users.exceptions import UserNotExists
+from cachetools import LRUCache
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
-from whombat import exceptions, schemas
+from whombat import cache, schemas
+from whombat.api import common
 from whombat.database import models
+from whombat.filters import Filter
 
 __all__ = [
     "create_user",
@@ -23,30 +23,142 @@ __all__ = [
 ]
 
 
-@asynccontextmanager
-async def _get_user_db_context(
+@cache.cached(
+    name="user_by_id",
+    cache=LRUCache(maxsize=100),
+    key=lambda _, user_id: user_id,
+)
+async def get_user_by_id(
     session: AsyncSession,
-) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
-    """Get a SQLAlchemyUserDatabase context."""
-    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
+    user_id: uuid.UUID,
+) -> schemas.User:
+    """Get a user by id.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    user_id : uuid.UUID
+        The id to use.
+
+    Returns
+    -------
+    user : schemas.User
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+    """
+    obj = await common.get_object(
+        session, models.User, models.User.id == user_id
+    )
+    return schemas.User.model_validate(obj)
 
 
-@asynccontextmanager
-async def _get_user_manager(
-    user_database: SQLAlchemyUserDatabase,
-) -> AsyncGenerator[models.UserManager, None]:
-    """Get a UserManager context."""
-    yield models.UserManager(user_database)
-
-
-@asynccontextmanager
-async def _get_user_manager_from_session(
+@cache.cached(
+    name="user_by_username",
+    cache=LRUCache(maxsize=100),
+    key=lambda _, username: username,
+)
+async def get_user_by_username(
     session: AsyncSession,
-) -> AsyncGenerator[models.UserManager, None]:
-    """Get a UserManager context from a database session."""
-    async with _get_user_db_context(session) as user_db:
-        async with _get_user_manager(user_db) as user_manager:
-            yield user_manager
+    username: str,
+) -> schemas.User:
+    """Get a user by username.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    username : str
+        The username to use.
+
+    Returns
+    -------
+    user : schemas.User
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+
+    """
+    obj = await common.get_object(
+        session, models.User, models.User.username == username
+    )
+    return schemas.User.model_validate(obj)
+
+
+@cache.cached(
+    name="user_by_email",
+    cache=LRUCache(maxsize=100),
+    key=lambda _, email: email,
+)
+async def get_user_by_email(
+    session: AsyncSession,
+    email: str,
+) -> schemas.User:
+    """Get a user by email.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    email : str
+        The email to use.
+
+    Returns
+    -------
+    user : schemas.User
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+
+    """
+    obj = await common.get_object(
+        session, models.User, models.User.email == email
+    )
+    return schemas.User.model_validate(obj)
+
+
+async def get_users(
+    session: AsyncSession,
+    *,
+    offset: int = 0,
+    limit: int = 100,
+    filters: list[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> list[schemas.User]:
+    """Get all users.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    offset : int, optional
+        The number of users to skip, by default 0.
+
+    limit : int, optional
+        The number of users to get, by default 100.
+
+    Returns
+    -------
+    users : List[schemas.User]
+
+    """
+    db_users = await common.get_objects(
+        session,
+        models.User,
+        offset=offset,
+        limit=limit,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return [schemas.User.model_validate(db_user) for db_user in db_users]
 
 
 async def create_user(
@@ -100,99 +212,6 @@ async def create_user(
         return schemas.User.model_validate(db_user)
 
 
-async def get_user_by_id(
-    session: AsyncSession,
-    user_id: uuid.UUID,
-) -> schemas.User:
-    """Get a user by id.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-
-    user_id : uuid.UUID
-        The id to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-    """
-    try:
-        async with _get_user_manager_from_session(session) as user_manager:
-            db_user = await user_manager.get(user_id)
-            return schemas.User.model_validate(db_user)
-    except UserNotExists as error:
-        raise exceptions.NotFoundError from error
-
-
-async def get_user_by_username(
-    session: AsyncSession,
-    username: str,
-) -> schemas.User:
-    """Get a user by username.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-
-    username : str
-        The username to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-
-    """
-    q = select(models.User).where(models.User.username == username)
-    result = await session.execute(q)
-    try:
-        db_user = result.scalars().one()
-    except NoResultFound as error:
-        raise exceptions.NotFoundError("User not found") from error
-    return schemas.User.model_validate(db_user)
-
-
-async def get_user_by_email(
-    session: AsyncSession,
-    email: str,
-) -> schemas.User:
-    """Get a user by email.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-
-    email : str
-        The email to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-
-    """
-    try:
-        async with _get_user_manager_from_session(session) as user_manager:
-            db_user = await user_manager.get_by_email(email)
-            return schemas.User.model_validate(db_user)
-    except UserNotExists as error:
-        raise exceptions.NotFoundError("No user with that email") from error
-
-
 async def update_user(
     session: AsyncSession,
     user_id: uuid.UUID,
@@ -227,36 +246,7 @@ async def update_user(
         return schemas.User.model_validate(db_user)
 
 
-async def get_users(
-    session: AsyncSession,
-    offset: int = 0,
-    limit: int = 100,
-) -> list[schemas.User]:
-    """Get all users.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-
-    offset : int, optional
-        The number of users to skip, by default 0.
-
-    limit : int, optional
-        The number of users to get, by default 100.
-
-    Returns
-    -------
-    users : List[schemas.User]
-
-    """
-    select_query = select(models.User).offset(offset).limit(limit)
-    result = await session.execute(select_query)
-    db_users = result.scalars().all()
-    return [schemas.User.model_validate(db_user) for db_user in db_users]
-
-
-async def delete_user(session: AsyncSession, user: schemas.User) -> None:
+async def delete_user(session: AsyncSession, user_id: uuid.UUID) -> None:
     """Delete a user.
 
     Parameters
@@ -264,18 +254,42 @@ async def delete_user(session: AsyncSession, user: schemas.User) -> None:
     session : AsyncSession
         The database session to use.
 
-    user : schemas.User
-        The user to delete.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If no user with the given id exists.
+    user_id : uuid.UUID
+        The id of the user to delete.
 
     """
-    async with _get_user_manager_from_session(session) as user_manager:
-        try:
-            db_user = await user_manager.get(user.id)
-        except UserNotExists as error:
-            raise exceptions.NotFoundError("No user with that id") from error
-        await user_manager.delete(db_user)
+    obj = await common.delete_object(
+        session,
+        models.User,
+        models.User.id == user_id,
+    )
+    cache.clear_cache_key("user_by_id", obj.id)
+    cache.clear_cache_key("user_by_username", obj.username)
+    if obj.email is not None:
+        cache.clear_cache_key("user_by_email", obj.email)
+
+
+@asynccontextmanager
+async def _get_user_db_context(
+    session: AsyncSession,
+) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
+    """Get a SQLAlchemyUserDatabase context."""
+    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
+
+
+@asynccontextmanager
+async def _get_user_manager(
+    user_database: SQLAlchemyUserDatabase,
+) -> AsyncGenerator[models.UserManager, None]:
+    """Get a UserManager context."""
+    yield models.UserManager(user_database)
+
+
+@asynccontextmanager
+async def _get_user_manager_from_session(
+    session: AsyncSession,
+) -> AsyncGenerator[models.UserManager, None]:
+    """Get a UserManager context from a database session."""
+    async with _get_user_db_context(session) as user_db:
+        async with _get_user_manager(user_db) as user_manager:
+            yield user_manager

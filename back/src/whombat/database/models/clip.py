@@ -49,7 +49,8 @@ class Clip(Base):
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
-        init=False,
+        kw_only=True,
+        unique=True,
     )
     """The UUID of the clip."""
 

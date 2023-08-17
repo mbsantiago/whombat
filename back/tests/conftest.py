@@ -12,12 +12,19 @@ import pytest
 from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, schemas
+from whombat import api, cache, schemas
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 logging.getLogger("passlib").setLevel(logging.WARNING)
+
+
+@pytest.fixture(autouse=True)
+async def clear_cache():
+    """Clear the cache before each test."""
+    yield
+    cache.clear_all_caches()
 
 
 def random_string():

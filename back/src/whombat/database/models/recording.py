@@ -105,7 +105,11 @@ class Recording(Base):
     time_expansion: orm.Mapped[float] = orm.mapped_column(default=1.0)
     """The time expansion factor of the recording."""
 
-    uuid: orm.Mapped[UUID] = orm.mapped_column(default_factory=uuid4)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        kw_only=True,
+        unique=True,
+    )
     """The UUID of the recording."""
 
     notes: orm.Mapped[list[Note]] = orm.relationship(
@@ -154,7 +158,9 @@ class Recording(Base):
         repr=False,
     )
 
-    recording_datasets: orm.Mapped[list["DatasetRecording"]] = orm.relationship(
+    recording_datasets: orm.Mapped[
+        list["DatasetRecording"]
+    ] = orm.relationship(
         init=False,
         repr=False,
         cascade="all, delete-orphan",

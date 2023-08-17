@@ -46,6 +46,7 @@ from whombat.database.models.base import Base
 if TYPE_CHECKING:
     from whombat.database.models.recording import Recording, RecordingTag
     from whombat.database.models.clip import Clip, ClipTag
+    from whombat.database.models.sound_event import SoundEvent, SoundEventTag
 
 __all__ = [
     "Tag",
@@ -95,6 +96,22 @@ class Tag(Base):
     )
 
     clip_tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    sound_events: orm.Mapped[list["SoundEvent"]] = orm.relationship(
+        back_populates="tags",
+        secondary="sound_event_tag",
+        init=False,
+        repr=False,
+        viewonly=True,
+        default_factory=list,
+    )
+
+    soundevent_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,

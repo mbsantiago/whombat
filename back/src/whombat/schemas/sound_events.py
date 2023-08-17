@@ -2,7 +2,7 @@
 
 from uuid import UUID, uuid4
 
-from pydantic import Field
+from pydantic import Field, computed_field
 from soundevent.data.geometries import Geometry, GeometryType
 
 from whombat.schemas.base import BaseSchema
@@ -29,15 +29,18 @@ class SoundEventCreate(BaseSchema):
     geometry: Geometry
     """The geometry of the sound event."""
 
+    @computed_field
+    @property
+    def geometry_type(self) -> GeometryType:
+        """Return the type of geometry used to mark the sound event."""
+        return self.geometry.type
+
 
 class SoundEvent(SoundEventCreate):
     """Public schema for handling sound events."""
 
     id: int
     """The id of the sound event."""
-
-    geometry_type: GeometryType
-    """The type of geometry used to mark the sound event."""
 
     tags: list[Tag] = Field(default_factory=list)
     """The tags associated with the sound event."""

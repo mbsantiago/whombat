@@ -147,8 +147,8 @@ async def test_get_notes_from_user(
     # Assert
     assert isinstance(db_notes, list)
     assert len(db_notes) == 2
-    assert db_notes[0] == notes[1]
-    assert db_notes[1] == notes[0]
+    assert db_notes[1] == notes[1]
+    assert db_notes[0] == notes[0]
 
 
 async def test_get_notes_from_multiple_users(
@@ -170,8 +170,8 @@ async def test_get_notes_from_multiple_users(
     assert isinstance(db_notes, list)
     assert len(db_notes) == 3
     assert db_notes[0] == notes[2]
-    assert db_notes[1] == notes[1]
-    assert db_notes[2] == notes[0]
+    assert db_notes[2] == notes[1]
+    assert db_notes[1] == notes[0]
 
 
 async def test_get_notes_before_date(

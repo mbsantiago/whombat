@@ -4,7 +4,6 @@ from typing import Sequence
 from uuid import UUID
 
 from soundevent.features import compute_geometric_features
-from soundevent.geometry import geometry_validate
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import schemas
@@ -142,6 +141,11 @@ async def create_sound_event(
     schemas.SoundEvent
         The created sound event.
     """
+    await common.get_object(
+        session=session,
+        model=models.Recording,
+        condition=models.Recording.id == data.recording_id,
+    )
     sound_event = await common.create_object(
         session=session,
         model=models.SoundEvent,
@@ -168,7 +172,6 @@ async def create_sound_events(
     await _create_sound_event_features(session, sound_events)
 
     sound_event_ids = [s.id for s in sound_events]
-    session.expire_all()
 
     sound_events = await common.get_objects(
         session=session,
@@ -425,12 +428,11 @@ async def _create_sound_event_features(
     """
     all_features = []
     for sound_event in sound_events:
-        geometry = geometry_validate(sound_event.geometry, mode="json")
-        feats = compute_geometric_features(geometry)
+        feats = compute_geometric_features(sound_event.geometry)
         for feature in feats:
             all_features.append((sound_event.id, feature.name, feature.value))
 
-    feature_names = {f[0] for f in all_features}
+    feature_names = {f[1] for f in all_features}
     feature_mapping = {
         name: await features.get_or_create_feature_name(
             session, data=schemas.FeatureNameCreate(name=name)
