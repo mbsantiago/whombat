@@ -154,7 +154,7 @@ async def test_get_tag_by_key_and_value(
         ),
     )
     retrieved_tag = await tags.get_tag_by_key_and_value(
-        session=session,
+        session,
         key="test_key",
         value="test_value",
     )
@@ -169,7 +169,7 @@ async def test_get_tag_by_key_and_value_nonexistent_should_fail(
     """Test getting a tag by key and value that does not exist."""
     with pytest.raises(exceptions.NotFoundError):
         await tags.get_tag_by_key_and_value(
-            session=session,
+            session,
             key="test_key",
             value="test_value",
         )
@@ -237,7 +237,7 @@ async def test_get_or_create_tag_nonexistent_should_create(
 ) -> None:
     """Test getting or creating a tag that does not exist."""
     created_tag = await tags.get_or_create_tag(
-        session=session,
+        session,
         data=schemas.TagCreate(
             key="test_key",
             value="test_value",
@@ -260,7 +260,7 @@ async def test_get_or_create_tag_existing_should_get(
         ),
     )
     retrieved_tag = await tags.get_or_create_tag(
-        session=session,
+        session,
         data=schemas.TagCreate(
             key="test_key",
             value="test_value",

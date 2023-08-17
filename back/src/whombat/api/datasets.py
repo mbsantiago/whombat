@@ -2,10 +2,11 @@
 import uuid
 from pathlib import Path
 
+from cachetools import LRUCache
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
+from whombat import cache, exceptions, schemas
 from whombat.api import common, recordings
 from whombat.core import files
 from whombat.database import models
@@ -27,6 +28,15 @@ __all__ = [
 ]
 
 
+dataset_caches = cache.CacheCollection(schemas.DatasetWithCounts)
+
+
+@dataset_caches.cached(
+    name="dataset_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, dataset_id: dataset_id,
+    data_key=lambda dataset: dataset.id,
+)
 async def get_dataset_by_id(
     session: AsyncSession,
     dataset_id: int,
@@ -58,6 +68,12 @@ async def get_dataset_by_id(
     return schemas.DatasetWithCounts.model_validate(dataset)
 
 
+@dataset_caches.cached(
+    name="dataset_by_name",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, name: name,
+    data_key=lambda dataset: dataset.name,
+)
 async def get_dataset_by_name(
     session: AsyncSession,
     name: str,
@@ -89,6 +105,12 @@ async def get_dataset_by_name(
     return schemas.DatasetWithCounts.model_validate(dataset)
 
 
+@dataset_caches.cached(
+    name="dataset_by_uuid",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, uuid: uuid,
+    data_key=lambda dataset: dataset.uuid,
+)
 async def get_dataset_by_uuid(
     session: AsyncSession,
     uuid: uuid.UUID,
@@ -120,6 +142,12 @@ async def get_dataset_by_uuid(
     return schemas.DatasetWithCounts.model_validate(dataset)
 
 
+@dataset_caches.cached(
+    name="dataset_by_audio_dir",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, audio_dir: audio_dir,
+    data_key=lambda dataset: dataset.audio_dir,
+)
 async def get_dataset_by_audio_dir(
     session: AsyncSession,
     audio_dir: Path,
@@ -240,12 +268,18 @@ async def create_dataset(
 
     await session.refresh(db_dataset)
 
+    dataset = schemas.DatasetWithCounts.model_validate(db_dataset)
+
+    # Update the caches.
+    dataset_caches.update_object(dataset)
+
     return (
-        schemas.DatasetWithCounts.model_validate(dataset),
+        dataset,
         dataset_recordigns,
     )
 
 
+@dataset_caches.with_update
 async def update_dataset(
     session: AsyncSession,
     dataset_id: int,
@@ -283,10 +317,11 @@ async def update_dataset(
     return schemas.DatasetWithCounts.model_validate(db_dataset)
 
 
+@dataset_caches.with_clear
 async def delete_dataset(
     session: AsyncSession,
     dataset_id: int,
-) -> None:
+) -> schemas.DatasetWithCounts:
     """Delete a dataset.
 
     Parameters
@@ -303,11 +338,12 @@ async def delete_dataset(
         If no dataset with the given id exists.
 
     """
-    await common.delete_object(
+    obj = await common.delete_object(
         session,
         models.Dataset,
         models.Dataset.id == dataset_id,
     )
+    return schemas.DatasetWithCounts.model_validate(obj)
 
 
 async def add_file_to_dataset(
@@ -358,6 +394,10 @@ async def add_file_to_dataset(
         recording = await recordings.get_recording_by_path(session, data.path)
     except exceptions.NotFoundError:
         recording = await recordings.create_recording(session, data)
+
+        # Update the dataset recording count.
+        dataset.recording_count += 1
+        dataset_caches.update_object(dataset)
 
     return await add_recording_to_dataset(
         session,
@@ -417,6 +457,10 @@ async def add_recording_to_dataset(
         data,
     )
 
+    # Update the dataset recording count.
+    dataset.recording_count += 1
+    dataset_caches.update_object(dataset)
+
     return schemas.DatasetRecording(
         dataset_id=db_dataset_recording.dataset_id,
         recording_id=db_dataset_recording.recording_id,
@@ -468,6 +512,11 @@ async def add_recordings_to_dataset(
             models.DatasetRecording.dataset_id,
             models.DatasetRecording.recording_id,
         ),
+    )
+
+    # Remove the dataset from the cache as the recording count has changed.
+    dataset_caches.clear_object(
+        schemas.DatasetWithCounts.model_validate(dataset)
     )
 
     return [schemas.DatasetRecording.model_validate(x) for x in db_recordings]

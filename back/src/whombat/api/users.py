@@ -23,10 +23,14 @@ __all__ = [
 ]
 
 
-@cache.cached(
+users_cache = cache.CacheCollection(schemas.User)
+
+
+@users_cache.cached(
     name="user_by_id",
     cache=LRUCache(maxsize=100),
     key=lambda _, user_id: user_id,
+    data_key=lambda user: user.id,
 )
 async def get_user_by_id(
     session: AsyncSession,
@@ -56,10 +60,11 @@ async def get_user_by_id(
     return schemas.User.model_validate(obj)
 
 
-@cache.cached(
+@users_cache.cached(
     name="user_by_username",
     cache=LRUCache(maxsize=100),
     key=lambda _, username: username,
+    data_key=lambda user: user.username,
 )
 async def get_user_by_username(
     session: AsyncSession,
@@ -90,10 +95,11 @@ async def get_user_by_username(
     return schemas.User.model_validate(obj)
 
 
-@cache.cached(
+@users_cache.cached(
     name="user_by_email",
     cache=LRUCache(maxsize=100),
     key=lambda _, email: email,
+    data_key=lambda user: user.email,
 )
 async def get_user_by_email(
     session: AsyncSession,
@@ -161,6 +167,7 @@ async def get_users(
     return [schemas.User.model_validate(db_user) for db_user in db_users]
 
 
+@users_cache.with_update
 async def create_user(
     session: AsyncSession,
     data: schemas.UserCreate,
@@ -212,6 +219,7 @@ async def create_user(
         return schemas.User.model_validate(db_user)
 
 
+@users_cache.with_update
 async def update_user(
     session: AsyncSession,
     user_id: uuid.UUID,
@@ -246,7 +254,10 @@ async def update_user(
         return schemas.User.model_validate(db_user)
 
 
-async def delete_user(session: AsyncSession, user_id: uuid.UUID) -> None:
+@users_cache.with_clear
+async def delete_user(
+    session: AsyncSession, user_id: uuid.UUID
+) -> schemas.User:
     """Delete a user.
 
     Parameters
@@ -258,15 +269,12 @@ async def delete_user(session: AsyncSession, user_id: uuid.UUID) -> None:
         The id of the user to delete.
 
     """
-    obj = await common.delete_object(
+    user = await common.delete_object(
         session,
         models.User,
         models.User.id == user_id,
     )
-    cache.clear_cache_key("user_by_id", obj.id)
-    cache.clear_cache_key("user_by_username", obj.username)
-    if obj.email is not None:
-        cache.clear_cache_key("user_by_email", obj.email)
+    return schemas.User.model_validate(user)
 
 
 @asynccontextmanager

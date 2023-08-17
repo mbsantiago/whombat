@@ -3,11 +3,12 @@
 from multiprocessing import Pool
 from pathlib import Path
 
+from cachetools import LRUCache
 from soundevent.audio import compute_md5_checksum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import filters, schemas
+from whombat import cache, filters, schemas
 from whombat.api import common
 from whombat.core import files
 from whombat.core.common import remove_duplicates
@@ -30,6 +31,15 @@ __all__ = [
 ]
 
 
+recording_caches = cache.CacheCollection(schemas.Recording)
+
+
+@recording_caches.cached(
+    name="recording_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, recording_id: recording_id,
+    data_key=lambda recording: recording.id,
+)
 async def get_recording_by_id(
     session: AsyncSession, recording_id: int
 ) -> schemas.Recording:
@@ -62,6 +72,12 @@ async def get_recording_by_id(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.cached(
+    name="recording_by_hash",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, recording_hash: recording_hash,
+    data_key=lambda recording: recording.hash,
+)
 async def get_recording_by_hash(
     session: AsyncSession, recording_hash: str
 ) -> schemas.Recording:
@@ -94,6 +110,12 @@ async def get_recording_by_hash(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.cached(
+    name="recording_by_path",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, recording_path: recording_path,
+    data_key=lambda recording: recording.path,
+)
 async def get_recording_by_path(
     session: AsyncSession, recording_path: Path
 ) -> schemas.Recording:
@@ -193,6 +215,7 @@ def _assemble_recording_data(
     )
 
 
+@recording_caches.with_update
 async def create_recording(
     session: AsyncSession,
     data: schemas.RecordingCreate,
@@ -277,6 +300,7 @@ async def create_recordings(
     ]
 
 
+@recording_caches.with_update
 async def update_recording(
     session: AsyncSession,
     recording_id: int,
@@ -361,10 +385,11 @@ def adjust_time_expansion(
     # - sound_events
 
 
+@recording_caches.with_clear
 async def delete_recording(
     session: AsyncSession,
     recording_id: int,
-) -> None:
+) -> schemas.Recording:
     """Delete a recording.
 
     Parameters
@@ -381,15 +406,16 @@ async def delete_recording(
     associated with the recording. Use with caution.
 
     """
-    await common.delete_object(
+    obj = await common.delete_object(
         session,
         models.Recording,
         models.Recording.id == recording_id,
     )
-
     # TODO: Make sure that all associated objects are also deleted
+    return schemas.Recording.model_validate(obj)
 
 
+@recording_caches.with_update
 async def add_note_to_recording(
     session: AsyncSession,
     recording_id: int,
@@ -423,6 +449,7 @@ async def add_note_to_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def add_tag_to_recording(
     session: AsyncSession,
     recording_id: int,
@@ -467,6 +494,7 @@ async def add_tag_to_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def add_feature_to_recording(
     session: AsyncSession,
     recording_id: int,
@@ -510,6 +538,7 @@ async def add_feature_to_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def update_feature_of_recording(
     session: AsyncSession,
     recording_id: int,
@@ -556,6 +585,7 @@ async def update_feature_of_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def remove_note_from_recording(
     session: AsyncSession,
     recording_id: int,
@@ -598,6 +628,7 @@ async def remove_note_from_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def remove_tag_from_recording(
     session: AsyncSession,
     recording_id: int,
@@ -640,6 +671,7 @@ async def remove_tag_from_recording(
     return schemas.Recording.model_validate(recording)
 
 
+@recording_caches.with_update
 async def remove_feature_from_recording(
     session: AsyncSession,
     recording_id: int,

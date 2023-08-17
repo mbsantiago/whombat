@@ -1,12 +1,13 @@
 """API functions for interacting with audio clips."""
 
-from uuid import UUID
 from typing import Sequence
+from uuid import UUID
 
+from cachetools import LRUCache
 from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import schemas
+from whombat import cache, schemas
 from whombat.api import common, features, recordings
 from whombat.database import models
 from whombat.filters.base import Filter
@@ -25,52 +26,19 @@ __all__ = [
 ]
 
 
-DURATION = "duration"
-"""Name of duration feature."""
+clips_cache = cache.CacheCollection(schemas.Clip)
 
 
-def compute_clip_duration(clip: schemas.Clip | models.Clip) -> float:
-    """Compute duration of clip.
-
-    Parameters
-    ----------
-    clip : schemas.Clip
-        Clip to compute duration for.
-
-    Returns
-    -------
-    float
-        Duration of clip.
-
-    """
-    return clip.end_time - clip.start_time
-
-
-CLIP_FEATURES = {
-    DURATION: compute_clip_duration,
-}
-
-
-def compute_clip_features(
-    clip: schemas.Clip | models.Clip,
-) -> dict[str, float]:
-    """Compute features for clip.
-
-    Parameters
-    ----------
-    clip : schemas.Clip
-        Clip to compute features for.
-
-    Returns
-    -------
-    dict[str, float]
-        Dictionary of feature names and values.
-
-    """
-    return {name: func(clip) for name, func in CLIP_FEATURES.items()}
-
-
-async def get_clip_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Clip:
+@clips_cache.cached(
+    name="clip_by_uuid",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, uuid: uuid,
+    data_key=lambda clip: clip.uuid,
+)
+async def get_clip_by_uuid(
+    session: AsyncSession,
+    clip_uuid: UUID,
+) -> schemas.Clip:
     """Get clip by UUID.
 
     Parameters
@@ -95,12 +63,18 @@ async def get_clip_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Clip:
     clip = await common.get_object(
         session,
         models.Clip,
-        models.Clip.uuid == uuid,
+        models.Clip.uuid == clip_uuid,
     )
     return schemas.Clip.model_validate(clip)
 
 
-async def get_clip_by_id(session: AsyncSession, id: int) -> schemas.Clip:
+@clips_cache.cached(
+    name="clip_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, clip_id: clip_id,
+    data_key=lambda clip: clip.id,
+)
+async def get_clip_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
     """Get clip by ID.
 
     Parameters
@@ -122,7 +96,9 @@ async def get_clip_by_id(session: AsyncSession, id: int) -> schemas.Clip:
         Raised if clip with ID `id` is not found.
 
     """
-    clip = await common.get_object(session, models.Clip, models.Clip.id == id)
+    clip = await common.get_object(
+        session, models.Clip, models.Clip.id == clip_id
+    )
     return schemas.Clip.model_validate(clip)
 
 
@@ -163,48 +139,7 @@ async def get_clips(
     return [schemas.Clip.model_validate(clip) for clip in clips]
 
 
-async def _create_clip_features(
-    session: AsyncSession,
-    clips: Sequence[models.Clip],
-) -> None:
-    """Create features for clips.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        Database session.
-    clips : list[schemas.Clip]
-        List of clips to create features for.
-
-    """
-    clip_features = [
-        (clip.id, name, value)
-        for clip in clips
-        for name, value in compute_clip_features(clip).items()
-    ]
-
-    # Get feature names
-    names = {name for _, name, _ in clip_features}
-
-    feature_names: dict[str, schemas.FeatureName] = {
-        name: await features.get_or_create_feature_name(
-            session, data=schemas.FeatureNameCreate(name=name)
-        )
-        for name in names
-    }
-
-    data = [
-        schemas.ClipFeatureCreate(
-            clip_id=clip_id,
-            feature_name_id=feature_names[name].id,
-            value=value,
-        )
-        for clip_id, name, value in clip_features
-    ]
-
-    await common.create_objects(session, models.ClipFeature, data)
-
-
+@clips_cache.with_update
 async def create_clip(
     session: AsyncSession,
     data: schemas.ClipCreate,
@@ -309,10 +244,11 @@ async def create_clips(
     return [schemas.Clip.model_validate(clip) for clip in clips]
 
 
+@clips_cache.with_clear
 async def delete_clip(
     session: AsyncSession,
     clip_id: int,
-) -> None:
+) -> schemas.Clip:
     """Delete clip.
 
     This will also delete all associated tags and features.
@@ -333,9 +269,15 @@ async def delete_clip(
         Raised if clip does not exist in the database.
 
     """
-    await common.delete_object(session, models.Clip, models.Clip.id == clip_id)
+    obj = await common.delete_object(
+        session,
+        models.Clip,
+        models.Clip.id == clip_id,
+    )
+    return schemas.Clip.model_validate(obj)
 
 
+@clips_cache.with_update
 async def add_tag_to_clip(
     session: AsyncSession,
     clip_id: int,
@@ -374,6 +316,7 @@ async def add_tag_to_clip(
     return schemas.Clip.model_validate(clip)
 
 
+@clips_cache.with_update
 async def add_feature_to_clip(
     session: AsyncSession,
     clip_id: int,
@@ -414,9 +357,11 @@ async def add_feature_to_clip(
         feature_name_id,
         value,
     )
+
     return schemas.Clip.model_validate(clip)
 
 
+@clips_cache.with_update
 async def update_clip_feature(
     session: AsyncSession,
     clip_id: int,
@@ -462,6 +407,7 @@ async def update_clip_feature(
     return schemas.Clip.model_validate(clip)
 
 
+@clips_cache.with_update
 async def remove_tag_from_clip(
     session: AsyncSession,
     clip_id: int,
@@ -500,6 +446,7 @@ async def remove_tag_from_clip(
     return schemas.Clip.model_validate(clip)
 
 
+@clips_cache.with_update
 async def remove_feature_from_clip(
     session: AsyncSession,
     clip_id: int,
@@ -536,3 +483,90 @@ async def remove_feature_from_clip(
         feature_name_id,
     )
     return schemas.Clip.model_validate(clip)
+
+
+async def _create_clip_features(
+    session: AsyncSession,
+    clips: Sequence[models.Clip],
+) -> None:
+    """Create features for clips.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        Database session.
+    clips : list[schemas.Clip]
+        List of clips to create features for.
+
+    """
+    clip_features = [
+        (clip.id, name, value)
+        for clip in clips
+        for name, value in compute_clip_features(clip).items()
+    ]
+
+    # Get feature names
+    names = {name for _, name, _ in clip_features}
+
+    feature_names: dict[str, schemas.FeatureName] = {
+        name: await features.get_or_create_feature_name(
+            session, data=schemas.FeatureNameCreate(name=name)
+        )
+        for name in names
+    }
+
+    data = [
+        schemas.ClipFeatureCreate(
+            clip_id=clip_id,
+            feature_name_id=feature_names[name].id,
+            value=value,
+        )
+        for clip_id, name, value in clip_features
+    ]
+
+    await common.create_objects(session, models.ClipFeature, data)
+
+
+DURATION = "duration"
+"""Name of duration feature."""
+
+
+def compute_clip_duration(clip: schemas.Clip | models.Clip) -> float:
+    """Compute duration of clip.
+
+    Parameters
+    ----------
+    clip : schemas.Clip
+        Clip to compute duration for.
+
+    Returns
+    -------
+    float
+        Duration of clip.
+
+    """
+    return clip.end_time - clip.start_time
+
+
+CLIP_FEATURES = {
+    DURATION: compute_clip_duration,
+}
+
+
+def compute_clip_features(
+    clip: schemas.Clip | models.Clip,
+) -> dict[str, float]:
+    """Compute features for clip.
+
+    Parameters
+    ----------
+    clip : schemas.Clip
+        Clip to compute features for.
+
+    Returns
+    -------
+    dict[str, float]
+        Dictionary of feature names and values.
+
+    """
+    return {name: func(clip) for name, func in CLIP_FEATURES.items()}

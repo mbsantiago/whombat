@@ -1,9 +1,10 @@
 """API functions to interact with tags."""
 
+from cachetools import LRUCache
 from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import schemas
+from whombat import cache, schemas
 from whombat.api import common
 from whombat.database import models
 from whombat.filters.base import Filter
@@ -20,6 +21,15 @@ __all__ = [
 ]
 
 
+tag_caches = cache.CacheCollection(schemas.Tag)
+
+
+@tag_caches.cached(
+    name="tag_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, tag_id: tag_id,
+    data_key=lambda tag: tag.id,
+)
 async def get_tag_by_id(
     session: AsyncSession,
     tag_id: int,
@@ -51,6 +61,12 @@ async def get_tag_by_id(
     return schemas.Tag.model_validate(tag)
 
 
+@tag_caches.cached(
+    name="tag_by_key_and_value",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, key, value: (key, value),
+    data_key=lambda tag: (tag.key, tag.value),
+)
 async def get_tag_by_key_and_value(
     session: AsyncSession,
     key: str,
@@ -124,6 +140,7 @@ async def get_tags(
     return [schemas.Tag.model_validate(tag) for tag in tags]
 
 
+@tag_caches.with_update
 async def create_tag(
     session: AsyncSession,
     data: schemas.TagCreate,
@@ -188,6 +205,10 @@ async def create_tags(
     return [schemas.Tag.model_validate(tag) for tag in tags]
 
 
+@cache.cached(
+    name="tag_by_key_and_value",
+    key=lambda _, data: (data.key, data.value),
+)
 async def get_or_create_tag(
     session: AsyncSession,
     data: schemas.TagCreate,
@@ -219,6 +240,7 @@ async def get_or_create_tag(
     return schemas.Tag.model_validate(tag)
 
 
+@tag_caches.with_update
 async def update_tag(
     session: AsyncSession,
     tag_id: int,
@@ -257,7 +279,8 @@ async def update_tag(
     return schemas.Tag.model_validate(tag)
 
 
-async def delete_tag(session: AsyncSession, tag_id: int) -> None:
+@tag_caches.with_clear
+async def delete_tag(session: AsyncSession, tag_id: int) -> schemas.Tag:
     """Delete a tag.
 
     Parameters
@@ -267,13 +290,10 @@ async def delete_tag(session: AsyncSession, tag_id: int) -> None:
 
     tag_id : int
         The id of the tag to delete.
-
-    Notes
-    -----
-    This function will not raise an exception if the tag does not exist.
     """
-    await common.delete_object(
+    obj = await common.delete_object(
         session=session,
         model=models.Tag,
         condition=models.Tag.id == tag_id,
     )
+    return schemas.Tag.model_validate(obj)

@@ -1,14 +1,28 @@
 """Cache functions."""
 from contextlib import AbstractContextManager
-from typing import Any, Callable, Hashable, MutableMapping, TypeVar
+from functools import wraps
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Generic,
+    Hashable,
+    MutableMapping,
+    TypeVar,
+)
 
 from asyncache import cached as _cached
 from cachetools import keys
+from pydantic import BaseModel
 
 __all__ = [
     "cached",
     "clear_cache",
     "clear_all_caches",
+    "get_cache",
+    "clear_cache_key",
+    "update_cache_key",
+    "CacheCollection",
 ]
 
 
@@ -84,9 +98,91 @@ def get_cache(name: str) -> MutableMapping[Hashable, Any]:
     return CACHES[name]
 
 
-
 def clear_cache_key(name: str, key: Hashable) -> None:
     """Clear a cache key."""
     cache = get_cache(name)
     if key in cache:
         del cache[key]
+
+
+def update_cache_key(name: str, key: Hashable, value: Any) -> None:
+    """Update a cache key."""
+    cache = get_cache(name)
+    cache[key] = value
+
+
+M = TypeVar("M", bound=BaseModel)
+
+Func = Callable[..., Awaitable[M]]
+
+
+class CacheCollection(Generic[M]):
+    """Collection of caches.
+
+    Use this class to manage a collection of hashes that are meant
+    to store objects of the same type. This will ensure that the
+    caches are updated and cleared when the objects are updated and
+    deleted.
+    """
+
+    def __init__(self, model: type[M]):
+        """Initialize the cache collection."""
+        self.model = model
+        self.caches: list[tuple[str, Callable[[M], Hashable]]] = []
+
+    def cached(
+        self,
+        name: str,
+        cache: MutableMapping[Hashable, Any] | None = None,
+        key: Callable[..., Hashable] = keys.hashkey,
+        lock: AbstractContextManager[Any] | None = None,
+        data_key: Callable[[M], Hashable] = lambda x: hash(x),
+    ):
+        """Decorate a function to cache its return value."""
+
+        def decorator(func):
+            return cached(name=name, cache=cache, key=key, lock=lock)(func)
+
+        # Store in the cache collection
+        self.caches.append((name, data_key))
+        return decorator
+
+    def with_update(self, func: Func[M]) -> Func[M]:
+        """Decorate a function to update the cache."""
+
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Call the function
+            data = await func(*args, **kwargs)
+
+            # Update the cache
+            self.update_object(data)
+
+            return data
+
+        return wrapper
+
+    def with_clear(self, func: Func[M]) -> Func[M]:
+        """Decorate a function to clear the cache."""
+
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Call the function
+            data = await func(*args, **kwargs)
+
+            # Clear the cache
+            self.clear_object(data)
+
+            return data
+
+        return wrapper
+
+    def clear_object(self, data: M) -> None:
+        """Clear the cache for an object."""
+        for name, data_key in self.caches:
+            clear_cache_key(name, data_key(data))
+
+    def update_object(self, data: M) -> None:
+        """Update the cache for an object."""
+        for name, data_key in self.caches:
+            update_cache_key(name, data_key(data), data)

@@ -5,9 +5,8 @@ from typing import Any, Sequence
 from cachetools import LRUCache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import schemas
+from whombat import cache, schemas
 from whombat.api import common
-from whombat import cache
 from whombat.database import models
 from whombat.filters.base import Filter
 
@@ -23,10 +22,14 @@ __all__ = [
 ]
 
 
-@cache.cached(
+feature_caches = cache.CacheCollection(schemas.FeatureName)
+
+
+@feature_caches.cached(
     name="feature_name_by_id",
     cache=LRUCache(maxsize=1000),
     key=lambda _, feature_name_id: feature_name_id,
+    data_key=lambda feature_name: feature_name.id,
 )
 async def get_feature_name_by_id(
     session: AsyncSession,
@@ -60,10 +63,11 @@ async def get_feature_name_by_id(
     return schemas.FeatureName.model_validate(db_feature_name)
 
 
-@cache.cached(
+@feature_caches.cached(
     name="feature_name_by_name",
     cache=LRUCache(maxsize=1000),
     key=lambda _, feature_name: feature_name,
+    data_key=lambda feature_name: feature_name.name,
 )
 async def get_feature_name_by_name(
     session: AsyncSession,
@@ -134,6 +138,7 @@ async def get_feature_names(
     return [schemas.FeatureName.model_validate(r) for r in db_feature_names]
 
 
+@feature_caches.with_update
 async def create_feature_name(
     session: AsyncSession,
     data: schemas.FeatureNameCreate,
@@ -231,6 +236,7 @@ async def get_or_create_feature_name(
     return schemas.FeatureName.model_validate(feature_name)
 
 
+@feature_caches.with_update
 async def update_feature_name(
     session: AsyncSession,
     feature_name_id: int,
@@ -272,10 +278,11 @@ async def update_feature_name(
     return schemas.FeatureName.model_validate(feature_name)
 
 
+@feature_caches.with_clear
 async def delete_feature_name(
     session: AsyncSession,
     feature_name_id: int,
-) -> None:
+) -> schemas.FeatureName:
     """Delete a feature.
 
     Parameters
@@ -297,8 +304,7 @@ async def delete_feature_name(
         model=models.FeatureName,
         condition=models.FeatureName.id == feature_name_id,
     )
-    cache.clear_cache_key("feature_name_by_id", feature_name_id)
-    cache.clear_cache_key("feature_name_by_name", obj.name)
+    return schemas.FeatureName.model_validate(obj)
 
 
 def find_feature(
