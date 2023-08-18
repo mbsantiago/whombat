@@ -1,5 +1,6 @@
 """Common API functions."""
 
+import re
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
@@ -36,6 +37,25 @@ __all__ = [
 A = TypeVar("A", bound=models.Base)
 B = TypeVar("B", bound=BaseModel)
 F = TypeVar("F", bound=models.Base)
+
+
+pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+
+def _to_snake_case(name: str) -> str:
+    """Convert a string to snake case.
+
+    Parameters
+    ----------
+    name : str
+        The string to convert.
+
+    Returns
+    -------
+    str
+        The converted string.
+    """
+    return pattern.sub("_", name).lower()
 
 
 def get_values(
@@ -485,7 +505,7 @@ async def add_note_to_object(
     # NOTE: This is a bit hacky. Here we assume that the note association models
     # and the relation fields are named in a certain way. This is not ideal,
     # but it works for now.
-    name = model.__name__.lower()
+    name = _to_snake_case(model.__name__)
     foreign_key = f"{name}_id"
     relation_field_name = f"{name}_notes"
     association_model_name = f"{model.__name__}Note"
@@ -550,20 +570,25 @@ async def add_tag_to_object(
     # NOTE: This is a bit hacky. Here we assume that the tag association models
     # and the relation fields are named in a certain way. This is not ideal,
     # but it works for now.
-    name = model.__name__.lower()
+    name = _to_snake_case(model.__name__)
     foreign_key = f"{name}_id"
     relation_field_name = f"{name}_tags"
     association_model_name = f"{model.__name__}Tag"
 
     # Get the association model
     association_model = getattr(models, association_model_name)
+    data = {
+        "tag_id": tag.id,
+        foreign_key: obj.id,  # type: ignore
+    }
+    print(data)
 
-    object_tag = association_model(
-        **{
-            "tag_id": tag.id,
-            foreign_key: obj.id,  # type: ignore
-        }
-    )  # type: ignore
+    object_tag = association_model(**data)
+
+
+    print("HERE")
+
+
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
     await session.commit()
@@ -621,9 +646,9 @@ async def add_feature_to_object(
         models.FeatureName.id == feature_name_id,
     )
 
-    model_name = model.__name__
-    feature_model_name = f"{model_name}Feature"
-    foreign_key = f"{model_name.lower()}_id"
+    name = _to_snake_case(model.__name__)
+    feature_model_name = f"{model.__name__}Feature"
+    foreign_key = f"{name}_id"
     association_model = getattr(models, feature_model_name)
 
     feature = association_model(
@@ -733,7 +758,7 @@ async def remove_tag_from_object(
     """
     obj = await get_object(session, model, condition)
 
-    name = model.__name__.lower()
+    name = _to_snake_case(model.__name__)
     relation_field_name = f"{name}_tags"
 
     tag = next(
@@ -788,8 +813,8 @@ async def remove_note_from_object(
     """
     obj = await get_object(session, model, condition)
 
-    name = model.__name__
-    relation_field = f"{name.lower()}_notes"
+    name = _to_snake_case(model.__name__)
+    relation_field = f"{name}_notes"
 
     note = next(
         (

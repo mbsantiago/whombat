@@ -21,6 +21,8 @@ manner.
 
 """
 
+import enum
+
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
@@ -37,6 +39,25 @@ __all__ = [
 ]
 
 
+class TaskState(enum.Enum):
+    """Task state."""
+
+    created = "created"
+    """Task has been created."""
+
+    assigned = "assigned"
+    """Task has been assigned to an annotator."""
+
+    completed = "completed"
+    """Task has been completed by an annotator."""
+
+    verified = "verified"
+    """Task has been verified by a reviewer."""
+
+    rejected = "rejected"
+    """Task has been rejected by a reviewer."""
+
+
 class Task(Base):
     """Task model."""
 
@@ -51,26 +72,17 @@ class Task(Base):
     )
     """Unique identifier of the annotation project."""
 
-    project: orm.Mapped[AnnotationProject] = orm.relationship()
-    """Annotation project to which the task belongs."""
-
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
     )
     """Unique identifier of the audio clip."""
 
+    project: orm.Mapped[AnnotationProject] = orm.relationship()
+    """Annotation project to which the task belongs."""
+
     clip: orm.Mapped[Clip] = orm.relationship()
     """Audio clip to be annotated."""
-
-    completed_by_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("user.id"),
-        nullable=True,
-    )
-    """Unique identifier of the user who completed the task."""
-
-    completed_by: orm.Mapped[User] = orm.relationship()
-    """User who completed the task."""
 
     notes: orm.Mapped[list[Note]] = orm.relationship(
         "Note",
@@ -89,6 +101,48 @@ class Task(Base):
         default=False,
     )
     """Whether the task has been completed."""
+
+    status_badges: orm.Mapped[list["TaskStatusBadge"]] = orm.relationship(
+        "TaskStatusBadge",
+        back_populates="task",
+        lazy="joined",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+
+class TaskStatusBadge(Base):
+    """Task status badge model."""
+
+    __tablename__ = "task_status_badge"
+
+    task_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("task.id"),
+        primary_key=True,
+        nullable=False,
+    )
+    """Unique identifier of the task."""
+
+    created_by_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("user.id"),
+        primary_key=True,
+        nullable=False,
+    )
+    """Unique identifier of the user associated to the status."""
+
+    task: orm.Mapped[Task] = orm.relationship(
+        back_populates="status_badges",
+    )
+
+    state: orm.Mapped[TaskState] = orm.mapped_column(
+        nullable=False,
+    )
+    """Type of status."""
+
+    created_by: orm.Mapped[User] = orm.relationship(
+        "User",
+    )
 
 
 class TaskNote(Base):

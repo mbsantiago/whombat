@@ -14,6 +14,11 @@ the database.
 
 """
 
+from whombat.schemas.annotation_projects import (
+    AnnotationProject,
+    AnnotationProjectCreate,
+    AnnotationProjectUpdate,
+)
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
@@ -49,6 +54,9 @@ from whombat.schemas.tags import Tag, TagCreate, TagUpdate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
+    "AnnotationProject",
+    "AnnotationProjectCreate",
+    "AnnotationProjectUpdate",
     "Clip",
     "ClipCreate",
     "ClipFeatureCreate",

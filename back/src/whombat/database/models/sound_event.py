@@ -95,7 +95,7 @@ class SoundEvent(Base):
         lazy="joined",
     )
 
-    soundevent_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+    sound_event_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
         "SoundEventTag",
         back_populates="sound_event",
         cascade="all, delete-orphan",
@@ -151,14 +151,14 @@ class SoundEventTag(Base):
     """The id of the tag."""
 
     tag: orm.Mapped[Tag] = orm.relationship(
-        back_populates="soundevent_tags",
+        back_populates="sound_event_tags",
         init=False,
         repr=False,
     )
     """The tag."""
 
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
-        back_populates="soundevent_tags",
+        back_populates="sound_event_tags",
         init=False,
         repr=False,
         cascade="all",

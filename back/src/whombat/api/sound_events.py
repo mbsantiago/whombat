@@ -3,10 +3,11 @@
 from typing import Sequence
 from uuid import UUID
 
+from cachetools import LRUCache
 from soundevent.features import compute_geometric_features
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import schemas
+from whombat import cache, schemas
 from whombat.api import common, features
 from whombat.database import models
 from whombat.filters.base import Filter
@@ -25,6 +26,15 @@ __all__ = [
 ]
 
 
+sound_event_caches = cache.CacheCollection(schemas.SoundEvent)
+
+
+@sound_event_caches.cached(
+    name="sound_event_by_id",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, id: id,
+    data_key=lambda sound_event: sound_event.id,
+)
 async def get_sound_event_by_id(
     session: AsyncSession,
     id: int,
@@ -56,6 +66,12 @@ async def get_sound_event_by_id(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
+@sound_event_caches.cached(
+    name="sound_event_by_uuid",
+    cache=LRUCache(maxsize=1000),
+    key=lambda _, uuid: uuid,
+    data_key=lambda sound_event: sound_event.uuid,
+)
 async def get_sound_event_by_uuid(
     session: AsyncSession,
     uuid: UUID,
@@ -123,6 +139,7 @@ async def get_sound_events(
     return [schemas.SoundEvent.model_validate(s) for s in sound_events]
 
 
+@sound_event_caches.with_update
 async def create_sound_event(
     session: AsyncSession,
     data: schemas.SoundEventCreate,
@@ -182,6 +199,7 @@ async def create_sound_events(
     return [schemas.SoundEvent.model_validate(s) for s in sound_events]
 
 
+@sound_event_caches.with_update
 async def update_sound_event(
     session: AsyncSession,
     sound_event_id: int,
@@ -236,10 +254,11 @@ async def update_sound_event(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
+@sound_event_caches.with_clear
 async def delete_sound_event(
     session: AsyncSession,
     sound_event_id: int,
-) -> None:
+) -> schemas.SoundEvent:
     """Delete a sound event.
 
     Parameters
@@ -255,13 +274,15 @@ async def delete_sound_event(
     exceptions.NotFoundError
         If the sound event does not exist in the database.
     """
-    await common.delete_object(
+    obj = await common.delete_object(
         session=session,
         model=models.SoundEvent,
         condition=models.SoundEvent.id == sound_event_id,
     )
+    return schemas.SoundEvent.model_validate(obj)
 
 
+@sound_event_caches.with_update
 async def add_tag_to_sound_event(
     session: AsyncSession,
     sound_event_id: int,
@@ -299,6 +320,7 @@ async def add_tag_to_sound_event(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
+@sound_event_caches.with_update
 async def add_feature_to_sound_event(
     session: AsyncSession,
     sound_event_id: int,
@@ -338,6 +360,7 @@ async def add_feature_to_sound_event(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
+@sound_event_caches.with_update
 async def remove_tags_from_sound_event(
     session: AsyncSession,
     sound_event_id: int,
@@ -375,6 +398,7 @@ async def remove_tags_from_sound_event(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
+@sound_event_caches.with_update
 async def remove_features_from_sound_event(
     session: AsyncSession,
     sound_event_id: int,

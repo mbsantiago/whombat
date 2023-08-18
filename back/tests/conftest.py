@@ -173,3 +173,23 @@ async def dataset(session: AsyncSession, tmp_path: Path) -> schemas.Dataset:
         ),
     )
     return dataset
+
+
+@pytest.fixture
+async def annotation_project(
+    session: AsyncSession, tmp_path: Path
+) -> schemas.AnnotationProject:
+    """Create an annotation project for testing."""
+    annotation_project_dir = tmp_path / "test_annotation_project"
+    annotation_project_dir.mkdir(parents=True)
+    annotation_project = (
+        await api.annotation_projects.create_annotation_project(
+            session,
+            data=schemas.AnnotationProjectCreate(
+                name="test_annotation_project",
+                description="test_description",
+                annotation_instructions="test_instructions",
+            ),
+        )
+    )
+    return annotation_project

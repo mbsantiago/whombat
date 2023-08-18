@@ -44,8 +44,12 @@ from sqlalchemy import UniqueConstraint
 from whombat.database.models.base import Base
 
 if TYPE_CHECKING:
-    from whombat.database.models.recording import Recording, RecordingTag
+    from whombat.database.models.annotation_project import (
+        AnnotationProject,
+        AnnotationProjectTag,
+    )
     from whombat.database.models.clip import Clip, ClipTag
+    from whombat.database.models.recording import Recording, RecordingTag
     from whombat.database.models.sound_event import SoundEvent, SoundEventTag
 
 __all__ = [
@@ -111,7 +115,27 @@ class Tag(Base):
         default_factory=list,
     )
 
-    soundevent_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+    sound_event_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    annotation_projects: orm.Mapped[
+        list["AnnotationProject"]
+    ] = orm.relationship(
+        back_populates="tags",
+        secondary="annotation_project_tag",
+        init=False,
+        repr=False,
+        viewonly=True,
+        default_factory=list,
+    )
+
+    annotation_project_tags: orm.Mapped[
+        list["AnnotationProjectTag"]
+    ] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,

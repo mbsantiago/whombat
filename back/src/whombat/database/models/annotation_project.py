@@ -44,25 +44,38 @@ class AnnotationProject(Base):
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
-        init=False,
+        kw_only=True,
         unique=True,
     )
     """Unique identifier of the annotation project."""
 
-    name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    name: orm.Mapped[str] = orm.mapped_column(unique=True)
     """Name of the annotation project."""
 
-    description: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    description: orm.Mapped[str]
     """Description of the annotation project."""
 
-    annotation_instructions: orm.Mapped[str] = orm.mapped_column(
-        nullable=False
+    annotation_instructions: orm.Mapped[str | None] = orm.mapped_column(
+        default=None
     )
     """Instructions for annotators."""
 
     tags: orm.Mapped[list[Tag]] = orm.relationship(
         "Tag",
         secondary="annotation_project_tag",
+        lazy="joined",
+        viewonly=True,
+        default_factory=list,
+        repr=False,
+    )
+
+    annotation_project_tags: orm.Mapped[
+        list["AnnotationProjectTag"]
+    ] = orm.relationship(
+        "AnnotationProjectTag",
+        lazy="joined",
+        default_factory=list,
+        cascade="all, delete-orphan",
     )
 
 
@@ -84,6 +97,19 @@ class AnnotationProjectTag(Base):
         primary_key=True,
     )
     """Unique identifier of the tag."""
+
+    annotation_project: orm.Mapped[AnnotationProject] = orm.relationship(
+        "AnnotationProject",
+        back_populates="annotation_project_tags",
+        init=False,
+    )
+
+    tag: orm.Mapped[Tag] = orm.relationship(
+        "Tag",
+        back_populates="annotation_project_tags",
+        lazy="joined",
+        init=False,
+    )
 
     __table_args__ = (
         UniqueConstraint(
