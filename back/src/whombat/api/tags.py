@@ -9,14 +9,14 @@ from whombat.api import common
 from whombat.filters.base import Filter
 
 __all__ = [
-    "create_tag",
-    "delete_tag",
-    "create_tags",
-    "get_or_create_tag",
-    "get_tag_by_id",
-    "get_tag_by_key_and_value",
-    "get_tags",
-    "update_tag",
+    "create",
+    "delete",
+    "create_many",
+    "get_or_create",
+    "get_by_id",
+    "get_by_tag_and_value",
+    "get_many",
+    "update",
 ]
 
 
@@ -29,7 +29,7 @@ tag_caches = cache.CacheCollection(schemas.Tag)
     key=lambda _, tag_id: tag_id,
     data_key=lambda tag: tag.id,
 )
-async def get_tag_by_id(
+async def get_by_id(
     session: AsyncSession,
     tag_id: int,
 ) -> schemas.Tag:
@@ -66,7 +66,7 @@ async def get_tag_by_id(
     key=lambda _, key, value: (key, value),
     data_key=lambda tag: (tag.key, tag.value),
 )
-async def get_tag_by_key_and_value(
+async def get_by_tag_and_value(
     session: AsyncSession,
     key: str,
     value: str,
@@ -100,7 +100,7 @@ async def get_tag_by_key_and_value(
     return schemas.Tag.model_validate(tag)
 
 
-async def get_tags(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 1000,
@@ -140,7 +140,7 @@ async def get_tags(
 
 
 @tag_caches.with_update
-async def create_tag(
+async def create(
     session: AsyncSession,
     data: schemas.TagCreate,
 ) -> schemas.Tag:
@@ -173,7 +173,7 @@ async def create_tag(
     return schemas.Tag.model_validate(tag)
 
 
-async def create_tags(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.TagCreate],
 ) -> list[schemas.Tag]:
@@ -208,7 +208,7 @@ async def create_tags(
     name="tag_by_key_and_value",
     key=lambda _, data: (data.key, data.value),
 )
-async def get_or_create_tag(
+async def get_or_create(
     session: AsyncSession,
     data: schemas.TagCreate,
 ) -> schemas.Tag:
@@ -240,7 +240,7 @@ async def get_or_create_tag(
 
 
 @tag_caches.with_update
-async def update_tag(
+async def update(
     session: AsyncSession,
     tag_id: int,
     data: schemas.TagUpdate,
@@ -279,7 +279,7 @@ async def update_tag(
 
 
 @tag_caches.with_clear
-async def delete_tag(session: AsyncSession, tag_id: int) -> schemas.Tag:
+async def delete(session: AsyncSession, tag_id: int) -> schemas.Tag:
     """Delete a tag.
 
     Parameters

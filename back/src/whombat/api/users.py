@@ -12,13 +12,13 @@ from whombat.api import common
 from whombat.filters import Filter
 
 __all__ = [
-    "create_user",
-    "get_user_by_id",
-    "get_user_by_email",
-    "get_user_by_username",
-    "get_users",
-    "update_user",
-    "delete_user",
+    "create",
+    "get_by_id",
+    "get_by_email",
+    "get_by_username",
+    "get_many",
+    "update",
+    "delete",
 ]
 
 
@@ -31,7 +31,7 @@ users_cache = cache.CacheCollection(schemas.User)
     key=lambda _, user_id: user_id,
     data_key=lambda user: user.id,
 )
-async def get_user_by_id(
+async def get_by_id(
     session: AsyncSession,
     user_id: uuid.UUID,
 ) -> schemas.User:
@@ -65,7 +65,7 @@ async def get_user_by_id(
     key=lambda _, username: username,
     data_key=lambda user: user.username,
 )
-async def get_user_by_username(
+async def get_by_username(
     session: AsyncSession,
     username: str,
 ) -> schemas.User:
@@ -100,7 +100,7 @@ async def get_user_by_username(
     key=lambda _, email: email,
     data_key=lambda user: user.email,
 )
-async def get_user_by_email(
+async def get_by_email(
     session: AsyncSession,
     email: str,
 ) -> schemas.User:
@@ -129,7 +129,7 @@ async def get_user_by_email(
     return schemas.User.model_validate(obj)
 
 
-async def get_users(
+async def get_many(
     session: AsyncSession,
     *,
     offset: int = 0,
@@ -167,7 +167,7 @@ async def get_users(
 
 
 @users_cache.with_update
-async def create_user(
+async def create(
     session: AsyncSession,
     data: schemas.UserCreate,
 ) -> schemas.User:
@@ -219,7 +219,7 @@ async def create_user(
 
 
 @users_cache.with_update
-async def update_user(
+async def update(
     session: AsyncSession,
     user_id: uuid.UUID,
     data: schemas.UserUpdate,
@@ -254,9 +254,7 @@ async def update_user(
 
 
 @users_cache.with_clear
-async def delete_user(
-    session: AsyncSession, user_id: uuid.UUID
-) -> schemas.User:
+async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
     """Delete a user.
 
     Parameters

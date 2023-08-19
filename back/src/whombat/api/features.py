@@ -10,14 +10,14 @@ from whombat.api import common
 from whombat.filters.base import Filter
 
 __all__ = [
-    "create_feature_name",
-    "create_feature_names",
-    "delete_feature_name",
-    "get_feature_name_by_id",
-    "get_feature_name_by_name",
-    "get_feature_names",
-    "update_feature_name",
-    "find_feature",
+    "create",
+    "create_many",
+    "delete",
+    "get_by_id",
+    "get_by_name",
+    "get_recordings",
+    "update",
+    "find",
 ]
 
 
@@ -30,7 +30,7 @@ feature_caches = cache.CacheCollection(schemas.FeatureName)
     key=lambda _, feature_name_id: feature_name_id,
     data_key=lambda feature_name: feature_name.id,
 )
-async def get_feature_name_by_id(
+async def get_by_id(
     session: AsyncSession,
     feature_name_id: int,
 ) -> schemas.FeatureName:
@@ -68,7 +68,7 @@ async def get_feature_name_by_id(
     key=lambda _, feature_name: feature_name,
     data_key=lambda feature_name: feature_name.name,
 )
-async def get_feature_name_by_name(
+async def get_by_name(
     session: AsyncSession,
     feature_name: str,
 ) -> schemas.FeatureName:
@@ -100,7 +100,7 @@ async def get_feature_name_by_name(
     return schemas.FeatureName.model_validate(db_feature_name)
 
 
-async def get_feature_names(
+async def get_recordings(
     session: AsyncSession,
     *,
     limit: int = 1000,
@@ -138,7 +138,7 @@ async def get_feature_names(
 
 
 @feature_caches.with_update
-async def create_feature_name(
+async def create(
     session: AsyncSession,
     data: schemas.FeatureNameCreate,
 ) -> schemas.FeatureName:
@@ -170,7 +170,7 @@ async def create_feature_name(
     return schemas.FeatureName.model_validate(feature)
 
 
-async def create_feature_names(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.FeatureNameCreate],
 ) -> list[schemas.FeatureName]:
@@ -206,7 +206,7 @@ async def create_feature_names(
     name="feature_name_by_name",
     key=lambda _, data: data.name,
 )
-async def get_or_create_feature_name(
+async def get_or_create(
     session: AsyncSession,
     data: schemas.FeatureNameCreate,
 ) -> schemas.FeatureName:
@@ -236,7 +236,7 @@ async def get_or_create_feature_name(
 
 
 @feature_caches.with_update
-async def update_feature_name(
+async def update(
     session: AsyncSession,
     feature_name_id: int,
     data: schemas.FeatureNameUpdate,
@@ -278,7 +278,7 @@ async def update_feature_name(
 
 
 @feature_caches.with_clear
-async def delete_feature_name(
+async def delete(
     session: AsyncSession,
     feature_name_id: int,
 ) -> schemas.FeatureName:
@@ -306,7 +306,7 @@ async def delete_feature_name(
     return schemas.FeatureName.model_validate(obj)
 
 
-def find_feature(
+def find(
     features: Sequence[schemas.Feature],
     feature_name: str,
     default: Any = None,

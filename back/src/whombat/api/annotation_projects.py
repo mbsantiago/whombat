@@ -11,15 +11,15 @@ from whombat.api import common
 from whombat.filters.base import Filter
 
 __all__ = [
-    "add_tag_to_annotation_project",
-    "create_annotation_project",
-    "delete_annotation_project",
-    "get_annotation_project_by_id",
-    "get_annotation_project_by_name",
-    "get_annotation_project_by_uuid",
-    "get_annotation_projects",
-    "remove_tag_from_annotation_project",
-    "update_annotation_project",
+    "add_tag",
+    "create",
+    "delete",
+    "get_by_id",
+    "get_by_name",
+    "get_by_uuid",
+    "get_recordings",
+    "remove_tag",
+    "update",
 ]
 
 
@@ -32,7 +32,7 @@ caches = cache.CacheCollection(schemas.AnnotationProject)
     key=lambda _, annotation_project_id: annotation_project_id,
     data_key=lambda annotation_project: annotation_project.id,
 )
-async def get_annotation_project_by_id(
+async def get_by_id(
     session: AsyncSession, annotation_project_id: int
 ) -> schemas.AnnotationProject:
     """Get an annotation project by its ID."""
@@ -50,7 +50,7 @@ async def get_annotation_project_by_id(
     key=lambda _, annotation_project_uuid: annotation_project_uuid,
     data_key=lambda annotation_project: annotation_project.uuid,
 )
-async def get_annotation_project_by_uuid(
+async def get_by_uuid(
     session: AsyncSession, annotation_project_uuid: UUID
 ) -> schemas.AnnotationProject:
     """Get an annotation project by its UUID."""
@@ -68,7 +68,7 @@ async def get_annotation_project_by_uuid(
     key=lambda _, annotation_project_name: annotation_project_name,
     data_key=lambda annotation_project: annotation_project.name,
 )
-async def get_annotation_project_by_name(
+async def get_by_name(
     session: AsyncSession, annotation_project_name: str
 ) -> schemas.AnnotationProject:
     """Get an annotation project by its name."""
@@ -80,7 +80,7 @@ async def get_annotation_project_by_name(
     return schemas.AnnotationProject.model_validate(annotation_project)
 
 
-async def get_annotation_projects(
+async def get_recordings(
     session: AsyncSession,
     *,
     limit: int = 1000,
@@ -104,7 +104,7 @@ async def get_annotation_projects(
 
 
 @caches.with_update
-async def create_annotation_project(
+async def create(
     session: AsyncSession, data: schemas.AnnotationProjectCreate
 ) -> schemas.AnnotationProject:
     """Create an annotation project."""
@@ -117,7 +117,7 @@ async def create_annotation_project(
 
 
 @caches.with_update
-async def update_annotation_project(
+async def update(
     session: AsyncSession,
     annotation_project_id: int,
     data: schemas.AnnotationProjectUpdate,
@@ -133,7 +133,7 @@ async def update_annotation_project(
 
 
 @caches.with_clear
-async def delete_annotation_project(
+async def delete(
     session: AsyncSession,
     annotation_project_id: int,
 ) -> schemas.AnnotationProject:
@@ -147,7 +147,7 @@ async def delete_annotation_project(
 
 
 @caches.with_update
-async def add_tag_to_annotation_project(
+async def add_tag(
     session: AsyncSession,
     annotation_project_id: int,
     tag_id: int,
@@ -163,7 +163,7 @@ async def add_tag_to_annotation_project(
 
 
 @caches.with_update
-async def remove_tag_from_annotation_project(
+async def remove_tag(
     session: AsyncSession,
     annotation_project_id: int,
     tag_id: int,

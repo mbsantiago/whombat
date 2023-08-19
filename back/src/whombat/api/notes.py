@@ -7,15 +7,15 @@ from whombat.api import common, users
 from whombat.filters.base import Filter
 
 __all__ = [
-    "create_note",
-    "delete_note",
-    "get_note_by_id",
-    "get_notes",
-    "update_note",
+    "create",
+    "delete",
+    "get_by_id",
+    "get_recordings",
+    "update",
 ]
 
 
-async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
+async def get_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     """Get a note by its ID.
 
     Parameters
@@ -43,7 +43,7 @@ async def get_note_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     return schemas.Note.model_validate(note)
 
 
-async def get_notes(
+async def get_recordings(
     session: AsyncSession,
     *,
     limit: int = 100,
@@ -90,7 +90,7 @@ async def get_notes(
     return [schemas.Note.model_validate(note) for note in notes]
 
 
-async def create_note(
+async def create(
     session: AsyncSession,
     data: schemas.NoteCreate,
 ) -> schemas.Note:
@@ -115,13 +115,13 @@ async def create_note(
         If the given user does not exist.
 
     """
-    await users.get_user_by_id(session, user_id=data.created_by_id)
+    await users.get_by_id(session, user_id=data.created_by_id)
     note = await common.create_object(session, models.Note, data)
     await session.refresh(note)
     return schemas.Note.model_validate(note)
 
 
-async def update_note(
+async def update(
     session: AsyncSession,
     note_id: int,
     data: schemas.NoteUpdate,
@@ -159,7 +159,7 @@ async def update_note(
     return schemas.Note.model_validate(note)
 
 
-async def delete_note(
+async def delete(
     session: AsyncSession,
     note_id: int,
 ) -> None:

@@ -16,7 +16,7 @@ async def test_create_empty_dataset(session: AsyncSession, tmp_path: Path):
     """Test the creation of an empty dataset."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    dataset, recordings = await datasets.create_dataset(
+    dataset, recordings = await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
@@ -41,7 +41,7 @@ async def test_create_dataset_fails_if_name_is_not_unique(
     audio_dir2 = tmp_path / "audio2"
     audio_dir1.mkdir()
     audio_dir2.mkdir()
-    await datasets.create_dataset(
+    await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
@@ -50,7 +50,7 @@ async def test_create_dataset_fails_if_name_is_not_unique(
         ),
     )
     with pytest.raises(exceptions.DuplicateObjectError):
-        await datasets.create_dataset(
+        await datasets.create(
             session,
             data=schemas.DatasetCreate(
                 name="test_dataset",
@@ -67,7 +67,7 @@ async def test_create_dataset_fails_if_audio_dir_is_not_unique(
     """Test that creating a dataset fails if the audio dir is not unique."""
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    await datasets.create_dataset(
+    await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
@@ -76,7 +76,7 @@ async def test_create_dataset_fails_if_audio_dir_is_not_unique(
         ),
     )
     with pytest.raises(exceptions.DuplicateObjectError):
-        await datasets.create_dataset(
+        await datasets.create(
             session,
             data=schemas.DatasetCreate(
                 name="test_dataset_2",
@@ -90,7 +90,7 @@ async def test_get_dataset_by_uuid(
     session: AsyncSession, dataset: schemas.Dataset
 ):
     """Test getting a dataset by UUID."""
-    retrieved_dataset = await datasets.get_dataset_by_uuid(
+    retrieved_dataset = await datasets.get_by_uuid(
         session,
         dataset.uuid,
     )
@@ -103,7 +103,7 @@ async def test_get_dataset_by_uuid_fails_when_uuid_does_not_exist(
 ):
     """Test that getting a dataset by UUID fails when nonexisting."""
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.get_dataset_by_uuid(
+        await datasets.get_by_uuid(
             session,
             uuid=uuid.uuid4(),
         )
@@ -113,9 +113,7 @@ async def test_get_dataset_by_name(
     session: AsyncSession, dataset: schemas.Dataset
 ):
     """Test getting a dataset by name."""
-    retrieved_dataset = await datasets.get_dataset_by_name(
-        session, dataset.name
-    )
+    retrieved_dataset = await datasets.get_by_name(session, dataset.name)
     assert isinstance(retrieved_dataset, schemas.Dataset)
     assert retrieved_dataset.id == dataset.id
 
@@ -125,7 +123,7 @@ async def test_get_dataset_by_name_fails_when_name_does_not_exist(
 ):
     """Test that getting a dataset by name fails when nonexisting."""
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.get_dataset_by_name(
+        await datasets.get_by_name(
             session,
             name="nonexisting_dataset",
         )
@@ -135,7 +133,7 @@ async def test_get_dataset_by_audio_dir(
     session: AsyncSession, dataset: schemas.Dataset
 ):
     """Test getting a dataset by audio directory."""
-    retrieved_dataset = await datasets.get_dataset_by_audio_dir(
+    retrieved_dataset = await datasets.get_by_audio_dir(
         session, dataset.audio_dir
     )
     assert isinstance(retrieved_dataset, schemas.Dataset)
@@ -150,7 +148,7 @@ async def test_get_dataset_by_audio_dir_fails_when_audio_dir_does_not_exist(
     audio_dir = tmp_path / "nonexisting_audio_dir"
     audio_dir.mkdir()
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.get_dataset_by_audio_dir(
+        await datasets.get_by_audio_dir(
             session,
             audio_dir=audio_dir,
         )
@@ -161,7 +159,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     # Arrange
     audio_dir_1 = tmp_path / "audio_1"
     audio_dir_1.mkdir()
-    dataset1, _ = await datasets.create_dataset(
+    dataset1, _ = await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset_1",
@@ -171,7 +169,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     )
     audio_dir_2 = tmp_path / "audio_2"
     audio_dir_2.mkdir()
-    dataset2, _ = await datasets.create_dataset(
+    dataset2, _ = await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset_2",
@@ -181,7 +179,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     )
 
     # Act
-    retrieved_datasets = await datasets.get_datasets(session)
+    retrieved_datasets = await datasets.get_many(session)
 
     # Assert
     assert isinstance(retrieved_datasets, list)
@@ -190,7 +188,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     assert dataset2 in retrieved_datasets
 
     # Act (with limit)
-    retrieved_datasets = await datasets.get_datasets(session, limit=1)
+    retrieved_datasets = await datasets.get_many(session, limit=1)
 
     # Assert
     assert isinstance(retrieved_datasets, list)
@@ -198,7 +196,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
     assert dataset2 in retrieved_datasets
 
     # Act (with offset)
-    retrieved_datasets = await datasets.get_datasets(session, offset=1)
+    retrieved_datasets = await datasets.get_many(session, offset=1)
     assert isinstance(retrieved_datasets, list)
     assert len(retrieved_datasets) == 1
     assert dataset1 in retrieved_datasets
@@ -209,7 +207,7 @@ async def test_update_dataset_name(
 ):
     """Test updating a dataset's name."""
     assert dataset.name != "updated_dataset"
-    updated_dataset = await datasets.update_dataset(
+    updated_dataset = await datasets.update(
         session,
         dataset_id=dataset.id,
         data=schemas.DatasetUpdate(name="updated_dataset"),
@@ -223,7 +221,7 @@ async def test_update_dataset_description(
     dataset: schemas.Dataset,
 ):
     """Test updating a dataset's description."""
-    updated_dataset = await datasets.update_dataset(
+    updated_dataset = await datasets.update(
         session,
         dataset_id=dataset.id,
         data=schemas.DatasetUpdate(
@@ -240,7 +238,7 @@ async def test_update_dataset_audio_dir(
     """Test updating a dataset's audio directory."""
     audio_dir_2 = tmp_path / "audio_2"
     audio_dir_2.mkdir()
-    updated_dataset = await datasets.update_dataset(
+    updated_dataset = await datasets.update(
         session,
         dataset_id=dataset.id,
         data=schemas.DatasetUpdate(audio_dir=audio_dir_2),
@@ -251,9 +249,9 @@ async def test_update_dataset_audio_dir(
 
 async def test_delete_dataset(session: AsyncSession, dataset: schemas.Dataset):
     """Test deleting a dataset."""
-    await datasets.delete_dataset(session, dataset_id=dataset.id)
+    await datasets.delete(session, dataset_id=dataset.id)
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.get_dataset_by_id(session, dataset.id)
+        await datasets.get_by_id(session, dataset.id)
 
 
 async def test_get_dataset_files(
@@ -268,9 +266,7 @@ async def test_get_dataset_files(
     audio_file_2.touch()
 
     # Act
-    retrieved_files = await datasets.get_dataset_state(
-        session, dataset_id=dataset.id
-    )
+    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
 
     # Assert
     assert isinstance(retrieved_files, list)
@@ -290,18 +286,16 @@ async def test_get_dataset_files_with_existing_files(
     """Test getting a dataset's files when some files already exist."""
     audio_dir = dataset.audio_dir
     path = random_wav_factory(audio_dir / "audio_file.wav")
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
     )
 
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session, dataset_id=dataset.id, recording_id=recording.id
     )
 
-    retrieved_files = await datasets.get_dataset_state(
-        session, dataset_id=dataset.id
-    )
+    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
 
     assert len(retrieved_files) == 1
     assert retrieved_files[0].state == schemas.FileState.REGISTERED
@@ -317,13 +311,13 @@ async def test_get_dataset_files_with_missing_files(
     audio_dir = dataset.audio_dir
     path = random_wav_factory(audio_dir / "audio_file.wav")
 
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
     )
 
     # add the recording to the dataset
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session, dataset_id=dataset.id, recording_id=recording.id
     )
 
@@ -331,9 +325,7 @@ async def test_get_dataset_files_with_missing_files(
     path.unlink()
 
     # Act
-    retrieved_files = await datasets.get_dataset_state(
-        session, dataset_id=dataset.id
-    )
+    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
 
     assert isinstance(retrieved_files, list)
     assert len(retrieved_files) == 1
@@ -350,12 +342,12 @@ async def test_add_recording_to_dataset(
     audio_dir = dataset.audio_dir
     audio_file = random_wav_factory(path=audio_dir / "audio_file.wav")
 
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session, data=schemas.RecordingCreate(path=audio_file)
     )
 
     # Act
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session,
         dataset_id=dataset.id,
         recording_id=recording.id,
@@ -379,7 +371,7 @@ async def test_add_recording_to_dataset_with_nonexisting_recording(
     """Test adding a dataset recording when the recording does not exist."""
     # Arrange
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.add_recording_to_dataset(
+        await datasets.add_recording(
             session,
             dataset_id=dataset.id,
             recording_id=10,
@@ -400,7 +392,7 @@ async def test_get_dataset_recordings(
         samplerate=8000,
         channels=1,
     )
-    recording_1 = await recordings.create_recording(
+    recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
     )
@@ -411,24 +403,24 @@ async def test_get_dataset_recordings(
         samplerate=8000,
         channels=1,
     )
-    recording_2 = await recordings.create_recording(
+    recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
     )
 
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session,
         dataset_id=dataset.id,
         recording_id=recording_1.id,
     )
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session,
         dataset_id=dataset.id,
         recording_id=recording_2.id,
     )
 
     # Act
-    retrieved_recordings = await datasets.get_dataset_recordings(
+    retrieved_recordings = await datasets.get_recordings(
         session, dataset_id=dataset.id
     )
 
@@ -450,7 +442,7 @@ async def test_get_dataset_recordings_fails_with_nonexisting_dataset(
 ):
     """Test getting a dataset's recordings when the dataset does not exist."""
     with pytest.raises(exceptions.NotFoundError):
-        await datasets.get_dataset_recordings(
+        await datasets.get_recordings(
             session,
             dataset_id=10,
         )
@@ -472,7 +464,7 @@ async def test_add_file_to_dataset(
     )
 
     # Act
-    await datasets.add_file_to_dataset(
+    await datasets.add_file(
         session,
         dataset_id=dataset.id,
         data=schemas.RecordingCreate(path=path),
@@ -487,7 +479,7 @@ async def test_add_file_to_dataset(
     assert result.scalars().first() is not None
 
     # Make sure the recording was added to the dataset
-    recording_list = await datasets.get_dataset_recordings(
+    recording_list = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )
@@ -515,7 +507,7 @@ async def test_add_file_to_dataset_fails_if_file_not_in_audio_dir(
 
     # Act
     with pytest.raises(ValueError):
-        await datasets.add_file_to_dataset(
+        await datasets.add_file(
             session,
             dataset_id=dataset.id,
             data=schemas.RecordingCreate(path=path),
@@ -537,20 +529,20 @@ async def test_add_file_to_dataset_with_existing_recording(
         channels=1,
     )
 
-    await recordings.create_recording(
+    await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
     )
 
     # Act
-    await datasets.add_file_to_dataset(
+    await datasets.add_file(
         session,
         dataset_id=dataset.id,
         data=schemas.RecordingCreate(path=path),
     )
 
     # Assert
-    recording_list = await datasets.get_dataset_recordings(
+    recording_list = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )
@@ -573,7 +565,7 @@ async def test_add_recordings_to_dataset(
         samplerate=8000,
         channels=1,
     )
-    recording_1 = await recordings.create_recording(
+    recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
     )
@@ -584,13 +576,13 @@ async def test_add_recordings_to_dataset(
         samplerate=8000,
         channels=1,
     )
-    recording_2 = await recordings.create_recording(
+    recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
     )
 
     # Act
-    added_paths = await datasets.add_recordings_to_dataset(
+    added_paths = await datasets.add_recordings(
         session,
         dataset,
         [recording_1, recording_2],
@@ -614,19 +606,19 @@ async def test_add_recordings_to_dataset_ignores_files_not_in_audio_dir(
     other_dir.mkdir()
 
     path_1 = random_wav_factory(path=audio_dir / "audio_file_1.wav")
-    recording_1 = await recordings.create_recording(
+    recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
     )
 
     path_2 = random_wav_factory(path=other_dir / "audio_file_2.wav")
-    recording_2 = await recordings.create_recording(
+    recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
     )
 
     # Act
-    added_paths = await datasets.add_recordings_to_dataset(
+    added_paths = await datasets.add_recordings(
         session,
         dataset,
         [recording_1, recording_2],
@@ -651,7 +643,7 @@ async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
         samplerate=8000,
         channels=1,
     )
-    recording_1 = await recordings.create_recording(
+    recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
     )
@@ -662,13 +654,13 @@ async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
         samplerate=8000,
         channels=1,
     )
-    recording_2 = await recordings.create_recording(
+    recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
     )
 
     # Act
-    added_paths = await datasets.add_recordings_to_dataset(
+    added_paths = await datasets.add_recordings(
         session,
         dataset,
         [recording_1, recording_2, recording_1],
@@ -694,7 +686,7 @@ async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
         samplerate=8000,
         channels=1,
     )
-    recording_1 = await recordings.create_recording(
+    recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
     )
@@ -705,19 +697,19 @@ async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
         samplerate=8000,
         channels=1,
     )
-    recording_2 = await recordings.create_recording(
+    recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
     )
 
-    await datasets.add_recording_to_dataset(
+    await datasets.add_recording(
         session,
         dataset_id=dataset.id,
         recording_id=recording_2.id,
     )
 
     # Act
-    added_paths = await datasets.add_recordings_to_dataset(
+    added_paths = await datasets.add_recordings(
         session,
         dataset,
         [recording_1, recording_2],
@@ -751,7 +743,7 @@ async def test_create_dataset_registers_all_recordings(
     text_file.touch()
 
     # Act
-    dataset, recording_list = await datasets.create_dataset(
+    dataset, recording_list = await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
@@ -774,7 +766,7 @@ async def test_create_dataset_registers_all_recordings(
         audio_file_2.relative_to(audio_dir),
     }
 
-    dataset_recordings = await datasets.get_dataset_recordings(
+    dataset_recordings = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )

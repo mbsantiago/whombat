@@ -12,16 +12,16 @@ from whombat.api import common, features
 from whombat.filters.base import Filter
 
 __all__ = [
-    "create_sound_event",
-    "create_sound_events",
-    "get_sound_events",
-    "get_sound_event_by_uuid",
-    "add_tag_to_sound_event",
-    "add_feature_to_sound_event",
-    "remove_tags_from_sound_event",
-    "remove_features_from_sound_event",
-    "update_sound_event",
-    "delete_sound_event",
+    "create",
+    "create_many",
+    "get_many",
+    "get_by_uuid",
+    "add_tag",
+    "add_feature",
+    "remove_tag",
+    "remove_feature",
+    "update",
+    "delete",
 ]
 
 
@@ -34,7 +34,7 @@ sound_event_caches = cache.CacheCollection(schemas.SoundEvent)
     key=lambda _, id: id,
     data_key=lambda sound_event: sound_event.id,
 )
-async def get_sound_event_by_id(
+async def get_by_id(
     session: AsyncSession,
     id: int,
 ) -> schemas.SoundEvent:
@@ -71,7 +71,7 @@ async def get_sound_event_by_id(
     key=lambda _, uuid: uuid,
     data_key=lambda sound_event: sound_event.uuid,
 )
-async def get_sound_event_by_uuid(
+async def get_by_uuid(
     session: AsyncSession,
     uuid: UUID,
 ) -> schemas.SoundEvent:
@@ -102,7 +102,7 @@ async def get_sound_event_by_uuid(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
-async def get_sound_events(
+async def get_many(
     session: AsyncSession,
     limit: int = 1000,
     offset: int = 0,
@@ -139,7 +139,7 @@ async def get_sound_events(
 
 
 @sound_event_caches.with_update
-async def create_sound_event(
+async def create(
     session: AsyncSession,
     data: schemas.SoundEventCreate,
 ):
@@ -172,7 +172,7 @@ async def create_sound_event(
     return schemas.SoundEvent.model_validate(sound_event)
 
 
-async def create_sound_events(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.SoundEventCreate],
 ) -> list[schemas.SoundEvent]:
@@ -199,7 +199,7 @@ async def create_sound_events(
 
 
 @sound_event_caches.with_update
-async def update_sound_event(
+async def update(
     session: AsyncSession,
     sound_event_id: int,
     data: schemas.SoundEventUpdate,
@@ -238,7 +238,7 @@ async def update_sound_event(
 
     new_features = compute_geometric_features(data.geometry)
     for feature in new_features:
-        feature_name = await features.get_or_create_feature_name(
+        feature_name = await features.get_or_create(
             session, data=schemas.FeatureNameCreate(name=feature.name)
         )
         await common.update_feature_on_object(
@@ -254,7 +254,7 @@ async def update_sound_event(
 
 
 @sound_event_caches.with_clear
-async def delete_sound_event(
+async def delete(
     session: AsyncSession,
     sound_event_id: int,
 ) -> schemas.SoundEvent:
@@ -282,7 +282,7 @@ async def delete_sound_event(
 
 
 @sound_event_caches.with_update
-async def add_tag_to_sound_event(
+async def add_tag(
     session: AsyncSession,
     sound_event_id: int,
     tag_id: int,
@@ -320,7 +320,7 @@ async def add_tag_to_sound_event(
 
 
 @sound_event_caches.with_update
-async def add_feature_to_sound_event(
+async def add_feature(
     session: AsyncSession,
     sound_event_id: int,
     feature_name_id: int,
@@ -360,7 +360,7 @@ async def add_feature_to_sound_event(
 
 
 @sound_event_caches.with_update
-async def remove_tags_from_sound_event(
+async def remove_tag(
     session: AsyncSession,
     sound_event_id: int,
     tag_id: int,
@@ -398,7 +398,7 @@ async def remove_tags_from_sound_event(
 
 
 @sound_event_caches.with_update
-async def remove_features_from_sound_event(
+async def remove_feature(
     session: AsyncSession,
     sound_event_id: int,
     features_name_id: int,
@@ -457,7 +457,7 @@ async def _create_sound_event_features(
 
     feature_names = {f[1] for f in all_features}
     feature_mapping = {
-        name: await features.get_or_create_feature_name(
+        name: await features.get_or_create(
             session, data=schemas.FeatureNameCreate(name=name)
         )
         for name in feature_names

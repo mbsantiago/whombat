@@ -12,7 +12,7 @@ from whombat.api import notes
 async def test_create_note(session: AsyncSession, user: schemas.User):
     """Test creating a note."""
     # Act
-    note = await notes.create_note(
+    note = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test",
@@ -33,7 +33,7 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
     )
     assert results.scalar_one_or_none() is not None
 
-    db_note = await notes.get_note_by_id(session, note_id=note.id)
+    db_note = await notes.get_by_id(session, note_id=note.id)
     assert db_note == note
 
 
@@ -51,7 +51,7 @@ async def test_create_note_fails_if_username_does_not_exist(
 
     # Act / Assert
     with pytest.raises(exceptions.NotFoundError):
-        await notes.create_note(
+        await notes.create(
             session,
             data=schemas.NoteCreate(
                 message="test",
@@ -64,7 +64,7 @@ async def test_create_note_fails_if_username_does_not_exist(
 async def test_get_note_by_id(session: AsyncSession, user: schemas.User):
     """Test getting a note by uuid."""
     # Arrange
-    note = await notes.create_note(
+    note = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test",
@@ -74,7 +74,7 @@ async def test_get_note_by_id(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    db_note = await notes.get_note_by_id(session, note_id=note.id)
+    db_note = await notes.get_by_id(session, note_id=note.id)
 
     # Assert
     assert isinstance(db_note, schemas.Note)
@@ -91,13 +91,13 @@ async def test_get_note_by_uuid_fails_if_note_does_not_exist(
     """Test that getting a note by id fails if the note does not exist."""
     # Act / Assert
     with pytest.raises(exceptions.NotFoundError):
-        await notes.get_note_by_id(session, note_id=4)
+        await notes.get_by_id(session, note_id=4)
 
 
 async def test_delete_note(session: AsyncSession, user: schemas.User):
     """Test deleting a note."""
     # Arrange
-    note = await notes.create_note(
+    note = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test",
@@ -107,7 +107,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    await notes.delete_note(session, note_id=note.id)
+    await notes.delete(session, note_id=note.id)
 
     # Assert
     results = await session.execute(
@@ -130,10 +130,10 @@ async def test_delete_note_fails_if_note_does_not_exist(
 
     # Arrange
     with pytest.raises(exceptions.NotFoundError):
-        await notes.get_note_by_id(session, note_id=note.id)
+        await notes.get_by_id(session, note_id=note.id)
 
     with pytest.raises(exceptions.NotFoundError):
-        await notes.delete_note(
+        await notes.delete(
             session,
             note_id=note.id,
         )
@@ -142,7 +142,7 @@ async def test_delete_note_fails_if_note_does_not_exist(
 async def test_get_notes(session: AsyncSession, user: schemas.User):
     """Test getting all notes."""
     # Arrange
-    note1 = await notes.create_note(
+    note1 = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test1",
@@ -151,7 +151,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
         ),
     )
 
-    note2 = await notes.create_note(
+    note2 = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test2",
@@ -161,7 +161,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    db_notes = await notes.get_notes(session)
+    db_notes = await notes.get_recordings(session)
 
     # Assert
     assert isinstance(db_notes, list)
@@ -173,7 +173,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
 async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     """Test getting all notes with a limit."""
     # Arrange
-    await notes.create_note(
+    await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test1",
@@ -182,7 +182,7 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
         ),
     )
 
-    note = await notes.create_note(
+    note = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test2",
@@ -192,7 +192,7 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    db_notes = await notes.get_notes(session, limit=1)
+    db_notes = await notes.get_recordings(session, limit=1)
 
     # Assert
     assert isinstance(db_notes, list)
@@ -206,7 +206,7 @@ async def test_get_notes_with_offset(
 ):
     """Test getting all notes with an offset."""
     # Arrange
-    note = await notes.create_note(
+    note = await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test1",
@@ -215,7 +215,7 @@ async def test_get_notes_with_offset(
         ),
     )
 
-    await notes.create_note(
+    await notes.create(
         session,
         data=schemas.NoteCreate(
             message="test2",
@@ -225,7 +225,7 @@ async def test_get_notes_with_offset(
     )
 
     # Act
-    db_notes = await notes.get_notes(session, offset=1)
+    db_notes = await notes.get_recordings(session, offset=1)
 
     # Assert
     assert isinstance(db_notes, list)

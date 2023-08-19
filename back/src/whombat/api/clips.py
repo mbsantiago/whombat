@@ -12,16 +12,16 @@ from whombat.api import common, features, recordings
 from whombat.filters.base import Filter
 
 __all__ = [
-    "add_feature_to_clip",
-    "add_tag_to_clip",
-    "create_clip",
-    "create_clips",
-    "delete_clip",
-    "get_clip_by_uuid",
-    "get_clips",
-    "remove_feature_from_clip",
-    "remove_tag_from_clip",
-    "update_clip_feature",
+    "add_feature",
+    "add_tag",
+    "create",
+    "create_many",
+    "delete",
+    "get_by_uuid",
+    "get_recordings",
+    "remove_feature",
+    "remove_tag",
+    "update_feature",
 ]
 
 
@@ -34,7 +34,7 @@ clips_cache = cache.CacheCollection(schemas.Clip)
     key=lambda _, uuid: uuid,
     data_key=lambda clip: clip.uuid,
 )
-async def get_clip_by_uuid(
+async def get_by_uuid(
     session: AsyncSession,
     clip_uuid: UUID,
 ) -> schemas.Clip:
@@ -73,7 +73,7 @@ async def get_clip_by_uuid(
     key=lambda _, clip_id: clip_id,
     data_key=lambda clip: clip.id,
 )
-async def get_clip_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
+async def get_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
     """Get clip by ID.
 
     Parameters
@@ -101,7 +101,7 @@ async def get_clip_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
     return schemas.Clip.model_validate(clip)
 
 
-async def get_clips(
+async def get_recordings(
     session: AsyncSession,
     *,
     limit: int = 1000,
@@ -139,7 +139,7 @@ async def get_clips(
 
 
 @clips_cache.with_update
-async def create_clip(
+async def create(
     session: AsyncSession,
     data: schemas.ClipCreate,
 ) -> schemas.Clip:
@@ -176,10 +176,10 @@ async def create_clip(
     await _create_clip_features(session, [clip])
 
     session.expire(clip)
-    return await get_clip_by_id(session, clip_id)
+    return await get_by_id(session, clip_id)
 
 
-async def create_clips(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.ClipCreate],
 ) -> list[schemas.Clip]:
@@ -244,7 +244,7 @@ async def create_clips(
 
 
 @clips_cache.with_clear
-async def delete_clip(
+async def delete(
     session: AsyncSession,
     clip_id: int,
 ) -> schemas.Clip:
@@ -277,7 +277,7 @@ async def delete_clip(
 
 
 @clips_cache.with_update
-async def add_tag_to_clip(
+async def add_tag(
     session: AsyncSession,
     clip_id: int,
     tag_id: int,
@@ -316,7 +316,7 @@ async def add_tag_to_clip(
 
 
 @clips_cache.with_update
-async def add_feature_to_clip(
+async def add_feature(
     session: AsyncSession,
     clip_id: int,
     feature_name_id: int,
@@ -361,7 +361,7 @@ async def add_feature_to_clip(
 
 
 @clips_cache.with_update
-async def update_clip_feature(
+async def update_feature(
     session: AsyncSession,
     clip_id: int,
     feature_name_id: int,
@@ -407,7 +407,7 @@ async def update_clip_feature(
 
 
 @clips_cache.with_update
-async def remove_tag_from_clip(
+async def remove_tag(
     session: AsyncSession,
     clip_id: int,
     tag_id: int,
@@ -446,7 +446,7 @@ async def remove_tag_from_clip(
 
 
 @clips_cache.with_update
-async def remove_feature_from_clip(
+async def remove_feature(
     session: AsyncSession,
     clip_id: int,
     feature_name_id: int,
@@ -508,7 +508,7 @@ async def _create_clip_features(
     names = {name for _, name, _ in clip_features}
 
     feature_names: dict[str, schemas.FeatureName] = {
-        name: await features.get_or_create_feature_name(
+        name: await features.get_or_create(
             session, data=schemas.FeatureNameCreate(name=name)
         )
         for name in names

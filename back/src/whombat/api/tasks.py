@@ -12,17 +12,17 @@ from whombat.api import common
 from whombat.filters.base import Filter
 
 __all__ = [
-    "get_task_by_id",
-    "get_task_by_uuid",
-    "get_tasks",
-    "create_task",
-    "create_tasks",
-    "add_tag_to_task",
-    "add_status_badge_to_task",
-    "add_note_to_task",
-    "remove_note_from_task",
-    "remove_tag_from_task",
-    "remove_status_badge_from_task",
+    "get_by_id",
+    "get_by_uuid",
+    "get_many",
+    "create",
+    "create_many",
+    "add_tag",
+    "add_status_badge",
+    "add_note",
+    "remove_note",
+    "remove_tag",
+    "remove_status_badge",
 ]
 
 
@@ -35,7 +35,7 @@ task_caches = cache.CacheCollection(schemas.Task)
     key=lambda _, task_id: task_id,
     data_key=lambda task: task.id,
 )
-async def get_task_by_id(
+async def get_by_id(
     session: AsyncSession,
     task_id: int,
 ) -> schemas.Task:
@@ -71,7 +71,7 @@ async def get_task_by_id(
     key=lambda _, task_uuid: task_uuid,
     data_key=lambda task: task.uuid,
 )
-async def get_task_by_uuid(
+async def get_by_uuid(
     session: AsyncSession,
     task_uuid: UUID,
 ) -> schemas.Task:
@@ -101,7 +101,7 @@ async def get_task_by_uuid(
     return schemas.Task.model_validate(task)
 
 
-async def get_tasks(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 100,
@@ -144,7 +144,7 @@ async def get_tasks(
     return [schemas.Task.model_validate(task) for task in tasks]
 
 
-async def create_task(
+async def create(
     session: AsyncSession,
     data: schemas.TaskCreate,
 ) -> schemas.Task:
@@ -184,7 +184,7 @@ async def create_task(
     return schemas.Task.model_validate(task)
 
 
-async def create_tasks(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.TaskCreate],
 ) -> list[schemas.Task]:
@@ -215,7 +215,7 @@ async def create_tasks(
 
 
 @task_caches.with_update
-async def add_tag_to_task(
+async def add_tag(
     session: AsyncSession,
     task_id: int,
     tag_id: int,
@@ -278,7 +278,7 @@ async def add_tag_to_task(
 
 
 @task_caches.with_update
-async def add_note_to_task(
+async def add_note(
     session: AsyncSession,
     task_id: int,
     note_id: int,
@@ -315,7 +315,7 @@ async def add_note_to_task(
     return schemas.Task.model_validate(task)
 
 
-async def add_status_badge_to_task(
+async def add_status_badge(
     session: AsyncSession,
     task_id: int,
     user_id: UUID,
@@ -361,7 +361,7 @@ async def add_status_badge_to_task(
 
 
 @task_caches.with_update
-async def remove_tag_from_task(
+async def remove_tag(
     session: AsyncSession,
     task_id: int,
     task_tag_id: int,
@@ -402,7 +402,7 @@ async def remove_tag_from_task(
 
 
 @task_caches.with_update
-async def remove_note_from_task(
+async def remove_note(
     session: AsyncSession,
     task_id: int,
     note_id: int,
@@ -435,7 +435,7 @@ async def remove_note_from_task(
 
 
 @task_caches.with_update
-async def remove_status_badge_from_task(
+async def remove_status_badge(
     session: AsyncSession,
     task_id: int,
     status_badge_id: int,

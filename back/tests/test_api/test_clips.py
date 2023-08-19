@@ -16,7 +16,7 @@ async def test_create_clip(
 ):
     """Test creating a clip."""
     # Act
-    clip = await clips.create_clip(
+    clip = await clips.create(
         session,
         data=schemas.ClipCreate(
             recording_id=recording.id,
@@ -54,7 +54,7 @@ async def test_create_clip_fails_if_recording_does_exist(
     """Test creating a clip fails if the recording does not exist."""
     # Act & Assert
     with pytest.raises(exceptions.NotFoundError):
-        await clips.create_clip(
+        await clips.create(
             session,
             data=schemas.ClipCreate(
                 recording_id=3,
@@ -76,11 +76,11 @@ async def test_create_clip_fails_for_duplicate_clip(
     )
 
     # Arrange
-    await clips.create_clip(session, data=data)
+    await clips.create(session, data=data)
 
     # Act & Assert
     with pytest.raises(exceptions.DuplicateObjectError):
-        await clips.create_clip(session, data=data)
+        await clips.create(session, data=data)
 
 
 async def test_create_clip_fails_if_end_time_is_less_than_start_time(
@@ -90,7 +90,7 @@ async def test_create_clip_fails_if_end_time_is_less_than_start_time(
     """Test creating clip fails if the end time is less than the start time."""
     # Act & Assert
     with pytest.raises(ValidationError):
-        await clips.create_clip(
+        await clips.create(
             session,
             data=schemas.ClipCreate(
                 recording_id=recording.id,
@@ -106,7 +106,7 @@ async def test_get_clips(
 ):
     """Test getting clips."""
     # Arrange
-    await clips.create_clip(
+    await clips.create(
         session,
         data=schemas.ClipCreate(
             recording_id=recording.id,
@@ -115,7 +115,7 @@ async def test_get_clips(
         ),
     )
 
-    await clips.create_clip(
+    await clips.create(
         session,
         data=schemas.ClipCreate(
             recording_id=recording.id,
@@ -125,7 +125,7 @@ async def test_get_clips(
     )
 
     # Act
-    db_clips = await clips.get_clips(session)
+    db_clips = await clips.get_recordings(session)
 
     # Assert
     assert len(db_clips) == 2
@@ -143,7 +143,7 @@ async def test_create_clips(
 ):
     """Test creating clips."""
     # Act
-    created_clips = await clips.create_clips(
+    created_clips = await clips.create_many(
         session,
         data=[
             schemas.ClipCreate(
@@ -184,7 +184,7 @@ async def create_clips_ignores_non_existing_recordings(
 ):
     """Test creating clips ignores non-existing recordings."""
     # Act
-    created_clips = await clips.create_clips(
+    created_clips = await clips.create_many(
         session,
         data=[
             schemas.ClipCreate(
@@ -200,7 +200,7 @@ async def create_clips_ignores_non_existing_recordings(
     assert created_clips[0].end_time == 0.5
     assert created_clips[0].recording == recording
 
-    all_clips = await clips.get_clips(session)
+    all_clips = await clips.get_recordings(session)
     assert len(all_clips) == 1
 
 
@@ -210,7 +210,7 @@ async def test_get_clips_with_limit(
 ):
     """Test getting clips with a limit."""
     # Arrange
-    await clips.create_clips(
+    await clips.create_many(
         session,
         data=[
             schemas.ClipCreate(
@@ -223,7 +223,7 @@ async def test_get_clips_with_limit(
     )
 
     # Act
-    db_clips = await clips.get_clips(
+    db_clips = await clips.get_recordings(
         session,
         limit=1,
     )
@@ -240,7 +240,7 @@ async def test_get_clips_with_offset(
     recording: schemas.Recording,
 ):
     """Test getting clips with an offset."""
-    await clips.create_clips(
+    await clips.create_many(
         session,
         data=[
             schemas.ClipCreate(
@@ -253,7 +253,7 @@ async def test_get_clips_with_offset(
     )
 
     # Act
-    db_clips = await clips.get_clips(
+    db_clips = await clips.get_recordings(
         session,
         offset=1,
     )
@@ -271,7 +271,7 @@ async def test_create_clips_ignores_duplicate_clips(
 ):
     """Test creating clips ignores duplicate clips."""
     # Arrange
-    created_clips = await clips.create_clips(
+    created_clips = await clips.create_many(
         session,
         data=[
             schemas.ClipCreate(
@@ -289,7 +289,7 @@ async def test_create_clips_ignores_duplicate_clips(
     assert created_clips[0].end_time == 0.5
     assert created_clips[0].recording == recording
 
-    all_clips = await clips.get_clips(session)
+    all_clips = await clips.get_recordings(session)
     assert len(all_clips) == 1
 
 
@@ -304,15 +304,15 @@ async def test_create_clips_ignores_existing_clips(
         end_time=0.5,
     )
     # Arrange
-    await clips.create_clip(session, data=data)
+    await clips.create(session, data=data)
 
     # Act
-    created_clips = await clips.create_clips(session, data=[data])
+    created_clips = await clips.create_many(session, data=[data])
 
     # Assert
     assert len(created_clips) == 0
 
-    all_clips = await clips.get_clips(session)
+    all_clips = await clips.get_recordings(session)
     assert len(all_clips) == 1
 
 
@@ -327,7 +327,7 @@ async def test_create_clips_add_duration_feature(
     )
 
     # Act
-    created_clips = await clips.create_clips(session, data=[data])
+    created_clips = await clips.create_many(session, data=[data])
 
     # Assert
     assert len(created_clips) == 1
@@ -336,7 +336,7 @@ async def test_create_clips_add_duration_feature(
     assert created_clips[0].recording == recording
     assert created_clips[0].features
 
-    duration = features.find_feature(created_clips[0].features, "duration")
+    duration = features.find(created_clips[0].features, "duration")
     assert duration
     assert duration.value == 0.5
 
@@ -347,7 +347,7 @@ async def test_get_clip_by_uuid(
 ):
     """Test getting a clip by UUID."""
     # Act
-    retrieved_clip = await clips.get_clip_by_uuid(
+    retrieved_clip = await clips.get_by_uuid(
         session,
         clip.uuid,
     )
@@ -364,7 +364,7 @@ async def test_get_clip_by_uuid_raises_not_found(
 
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await clips.get_clip_by_uuid(
+        await clips.get_by_uuid(
             session,
             uuid4(),
         )
@@ -377,7 +377,7 @@ async def test_add_feature_to_clip(
 ):
     """Test adding a feature to a clip."""
     # Act
-    updated_clip = await clips.add_feature_to_clip(
+    updated_clip = await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -387,7 +387,7 @@ async def test_add_feature_to_clip(
     # Assert
     assert len(updated_clip.features) == 2
 
-    feature = features.find_feature(updated_clip.features, feature_name.name)
+    feature = features.find(updated_clip.features, feature_name.name)
     assert feature
     assert feature.value == 10
 
@@ -399,7 +399,7 @@ async def test_add_feature_to_clip_fails_if_clip_does_not_exist(
     """Test adding a feature to a clip fails if the clip does not exist."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await clips.add_feature_to_clip(
+        await clips.add_feature(
             session,
             clip_id=10,
             feature_name_id=feature_name.id,
@@ -413,7 +413,7 @@ async def test_add_feature_to_clip_with_nonexistent_feature_fails(
 ):
     """Test adding a feature to a clip with a nonexistent feature fails."""
     with pytest.raises(exceptions.NotFoundError):
-        await clips.add_feature_to_clip(
+        await clips.add_feature(
             session,
             clip_id=clip.id,
             feature_name_id=10,
@@ -428,14 +428,14 @@ async def test_add_feature_to_clip_is_idempotent(
 ):
     """Test adding a feature to a clip is idempotent."""
     # Act
-    updated_clip = await clips.add_feature_to_clip(
+    updated_clip = await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
         value=10,
     )
 
-    updated_clip = await clips.add_feature_to_clip(
+    updated_clip = await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -453,7 +453,7 @@ async def test_add_tag_to_clip(
 ):
     """Test adding a tag to a clip."""
     # Act
-    updated_clip = await clips.add_tag_to_clip(
+    updated_clip = await clips.add_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
@@ -472,13 +472,13 @@ async def test_add_tag_to_clip_is_idempotent(
 ):
     """Test adding a tag to a clip is idempotent."""
     # Act
-    updated_clip = await clips.add_tag_to_clip(
+    updated_clip = await clips.add_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
     )
 
-    updated_clip = await clips.add_tag_to_clip(
+    updated_clip = await clips.add_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
@@ -496,7 +496,7 @@ async def test_add_tag_to_clip_with_nonexisting_tag_fails(
 ):
     """Test adding a tag to a clip with a nonexisting tag fails."""
     with pytest.raises(exceptions.NotFoundError):
-        await clips.add_tag_to_clip(
+        await clips.add_tag(
             session,
             clip_id=clip.id,
             tag_id=10,
@@ -510,7 +510,7 @@ async def test_add_tag_to_clip_fails_with_nonexisting_clip(
     """Test adding a tag to a clip fails with a nonexisting clip."""
     # Arrange
     with pytest.raises(exceptions.NotFoundError):
-        await clips.add_tag_to_clip(
+        await clips.add_tag(
             session,
             clip_id=10,
             tag_id=tag.id,
@@ -522,8 +522,8 @@ async def test_delete_clip(
     clip: schemas.Clip,
 ):
     """Test deleting a clip."""
-    await clips.delete_clip(session, clip_id=clip.id)
-    all_clips = await clips.get_clips(session)
+    await clips.delete(session, clip_id=clip.id)
+    all_clips = await clips.get_recordings(session)
     assert len(all_clips) == 0
 
 
@@ -533,7 +533,7 @@ async def test_delete_clip_fails_with_nonexisting_clip(
     """Test deleting a clip ignores nonexisting clips."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await clips.delete_clip(session, clip_id=10)
+        await clips.delete(session, clip_id=10)
 
 
 async def test_delete_clip_deletes_associated_tags_and_features(
@@ -544,13 +544,13 @@ async def test_delete_clip_deletes_associated_tags_and_features(
 ):
     """Test deleting a clip deletes associated tags and features."""
     # Arrange
-    await clips.add_tag_to_clip(
+    await clips.add_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
     )
 
-    await clips.add_feature_to_clip(
+    await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -558,7 +558,7 @@ async def test_delete_clip_deletes_associated_tags_and_features(
     )
 
     # Act
-    await clips.delete_clip(
+    await clips.delete(
         session,
         clip_id=clip.id,
     )
@@ -583,7 +583,7 @@ async def test_remove_tag_from_clip(
 ):
     """Test removing a tag from a clip."""
     # Arrange
-    clip = await clips.add_tag_to_clip(
+    clip = await clips.add_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
@@ -591,7 +591,7 @@ async def test_remove_tag_from_clip(
     assert len(clip.tags) == 1
 
     # Act
-    clip = await clips.remove_tag_from_clip(
+    clip = await clips.remove_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
@@ -607,7 +607,7 @@ async def test_remove_tag_from_clip_fails_with_nonexisting_clip(
 ):
     """Test removing a tag from a clip fails with a nonexisting clip."""
     with pytest.raises(exceptions.NotFoundError):
-        await clips.remove_tag_from_clip(
+        await clips.remove_tag(
             session,
             clip_id=10,
             tag_id=tag.id,
@@ -619,7 +619,7 @@ async def test_remove_nonexisting_tag_from_clip_succeeds(
     clip: schemas.Clip,
 ):
     """Test removing a tag from a clip ignores a nonexisting clip tag."""
-    await clips.remove_tag_from_clip(
+    await clips.remove_tag(
         session,
         clip_id=clip.id,
         tag_id=10,
@@ -635,7 +635,7 @@ async def test_remove_tag_from_clip_ignores_nonregistered_tag(
     assert len(clip.tags) == 0
 
     # Act
-    clip = await clips.remove_tag_from_clip(
+    clip = await clips.remove_tag(
         session,
         clip_id=clip.id,
         tag_id=tag.id,
@@ -648,7 +648,7 @@ async def test_remove_feature_from_clip(
     feature_name: schemas.FeatureName,
 ):
     """Test removing a feature from a clip."""
-    clip = await clips.add_feature_to_clip(
+    clip = await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -657,7 +657,7 @@ async def test_remove_feature_from_clip(
     assert len(clip.features) == 2
 
     # Act
-    clip = await clips.remove_feature_from_clip(
+    clip = await clips.remove_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -673,7 +673,7 @@ async def test_remove_feature_from_clip_fails_with_nonexisting_clip(
 ):
     """Test removing a feature from a clip fails with a nonexisting clip."""
     with pytest.raises(exceptions.NotFoundError):
-        await clips.remove_feature_from_clip(
+        await clips.remove_feature(
             session,
             clip_id=10,
             feature_name_id=feature_name.id,
@@ -687,7 +687,7 @@ async def test_remove_feature_from_clip_ignores_nonexisting_clip_feature(
 ):
     """Test removing a clip feature ignores a nonexisting clip feature."""
     # Arrange
-    await clips.remove_feature_from_clip(
+    await clips.remove_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -699,7 +699,7 @@ async def test_remove_nonexisting_feature_from_clip_succeeds(
     clip: schemas.Clip,
 ):
     """Test removing a feature from a clip ignores a nonexisting feature."""
-    await clips.remove_feature_from_clip(
+    await clips.remove_feature(
         session,
         clip_id=clip.id,
         feature_name_id=10,
@@ -713,19 +713,19 @@ async def test_update_clip_feature(
 ):
     """Test updating a clip feature."""
     # Arrange
-    clip = await clips.add_feature_to_clip(
+    clip = await clips.add_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
         value=10,
     )
 
-    feature = features.find_feature(clip.features, feature_name.name)
+    feature = features.find(clip.features, feature_name.name)
     assert feature is not None
     assert feature.value == 10
 
     # Act
-    clip = await clips.update_clip_feature(
+    clip = await clips.update_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,
@@ -733,7 +733,7 @@ async def test_update_clip_feature(
     )
 
     assert len(clip.features) == 2
-    feature = features.find_feature(clip.features, feature_name.name)
+    feature = features.find(clip.features, feature_name.name)
     assert feature is not None
     assert feature.value == 20
 
@@ -744,7 +744,7 @@ async def test_update_clip_feature_fails_with_nonexisting_clip(
 ):
     """Test updating a clip feature fails with a nonexisting clip."""
     with pytest.raises(exceptions.NotFoundError):
-        await clips.update_clip_feature(
+        await clips.update_feature(
             session,
             clip_id=10,
             feature_name_id=feature_name.id,
@@ -760,7 +760,7 @@ async def test_update_clip_feature_creates_clip_feature_if_missing(
     """Test updating a clip feature creates the clip feature if missing."""
     assert len(clip.features) == 1
 
-    clip = await clips.update_clip_feature(
+    clip = await clips.update_feature(
         session,
         clip_id=clip.id,
         feature_name_id=feature_name.id,

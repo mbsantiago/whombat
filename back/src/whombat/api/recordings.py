@@ -14,19 +14,19 @@ from whombat.core import files
 from whombat.core.common import remove_duplicates
 
 __all__ = [
-    "add_feature_to_recording",
-    "add_note_to_recording",
-    "add_tag_to_recording",
-    "create_recording",
-    "delete_recording",
+    "add_feature",
+    "add_note",
+    "add_tag",
+    "create",
+    "delete",
     "get_recording_by_id",
-    "get_recording_by_hash",
-    "get_recording_by_path",
+    "get_by_hash",
+    "get_by_path",
     "get_recordings",
-    "remove_feature_from_recording",
-    "remove_note_from_recording",
-    "remove_tag_from_recording",
-    "update_recording",
+    "remove_feature",
+    "remove_note",
+    "remove_tag",
+    "update",
 ]
 
 
@@ -77,7 +77,7 @@ async def get_recording_by_id(
     key=lambda _, recording_hash: recording_hash,
     data_key=lambda recording: recording.hash,
 )
-async def get_recording_by_hash(
+async def get_by_hash(
     session: AsyncSession, recording_hash: str
 ) -> schemas.Recording:
     """Get a recording by hash.
@@ -115,7 +115,7 @@ async def get_recording_by_hash(
     key=lambda _, recording_path: recording_path,
     data_key=lambda recording: recording.path,
 )
-async def get_recording_by_path(
+async def get_by_path(
     session: AsyncSession, recording_path: Path
 ) -> schemas.Recording:
     """Get a recording by path.
@@ -215,7 +215,7 @@ def _assemble_recording_data(
 
 
 @recording_caches.with_update
-async def create_recording(
+async def create(
     session: AsyncSession,
     data: schemas.RecordingCreate,
 ) -> schemas.Recording:
@@ -245,7 +245,7 @@ async def create_recording(
     return schemas.Recording.model_validate(recording)
 
 
-async def create_recordings(
+async def create_many(
     session: AsyncSession,
     data: list[schemas.RecordingCreate],
 ) -> list[schemas.Recording]:
@@ -300,7 +300,7 @@ async def create_recordings(
 
 
 @recording_caches.with_update
-async def update_recording(
+async def update(
     session: AsyncSession,
     recording_id: int,
     data: schemas.RecordingUpdate,
@@ -385,7 +385,7 @@ def adjust_time_expansion(
 
 
 @recording_caches.with_clear
-async def delete_recording(
+async def delete(
     session: AsyncSession,
     recording_id: int,
 ) -> schemas.Recording:
@@ -415,7 +415,7 @@ async def delete_recording(
 
 
 @recording_caches.with_update
-async def add_note_to_recording(
+async def add_note(
     session: AsyncSession,
     recording_id: int,
     note_id: int,
@@ -449,7 +449,7 @@ async def add_note_to_recording(
 
 
 @recording_caches.with_update
-async def add_tag_to_recording(
+async def add_tag(
     session: AsyncSession,
     recording_id: int,
     tag_id: int,
@@ -494,7 +494,7 @@ async def add_tag_to_recording(
 
 
 @recording_caches.with_update
-async def add_feature_to_recording(
+async def add_feature(
     session: AsyncSession,
     recording_id: int,
     feature_name_id: int,
@@ -538,7 +538,7 @@ async def add_feature_to_recording(
 
 
 @recording_caches.with_update
-async def update_feature_of_recording(
+async def update_feature(
     session: AsyncSession,
     recording_id: int,
     feature_name_id: int,
@@ -585,7 +585,7 @@ async def update_feature_of_recording(
 
 
 @recording_caches.with_update
-async def remove_note_from_recording(
+async def remove_note(
     session: AsyncSession,
     recording_id: int,
     note_id: int,
@@ -628,7 +628,7 @@ async def remove_note_from_recording(
 
 
 @recording_caches.with_update
-async def remove_tag_from_recording(
+async def remove_tag(
     session: AsyncSession,
     recording_id: int,
     tag_id: int,
@@ -671,7 +671,7 @@ async def remove_tag_from_recording(
 
 
 @recording_caches.with_update
-async def remove_feature_from_recording(
+async def remove_feature(
     session: AsyncSession,
     recording_id: int,
     feature_name_id: int,

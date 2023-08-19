@@ -29,7 +29,7 @@ async def test_create_recording(
     hash = compute_md5_checksum(path)
 
     # Act
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session, data=schemas.RecordingCreate(path=path)
     )
 
@@ -76,7 +76,7 @@ async def test_create_recording_with_time_expansion(
     )
 
     # Act
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path, time_expansion=10.0),
     )
@@ -101,13 +101,11 @@ async def test_create_recording_fails_if_already_exists(
     )
 
     # Act
-    await recordings.create_recording(
-        session, data=schemas.RecordingCreate(path=path)
-    )
+    await recordings.create(session, data=schemas.RecordingCreate(path=path))
 
     # Assert
     with pytest.raises(exceptions.DuplicateObjectError):
-        await recordings.create_recording(
+        await recordings.create(
             session, data=schemas.RecordingCreate(path=path)
         )
 
@@ -126,7 +124,7 @@ async def test_create_recording_with_date(
     date = datetime.date(2021, 1, 1)
 
     # Act
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session, data=schemas.RecordingCreate(path=path, date=date)
     )
 
@@ -152,7 +150,7 @@ async def test_create_recording_with_time(
     time = datetime.time(12, 0, 0)
 
     # Act
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session, data=schemas.RecordingCreate(path=path, time=time)
     )
 
@@ -179,7 +177,7 @@ async def test_create_recording_with_coordinates(
     longitude = 2.0
 
     # Act
-    recording = await recordings.create_recording(
+    recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(
             path=path,
@@ -205,9 +203,7 @@ async def test_create_recording_fails_if_path_does_not_exist(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(
-            session, schemas.RecordingCreate(path=path)
-        )
+        await recordings.create(session, schemas.RecordingCreate(path=path))
 
 
 async def test_create_recording_fails_if_path_is_not_an_audio_file(
@@ -221,9 +217,7 @@ async def test_create_recording_fails_if_path_is_not_an_audio_file(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(
-            session, schemas.RecordingCreate(path=path)
-        )
+        await recordings.create(session, schemas.RecordingCreate(path=path))
 
 
 async def test_create_recording_with_bad_coordinates_fail(
@@ -242,7 +236,7 @@ async def test_create_recording_with_bad_coordinates_fail(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(
+        await recordings.create(
             session,
             data=schemas.RecordingCreate(
                 path=path,
@@ -256,7 +250,7 @@ async def test_create_recording_with_bad_coordinates_fail(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create_recording(
+        await recordings.create(
             session,
             data=schemas.RecordingCreate(
                 path=path,
@@ -272,7 +266,7 @@ async def test_get_recording_by_hash(
 ):
     """Test getting a recording by its hash."""
     # Act
-    retrieved = await recordings.get_recording_by_hash(session, recording.hash)
+    retrieved = await recordings.get_by_hash(session, recording.hash)
 
     # Assert
     assert isinstance(retrieved, schemas.Recording)
@@ -288,7 +282,7 @@ async def test_get_recording_by_hash_fails_if_not_found(
 
     # Act/Assert
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.get_recording_by_hash(session, hash)
+        await recordings.get_by_hash(session, hash)
 
 
 async def test_update_recording_date(
@@ -301,7 +295,7 @@ async def test_update_recording_date(
     assert recording.date is None
 
     # Act
-    updated_recording = await recordings.update_recording(
+    updated_recording = await recordings.update(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(date=date),
@@ -324,7 +318,7 @@ async def test_update_recording_time(
     assert recording.time is None
 
     # Act
-    updated_recording = await recordings.update_recording(
+    updated_recording = await recordings.update(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(time=time),
@@ -349,7 +343,7 @@ async def test_update_recording_coordinates(
     assert recording.longitude is None
 
     # Act
-    updated_recording = await recordings.update_recording(
+    updated_recording = await recordings.update(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(
@@ -376,7 +370,7 @@ async def test_update_recording_fails_with_bad_coordinates(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=recording.id,
             data=schemas.RecordingUpdate(
@@ -390,7 +384,7 @@ async def test_update_recording_fails_with_bad_coordinates(
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=recording.id,
             data=schemas.RecordingUpdate(
@@ -406,7 +400,7 @@ async def test_update_recording_time_expansion(
 ):
     """Test updating a recording's time expands the recording."""
     # Act
-    updated_recording = await recordings.update_recording(
+    updated_recording = await recordings.update(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(time_expansion=10),
@@ -424,7 +418,7 @@ async def test_update_nonexisting_recording_fails(
     """Test updating a nonexistent recording succeeds."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=2,
             data=schemas.RecordingUpdate(
@@ -441,11 +435,11 @@ async def test_delete_recording(
     # Arrange
 
     # Act
-    await recordings.delete_recording(session, recording_id=recording.id)
+    await recordings.delete(session, recording_id=recording.id)
 
     # Assert
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.get_recording_by_hash(session, recording.hash)
+        await recordings.get_by_hash(session, recording.hash)
 
 
 async def test_delete_non_existing_recording_fails(
@@ -454,7 +448,7 @@ async def test_delete_non_existing_recording_fails(
     """Test deleting a nonexistent recording succeeds."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.delete_recording(session, recording_id=2)
+        await recordings.delete(session, recording_id=2)
 
 
 async def test_add_tag_to_recording(
@@ -464,7 +458,7 @@ async def test_add_tag_to_recording(
 ):
     """Test adding a tag to a recording."""
     # Act
-    recording = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -475,7 +469,7 @@ async def test_add_tag_to_recording(
     assert isinstance(recording, schemas.Recording)
 
     # Get the recording again to make sure the tag was added
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    recording = await recordings.get_by_hash(session, recording.hash)
     assert tag in recording.tags
 
 
@@ -485,7 +479,7 @@ async def test_add_tag_to_recording_is_idempotent(
     tag: schemas.Tag,
 ):
     """Test adding a tag to a recording is idempotent."""
-    recording = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -493,7 +487,7 @@ async def test_add_tag_to_recording_is_idempotent(
     assert len(recording.tags) == 1
 
     # Act
-    recording = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -510,7 +504,7 @@ async def test_add_note_to_recording(
 ):
     """Test adding a note to a recording."""
     # Act
-    recording = await recordings.add_note_to_recording(
+    recording = await recordings.add_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -528,7 +522,7 @@ async def test_add_note_to_recording_is_idempotent(
 ):
     """Test adding a note to a recording is idempotent."""
     # Arrange
-    recording = await recordings.add_note_to_recording(
+    recording = await recordings.add_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -536,7 +530,7 @@ async def test_add_note_to_recording_is_idempotent(
     assert len(recording.notes) == 1
 
     # Act
-    recording = await recordings.add_note_to_recording(
+    recording = await recordings.add_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -554,7 +548,7 @@ async def test_add_feature_to_recording(
     """Test adding a feature to a recording."""
     # Act
     value = 10
-    recording = await recordings.add_feature_to_recording(
+    recording = await recordings.add_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -577,7 +571,7 @@ async def test_add_feature_to_recording_is_idempotent(
     """Test adding a feature to a recording is idempotent."""
     # Arrange
     value = 10
-    recording = await recordings.add_feature_to_recording(
+    recording = await recordings.add_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -586,7 +580,7 @@ async def test_add_feature_to_recording_is_idempotent(
     assert len(recording.features) == 1
 
     # Act
-    recording = await recordings.add_feature_to_recording(
+    recording = await recordings.add_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -597,7 +591,7 @@ async def test_add_feature_to_recording_is_idempotent(
     assert len(recording.features) == 1
 
     # Get the recording again to make sure no features were added
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    recording = await recordings.get_by_hash(session, recording.hash)
     assert len(recording.features) == 1
 
 
@@ -608,14 +602,14 @@ async def test_remove_note_from_recording(
 ):
     """Test removing a note from a recording."""
     # Arrange
-    recording = await recordings.add_note_to_recording(
+    recording = await recordings.add_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
     )
 
     # Act
-    recording = await recordings.remove_note_from_recording(
+    recording = await recordings.remove_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -626,7 +620,7 @@ async def test_remove_note_from_recording(
     assert note not in recording.notes
 
     # Get the recording again to make sure the note was removed
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    recording = await recordings.get_by_hash(session, recording.hash)
     assert note not in recording.notes
 
 
@@ -637,7 +631,7 @@ async def test_remove_note_from_recording_fails_if_recording_does_not_exist(
     """Test removing a recording note fails if the recording does not exist."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_note_from_recording(
+        await recordings.remove_note(
             session,
             recording_id=3,
             note_id=note.id,
@@ -650,7 +644,7 @@ async def test_remove_note_from_recording_fails_if_note_does_not_exist(
     """Test removing a recording note fails if the note does not exist."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_note_from_recording(
+        await recordings.remove_note(
             session,
             recording_id=3,
             note_id=3,
@@ -664,7 +658,7 @@ async def test_remove_note_from_recording_is_idempotent(
 ):
     """Test removing a note from a recording is idempotent."""
     # Arrange
-    recording = await recordings.add_note_to_recording(
+    recording = await recordings.add_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -672,7 +666,7 @@ async def test_remove_note_from_recording_is_idempotent(
     assert len(recording.notes) == 1
 
     # Act
-    recording = await recordings.remove_note_from_recording(
+    recording = await recordings.remove_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -682,7 +676,7 @@ async def test_remove_note_from_recording_is_idempotent(
     assert len(recording.notes) == 0
 
     # Act
-    recording = await recordings.remove_note_from_recording(
+    recording = await recordings.remove_note(
         session,
         recording_id=recording.id,
         note_id=note.id,
@@ -699,7 +693,7 @@ async def test_remove_tag_from_recording(
 ):
     """Test removing a tag from a recording."""
     # Arrange
-    recording = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -709,7 +703,7 @@ async def test_remove_tag_from_recording(
     assert tag in recording.tags
 
     # Act
-    recording = await recordings.remove_tag_from_recording(
+    recording = await recordings.remove_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -720,7 +714,7 @@ async def test_remove_tag_from_recording(
     assert tag not in recording.tags
 
     # Get the recording again to make sure the tag was removed
-    recording = await recordings.get_recording_by_hash(session, recording.hash)
+    recording = await recordings.get_by_hash(session, recording.hash)
     assert tag not in recording.tags
 
 
@@ -730,7 +724,7 @@ async def test_remove_tag_from_recording_fails_with_nonexistent_recording(
     """Test removing a recording tag fails with a nonexistent recording."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_tag_from_recording(
+        await recordings.remove_tag(
             session,
             recording_id=3,
             tag_id=3,
@@ -744,7 +738,7 @@ async def test_remove_tag_from_recording_is_idempotent(
 ):
     """Test removing a tag from a recording is idempotent."""
     # Arrange
-    recording = await recordings.add_tag_to_recording(
+    recording = await recordings.add_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -752,7 +746,7 @@ async def test_remove_tag_from_recording_is_idempotent(
     assert len(recording.tags) == 1
 
     # Act
-    recording = await recordings.remove_tag_from_recording(
+    recording = await recordings.remove_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -762,7 +756,7 @@ async def test_remove_tag_from_recording_is_idempotent(
     assert len(recording.tags) == 0
 
     # Act
-    recording = await recordings.remove_tag_from_recording(
+    recording = await recordings.remove_tag(
         session,
         recording_id=recording.id,
         tag_id=tag.id,
@@ -779,7 +773,7 @@ async def test_remove_feature_from_recording(
 ):
     """Test removing a feature from a recording."""
     value = 10
-    recording = await recordings.add_feature_to_recording(
+    recording = await recordings.add_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -787,7 +781,7 @@ async def test_remove_feature_from_recording(
     )
 
     # Act
-    recording = await recordings.remove_feature_from_recording(
+    recording = await recordings.remove_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -804,7 +798,7 @@ async def test_remove_feature_from_recording_fails_with_nonexistent_recording(
     """Test removing a recording feature fails with a nonexistent recording."""
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.remove_feature_from_recording(
+        await recordings.remove_feature(
             session,
             recording_id=3,
             feature_name_id=3,
@@ -818,7 +812,7 @@ async def test_remove_feature_from_recording_is_idempotent(
 ):
     """Test removing a feature from a recording is idempotent."""
     feature = schemas.Feature(feature_name=feature_name, value=1.0)
-    recording = await recordings.add_feature_to_recording(
+    recording = await recordings.add_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature_name.id,
@@ -827,7 +821,7 @@ async def test_remove_feature_from_recording_is_idempotent(
     assert len(recording.features) == 1
 
     # Act
-    recording = await recordings.remove_feature_from_recording(
+    recording = await recordings.remove_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature.feature_name.id,
@@ -837,7 +831,7 @@ async def test_remove_feature_from_recording_is_idempotent(
     assert len(recording.features) == 0
 
     # Act
-    recording = await recordings.remove_feature_from_recording(
+    recording = await recordings.remove_feature(
         session,
         recording_id=recording.id,
         feature_name_id=feature.feature_name.id,
@@ -858,7 +852,7 @@ async def test_get_recordings(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create_recording(
+    recording1 = await recordings.create(
         session, schemas.RecordingCreate(path=path1)
     )
 
@@ -867,7 +861,7 @@ async def test_get_recordings(
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(
+    recording2 = await recordings.create(
         session, schemas.RecordingCreate(path=path2)
     )
 
@@ -894,7 +888,7 @@ async def test_get_recordings_with_limit(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create_recording(
+    recording1 = await recordings.create(
         session, schemas.RecordingCreate(path=path1)
     )
 
@@ -903,7 +897,7 @@ async def test_get_recordings_with_limit(
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(
+    recording2 = await recordings.create(
         session, schemas.RecordingCreate(path=path2)
     )
 
@@ -939,16 +933,14 @@ async def test_get_recordings_with_offset(
         samplerate=44100,
         duration=1,
     )
-    await recordings.create_recording(
-        session, schemas.RecordingCreate(path=path1)
-    )
+    await recordings.create(session, schemas.RecordingCreate(path=path1))
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create_recording(
+    recording2 = await recordings.create(
         session, schemas.RecordingCreate(path=path2)
     )
 
@@ -975,9 +967,7 @@ async def test_get_recording_by_path(
 ):
     """Test getting a recording by path."""
     # Act
-    retrieved_recording = await recordings.get_recording_by_path(
-        session, recording.path
-    )
+    retrieved_recording = await recordings.get_by_path(session, recording.path)
 
     # Assert
     assert isinstance(retrieved_recording, schemas.Recording)
@@ -999,7 +989,7 @@ async def test_get_recording_by_path_fails_if_not_found(
 
     # Act
     with pytest.raises(exceptions.NotFoundError):
-        await recordings.get_recording_by_path(session, path)
+        await recordings.get_by_path(session, path)
 
 
 async def test_update_recording_path(
@@ -1013,7 +1003,7 @@ async def test_update_recording_path(
     shutil.move(path, new_path)
 
     # Act
-    recording = await recordings.update_recording(
+    recording = await recordings.update(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(path=new_path),
@@ -1034,7 +1024,7 @@ async def test_update_recording_path_fails_if_no_file_exist(
 
     # Act
     with pytest.raises(ValueError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=recording.id,
             data=schemas.RecordingUpdate(path=new_path),
@@ -1056,7 +1046,7 @@ async def test_update_recording_path_fails_if_hash_does_not_coincide(
 
     # Act
     with pytest.raises(ValueError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=recording.id,
             data=schemas.RecordingUpdate(path=new_path),
@@ -1070,7 +1060,7 @@ async def test_update_recording_fails_if_recording_does_not_exist(
     """Test updating a recording fails if the recording does not exist."""
     # Act
     with pytest.raises(ValidationError):
-        await recordings.update_recording(
+        await recordings.update(
             session,
             recording_id=3,
             data=schemas.RecordingUpdate(path=tmp_path / "test.wav"),
@@ -1087,7 +1077,7 @@ async def test_create_recordings(
     path2 = random_wav_factory()
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_many(
         session,
         [
             schemas.RecordingCreate(path=path1),
@@ -1116,7 +1106,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
     assert len(all_recordings) == 1
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_many(
         session,
         [
             schemas.RecordingCreate(path=path1),
@@ -1147,7 +1137,7 @@ async def test_create_recordings_removes_hash_duplicates(
     shutil.copy(path1, path2)
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_many(
         session,
         [
             schemas.RecordingCreate(path=path1),
@@ -1179,12 +1169,10 @@ async def test_create_recording_avoids_hash_duplicates(
     shutil.copy(path2, path3)
 
     # Pre register recording at path3
-    await recordings.create_recording(
-        session, schemas.RecordingCreate(path=path3)
-    )
+    await recordings.create(session, schemas.RecordingCreate(path=path3))
 
     # Act
-    await recordings.create_recordings(
+    await recordings.create_many(
         session,
         [
             schemas.RecordingCreate(path=path1),
@@ -1206,7 +1194,7 @@ async def test_create_recordings_with_time_expansion(
     path1 = random_wav_factory(duration=1, samplerate=8000)
 
     # Act
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_many(
         session,
         [
             schemas.RecordingCreate(path=path1, time_expansion=5),

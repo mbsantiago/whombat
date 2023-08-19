@@ -78,14 +78,14 @@ def random_wav_factory(tmp_path: Path):
 @pytest.fixture
 async def session() -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
-    async with api.sessions.create_session() as sess:
+    async with api.sessions.create() as sess:
         yield sess
 
 
 @pytest.fixture
 async def user(session: AsyncSession) -> schemas.User:
     """Create a user for tests."""
-    user = await api.users.create_user(
+    user = await api.users.create(
         session,
         data=schemas.UserCreate(
             username="test",
@@ -102,7 +102,7 @@ async def recording(
     random_wav_factory: Callable[..., Path],
 ) -> schemas.Recording:
     """Create a recording for testing."""
-    recording = await api.recordings.create_recording(
+    recording = await api.recordings.create(
         session,
         data=schemas.RecordingCreate(path=random_wav_factory()),
     )
@@ -112,7 +112,7 @@ async def recording(
 @pytest.fixture
 async def tag(session: AsyncSession) -> schemas.Tag:
     """Create a tag for testing."""
-    tag = await api.tags.create_tag(
+    tag = await api.tags.create(
         session,
         data=schemas.TagCreate(key="test_key", value="test_value"),
     )
@@ -122,7 +122,7 @@ async def tag(session: AsyncSession) -> schemas.Tag:
 @pytest.fixture
 async def feature_name(session: AsyncSession) -> schemas.FeatureName:
     """Create a feature for testing."""
-    feature_name = await api.features.create_feature_name(
+    feature_name = await api.features.create(
         session, data=schemas.FeatureNameCreate(name="test_feature")
     )
     return feature_name
@@ -131,7 +131,7 @@ async def feature_name(session: AsyncSession) -> schemas.FeatureName:
 @pytest.fixture
 async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
     """Create a note for testing."""
-    note = await api.notes.create_note(
+    note = await api.notes.create(
         session,
         data=schemas.NoteCreate(
             message="test_message",
@@ -147,7 +147,7 @@ async def clip(
     recording: schemas.Recording,
 ) -> schemas.Clip:
     """Create a clip for testing."""
-    return await api.clips.create_clip(
+    return await api.clips.create(
         session,
         data=schemas.ClipCreate(
             recording_id=recording.id,
@@ -164,7 +164,7 @@ async def dataset(session: AsyncSession, tmp_path: Path) -> schemas.Dataset:
     audio_dir = dataset_dir / "audio"
     audio_dir.mkdir(parents=True)
 
-    dataset, _ = await api.datasets.create_dataset(
+    dataset, _ = await api.datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
@@ -182,15 +182,13 @@ async def annotation_project(
     """Create an annotation project for testing."""
     annotation_project_dir = tmp_path / "test_annotation_project"
     annotation_project_dir.mkdir(parents=True)
-    annotation_project = (
-        await api.annotation_projects.create_annotation_project(
-            session,
-            data=schemas.AnnotationProjectCreate(
-                name="test_annotation_project",
-                description="test_description",
-                annotation_instructions="test_instructions",
-            ),
-        )
+    annotation_project = await api.annotation_projects.create(
+        session,
+        data=schemas.AnnotationProjectCreate(
+            name="test_annotation_project",
+            description="test_description",
+            annotation_instructions="test_instructions",
+        ),
     )
     return annotation_project
 
@@ -202,7 +200,7 @@ async def task(
     clip: schemas.Clip,
 ) -> schemas.Task:
     """Create a task for testing."""
-    task = await api.tasks.create_task(
+    task = await api.tasks.create(
         session,
         data=schemas.TaskCreate(
             project_id=annotation_project.id,
@@ -219,7 +217,7 @@ async def task_status_badge(
     user: schemas.User,
 ) -> schemas.TaskStatusBadge:
     """Create a task status badge for testing."""
-    task = await api.tasks.add_status_badge_to_task(
+    task = await api.tasks.add_status_badge(
         session,
         task_id=task.id,
         user_id=user.id,
@@ -242,7 +240,7 @@ async def task_tag(
     user: schemas.User,
 ) -> schemas.TaskTag:
     """Create a task tag for testing."""
-    task = await api.tasks.add_tag_to_task(
+    task = await api.tasks.add_tag(
         session,
         task_id=task.id,
         tag_id=tag.id,

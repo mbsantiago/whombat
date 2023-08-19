@@ -1,4 +1,4 @@
 """Database module.
 
-Here we define the database models and the database engine.
+Here we define the database engine.
 """

@@ -13,17 +13,17 @@ from whombat.filters.base import Filter
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
 __all__ = [
-    "add_file_to_dataset",
-    "add_recording_to_dataset",
-    "create_dataset",
-    "delete_dataset",
-    "get_dataset_by_id",
-    "get_dataset_by_audio_dir",
-    "get_dataset_by_name",
-    "get_dataset_by_uuid",
-    "get_dataset_state",
-    "get_datasets",
-    "update_dataset",
+    "add_file",
+    "add_recording",
+    "create",
+    "delete",
+    "get_by_id",
+    "get_by_audio_dir",
+    "get_by_name",
+    "get_by_uuid",
+    "get_state",
+    "get_recordings",
+    "update",
 ]
 
 
@@ -36,7 +36,7 @@ dataset_caches = cache.CacheCollection(schemas.DatasetWithCounts)
     key=lambda _, dataset_id: dataset_id,
     data_key=lambda dataset: dataset.id,
 )
-async def get_dataset_by_id(
+async def get_by_id(
     session: AsyncSession,
     dataset_id: int,
 ) -> schemas.DatasetWithCounts:
@@ -73,7 +73,7 @@ async def get_dataset_by_id(
     key=lambda _, name: name,
     data_key=lambda dataset: dataset.name,
 )
-async def get_dataset_by_name(
+async def get_by_name(
     session: AsyncSession,
     name: str,
 ) -> schemas.DatasetWithCounts:
@@ -110,7 +110,7 @@ async def get_dataset_by_name(
     key=lambda _, uuid: uuid,
     data_key=lambda dataset: dataset.uuid,
 )
-async def get_dataset_by_uuid(
+async def get_by_uuid(
     session: AsyncSession,
     uuid: uuid.UUID,
 ) -> schemas.DatasetWithCounts:
@@ -147,7 +147,7 @@ async def get_dataset_by_uuid(
     key=lambda _, audio_dir: audio_dir,
     data_key=lambda dataset: dataset.audio_dir,
 )
-async def get_dataset_by_audio_dir(
+async def get_by_audio_dir(
     session: AsyncSession,
     audio_dir: Path,
 ) -> schemas.DatasetWithCounts:
@@ -178,7 +178,7 @@ async def get_dataset_by_audio_dir(
     return schemas.DatasetWithCounts.model_validate(dataset)
 
 
-async def get_datasets(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 100,
@@ -216,7 +216,7 @@ async def get_datasets(
     ]
 
 
-async def create_dataset(
+async def create(
     session: AsyncSession,
     data: DatasetCreate,
 ) -> tuple[schemas.DatasetWithCounts, list[schemas.DatasetRecording]]:
@@ -254,12 +254,12 @@ async def create_dataset(
     dataset = schemas.Dataset.model_validate(db_dataset)
 
     file_list = files.get_audio_files_in_folder(data.audio_dir, relative=False)
-    recording_list = await recordings.create_recordings(
+    recording_list = await recordings.create_many(
         session,
         [schemas.RecordingCreate(path=file) for file in file_list],
     )
 
-    dataset_recordigns = await add_recordings_to_dataset(
+    dataset_recordigns = await add_recordings(
         session=session,
         dataset=dataset,
         recordings=recording_list,
@@ -279,7 +279,7 @@ async def create_dataset(
 
 
 @dataset_caches.with_update
-async def update_dataset(
+async def update(
     session: AsyncSession,
     dataset_id: int,
     data: DatasetUpdate,
@@ -317,7 +317,7 @@ async def update_dataset(
 
 
 @dataset_caches.with_clear
-async def delete_dataset(
+async def delete(
     session: AsyncSession,
     dataset_id: int,
 ) -> schemas.DatasetWithCounts:
@@ -345,7 +345,7 @@ async def delete_dataset(
     return schemas.DatasetWithCounts.model_validate(obj)
 
 
-async def add_file_to_dataset(
+async def add_file(
     session: AsyncSession,
     dataset_id: int,
     data: schemas.RecordingCreate,
@@ -381,7 +381,7 @@ async def add_file_to_dataset(
         If the file is not part of the dataset audio directory.
 
     """
-    dataset = await get_dataset_by_id(session, dataset_id=dataset_id)
+    dataset = await get_by_id(session, dataset_id=dataset_id)
 
     # Make sure the file is part of the dataset audio dir
     if not data.path.is_relative_to(dataset.audio_dir):
@@ -390,22 +390,22 @@ async def add_file_to_dataset(
         )
 
     try:
-        recording = await recordings.get_recording_by_path(session, data.path)
+        recording = await recordings.get_by_path(session, data.path)
     except exceptions.NotFoundError:
-        recording = await recordings.create_recording(session, data)
+        recording = await recordings.create(session, data)
 
         # Update the dataset recording count.
         dataset.recording_count += 1
         dataset_caches.update_object(dataset)
 
-    return await add_recording_to_dataset(
+    return await add_recording(
         session,
         recording_id=recording.id,
         dataset_id=dataset_id,
     )
 
 
-async def add_recording_to_dataset(
+async def add_recording(
     session: AsyncSession,
     dataset_id: int,
     recording_id: int,
@@ -434,7 +434,7 @@ async def add_recording_to_dataset(
         If the recording is not part of the dataset audio directory.
 
     """
-    dataset = await get_dataset_by_id(session, dataset_id=dataset_id)
+    dataset = await get_by_id(session, dataset_id=dataset_id)
     recording = await recordings.get_recording_by_id(
         session, recording_id=recording_id
     )
@@ -468,7 +468,7 @@ async def add_recording_to_dataset(
     )
 
 
-async def add_recordings_to_dataset(
+async def add_recordings(
     session: AsyncSession,
     dataset: schemas.Dataset,
     recordings: list[schemas.Recording],
@@ -521,7 +521,7 @@ async def add_recordings_to_dataset(
     return [schemas.DatasetRecording.model_validate(x) for x in db_recordings]
 
 
-async def get_dataset_recordings(
+async def get_recordings(
     session: AsyncSession,
     dataset_id: int,
     limit: int = 1000,
@@ -558,7 +558,7 @@ async def get_dataset_recordings(
 
     """
     # Get the dataset.
-    await get_dataset_by_id(session, dataset_id=dataset_id)
+    await get_by_id(session, dataset_id=dataset_id)
 
     dataset_recordings = await common.get_objects(
         session,
@@ -576,7 +576,7 @@ async def get_dataset_recordings(
     ]
 
 
-async def get_dataset_state(
+async def get_state(
     session: AsyncSession,
     dataset_id: int,
 ) -> list[schemas.DatasetFile]:
@@ -607,7 +607,7 @@ async def get_dataset_state(
 
     """
     # Get the dataset.
-    dataset = await get_dataset_by_id(session, dataset_id=dataset_id)
+    dataset = await get_by_id(session, dataset_id=dataset_id)
 
     # Get the files in the dataset directory.
     file_list = files.get_audio_files_in_folder(

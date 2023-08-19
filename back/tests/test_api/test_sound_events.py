@@ -17,7 +17,7 @@ async def test_create_a_timestamp_sound_event(
     """Test creating a sound event."""
     # Act
     geometry = geometries.TimeStamp(coordinates=0.5)
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -50,7 +50,7 @@ async def test_create_a_timeinterval_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.TimeInterval(coordinates=[0.5, 0.6])
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -70,7 +70,7 @@ async def test_create_a_bbox_sound_event(
     """Test creating a sound event."""
     geometry = geometries.BoundingBox(coordinates=[0.5, 0.6, 0.7, 0.8])
 
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -89,7 +89,7 @@ async def test_create_a_point_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.Point(coordinates=[0.5, 0.6])
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -108,7 +108,7 @@ async def test_create_a_linestring_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.LineString(coordinates=[[0.5, 0.6], [0.7, 0.8]])
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -129,7 +129,7 @@ async def test_create_a_polygon_sound_event(
     geometry = geometries.Polygon(
         coordinates=[[[0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]],
     )
-    sound_event = await sound_events.create_sound_event(
+    sound_event = await sound_events.create(
         session,
         data=schemas.SoundEventCreate(
             recording_id=recording.id,
@@ -147,7 +147,7 @@ async def test_create_sound_event_fails_if_recording_does_not_exist(
 ):
     """Test creating a sound event fails if the recording does not exist."""
     with pytest.raises(exceptions.NotFoundError):
-        await sound_events.create_sound_event(
+        await sound_events.create(
             session,
             data=schemas.SoundEventCreate(
                 recording_id=10,
@@ -175,9 +175,7 @@ async def test_create_sound_events(
         ),
     ]
 
-    created_sound_events = await sound_events.create_sound_events(
-        session, data=data
-    )
+    created_sound_events = await sound_events.create_many(session, data=data)
 
     assert len(created_sound_events) == 2
     for sound_event in created_sound_events:
@@ -214,7 +212,7 @@ async def test_create_sound_events_with_different_geometries(
         geometries.Point(coordinates=[0.5, 0.6]),
     ]
 
-    created_sound_events = await sound_events.create_sound_events(
+    created_sound_events = await sound_events.create_many(
         session,
         data=[
             schemas.SoundEventCreate(recording_id=recording.id, geometry=g)
