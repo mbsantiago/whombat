@@ -2,8 +2,9 @@
 
 import uuid
 
-from whombat.schemas.base import BaseSchema
 from fastapi_users import schemas
+
+from whombat.schemas.base import BaseSchema
 
 
 class SimpleUser(BaseSchema):

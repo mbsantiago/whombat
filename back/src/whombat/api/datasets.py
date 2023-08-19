@@ -6,10 +6,9 @@ from cachetools import LRUCache
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, schemas
+from whombat import cache, exceptions, models, schemas
 from whombat.api import common, recordings
 from whombat.core import files
-from whombat.database import models
 from whombat.filters.base import Filter
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 

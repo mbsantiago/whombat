@@ -71,6 +71,7 @@ lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/p
 
 format: ## format code with black
 	black src tests
+	isort src tests
 
 test: ## run tests quickly with the default Python
 	pytest

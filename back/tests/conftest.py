@@ -12,8 +12,7 @@ import pytest
 from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, cache, schemas
-from whombat.database import models
+from whombat import api, cache, models, schemas
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
@@ -235,7 +234,6 @@ async def task_status_badge(
     return task_status_badge
 
 
-
 @pytest.fixture
 async def task_tag(
     session: AsyncSession,
@@ -253,7 +251,6 @@ async def task_tag(
     task_tag = next(
         tag
         for tag in task.tags
-        if tag.tag_id == tag.id
-        and tag.created_by_id == user.id
+        if tag.tag_id == tag.id and tag.created_by_id == user.id
     )
     return task_tag

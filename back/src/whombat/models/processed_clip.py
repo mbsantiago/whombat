@@ -15,9 +15,9 @@ necessary for model evaluation and improvement.
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
-from whombat.database.models.clip import Clip
-from whombat.database.models.model_run import ModelRun
+from whombat.models.base import Base
+from whombat.models.clip import Clip
+from whombat.models.model_run import ModelRun
 
 __all__ = [
     "ProcessedClip",

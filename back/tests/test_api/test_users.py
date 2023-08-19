@@ -6,8 +6,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from whombat import api, exceptions, schemas
-from whombat.database import models
+from whombat import api, exceptions, models, schemas
 
 
 async def test_create_session():

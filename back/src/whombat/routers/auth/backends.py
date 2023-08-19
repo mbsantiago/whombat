@@ -28,7 +28,7 @@ from fastapi_users.authentication.strategy.db import (
     DatabaseStrategy,
 )
 
-from whombat.database import models
+from whombat import models
 from whombat.routers.deps import get_access_token_db
 
 __all__ = [

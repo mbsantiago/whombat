@@ -7,7 +7,6 @@ from pydantic import Field
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
 
-
 __all__ = [
     "AnnotationProjectCreate",
     "AnnotationProject",

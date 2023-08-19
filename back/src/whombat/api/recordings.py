@@ -8,11 +8,10 @@ from soundevent.audio import compute_md5_checksum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, filters, schemas
+from whombat import cache, filters, models, schemas
 from whombat.api import common
 from whombat.core import files
 from whombat.core.common import remove_duplicates
-from whombat.database import models
 
 __all__ = [
     "add_feature_to_recording",

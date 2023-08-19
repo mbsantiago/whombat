@@ -20,7 +20,7 @@ from fastapi_users import BaseUserManager, UUIDIDMixin
 from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy import Boolean, String
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 __all__ = [
     "User",
@@ -29,7 +29,7 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from whombat.database.models.note import Note
+    from whombat.models.note import Note
 
 
 # TODO: Manage this secret better and make it cryptographically secure

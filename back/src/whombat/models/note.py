@@ -24,8 +24,8 @@ from uuid import UUID, uuid4
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey
 
-from whombat.database.models.base import Base
-from whombat.database.models.user import User
+from whombat.models.base import Base
+from whombat.models.user import User
 
 __all__ = [
     "Note",
@@ -33,7 +33,7 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from whombat.database.models.recording import Recording, RecordingNote
+    from whombat.models.recording import Recording, RecordingNote
 
 
 class Note(Base):

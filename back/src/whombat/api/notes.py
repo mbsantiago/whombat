@@ -2,9 +2,8 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import schemas
+from whombat import models, schemas
 from whombat.api import common, users
-from whombat.database import models
 from whombat.filters.base import Filter
 
 __all__ = [

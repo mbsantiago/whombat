@@ -7,9 +7,8 @@ from cachetools import LRUCache
 from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, schemas
+from whombat import cache, models, schemas
 from whombat.api import common, features, recordings
-from whombat.database import models
 from whombat.filters.base import Filter
 
 __all__ = [

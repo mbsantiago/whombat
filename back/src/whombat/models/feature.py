@@ -32,16 +32,16 @@ import typing
 
 import sqlalchemy.orm as orm
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 __all__ = [
     "FeatureName",
 ]
 
 if typing.TYPE_CHECKING:
-    from whombat.database.models.recording import RecordingFeature
-    from whombat.database.models.clip import ClipFeature
-    from whombat.database.models.sound_event import SoundEventFeature
+    from whombat.models.clip import ClipFeature
+    from whombat.models.recording import RecordingFeature
+    from whombat.models.sound_event import SoundEventFeature
 
 
 class FeatureName(Base):
@@ -55,9 +55,7 @@ class FeatureName(Base):
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     """Name of the feature."""
 
-    recordings: orm.Mapped[
-        list["RecordingFeature"]
-    ] = orm.relationship(
+    recordings: orm.Mapped[list["RecordingFeature"]] = orm.relationship(
         "RecordingFeature",
         back_populates="feature_name",
         init=False,
@@ -65,9 +63,7 @@ class FeatureName(Base):
         default_factory=list,
     )
 
-    clips: orm.Mapped[
-        list["ClipFeature"]
-    ] = orm.relationship(
+    clips: orm.Mapped[list["ClipFeature"]] = orm.relationship(
         "ClipFeature",
         back_populates="feature_name",
         init=False,
@@ -75,9 +71,7 @@ class FeatureName(Base):
         default_factory=list,
     )
 
-    sound_events: orm.Mapped[
-        list["SoundEventFeature"]
-    ] = orm.relationship(
+    sound_events: orm.Mapped[list["SoundEventFeature"]] = orm.relationship(
         "SoundEventFeature",
         back_populates="feature_name",
         init=False,

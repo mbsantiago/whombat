@@ -13,9 +13,9 @@ that the tag is relevant to the event.
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
-from whombat.database.models.processed_clip import ProcessedClip
-from whombat.database.models.sound_event import SoundEvent
+from whombat.models.base import Base
+from whombat.models.processed_clip import ProcessedClip
+from whombat.models.sound_event import SoundEvent
 
 __all__ = [
     "PredictedSoundEvent",

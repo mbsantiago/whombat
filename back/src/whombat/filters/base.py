@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import Select, or_
 from sqlalchemy.orm import InstrumentedAttribute, MappedColumn
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 __all__ = [
     "Filter",

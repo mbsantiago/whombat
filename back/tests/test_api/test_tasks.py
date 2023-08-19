@@ -6,8 +6,7 @@ import pytest
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, exceptions, schemas
-from whombat.database import models
+from whombat import api, exceptions, models, schemas
 
 
 async def test_created_task_is_stored_in_the_database(

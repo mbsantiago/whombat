@@ -11,9 +11,8 @@ from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql._typing import _ColumnExpressionArgument
 from sqlalchemy.sql.expression import ColumnElement
 
-from whombat import exceptions
+from whombat import exceptions, models
 from whombat.core.common import remove_duplicates
-from whombat.database import models
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -585,9 +584,7 @@ async def add_tag_to_object(
 
     object_tag = association_model(**data)
 
-
     print("HERE")
-
 
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)

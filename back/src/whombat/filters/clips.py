@@ -1,6 +1,6 @@
 """Filters for Clips."""
 
-from whombat.database import models
+from whombat import models
 from whombat.filters import base
 
 __all__ = [

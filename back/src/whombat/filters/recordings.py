@@ -2,8 +2,7 @@
 
 from sqlalchemy import Select, select
 
-from whombat import schemas
-from whombat.database import models
+from whombat import models, schemas
 from whombat.filters import base
 
 __all__ = [

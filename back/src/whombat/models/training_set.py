@@ -23,11 +23,11 @@ import typing
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
-from whombat.database.models.tag import Tag
+from whombat.models.base import Base
+from whombat.models.tag import Tag
 
 if typing.TYPE_CHECKING:
-    from whombat.database.models.training_sound_event import TrainingSoundEvent
+    from whombat.models.training_sound_event import TrainingSoundEvent
 
 __all__ = [
     "TrainingSet",

@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
-from whombat.database.models.task import TaskState
+from whombat.models.task import TaskState
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.clips import Clip
 from whombat.schemas.notes import Note

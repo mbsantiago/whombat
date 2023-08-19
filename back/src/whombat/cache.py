@@ -8,8 +8,8 @@ from typing import (
     Generic,
     Hashable,
     MutableMapping,
-    TypeVar,
     ParamSpec,
+    TypeVar,
 )
 
 from asyncache import cached as _cached

@@ -10,9 +10,8 @@ from soundevent.audio import compute_md5_checksum
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import recordings
-from whombat.database import models
 
 
 async def test_create_recording(

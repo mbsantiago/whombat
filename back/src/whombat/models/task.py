@@ -27,12 +27,12 @@ from uuid import UUID, uuid4
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.annotation_project import AnnotationProject
-from whombat.database.models.base import Base
-from whombat.database.models.clip import Clip
-from whombat.database.models.note import Note
-from whombat.database.models.tag import Tag
-from whombat.database.models.user import User
+from whombat.models.annotation_project import AnnotationProject
+from whombat.models.base import Base
+from whombat.models.clip import Clip
+from whombat.models.note import Note
+from whombat.models.tag import Tag
+from whombat.models.user import User
 
 __all__ = [
     "Task",

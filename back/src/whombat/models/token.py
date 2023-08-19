@@ -3,9 +3,9 @@ from uuid import UUID
 
 import sqlalchemy.orm as orm
 from fastapi_users_db_sqlalchemy.generics import GUID
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import ForeignKey, String
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 __all__ = [
     "AccessToken",

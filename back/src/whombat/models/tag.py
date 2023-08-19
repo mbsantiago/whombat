@@ -41,17 +41,17 @@ from typing import TYPE_CHECKING
 import sqlalchemy.orm as orm
 from sqlalchemy import UniqueConstraint
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 if TYPE_CHECKING:
-    from whombat.database.models.annotation_project import (
+    from whombat.models.annotation_project import (
         AnnotationProject,
         AnnotationProjectTag,
     )
-    from whombat.database.models.clip import Clip, ClipTag
-    from whombat.database.models.recording import Recording, RecordingTag
-    from whombat.database.models.sound_event import SoundEvent, SoundEventTag
-    from whombat.database.models.task import Task, TaskTag
+    from whombat.models.clip import Clip, ClipTag
+    from whombat.models.recording import Recording, RecordingTag
+    from whombat.models.sound_event import SoundEvent, SoundEventTag
+    from whombat.models.task import Task, TaskTag
 
 __all__ = [
     "Tag",

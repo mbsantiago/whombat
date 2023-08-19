@@ -8,9 +8,8 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import datasets, recordings
-from whombat.database import models
 
 
 async def test_create_empty_dataset(session: AsyncSession, tmp_path: Path):

@@ -10,12 +10,12 @@ particular species or the location of a specific sound source.
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
-from whombat.database.models.note import Note
-from whombat.database.models.sound_event import SoundEvent
-from whombat.database.models.tag import Tag
-from whombat.database.models.task import Task
-from whombat.database.models.user import User
+from whombat.models.base import Base
+from whombat.models.note import Note
+from whombat.models.sound_event import SoundEvent
+from whombat.models.tag import Tag
+from whombat.models.task import Task
+from whombat.models.user import User
 
 __all__ = [
     "Annotation",

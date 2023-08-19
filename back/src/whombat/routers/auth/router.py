@@ -4,10 +4,10 @@ import uuid
 from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 
-from whombat.database import models
+from whombat import models
 from whombat.routers.auth.backends import db_auth_backend
 from whombat.routers.deps import get_user_manager
-from whombat.schemas.users import UserCreate, User, UserUpdate
+from whombat.schemas.users import User, UserCreate, UserUpdate
 
 __all__ = [
     "auth_router",

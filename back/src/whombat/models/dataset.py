@@ -14,14 +14,14 @@ recordings from the app.
 
 """
 
-from uuid import UUID, uuid4
 from pathlib import Path
+from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint, func, inspect, select
 
-from whombat.database.models.base import Base
-from whombat.database.models.recording import Recording
+from whombat.models.base import Base
+from whombat.models.recording import Recording
 
 __all__ = [
     "Dataset",
@@ -42,9 +42,7 @@ class Dataset(Base):
     """The id of the dataset."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
-        default_factory=uuid4,
-        unique=True,
-        kw_only=True
+        default_factory=uuid4, unique=True, kw_only=True
     )
     """The UUID of the dataset."""
 
@@ -136,5 +134,5 @@ inspect(Dataset).add_property(
         .correlate_except(DatasetRecording)
         .scalar_subquery(),
         deferred=False,
-    )
+    ),
 )

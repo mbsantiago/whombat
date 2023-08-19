@@ -15,7 +15,7 @@ the evaluation.
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
+from whombat.models.base import Base
 
 __all__ = [
     "EvaluatedSoundEvent",

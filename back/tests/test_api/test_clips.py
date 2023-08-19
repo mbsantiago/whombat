@@ -6,9 +6,8 @@ from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import clips, features
-from whombat.database import models
 
 
 async def test_create_clip(
@@ -300,7 +299,9 @@ async def test_create_clips_ignores_existing_clips(
 ):
     """Test creating clips ignores existing clips."""
     data = schemas.ClipCreate(
-        recording_id=recording.id, start_time=0.0, end_time=0.5,
+        recording_id=recording.id,
+        start_time=0.0,
+        end_time=0.5,
     )
     # Arrange
     await clips.create_clip(session, data=data)

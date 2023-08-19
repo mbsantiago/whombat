@@ -27,14 +27,15 @@ accurately and consistently.
 """
 
 import typing
+
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from whombat.database.models.base import Base
-from whombat.database.models.sound_event import SoundEvent
+from whombat.models.base import Base
+from whombat.models.sound_event import SoundEvent
 
 if typing.TYPE_CHECKING:
-    from whombat.database.models.training_set import TrainingSet
+    from whombat.models.training_set import TrainingSet
 
 __all__ = [
     "TrainingSoundEvent",

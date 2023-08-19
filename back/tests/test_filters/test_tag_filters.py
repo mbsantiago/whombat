@@ -31,8 +31,7 @@ async def test_filter_by_exact_key(session: AsyncSession):
     """Test filtering by exact key."""
     # Act
     tags = await api.tags.get_tags(
-        session,
-        filters=[filters.tags.KeyFilter(eq="a")]
+        session, filters=[filters.tags.KeyFilter(eq="a")]
     )
 
     # Assert.
@@ -44,8 +43,7 @@ async def test_filter_by_has_key(session: AsyncSession):
     """Test filtering by has key."""
     # Act
     tags = await api.tags.get_tags(
-        session,
-        filters=[filters.tags.KeyFilter(has="a")]
+        session, filters=[filters.tags.KeyFilter(has="a")]
     )
 
     # Assert.
@@ -57,8 +55,7 @@ async def test_filter_by_exact_value(session: AsyncSession):
     """Test filtering by exact value."""
     # Act
     tags = await api.tags.get_tags(
-        session,
-        filters=[filters.tags.ValueFilter(eq="a1")]
+        session, filters=[filters.tags.ValueFilter(eq="a1")]
     )
 
     # Assert.
@@ -70,8 +67,7 @@ async def test_filter_by_has_value(session: AsyncSession):
     """Test filtering by has value."""
     # Act
     tags = await api.tags.get_tags(
-        session,
-        filters=[filters.tags.ValueFilter(has="a")]
+        session, filters=[filters.tags.ValueFilter(has="a")]
     )
 
     # Assert.
@@ -83,8 +79,7 @@ async def test_filter_by_search(session: AsyncSession):
     """Test filtering by search."""
     # Act
     tags = await api.tags.get_tags(
-        session,
-        filters=[filters.tags.SearchFilter(query="a")]
+        session, filters=[filters.tags.SearchFilter(query="a")]
     )
 
     # Assert.
