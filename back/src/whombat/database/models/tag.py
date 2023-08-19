@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     from whombat.database.models.clip import Clip, ClipTag
     from whombat.database.models.recording import Recording, RecordingTag
     from whombat.database.models.sound_event import SoundEvent, SoundEventTag
+    from whombat.database.models.task import Task, TaskTag
 
 __all__ = [
     "Tag",
@@ -136,6 +137,13 @@ class Tag(Base):
     annotation_project_tags: orm.Mapped[
         list["AnnotationProjectTag"]
     ] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    task_tags: orm.Mapped[list["TaskTag"]] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,

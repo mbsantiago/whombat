@@ -51,6 +51,14 @@ from whombat.schemas.sound_events import (
     SoundEventUpdate,
 )
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
+from whombat.schemas.tasks import (
+    Task,
+    TaskCreate,
+    TaskStatusBadge,
+    TaskStatusBadgeCreate,
+    TaskTag,
+    TaskTagCreate,
+)
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
@@ -91,4 +99,10 @@ __all__ = [
     "User",
     "UserCreate",
     "UserUpdate",
+    "Task",
+    "TaskCreate",
+    "TaskStatusBadge",
+    "TaskStatusBadgeCreate",
+    "TaskTag",
+    "TaskTagCreate",
 ]

@@ -337,8 +337,8 @@ async def test_add_tag_to_project_modifies_database(
     )
     stmt = select(models.AnnotationProjectTag).where(
         models.AnnotationProjectTag.annotation_project_id
-        == annotation_project.id
-        and models.AnnotationProjectTag.tag_id == tag.id
+        == annotation_project.id,
+        models.AnnotationProjectTag.tag_id == tag.id,
     )
     result = await session.execute(stmt)
     db_annotation_project_tag = result.scalars().first()
@@ -436,8 +436,8 @@ async def test_remove_tag_from_project_modifies_database(
     )
     stmt = select(models.AnnotationProjectTag).where(
         models.AnnotationProjectTag.annotation_project_id
-        == annotation_project.id
-        and models.AnnotationProjectTag.tag_id == tag.id
+        == annotation_project.id,
+        models.AnnotationProjectTag.tag_id == tag.id,
     )
     result = await session.execute(stmt)
     db_annotation_project_tag = result.scalars().first()

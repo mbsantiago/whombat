@@ -22,6 +22,7 @@ manner.
 """
 
 import enum
+from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
@@ -30,20 +31,19 @@ from whombat.database.models.annotation_project import AnnotationProject
 from whombat.database.models.base import Base
 from whombat.database.models.clip import Clip
 from whombat.database.models.note import Note
+from whombat.database.models.tag import Tag
 from whombat.database.models.user import User
 
 __all__ = [
     "Task",
     "TaskNote",
+    "TaskState",
     "TaskTag",
 ]
 
 
 class TaskState(enum.Enum):
     """Task state."""
-
-    created = "created"
-    """Task has been created."""
 
     assigned = "assigned"
     """Task has been assigned to an annotator."""
@@ -63,7 +63,7 @@ class Task(Base):
 
     __tablename__ = "task"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     """Unique identifier of the task."""
 
     project_id: orm.Mapped[int] = orm.mapped_column(
@@ -78,38 +78,57 @@ class Task(Base):
     )
     """Unique identifier of the audio clip."""
 
-    project: orm.Mapped[AnnotationProject] = orm.relationship()
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        kw_only=True,
+        unique=True,
+    )
+
+    project: orm.Mapped[AnnotationProject] = orm.relationship(init=False)
     """Annotation project to which the task belongs."""
 
-    clip: orm.Mapped[Clip] = orm.relationship()
+    clip: orm.Mapped[Clip] = orm.relationship(
+        init=False,
+        lazy="joined",
+    )
     """Audio clip to be annotated."""
 
     notes: orm.Mapped[list[Note]] = orm.relationship(
-        "Note",
+        default_factory=list,
         secondary="task_note",
+        init=False,
+        lazy="joined",
+        viewonly=True,
     )
     """Notes associated with the task."""
 
-    tags: orm.Mapped[list[Note]] = orm.relationship(
-        "Tag",
-        secondary="task_tag",
+    task_notes: orm.Mapped[list["TaskNote"]] = orm.relationship(
+        init=False,
+        back_populates="task",
+        default_factory=list,
+        cascade="all, delete-orphan",
+        lazy="joined",
     )
-    """Tags attached to the clip during the task."""
 
-    completed: orm.Mapped[bool] = orm.mapped_column(
-        nullable=False,
-        default=False,
+    tags: orm.Mapped[list["TaskTag"]] = orm.relationship(
+        init=False,
+        back_populates="task",
+        default_factory=list,
+        cascade="all, delete-orphan",
+        lazy="joined",
     )
-    """Whether the task has been completed."""
 
     status_badges: orm.Mapped[list["TaskStatusBadge"]] = orm.relationship(
         "TaskStatusBadge",
         back_populates="task",
+        cascade="all",
         lazy="joined",
         init=False,
         repr=False,
         default_factory=list,
     )
+
+    __table_args__ = (UniqueConstraint("project_id", "clip_id"),)
 
 
 class TaskStatusBadge(Base):
@@ -117,32 +136,39 @@ class TaskStatusBadge(Base):
 
     __tablename__ = "task_status_badge"
 
+    id: orm.Mapped[int] = orm.mapped_column(
+        primary_key=True,
+        init=False,
+    )
+
     task_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("task.id"),
-        primary_key=True,
         nullable=False,
     )
     """Unique identifier of the task."""
 
-    created_by_id: orm.Mapped[int] = orm.mapped_column(
+    user_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("user.id"),
-        primary_key=True,
         nullable=False,
     )
-    """Unique identifier of the user associated to the status."""
+    """Unique ID of the user to whom the status badge refers."""
+
+    state: orm.Mapped[TaskState]
+    """Type of status."""
 
     task: orm.Mapped[Task] = orm.relationship(
         back_populates="status_badges",
+        init=False,
     )
 
-    state: orm.Mapped[TaskState] = orm.mapped_column(
-        nullable=False,
+    user: orm.Mapped[User] = orm.relationship(
+        User,
+        init=False,
+        lazy="joined",
     )
-    """Type of status."""
+    """User to whom the status badge refers."""
 
-    created_by: orm.Mapped[User] = orm.relationship(
-        "User",
-    )
+    __table_args__ = (UniqueConstraint("task_id", "user_id", "state"),)
 
 
 class TaskNote(Base):
@@ -164,6 +190,17 @@ class TaskNote(Base):
     )
     """Unique identifier of the note."""
 
+    task: orm.Mapped[Task] = orm.relationship(
+        back_populates="task_notes",
+        init=False,
+        repr=False,
+    )
+
+    note: orm.Mapped[Note] = orm.relationship(
+        init=False,
+        lazy="joined",
+    )
+
     __table_args__ = (UniqueConstraint("task_id", "note_id"),)
 
 
@@ -172,18 +209,46 @@ class TaskTag(Base):
 
     __tablename__ = "task_tag"
 
+    id: orm.Mapped[int] = orm.mapped_column(
+        primary_key=True,
+        init=False,
+    )
+
     task_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("task.id"),
-        primary_key=True,
-        nullable=False,
     )
     """Unique identifier of the task."""
 
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
-        primary_key=True,
-        nullable=False,
     )
     """Unique identifier of the tag."""
 
-    __table_args__ = (UniqueConstraint("task_id", "tag_id"),)
+    created_by_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("user.id"),
+    )
+    """Unique identifier of the user who created the tag."""
+
+    task: orm.Mapped[Task] = orm.relationship(
+        back_populates="tags",
+        init=False,
+        repr=False,
+    )
+
+    tag: orm.Mapped[Tag] = orm.relationship(
+        init=False,
+        lazy="joined",
+    )
+
+    created_by: orm.Mapped[User] = orm.relationship(
+        init=False,
+        lazy="joined",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "task_id",
+            "tag_id",
+            "created_by_id",
+        ),
+    )

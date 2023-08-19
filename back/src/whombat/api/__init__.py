@@ -23,6 +23,7 @@ from whombat.api import (
     sessions,
     sound_events,
     tags,
+    tasks,
     users,
 )
 
@@ -36,5 +37,6 @@ __all__ = [
     "sessions",
     "sound_events",
     "tags",
+    "tasks",
     "users",
 ]

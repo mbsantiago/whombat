@@ -13,6 +13,7 @@ from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, cache, schemas
+from whombat.database import models
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
@@ -193,3 +194,66 @@ async def annotation_project(
         )
     )
     return annotation_project
+
+
+@pytest.fixture
+async def task(
+    session: AsyncSession,
+    annotation_project: schemas.AnnotationProject,
+    clip: schemas.Clip,
+) -> schemas.Task:
+    """Create a task for testing."""
+    task = await api.tasks.create_task(
+        session,
+        data=schemas.TaskCreate(
+            project_id=annotation_project.id,
+            clip_id=clip.id,
+        ),
+    )
+    return task
+
+
+@pytest.fixture
+async def task_status_badge(
+    session: AsyncSession,
+    task: schemas.Task,
+    user: schemas.User,
+) -> schemas.TaskStatusBadge:
+    """Create a task status badge for testing."""
+    task = await api.tasks.add_status_badge_to_task(
+        session,
+        task_id=task.id,
+        user_id=user.id,
+        state=models.TaskState.assigned,
+    )
+    task_status_badge = next(
+        badge
+        for badge in task.status_badges
+        if badge.user_id == user.id
+        and badge.state == models.TaskState.assigned
+    )
+    return task_status_badge
+
+
+
+@pytest.fixture
+async def task_tag(
+    session: AsyncSession,
+    task: schemas.Task,
+    tag: schemas.Tag,
+    user: schemas.User,
+) -> schemas.TaskTag:
+    """Create a task tag for testing."""
+    task = await api.tasks.add_tag_to_task(
+        session,
+        task_id=task.id,
+        tag_id=tag.id,
+        created_by_id=user.id,
+    )
+    task_tag = next(
+        tag
+        for tag in task.tags
+        if tag.tag_id == tag.id
+        and tag.created_by_id == user.id
+    )
+    return task_tag

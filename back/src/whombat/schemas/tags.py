@@ -3,24 +3,28 @@ from pydantic import Field
 
 from whombat.schemas.base import BaseSchema
 
-__all__ = ["Tag", "TagCreate", "TagUpdate"]
+__all__ = [
+    "Tag",
+    "TagCreate",
+    "TagUpdate",
+]
 
 
 class TagCreate(BaseSchema):
     """Schema for creating Tag objects."""
 
     key: str = Field(min_length=1, max_length=255)
+    """Key of the tag."""
+
     value: str = Field(min_length=1, max_length=255)
+    """Value of the tag."""
 
 
 class Tag(TagCreate):
     """Schema for Tag objects returned to the user."""
 
     id: int
-
-    def __hash__(self):
-        """Hash the Tag object."""
-        return hash((self.key, self.value))
+    """Database ID of the tag."""
 
 
 class TagUpdate(BaseSchema):

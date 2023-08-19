@@ -9,6 +9,7 @@ from typing import (
     Hashable,
     MutableMapping,
     TypeVar,
+    ParamSpec,
 )
 
 from asyncache import cached as _cached
@@ -112,8 +113,8 @@ def update_cache_key(name: str, key: Hashable, value: Any) -> None:
 
 
 M = TypeVar("M", bound=BaseModel)
-
-Func = Callable[..., Awaitable[M]]
+P = ParamSpec("P")
+Func = Callable[P, Awaitable[M]]
 
 
 class CacheCollection(Generic[M]):
@@ -147,11 +148,11 @@ class CacheCollection(Generic[M]):
         self.caches.append((name, data_key))
         return decorator
 
-    def with_update(self, func: Func[M]) -> Func[M]:
+    def with_update(self, func: Func[P, M]) -> Func[P, M]:
         """Decorate a function to update the cache."""
 
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: P.args, **kwargs: P.kwargs):
             # Call the function
             data = await func(*args, **kwargs)
 
@@ -162,11 +163,11 @@ class CacheCollection(Generic[M]):
 
         return wrapper
 
-    def with_clear(self, func: Func[M]) -> Func[M]:
+    def with_clear(self, func: Func[P, M]) -> Func[P, M]:
         """Decorate a function to clear the cache."""
 
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: P.args, **kwargs: P.kwargs):
             # Call the function
             data = await func(*args, **kwargs)
 

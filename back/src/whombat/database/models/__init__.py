@@ -45,7 +45,13 @@ from whombat.database.models.sound_event import (
     SoundEventTag,
 )
 from whombat.database.models.tag import Tag
-from whombat.database.models.task import Task, TaskNote, TaskTag
+from whombat.database.models.task import (
+    Task,
+    TaskNote,
+    TaskState,
+    TaskStatusBadge,
+    TaskTag,
+)
 from whombat.database.models.token import AccessToken
 from whombat.database.models.training_guess import (
     TrainingGuess,
@@ -92,6 +98,8 @@ __all__ = [
     "Tag",
     "Task",
     "TaskNote",
+    "TaskState",
+    "TaskStatusBadge",
     "TaskTag",
     "TrainingGuess",
     "TrainingGuessTags",
