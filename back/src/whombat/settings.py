@@ -2,7 +2,6 @@
 
 We are using pydantic to define our settings.
 """
-from functools import lru_cache
 
 from pydantic_settings import BaseSettings
 
@@ -21,9 +20,3 @@ class Settings(BaseSettings):
     admin_password: str = "admin"
 
     admin_email: str = "admin@whombat.com"
-
-
-@lru_cache()
-def get_settings() -> Settings:
-    """Get the application settings."""
-    return Settings()

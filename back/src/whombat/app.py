@@ -6,24 +6,12 @@ It contains the FastAPI instance and the root endpoint.
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from whombat.dependencies import get_settings
 from whombat.database.init import init_database
-from whombat.routers.auth import auth_router, users_router
-from whombat.settings import get_settings
+from whombat.routers import main_router
 
 app = FastAPI()
-
-app.include_router(
-    auth_router,
-    prefix="/auth",
-    tags=["auth"],
-)
-
-app.include_router(
-    users_router,
-    prefix="/users",
-    tags=["users"],
-)
-
+app.include_router(main_router)
 app.mount(
     "/app",
     StaticFiles(packages=["whombat"], html=True),

@@ -1,12 +1,10 @@
 """Whombat Python API to interact with user objects in the database."""
 import uuid
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from cachetools import LRUCache
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from whombat.dependencies.users import UserDatabase, UserManager
 from whombat import cache, models, schemas
 from whombat.api import common
 from whombat.filters import Filter
@@ -23,6 +21,25 @@ __all__ = [
 
 
 users_cache = cache.CacheCollection(schemas.User)
+
+
+def _get_user_manager(session: AsyncSession) -> UserManager:
+    """Get a user manager from a database session.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    Returns
+    -------
+    UserManager
+        The user manager.
+
+    """
+    return UserManager(
+        UserDatabase(session, models.User),
+    )
 
 
 @users_cache.cached(
@@ -211,11 +228,11 @@ async def create(
             )
 
     """
-    async with _get_user_manager_from_session(session) as user_manager:
-        db_user = await user_manager.create(data)
-        session.add(db_user)
-        await session.commit()
-        return schemas.User.model_validate(db_user)
+    user_manager = _get_user_manager(session)
+    db_user = await user_manager.create(data)
+    session.add(db_user)
+    await session.commit()
+    return schemas.User.model_validate(db_user)
 
 
 @users_cache.with_update
@@ -247,10 +264,10 @@ async def update(
         If no user with the given id exists.
 
     """
-    async with _get_user_manager_from_session(session) as user_manager:
-        db_user = await user_manager.get(user_id)
-        db_user = await user_manager.update(data, db_user)
-        return schemas.User.model_validate(db_user)
+    user_manager = _get_user_manager(session)
+    db_user = await user_manager.get(user_id)
+    db_user = await user_manager.update(data, db_user)
+    return schemas.User.model_validate(db_user)
 
 
 @users_cache.with_clear
@@ -272,29 +289,3 @@ async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
         models.User.id == user_id,
     )
     return schemas.User.model_validate(user)
-
-
-@asynccontextmanager
-async def _get_user_db_context(
-    session: AsyncSession,
-) -> AsyncGenerator[SQLAlchemyUserDatabase, None]:
-    """Get a SQLAlchemyUserDatabase context."""
-    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
-
-
-@asynccontextmanager
-async def _get_user_manager(
-    user_database: SQLAlchemyUserDatabase,
-) -> AsyncGenerator[models.UserManager, None]:
-    """Get a UserManager context."""
-    yield models.UserManager(user_database)
-
-
-@asynccontextmanager
-async def _get_user_manager_from_session(
-    session: AsyncSession,
-) -> AsyncGenerator[models.UserManager, None]:
-    """Get a UserManager context from a database session."""
-    async with _get_user_db_context(session) as user_db:
-        async with _get_user_manager(user_db) as user_manager:
-            yield user_manager

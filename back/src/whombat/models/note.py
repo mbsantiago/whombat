@@ -34,6 +34,7 @@ __all__ = [
 
 if TYPE_CHECKING:
     from whombat.models.recording import Recording, RecordingNote
+    from whombat.models.annotation import Annotation, AnnotationNote
 
 
 class Note(Base):
@@ -86,6 +87,24 @@ class Note(Base):
 
     recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
         "RecordingNote",
+        init=False,
+        repr=False,
+        back_populates="note",
+        default_factory=list,
+    )
+
+    annotations: orm.Mapped[list["Annotation"]] = orm.relationship(
+        "Annotation",
+        secondary="annotation_note",
+        init=False,
+        repr=False,
+        viewonly=True,
+        back_populates="notes",
+        default_factory=list,
+    )
+
+    annotation_notes: orm.Mapped[list["AnnotationNote"]] = orm.relationship(
+        "AnnotationNote",
         init=False,
         repr=False,
         back_populates="note",

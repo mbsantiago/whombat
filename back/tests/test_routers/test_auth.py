@@ -7,28 +7,7 @@ from fastapi.testclient import TestClient
 
 from whombat.app import app
 from whombat.database.init import init_database
-from whombat.settings import Settings, get_settings
-
-
-@pytest.fixture
-def database_test(tmpdir) -> Path:
-    """Fixture to create a temporary database."""
-    path = Path(tmpdir)
-    return path / "test.db"
-
-
-@pytest.fixture
-def settings(database_test: Path):
-    """Fixture to return the settings."""
-    settings = Settings(
-        db_url=f"sqlite+aiosqlite:///{database_test.absolute()}",
-        app_name="Whombat",
-        admin_username="test_admin",
-        admin_password="test_password",
-        admin_email="test@whombat.com",
-    )
-    app.dependency_overrides[get_settings] = lambda: settings
-    return settings
+from whombat.settings import Settings
 
 
 @pytest.fixture
@@ -47,7 +26,7 @@ async def test_admin_can_login(client: TestClient):
     response = client.post(
         "/auth/login",
         data={
-            "username": "test@whombat.com",
+            "username": "test_admin",
             "password": "test_password",
         },
     )

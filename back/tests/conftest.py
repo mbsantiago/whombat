@@ -9,10 +9,14 @@ from typing import AsyncGenerator, Optional
 
 import numpy as np
 import pytest
+import soundevent
 from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from whombat.app import app
 from whombat import api, cache, models, schemas
+from whombat.dependencies import get_settings
+from whombat.settings import Settings
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
@@ -73,6 +77,27 @@ def random_wav_factory(tmp_path: Path):
         return path
 
     return wav_factory
+
+
+@pytest.fixture
+def database_test(tmpdir) -> Path:
+    """Fixture to create a temporary database."""
+    path = Path(tmpdir)
+    return path / "test.db"
+
+
+@pytest.fixture(autouse=True)
+def settings(database_test: Path) -> Settings:
+    """Fixture to return the settings."""
+    settings = Settings(
+        db_url=f"sqlite+aiosqlite:///{database_test.absolute()}",
+        app_name="Whombat",
+        admin_username="test_admin",
+        admin_password="test_password",
+        admin_email="test@whombat.com",
+    )
+    app.dependency_overrides[get_settings] = lambda: settings
+    return settings
 
 
 @pytest.fixture
@@ -252,3 +277,49 @@ async def task_tag(
         if tag.tag_id == tag.id and tag.created_by_id == user.id
     )
     return task_tag
+
+
+@pytest.fixture
+async def sound_event(
+    session: AsyncSession,
+    recording: schemas.Recording,
+) -> schemas.SoundEvent:
+    """Create a sound event for testing."""
+    geometry = soundevent.Polygon(
+        coordinates=[
+            [
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 0.0],
+            ]
+        ]
+    )
+
+    sound_event = await api.sound_events.create(
+        session,
+        data=schemas.SoundEventCreate(
+            recording_id=recording.id,
+            geometry=geometry,
+        ),
+    )
+    return sound_event
+
+
+@pytest.fixture
+async def annotation(
+    session: AsyncSession,
+    task: schemas.Task,
+    sound_event: schemas.SoundEvent,
+    user: schemas.User,
+) -> schemas.Annotation:
+    """Create an annotation for testing."""
+    annotation = await api.annotations.create(
+        session,
+        data=schemas.AnnotationCreate(
+            created_by_id=user.id,
+            task_id=task.id,
+            sound_event_id=sound_event.id,
+        ),
+    )
+    return annotation

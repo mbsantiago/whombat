@@ -40,7 +40,7 @@ from whombat.models.training_guess import TrainingGuess, TrainingGuessTags
 from whombat.models.training_session import TrainingSession
 from whombat.models.training_set import TrainingSet, TrainingSetTag
 from whombat.models.training_sound_event import TrainingSoundEvent
-from whombat.models.user import User, UserManager
+from whombat.models.user import User
 
 __all__ = [
     "AccessToken",
@@ -88,5 +88,4 @@ __all__ = [
     "TrainingSetTag",
     "TrainingSoundEvent",
     "User",
-    "UserManager",
 ]

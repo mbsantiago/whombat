@@ -2,15 +2,12 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi import Depends
-from fastapi_users.authentication.strategy.db import (
-    AccessTokenDatabase,
-    DatabaseStrategy,
-)
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase
 from sqlalchemy.ext.asyncio import async_sessionmaker  # type: ignore
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    create_async_engine,
+)
 
 from whombat import models
 
@@ -60,33 +57,6 @@ async def get_async_session(
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
     async with async_session_maker() as session:
         yield session
-
-
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    """Get the user database."""
-    yield SQLAlchemyUserDatabase(session, models.User)  # type: ignore
-
-
-async def get_access_token_db(
-    session: AsyncSession = Depends(get_async_session),
-):
-    """Get the access token database."""
-    yield SQLAlchemyAccessTokenDatabase(
-        session,
-        models.AccessToken,  # type: ignore
-    )
-
-
-TokenDB = AccessTokenDatabase[models.AccessToken]  # type: ignore
-
-
-def get_database_strategy(
-    access_token_db: TokenDB = Depends(get_access_token_db),
-) -> DatabaseStrategy:
-    return DatabaseStrategy(
-        access_token_db,  # type: ignore
-        lifetime_seconds=60 * 60 * 24,
-    )
 
 
 def supports_returning(session: AsyncSession) -> bool:

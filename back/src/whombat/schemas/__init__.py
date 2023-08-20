@@ -19,6 +19,11 @@ from whombat.schemas.annotation_projects import (
     AnnotationProjectCreate,
     AnnotationProjectUpdate,
 )
+from whombat.schemas.annotations import (
+    Annotation,
+    AnnotationCreate,
+    AnnotationTagCreate,
+)
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
@@ -62,9 +67,12 @@ from whombat.schemas.tasks import (
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
+    "Annotation",
+    "AnnotationCreate",
     "AnnotationProject",
     "AnnotationProjectCreate",
     "AnnotationProjectUpdate",
+    "AnnotationTagCreate",
     "Clip",
     "ClipCreate",
     "ClipFeatureCreate",
@@ -96,13 +104,13 @@ __all__ = [
     "Tag",
     "TagCreate",
     "TagUpdate",
-    "User",
-    "UserCreate",
-    "UserUpdate",
     "Task",
     "TaskCreate",
     "TaskStatusBadge",
     "TaskStatusBadgeCreate",
     "TaskTag",
     "TaskTagCreate",
+    "User",
+    "UserCreate",
+    "UserUpdate",
 ]
