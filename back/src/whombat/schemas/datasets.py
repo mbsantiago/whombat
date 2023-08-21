@@ -20,13 +20,11 @@ __all__ = [
 ]
 
 
-class DatasetCreate(BaseSchema):
-    """Schema for Dataset objects created by the user."""
-
+class BaseDataset(BaseSchema):
     uuid: UUID = Field(default_factory=uuid4)
     """The unique identifier of the dataset."""
 
-    audio_dir: DirectoryPath
+    audio_dir: Path
     """The path to the directory containing the audio files."""
 
     name: str = Field(..., min_length=1)
@@ -36,16 +34,20 @@ class DatasetCreate(BaseSchema):
     """The description of the dataset."""
 
 
+class DatasetCreate(BaseDataset):
+    """Schema for Dataset objects created by the user."""
+
+    audio_dir: DirectoryPath
+    """The path to the directory containing the audio files."""
+
+
 class WithCounts(BaseSchema):
     recording_count: int = 0
     """The number of recordings in the dataset."""
 
 
-class Dataset(DatasetCreate):
+class Dataset(BaseDataset):
     """Schema for Dataset objects returned to the user."""
-
-    audio_dir: Path
-    """The path to the directory containing the audio files."""
 
     id: int
     """The database id of the dataset."""

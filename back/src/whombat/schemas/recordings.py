@@ -93,6 +93,9 @@ class RecordingCreate(RecordingMetadata):
     This only contains data that is provided by the user.
     """
 
+    uuid: UUID = Field(default_factory=uuid4)
+    """The UUID of the recording."""
+
     # NOTE: We use a FilePath object as this will make sure that the path is a
     # valid path and that the file exists.
     path: FilePath
@@ -106,11 +109,14 @@ class RecordingCreate(RecordingMetadata):
         return v
 
 
-class RecordingPreCreate(RecordingMediaInfo, RecordingCreate):
+class RecordingPreCreate(RecordingMediaInfo, RecordingMetadata):
     """Data for Recording creation.
 
     This contains data that has also been extracted from the audio file.
     """
+
+    path: Path
+    """The path to the audio file."""
 
 
 class Recording(RecordingObjects, RecordingPreCreate):

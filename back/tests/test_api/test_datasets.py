@@ -12,33 +12,71 @@ from whombat import exceptions, models, schemas
 from whombat.api import datasets, recordings
 
 
-async def test_create_empty_dataset(session: AsyncSession, tmp_path: Path):
+async def test_created_dataset_is_stored_in_the_database(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+):
+    """Test that a created dataset is stored in the database."""
+    stmt = select(models.Dataset).where(models.Dataset.id == dataset.id)
+    result = await session.execute(stmt)
+    retrieved_dataset = result.unique().scalar_one_or_none()
+    assert retrieved_dataset is not None
+    assert retrieved_dataset.id == dataset.id
+    assert retrieved_dataset.name == dataset.name
+    assert retrieved_dataset.description == dataset.description
+
+
+async def test_dataset_is_stored_with_relative_audio_dir(
+    session: AsyncSession,
+    audio_dir: Path,
+):
+    """Test that a dataset is stored with a relative audio dir.""" ""
+    dataset_audio_dir = audio_dir / "dataset_audio_dir"
+    dataset_audio_dir.mkdir()
+    dataset, _ = await datasets.create(
+        session,
+        data=schemas.DatasetCreate(
+            name="test_dataset",
+            description="This is a test dataset.",
+            audio_dir=dataset_audio_dir,
+        ),
+        audio_dir=audio_dir,
+    )
+    # Make sure the audio dir is stored as a relative path
+    stmt = select(models.Dataset).where(models.Dataset.id == dataset.id)
+    result = await session.execute(stmt)
+    retrieved_dataset = result.unique().scalar_one_or_none()
+    assert retrieved_dataset is not None
+    assert retrieved_dataset.audio_dir == Path("dataset_audio_dir")
+
+
+async def test_create_empty_dataset(session: AsyncSession, audio_dir: Path):
     """Test the creation of an empty dataset."""
-    audio_dir = tmp_path / "audio"
-    audio_dir.mkdir()
+    dataset_audio_dir = audio_dir / "dataset_audio_dir"
+    dataset_audio_dir.mkdir()
     dataset, recordings = await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
             description="This is a test dataset.",
-            audio_dir=audio_dir,
+            audio_dir=dataset_audio_dir,
         ),
+        audio_dir=audio_dir,
     )
     assert isinstance(dataset, schemas.Dataset)
     assert isinstance(recordings, list)
     assert dataset.name == "test_dataset"
     assert dataset.description == "This is a test dataset."
-    assert dataset.audio_dir == audio_dir
     assert len(recordings) == 0
 
 
 async def test_create_dataset_fails_if_name_is_not_unique(
     session: AsyncSession,
-    tmp_path: Path,
+    audio_dir: Path,
 ):
     """Test that creating a dataset fails if the name is not unique."""
-    audio_dir1 = tmp_path / "audio1"
-    audio_dir2 = tmp_path / "audio2"
+    audio_dir1 = audio_dir / "audio1"
+    audio_dir2 = audio_dir / "audio2"
     audio_dir1.mkdir()
     audio_dir2.mkdir()
     await datasets.create(
@@ -48,6 +86,7 @@ async def test_create_dataset_fails_if_name_is_not_unique(
             description="This is a test dataset.",
             audio_dir=audio_dir1,
         ),
+        audio_dir=audio_dir,
     )
     with pytest.raises(exceptions.DuplicateObjectError):
         await datasets.create(
@@ -57,23 +96,25 @@ async def test_create_dataset_fails_if_name_is_not_unique(
                 description="This is a test dataset.",
                 audio_dir=audio_dir2,
             ),
+            audio_dir=audio_dir,
         )
 
 
 async def test_create_dataset_fails_if_audio_dir_is_not_unique(
     session: AsyncSession,
-    tmp_path: Path,
+    audio_dir: Path,
 ):
     """Test that creating a dataset fails if the audio dir is not unique."""
-    audio_dir = tmp_path / "audio"
-    audio_dir.mkdir()
+    dataset_audio_dir = audio_dir / "audio"
+    dataset_audio_dir.mkdir()
     await datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
             description="This is a test dataset.",
-            audio_dir=audio_dir,
+            audio_dir=dataset_audio_dir,
         ),
+        audio_dir=audio_dir,
     )
     with pytest.raises(exceptions.DuplicateObjectError):
         await datasets.create(
@@ -81,8 +122,9 @@ async def test_create_dataset_fails_if_audio_dir_is_not_unique(
             data=schemas.DatasetCreate(
                 name="test_dataset_2",
                 description="This is a test dataset.",
-                audio_dir=audio_dir,
+                audio_dir=dataset_audio_dir,
             ),
+            audio_dir=audio_dir,
         )
 
 
@@ -142,10 +184,10 @@ async def test_get_dataset_by_audio_dir(
 
 async def test_get_dataset_by_audio_dir_fails_when_audio_dir_does_not_exist(
     session: AsyncSession,
-    tmp_path: Path,
+    audio_dir: Path,
 ):
     """Test getting a dataset by audio_dir fails if does not exist."""
-    audio_dir = tmp_path / "nonexisting_audio_dir"
+    audio_dir = audio_dir / "nonexisting_audio_dir"
     audio_dir.mkdir()
     with pytest.raises(exceptions.NotFoundError):
         await datasets.get_by_audio_dir(
@@ -154,10 +196,10 @@ async def test_get_dataset_by_audio_dir_fails_when_audio_dir_does_not_exist(
         )
 
 
-async def test_get_datasets(session: AsyncSession, tmp_path: Path):
+async def test_get_datasets(session: AsyncSession, audio_dir: Path):
     """Test getting all datasets."""
     # Arrange
-    audio_dir_1 = tmp_path / "audio_1"
+    audio_dir_1 = audio_dir / "audio_1"
     audio_dir_1.mkdir()
     dataset1, _ = await datasets.create(
         session,
@@ -166,8 +208,9 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
             description="This is a test dataset.",
             audio_dir=audio_dir_1,
         ),
+        audio_dir=audio_dir,
     )
-    audio_dir_2 = tmp_path / "audio_2"
+    audio_dir_2 = audio_dir / "audio_2"
     audio_dir_2.mkdir()
     dataset2, _ = await datasets.create(
         session,
@@ -176,6 +219,7 @@ async def test_get_datasets(session: AsyncSession, tmp_path: Path):
             description="This is a test dataset.",
             audio_dir=audio_dir_2,
         ),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -233,18 +277,19 @@ async def test_update_dataset_description(
 
 
 async def test_update_dataset_audio_dir(
-    session: AsyncSession, tmp_path: Path, dataset: schemas.Dataset
+    session: AsyncSession, audio_dir: Path, dataset: schemas.Dataset
 ):
     """Test updating a dataset's audio directory."""
-    audio_dir_2 = tmp_path / "audio_2"
+    audio_dir_2 = audio_dir / "audio_2"
     audio_dir_2.mkdir()
     updated_dataset = await datasets.update(
         session,
         dataset_id=dataset.id,
         data=schemas.DatasetUpdate(audio_dir=audio_dir_2),
+        audio_dir=audio_dir,
     )
     assert isinstance(updated_dataset, schemas.Dataset)
-    assert updated_dataset.audio_dir == audio_dir_2
+    assert updated_dataset.audio_dir == Path("audio_2")
 
 
 async def test_delete_dataset(session: AsyncSession, dataset: schemas.Dataset):
@@ -255,26 +300,33 @@ async def test_delete_dataset(session: AsyncSession, dataset: schemas.Dataset):
 
 
 async def test_get_dataset_files(
-    session: AsyncSession, dataset: schemas.Dataset
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+    audio_dir: Path,
 ):
     """Test getting a dataset's files."""
     # Arrange
-    audio_dir = dataset.audio_dir
-    audio_file_1 = audio_dir / "audio_file_1.wav"
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+
+    audio_file_1 = dataset_audio_dir / "audio_file_1.wav"
     audio_file_1.touch()
-    audio_file_2 = audio_dir / "audio_file_2.wav"
+    audio_file_2 = dataset_audio_dir / "audio_file_2.wav"
     audio_file_2.touch()
 
     # Act
-    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
+    retrieved_files = await datasets.get_state(
+        session,
+        dataset_id=dataset.id,
+        audio_dir=audio_dir,
+    )
 
     # Assert
     assert isinstance(retrieved_files, list)
     assert len(retrieved_files) == 2
 
     assert {audio_file.path for audio_file in retrieved_files} == {
-        audio_file_1.relative_to(audio_dir),
-        audio_file_2.relative_to(audio_dir),
+        Path("audio_file_1.wav"),
+        Path("audio_file_2.wav"),
     }
 
 
@@ -282,20 +334,28 @@ async def test_get_dataset_files_with_existing_files(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting a dataset's files when some files already exist."""
-    audio_dir = dataset.audio_dir
-    path = random_wav_factory(audio_dir / "audio_file.wav")
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+    path = random_wav_factory(dataset_audio_dir / "audio_file.wav")
     recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
+        audio_dir=audio_dir,
     )
 
     await datasets.add_recording(
-        session, dataset_id=dataset.id, recording_id=recording.id
+        session,
+        dataset_id=dataset.id,
+        recording_id=recording.id,
     )
 
-    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
+    retrieved_files = await datasets.get_state(
+        session,
+        dataset_id=dataset.id,
+        audio_dir=audio_dir,
+    )
 
     assert len(retrieved_files) == 1
     assert retrieved_files[0].state == schemas.FileState.REGISTERED
@@ -305,27 +365,35 @@ async def test_get_dataset_files_with_missing_files(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting a dataset's files when some files are missing."""
     # Arrange
-    audio_dir = dataset.audio_dir
-    path = random_wav_factory(audio_dir / "audio_file.wav")
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+    path = random_wav_factory(dataset_audio_dir / "audio_file.wav")
 
     recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
+        audio_dir=audio_dir,
     )
 
     # add the recording to the dataset
     await datasets.add_recording(
-        session, dataset_id=dataset.id, recording_id=recording.id
+        session,
+        dataset_id=dataset.id,
+        recording_id=recording.id,
     )
 
     # delete the file
     path.unlink()
 
     # Act
-    retrieved_files = await datasets.get_state(session, dataset_id=dataset.id)
+    retrieved_files = await datasets.get_state(
+        session,
+        dataset_id=dataset.id,
+        audio_dir=audio_dir,
+    )
 
     assert isinstance(retrieved_files, list)
     assert len(retrieved_files) == 1
@@ -336,14 +404,17 @@ async def test_add_recording_to_dataset(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding a recording to a dataset."""
     # Arrange
-    audio_dir = dataset.audio_dir
-    audio_file = random_wav_factory(path=audio_dir / "audio_file.wav")
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+    audio_file = random_wav_factory(path=dataset_audio_dir / "audio_file.wav")
 
     recording = await recordings.create(
-        session, data=schemas.RecordingCreate(path=audio_file)
+        session,
+        data=schemas.RecordingCreate(path=audio_file),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -382,12 +453,13 @@ async def test_get_dataset_recordings(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting a dataset's recordings."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path_1 = random_wav_factory(
-        path=audio_dir / "audio_file_1.wav",
+        path=dataset_audio_dir / "audio_file_1.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -395,10 +467,11 @@ async def test_get_dataset_recordings(
     recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
+        audio_dir=audio_dir,
     )
 
     path_2 = random_wav_factory(
-        path=audio_dir / "audio_file_2.wav",
+        path=dataset_audio_dir / "audio_file_2.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -406,6 +479,7 @@ async def test_get_dataset_recordings(
     recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
+        audio_dir=audio_dir,
     )
 
     await datasets.add_recording(
@@ -452,12 +526,13 @@ async def test_add_file_to_dataset(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding a file to a dataset."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path = random_wav_factory(
-        path=audio_dir / "audio_file.wav",
+        path=dataset_audio_dir / "audio_file.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -468,12 +543,13 @@ async def test_add_file_to_dataset(
         session,
         dataset_id=dataset.id,
         data=schemas.RecordingCreate(path=path),
+        audio_dir=audio_dir,
     )
 
     # Assert
     # Make sure the recording was created
     query = select(models.Recording).where(
-        models.Recording.path == str(path.absolute()),
+        models.Recording.path == str(path.relative_to(audio_dir)),
     )
     result = await session.execute(query)
     assert result.scalars().first() is not None
@@ -485,18 +561,19 @@ async def test_add_file_to_dataset(
     )
 
     assert len(recording_list) == 1
-    assert recording_list[0].path == path.relative_to(dataset.audio_dir)
+    assert recording_list[0].path == path.relative_to(dataset_audio_dir)
 
 
 async def test_add_file_to_dataset_fails_if_file_not_in_audio_dir(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding a file to a dataset fails if not in audio dir."""
     # Arrange
-    audio_dir = dataset.audio_dir
-    other_dir = audio_dir.parent / "other_dir"
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+    other_dir = dataset_audio_dir.parent / "other_dir"
     other_dir.mkdir()
     path = random_wav_factory(
         path=other_dir / "audio_file.wav",
@@ -511,6 +588,7 @@ async def test_add_file_to_dataset_fails_if_file_not_in_audio_dir(
             session,
             dataset_id=dataset.id,
             data=schemas.RecordingCreate(path=path),
+            audio_dir=audio_dir,
         )
 
 
@@ -518,12 +596,13 @@ async def test_add_file_to_dataset_with_existing_recording(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding a file to a dataset that already exists in the dataset."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path = random_wav_factory(
-        path=audio_dir / "audio_file.wav",
+        path=dataset_audio_dir / "audio_file.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -532,6 +611,7 @@ async def test_add_file_to_dataset_with_existing_recording(
     await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -539,6 +619,7 @@ async def test_add_file_to_dataset_with_existing_recording(
         session,
         dataset_id=dataset.id,
         data=schemas.RecordingCreate(path=path),
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -548,19 +629,20 @@ async def test_add_file_to_dataset_with_existing_recording(
     )
 
     assert len(recording_list) == 1
-    assert recording_list[0].path == path.relative_to(dataset.audio_dir)
+    assert recording_list[0].path == path.relative_to(dataset_audio_dir)
 
 
 async def test_add_recordings_to_dataset(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding multiple recordings to a dataset."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path_1 = random_wav_factory(
-        path=audio_dir / "audio_file_1.wav",
+        path=dataset_audio_dir / "audio_file_1.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -568,10 +650,11 @@ async def test_add_recordings_to_dataset(
     recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
+        audio_dir=audio_dir,
     )
 
     path_2 = random_wav_factory(
-        path=audio_dir / "audio_file_2.wav",
+        path=dataset_audio_dir / "audio_file_2.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -579,6 +662,7 @@ async def test_add_recordings_to_dataset(
     recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -590,31 +674,34 @@ async def test_add_recordings_to_dataset(
 
     # Assert
     assert len(added_paths) == 2
-    assert added_paths[0].path == path_1.relative_to(dataset.audio_dir)
-    assert added_paths[1].path == path_2.relative_to(dataset.audio_dir)
+    assert added_paths[0].path == path_1.relative_to(dataset_audio_dir)
+    assert added_paths[1].path == path_2.relative_to(dataset_audio_dir)
 
 
 async def test_add_recordings_to_dataset_ignores_files_not_in_audio_dir(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding recordings to a dataset ignores files not in audio dir."""
     # Arrange
-    audio_dir = dataset.audio_dir
-    other_dir = audio_dir.parent / "other_dir"
+    dataset_audio_dir = audio_dir / dataset.audio_dir
+    other_dir = dataset_audio_dir.parent / "other_dir"
     other_dir.mkdir()
 
-    path_1 = random_wav_factory(path=audio_dir / "audio_file_1.wav")
+    path_1 = random_wav_factory(path=dataset_audio_dir / "audio_file_1.wav")
     recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
+        audio_dir=audio_dir,
     )
 
     path_2 = random_wav_factory(path=other_dir / "audio_file_2.wav")
     recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -626,19 +713,20 @@ async def test_add_recordings_to_dataset_ignores_files_not_in_audio_dir(
 
     # Assert
     assert len(added_paths) == 1
-    assert added_paths[0].path == path_1.relative_to(dataset.audio_dir)
+    assert added_paths[0].path == path_1.relative_to(dataset_audio_dir)
 
 
 async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding recordings to a dataset ignores duplicate recordings."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path_1 = random_wav_factory(
-        path=audio_dir / "audio_file_1.wav",
+        path=dataset_audio_dir / "audio_file_1.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -646,10 +734,11 @@ async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
     recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
+        audio_dir=audio_dir,
     )
 
     path_2 = random_wav_factory(
-        path=audio_dir / "audio_file_2.wav",
+        path=dataset_audio_dir / "audio_file_2.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -657,6 +746,7 @@ async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
     recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -668,20 +758,21 @@ async def test_add_recordings_to_dataset_ignores_duplicate_recordings(
 
     # Assert
     assert len(added_paths) == 2
-    assert added_paths[0].path == path_1.relative_to(dataset.audio_dir)
-    assert added_paths[1].path == path_2.relative_to(dataset.audio_dir)
+    assert added_paths[0].path == path_1.relative_to(dataset_audio_dir)
+    assert added_paths[1].path == path_2.relative_to(dataset_audio_dir)
 
 
 async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
     session: AsyncSession,
     dataset: schemas.Dataset,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test adding multiple recordings ignores already in dataset."""
     # Arrange
-    audio_dir = dataset.audio_dir
+    dataset_audio_dir = audio_dir / dataset.audio_dir
     path_1 = random_wav_factory(
-        path=audio_dir / "audio_file_1.wav",
+        path=dataset_audio_dir / "audio_file_1.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -689,10 +780,11 @@ async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
     recording_1 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_1),
+        audio_dir=audio_dir,
     )
 
     path_2 = random_wav_factory(
-        path=audio_dir / "audio_file_2.wav",
+        path=dataset_audio_dir / "audio_file_2.wav",
         duration=1,
         samplerate=8000,
         channels=1,
@@ -700,6 +792,7 @@ async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
     recording_2 = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path_2),
+        audio_dir=audio_dir,
     )
 
     await datasets.add_recording(
@@ -717,29 +810,31 @@ async def test_add_recordings_to_dataset_ignores_recordings_already_in_dataset(
 
     # Assert
     assert len(added_paths) == 1
-    assert added_paths[0].path == path_1.relative_to(dataset.audio_dir)
+    assert added_paths[0].path == path_1.relative_to(dataset_audio_dir)
 
 
 async def test_create_dataset_registers_all_recordings(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
-    tmp_path: Path,
+    audio_dir: Path,
 ):
     """Test creating dataset registers all recordings in the directory."""
-    audio_dir = tmp_path / "audio"
+    dataset_audio_dir = audio_dir / "audio"
 
-    if audio_dir.exists():
-        audio_dir.rmdir()
+    if dataset_audio_dir.exists():
+        dataset_audio_dir.rmdir()
 
-    audio_dir.mkdir()
-    audio_file_1 = random_wav_factory(path=audio_dir / "audio_file_1.wav")
+    dataset_audio_dir.mkdir()
+    audio_file_1 = random_wav_factory(
+        path=dataset_audio_dir / "audio_file_1.wav"
+    )
 
-    subdirectory = audio_dir / "subdirectory"
+    subdirectory = dataset_audio_dir / "subdirectory"
     subdirectory.mkdir()
 
     audio_file_2 = random_wav_factory(path=subdirectory / "audio_file_2.wav")
 
-    text_file = audio_dir / "text_file.txt"
+    text_file = dataset_audio_dir / "text_file.txt"
     text_file.touch()
 
     # Act
@@ -748,13 +843,14 @@ async def test_create_dataset_registers_all_recordings(
         data=schemas.DatasetCreate(
             name="test_dataset",
             description="This is a test dataset.",
-            audio_dir=audio_dir,
+            audio_dir=dataset_audio_dir,
         ),
+        audio_dir=audio_dir,
     )
 
     # Assert
     assert isinstance(dataset, schemas.Dataset)
-    assert dataset.audio_dir == audio_dir
+    assert dataset.audio_dir == Path("audio")
     assert dataset.name == "test_dataset"
     assert dataset.description == "This is a test dataset."
 
@@ -762,8 +858,8 @@ async def test_create_dataset_registers_all_recordings(
     assert isinstance(recording_list[0], schemas.DatasetRecording)
     assert isinstance(recording_list[1], schemas.DatasetRecording)
     assert {recording_list[0].path, recording_list[1].path} == {
-        audio_file_1.relative_to(audio_dir),
-        audio_file_2.relative_to(audio_dir),
+        audio_file_1.relative_to(dataset_audio_dir),
+        audio_file_2.relative_to(dataset_audio_dir),
     }
 
     dataset_recordings = await datasets.get_recordings(
@@ -771,5 +867,9 @@ async def test_create_dataset_registers_all_recordings(
         dataset_id=dataset.id,
     )
     assert len(dataset_recordings) == 2
-    assert dataset_recordings[0].path == audio_file_1.relative_to(audio_dir)
-    assert dataset_recordings[1].path == audio_file_2.relative_to(audio_dir)
+    assert dataset_recordings[0].path == audio_file_1.relative_to(
+        dataset_audio_dir
+    )
+    assert dataset_recordings[1].path == audio_file_2.relative_to(
+        dataset_audio_dir
+    )

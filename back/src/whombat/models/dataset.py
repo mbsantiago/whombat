@@ -55,7 +55,12 @@ class Dataset(Base):
     audio_dir: orm.Mapped[Path] = orm.mapped_column(unique=True)
     """The path to the audio directory of the dataset.
 
-    This is the directory that contains all the recordings of the dataset.
+    This is the directory that contains all the recordings of the dataset. Only
+    the relative path to the base audio directory is stored in the database.
+
+    Notes
+    -----
+    Should NEVER store absolute paths in the database.
     """
 
     dataset_recordings: orm.Mapped[

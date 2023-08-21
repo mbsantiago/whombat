@@ -17,6 +17,7 @@ from whombat.api import recordings
 async def test_create_recording(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording."""
     # Arrange
@@ -30,12 +31,12 @@ async def test_create_recording(
 
     # Act
     recording = await recordings.create(
-        session, data=schemas.RecordingCreate(path=path)
+        session, data=schemas.RecordingCreate(path=path), audio_dir=audio_dir
     )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
-    assert recording.path == path.absolute()
+    assert recording.path == path.relative_to(audio_dir)
     assert recording.time_expansion == 1.0
     assert recording.channels == 1
     assert recording.samplerate == 44100
@@ -66,6 +67,7 @@ async def test_create_recording(
 async def test_create_recording_with_time_expansion(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording with time expansion."""
     # Arrange
@@ -79,6 +81,7 @@ async def test_create_recording_with_time_expansion(
     recording = await recordings.create(
         session,
         data=schemas.RecordingCreate(path=path, time_expansion=10.0),
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -91,6 +94,7 @@ async def test_create_recording_with_time_expansion(
 async def test_create_recording_fails_if_already_exists(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording fails if it already exists."""
     # Arrange
@@ -101,18 +105,23 @@ async def test_create_recording_fails_if_already_exists(
     )
 
     # Act
-    await recordings.create(session, data=schemas.RecordingCreate(path=path))
+    await recordings.create(
+        session, data=schemas.RecordingCreate(path=path), audio_dir=audio_dir
+    )
 
     # Assert
     with pytest.raises(exceptions.DuplicateObjectError):
         await recordings.create(
-            session, data=schemas.RecordingCreate(path=path)
+            session,
+            data=schemas.RecordingCreate(path=path),
+            audio_dir=audio_dir,
         )
 
 
 async def test_create_recording_with_date(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording with a date."""
     # Arrange
@@ -125,7 +134,9 @@ async def test_create_recording_with_date(
 
     # Act
     recording = await recordings.create(
-        session, data=schemas.RecordingCreate(path=path, date=date)
+        session,
+        data=schemas.RecordingCreate(path=path, date=date),
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -139,6 +150,7 @@ async def test_create_recording_with_date(
 async def test_create_recording_with_time(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording with a time."""
     # Arrange
@@ -151,7 +163,9 @@ async def test_create_recording_with_time(
 
     # Act
     recording = await recordings.create(
-        session, data=schemas.RecordingCreate(path=path, time=time)
+        session,
+        data=schemas.RecordingCreate(path=path, time=time),
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -165,6 +179,7 @@ async def test_create_recording_with_time(
 async def test_create_recording_with_coordinates(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording with coordinates."""
     # Arrange
@@ -184,6 +199,7 @@ async def test_create_recording_with_coordinates(
             latitude=latitude,
             longitude=longitude,
         ),
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -208,21 +224,26 @@ async def test_create_recording_fails_if_path_does_not_exist(
 
 async def test_create_recording_fails_if_path_is_not_an_audio_file(
     session: AsyncSession,
-    tmp_path: Path,
+    audio_dir: Path,
 ):
     """Test creating a recording fails if the path is not an audio file."""
     # Arrange
-    path = tmp_path / "not_an_audio_file.txt"
+    path = audio_dir / "not_an_audio_file.txt"
     path.touch()
 
     # Act/Assert
     with pytest.raises(ValidationError):
-        await recordings.create(session, schemas.RecordingCreate(path=path))
+        await recordings.create(
+            session,
+            schemas.RecordingCreate(path=path),
+            audio_dir=audio_dir,
+        )
 
 
 async def test_create_recording_with_bad_coordinates_fail(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating a recording with bad coordinates fails."""
     # Arrange
@@ -243,6 +264,7 @@ async def test_create_recording_with_bad_coordinates_fail(
                 latitude=latitude,
                 longitude=longitude,
             ),
+            audio_dir=audio_dir,
         )
 
     latitude = 1.0
@@ -257,6 +279,7 @@ async def test_create_recording_with_bad_coordinates_fail(
                 latitude=latitude,
                 longitude=longitude,
             ),
+            audio_dir=audio_dir,
         )
 
 
@@ -995,11 +1018,12 @@ async def test_get_recording_by_path_fails_if_not_found(
 async def test_update_recording_path(
     session: AsyncSession,
     recording: schemas.Recording,
+    audio_dir: Path,
 ):
     """Test updating a recording path."""
     # Arrange
-    path = recording.path
-    new_path = path.parent / "new_path.wav"
+    path = audio_dir / recording.path
+    new_path = audio_dir / "new_path.wav"
     shutil.move(path, new_path)
 
     # Act
@@ -1007,11 +1031,12 @@ async def test_update_recording_path(
         session,
         recording_id=recording.id,
         data=schemas.RecordingUpdate(path=new_path),
+        audio_dir=audio_dir,
     )
 
     # Assert
     assert isinstance(recording, schemas.Recording)
-    assert recording.path == new_path
+    assert recording.path == new_path.relative_to(audio_dir)
 
 
 async def test_update_recording_path_fails_if_no_file_exist(
@@ -1070,6 +1095,7 @@ async def test_update_recording_fails_if_recording_does_not_exist(
 async def test_create_recordings(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating multiple recordings."""
     # Arrange
@@ -1083,6 +1109,7 @@ async def test_create_recordings(
             schemas.RecordingCreate(path=path1),
             schemas.RecordingCreate(path=path2),
         ],
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -1090,17 +1117,21 @@ async def test_create_recordings(
     assert len(recording_list) == 2
     assert isinstance(recording_list[0], schemas.Recording)
     assert isinstance(recording_list[1], schemas.Recording)
-    assert {recording_list[0].path, recording_list[1].path} == {path1, path2}
+    assert {recording_list[0].path, recording_list[1].path} == {
+        path1.relative_to(audio_dir),
+        path2.relative_to(audio_dir),
+    }
 
 
 async def test_create_recordings_ignores_files_already_in_the_dataset(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
     recording: schemas.Recording,
+    audio_dir: Path,
 ):
     """Test creating multiple recordings ignores existing ones."""
     # Arrange
-    path1 = recording.path
+    path1 = audio_dir / recording.path
     path2 = random_wav_factory()
     all_recordings = await recordings.get_recordings(session, limit=-1)
     assert len(all_recordings) == 1
@@ -1112,6 +1143,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
             schemas.RecordingCreate(path=path1),
             schemas.RecordingCreate(path=path2),
         ],
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -1125,6 +1157,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
 async def test_create_recordings_removes_hash_duplicates(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating multiple recordings avoids hash duplication.
 
@@ -1143,18 +1176,20 @@ async def test_create_recordings_removes_hash_duplicates(
             schemas.RecordingCreate(path=path1),
             schemas.RecordingCreate(path=path2),
         ],
+        audio_dir=audio_dir,
     )
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path1
+    assert recording_list[0].path == path1.relative_to(audio_dir)
 
 
 async def test_create_recording_avoids_hash_duplicates(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating multiple recordings omits pre-registered hashes.
 
@@ -1169,7 +1204,9 @@ async def test_create_recording_avoids_hash_duplicates(
     shutil.copy(path2, path3)
 
     # Pre register recording at path3
-    await recordings.create(session, schemas.RecordingCreate(path=path3))
+    await recordings.create(
+        session, schemas.RecordingCreate(path=path3), audio_dir=audio_dir
+    )
 
     # Act
     await recordings.create_many(
@@ -1178,6 +1215,7 @@ async def test_create_recording_avoids_hash_duplicates(
             schemas.RecordingCreate(path=path1),
             schemas.RecordingCreate(path=path2),
         ],
+        audio_dir=audio_dir,
     )
 
     # Assert
@@ -1188,6 +1226,7 @@ async def test_create_recording_avoids_hash_duplicates(
 async def test_create_recordings_with_time_expansion(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test creating multiple recordings with time expansion."""
     # Arrange
@@ -1199,13 +1238,14 @@ async def test_create_recordings_with_time_expansion(
         [
             schemas.RecordingCreate(path=path1, time_expansion=5),
         ],
+        audio_dir=audio_dir,
     )
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].path == path1
+    assert recording_list[0].path == path1.relative_to(audio_dir)
     assert recording_list[0].time_expansion == 5
     assert recording_list[0].duration == 1 / 5
     assert recording_list[0].samplerate == 8000 * 5

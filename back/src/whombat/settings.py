@@ -2,6 +2,7 @@
 
 We are using pydantic to define our settings.
 """
+from pathlib import Path
 
 from pydantic_settings import BaseSettings
 
@@ -12,6 +13,8 @@ class Settings(BaseSettings):
     """Settings for whombat."""
 
     db_url: str = "sqlite+aiosqlite:///whombat.db"
+
+    audio_dir: Path = Path.home()
 
     app_name: str = "Whombat"
 

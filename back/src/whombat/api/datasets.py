@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import cache, exceptions, models, schemas
 from whombat.api import common, recordings
 from whombat.core import files
+from whombat.dependencies import get_settings
 from whombat.filters.base import Filter
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
@@ -219,6 +220,7 @@ async def get_many(
 async def create(
     session: AsyncSession,
     data: DatasetCreate,
+    audio_dir: Path | None = None,
 ) -> tuple[schemas.DatasetWithCounts, list[schemas.DatasetRecording]]:
     """Create a dataset.
 
@@ -246,17 +248,34 @@ async def create(
         If the given audio directory does not exist.
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
+    # Make sure the path is relative to the root audio directory.
+    if not data.audio_dir.is_relative_to(audio_dir):
+        raise ValueError(
+            "The audio directory must be relative to the root audio directory."
+            f"\n\tRoot audio directory: {audio_dir}"
+            f"\n\tAudio directory: {data.audio_dir}"
+        )
+
     db_dataset = await common.create_object(
         session,
         models.Dataset,
         data,
+        audio_dir=data.audio_dir.relative_to(audio_dir),
     )
     dataset = schemas.Dataset.model_validate(db_dataset)
 
-    file_list = files.get_audio_files_in_folder(data.audio_dir, relative=False)
+    file_list = files.get_audio_files_in_folder(
+        audio_dir / data.audio_dir,
+        relative=False,
+    )
+
     recording_list = await recordings.create_many(
         session,
         [schemas.RecordingCreate(path=file) for file in file_list],
+        audio_dir=audio_dir,
     )
 
     dataset_recordigns = await add_recordings(
@@ -283,6 +302,7 @@ async def update(
     session: AsyncSession,
     dataset_id: int,
     data: DatasetUpdate,
+    audio_dir: Path | None = None,
 ) -> schemas.DatasetWithCounts:
     """Update a dataset.
 
@@ -297,6 +317,10 @@ async def update(
     data : DatasetUpdate
         The data to update the dataset with.
 
+    audio_dir : Path, optional
+        The root audio directory, by default None. If None, the root audio
+        directory from the settings will be used.
+
     Returns
     -------
     dataset : schemas.Dataset
@@ -307,11 +331,28 @@ async def update(
         If no dataset with the given UUID exists.
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
+    dataset_audio_dir = None
+    if data.audio_dir is not None:
+        # Make sure the path is relative to the root audio directory.
+        if not data.audio_dir.is_relative_to(audio_dir):
+            raise ValueError(
+                "The audio directory must be relative to the root audio "
+                "directory."
+                f"\n\tRoot audio directory: {audio_dir}"
+                f"\n\tAudio directory: {data.audio_dir}"
+            )
+
+        dataset_audio_dir = data.audio_dir.relative_to(audio_dir)
+
     db_dataset = await common.update_object(
         session,
         models.Dataset,
         models.Dataset.id == dataset_id,
         data,
+        audio_dir=dataset_audio_dir,
     )
     return schemas.DatasetWithCounts.model_validate(db_dataset)
 
@@ -349,6 +390,7 @@ async def add_file(
     session: AsyncSession,
     dataset_id: int,
     data: schemas.RecordingCreate,
+    audio_dir: Path | None = None,
 ) -> schemas.DatasetRecording:
     """Add a file to a dataset.
 
@@ -367,6 +409,11 @@ async def add_file(
     data : schemas.RecordingCreate
         The data to create the recording with.
 
+
+    audio_dir : Path, optional
+        The root audio directory, by default None. If None, the root audio
+        directory from the settings will be used.
+
     Returns
     -------
     recording : schemas.DatasetRecording
@@ -381,22 +428,23 @@ async def add_file(
         If the file is not part of the dataset audio directory.
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
     dataset = await get_by_id(session, dataset_id=dataset_id)
+    dataset_audio_dir = audio_dir / dataset.audio_dir
 
     # Make sure the file is part of the dataset audio dir
-    if not data.path.is_relative_to(dataset.audio_dir):
+    if not data.path.is_relative_to(dataset_audio_dir):
         raise ValueError(
             "The file is not part of the dataset audio directory."
         )
 
     try:
-        recording = await recordings.get_by_path(session, data.path)
+        path = data.path.relative_to(audio_dir)
+        recording = await recordings.get_by_path(session, path)
     except exceptions.NotFoundError:
-        recording = await recordings.create(session, data)
-
-        # Update the dataset recording count.
-        dataset.recording_count += 1
-        dataset_caches.update_object(dataset)
+        recording = await recordings.create(session, data, audio_dir=audio_dir)
 
     return await add_recording(
         session,
@@ -579,6 +627,7 @@ async def get_recordings(
 async def get_state(
     session: AsyncSession,
     dataset_id: int,
+    audio_dir: Path | None = None,
 ) -> list[schemas.DatasetFile]:
     """Compute the state of the dataset recordings.
 
@@ -601,17 +650,25 @@ async def get_state(
     dataset_id : int
         The ID of the dataset to get the files for.
 
+    audio_dir : Path, optional
+        The root audio directory, by default None. If None, the root audio
+        directory from the settings will be used.
+
     Returns
     -------
     files : list[schemas.DatasetFile]
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
     # Get the dataset.
     dataset = await get_by_id(session, dataset_id=dataset_id)
 
     # Get the files in the dataset directory.
     file_list = files.get_audio_files_in_folder(
-        dataset.audio_dir, relative=True
+        audio_dir / dataset.audio_dir,
+        relative=True,
     )
 
     # Get the files in the database.
@@ -623,6 +680,7 @@ async def get_state(
     result = await session.execute(query)
     db_recordings = result.scalars().all()
     db_files = [Path(path) for path in db_recordings]
+    print(db_files, file_list)
 
     existing_files = set(file_list) & set(db_files)
     missing_files = set(db_files) - set(file_list)

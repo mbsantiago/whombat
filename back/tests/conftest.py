@@ -13,9 +13,8 @@ import soundevent
 from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from whombat import api, cache, dependencies, models, schemas
 from whombat.app import app
-from whombat import api, cache, models, schemas
-from whombat.dependencies import get_settings
 from whombat.settings import Settings
 
 # Avoid noisy logging during tests.
@@ -24,11 +23,46 @@ logging.getLogger("asyncio").setLevel(logging.WARNING)
 logging.getLogger("passlib").setLevel(logging.WARNING)
 
 
+@pytest.fixture
+def audio_dir(tmp_path: Path):
+    """Fixture to create a temporary audio directory."""
+    path = tmp_path / "audio"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+@pytest.fixture
+def database_test(tmp_path: Path) -> Path:
+    """Fixture to create a temporary database."""
+    return tmp_path / "test.db"
+
+
+@pytest.fixture(autouse=True)
+def settings(database_test: Path) -> Settings:
+    """Fixture to return the settings."""
+    os.environ["db_url"] = f"sqlite+aiosqlite:///{database_test.absolute()}"
+    os.environ["audio_dir"] = "/"
+    os.environ["app_name"] = "Whombat"
+    os.environ["admin_username"] = "test_admin"
+    os.environ["admin_password"] = "test_password"
+    os.environ["admin_email"] = "test@whombat.com"
+    settings = Settings(
+        db_url=f"sqlite+aiosqlite:///{database_test.absolute()}",
+        app_name="Whombat",
+        audio_dir=Path("/"),
+        admin_username="test_admin",
+        admin_password="test_password",
+        admin_email="test@whombat.com",
+    )
+    app.dependency_overrides[dependencies.get_settings] = lambda: settings
+    return settings
+
+
 @pytest.fixture(autouse=True)
 async def clear_cache():
     """Clear the cache before each test."""
-    yield
     cache.clear_all_caches()
+    yield
 
 
 def random_string():
@@ -51,7 +85,7 @@ def write_random_wav(
 
 
 @pytest.fixture
-def random_wav_factory(tmp_path: Path):
+def random_wav_factory(audio_dir: Path):
     """Produce a random wav file."""
 
     def wav_factory(
@@ -61,7 +95,7 @@ def random_wav_factory(tmp_path: Path):
         channels: int = 1,
     ) -> Path:
         if path is None:
-            path = tmp_path / (random_string() + ".wav")
+            path = audio_dir / (random_string() + ".wav")
 
         dirname = os.path.dirname(path)
         if not os.path.exists(dirname):
@@ -77,27 +111,6 @@ def random_wav_factory(tmp_path: Path):
         return path
 
     return wav_factory
-
-
-@pytest.fixture
-def database_test(tmpdir) -> Path:
-    """Fixture to create a temporary database."""
-    path = Path(tmpdir)
-    return path / "test.db"
-
-
-@pytest.fixture(autouse=True)
-def settings(database_test: Path) -> Settings:
-    """Fixture to return the settings."""
-    settings = Settings(
-        db_url=f"sqlite+aiosqlite:///{database_test.absolute()}",
-        app_name="Whombat",
-        admin_username="test_admin",
-        admin_password="test_password",
-        admin_email="test@whombat.com",
-    )
-    app.dependency_overrides[get_settings] = lambda: settings
-    return settings
 
 
 @pytest.fixture
@@ -125,11 +138,13 @@ async def user(session: AsyncSession) -> schemas.User:
 async def recording(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ) -> schemas.Recording:
     """Create a recording for testing."""
     recording = await api.recordings.create(
         session,
         data=schemas.RecordingCreate(path=random_wav_factory()),
+        audio_dir=audio_dir,
     )
     return recording
 
@@ -183,30 +198,27 @@ async def clip(
 
 
 @pytest.fixture
-async def dataset(session: AsyncSession, tmp_path: Path) -> schemas.Dataset:
+async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
     """Create a dataset for testing."""
-    dataset_dir = tmp_path / "test_dataset"
-    audio_dir = dataset_dir / "audio"
-    audio_dir.mkdir(parents=True)
-
+    dataset_dir = audio_dir / "test_dataset" / "audio"
+    dataset_dir.mkdir(parents=True)
     dataset, _ = await api.datasets.create(
         session,
         data=schemas.DatasetCreate(
             name="test_dataset",
             description="test_description",
-            audio_dir=audio_dir,
+            audio_dir=dataset_dir,
         ),
+        audio_dir=audio_dir,
     )
     return dataset
 
 
 @pytest.fixture
 async def annotation_project(
-    session: AsyncSession, tmp_path: Path
+    session: AsyncSession,
 ) -> schemas.AnnotationProject:
     """Create an annotation project for testing."""
-    annotation_project_dir = tmp_path / "test_annotation_project"
-    annotation_project_dir.mkdir(parents=True)
     annotation_project = await api.annotation_projects.create(
         session,
         data=schemas.AnnotationProjectCreate(

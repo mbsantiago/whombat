@@ -42,7 +42,7 @@ def test_get_audio_files_in_folder(
     random_wav_factory: Callable[..., Path],
 ):
     """Test the function to get all recordings in a folder."""
-    test_audio_dir = tmp_path / "audio"
+    test_audio_dir = tmp_path / "test_audio_dir"
     test_audio_dir.mkdir()
 
     # Create wav files

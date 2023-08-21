@@ -1,5 +1,6 @@
 """API functions for interacting with recordings."""
-
+import warnings
+from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from whombat import cache, filters, models, schemas
 from whombat.api import common
 from whombat.core import files
 from whombat.core.common import remove_duplicates
+from whombat.dependencies import get_settings
 
 __all__ = [
     "add_feature",
@@ -195,11 +197,34 @@ async def get_recordings(
 
 def _assemble_recording_data(
     data: schemas.RecordingCreate,
+    audio_dir: Path,
 ) -> schemas.RecordingPreCreate | None:
     """Get missing recording data from file."""
     info = files.get_file_info(data.path)
-    if info.media_info is None or not info.is_audio:
+
+    if info.media_info is None:
+        warnings.warn(
+            f"Could not extract media info from file. {data.path}"
+            "Skipping file.",
+            UserWarning,
+        )
         return None
+
+    if not info.is_audio:
+        warnings.warn(
+            f"File is not an audio file. {data.path} Skipping file.",
+            UserWarning,
+        )
+        return None
+
+    if not data.path.is_relative_to(audio_dir):
+        warnings.warn(
+            f"File is not in audio directory. {data.path} Skipping file."
+            f"Root audio directory: {audio_dir}",
+            UserWarning,
+        )
+        return None
+
     duration = info.media_info.duration_s / data.time_expansion
     samplerate = info.media_info.samplerate_hz * data.time_expansion
     channels = info.media_info.channels
@@ -210,6 +235,7 @@ def _assemble_recording_data(
             "samplerate": samplerate,
             "channels": channels,
             "hash": info.hash,
+            "path": data.path.relative_to(audio_dir),
         }
     )
 
@@ -218,6 +244,7 @@ def _assemble_recording_data(
 async def create(
     session: AsyncSession,
     data: schemas.RecordingCreate,
+    audio_dir: Path | None = None,
 ) -> schemas.Recording:
     """Create a recording.
 
@@ -225,8 +252,13 @@ async def create(
     ----------
     session : AsyncSession
         The database session to use.
+
     data : schemas.RecordingCreate
         The data to create the recording with.
+
+    audio_dir : Path
+        The root directory for audio files. If not given, it will
+        default to the value of `settings.audio_dir`.
 
     Returns
     -------
@@ -234,9 +266,14 @@ async def create(
         The created recording.
 
     """
-    recording_data = _assemble_recording_data(data)
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
+    recording_data = _assemble_recording_data(data, audio_dir=audio_dir)
+
     if recording_data is None:
         raise ValueError("Cannot create recording from file.")
+
     recording = await common.create_object(
         session,
         models.Recording,
@@ -248,6 +285,7 @@ async def create(
 async def create_many(
     session: AsyncSession,
     data: list[schemas.RecordingCreate],
+    audio_dir: Path | None = None,
 ) -> list[schemas.Recording]:
     """Create recordings.
 
@@ -278,13 +316,18 @@ async def create_many(
     Any files that do not meet these criteria will be silently ignored.
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
     data = remove_duplicates(
-        [recording for recording in data], key=lambda x: x.path
+        [recording for recording in data],
+        key=lambda x: x.path,
     )
 
     with Pool() as pool:
         all_data: list[schemas.RecordingPreCreate | None] = pool.map(
-            _assemble_recording_data, data
+            partial(_assemble_recording_data, audio_dir=audio_dir),
+            data,
         )
 
     recordings = await common.create_objects_without_duplicates(
@@ -304,6 +347,7 @@ async def update(
     session: AsyncSession,
     recording_id: int,
     data: schemas.RecordingUpdate,
+    audio_dir: Path | None = None,
 ) -> schemas.Recording:
     """Update a recording.
 
@@ -318,33 +362,52 @@ async def update(
     data : RecordingUpdate
         The data to update the recording with.
 
+    audio_dir : Path
+        The root directory for audio files. If not given, it will
+        default to the value of `settings.audio_dir`.
+
     Returns
     -------
     recording : schemas.recordings.Recording
         The updated recording.
 
     """
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
     recording = await common.get_object(
         session,
         models.Recording,
         models.Recording.id == recording_id,
     )
 
-    if data.path is not None:
-        new_hash = compute_md5_checksum(data.path)
-        if new_hash != recording.hash:
-            raise ValueError(
-                "File at the given path does not match the hash of the "
-                "recording."
-            )
-
-    if (
-        data.time_expansion is not None
-        and data.time_expansion != recording.time_expansion
-    ):
-        adjust_time_expansion(recording, data.time_expansion)
-
     for field, value in data.model_dump(exclude_unset=True).items():
+        if field == "path":
+            new_hash = compute_md5_checksum(value)
+
+            if new_hash != recording.hash:
+                raise ValueError(
+                    "File at the given path does not match the hash of the "
+                    "recording."
+                )
+
+            if not value.is_relative_to(audio_dir):
+                raise ValueError(
+                    "File is not in audio directory. "
+                    f"\n\tFile:                 {value}. "
+                    f"\n\tRoot audio directory: {audio_dir}"
+                )
+
+            recording.path = value.relative_to(audio_dir)
+            continue
+
+        if field == "time_expansion":
+            if value == recording.time_expansion:
+                continue
+
+            adjust_time_expansion(recording, value)
+            continue
+
         setattr(recording, field, value)
 
     await session.commit()
@@ -379,6 +442,8 @@ def adjust_time_expansion(
     recording.duration /= factor
     recording.samplerate = int(factor * recording.samplerate)
 
+    recording.time_expansion = time_expansion
+
     # TODO: Update time and frequency coordinates of associated objects:
     # - clips
     # - sound_events
@@ -410,7 +475,6 @@ async def delete(
         models.Recording,
         models.Recording.id == recording_id,
     )
-    # TODO: Make sure that all associated objects are also deleted
     return schemas.Recording.model_validate(obj)
 
 

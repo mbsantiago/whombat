@@ -214,6 +214,7 @@ async def create_object(
     session: AsyncSession,
     model: type[A],
     data: BaseModel,
+    **kwargs: Any,
 ) -> A:
     """Create an object.
 
@@ -231,7 +232,7 @@ async def create_object(
     A
         The created object.
     """
-    obj = model(**get_values(data))
+    obj = model(**{**get_values(data), **kwargs})
     try:
         session.add(obj)
         await session.commit()
@@ -418,6 +419,7 @@ async def update_object(
     model: type[A],
     condition: _ColumnExpressionArgument,
     data: BaseModel,
+    **kwargs: Any,
 ) -> A:
     """Update an object based on some condition.
 
@@ -446,9 +448,15 @@ async def update_object(
         If the object was not found.
     """
     obj = await get_object(session, model, condition)
-    for key in data.model_fields_set:
-        value = getattr(data, key)
+
+    update_with = {
+        **{key: getattr(data, key) for key in data.model_fields_set},
+        **kwargs,
+    }
+
+    for key, value in update_with.items():
         setattr(obj, key, value)
+
     try:
         await session.commit()
     except IntegrityError as e:

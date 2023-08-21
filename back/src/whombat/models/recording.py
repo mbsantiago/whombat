@@ -54,23 +54,20 @@ class Recording(Base):
     """The id of the recording."""
 
     hash: orm.Mapped[str] = orm.mapped_column(unique=True, index=True)
-    """The sha256 hash of the recording.
+    """The md5 hash of the recording.
 
     The hash is used to uniquely identify the recording. It is calculated
     from the recording file and is used to check if a recording has been
     registered before.
-
-    The hash function SHOULD be computed using the
-    whombat.core.files.compute_hash function.
     """
 
     path: orm.Mapped[Path] = orm.mapped_column(unique=True, index=True)
     """The path of the dataset.
 
-    This path should be absolute and should point to the recording file.
-    Never use the absolute path when providing the path through the REST API,
-    as this may expose sensitive information. Instead, use the relative path
-    to the dataset root directory.
+    This is the path to the recording file relative to the base audio
+    directory. We dont store the absolute path to the recording file in the
+    database, as this may expose sensitive information, and it makes it
+    easier to share datasets between users.
     """
 
     duration: orm.Mapped[float]
