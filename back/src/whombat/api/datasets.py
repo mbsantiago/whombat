@@ -1,4 +1,5 @@
 """API functions for interacting with datasets."""
+import logging
 import uuid
 from pathlib import Path
 
@@ -27,6 +28,8 @@ __all__ = [
     "update",
 ]
 
+
+logger = logging.getLogger(__name__)
 
 dataset_caches = cache.CacheCollection(schemas.DatasetWithCounts)
 
@@ -272,11 +275,16 @@ async def create(
         relative=False,
     )
 
+    logger.debug(f"Found {len(file_list)} audio files in {data.audio_dir}.")
+    logger.debug(f"Creating recordings for {len(file_list)} audio files.")
+
     recording_list = await recordings.create_many(
         session,
         [schemas.RecordingCreate(path=file) for file in file_list],
         audio_dir=audio_dir,
     )
+
+    logger.debug(f"Adding {len(recording_list)} recordings to dataset.")
 
     dataset_recordigns = await add_recordings(
         session=session,

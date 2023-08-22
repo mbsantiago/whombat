@@ -1,14 +1,6 @@
 "use client";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
-import * as api from "./api";
 
-const queryClient = new QueryClient();
-
-function Home() {
-  const { data, isLoading } = useQuery("tags", () => api.tags.getTags({}));
-
-  console.log(data, isLoading);
-
+export default function Home() {
   return (
     <main>
       <div className="container mx-auto p-16">
@@ -25,13 +17,5 @@ function Home() {
         </h2>
       </div>
     </main>
-  );
-}
-
-export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Home />
-    </QueryClientProvider>
   );
 }

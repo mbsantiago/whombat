@@ -1,10 +1,11 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import * as api from "../api";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, InputGroup } from "./components";
+import api from "@/app/api";
+import useStore from "@/app/store";
 
 const schema = z.object({
   username: z.string(),
@@ -13,19 +14,35 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function LoginForm() {
+  const login = useStore((state) => state.login);
+
   const {
     register,
     handleSubmit,
+    reset,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange",
   });
 
+  const router = useRouter();
+
   const onSubmit = (data: FormData) => {
-    api.auth.login(data.username, data.password).then((response) => {
-      console.log(response);
-    });
+    api.auth
+      .login(data)
+      .catch(() => {
+        reset();
+        setError("username", { message: "Invalid username or password" });
+        setError("password", { message: "Invalid username or password" });
+        return Promise.reject("Invalid username or password");
+      })
+      .then(() => api.user.me())
+      .then((user) => {
+        login(user);
+        router.push("/");
+      });
   };
 
   return (

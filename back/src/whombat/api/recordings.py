@@ -325,9 +325,12 @@ async def create_many(
     )
 
     with Pool() as pool:
-        all_data: list[schemas.RecordingPreCreate | None] = pool.map(
+        results = pool.map_async(
             partial(_assemble_recording_data, audio_dir=audio_dir),
             data,
+        )
+        all_data: list[schemas.RecordingPreCreate | None] = results.get(
+            timeout=30
         )
 
     recordings = await common.create_objects_without_duplicates(
@@ -337,6 +340,7 @@ async def create_many(
         key=lambda recording: recording.hash,
         key_column=models.Recording.hash,
     )
+
     return [
         schemas.Recording.model_validate(recording) for recording in recordings
     ]

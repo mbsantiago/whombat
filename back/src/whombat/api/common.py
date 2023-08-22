@@ -1,6 +1,7 @@
 """Common API functions."""
 
 import re
+import logging
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
@@ -31,6 +32,9 @@ __all__ = [
     "remove_note_from_object",
     "remove_feature_from_object",
 ]
+
+
+logger = logging.getLogger(__name__)
 
 
 A = TypeVar("A", bound=models.Base)
@@ -326,6 +330,9 @@ async def create_objects_without_duplicates(
 
     # Get existing objects
     keys = [key(obj) for obj in data]
+
+    logger.debug("Getting existing objects")
+
     existing = await get_objects(
         session,
         model,
@@ -336,13 +343,20 @@ async def create_objects_without_duplicates(
     # Create missing objects
     missing = [obj for obj in data if key(obj) not in existing_keys]
 
+    logger.debug("Number of missing objects: %s", len(missing))
+
     if not missing:
         return []
 
     values = [get_values(obj) for obj in missing]
     keys = [key(obj) for obj in missing]
+
+    logger.debug("Inserting missing objects")
+
     stmt = insert(model).values(values)
     await session.execute(stmt)
+
+    logger.debug("Getting created objects")
 
     # Return all objects
     return await get_objects(

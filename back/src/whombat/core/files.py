@@ -1,4 +1,5 @@
 """File handling functions."""
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -8,6 +9,8 @@ from soundevent.audio import (
     get_media_info,
     is_audio_file,
 )
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "get_audio_files_in_folder",
@@ -72,18 +75,29 @@ def get_file_info(path: Path) -> FileInfo:
     file_info: FileInfo
         Information about the file.
     """
+    logger.debug(f"Getting information about file: {path}")
+
     if not path.is_file():
+        logger.warning(f"File does not exist: {path}")
         return FileInfo(path=path, exists=False)
 
     if not is_audio_file(path):
+        logger.warning(f"File is not an audio file: {path}")
         return FileInfo(path=path, exists=True, is_audio=False)
 
+    logger.debug(f"Computing hash of file: {path}")
     hash = compute_md5_checksum(path)
+    logger.debug("done")
 
     try:
+        logger.debug(f"Getting media info of file: {path}")
         media_info = get_media_info(path)
+        logger.debug("done")
     except ValueError:
+        logger.warning(f"Could not get media info of file: {path}")
         media_info = None
+
+    logger.debug(f"Finished getting information about file: {path}")
 
     return FileInfo(
         path=path,

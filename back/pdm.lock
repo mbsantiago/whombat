@@ -1096,7 +1096,7 @@ files = [
 
 [[package]]
 name = "soundevent"
-version = "0.5.2"
+version = "0.5.4"
 requires_python = ">=3.8"
 summary = "soundevent is an open-source Python package for the computational biocoustic community, providing standardized tools for sound event analysis and data management."
 dependencies = [
@@ -1108,8 +1108,8 @@ dependencies = [
     "xarray>=0.20.2",
 ]
 files = [
-    {file = "soundevent-0.5.2-py3-none-any.whl", hash = "sha256:1070f30bd6b2bb76bff8ee2375a05f657d6f1412798e52af85e178c113015a40"},
-    {file = "soundevent-0.5.2.tar.gz", hash = "sha256:a839a44119cf578c181bbc30fda02344615198d1e10b8ce40674ba00fefef72c"},
+    {file = "soundevent-0.5.4-py3-none-any.whl", hash = "sha256:90e7f099ac4bc10639987ec7a8c2868eb1440c6efb85a5afcfc585043378f99a"},
+    {file = "soundevent-0.5.4.tar.gz", hash = "sha256:03a0bda8f72c8a18361c7d490b9a608afb8ef5d827929f06c1697ad6bc77ee5a"},
 ]
 
 [[package]]
