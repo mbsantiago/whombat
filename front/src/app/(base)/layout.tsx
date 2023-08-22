@@ -2,10 +2,16 @@
 import { redirect } from "next/navigation";
 import { QueryClientProvider } from "react-query";
 import queryClient from "../client";
-import useStore from "@/app/store";
+import useStore, { useHydration } from "@/app/store";
 
 function WithLogIn({ children }: { children: React.ReactNode }) {
+  const isHydrated = useHydration();
   const user = useStore((state) => state.user);
+
+  if (!isHydrated) {
+    return "Loading...";
+  }
+
   if (!user) {
     return redirect("/login");
   }
