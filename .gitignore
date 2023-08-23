@@ -1,2 +1,6 @@
 
 back/pdm.toml
+back/scripts
+front/src/old_components
+front/src/old_hooks
+front/src/draw
