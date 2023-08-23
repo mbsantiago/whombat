@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui-float/react": "^0.11.2",
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.2.0",
     "@types/node": "20.5.1",
     "@types/react": "18.2.20",
@@ -29,5 +32,9 @@
     "typescript": "5.1.6",
     "zod": "^3.21.4",
     "zustand": "^4.4.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.2",
+    "prettier-plugin-tailwindcss": "^0.5.3"
   }
 }
