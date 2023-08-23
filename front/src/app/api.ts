@@ -1,4 +1,4 @@
-import createAPI from "@/whombat";
+import createAPI from "@/api";
 
 const api = createAPI({
   baseURL: "http://localhost:5000",

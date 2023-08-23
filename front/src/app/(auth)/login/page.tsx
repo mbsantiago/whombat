@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input, InputGroup } from "@/components/inputs";
 import api from "@/app/api";
-import useStore from "@/app/store";
+import useStore from "@/store";
 
 const schema = z.object({
   username: z.string(),
