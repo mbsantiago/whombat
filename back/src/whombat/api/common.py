@@ -1,11 +1,11 @@
 """Common API functions."""
 
-import re
 import logging
+import re
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import insert, select
+from sqlalchemy import Select, func, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
@@ -17,20 +17,21 @@ from whombat.core.common import remove_duplicates
 from whombat.filters.base import Filter
 
 __all__ = [
+    "add_feature_to_object",
+    "add_note_to_object",
+    "add_tag_to_object",
     "create_object",
     "create_objects_without_duplicates",
+    "delete_object",
+    "get_count",
     "get_object",
     "get_objects",
     "get_or_create_object",
-    "delete_object",
-    "update_object",
-    "add_note_to_object",
-    "add_tag_to_object",
-    "add_feature_to_object",
-    "update_feature_on_object",
-    "remove_tag_from_object",
-    "remove_note_from_object",
     "remove_feature_from_object",
+    "remove_note_from_object",
+    "remove_tag_from_object",
+    "update_feature_on_object",
+    "update_object",
 ]
 
 
@@ -43,6 +44,19 @@ F = TypeVar("F", bound=models.Base)
 
 
 pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+
+async def get_count(session: AsyncSession, q: Select) -> int:
+    """Get the count of a query.
+
+    Modified from https://gist.github.com/hest/8798884.
+    """
+    count_q = q.with_only_columns(func.count()).order_by(None)
+    result = await session.execute(count_q)
+    count = result.scalar()
+    if not isinstance(count, int):
+        raise TypeError("Count query did not return an integer")
+    return count
 
 
 def _to_snake_case(name: str) -> str:
@@ -168,7 +182,7 @@ async def get_objects(
     offset: int = 0,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
     sort_by: _ColumnExpressionArgument | str | None = None,
-) -> Sequence[A]:
+) -> tuple[Sequence[A], int]:
     """Get all objects.
 
     Parameters
@@ -195,6 +209,10 @@ async def get_objects(
     -------
     list[A]
         The objects.
+
+    count : int
+        The total number of objects. This is the number of objects that would
+        have been returned if no limit or offset was applied.
     """
     query = select(model)
     for filter_ in filters or []:
@@ -202,7 +220,6 @@ async def get_objects(
             query = filter_.filter(query)
         else:
             query = query.where(filter_)
-    query = query.limit(limit).offset(offset)
 
     if sort_by is not None:
         if isinstance(sort_by, str):
@@ -210,8 +227,10 @@ async def get_objects(
 
         query = query.order_by(sort_by)
 
+    count = await get_count(session, query)
+    query = query.limit(limit).offset(offset)
     result = await session.execute(query)
-    return result.unique().scalars().all()
+    return result.unique().scalars().all(), count
 
 
 async def create_object(
@@ -333,7 +352,7 @@ async def create_objects_without_duplicates(
 
     logger.debug("Getting existing objects")
 
-    existing = await get_objects(
+    existing, _ = await get_objects(
         session,
         model,
         filters=[key_column.in_(keys)],
@@ -359,11 +378,12 @@ async def create_objects_without_duplicates(
     logger.debug("Getting created objects")
 
     # Return all objects
-    return await get_objects(
+    created, _ = await get_objects(
         session,
         model,
         filters=[key_column.in_(keys)],
     )
+    return created
 
 
 async def delete_object(

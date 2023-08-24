@@ -223,7 +223,7 @@ async def test_get_datasets(session: AsyncSession, audio_dir: Path):
     )
 
     # Act
-    retrieved_datasets = await datasets.get_many(session)
+    retrieved_datasets, _ = await datasets.get_many(session)
 
     # Assert
     assert isinstance(retrieved_datasets, list)
@@ -232,7 +232,7 @@ async def test_get_datasets(session: AsyncSession, audio_dir: Path):
     assert dataset2 in retrieved_datasets
 
     # Act (with limit)
-    retrieved_datasets = await datasets.get_many(session, limit=1)
+    retrieved_datasets, _ = await datasets.get_many(session, limit=1)
 
     # Assert
     assert isinstance(retrieved_datasets, list)
@@ -240,7 +240,7 @@ async def test_get_datasets(session: AsyncSession, audio_dir: Path):
     assert dataset2 in retrieved_datasets
 
     # Act (with offset)
-    retrieved_datasets = await datasets.get_many(session, offset=1)
+    retrieved_datasets, _ = await datasets.get_many(session, offset=1)
     assert isinstance(retrieved_datasets, list)
     assert len(retrieved_datasets) == 1
     assert dataset1 in retrieved_datasets
@@ -494,7 +494,7 @@ async def test_get_dataset_recordings(
     )
 
     # Act
-    retrieved_recordings = await datasets.get_recordings(
+    retrieved_recordings, _ = await datasets.get_recordings(
         session, dataset_id=dataset.id
     )
 
@@ -555,7 +555,7 @@ async def test_add_file_to_dataset(
     assert result.scalars().first() is not None
 
     # Make sure the recording was added to the dataset
-    recording_list = await datasets.get_recordings(
+    recording_list, _ = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )
@@ -623,7 +623,7 @@ async def test_add_file_to_dataset_with_existing_recording(
     )
 
     # Assert
-    recording_list = await datasets.get_recordings(
+    recording_list, _ = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )
@@ -862,7 +862,7 @@ async def test_create_dataset_registers_all_recordings(
         audio_file_2.relative_to(dataset_audio_dir),
     }
 
-    dataset_recordings = await datasets.get_recordings(
+    dataset_recordings, _ = await datasets.get_recordings(
         session,
         dataset_id=dataset.id,
     )

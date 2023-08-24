@@ -18,7 +18,7 @@ __all__ = [
     "create_many",
     "delete",
     "get_by_uuid",
-    "get_recordings",
+    "get_many",
     "remove_feature",
     "remove_tag",
     "update_feature",
@@ -101,41 +101,50 @@ async def get_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
     return schemas.Clip.model_validate(clip)
 
 
-async def get_recordings(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 1000,
     offset: int = 0,
     filters: list[Filter] | None = None,
-) -> list[schemas.Clip]:
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.Clip], int]:
     """Get clips from the database.
 
     Parameters
     ----------
     session : AsyncSession
         Database session.
+
     limit : int, optional
         Maximum number of clips to return, by default 1000.
         Set to -1 to return all clips.
+
     offset : int, optional
         Offset to start returning clips from, by default 0.
+
     filters : list[Filter], optional
         List of filters to apply, by default None.
+
+    sort_by : str, optional
+        Sort clips by this column, by default "-created_at".
 
     Returns
     -------
     list[schemas.Clip]
         List of clips.
-
+    count : int
+        Total number of clips that match the filters.
     """
-    clips = await common.get_objects(
+    clips, count = await common.get_objects(
         session,
         models.Clip,
         limit=limit,
         offset=offset,
         filters=filters,
+        sort_by=sort_by,
     )
-    return [schemas.Clip.model_validate(clip) for clip in clips]
+    return [schemas.Clip.model_validate(clip) for clip in clips], count
 
 
 @clips_cache.with_update
@@ -234,7 +243,7 @@ async def create_many(
     clip_ids = [clip.id for clip in clips]
     session.expire_all()
 
-    clips = await common.get_objects(
+    clips, _ = await common.get_objects(
         session,
         models.Clip,
         limit=-1,

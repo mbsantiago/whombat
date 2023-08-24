@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:c80e8f68d74c1618c65d352b049f52fef135b937cd821c7d9b6860e53b94f955"
+content_hash = "sha256:54290b186b670da76bba936eeb3ba6d20071ef124cd7f194ce67e072226b7e16"
 
 [[package]]
 name = "aiosqlite"
@@ -334,6 +334,20 @@ dependencies = [
 files = [
     {file = "fastapi-0.101.0-py3-none-any.whl", hash = "sha256:494eb3494d89e8079c20859d7ca695f66eaccc40f46fe8c75ab6186d15f05ffd"},
     {file = "fastapi-0.101.0.tar.gz", hash = "sha256:ca2ae65fe42f6a34b5cf6c994337149154b1b400c39809d7b2dccdceb5ae77af"},
+]
+
+[[package]]
+name = "fastapi-pagination"
+version = "0.12.8"
+requires_python = ">=3.8,<4.0"
+summary = "FastAPI pagination"
+dependencies = [
+    "fastapi>=0.93.0",
+    "pydantic>=1.9.1",
+]
+files = [
+    {file = "fastapi_pagination-0.12.8-py3-none-any.whl", hash = "sha256:d162fe05d5725301229d47b773eff62f578bdd4db9a97b521151a656e5d0b489"},
+    {file = "fastapi_pagination-0.12.8.tar.gz", hash = "sha256:7f740346e3b40038de13eb59941c47d7fbd1ea8f99346b2f571d5c7759400aa2"},
 ]
 
 [[package]]

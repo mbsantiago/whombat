@@ -161,7 +161,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    db_notes = await notes.get_recordings(session)
+    db_notes, _ = await notes.get_many(session)
 
     # Assert
     assert isinstance(db_notes, list)
@@ -192,7 +192,7 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     )
 
     # Act
-    db_notes = await notes.get_recordings(session, limit=1)
+    db_notes, _ = await notes.get_many(session, limit=1)
 
     # Assert
     assert isinstance(db_notes, list)
@@ -225,7 +225,7 @@ async def test_get_notes_with_offset(
     )
 
     # Act
-    db_notes = await notes.get_recordings(session, offset=1)
+    db_notes, _ = await notes.get_many(session, offset=1)
 
     # Assert
     assert isinstance(db_notes, list)

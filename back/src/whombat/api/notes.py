@@ -10,7 +10,7 @@ __all__ = [
     "create",
     "delete",
     "get_by_id",
-    "get_recordings",
+    "get_many",
     "update",
 ]
 
@@ -43,14 +43,14 @@ async def get_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     return schemas.Note.model_validate(note)
 
 
-async def get_recordings(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 100,
     offset: int = 0,
     filters: list[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.Note]:
+) -> tuple[list[schemas.Note], int]:
     """Get all notes.
 
     If any of the optional parameters are given, they will be used to filter
@@ -78,8 +78,11 @@ async def get_recordings(
     notes : schemas.notes.Notes
         The requested notes.
 
+    count : int
+        The total number of notes that match the given filters.
+
     """
-    notes = await common.get_objects(
+    notes, count = await common.get_objects(
         session,
         models.Note,
         limit=limit,
@@ -87,7 +90,7 @@ async def get_recordings(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.Note.model_validate(note) for note in notes]
+    return [schemas.Note.model_validate(note) for note in notes], count
 
 
 async def create(

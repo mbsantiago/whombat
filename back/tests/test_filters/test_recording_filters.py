@@ -47,7 +47,7 @@ async def test_duration_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.DurationFilter(ge=0.15)],
     )
@@ -57,7 +57,7 @@ async def test_duration_filter(
     assert results[0].hash == recording_list[1].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.DurationFilter(le=0.15)],
     )
@@ -80,29 +80,29 @@ async def test_samplerate_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.SamplerateFilter(ge=12_000)],
     )
 
     # Assert
     assert len(results) == 2
-    assert results[0].hash == recording_list[1].hash
-    assert results[1].hash == recording_list[2].hash
+    assert results[0].hash == recording_list[2].hash
+    assert results[1].hash == recording_list[1].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.SamplerateFilter(le=12_000)],
     )
 
     # Assert
     assert len(results) == 2
-    assert results[0].hash == recording_list[0].hash
-    assert results[1].hash == recording_list[1].hash
+    assert results[0].hash == recording_list[1].hash
+    assert results[1].hash == recording_list[0].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.SamplerateFilter(eq=12_000)],
     )
@@ -123,29 +123,30 @@ async def test_channels_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.ChannelsFilter(ge=2)],
+
     )
 
     # Assert
     assert len(results) == 2
-    assert results[0].hash == recording_list[1].hash
-    assert results[1].hash == recording_list[2].hash
+    assert results[0].hash == recording_list[2].hash
+    assert results[1].hash == recording_list[1].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.ChannelsFilter(le=2)],
     )
 
     # Assert
     assert len(results) == 2
-    assert results[0].hash == recording_list[0].hash
-    assert results[1].hash == recording_list[1].hash
+    assert results[0].hash == recording_list[1].hash
+    assert results[1].hash == recording_list[0].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.ChannelsFilter(eq=2)],
     )
@@ -165,7 +166,7 @@ async def test_latitude_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.LatitudeFilter(gt=0.5)],
     )
@@ -175,7 +176,7 @@ async def test_latitude_filter(
     assert results[0].hash == recording_list[1].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.LatitudeFilter(lt=0.5)],
     )
@@ -197,7 +198,7 @@ async def test_longitude_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.LongitudeFilter(gt=0.5)],
     )
@@ -207,7 +208,7 @@ async def test_longitude_filter(
     assert results[0].hash == recording_list[1].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.LongitudeFilter(lt=0.5)],
     )
@@ -230,7 +231,7 @@ async def test_date_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[
             filters.recordings.DateFilter(before=datetime.date(2020, 1, 2))
@@ -242,7 +243,7 @@ async def test_date_filter(
     assert results[0].hash == recording_list[0].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[
             filters.recordings.DateFilter(after=datetime.date(2020, 1, 2))
@@ -254,7 +255,7 @@ async def test_date_filter(
     assert results[0].hash == recording_list[2].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.DateFilter(on=datetime.date(2020, 1, 2))],
     )
@@ -276,7 +277,7 @@ async def test_time_filter(
     ]
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.TimeFilter(before=datetime.time(0, 0, 1))],
     )
@@ -286,7 +287,7 @@ async def test_time_filter(
     assert results[0].hash == recording_list[0].hash
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.TimeFilter(after=datetime.time(0, 0, 1))],
     )
@@ -314,7 +315,7 @@ async def test_tag_filter(
     )
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.TagFilter(tag=tag)],
     )
@@ -352,7 +353,7 @@ async def test_issues_filter(
     )
 
     # Act
-    results = await api.recordings.get_recordings(
+    results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.IssuesFilter(has_issues=True)],
     )

@@ -106,7 +106,7 @@ async def get_recordings(
     limit: int = 1000,
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
-) -> list[schemas.FeatureName]:
+) -> tuple[list[schemas.FeatureName], int]:
     """Get all feature names.
 
     Parameters
@@ -127,14 +127,16 @@ async def get_recordings(
         The names of all features.
 
     """
-    db_feature_names = await common.get_objects(
+    db_feature_names, count = await common.get_objects(
         session=session,
         model=models.FeatureName,
         limit=limit,
         offset=offset,
         filters=filters,
     )
-    return [schemas.FeatureName.model_validate(r) for r in db_feature_names]
+    return [
+        schemas.FeatureName.model_validate(r) for r in db_feature_names
+    ], count
 
 
 @feature_caches.with_update

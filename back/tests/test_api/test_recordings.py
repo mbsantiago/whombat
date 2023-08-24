@@ -889,15 +889,15 @@ async def test_get_recordings(
     )
 
     # Act
-    recording_list = await recordings.get_recordings(session)
+    recording_list, _ = await recordings.get_many(session)
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 2
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].hash == recording1.hash
+    assert recording_list[0].hash == recording2.hash
     assert isinstance(recording_list[1], schemas.Recording)
-    assert recording_list[1].hash == recording2.hash
+    assert recording_list[1].hash == recording1.hash
 
 
 async def test_get_recordings_with_limit(
@@ -925,24 +925,24 @@ async def test_get_recordings_with_limit(
     )
 
     # Act
-    recording_list = await recordings.get_recordings(session, limit=1)
+    recording_list, _ = await recordings.get_many(session, limit=1)
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].hash == recording1.hash
+    assert recording_list[0].hash == recording2.hash
 
     # Act
-    recording_list = await recordings.get_recordings(session, limit=2)
+    recording_list, _ = await recordings.get_many(session, limit=2)
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 2
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].hash == recording1.hash
+    assert recording_list[0].hash == recording2.hash
     assert isinstance(recording_list[1], schemas.Recording)
-    assert recording_list[1].hash == recording2.hash
+    assert recording_list[1].hash == recording1.hash
 
 
 async def test_get_recordings_with_offset(
@@ -956,28 +956,28 @@ async def test_get_recordings_with_offset(
         samplerate=44100,
         duration=1,
     )
-    await recordings.create(session, schemas.RecordingCreate(path=path1))
+    recording1 = await recordings.create(session, schemas.RecordingCreate(path=path1))
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    recording2 = await recordings.create(
+    await recordings.create(
         session, schemas.RecordingCreate(path=path2)
     )
 
     # Act
-    recording_list = await recordings.get_recordings(session, offset=1)
+    recording_list, _ = await recordings.get_many(session, offset=1)
 
     # Assert
     assert isinstance(recording_list, list)
     assert len(recording_list) == 1
     assert isinstance(recording_list[0], schemas.Recording)
-    assert recording_list[0].hash == recording2.hash
+    assert recording_list[0].hash == recording1.hash
 
     # Act
-    recording_list = await recordings.get_recordings(session, offset=2)
+    recording_list, _ = await recordings.get_many(session, offset=2)
 
     # Assert
     assert isinstance(recording_list, list)
@@ -1133,7 +1133,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
     # Arrange
     path1 = audio_dir / recording.path
     path2 = random_wav_factory()
-    all_recordings = await recordings.get_recordings(session, limit=-1)
+    all_recordings, _ = await recordings.get_many(session, limit=-1)
     assert len(all_recordings) == 1
 
     # Act
@@ -1150,7 +1150,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
     assert isinstance(recording_list, list)
     assert all(isinstance(obj, schemas.Recording) for obj in recording_list)
 
-    all_recordings = await recordings.get_recordings(session, limit=-1)
+    all_recordings, _ = await recordings.get_many(session, limit=-1)
     assert len(all_recordings) == 2
 
 
@@ -1219,7 +1219,7 @@ async def test_create_recording_avoids_hash_duplicates(
     )
 
     # Assert
-    all_recs = await recordings.get_recordings(session, limit=-1)
+    all_recs, _ = await recordings.get_many(session, limit=-1)
     assert len(all_recs) == 2
 
 

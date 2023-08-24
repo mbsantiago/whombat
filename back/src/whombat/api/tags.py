@@ -106,7 +106,8 @@ async def get_many(
     limit: int = 1000,
     offset: int = 0,
     filters: list[Filter] | None = None,
-) -> list[schemas.Tag]:
+    sort_by: str | None = "key",
+) -> tuple[list[schemas.Tag], int]:
     """Get all tags.
 
     Parameters
@@ -124,19 +125,26 @@ async def get_many(
     filters : list[Filter], optional
         A list of filters to apply, by default None.
 
+    sort_by : str, optional
+        Field to sort by, by default "key".
+
     Returns
     -------
     list[schemas.Tag]
-        The tags.
+        The tags that match the given filters.
+
+    count : int
+        The total number of tags that match the given filters.
     """
-    tags = await common.get_objects(
+    tags, count = await common.get_objects(
         session=session,
         model=models.Tag,
         limit=limit,
         offset=offset,
         filters=filters,
+        sort_by=sort_by,
     )
-    return [schemas.Tag.model_validate(tag) for tag in tags]
+    return [schemas.Tag.model_validate(tag) for tag in tags], count
 
 
 @tag_caches.with_update

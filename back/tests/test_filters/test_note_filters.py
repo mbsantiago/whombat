@@ -98,7 +98,7 @@ async def test_get_notes_that_are_issues(
 ):
     """Test getting all notes that are issues."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.IssueFilter(is_true=True),
@@ -117,7 +117,7 @@ async def test_get_notes_that_are_not_issues(
 ):
     """Test getting all notes that are not issues."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.IssueFilter(is_true=False),
@@ -137,7 +137,7 @@ async def test_get_notes_from_user(
 ):
     """Test getting all notes from a user."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.CreatedByFilter(eq=user1.id),
@@ -159,7 +159,7 @@ async def test_get_notes_from_multiple_users(
 ):
     """Test getting all notes from multiple users."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.CreatedByFilter(isin=[user1.id, user2.id]),
@@ -180,7 +180,7 @@ async def test_get_notes_before_date(
 ):
     """Test getting all notes before a date."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.CreatedAtFilter(
@@ -201,7 +201,7 @@ async def test_get_notes_created_after(
 ):
     """Test getting all notes created after a date."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.CreatedAtFilter(after=datetime.datetime(2021, 5, 1)),
@@ -222,7 +222,7 @@ async def test_get_notes_by_message(
 ):
     """Test getting notes by message content."""
     # Act
-    db_notes = await api.notes.get_recordings(
+    db_notes, _ = await api.notes.get_many(
         session,
         filters=[
             filters.notes.MessageFilter(has="b"),

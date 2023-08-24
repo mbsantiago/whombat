@@ -288,7 +288,7 @@ async def test_get_tags(
             value="test_value2",
         ),
     )
-    retrieved_tags = await tags.get_many(session)
+    retrieved_tags, _ = await tags.get_many(session)
     assert isinstance(retrieved_tags, list)
     assert len(retrieved_tags) == 2
     assert retrieved_tags[0].key == "test_key1"
@@ -322,7 +322,7 @@ async def test_get_tags_with_offset(
             value="test_value3",
         ),
     )
-    retrieved_tags = await tags.get_many(
+    retrieved_tags, _ = await tags.get_many(
         session=session,
         offset=1,
     )
@@ -350,7 +350,7 @@ async def test_get_tags_with_limit(
         session=session,
         data=schemas.TagCreate(key="test_key3", value="test_value3"),
     )
-    retrieved_tags = await tags.get_many(
+    retrieved_tags, _ = await tags.get_many(
         session=session,
         limit=2,
     )

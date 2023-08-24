@@ -125,16 +125,16 @@ async def test_get_clips(
     )
 
     # Act
-    db_clips = await clips.get_recordings(session)
+    db_clips, _ = await clips.get_many(session)
 
     # Assert
     assert len(db_clips) == 2
-    assert db_clips[0].recording == recording
-    assert db_clips[0].start_time == 0.0
-    assert db_clips[0].end_time == 0.5
     assert db_clips[1].recording == recording
-    assert db_clips[1].start_time == 0.5
-    assert db_clips[1].end_time == 1.0
+    assert db_clips[1].start_time == 0.0
+    assert db_clips[1].end_time == 0.5
+    assert db_clips[0].recording == recording
+    assert db_clips[0].start_time == 0.5
+    assert db_clips[0].end_time == 1.0
 
 
 async def test_create_clips(
@@ -200,7 +200,7 @@ async def create_clips_ignores_non_existing_recordings(
     assert created_clips[0].end_time == 0.5
     assert created_clips[0].recording == recording
 
-    all_clips = await clips.get_recordings(session)
+    all_clips, _ = await clips.get_many(session)
     assert len(all_clips) == 1
 
 
@@ -223,7 +223,7 @@ async def test_get_clips_with_limit(
     )
 
     # Act
-    db_clips = await clips.get_recordings(
+    db_clips, _ = await clips.get_many(
         session,
         limit=1,
     )
@@ -231,8 +231,8 @@ async def test_get_clips_with_limit(
     # Assert
     assert len(db_clips) == 1
     assert db_clips[0].recording == recording
-    assert db_clips[0].start_time == 0.0
-    assert db_clips[0].end_time == 0.5
+    assert db_clips[0].start_time == 0.5
+    assert db_clips[0].end_time == 1
 
 
 async def test_get_clips_with_offset(
@@ -253,7 +253,7 @@ async def test_get_clips_with_offset(
     )
 
     # Act
-    db_clips = await clips.get_recordings(
+    db_clips, _ = await clips.get_many(
         session,
         offset=1,
     )
@@ -261,8 +261,8 @@ async def test_get_clips_with_offset(
     # Assert
     assert len(db_clips) == 1
     assert db_clips[0].recording == recording
-    assert db_clips[0].start_time == 0.5
-    assert db_clips[0].end_time == 1.0
+    assert db_clips[0].start_time == 0.0
+    assert db_clips[0].end_time == 0.5
 
 
 async def test_create_clips_ignores_duplicate_clips(
@@ -289,7 +289,7 @@ async def test_create_clips_ignores_duplicate_clips(
     assert created_clips[0].end_time == 0.5
     assert created_clips[0].recording == recording
 
-    all_clips = await clips.get_recordings(session)
+    all_clips, _ = await clips.get_many(session)
     assert len(all_clips) == 1
 
 
@@ -312,7 +312,7 @@ async def test_create_clips_ignores_existing_clips(
     # Assert
     assert len(created_clips) == 0
 
-    all_clips = await clips.get_recordings(session)
+    all_clips, _ = await clips.get_many(session)
     assert len(all_clips) == 1
 
 
@@ -523,7 +523,7 @@ async def test_delete_clip(
 ):
     """Test deleting a clip."""
     await clips.delete(session, clip_id=clip.id)
-    all_clips = await clips.get_recordings(session)
+    all_clips, _ = await clips.get_many(session)
     assert len(all_clips) == 0
 
 

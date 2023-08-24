@@ -161,7 +161,7 @@ async def test_get_feature_names(
         )
 
     # Act.
-    result = await features.get_recordings(session)
+    result, _ = await features.get_recordings(session)
 
     # Assert.
     assert [feat.name for feat in result] == names
@@ -180,7 +180,7 @@ async def test_get_feature_names_with_limit(
         )
 
     # Act.
-    result = await features.get_recordings(session, limit=2)
+    result, _ = await features.get_recordings(session, limit=2)
 
     # Assert.
     assert [feat.name for feat in result] == names[:2]
@@ -199,7 +199,7 @@ async def test_get_feature_names_with_offset(
         )
 
     # Act.
-    result = await features.get_recordings(session, offset=1)
+    result, _ = await features.get_recordings(session, offset=1)
 
     # Assert.
     assert [feat.name for feat in result] == names[1:]
@@ -218,7 +218,7 @@ async def test_get_features_with_return_all(
         )
 
     # Act.
-    result = await features.get_recordings(session, limit=-1)
+    result, _ = await features.get_recordings(session, limit=-1)
 
     # Assert.
     assert [feat.name for feat in result] == names

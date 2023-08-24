@@ -4,9 +4,9 @@ import uuid
 from cachetools import LRUCache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat.dependencies.users import UserDatabase, UserManager
 from whombat import cache, models, schemas
 from whombat.api import common
+from whombat.dependencies.users import UserDatabase, UserManager
 from whombat.filters import Filter
 
 __all__ = [
@@ -153,7 +153,7 @@ async def get_many(
     limit: int = 100,
     filters: list[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.User]:
+) -> tuple[list[schemas.User], int]:
     """Get all users.
 
     Parameters
@@ -167,12 +167,21 @@ async def get_many(
     limit : int, optional
         The number of users to get, by default 100.
 
+    filters : list[Filter], optional
+        The filters to apply, by default None.
+
+    sort_by : str, optional
+        The field to sort by, by default "-created_at".
+
     Returns
     -------
     users : List[schemas.User]
+        The users that match the filters.
 
+    count : int
+        The total number of users that match the filters.
     """
-    db_users = await common.get_objects(
+    db_users, count = await common.get_objects(
         session,
         models.User,
         offset=offset,
@@ -180,7 +189,9 @@ async def get_many(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.User.model_validate(db_user) for db_user in db_users]
+    return [
+        schemas.User.model_validate(db_user) for db_user in db_users
+    ], count
 
 
 @users_cache.with_update

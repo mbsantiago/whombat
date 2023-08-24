@@ -189,24 +189,32 @@ async def get_many(
     offset: int = 0,
     filters: list[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.DatasetWithCounts]:
+) -> tuple[list[schemas.DatasetWithCounts], int]:
     """Get all datasets.
 
     Parameters
     ----------
     session : AsyncSession
         The database session to use.
+
     limit : int, optional
         The maximum number of datasets to return, by default 100
+
     offset : int, optional
         The number of datasets to skip, by default 0
+
+    filters : list[Filter], optional
+        A list of filters to apply to the query, by default None.
+
+    sort_by : str, optional
+        The column to sort the datasets by, by default None.
 
     Returns
     -------
     datasets : list[schemas.Dataset]
 
     """
-    datasets = await common.get_objects(
+    datasets, count = await common.get_objects(
         session,
         models.Dataset,
         limit=limit,
@@ -217,7 +225,7 @@ async def get_many(
     return [
         schemas.DatasetWithCounts.model_validate(dataset)
         for dataset in datasets
-    ]
+    ], count
 
 
 async def create(
@@ -584,7 +592,7 @@ async def get_recordings(
     offset: int = 0,
     filters: list[Filter] | None = None,
     sort_by: str | None = None,
-) -> list[schemas.DatasetRecording]:
+) -> tuple[list[schemas.DatasetRecording], int]:
     """Get all recordings of a dataset.
 
     Parameters
@@ -612,11 +620,13 @@ async def get_recordings(
     -------
     recordings : list[schemas.DatasetRecording]
 
+    count : int
+        The total number of recordings in the dataset.
     """
     # Get the dataset.
     await get_by_id(session, dataset_id=dataset_id)
 
-    dataset_recordings = await common.get_objects(
+    dataset_recordings, count = await common.get_objects(
         session,
         models.DatasetRecording,
         limit=limit,
@@ -629,7 +639,7 @@ async def get_recordings(
     )
     return [
         schemas.DatasetRecording.model_validate(x) for x in dataset_recordings
-    ]
+    ], count
 
 
 async def get_state(

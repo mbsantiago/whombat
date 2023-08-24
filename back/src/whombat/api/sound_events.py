@@ -108,26 +108,35 @@ async def get_many(
     offset: int = 0,
     filters: list[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.SoundEvent]:
+) -> tuple[list[schemas.SoundEvent], int]:
     """Get a list of sound events.
 
     Parameters
     ----------
     session : AsyncSession
         The database session.
+
     limit : int, optional
         The maximum number of sound events to return, by default 1000.
+
     offset : int, optional
         The number of sound events to skip, by default 0.
+
     filters : list[Filter], optional
         A list of filters to apply to the sound events, by default None.
+
+    sort_by : str, optional
+        The field to sort the sound events by, by default "-created_at".
 
     Returns
     -------
     list[schemas.SoundEvent]
         The list of sound events.
+
+    count : int
+        The total number of sound events.
     """
-    sound_events = await common.get_objects(
+    sound_events, count = await common.get_objects(
         session=session,
         model=models.SoundEvent,
         limit=limit,
@@ -135,7 +144,7 @@ async def get_many(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.SoundEvent.model_validate(s) for s in sound_events]
+    return [schemas.SoundEvent.model_validate(s) for s in sound_events], count
 
 
 @sound_event_caches.with_update
@@ -189,7 +198,7 @@ async def create_many(
 
     sound_event_ids = [s.id for s in sound_events]
 
-    sound_events = await common.get_objects(
+    sound_events, _ = await common.get_objects(
         session=session,
         model=models.SoundEvent,
         limit=-1,

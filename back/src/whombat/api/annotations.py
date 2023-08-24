@@ -69,9 +69,9 @@ async def get_many(
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> Sequence[schemas.Annotation]:
+) -> tuple[Sequence[schemas.Annotation], int]:
     """Get all annotation projects."""
-    annotations = await common.get_objects(
+    annotations, count = await common.get_objects(
         session,
         models.Annotation,
         limit=limit,
@@ -79,7 +79,7 @@ async def get_many(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.Annotation.model_validate(ap) for ap in annotations]
+    return [schemas.Annotation.model_validate(ap) for ap in annotations], count
 
 
 @caches.with_update

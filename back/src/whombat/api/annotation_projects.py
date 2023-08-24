@@ -87,9 +87,9 @@ async def get_recordings(
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> Sequence[schemas.AnnotationProject]:
+) -> tuple[Sequence[schemas.AnnotationProject], int]:
     """Get all annotation projects."""
-    annotation_projects = await common.get_objects(
+    annotation_projects, count = await common.get_objects(
         session,
         models.AnnotationProject,
         limit=limit,
@@ -100,7 +100,7 @@ async def get_recordings(
     return [
         schemas.AnnotationProject.model_validate(ap)
         for ap in annotation_projects
-    ]
+    ], count
 
 
 @caches.with_update

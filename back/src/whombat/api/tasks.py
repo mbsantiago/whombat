@@ -108,7 +108,7 @@ async def get_many(
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> list[schemas.Task]:
+) -> tuple[list[schemas.Task], int]:
     """Get a list of tasks.
 
     Parameters
@@ -132,8 +132,11 @@ async def get_many(
     -------
     schemas.TaskList
         List of tasks matching the given criteria.
+
+    count : int
+        Total number of tasks matching the given criteria.
     """
-    tasks = await common.get_objects(
+    tasks, count = await common.get_objects(
         session,
         models.Task,
         limit=limit,
@@ -141,7 +144,7 @@ async def get_many(
         filters=filters,
         sort_by=sort_by,
     )
-    return [schemas.Task.model_validate(task) for task in tasks]
+    return [schemas.Task.model_validate(task) for task in tasks], count
 
 
 async def create(

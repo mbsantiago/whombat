@@ -6,7 +6,6 @@ from pathlib import Path
 
 from cachetools import LRUCache
 from soundevent.audio import compute_md5_checksum
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, filters, models, schemas
@@ -24,7 +23,7 @@ __all__ = [
     "get_recording_by_id",
     "get_by_hash",
     "get_by_path",
-    "get_recordings",
+    "get_many",
     "remove_feature",
     "remove_note",
     "remove_tag",
@@ -149,13 +148,14 @@ async def get_by_path(
     return schemas.Recording.model_validate(recording)
 
 
-async def get_recordings(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 1000,
     offset: int = 0,
     filters: list[filters.Filter] | None = None,
-) -> list[schemas.Recording]:
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.Recording], int]:
     """Get all recordings.
 
     Parameters
@@ -173,26 +173,29 @@ async def get_recordings(
     filters : list[Filter], optional
         A list of filters to apply to the query, by default None
 
+    sort_by : str, optional
+        A string specifying how to sort the recordings, by default
+
     Returns
     -------
     recordings : list[schemas.recordings.Recording]
         The requested recordings.
 
+    count : int
+        The total number of recordings that match the given filters.
+
     """
-    query = select(models.Recording)
-
-    if filters is None:
-        filters = []
-
-    for filter in filters:
-        query = filter.filter(query)
-
-    query = query.limit(limit).offset(offset)
-    result = await session.execute(query)
-    recordings = result.unique().scalars().all()
+    recordings, count = await common.get_objects(
+        session,
+        models.Recording,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
     return [
         schemas.Recording.model_validate(recording) for recording in recordings
-    ]
+    ], count
 
 
 def _assemble_recording_data(

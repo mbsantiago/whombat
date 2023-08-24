@@ -163,5 +163,5 @@ async def test_can_get_annotations(
     annotation: schemas.Annotation,
 ) -> None:
     """Test that all annotations can be retrieved."""
-    annotations = await api.annotations.get_many(session)
+    annotations, _ = await api.annotations.get_many(session)
     assert annotation in annotations

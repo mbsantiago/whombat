@@ -190,7 +190,7 @@ async def test_get_all_users(session: AsyncSession):
     await api.users.create(session=session, data=data2)
 
     # Act
-    users = await api.users.get_many(session=session)
+    users, _ = await api.users.get_many(session=session)
 
     # Assert
     assert len(users) == 2
@@ -199,14 +199,14 @@ async def test_get_all_users(session: AsyncSession):
         assert isinstance(user, schemas.User)
 
     # Act
-    users = await api.users.get_many(session=session, limit=1)
+    users, _ = await api.users.get_many(session=session, limit=1)
 
     # Assert
     assert len(users) == 1
     assert users[0].username == "test2"
 
     # Act
-    users = await api.users.get_many(session=session, offset=1)
+    users, _ = await api.users.get_many(session=session, offset=1)
 
     # Assert
     assert len(users) == 1
