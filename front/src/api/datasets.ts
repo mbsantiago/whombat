@@ -3,8 +3,9 @@ import { AxiosInstance } from "axios";
 import { GetManySchema, Page } from "./common";
 
 const DEFAULT_ENDPOINTS = {
-  get: "/api/v1/datasets/",
+  getMany: "/api/v1/datasets/",
   create: "/api/v1/datasets/",
+  get: "/api/v1/datasets/detail/",
 };
 
 const DatasetFilterSchema = z.object({
@@ -50,7 +51,7 @@ function registerDatasetAPI(
     query: z.infer<typeof GetDatasetsQuerySchema> = {},
   ): Promise<DatasetPage> {
     const params = GetDatasetsQuerySchema.parse(query);
-    const { data } = await instance.get(endpoints.get, { params });
+    const { data } = await instance.get(endpoints.getMany, { params });
     return DatasetPageSchema.parse(data);
   }
 
@@ -60,9 +61,15 @@ function registerDatasetAPI(
     return DatasetSchema.parse(res);
   }
 
+  async function get(uuid: string): Promise<Dataset> {
+    const { data } = await instance.get(endpoints.get, { params: { uuid } });
+    return DatasetSchema.parse(data);
+  }
+
   return {
     getMany,
     create,
+    get,
   };
 }
 

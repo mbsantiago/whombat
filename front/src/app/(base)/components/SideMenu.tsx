@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   WhombatIcon,
   DatasetsIcon,
@@ -11,7 +11,6 @@ import {
   LogOutIcon,
 } from "@/components/icons";
 import classnames from "classnames";
-import Link from "next/link";
 import { HorizontalDivider } from "@/components/Divider";
 import Tooltip from "@/components/Tooltip";
 
@@ -19,20 +18,31 @@ function SideMenuButton({
   children,
   tooltip,
   isActive,
+  href,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   tooltip?: string;
   isActive?: boolean;
+  href?: string;
 }) {
+  const router = useRouter();
+
   return (
     <Tooltip
       tooltip={
-        <div className="rounded p-2 dark:bg-stone-700">
-          <p className="text-stone-700 dark:text-stone-300">{tooltip}</p>
+        <div className="rounded p-2 shadow-lg dark:bg-stone-700">
+          <p className="whitespace-nowrap text-stone-700 dark:text-stone-300">
+            {tooltip}
+          </p>
         </div>
       }
     >
       <button
+        onClick={() => {
+          if (href) {
+            router.push(href);
+          }
+        }}
         className={classnames(
           {
             "bg-stone-200 outline outline-2 outline-offset-2 outline-emerald-500 dark:bg-stone-900":
@@ -55,10 +65,9 @@ function MainNavigation({ pathname }: { pathname?: string }) {
         <SideMenuButton
           isActive={pathname === "/datasets"}
           tooltip={"Datasets"}
+          href="/datasets"
         >
-          <Link href="/datasets">
-            <DatasetsIcon />
-          </Link>
+          <DatasetsIcon />
         </SideMenuButton>
       </li>
       <li className="px-3">
@@ -94,10 +103,8 @@ function SecondaryNavigation({ pathname }: { pathname?: string }) {
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <HorizontalDivider />
       <li className="px-3">
-        <SideMenuButton isActive={pathname === "/"} tooltip={"Home"}>
-          <Link href="/">
-            <HomeIcon />
-          </Link>
+        <SideMenuButton isActive={pathname === "/"} tooltip={"Home"} href="/">
+          <HomeIcon />
         </SideMenuButton>
       </li>
       <li className="px-3">

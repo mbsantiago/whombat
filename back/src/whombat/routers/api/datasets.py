@@ -1,4 +1,6 @@
 """REST API routes for datasets."""
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -11,6 +13,19 @@ __all__ = [
 ]
 
 dataset_router = APIRouter()
+
+
+@dataset_router.get(
+    "/detail/",
+    response_model=schemas.DatasetWithCounts,
+)
+async def get_dataset(
+    session: Session,
+    uuid: UUID,
+):
+    """Get a dataset by UUID."""
+    dataset = await api.datasets.get_by_uuid(session, uuid)
+    return dataset
 
 
 @dataset_router.get(

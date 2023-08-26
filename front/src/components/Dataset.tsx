@@ -28,7 +28,10 @@ export default function Dataset({
           </span>{" "}
           <Link
             className="hover:font-bold hover:text-emerald-500"
-            href={`/datasets/${uuid}/`}
+            href={{
+              pathname: "/datasets/detail/",
+              query: { uuid },
+            }}
           >
             {name}
           </Link>

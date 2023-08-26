@@ -1,3 +1,4 @@
+import { type HTMLAttributes } from "react";
 import {
   RectangleStackIcon,
   PencilSquareIcon,
@@ -19,10 +20,12 @@ import {
   ArrowSmallLeftIcon,
   ChevronUpDownIcon,
   CheckIcon,
+  SignalIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 
-function WhombatIcon() {
-  return <img src="/whombat.svg" />;
+function WhombatIcon(props: HTMLAttributes<HTMLImageElement>) {
+  return <img {...props} src="/whombat.svg" />;
 }
 
 export {
@@ -47,4 +50,6 @@ export {
   ArrowUturnLeftIcon as BackIcon,
   ChevronUpDownIcon as ExpandIcon,
   CheckIcon,
+  SignalIcon as SoundEventIcon,
+  ChatBubbleLeftRightIcon as NotesIcon,
 };

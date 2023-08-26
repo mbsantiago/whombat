@@ -29,7 +29,7 @@ export default function Select<T>({
             <Listbox.Label className="text-sm text-stone-500">{label}</Listbox.Label>
           </div>
         ) : null}
-        <Listbox.Button className="relative">
+        <Listbox.Button as="div" className="relative">
           <Button
             variant="secondary"
             mode="outline"
