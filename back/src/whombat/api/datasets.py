@@ -698,7 +698,6 @@ async def get_state(
     result = await session.execute(query)
     db_recordings = result.scalars().all()
     db_files = [Path(path) for path in db_recordings]
-    print(db_files, file_list)
 
     existing_files = set(file_list) & set(db_files)
     missing_files = set(db_files) - set(file_list)

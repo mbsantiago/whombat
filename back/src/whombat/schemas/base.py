@@ -2,14 +2,14 @@
 
 import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_core import core_schema
 
 from whombat.dependencies import get_settings
 
-__all__ = ["BaseSchema"]
+__all__ = ["BaseSchema", "Page"]
 
 
 def get_default_context() -> dict[str, Any]:
@@ -32,7 +32,6 @@ class BaseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-
 def relative_to_audio_dir(v: Path, info: core_schema.ValidationInfo) -> Path:
     """Check that the audio directory is in the root audio directory.
 
@@ -53,3 +52,15 @@ def relative_to_audio_dir(v: Path, info: core_schema.ValidationInfo) -> Path:
         )
 
     return path.relative_to(audio_dir)
+
+
+M = TypeVar("M", bound=BaseSchema)
+
+
+class Page(BaseModel, Generic[M]):
+    """A page of results."""
+
+    items: list[M]
+    total: int
+    offset: int
+    limit: int

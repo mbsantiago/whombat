@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input, InputGroup } from "@/components/inputs";
+import { Input, InputGroupCommon } from "@/components/inputs";
 import api from "@/app/api";
 import useStore from "@/store";
 
@@ -50,7 +50,7 @@ export default function LoginForm() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
-          <InputGroup
+          <InputGroupCommon
             label="Username"
             name="username"
             register={register}
@@ -58,7 +58,7 @@ export default function LoginForm() {
           />
         </div>
         <div className="mb-3">
-          <InputGroup
+          <InputGroupCommon
             type="password"
             label="Password"
             name="password"

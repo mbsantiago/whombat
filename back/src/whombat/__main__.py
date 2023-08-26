@@ -7,5 +7,9 @@ import uvicorn
 
 if __name__ == "__main__":
     uvicorn.run(
-        "whombat.app:app", host="0.0.0.0", log_level="info", reload=True
+        "whombat.app:app",
+        host="0.0.0.0",
+        log_level="info",
+        reload=True,
+        port=5000,
     )

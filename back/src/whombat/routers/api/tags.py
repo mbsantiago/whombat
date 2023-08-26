@@ -18,4 +18,6 @@ async def get_tags(session: Session):
 @tags_router.post("/", response_model=schemas.Tag)
 async def create_tag(tag: schemas.TagCreate, session: Session):
     """Create a new tag."""
-    return await api.tags.create(session, tag)
+    tag = await api.tags.create(session, tag)
+    await session.commit()
+    return tag

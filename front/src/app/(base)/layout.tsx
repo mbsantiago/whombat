@@ -1,6 +1,6 @@
 "use client";
 import { redirect } from "next/navigation";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "../client";
 import useStore, { useHydration } from "@/store";
 import { NavBar, SideMenu } from "./components";

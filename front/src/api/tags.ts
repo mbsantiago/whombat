@@ -24,14 +24,14 @@ function registerTagAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getTags(query: GetManyQuery) {
+  async function getTags(query: GetManyQuery): Promise<Tag[]> {
     const response = await instance.get(endpoints.get, {
       params: GetManySchema.parse(query),
     });
     return response.data;
   }
 
-  async function createTag({ name, key }: TagCreate) {
+  async function createTag({ name, key }: TagCreate): Promise<Tag> {
     const response = await instance.post(endpoints.create, {
       name,
       key,

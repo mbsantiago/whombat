@@ -79,7 +79,7 @@ async def test_filter_by_search(session: AsyncSession):
     """Test filtering by search."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.SearchFilter(query="a")]
+        session, filters=[filters.tags.SearchFilter(search="a")]
     )
 
     # Assert.

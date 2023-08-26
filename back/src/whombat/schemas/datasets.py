@@ -41,11 +41,6 @@ class DatasetCreate(BaseDataset):
     """The path to the directory containing the audio files."""
 
 
-class WithCounts(BaseSchema):
-    recording_count: int = 0
-    """The number of recordings in the dataset."""
-
-
 class Dataset(BaseDataset):
     """Schema for Dataset objects returned to the user."""
 
@@ -53,10 +48,11 @@ class Dataset(BaseDataset):
     """The database id of the dataset."""
 
 
-class DatasetWithCounts(Dataset, WithCounts):
+class DatasetWithCounts(Dataset):
     """Schema for Dataset objects returned to the user."""
 
-    pass
+    recording_count: int = 0
+    """The number of recordings in the dataset."""
 
 
 class DatasetUpdate(BaseSchema):

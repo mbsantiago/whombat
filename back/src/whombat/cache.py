@@ -161,7 +161,7 @@ class CacheCollection(Generic[M]):
 
             return data
 
-        return wrapper
+        return wrapper  # type: ignore
 
     def with_clear(self, func: Func[P, M]) -> Func[P, M]:
         """Decorate a function to clear the cache."""
@@ -176,7 +176,7 @@ class CacheCollection(Generic[M]):
 
             return data
 
-        return wrapper
+        return wrapper  # type: ignore
 
     def clear_object(self, data: M) -> None:
         """Clear the cache for an object."""

@@ -399,7 +399,7 @@ async def remove_tag(
         return schemas.Task.model_validate(task)
 
     task.tags.remove(task_tag)
-    await session.commit()
+    await session.flush()
     await session.refresh(task)
     return schemas.Task.model_validate(task)
 

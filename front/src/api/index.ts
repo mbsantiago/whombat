@@ -8,6 +8,7 @@ import axios from "axios";
 import { registerAuthAPI } from "./auth";
 import { registerTagAPI } from "./tags";
 import { registerUserAPI } from "./user";
+import { registerDatasetAPI } from "./datasets";
 
 type APIConfig = {
   baseURL: string;
@@ -28,5 +29,6 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     auth: registerAuthAPI(instance),
     tags: registerTagAPI(instance),
     user: registerUserAPI(instance),
+    datasets: registerDatasetAPI(instance),
   };
 }

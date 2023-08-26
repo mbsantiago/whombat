@@ -16,8 +16,14 @@ const config: Config = {
       transitionProperty: {
         width: "width",
       },
+      strokeWidth: {
+        '3': '3px',
+        '4': '4px',
+      }
     },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms"),
+  ],
 };
 export default config;

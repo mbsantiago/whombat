@@ -242,7 +242,7 @@ async def create(
     user_manager = _get_user_manager(session)
     db_user = await user_manager.create(data)
     session.add(db_user)
-    await session.commit()
+    await session.flush()
     return schemas.User.model_validate(db_user)
 
 

@@ -11,10 +11,33 @@ const instance = axios.create({
 });
 
 const GetManySchema = z.object({
-  limit: z.number().gt(0).optional(),
-  offset: z.number().gt(0).optional(),
+  limit: z.number().gte(0).optional(),
+  offset: z.number().gte(0).optional(),
 });
 
 type GetManyQuery = z.infer<typeof GetManySchema>;
 
-export { instance, HOST, BASE_ROUTE, GetManySchema, type GetManyQuery };
+type Paginated<T> = {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+const Page = <T extends z.ZodTypeAny>(schema: T) =>
+  z.object({
+    items: z.array(schema),
+    total: z.number().int(),
+    limit: z.number().int(),
+    offset: z.number().int(),
+  });
+
+export {
+  instance,
+  HOST,
+  BASE_ROUTE,
+  GetManySchema,
+  type GetManyQuery,
+  Page,
+  type Paginated,
+};

@@ -2,7 +2,7 @@
 
 from sqlalchemy import Select, select
 
-from whombat import models, schemas
+from whombat import models
 from whombat.filters import base
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "LongitudeFilter",
     "SamplerateFilter",
     "TimeFilter",
+    "RecordingFilter",
 ]
 
 
@@ -41,6 +42,12 @@ TimeFilter = base.optional_time_filter(models.Recording.time)
 HashFilter = base.string_filter(models.Recording.hash)
 """Filter recordings by hash."""
 
+SearchFilter = base.search_filter(
+    [
+        models.Recording.path,
+    ]
+)
+
 
 class IssuesFilter(base.Filter):
     """Filter recordings by their status.
@@ -50,10 +57,13 @@ class IssuesFilter(base.Filter):
     that do not have issues.
     """
 
-    has_issues: bool
+    has_issues: bool | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
+        if self.has_issues is None:
+            return query
+
         subquery = (
             select(models.RecordingNote.recording_id)
             .join(models.RecordingNote.note)
@@ -72,16 +82,32 @@ class TagFilter(base.Filter):
     This filter can be used to filter recordings that have a certain tag.
     """
 
-    tag: schemas.Tag
+    tags: list[int] | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
+        if not self.tags:
+            return query
+
         subquery = (
             select(models.RecordingTag.recording_id)
             .join(models.RecordingTag.tag)
             .where(
-                models.Tag.key == self.tag.key,
-                models.Tag.value == self.tag.value,
+                models.RecordingTag.tag_id.in_(self.tags),
             )
         )
         return query.where(models.Recording.id.in_(subquery))
+
+
+RecordingFilter = base.combine(
+    SearchFilter,
+    TagFilter,
+    duration=DurationFilter,
+    samplerate=SamplerateFilter,
+    channels=ChannelsFilter,
+    latitude=LatitudeFilter,
+    longitude=LongitudeFilter,
+    date=DateFilter,
+    time=TimeFilter,
+    issues=IssuesFilter,
+)

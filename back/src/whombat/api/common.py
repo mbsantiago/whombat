@@ -6,6 +6,7 @@ from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import Select, func, insert, select
+from sqlalchemy.inspection import inspect
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
@@ -46,12 +47,17 @@ F = TypeVar("F", bound=models.Base)
 pattern = re.compile(r"(?<!^)(?=[A-Z])")
 
 
-async def get_count(session: AsyncSession, q: Select) -> int:
+async def get_count(
+    session: AsyncSession,
+    model: type[models.Base],
+    q: Select,
+) -> int:
     """Get the count of a query.
 
     Modified from https://gist.github.com/hest/8798884.
     """
-    count_q = q.with_only_columns(func.count()).order_by(None)
+    pk = inspect(model).primary_key[0]  # type: ignore
+    count_q = q.with_only_columns(func.count(pk)).order_by(None)
     result = await session.execute(count_q)
     count = result.scalar()
     if not isinstance(count, int):
@@ -227,7 +233,7 @@ async def get_objects(
 
         query = query.order_by(sort_by)
 
-    count = await get_count(session, query)
+    count = await get_count(session, model, query)
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)
     return result.unique().scalars().all(), count
@@ -258,7 +264,7 @@ async def create_object(
     obj = model(**{**get_values(data), **kwargs})
     try:
         session.add(obj)
-        await session.commit()
+        await session.flush()
     except IntegrityError as e:
         await session.rollback()
         raise exceptions.DuplicateObjectError(
@@ -411,7 +417,7 @@ async def delete_object(
     """
     obj = await get_object(session, model, condition)
     await session.delete(obj)
-    await session.commit()
+    await session.flush()
     return obj
 
 
@@ -492,7 +498,7 @@ async def update_object(
         setattr(obj, key, value)
 
     try:
-        await session.commit()
+        await session.flush()
     except IntegrityError as e:
         await session.rollback()
         raise exceptions.DuplicateObjectError(
@@ -562,7 +568,7 @@ async def add_note_to_object(
     )  # type: ignore
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -630,7 +636,7 @@ async def add_tag_to_object(
 
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -698,7 +704,7 @@ async def add_feature_to_object(
         }
     )
     obj.features.append(feature)  # type: ignore
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -758,7 +764,7 @@ async def update_feature_on_object(
     feature.value = value
 
     session.add(obj)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -813,7 +819,7 @@ async def remove_tag_from_object(
         return obj
 
     getattr(obj, relation_field_name).remove(tag)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -869,7 +875,7 @@ async def remove_note_from_object(
 
     getattr(obj, relation_field).remove(note)
     session.add(obj)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj
 
@@ -922,6 +928,6 @@ async def remove_feature_from_object(
 
     obj.features.remove(feature)  # type: ignore
     session.add(obj)
-    await session.commit()
+    await session.flush()
     await session.refresh(obj)
     return obj

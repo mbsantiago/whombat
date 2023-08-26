@@ -1,7 +1,7 @@
 import { usePathname } from "next/navigation";
 import {
   WhombatIcon,
-  DatasetIcon,
+  DatasetsIcon,
   AnnotationProjectIcon,
   ExplorationIcon,
   EvaluationIcon,
@@ -57,7 +57,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
           tooltip={"Datasets"}
         >
           <Link href="/datasets">
-            <DatasetIcon />
+            <DatasetsIcon />
           </Link>
         </SideMenuButton>
       </li>
@@ -122,11 +122,10 @@ function SecondaryNavigation({ pathname }: { pathname?: string }) {
 
 function SideMenu() {
   const pathname = usePathname();
-
   return (
     <aside
       id="side-menu"
-      className="left-0 top-0 z-40 flex h-screen w-16 flex-shrink-0 flex-col shadow-md"
+      className="sticky left-0 top-0 z-40 flex h-screen w-16 flex-shrink-0 flex-col shadow-md"
       aria-label="Sidebar"
     >
       <div className="flex flex-grow flex-col justify-between overflow-y-auto overflow-x-hidden bg-stone-50 dark:bg-stone-800">

@@ -3,56 +3,48 @@ import {
   PencilSquareIcon,
   ClipboardDocumentCheckIcon,
   DocumentMagnifyingGlassIcon,
-  HomeIcon as HomeIconOutline,
+  HomeIcon,
   InboxIcon,
   ArrowRightOnRectangleIcon,
   Cog8ToothIcon,
+  MagnifyingGlassIcon,
+  DocumentDuplicateIcon,
+  ArchiveBoxIcon,
+  PlusIcon,
+  CalendarIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  ArrowUturnLeftIcon,
+  ArrowSmallRightIcon,
+  ArrowSmallLeftIcon,
+  ChevronUpDownIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
 
 function WhombatIcon() {
   return <img src="/whombat.svg" />;
 }
 
-function DatasetIcon() {
-  return <RectangleStackIcon />;
-}
-
-function AnnotationProjectIcon() {
-  return <PencilSquareIcon />;
-}
-
-function ExplorationIcon() {
-  return <DocumentMagnifyingGlassIcon />;
-}
-
-function EvaluationIcon() {
-  return <ClipboardDocumentCheckIcon />;
-}
-
-function HomeIcon() {
-  return <HomeIconOutline />;
-}
-
-function MessagesIcon() {
-  return <InboxIcon />;
-}
-
-function SettingsIcon() {
-  return <Cog8ToothIcon />;
-}
-
-function LogOutIcon() {
-  return <ArrowRightOnRectangleIcon />;
-}
-
 export {
   WhombatIcon,
-  DatasetIcon,
-  AnnotationProjectIcon,
-  ExplorationIcon,
-  EvaluationIcon,
-  MessagesIcon,
-  SettingsIcon,
-  LogOutIcon,
+  RectangleStackIcon as DatasetsIcon,
+  PencilSquareIcon as AnnotationProjectIcon,
+  DocumentMagnifyingGlassIcon as ExplorationIcon,
+  ClipboardDocumentCheckIcon as EvaluationIcon,
   HomeIcon,
+  ArchiveBoxIcon as DatasetIcon,
+  DocumentDuplicateIcon as RecordingsIcon,
+  InboxIcon as MessagesIcon,
+  Cog8ToothIcon as SettingsIcon,
+  ArrowRightOnRectangleIcon as LogOutIcon,
+  MagnifyingGlassIcon as SearchIcon,
+  PlusIcon as AddIcon,
+  CalendarIcon,
+  ChevronRightIcon as LastIcon,
+  ChevronLeftIcon as FirstIcon,
+  ArrowSmallRightIcon as NextIcon,
+  ArrowSmallLeftIcon as PreviousIcon,
+  ArrowUturnLeftIcon as BackIcon,
+  ChevronUpDownIcon as ExpandIcon,
+  CheckIcon,
 };

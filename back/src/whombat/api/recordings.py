@@ -332,8 +332,11 @@ async def create_many(
             partial(_assemble_recording_data, audio_dir=audio_dir),
             data,
         )
+        # Take at most 50 milliseconds per file on average
+        estimated_time = len(data) * 0.05
+        print(f"Estimated time: {estimated_time} seconds")
         all_data: list[schemas.RecordingPreCreate | None] = results.get(
-            timeout=30
+            timeout=estimated_time
         )
 
     recordings = await common.create_objects_without_duplicates(
@@ -417,7 +420,7 @@ async def update(
 
         setattr(recording, field, value)
 
-    await session.commit()
+    await session.flush()
     return schemas.Recording.model_validate(recording)
 
 

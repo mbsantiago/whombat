@@ -3,6 +3,8 @@
 from fastapi import APIRouter
 
 from whombat.dependencies import Session
+from whombat.routers.api.datasets import dataset_router
+from whombat.routers.api.recordings import recording_router
 from whombat.routers.api.tags import tags_router
 
 __all__ = [
@@ -11,7 +13,21 @@ __all__ = [
 
 
 api_router = APIRouter()
-api_router.include_router(tags_router, prefix="/tags", tags=["tags"])
+api_router.include_router(
+    tags_router,
+    prefix="/tags",
+    tags=["tags"],
+)
+api_router.include_router(
+    dataset_router,
+    prefix="/datasets",
+    tags=["datasets"],
+)
+api_router.include_router(
+    recording_router,
+    prefix="/recordings",
+    tags=["recordings"],
+)
 
 
 @api_router.get("/users")

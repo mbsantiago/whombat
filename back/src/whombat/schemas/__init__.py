@@ -14,6 +14,7 @@ the database.
 
 """
 
+from whombat.schemas.base import Page
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
@@ -91,6 +92,7 @@ __all__ = [
     "Note",
     "NoteCreate",
     "NoteUpdate",
+    "Page",
     "Recording",
     "RecordingCreate",
     "RecordingPreCreate",
