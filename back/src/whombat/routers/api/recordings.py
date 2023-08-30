@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.filters.recordings import RecordingFilter
 from whombat.dependencies import Session
+from whombat.filters.recordings import RecordingFilter
 from whombat.routers.types import Limit, Offset
 
 __all__ = [
@@ -21,6 +21,7 @@ async def get_recordings(
     session: Session,
     limit: Limit = 10,
     offset: Offset = 0,
+    sort_by: str = "-created_at",
     filter: RecordingFilter = Depends(RecordingFilter),  # type: ignore
 ):
     """Get a page of datasets."""
@@ -29,6 +30,7 @@ async def get_recordings(
         limit=limit,
         offset=offset,
         filters=[filter],
+        sort_by=sort_by,
     )
     return schemas.Page(
         items=datasets,
@@ -36,3 +38,22 @@ async def get_recordings(
         offset=offset,
         limit=limit,
     )
+
+
+@recording_router.patch(
+    "/detail/",
+    response_model=schemas.Recording,
+)
+async def update_recording(
+    session: Session,
+    recording_id: int,
+    recording: schemas.RecordingUpdate,
+):
+    """Update a recording."""
+    response = await api.recordings.update(
+        session,
+        recording_id,
+        recording,
+    )
+    await session.commit()
+    return response

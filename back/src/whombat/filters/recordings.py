@@ -49,6 +49,22 @@ SearchFilter = base.search_filter(
 )
 
 
+class DatasetFilter(base.Filter):
+    """Filter recordings by the dataset they are in."""
+
+    dataset: int | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if not self.dataset:
+            return query
+
+        return query.join(
+            models.DatasetRecording,
+            models.Recording.id == models.DatasetRecording.recording_id,
+        ).where(models.DatasetRecording.dataset_id == self.dataset)
+
+
 class IssuesFilter(base.Filter):
     """Filter recordings by their status.
 
@@ -102,6 +118,7 @@ class TagFilter(base.Filter):
 RecordingFilter = base.combine(
     SearchFilter,
     TagFilter,
+    DatasetFilter,
     duration=DurationFilter,
     samplerate=SamplerateFilter,
     channels=ChannelsFilter,

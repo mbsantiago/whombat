@@ -4,7 +4,7 @@ import datetime
 from pathlib import Path
 from uuid import UUID, uuid4
 
-from pydantic import Field, FilePath, field_validator
+from pydantic import BaseModel, Field, FilePath, field_validator
 
 from whombat.core import files
 from whombat.schemas.base import BaseSchema
@@ -115,16 +115,13 @@ class RecordingPreCreate(RecordingMediaInfo, RecordingMetadata):
     This contains data that has also been extracted from the audio file.
     """
 
+    # NOTE: We use a Path object as validation is not required after creation.
     path: Path
     """The path to the audio file."""
 
 
 class Recording(RecordingObjects, RecordingPreCreate):
     """Schema for Recording objects returned to the user."""
-
-    # NOTE: We use a Path object as validation is not required after creation.
-    path: Path
-    """The path to the audio file."""
 
     id: int
     """The database id of the recording."""
@@ -137,8 +134,20 @@ class RecordingWithoutPath(RecordingObjects, RecordingPreCreate):
     """The database id of the recording."""
 
 
-class RecordingUpdate(RecordingMetadata):
+class RecordingUpdate(BaseModel):
     """Schema for Recording objects updated by the user."""
+
+    date: datetime.date | None = None
+    """The date of the recording."""
+
+    time: datetime.time | None = None
+    """The time of the recording."""
+
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    """The latitude of the recording."""
+
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    """The longitude of the recording."""
 
     path: FilePath | None = None
     """New path to the audio file."""
