@@ -17,13 +17,15 @@ const config: Config = {
         width: "width",
       },
       strokeWidth: {
-        '3': '3px',
-        '4': '4px',
-      }
+        "3": "3px",
+        "4": "4px",
+      },
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
   ],
 };
 export default config;

@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, type ButtonHTMLAttributes } from "react";
 import classnames from "classnames";
 
 type TabType = {
@@ -9,16 +9,21 @@ type TabType = {
   onClick: () => void;
 };
 
-function Tab({ children, active }: { children: ReactNode; active?: boolean }) {
+function Tab({
+  children,
+  disabled,
+  ...props
+}: { children: ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      disabled={active}
+      {...props}
+      disabled={disabled}
       className={classnames(
-        "whitespace-nowrap rounded-lg p-2 text-center text-sm font-medium bg-stone-50 dark:bg-stone-800",
+        "whitespace-nowrap rounded-lg bg-stone-50 p-2 text-center text-sm font-medium dark:bg-stone-800",
         {
-          "text-emerald-500": active,
-          "dark:text-stone-400 text-stone-700 hover:bg-stone-200 dark:hover:bg-stone-900 hover:text-stone-900 dark:hover:text-stone-300":
-            !active,
+          "text-emerald-500": disabled,
+          "text-stone-700 hover:bg-stone-200 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-stone-300":
+            !disabled,
         },
       )}
     >
@@ -32,7 +37,7 @@ export default function Tabs({ tabs }: { tabs: TabType[] }) {
     <ul className="flex space-x-4">
       {tabs.map((tab) => (
         <li key={tab.id}>
-          <Tab active={tab.isActive}>
+          <Tab onClick={tab.onClick} disabled={tab.isActive}>
             {tab.icon ? (
               <span className="mr-2 inline-block align-middle text-stone-500">
                 {tab.icon}

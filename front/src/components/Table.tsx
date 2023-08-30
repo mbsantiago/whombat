@@ -6,10 +6,24 @@ export default function Table<S>({
   table,
   onCopy,
   onPaste,
+  onDelete,
 }: {
   table: Table<S>;
   onCopy?: (value: string) => void;
-  onPaste?: () => void;
+  onDelete?: ({
+    row_id,
+    column_id,
+  }: {
+    row_id: number;
+    column_id: string;
+  }) => void;
+  onPaste?: ({
+    row_id,
+    column_id,
+  }: {
+    row_id: number;
+    column_id: string;
+  }) => void;
 }) {
   const {
     listeners: { onKeyUp, onKeyDown },
@@ -73,7 +87,7 @@ export default function Table<S>({
                 return (
                   <td
                     role="gridcell"
-                    className="border border-stone-300 outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-transparent dark:border-stone-600"
+                    className="border border-stone-300 outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent dark:border-stone-600"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {
@@ -84,9 +98,23 @@ export default function Table<S>({
                       }
 
                       // Paste value on ctrl+v
-                      if (event.key === "v" && event.ctrlKey) {
-                        row.meta.editable = true;
-                        onPaste?.();
+                      if (
+                        event.key === "v" &&
+                        event.ctrlKey &&
+                        (cell.column.columnDef.meta?.editable ?? false)
+                      ) {
+                        onPaste?.({
+                          row_id: row.index,
+                          column_id: cell.column.id,
+                        });
+                      }
+
+                      if (event.key === "Delete" || event.key === "Backspace") {
+                        console.log("Deleting")
+                        onDelete?.({
+                          row_id: row.index,
+                          column_id: cell.column.id,
+                        });
                       }
                     }}
                     style={{

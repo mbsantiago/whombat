@@ -17,6 +17,7 @@ const DatasetSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
   description: z.string(),
+  audio_dir: z.string(),
   recording_count: z.number().int(),
   created_at: z.coerce.date(),
 });

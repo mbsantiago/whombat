@@ -9,6 +9,7 @@ import { registerAuthAPI } from "./auth";
 import { registerTagAPI } from "./tags";
 import { registerUserAPI } from "./user";
 import { registerDatasetAPI } from "./datasets";
+import { registerRecordingAPI } from "./recordings";
 
 type APIConfig = {
   baseURL: string;
@@ -30,5 +31,6 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     tags: registerTagAPI(instance),
     user: registerUserAPI(instance),
     datasets: registerDatasetAPI(instance),
+    recordings: registerRecordingAPI(instance),
   };
 }

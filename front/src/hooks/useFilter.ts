@@ -19,9 +19,9 @@ export default function useFilter<T extends Object>({
   const [state, setState] = useState(initialState);
   const [debouncedState, setDebouncedState] = useState(initialState);
 
-  const set = (key: keyof T, value: T[keyof T]) =>
+  const set = <K extends keyof T>(key: K, value: (typeof state)[K]) =>
     setState((prev) => ({ ...prev, [key]: value }));
-  const get = (key: keyof T) => state[key];
+  const get = <K extends keyof T>(key: K): (typeof state)[K] => state[key];
 
   useDebounce(
     () => {

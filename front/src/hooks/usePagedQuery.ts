@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { type GetManyQuery, type Paginated } from "@/api/common";
 
@@ -32,17 +32,24 @@ export default function usePagedQuery<T, S extends Object>({
   func: (query: GetManyQuery) => Promise<Paginated<T>>;
   pageSize: number;
   filter: S;
-}): PagedList<T> {
+}) {
   const [page, setPage] = useState(0);
   const [size, setPageSize] = useState(pageSize);
 
-  const { data, isLoading, error } = useQuery<Paginated<T>, Error>(
+  const query = useQuery<Paginated<T>, Error>(
     [name, page, size, filter],
     () => func({ limit: size, offset: page * size, ...filter }),
     { keepPreviousData: true },
   );
 
-  const numPages = Math.ceil((data?.total ?? 0) / size);
+  const numPages = Math.ceil((query.data?.total ?? 0) / size);
+
+  useEffect(() => {
+    if (page >= numPages && numPages > 0) {
+      setPage(numPages - 1);
+    }
+  }, [numPages]);
+
   const pagination: Pagination = {
     page,
     numPages,
@@ -55,11 +62,8 @@ export default function usePagedQuery<T, S extends Object>({
     setPageSize: (size) => {
       if (size > 0) {
         setPageSize((prev) => {
-          const newNumPages = Math.ceil((data?.total ?? 0) / size);
-          const firstElement = Math.min(
-            page * prev,
-            data?.total ?? 0,
-          );
+          const newNumPages = Math.ceil((query.data?.total ?? 0) / size);
+          const firstElement = Math.min(page * prev, query.data?.total ?? 0);
           const newPage = Math.floor(firstElement / size);
           setPage(Math.max(0, Math.min(newPage, newNumPages - 1)));
           return size;
@@ -81,10 +85,9 @@ export default function usePagedQuery<T, S extends Object>({
   };
 
   return {
-    page: data?.items ?? [],
-    total: data?.total ?? 0,
+    page: query.data?.items ?? [],
+    total: query.data?.total ?? 0,
     pagination,
-    isLoading,
-    error,
+    ...query,
   };
 }

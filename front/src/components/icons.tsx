@@ -1,6 +1,7 @@
 import { type HTMLAttributes } from "react";
 import {
   RectangleStackIcon,
+  PencilIcon,
   PencilSquareIcon,
   ClipboardDocumentCheckIcon,
   DocumentMagnifyingGlassIcon,
@@ -22,6 +23,11 @@ import {
   CheckIcon,
   SignalIcon,
   ChatBubbleLeftRightIcon,
+  TagIcon,
+  SwatchIcon,
+  CalendarDaysIcon,
+  ClockIcon,
+  MapPinIcon,
 } from "@heroicons/react/24/outline";
 
 function WhombatIcon(props: HTMLAttributes<HTMLImageElement>) {
@@ -52,4 +58,10 @@ export {
   CheckIcon,
   SignalIcon as SoundEventIcon,
   ChatBubbleLeftRightIcon as NotesIcon,
+  TagIcon,
+  SwatchIcon as TagsIcon,
+  CalendarDaysIcon as DateIcon,
+  ClockIcon as TimeIcon,
+  MapPinIcon as LocationIcon,
+  PencilIcon as EditIcon,
 };

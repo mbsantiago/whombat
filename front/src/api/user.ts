@@ -10,6 +10,12 @@ const UserSchema = z.object({
   is_superuser: z.boolean(),
 });
 
+const SimpleUserSchema = z.object({
+  id: z.string().uuid(),
+  username: z.string(),
+  name: z.string().nullable(),
+});
+
 type User = z.infer<typeof UserSchema>;
 
 const DEFAULT_ENDPOINTS = {
@@ -28,4 +34,4 @@ function registerUserAPI(
   return { me: getActiveUser };
 }
 
-export { registerUserAPI, type User, UserSchema };
+export { registerUserAPI, type User, UserSchema, SimpleUserSchema };
