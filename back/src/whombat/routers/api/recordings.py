@@ -57,3 +57,41 @@ async def update_recording(
     )
     await session.commit()
     return response
+
+
+@recording_router.post(
+    "/detail/tags/",
+    response_model=schemas.Recording,
+)
+async def add_recording_tag(
+    session: Session,
+    recording_id: int,
+    tag_id: int,
+):
+    """Add a tag to a recording."""
+    response = await api.recordings.add_tag(
+        session,
+        recording_id,
+        tag_id,
+    )
+    await session.commit()
+    return response
+
+
+@recording_router.delete(
+    "/detail/tags/",
+    response_model=schemas.Recording,
+)
+async def remove_recording_tag(
+    session: Session,
+    recording_id: int,
+    tag_id: int,
+):
+    """Remove a tag from a recording."""
+    response = await api.recordings.remove_tag(
+        session,
+        recording_id,
+        tag_id,
+    )
+    await session.commit()
+    return response

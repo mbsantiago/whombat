@@ -54,7 +54,7 @@ export default function Table<S>({
           >
             {headerGroup.headers.map((header) => (
               <th
-                className="relative whitespace-nowrap border border-stone-400 px-2 py-1 dark:border-stone-500"
+                className="relative whitespace-nowrap overflow-x-scroll border border-stone-400 px-2 py-1 dark:border-stone-500"
                 key={header.id}
                 colSpan={header.colSpan}
                 style={{

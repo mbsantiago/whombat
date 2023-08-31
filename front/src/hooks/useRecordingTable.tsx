@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { type Tag } from "@/api/tags";
 import { type Recording, type UpdateRecording } from "@/api/recordings";
 import TableCheckbox from "@/components/TableCheckbox";
 import TableInput from "@/components/TableInput";
 import TableCell from "@/components/TableCell";
+import TableTags from "@/components/TableTags";
+import TableHeader from "@/components/TableHeader";
 import * as icons from "@/components/icons";
 
 import {
@@ -15,6 +18,8 @@ import {
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+    addTag: (rowIndex: number, tag: Tag) => void;
+    removeTag: (rowIndex: number, tag: Tag) => void;
   }
 
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -62,7 +67,7 @@ const columns: ColumnDef<Recording>[] = [
   {
     accessorFn: (row) => row.path,
     id: "path",
-    header: "Path",
+    header: () => <TableHeader>Path</TableHeader>,
     size: 200,
     enableResizing: true,
     footer: (props) => props.column.id,
@@ -73,10 +78,9 @@ const columns: ColumnDef<Recording>[] = [
   },
   {
     id: "duration",
-    header: "Duration",
+    header: () => <TableHeader>Duration</TableHeader>,
     enableResizing: true,
     size: 100,
-    minSize: 100,
     accessorFn: (row) => row.duration.toFixed(2),
     cell: ({ row }) => {
       const duration = row.getValue("duration") as string;
@@ -86,10 +90,9 @@ const columns: ColumnDef<Recording>[] = [
   {
     id: "samplerate",
     accessorKey: "samplerate",
-    header: "Samplerate",
+    header: () => <TableHeader>Sample Rate</TableHeader>,
     enableResizing: true,
     size: 120,
-    minSize: 120,
     footer: (props) => props.column.id,
     cell: ({ row }) => {
       const samplerate = row.getValue("samplerate") as string;
@@ -100,13 +103,12 @@ const columns: ColumnDef<Recording>[] = [
     id: "date",
     enableResizing: true,
     size: 140,
-    minSize: 140,
     header: () => {
       return (
-        <span className="align-middle">
+          <TableHeader>
           <icons.DateIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
           Date
-        </span>
+          </TableHeader>
       );
     },
     cell: ({ row, table, column }) => {
@@ -130,13 +132,12 @@ const columns: ColumnDef<Recording>[] = [
     id: "time",
     enableResizing: true,
     size: 120,
-    minSize: 120,
     header: () => {
       return (
-        <span className="align-middle">
+        <TableHeader>
           <icons.TimeIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
           Time
-        </span>
+        </TableHeader>
       );
     },
     cell: ({ row, table, column }) => {
@@ -162,10 +163,10 @@ const columns: ColumnDef<Recording>[] = [
     enableResizing: true,
     header: () => {
       return (
-        <span className="align-middle">
+        <TableHeader>
           <icons.LocationIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
           Location
-        </span>
+        </TableHeader>
       );
     },
     accessorFn: (row) => {
@@ -181,23 +182,36 @@ const columns: ColumnDef<Recording>[] = [
     enableResizing: true,
     header: () => {
       return (
-        <span className="align-middle">
+        <TableHeader>
           <icons.TagIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
           Tags
-        </span>
+        </TableHeader>
       );
     },
     accessorFn: (row) => row.tags,
+    cell: ({ row, table }) => {
+      const tags = row.getValue("tags") as Tag[];
+      return (
+        <TableTags
+          tags={tags}
+          onAdd={(tag) => {
+            console.log("add tag", tag);
+            table.options.meta?.addTag(row.index, tag);
+          }}
+          onRemove={(tag) => table.options.meta?.removeTag(row.index, tag)}
+        />
+      );
+    },
   },
   {
     id: "notes",
     enableResizing: true,
     header: () => {
       return (
-        <span className="align-middle">
+        <TableHeader>
           <icons.NotesIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
           Notes
-        </span>
+        </TableHeader>
       );
     },
     accessorFn: (row) => row.notes,
@@ -207,9 +221,13 @@ const columns: ColumnDef<Recording>[] = [
 function useRecordingTable({
   data,
   updateData,
+  addTag,
+  removeTag,
 }: {
   data: Recording[];
   updateData?: (recording_id: number, data: UpdateRecording) => void;
+  addTag?: (recording_id: number, tag: Tag) => void;
+  removeTag?: (recording_id: number, tag: Tag) => void;
 }) {
   const [rowSelection, setRowSelection] = useState({});
   const table = useReactTable<Recording>({
@@ -224,11 +242,15 @@ function useRecordingTable({
     meta: {
       updateData: (rowIndex, columnId, value) => {
         const recording_id = data[rowIndex].id;
-        if (updateData != null) {
-          updateData(recording_id, {
-            [columnId]: value,
-          });
-        }
+        updateData?.(recording_id, { [columnId]: value });
+      },
+      addTag: (rowIndex, tag) => {
+        const recording_id = data[rowIndex].id;
+        addTag?.(recording_id, tag);
+      },
+      removeTag: (rowIndex, tag) => {
+        const recording_id = data[rowIndex].id;
+        removeTag?.(recording_id, tag);
       },
     },
     debugTable: true,

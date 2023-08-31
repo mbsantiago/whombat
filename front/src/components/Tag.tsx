@@ -56,7 +56,7 @@ export default function Tag({
   const classNames = getClassNames(color, level);
   return (
     <button
-      className={classnames("border rounded-md px-2", classNames, className)}
+      className={classnames("border rounded-md px-2 whitespace-nowrap", classNames, className)}
       {...props}
     >
       {tag.key}

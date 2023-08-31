@@ -51,6 +51,36 @@ export default function DatasetRecordings() {
     },
   });
 
+  const addTag = useMutation({
+    mutationFn: ({
+      recording_id,
+      tag_id,
+    }: {
+      recording_id: number;
+      tag_id: number;
+    }) => {
+      return api.recordings.addTag({ recording_id, tag_id });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const removeTag = useMutation({
+    mutationFn: ({
+      recording_id,
+      tag_id,
+    }: {
+      recording_id: number;
+      tag_id: number;
+    }) => {
+      return api.recordings.removeTag({ recording_id, tag_id });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
   if (dataset.data != null) {
     const length = dataset.data.audio_dir.length;
     page.forEach((recording) => {
@@ -67,6 +97,10 @@ export default function DatasetRecordings() {
   const table = useRecordingTable({
     data: page ?? [],
     updateData: updateRecording,
+    addTag: (recording_id, tag) =>
+      addTag.mutate({ recording_id, tag_id: tag.id }),
+    removeTag: (recording_id, tag) =>
+      removeTag.mutate({ recording_id, tag_id: tag.id }),
   });
 
   if (dataset.isLoading || isLoading) {

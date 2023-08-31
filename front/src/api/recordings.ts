@@ -104,76 +104,86 @@ function registerRecordingAPI(
   }
 
   async function addTag({
-    uuid,
+    recording_id,
     tag_id,
   }: {
-    uuid: string;
+    recording_id: number;
     tag_id: number;
   }): Promise<void> {
-    await instance.post(endpoints.addTag, { tag_id }, { params: { uuid } });
+    await instance.post(
+      endpoints.addTag,
+      {},
+      {
+        params: { tag_id, recording_id },
+      },
+    );
   }
 
   async function removeTag({
-    uuid,
+    recording_id,
     tag_id,
   }: {
-    uuid: string;
+    recording_id: number;
     tag_id: number;
   }): Promise<void> {
-    await instance.delete(endpoints.removeTag, { params: { uuid, tag_id } });
+    await instance.delete(endpoints.removeTag, {
+      params: { recording_id, tag_id },
+    });
   }
 
   async function addNote({
-    uuid,
+    recording_id,
     message,
     is_issue,
   }: {
-    uuid: string;
+    recording_id: number;
     message: string;
     is_issue: boolean;
   }): Promise<void> {
     await instance.post(
       endpoints.addNote,
       { message, is_issue },
-      { params: { uuid } },
+      { params: { recording_id } },
     );
   }
 
   async function removeNote({
-    uuid,
+    recording_id,
     note_id,
   }: {
-    uuid: string;
+    recording_id: number;
     note_id: number;
   }): Promise<void> {
-    await instance.delete(endpoints.removeNote, { params: { uuid, note_id } });
+    await instance.delete(endpoints.removeNote, {
+      params: { recording_id, note_id },
+    });
   }
 
   async function addFeature({
-    uuid,
+    recording_id,
     feature_name_id,
     value,
   }: {
-    uuid: string;
+    recording_id: number;
     feature_name_id: number;
     value: number;
   }): Promise<void> {
     await instance.post(
       endpoints.addFeature,
       { feature_name_id, value },
-      { params: { uuid } },
+      { params: { recording_id } },
     );
   }
 
   async function removeFeature({
-    uuid,
+    recording_id,
     feature_name_id,
   }: {
-    uuid: string;
+    recording_id: number;
     feature_name_id: number;
   }): Promise<void> {
     await instance.delete(endpoints.removeFeature, {
-      params: { uuid, feature_name_id },
+      params: { recording_id, feature_name_id },
     });
   }
 
