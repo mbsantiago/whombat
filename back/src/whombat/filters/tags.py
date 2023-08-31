@@ -7,6 +7,7 @@ __all__ = [
     "KeyFilter",
     "ValueFilter",
     "SearchFilter",
+    "TagFilter",
 ]
 
 
@@ -18,3 +19,10 @@ ValueFilter = base.string_filter(models.Tag.value)
 
 SearchFilter = base.search_filter([models.Tag.key, models.Tag.value])
 """Search tags by key or value."""
+
+
+TagFilter = base.combine(
+    SearchFilter,
+    key=KeyFilter,
+    value=ValueFilter,
+)

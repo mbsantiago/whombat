@@ -28,6 +28,7 @@ import {
   CalendarDaysIcon,
   ClockIcon,
   MapPinIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 function WhombatIcon(props: HTMLAttributes<HTMLImageElement>) {
@@ -64,4 +65,5 @@ export {
   ClockIcon as TimeIcon,
   MapPinIcon as LocationIcon,
   PencilIcon as EditIcon,
+  XMarkIcon as CloseIcon,
 };

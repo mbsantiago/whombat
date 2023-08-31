@@ -22,6 +22,9 @@ export default function useFilter<T extends Object>({
   const set = <K extends keyof T>(key: K, value: (typeof state)[K]) =>
     setState((prev) => ({ ...prev, [key]: value }));
   const get = <K extends keyof T>(key: K): (typeof state)[K] => state[key];
+  const clear = <K extends keyof T>(key: K) =>
+    setState((prev) => ({ ...prev, [key]: initialState[key] }));
+  const reset = () => setState(initialState);
 
   useDebounce(
     () => {
@@ -39,6 +42,8 @@ export default function useFilter<T extends Object>({
     filter: debouncedState,
     set,
     get,
+    clear,
+    reset,
     submit,
   } as const;
 }

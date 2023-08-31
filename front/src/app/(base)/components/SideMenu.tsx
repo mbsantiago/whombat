@@ -30,7 +30,7 @@ function SideMenuButton({
   return (
     <Tooltip
       tooltip={
-        <div className="rounded p-2 shadow-lg dark:bg-stone-700">
+        <div className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700">
           <p className="whitespace-nowrap text-stone-700 dark:text-stone-300">
             {tooltip}
           </p>

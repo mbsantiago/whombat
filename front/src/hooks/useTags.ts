@@ -8,16 +8,17 @@ export default function useTags({
   initialFilter = {},
 }: {
   initialFilter?: TagFilter;
-}) {
+} = {}) {
   const filter = useFilter<TagFilter>({
     initialState: initialFilter,
+    debounce: 50, // Lower debounce time for faster response
   });
 
   const query = usePagedQuery({
     name: "tags",
     func: api.tags.get,
     pageSize: 10,
-    filter,
+    filter: filter.filter,
   });
 
   const mutation = useMutation({

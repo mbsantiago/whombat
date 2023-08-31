@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createSessionSlice, type SessionSlice } from "./session";
 import { createClipboardSlice, type ClipboardSlice } from "./clipboard";
+import { createColorsSlice, type ColorsSlice } from "./colors";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type Store = SessionSlice & ClipboardSlice;
+type Store = SessionSlice & ClipboardSlice & ColorsSlice;
 
 const useStore = create<Store>()(
   persist(
     (...a) => ({
       ...createSessionSlice(...a),
       ...createClipboardSlice(...a),
+      ...createColorsSlice(...a),
     }),
     {
       name: "whombat-storage",
