@@ -106,6 +106,9 @@ function Navigation() {
 
 function NavBar() {
   const user = useStore((state) => state.user);
+  if (!user) {
+    return null;
+  }
   return (
     <nav>
       <div className="z-50 flex max-w-screen-xl flex-wrap items-center justify-between p-4">

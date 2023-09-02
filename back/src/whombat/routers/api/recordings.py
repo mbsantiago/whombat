@@ -50,6 +50,7 @@ async def update_recording(
     recording: schemas.RecordingUpdate,
 ):
     """Update a recording."""
+    print(recording.model_dump_json())
     response = await api.recordings.update(
         session,
         recording_id,

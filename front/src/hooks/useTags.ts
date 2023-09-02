@@ -6,22 +6,24 @@ import { type TagFilter } from "@/api/tags";
 
 export default function useTags({
   initialFilter = {},
+  pageSize = 10,
 }: {
   initialFilter?: TagFilter;
+  pageSize?: number;
 } = {}) {
   const filter = useFilter<TagFilter>({
     initialState: initialFilter,
     debounce: 50, // Lower debounce time for faster response
   });
 
-  const query = usePagedQuery({
+  const { items, total, query, pagination } = usePagedQuery({
     name: "tags",
     func: api.tags.get,
-    pageSize: 10,
+    pageSize: pageSize,
     filter: filter.filter,
   });
 
-  const mutation = useMutation({
+  const create = useMutation({
     mutationFn: api.tags.create,
     onSuccess: () => {
       query.refetch();
@@ -29,10 +31,11 @@ export default function useTags({
   });
 
   return {
-    results: query.data?.items ?? [],
-    total: query.data?.total ?? 0,
-    filter,
+    items,
+    total,
     query,
-    mutation,
+    pagination,
+    filter,
+    create,
   };
 }

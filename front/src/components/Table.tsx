@@ -2,6 +2,14 @@ import { flexRender } from "@tanstack/react-table";
 import { useTableNav } from "@table-nav/react";
 import { type Table } from "@tanstack/react-table";
 
+/** A Table component.
+ * Will display a table.
+ * We use the `@tanstack/react-table` library to manage the table state.
+ * and column definitions.
+ * This defines the basic aspect of the table, while the actual content
+ * and cell rendering is controlled by the `table` prop.
+ * @component
+ */
 export default function Table<S>({
   table,
   onCopy,
@@ -79,7 +87,7 @@ export default function Table<S>({
           </tr>
         ))}
       </thead>
-      <tbody>
+      <tbody className="text-stone-800 dark:text-stone-300 text-sm">
         {table.getRowModel().rows.map((row) => {
           return (
             <tr key={row.id} className="hover:dark:bg-stone-800">
@@ -95,6 +103,8 @@ export default function Table<S>({
                       if (event.key === "c" && event.ctrlKey) {
                         const value = row.getValue(cell.column.id) as string;
                         onCopy?.(value);
+                        // Copy to clipboard
+                        navigator.clipboard.writeText(value);
                       }
 
                       // Paste value on ctrl+v
@@ -110,7 +120,6 @@ export default function Table<S>({
                       }
 
                       if (event.key === "Delete" || event.key === "Backspace") {
-                        console.log("Deleting")
                         onDelete?.({
                           row_id: row.index,
                           column_id: cell.column.id,

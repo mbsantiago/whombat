@@ -79,102 +79,105 @@ type TagSearchBarProps = {
   "onSelect" | "onChange" | "onKeyDown" | "onBlur"
 >;
 
-export default forwardRef<HTMLInputElement, TagSearchBarProps>(function (
-  { onSelect, initialFilter = {}, onBlur, onKeyDown, ...props },
-  ref,
-) {
-  const tags = useTags({
-    initialFilter,
-  });
-  const [query, setQuery] = useState("");
+export default forwardRef<HTMLInputElement, TagSearchBarProps>(
+  function TagSearchBar(
+    { onSelect, initialFilter = {}, onBlur, onKeyDown, ...props },
+    ref,
+  ) {
+    const tags = useTags({ initialFilter });
+    const [query, setQuery] = useState("");
 
-  const getTagColor = useStore((state) => state.getTagColor);
+    const getTagColor = useStore((state) => state.getTagColor);
 
-  const key = query.split(":")[0];
-  const value = query.split(":")[1];
+    const key = query.split(":")[0];
+    const value = query.split(":")[1];
 
-  const reset = () => {
-    setQuery("");
-    tags.filter.reset();
-  };
+    const reset = () => {
+      setQuery("");
+      tags.filter.reset();
+    };
 
-  useEffect(() => {
-    if (value == null || key == null) {
-      tags.filter.set("search", query);
-      tags.filter.clear("key__eq");
-      tags.filter.clear("value__has");
-    } else {
-      tags.filter.clear("search");
-      tags.filter.set("key__eq", key);
-      tags.filter.set("value__has", value);
-    }
-  }, [query]);
+    useEffect(() => {
+      let key = query.split(":")[0];
+      let value = query.split(":")[1];
 
-  return (
-    <Combobox onChange={(tag: TagType) => onSelect?.(tag)}>
-      <div className="relative mt-1 z-20">
-        <div className="relative w-full cursor-default overflow-hidden text-left">
-          <Combobox.Input
-            as={Input}
-            ref={ref}
-            {...props}
-            onBlur={() => {
-              reset();
-              onBlur?.();
-            }}
-            autoFocus
-            displayValue={() => ""}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && event.shiftKey) {
-                event.preventDefault();
-                if (key && value) {
-                  tags.mutation.mutate({ key, value });
+      if (value == null || key == null) {
+        tags.filter.set("search", query);
+        tags.filter.clear("key__eq");
+        tags.filter.clear("value__has");
+      } else {
+        tags.filter.clear("search");
+        tags.filter.set("key__eq", key);
+        tags.filter.set("value__has", value);
+      }
+    }, [query]);
+
+    return (
+      <Combobox onChange={(tag: TagType) => onSelect?.(tag)}>
+        <div className="relative mt-1 z-20">
+          <div className="relative w-full cursor-default overflow-hidden text-left">
+            <Combobox.Input
+              as={Input}
+              ref={ref}
+              {...props}
+              onBlur={() => {
+                reset();
+                onBlur?.();
+              }}
+              autoFocus
+              displayValue={() => ""}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && event.shiftKey) {
+                  event.preventDefault();
+                  if (key && value) {
+                    tags.create.mutate({ key, value });
+                  }
                 }
-              }
-              onKeyDown?.(event);
-            }}
-          />
-          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
-          </Combobox.Button>
+                onKeyDown?.(event);
+              }}
+            />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
+            </Combobox.Button>
+          </div>
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterLeave={reset}
+          >
+            <Combobox.Options className="absolute divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm z-50">
+              {tags.items.length === 0 ? (
+                <NoTagsFound />
+              ) : (
+                <ComboBoxSection>
+                  {tags.items.map((tag) => (
+                    <Combobox.Option
+                      key={tag.id}
+                      className={({ active }) =>
+                        `relative cursor-default select-none py-2 pl-4 ${
+                          active ? "bg-stone-200 dark:bg-stone-600" : ""
+                        }`
+                      }
+                      value={tag}
+                    >
+                      <Tag
+                        disabled
+                        className="pointer-events-none"
+                        tag={tag}
+                        {...getTagColor(tag)}
+                      />
+                    </Combobox.Option>
+                  ))}
+                </ComboBoxSection>
+              )}
+              <CreateNewTag tag={{ key, value }} />
+            </Combobox.Options>
+          </Transition>
         </div>
-        <Transition
-          as={Fragment}
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          afterLeave={reset}
-        >
-          <Combobox.Options className="absolute divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm z-50">
-            {tags.results.length === 0 ? (
-              <NoTagsFound />
-            ) : (
-              <ComboBoxSection>
-                {tags.results.map((tag) => (
-                  <Combobox.Option
-                    key={tag.id}
-                    className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-4 ${
-                        active ? "bg-stone-200 dark:bg-stone-600" : ""
-                      }`
-                    }
-                    value={tag}
-                  >
-                    <Tag
-                      disabled
-                      className="pointer-events-none"
-                      tag={tag}
-                      {...getTagColor(tag)}
-                    />
-                  </Combobox.Option>
-                ))}
-              </ComboBoxSection>
-            )}
-            <CreateNewTag tag={{ key, value }} />
-          </Combobox.Options>
-        </Transition>
-      </div>
-    </Combobox>
-  );
-});
+      </Combobox>
+    );
+  },
+);

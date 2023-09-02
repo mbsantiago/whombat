@@ -1,3 +1,6 @@
+/** @module Tag.
+ * Definition of the Tag component.
+ */
 import { type ButtonHTMLAttributes } from "react";
 import { type Tag } from "@/api/tags";
 import classnames from "classnames";
@@ -41,6 +44,11 @@ function getClassNames(color: string, level: number) {
   return `${bg} ${border} ${text}`;
 }
 
+/** A Tag.
+ * Will display a tag. The aspect can be customized by specifying
+ * the color (hue) and the level (brightness).
+ * @component
+ */
 export default function Tag({
   tag,
   color,
@@ -56,7 +64,11 @@ export default function Tag({
   const classNames = getClassNames(color, level);
   return (
     <button
-      className={classnames("border rounded-md px-2 whitespace-nowrap", classNames, className)}
+      className={classnames(
+        "border rounded-md px-2 whitespace-nowrap",
+        classNames,
+        className,
+      )}
       {...props}
     >
       {tag.key}

@@ -15,50 +15,56 @@ type HasErrors = {
 const Input = forwardRef<
   HTMLInputElement & HasErrors,
   InputHTMLAttributes<HTMLInputElement>
->((props, ref) => (
-  <input
-    ref={ref}
-    {...{
-      ...props,
-      className: classNames(
-        "focus:shadow-outline w-full rounded rounded-lg border border-stone-300 bg-stone-50 p-2.5 leading-tight text-sm text-stone-900 dark:text-stone-300 outline-none focus:border-emerald-500 focus:ring-emerald-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400 dark:focus:border-emerald-500 dark:focus:ring-emerald-500",
-        props.className,
-      ),
-    }}
-  />
-));
+>(function Input(props, ref) {
+  return (
+    <input
+      ref={ref}
+      {...{
+        ...props,
+        className: classNames(
+          "focus:shadow-outline w-full rounded rounded-lg border border-stone-300 bg-stone-50 p-2.5 leading-tight text-sm text-stone-900 dark:text-stone-300 outline-none focus:border-emerald-500 focus:ring-emerald-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400 dark:focus:border-emerald-500 dark:focus:ring-emerald-500",
+          props.className,
+        ),
+      }}
+    />
+  );
+});
 
 const TextArea = forwardRef<
   HTMLTextAreaElement & HasErrors,
   InputHTMLAttributes<HTMLTextAreaElement>
->((props, ref) => (
-  <textarea
-    ref={ref}
-    {...{
-      ...props,
-      className: classNames(
-        "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
-        props.className,
-      ),
-    }}
-  />
-));
+>(function TextArea(props, ref) {
+  return (
+    <textarea
+      ref={ref}
+      {...{
+        ...props,
+        className: classNames(
+          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
+          props.className,
+        ),
+      }}
+    />
+  );
+});
 
 const Select = forwardRef<
   HTMLSelectElement & HasErrors,
   InputHTMLAttributes<HTMLSelectElement>
->((props, ref) => (
-  <select
-    ref={ref}
-    {...{
-      ...props,
-      className: classNames(
-        "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
-        props.className,
-      ),
-    }}
-  />
-));
+>(function Select(props, ref) {
+  return (
+    <select
+      ref={ref}
+      {...{
+        ...props,
+        className: classNames(
+          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
+          props.className,
+        ),
+      }}
+    />
+  );
+});
 
 /**
 /* Label for an input element.

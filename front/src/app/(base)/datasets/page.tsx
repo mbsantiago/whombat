@@ -1,48 +1,17 @@
 "use client";
 import Link from "next/link";
 import Hero from "@/components/Hero";
-import api from "@/app/api";
-import usePagedQuery from "@/hooks/usePagedQuery";
-import useFilter from "@/hooks/useFilter";
+import useDatasets from "@/hooks/useDatasets";
 import Dataset from "@/components/Dataset";
 import Button from "@/components/Button";
 import { DatasetIcon, AddIcon } from "@/components/icons";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
-import { type DatasetFilter } from "@/api/datasets";
-
-function DatasetList({ filter }: { filter: DatasetFilter }) {
-  const { page, isLoading, pagination } = usePagedQuery({
-    name: "datasets",
-    func: api.datasets.getMany,
-    pageSize: 10,
-    filter,
-  });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <>
-      <StackedList
-        items={page.map((item) => (
-          <Dataset key={item.id} {...item} />
-        ))}
-      />
-      <Pagination {...pagination} />
-    </>
-  );
-}
+import Loading from "@/app/loading";
 
 export default function Datasets() {
-  const {
-    filter,
-    set: setFilter,
-    get: getFilter,
-    submit,
-  } = useFilter<DatasetFilter>({ initialState: {} });
+  const { items, pagination, query, filter } = useDatasets();
 
   return (
     <>
@@ -53,9 +22,9 @@ export default function Datasets() {
             <Search
               label="Search"
               placeholder="Search dataset..."
-              value={getFilter("search")}
-              onChange={(value) => setFilter("search", value)}
-              onSubmit={() => submit()}
+              value={filter.get("search")}
+              onChange={(value) => filter.set("search", value)}
+              onSubmit={() => filter.submit()}
               icon={<DatasetIcon />}
             />
           </div>
@@ -67,7 +36,18 @@ export default function Datasets() {
             </Link>
           </div>
         </div>
-        <DatasetList filter={filter} />
+        {query.isLoading ? (
+          <Loading />
+        ) : (
+          <>
+            <StackedList
+              items={items.map((item) => (
+                <Dataset key={item.id} {...item} />
+              ))}
+            />
+            <Pagination {...pagination} />
+          </>
+        )}
       </div>
     </>
   );

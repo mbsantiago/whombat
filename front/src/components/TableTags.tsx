@@ -90,6 +90,7 @@ export default function TableTags({
         <Tag
           key={tag.id}
           tag={tag}
+          className="hover:bg-red-300 hover:border-red-500 hover:text-red-700"
           {...getTagColor(tag)}
           onClick={() => {
             onRemove?.(tag);

@@ -1,6 +1,4 @@
 """REST API routes for datasets."""
-from uuid import UUID
-
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -21,10 +19,10 @@ dataset_router = APIRouter()
 )
 async def get_dataset(
     session: Session,
-    uuid: UUID,
+    dataset_id: int,
 ):
     """Get a dataset by UUID."""
-    dataset = await api.datasets.get_by_uuid(session, uuid)
+    dataset = await api.datasets.get_by_id(session, dataset_id)
     return dataset
 
 
@@ -63,3 +61,32 @@ async def create_dataset(
     created, _ = await api.datasets.create(session, dataset)
     await session.commit()
     return created
+
+
+@dataset_router.patch(
+    "/detail/",
+    response_model=schemas.DatasetWithCounts,
+)
+async def update_dataset(
+    session: Session,
+    dataset_id: int,
+    dataset: schemas.DatasetUpdate,
+):
+    """Update a dataset."""
+    updated = await api.datasets.update(session, dataset_id, dataset)
+    await session.commit()
+    return updated
+
+
+@dataset_router.delete(
+    "/detail/",
+    response_model=schemas.DatasetWithCounts,
+)
+async def delete_dataset(
+    session: Session,
+    dataset_id: int,
+):
+    """Delete a dataset."""
+    deleted = await api.datasets.delete(session, dataset_id)
+    await session.commit()
+    return deleted

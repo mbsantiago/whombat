@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryResult} from "@tanstack/react-query";
 import { type GetManyQuery, type Paginated } from "@/api/common";
 
 export type Pagination = {
@@ -15,11 +15,10 @@ export type Pagination = {
 };
 
 export type PagedList<T> = {
-  page: T[];
+  items: T[];
   total: number;
   pagination: Pagination;
-  isLoading: boolean;
-  error: Error | null;
+  query: UseQueryResult<Paginated<T>, Error>;
 };
 
 export default function usePagedQuery<T, S extends Object>({
@@ -32,7 +31,7 @@ export default function usePagedQuery<T, S extends Object>({
   func: (query: GetManyQuery) => Promise<Paginated<T>>;
   pageSize: number;
   filter: S;
-}) {
+}): PagedList<T> {
   const [page, setPage] = useState(0);
   const [size, setPageSize] = useState(pageSize);
 
@@ -45,9 +44,12 @@ export default function usePagedQuery<T, S extends Object>({
   const numPages = Math.ceil((query.data?.total ?? 0) / size);
 
   useEffect(() => {
-    if (page >= numPages && numPages > 0) {
-      setPage(numPages - 1);
-    }
+    setPage((page) => {
+      if (page >= numPages && numPages > 0) {
+        return numPages - 1;
+      }
+      return page;
+    });
   }, [numPages]);
 
   const pagination: Pagination = {
@@ -85,9 +87,9 @@ export default function usePagedQuery<T, S extends Object>({
   };
 
   return {
-    page: query.data?.items ?? [],
+    items: query.data?.items ?? [],
     total: query.data?.total ?? 0,
     pagination,
-    ...query,
+    query,
   };
 }

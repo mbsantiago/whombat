@@ -382,6 +382,8 @@ async def update(
         The updated recording.
 
     """
+    print("Updating recording.")
+
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
 
@@ -415,6 +417,7 @@ async def update(
             if value == recording.time_expansion:
                 continue
 
+            print("Adjusting time expansion.")
             adjust_time_expansion(recording, value)
             continue
 

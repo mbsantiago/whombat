@@ -62,6 +62,7 @@ const UpdateRecordingSchema = z.object({
     .optional(),
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
+  time_expansion: z.coerce.number().optional(),
 });
 
 type UpdateRecording = z.infer<typeof UpdateRecordingSchema>;

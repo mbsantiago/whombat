@@ -13,11 +13,11 @@ function Atom({ label, value }: { label: ReactNode; value: string }) {
 }
 
 export default function Dataset({
+  id,
   name,
   description,
   recording_count,
   created_at,
-  uuid,
 }: DatasetType) {
   return (
     <div>
@@ -30,7 +30,7 @@ export default function Dataset({
             className="hover:font-bold hover:text-emerald-500"
             href={{
               pathname: "/datasets/detail/",
-              query: { uuid },
+              query: { dataset_id: id },
             }}
           >
             {name}

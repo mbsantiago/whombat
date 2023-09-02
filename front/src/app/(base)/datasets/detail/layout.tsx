@@ -1,14 +1,17 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { notFound } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { useSelectedLayoutSegment } from "next/navigation";
-import { ReactNode } from "react";
+import {
+  notFound,
+  useSearchParams,
+  useSelectedLayoutSegment,
+  useRouter,
+} from "next/navigation";
+import { type ReactNode } from "react";
 import * as icons from "@/components/icons";
 import Loading from "@/app/loading";
 import Header from "@/components/Header";
 import Tabs from "@/components/Tabs";
 import useDataset from "@/hooks/useDataset";
+import { DatasetContext } from "./context";
 import { H1 } from "@/components/Headings";
 
 function DatasetHeader({ name }: { name: string }) {
@@ -70,20 +73,25 @@ function DatasetHeader({ name }: { name: string }) {
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const { data, isLoading, isError } = useDataset();
+  const params = useSearchParams();
+  const dataset_id = params.get("dataset_id");
+  if (!dataset_id) notFound();
+  const dataset = useDataset({
+    dataset_id: parseInt(dataset_id),
+  });
 
-  if (isLoading) {
+  if (dataset.query.isLoading) {
     return <Loading />;
   }
 
-  if (isError) {
+  if (dataset.query.isError) {
     notFound();
   }
 
   return (
-    <>
-      <DatasetHeader name={data.name} />
+    <DatasetContext.Provider value={dataset}>
+      <DatasetHeader name={dataset.query.data.name} />
       <div className="p-4">{children}</div>
-    </>
+    </DatasetContext.Provider>
   );
 }
