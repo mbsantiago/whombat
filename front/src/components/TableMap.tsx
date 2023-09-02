@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   useState,
   useMemo,
@@ -8,8 +9,23 @@ import {
 } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { EditIcon } from "@/components/icons";
-import Map, { DraggableMarker } from "@/components/Map";
 
+// NOTE: The use of dynamic imports is necessary to avoid
+// importing the leaflet library on the server side as it
+// uses the `window` object which is not available on the server.
+const Map = dynamic(() => import("@/components/Map"), { ssr: false });
+const DraggableMarker = dynamic(() => import("@/components/DraggableMarker"), {
+  ssr: false,
+});
+
+/* Parse a string into a position object.
+ * @param {string} value - The string to parse.
+ * @returns {object}
+ * @returns {object.position} - The position associated with the string.
+ * @returns {number} position.lat - The latitude.
+ * @returns {number} position.lng - The longitude.
+ * @returns {boolean} isComplete - If the string is a valid position.
+ */
 export function parsePosition(value: string): {
   position: {
     lat: number;
