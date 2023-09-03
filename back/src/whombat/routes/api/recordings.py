@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from whombat import api, schemas
 from whombat.dependencies import Session
 from whombat.filters.recordings import RecordingFilter
-from whombat.routers.types import Limit, Offset
+from whombat.routes.types import Limit, Offset
 
 __all__ = [
     "recording_router",

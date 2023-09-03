@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from whombat.database.init import init_database
 from whombat.dependencies import get_settings
-from whombat.routers import main_router
+from whombat.routes import main_router
 
 app = FastAPI()
 app.include_router(main_router)

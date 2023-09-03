@@ -45,26 +45,26 @@ function DatasetHeader({ name }: { name: string }) {
                 );
               },
             },
-            {
-              id: "sound_events",
-              title: "Sound Events",
-              icon: <icons.SoundEventIcon className="h-4 w-4 align-middle" />,
-              isActive: selectedLayoutSegment === "sound_events",
-              onClick: () => {
-                router.push(
-                  `/datasets/detail/sound_events/?${params.toString()}`,
-                );
-              },
-            },
-            {
-              id: "notes",
-              icon: <icons.NotesIcon className="h-4 w-4 align-middle" />,
-              title: "Notes",
-              isActive: selectedLayoutSegment === "notes",
-              onClick: () => {
-                router.push(`/datasets/detail/notes/?${params.toString()}`);
-              },
-            },
+            // {
+            //   id: "sound_events",
+            //   title: "Sound Events",
+            //   icon: <icons.SoundEventIcon className="h-4 w-4 align-middle" />,
+            //   isActive: selectedLayoutSegment === "sound_events",
+            //   onClick: () => {
+            //     router.push(
+            //       `/datasets/detail/sound_events/?${params.toString()}`,
+            //     );
+            //   },
+            // },
+            // {
+            //   id: "notes",
+            //   icon: <icons.NotesIcon className="h-4 w-4 align-middle" />,
+            //   title: "Notes",
+            //   isActive: selectedLayoutSegment === "notes",
+            //   onClick: () => {
+            //     router.push(`/datasets/detail/notes/?${params.toString()}`);
+            //   },
+            // },
           ]}
         />
       </div>

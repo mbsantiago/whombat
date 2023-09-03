@@ -2,10 +2,10 @@
 
 from fastapi import APIRouter
 
-from whombat.dependencies import Session
-from whombat.routers.api.datasets import dataset_router
-from whombat.routers.api.recordings import recording_router
-from whombat.routers.api.tags import tags_router
+from whombat.routes.api.annotation_projects import annotation_projects_router
+from whombat.routes.api.datasets import dataset_router
+from whombat.routes.api.recordings import recording_router
+from whombat.routes.api.tags import tags_router
 
 __all__ = [
     "api_router",
@@ -28,11 +28,8 @@ api_router.include_router(
     prefix="/recordings",
     tags=["recordings"],
 )
-
-
-@api_router.get("/users")
-async def get_users(session: Session):
-    """Get all users."""
-    from whombat import api
-
-    return await api.users.get_many(session, limit=-1)
+api_router.include_router(
+    annotation_projects_router,
+    prefix="/annotation_projects",
+    tags=["annotation_projects"],
+)

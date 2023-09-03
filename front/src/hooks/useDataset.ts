@@ -16,7 +16,7 @@ export default function useDataset({
   );
 
   const update = useMutation({
-    mutationFn: async ({ data }: { data: DatasetUpdate }) => {
+    mutationFn: async (data: DatasetUpdate) => {
       const updated = await api.datasets.update(dataset_id, data);
       onUpdate?.(updated);
       query.refetch();

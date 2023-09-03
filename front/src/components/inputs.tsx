@@ -40,7 +40,7 @@ const TextArea = forwardRef<
       {...{
         ...props,
         className: classNames(
-          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
+          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 outline-none focus:border-emerald-500 focus:rign-emerald-500 dark:border-stone-600 dark:bg-stone-700",
           props.className,
         ),
       }}

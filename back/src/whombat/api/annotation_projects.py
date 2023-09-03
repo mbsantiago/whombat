@@ -17,7 +17,7 @@ __all__ = [
     "get_by_id",
     "get_by_name",
     "get_by_uuid",
-    "get_recordings",
+    "get_many",
     "remove_tag",
     "update",
 ]
@@ -80,14 +80,14 @@ async def get_by_name(
     return schemas.AnnotationProject.model_validate(annotation_project)
 
 
-async def get_recordings(
+async def get_many(
     session: AsyncSession,
     *,
     limit: int = 1000,
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> tuple[Sequence[schemas.AnnotationProject], int]:
+) -> tuple[list[schemas.AnnotationProject], int]:
     """Get all annotation projects."""
     annotation_projects, count = await common.get_objects(
         session,

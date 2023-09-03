@@ -11,11 +11,23 @@ import Search from "@/components/Search";
 import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
-import { TimeIcon } from "@/components/icons";
+import {
+  TimeIcon,
+  LatitudeIcon,
+  LongitudeIcon,
+  DateIcon,
+  TagIcon,
+  IssueIcon,
+  SampleRateIcon,
+  ChannelsIcon,
+  TimeExpansionIcon,
+} from "@/components/icons";
 import { RecordingsNav, SelectedMenu } from "./components";
 import { FloatFilter, NullableFloatFilter } from "@/components/Filters";
 import { type FilterDef } from "@/components/FilterMenu";
 import "./page.css";
+
+// TODO: Create custom filter for integer, date, time, tags and boolean values
 
 const DurationFilter: FilterDef = {
   name: "Duration",
@@ -32,7 +44,7 @@ const SampleRateFilter: FilterDef = {
   name: "Sample Rate",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <SampleRateIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -40,7 +52,7 @@ const ChannelsFilter: FilterDef = {
   name: "Channels",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <ChannelsIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -48,7 +60,7 @@ const TimeExpansionFilter: FilterDef = {
   name: "Time Expansion",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <TimeExpansionIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -56,7 +68,7 @@ const DateFilter: FilterDef = {
   name: "Date",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <DateIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -78,7 +90,7 @@ const LatitudeFilter: FilterDef = {
     />
   ),
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <LatitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -92,7 +104,7 @@ const LongitudeFilter: FilterDef = {
     />
   ),
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <LongitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -100,7 +112,7 @@ const HasTagFilter: FilterDef = {
   name: "Has Tag",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 
@@ -108,7 +120,7 @@ const IssuesFilter: FilterDef = {
   name: "Has Issues",
   selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
   icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+    <IssueIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
   ),
 };
 

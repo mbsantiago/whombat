@@ -74,6 +74,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
         <SideMenuButton
           isActive={pathname === "/annotation_projects"}
           tooltip={"Annotation Projects"}
+          href="/annotation_projects"
         >
           <AnnotationProjectIcon />
         </SideMenuButton>

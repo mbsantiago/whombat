@@ -1,5 +1,12 @@
 import { type HTMLAttributes } from "react";
 import {
+  ClipboardDocumentListIcon,
+  EllipsisHorizontalIcon,
+  ArrowsPointingOutIcon,
+  Bars2Icon,
+  FlagIcon,
+  GlobeAmericasIcon,
+  GlobeEuropeAfricaIcon,
   TrashIcon,
   RectangleStackIcon,
   PencilIcon,
@@ -76,4 +83,10 @@ export {
   ArrowDownOnSquareIcon as DownloadIcon,
   FunnelIcon as FilterIcon,
   TrashIcon as DeleteIcon,
+  GlobeAmericasIcon as LongitudeIcon,
+  GlobeEuropeAfricaIcon as LatitudeIcon,
+  FlagIcon as IssueIcon,
+  Bars2Icon as ChannelsIcon,
+  ArrowsPointingOutIcon as TimeExpansionIcon,
+  EllipsisHorizontalIcon as SampleRateIcon,
 };

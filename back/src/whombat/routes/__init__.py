@@ -1,9 +1,9 @@
 """Whombat REST API routes."""
 from fastapi import APIRouter
 
-from whombat.routers.api import api_router
-from whombat.routers.auth import auth_router
-from whombat.routers.users import users_router
+from whombat.routes.api import api_router
+from whombat.routes.auth import auth_router
+from whombat.routes.users import users_router
 
 __all__ = [
     "main_router",

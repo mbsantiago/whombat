@@ -19,6 +19,7 @@ __all__ = [
     "add_recording",
     "create",
     "delete",
+    "get_many",
     "get_by_id",
     "get_by_audio_dir",
     "get_by_name",

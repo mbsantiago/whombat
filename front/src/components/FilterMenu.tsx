@@ -135,8 +135,8 @@ export default function FilterPopover<T extends Object>({
   return (
     <Popover as="div" className="relative inline-block text-left">
       <div>
-        <Popover.Button as={Button} className="p-1">
-          <FilterIcon className="h-5 w-5 text-emerald-900" />
+        <Popover.Button as={Button}>
+          <FilterIcon className="h-4 w-4 stroke-2 text-emerald-900" />
         </Popover.Button>
       </div>
       <Transition
