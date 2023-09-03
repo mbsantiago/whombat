@@ -1,6 +1,6 @@
 import { useEffect, useRef, type HTMLProps } from "react";
 
-export default function TableCheckbox({
+export default function Checkbox({
   indeterminate,
   className = "",
   ...rest

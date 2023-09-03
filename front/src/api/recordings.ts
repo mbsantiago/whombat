@@ -23,6 +23,20 @@ const DEFAULT_ENDPOINTS = {
 const RecordingFilterSchema = z.object({
   search: z.string().optional(),
   dataset: z.number().int().optional(),
+  duration__gt: z.number().optional(),
+  duration__lt: z.number().optional(),
+  duration__ge: z.number().optional(),
+  duration__le: z.number().optional(),
+  latitude__gt: z.number().optional(),
+  latitude__lt: z.number().optional(),
+  latitude__ge: z.number().optional(),
+  latitude__le: z.number().optional(),
+  latitude__is_null: z.boolean().optional(),
+  longitude__gt: z.number().optional(),
+  longitude__lt: z.number().optional(),
+  longitude__ge: z.number().optional(),
+  longitude__le: z.number().optional(),
+  longitude__is_null: z.boolean().optional(),
 });
 
 type RecordingFilter = z.infer<typeof RecordingFilterSchema>;

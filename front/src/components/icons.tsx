@@ -1,5 +1,6 @@
 import { type HTMLAttributes } from "react";
 import {
+  TrashIcon,
   RectangleStackIcon,
   PencilIcon,
   PencilSquareIcon,
@@ -29,6 +30,10 @@ import {
   ClockIcon,
   MapPinIcon,
   XMarkIcon,
+  FolderPlusIcon,
+  ArrowUpOnSquareIcon,
+  ArrowDownOnSquareIcon,
+  FunnelIcon,
 } from "@heroicons/react/24/outline";
 
 function WhombatIcon(props: HTMLAttributes<HTMLImageElement>) {
@@ -66,4 +71,9 @@ export {
   MapPinIcon as LocationIcon,
   PencilIcon as EditIcon,
   XMarkIcon as CloseIcon,
+  FolderPlusIcon as AddRecordingIcon,
+  ArrowUpOnSquareIcon as UploadIcon,
+  ArrowDownOnSquareIcon as DownloadIcon,
+  FunnelIcon as FilterIcon,
+  TrashIcon as DeleteIcon,
 };

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { type Tag } from "@/api/tags";
 import { type Recording, type UpdateRecording } from "@/api/recordings";
-import TableCheckbox from "@/components/TableCheckbox";
+import Checkbox from "@/components/TableCheckbox";
 import TableInput from "@/components/TableInput";
 import TableCell from "@/components/TableCell";
 import TableMap, { parsePosition } from "@/components/TableMap";
@@ -48,7 +48,7 @@ function useRecordingTable({
         maxSize: 33,
         enableResizing: false,
         header: ({ table }) => (
-          <TableCheckbox
+          <Checkbox
             {...{
               checked: table.getIsAllRowsSelected(),
               indeterminate: table.getIsSomeRowsSelected(),
@@ -58,7 +58,7 @@ function useRecordingTable({
         ),
         cell: ({ row }) => (
           <div className="flex justify-center px-1">
-            <TableCheckbox
+            <Checkbox
               {...{
                 checked: row.getIsSelected(),
                 disabled: !row.getCanSelect(),

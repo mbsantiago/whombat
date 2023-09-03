@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import useRecordingTable from "@/hooks/useRecordingTable";
 import useStore from "@/store";
 import useRecordings from "@/hooks/useRecordings";
@@ -9,22 +9,134 @@ import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
 import Search from "@/components/Search";
 import Table from "@/components/Table";
+import FilterPopover from "@/components/FilterMenu";
+import FilterBar from "@/components/FilterBar";
+import { TimeIcon } from "@/components/icons";
+import { RecordingsNav, SelectedMenu } from "./components";
+import { FloatFilter, NullableFloatFilter } from "@/components/Filters";
+import { type FilterDef } from "@/components/FilterMenu";
 import "./page.css";
+
+const DurationFilter: FilterDef = {
+  name: "Duration",
+  selector: ({ setFilter }) => (
+    <FloatFilter prefix="duration" name="duration" setFilter={setFilter} />
+  ),
+  description: "Select recordings by duration. Duration is in seconds.",
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const SampleRateFilter: FilterDef = {
+  name: "Sample Rate",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const ChannelsFilter: FilterDef = {
+  name: "Channels",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const TimeExpansionFilter: FilterDef = {
+  name: "Time Expansion",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const DateFilter: FilterDef = {
+  name: "Date",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const TimeFilter: FilterDef = {
+  name: "Time",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const LatitudeFilter: FilterDef = {
+  name: "Latitude",
+  selector: ({ setFilter }) => (
+    <NullableFloatFilter
+      name="latitude"
+      prefix="latitude"
+      setFilter={setFilter}
+    />
+  ),
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const LongitudeFilter: FilterDef = {
+  name: "Longitude",
+  selector: ({ setFilter }) => (
+    <NullableFloatFilter
+      name="longitude"
+      prefix="longitude"
+      setFilter={setFilter}
+    />
+  ),
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const HasTagFilter: FilterDef = {
+  name: "Has Tag",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
+
+const IssuesFilter: FilterDef = {
+  name: "Has Issues",
+  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
+  icon: (
+    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+  ),
+};
 
 export default function DatasetRecordings() {
   const dataset = useContext(DatasetContext);
-
   const clipboard = useStore((state) => state.clipboard);
   const copy = useStore((state) => state.copy);
-
   const recordings = useRecordings({
     filter: {
       dataset: dataset?.query.data?.id,
     },
   });
 
+  // Remove audio_dir prefix from recording paths
+  const items = useMemo(() => {
+    const prefix = dataset?.query.data?.audio_dir;
+    if (prefix == null) return recordings.items ?? [];
+    return recordings.items.map((recording) => {
+      let path = recording.path;
+      if (path.startsWith(prefix)) {
+        recording.path = path.slice(prefix.length);
+      }
+      return recording;
+    });
+  }, [recordings.items, dataset?.query.data?.audio_dir]);
+
   const table = useRecordingTable({
-    data: recordings.items ?? [],
+    data: items,
     updateData: (recording_id, data) =>
       recordings.update.mutate({ recording_id, data }),
     addTag: (recording_id, tag) =>
@@ -39,12 +151,39 @@ export default function DatasetRecordings() {
 
   return (
     <div className="container">
-      <Search
-        label="Search"
-        placeholder="Search recordings..."
-        value={recordings.filter.get("search") ?? ""}
-        onChange={(value) => recordings.filter.set("search", value)}
-      />
+      <RecordingsNav dataset={dataset?.query.data} />
+      <div className="flex flex-row space-x-4 justify-between">
+        <div className="flex flex-row basis-1/2 space-x-3">
+          <div className="grow">
+            <Search
+              label="Search"
+              placeholder="Search recordings..."
+              value={recordings.filter.get("search") ?? ""}
+              onChange={(value) => recordings.filter.set("search", value)}
+              withButton={false}
+            />
+          </div>
+          <FilterPopover
+            filter={recordings.filter}
+            filterDefs={[
+              DurationFilter,
+              SampleRateFilter,
+              ChannelsFilter,
+              TimeExpansionFilter,
+              DateFilter,
+              TimeFilter,
+              LatitudeFilter,
+              LongitudeFilter,
+              HasTagFilter,
+              IssuesFilter,
+            ]}
+          />
+        </div>
+        <SelectedMenu
+          selected={Object.keys(table.options.state.rowSelection ?? {}).length}
+        />
+      </div>
+      <FilterBar filter={recordings.filter} total={recordings.total} />
       <div className="w-full py-4">
         <div className="w-full overflow-x-scroll outline outline-1 outline-stone-200 dark:outline-stone-800 rounded-md">
           <Table

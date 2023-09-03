@@ -10,7 +10,7 @@ export default function useDatasets({
   filter?: DatasetFilter;
   pageSize?: number;
 } = {}) {
-  const filter = useFilter<DatasetFilter>({ initialState: initialFilter });
+  const filter = useFilter<DatasetFilter>({ fixed: initialFilter });
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "datasets",

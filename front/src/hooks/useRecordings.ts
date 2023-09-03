@@ -11,13 +11,13 @@ export default function useRecordings({
   filter?: RecordingFilter;
   pageSize?: number;
 } = {}) {
-  const filter = useFilter<RecordingFilter>({ initialState: initialFilter });
+  const filter = useFilter<RecordingFilter>({ fixed: initialFilter });
 
   const { items, total, pagination, query } = usePagedQuery({
     name: "dataset-recordings",
     func: api.recordings.getMany,
     pageSize: pageSize,
-    filter,
+    filter: filter.filter,
   });
 
   const update = useMutation({

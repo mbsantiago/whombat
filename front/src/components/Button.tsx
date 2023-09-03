@@ -7,7 +7,7 @@ type Mode = "filled" | "outline" | "text";
 const CLASS_NAMES = {
   filled: {
     primary:
-      "border-emerald-500 bg-emerald-700 hover:bg-emerald-800 focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800",
+      "border-emerald-500 bg-emerald-300 hover:bg-emerald-500 focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800",
     secondary:
       "border-stone-500 bg-stone-700 hover:bg-stone-800 focus:ring-stone-300 dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-stone-800",
     danger:

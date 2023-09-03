@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { useDebounce } from "react-use";
 
+export type Filter<T extends Object> = {
+  filter: T;
+  set: <K extends keyof T>(key: K, value: T[K]) => void;
+  get: <K extends keyof T>(key: K) => T[K];
+  clear: <K extends keyof T>(key: K) => void;
+  reset: () => void;
+  submit: () => void;
+  isFixed: <K extends keyof T>(key: K) => boolean;
+};
+
 /**
  * A hook for managing a filter state object.
  * The filter state is debounced by default.
@@ -10,21 +20,42 @@ import { useDebounce } from "react-use";
  * and a submit function.
  */
 export default function useFilter<T extends Object>({
-  initialState,
+  fixed,
   debounce = 500,
 }: {
-  initialState: T;
+  fixed: T;
   debounce?: number;
-}) {
-  const [state, setState] = useState(initialState);
-  const [debouncedState, setDebouncedState] = useState(initialState);
+  prefix?: string;
+}): Filter<T> {
+  const [state, setState] = useState(fixed);
+  const [debouncedState, setDebouncedState] = useState(fixed);
 
-  const set = <K extends keyof T>(key: K, value: (typeof state)[K]) =>
+  const isFixed = (key: keyof T) => fixed[key] !== undefined;
+  const set = <K extends keyof T>(key: K, value: (typeof state)[K]) => {
+    if (isFixed(key)) return;
     setState((prev) => ({ ...prev, [key]: value }));
+  };
   const get = <K extends keyof T>(key: K): (typeof state)[K] => state[key];
-  const clear = <K extends keyof T>(key: K) =>
-    setState((prev) => ({ ...prev, [key]: initialState[key] }));
-  const reset = () => setState(initialState);
+  const clear = <K extends keyof T>(key: K) => {
+    if (isFixed(key)) return;
+    setState((prev) => {
+      // Delete the key from a copy of the state
+      const newState = { ...prev };
+      delete newState[key];
+
+      // Reset to initial value if it exists
+      const initialValue = fixed[key];
+      if (initialValue !== undefined) {
+        newState[key] = initialValue;
+      }
+
+      // Do not debounce when clearing
+      setDebouncedState(newState);
+
+      return newState;
+    });
+  };
+  const reset = () => setState(fixed);
 
   useDebounce(
     () => {
@@ -45,5 +76,6 @@ export default function useFilter<T extends Object>({
     clear,
     reset,
     submit,
-  } as const;
+    isFixed,
+  };
 }

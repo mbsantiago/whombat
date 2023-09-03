@@ -12,7 +12,7 @@ export default function useTags({
   pageSize?: number;
 } = {}) {
   const filter = useFilter<TagFilter>({
-    initialState: initialFilter,
+    fixed: initialFilter,
     debounce: 50, // Lower debounce time for faster response
   });
 

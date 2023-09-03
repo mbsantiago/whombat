@@ -1,27 +1,37 @@
+import { type InputHTMLAttributes } from "react";
 import { SearchIcon } from "@/components/icons";
 import Button from "@/components/Button";
 import { Input } from "@/components/inputs";
 
-export default function Search(
-  {
-    label,
-    placeholder,
-    icon,
-    value,
-    onChange,
-    onSubmit,
-  }: {
-    label?: string;
-    placeholder?: string;
-    icon?: React.ReactElement;
-    value?: string;
-    onChange?: (value: string) => void;
-    onSubmit?: () => void;
-  } = {
-    label: "Search",
-    placeholder: "Search...",
-  },
-) {
+export default function Search({
+  label = "Search",
+  placeholder = "Search...",
+  icon,
+  value,
+  onChange,
+  onSubmit,
+  withButton = true,
+  ...props
+}: {
+  label?: string;
+  placeholder?: string;
+  icon?: React.ReactElement;
+  value?: string;
+  withButton?: boolean;
+  onChange?: (value: string) => void;
+  onSubmit?: () => void;
+} & Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  | "onChange"
+  | "onSubmit"
+  | "placeholder"
+  | "value"
+  | "id"
+  | "onKeyDown"
+  | "required"
+  | "type"
+  | "className"
+>) {
   const inputId = `search-${label}`;
 
   // Handle enter key press
@@ -51,18 +61,21 @@ export default function Search(
           }
           className="5 pl-10 text-sm"
           placeholder={placeholder}
+          {...props}
           required
         />
       </div>
-      <Button
-        type="submit"
-        onSubmit={onSubmit}
-        variant="primary"
-        className="ml-2"
-      >
-        <SearchIcon className="h-4 w-4" />
-        <span className="sr-only">{label}</span>
-      </Button>
+      {withButton && (
+        <Button
+          type="submit"
+          onSubmit={onSubmit}
+          variant="primary"
+          className="ml-2"
+        >
+          <SearchIcon className="h-4 w-4" />
+          <span className="sr-only">{label}</span>
+        </Button>
+      )}
     </div>
   );
 }
