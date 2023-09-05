@@ -23,6 +23,7 @@ __all__ = [
     "remove_note",
     "remove_tag",
     "remove_status_badge",
+    "delete",
 ]
 
 
@@ -474,3 +475,31 @@ async def remove_status_badge(
     )
     await session.refresh(obj)
     return schemas.Task.model_validate(obj)
+
+
+@task_caches.with_clear
+async def delete(
+    session: AsyncSession,
+    task_id: int,
+) -> schemas.Task:
+    """Delete a task.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    task_id : int
+        ID of the task.
+
+    Returns
+    -------
+    schemas.Task
+        Deleted task.
+    """
+    task = await common.delete_object(
+        session,
+        models.Task,
+        models.Task.id == task_id,
+    )
+    return schemas.Task.model_validate(task)

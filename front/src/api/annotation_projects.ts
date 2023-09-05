@@ -9,8 +9,8 @@ const DEFAULT_ENDPOINTS = {
   get: "/api/v1/annotation_projects/detail/",
   update: "/api/v1/annotation_projects/detail/",
   delete: "/api/v1/annotation_projects/detail/",
-  addClips: "/api/v1/annotation_projects/detail/clips/",
-  removeClips: "/api/v1/annotation_projects/detail/clips/",
+  addTask: "/api/v1/annotation_projects/detail/tasks/",
+  removeTask: "/api/v1/annotation_projects/detail/tasks/",
   addTag: "/api/v1/annotation_projects/detail/tags/",
   removeTag: "/api/v1/annotation_projects/detail/tags/",
 };
@@ -36,8 +36,8 @@ export const AnnotationProjectSchema = z.object({
 export type AnnotationProject = z.infer<typeof AnnotationProjectSchema>;
 
 export const AnnotationProjectCreateSchema = z.object({
-  name: z.string(),
-  description: z.string(),
+  name: z.string().min(1),
+  description: z.string().min(1),
   annotation_instructions: z.string().optional(),
 });
 
@@ -114,34 +114,6 @@ export function registerAnnotationProjectAPI(
     return AnnotationProjectSchema.parse(data);
   }
 
-  async function addClips(annotation_project_id: number, clip_ids: number[]) {
-    const { data } = await instance.post(
-      endpoints.addClips,
-      {
-        clip_ids,
-      },
-      {
-        params: {
-          annotation_project_id,
-        },
-      },
-    );
-    return AnnotationProjectSchema.parse(data);
-  }
-
-  async function removeClips(
-    annotation_project_id: number,
-    clip_ids: number[],
-  ) {
-    const { data } = await instance.delete(endpoints.removeClips, {
-      params: {
-        annotation_project_id,
-        clip_ids,
-      },
-    });
-    return AnnotationProjectSchema.parse(data);
-  }
-
   async function addTag(annotation_project_id: number, tag_id: number) {
     const { data } = await instance.post(
       endpoints.addTag,
@@ -172,8 +144,6 @@ export function registerAnnotationProjectAPI(
     create,
     update,
     delete: delete_,
-    addClips,
-    removeClips,
     addTag,
     removeTag,
   };

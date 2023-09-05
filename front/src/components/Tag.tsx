@@ -3,6 +3,7 @@
  */
 import { type ButtonHTMLAttributes } from "react";
 import { type Tag } from "@/api/tags";
+import { CloseIcon } from "@/components/icons";
 import classnames from "classnames";
 import { ALL_COLORS } from "@/components/colors";
 
@@ -53,12 +54,14 @@ export default function Tag({
   tag,
   color,
   level = 1,
+  withClose = false,
   className,
   ...props
 }: {
   tag: Tag;
   level: (typeof LEVELS)[number];
   color: (typeof COLOR_NAMES)[number];
+  withClose?: boolean;
   onRemove?: () => void;
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
   const classNames = getClassNames(color, level);
@@ -73,6 +76,10 @@ export default function Tag({
     >
       {tag.key}
       <span className="ml-1 font-bold">{tag.value}</span>
+      {withClose && (
+        <CloseIcon className="inline-block w-4 h-4 ml-1" />
+      )
+      }
     </button>
   );
 }

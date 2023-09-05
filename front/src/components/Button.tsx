@@ -7,17 +7,18 @@ type Mode = "filled" | "outline" | "text";
 const CLASS_NAMES = {
   filled: {
     primary:
-      "border-emerald-500 bg-emerald-300 hover:bg-emerald-500 focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800",
+      "border-emerald-500 bg-emerald-300 hover:bg-emerald-500 focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800 disabled:bg-emerald-300 dark:disabled:bg-emerald-700",
     secondary:
-      "border-stone-500 bg-stone-700 hover:bg-stone-800 focus:ring-stone-300 dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-stone-800",
+      "border-stone-500 bg-stone-700 hover:bg-stone-800 focus:ring-stone-300 dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-stone-800 disabled:bg-stone-300 dark:disabled:bg-stone-700",
     danger:
-      "border-rose-500 bg-rose-700 hover:bg-rose-800 focus:ring-rose-300 dark:bg-rose-600 dark:hover:bg-rose-700 dark:focus:ring-rose-800",
+      "border-rose-500 bg-rose-700 hover:bg-rose-800 focus:ring-rose-300 dark:bg-rose-600 dark:hover:bg-rose-700 dark:focus:ring-rose-800 disabled:bg-rose-300 dark:disabled:bg-rose-700",
     success:
-      "border-green-500 bg-green-700 hover:bg-green-800 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800",
+      "border-green-500 bg-green-700 hover:bg-green-800 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 disabled:bg-green-300 dark:disabled:bg-green-700",
     warning:
-      "border-yellow-500 bg-yellow-700 hover:bg-yellow-800 focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800",
-    info: "border-blue-500 bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
-    common: "border text-stone-900 dark:text-stone-100",
+      "border-yellow-500 bg-yellow-700 hover:bg-yellow-800 focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 disabled:bg-yellow-300 dark:disabled:bg-yellow-700",
+    info: "border-blue-500 bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:bg-blue-300 dark:disabled:bg-blue-700",
+    common:
+      "border text-stone-900 dark:text-stone-100 disabled:text-stone-500 dark:disabled:text-stone-300",
   },
   outline: {
     primary:

@@ -1,11 +1,10 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { Popover, Transition, Combobox } from "@headlessui/react";
+import { useState, type ReactNode } from "react";
+import { Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { FilterIcon, BackIcon } from "@/components/icons";
 import { type SetFilter } from "@/components/Filters";
 import { type Filter } from "@/hooks/useFilter";
-import Fuse from "fuse.js";
-import Search from "@/components/Search";
+import SearchMenu from "@/components/SearchMenu";
 import Button from "@/components/Button";
 
 export type FilterDef = {
@@ -23,51 +22,26 @@ function FilterCombobox({
   filterDefs: FilterDef[];
   onChange?: (filter: FilterDef) => void;
 }) {
-  const [query, setQuery] = useState("");
-
-  const fuse = useMemo(
-    () =>
-      new Fuse(filterDefs, {
-        keys: ["name", "prefix"],
-        threshold: 0.3,
-      }),
-    [filterDefs],
-  );
-
-  const filteredFilters = useMemo(() => {
-    if (!query) return filterDefs.slice(5);
-    return fuse.search(query, { limit: 5 }).map((result) => result.item);
-  }, [query, fuse, filterDefs]);
-
   return (
-    <Combobox onChange={onChange}>
+    <>
       <div className="mb-2 text-stone-700 dark:text-stone-300 underline underline-offset-2 decoration-amber-500 decoration-2">
         Apply Filter
       </div>
-      <Combobox.Input
-        as={Search}
-        autoFocus
-        withButton={false}
-        // @ts-ignore
-        onChange={(value) => setQuery(value)}
-      />
-      <Combobox.Options static className="pt-4">
-        {filteredFilters.map((filter) => (
-          <Combobox.Option
-            className={({ active }) =>
-              `relative cursor-default select-none p-2 rounded-md ${
-                active ? "bg-stone-200 dark:bg-stone-800 text-emerald-600 dark:text-emerald-500" : ""
-              }`
-            }
-            key={filter.name}
-            value={filter}
-          >
+      <SearchMenu
+        options={filterDefs}
+        renderOption={(filter) => (
+          <>
             {filter.icon ?? filter.icon}
             {filter.name}
-          </Combobox.Option>
-        ))}
-      </Combobox.Options>
-    </Combobox>
+          </>
+        )}
+        limit={5}
+        fields={["name", "prefix"]}
+        getOptionKey={(filter) => filter.name}
+        onSelect={onChange}
+        autoFocus
+      />
+    </>
   );
 }
 
@@ -128,15 +102,21 @@ function FilterPanel<T extends Object>({
 export default function FilterPopover<T extends Object>({
   filter,
   filterDefs,
+  button,
 }: {
   filter: Filter<T>;
   filterDefs: FilterDef[];
+  button?: ReactNode;
 }) {
   return (
     <Popover as="div" className="relative inline-block text-left">
       <div>
         <Popover.Button as={Button}>
-          <FilterIcon className="h-4 w-4 stroke-2 text-emerald-900" />
+          {button != null ? (
+            button
+          ) : (
+            <FilterIcon className="h-4 w-4 stroke-2 text-emerald-900" />
+          )}
         </Popover.Button>
       </div>
       <Transition

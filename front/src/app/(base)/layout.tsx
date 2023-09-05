@@ -1,4 +1,5 @@
 "use client";
+import Notification from "@/components/Notification";
 import { WhombatIcon } from "@/components/icons";
 import { redirect } from "next/navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -44,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <NavBar />
             {children}
           </main>
+          <Notification />
         </div>
       </WithLogIn>
     </QueryClientProvider>

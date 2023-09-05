@@ -126,7 +126,6 @@ async def test_channels_filter(
     results, _ = await api.recordings.get_many(
         session=session,
         filters=[filters.recordings.ChannelsFilter(ge=2)],
-
     )
 
     # Assert
@@ -315,9 +314,12 @@ async def test_tag_filter(
     )
 
     # Act
+    filters_: list[filters.Filter] = [
+        filters.recordings.TagFilter(tags=[tag.id])
+    ]
     results, _ = await api.recordings.get_many(
         session=session,
-        filters=[filters.recordings.TagFilter(tag=tag)],
+        filters=filters_,
     )
 
     # Assert

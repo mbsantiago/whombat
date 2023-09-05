@@ -11,6 +11,8 @@ import { registerUserAPI } from "./user";
 import { registerDatasetAPI } from "./datasets";
 import { registerRecordingAPI } from "./recordings";
 import { registerAnnotationProjectAPI } from "./annotation_projects";
+import { registerClipApi } from "./clips";
+import { registerTasksApi } from "./tasks";
 
 type APIConfig = {
   baseURL: string;
@@ -34,5 +36,7 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     datasets: registerDatasetAPI(instance),
     recordings: registerRecordingAPI(instance),
     annotation_projects: registerAnnotationProjectAPI(instance),
+    tasks: registerTasksApi(instance),
+    clips: registerClipApi(instance),
   };
 }

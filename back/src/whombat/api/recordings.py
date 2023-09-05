@@ -334,7 +334,6 @@ async def create_many(
         )
         # Take at most 50 milliseconds per file on average
         estimated_time = len(data) * 0.05
-        print(f"Estimated time: {estimated_time} seconds")
         all_data: list[schemas.RecordingPreCreate | None] = results.get(
             timeout=estimated_time
         )
@@ -382,8 +381,6 @@ async def update(
         The updated recording.
 
     """
-    print("Updating recording.")
-
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
 
@@ -417,7 +414,6 @@ async def update(
             if value == recording.time_expansion:
                 continue
 
-            print("Adjusting time expansion.")
             adjust_time_expansion(recording, value)
             continue
 

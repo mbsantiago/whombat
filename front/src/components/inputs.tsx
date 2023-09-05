@@ -1,18 +1,33 @@
 import { forwardRef } from "react";
 import classNames from "classnames";
-import type { InputHTMLAttributes } from "react";
-import type { LabelHTMLAttributes } from "react";
+import Spinner from "@/components/Spinner";
+import Button from "@/components/Button";
+import type {
+  TextareaHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  LabelHTMLAttributes,
+} from "react";
 
 type HasErrors = {
   errors?: any;
 };
+
+const BORDER_STYLE = "rounded border border-stone-300 dark:border-stone-600";
+const BACKGROUND_STYLE = "bg-stone-200 dark:bg-stone-700";
+const TEXT_STYLE = "leading-tight text-stone-700 dark:text-stone-300";
+const FOCUS_STYLE = "focus:ring-2 focus:outline-none focus:ring-emerald-500 focus:ring-offset-4 focus:ring-offset-slate-50 focus:dark:ring-offset-stone-900";
+const COMMON_STYLE = "w-full p-2.5";
+const INVALID_STYLE = "invalid:focus:ring-red-500 invalid:border-red-500";
+const DISABLED_STYLE =
+  "disabled:bg-stone-300 dark:disabled:bg-stone-800 text-stone-500 dark:text-stone-400";
 
 /**
 /* An input element.
 /* @param props The props for the input.
 /* @returns An input element.
 */
-const Input = forwardRef<
+export const Input = forwardRef<
   HTMLInputElement & HasErrors,
   InputHTMLAttributes<HTMLInputElement>
 >(function Input(props, ref) {
@@ -22,7 +37,13 @@ const Input = forwardRef<
       {...{
         ...props,
         className: classNames(
-          "focus:shadow-outline w-full rounded rounded-lg border border-stone-300 bg-stone-50 p-2.5 leading-tight text-sm text-stone-900 dark:text-stone-300 outline-none focus:border-emerald-500 focus:ring-emerald-500 dark:border-stone-600 dark:bg-stone-700 dark:text-stone-100 dark:placeholder-stone-400 dark:focus:border-emerald-500 dark:focus:ring-emerald-500",
+          COMMON_STYLE,
+          BORDER_STYLE,
+          BACKGROUND_STYLE,
+          TEXT_STYLE,
+          FOCUS_STYLE,
+          DISABLED_STYLE,
+          INVALID_STYLE,
           props.className,
         ),
       }}
@@ -30,9 +51,9 @@ const Input = forwardRef<
   );
 });
 
-const TextArea = forwardRef<
+export const TextArea = forwardRef<
   HTMLTextAreaElement & HasErrors,
-  InputHTMLAttributes<HTMLTextAreaElement>
+  TextareaHTMLAttributes<HTMLTextAreaElement>
 >(function TextArea(props, ref) {
   return (
     <textarea
@@ -40,7 +61,13 @@ const TextArea = forwardRef<
       {...{
         ...props,
         className: classNames(
-          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 outline-none focus:border-emerald-500 focus:rign-emerald-500 dark:border-stone-600 dark:bg-stone-700",
+          COMMON_STYLE,
+          BORDER_STYLE,
+          BACKGROUND_STYLE,
+          TEXT_STYLE,
+          FOCUS_STYLE,
+          DISABLED_STYLE,
+          INVALID_STYLE,
           props.className,
         ),
       }}
@@ -48,7 +75,7 @@ const TextArea = forwardRef<
   );
 });
 
-const Select = forwardRef<
+export const Select = forwardRef<
   HTMLSelectElement & HasErrors,
   InputHTMLAttributes<HTMLSelectElement>
 >(function Select(props, ref) {
@@ -58,7 +85,12 @@ const Select = forwardRef<
       {...{
         ...props,
         className: classNames(
-          "focus:shadow-outline w-full rounded border border-stone-300 bg-stone-200 py-2 px-3 leading-tight text-stone-700 dark:text-stone-300 focus:outline-none focus:outline-emerald-500 dark:border-stone-600 dark:bg-stone-700",
+          COMMON_STYLE,
+          BORDER_STYLE,
+          BACKGROUND_STYLE,
+          TEXT_STYLE,
+          FOCUS_STYLE,
+          DISABLED_STYLE,
           props.className,
         ),
       }}
@@ -71,7 +103,7 @@ const Select = forwardRef<
 /* @param props The props for the label.
 /* @returns A label for an input.
 */
-function InputLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
+export function InputLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
       className="mb-2 block font-medium text-stone-600 dark:text-stone-400"
@@ -80,63 +112,91 @@ function InputLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
   );
 }
 
-function InputError({ message }: { message: string }) {
+export function InputError({ message }: { message: string }) {
   return <p className="mt-2 text-xs italic text-red-500">{message}</p>;
 }
 
-function InputHelp({ message }: { message: string }) {
+export function InputHelp({ message }: { message: string }) {
   return <p className="mt-2 text-xs italic text-stone-500">{message}</p>;
 }
 
-function InputInfo({ message }: { message: string }) {
+export function InputInfo({ message }: { message: string }) {
   return <p className="mt-2 text-xs italic text-blue-500">{message}</p>;
 }
 
-function InputSuccess({ message }: { message: string }) {
+export function InputSuccess({ message }: { message: string }) {
   return <p className="mt-2 text-xs italic text-emerald-500">{message}</p>;
 }
 
-function InputGroup({ children }: { children: React.ReactNode }) {
+function InputGroupShell({ children }: { children: React.ReactNode }) {
   return <div className="mb-3">{children}</div>;
 }
 
-function InputGroupCommon({
+export function InputGroup({
   label,
   name,
-  register,
-  errors,
-  type = "text",
+  error,
+  help,
+  children,
 }: {
   label?: string;
   name: string;
-  register: any;
-  errors: any;
-  type?: string;
+  error?: string;
+  help?: string;
+  children: ReactNode;
 }) {
   return (
-    <div className="mb-3">
+    <InputGroupShell>
       {label && <InputLabel htmlFor={name}>{label}</InputLabel>}
-      <Input
-        type={type}
-        {...register(name)}
-        className={
-          errors ? "outline outline-red-500 focus:outline-red-500" : null
-        }
-      />
-      {errors?.message && <InputError message={errors.message} />}
-    </div>
+      {children}
+      {help && <InputHelp message={help} />}
+      {error && <InputError message={error} />}
+    </InputGroupShell>
   );
 }
 
-export {
-  Input,
-  TextArea,
-  Select,
-  InputLabel,
-  InputGroup,
-  InputGroupCommon,
-  InputError,
-  InputHelp,
-  InputInfo,
-  InputSuccess,
-};
+export function Submit({
+  loading = false,
+  success = false,
+  error = false,
+  text = "Submit",
+  loadingMessage = "Please wait. This could take a while...",
+  errorMessage = "Something went wrong. Please try again.",
+  successMessage = "Success! Redirecting...",
+  className,
+  ...props
+}: {
+  loading?: boolean;
+  success?: boolean;
+  error?: boolean;
+  text?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+  successMessage?: string;
+} & Omit<InputHTMLAttributes<HTMLButtonElement>, "type">) {
+  return (
+    <>
+      <Button
+        variant={loading ? "info" : "primary"}
+        type="submit"
+        className={classNames(
+          "m-0 w-full",
+          {
+            "bg-stone-500": !loading,
+          },
+          className,
+        )}
+        {...props}
+      >
+        {loading ? <Spinner variant="success" /> : text}
+      </Button>
+      {loading ? (
+        <InputInfo message={loadingMessage} />
+      ) : error ? (
+        <InputError message={errorMessage} />
+      ) : success ? (
+        <InputSuccess message={successMessage} />
+      ) : null}
+    </>
+  );
+}

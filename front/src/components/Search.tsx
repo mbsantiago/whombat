@@ -62,7 +62,6 @@ export default function Search({
           className="5 pl-10 text-sm"
           placeholder={placeholder}
           {...props}
-          required
         />
       </div>
       {withButton && (

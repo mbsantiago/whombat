@@ -28,8 +28,8 @@ export default function AnnotationProject({
           <Link
             className="hover:font-bold hover:text-emerald-500"
             href={{
-              pathname: "/datasets/detail/",
-              query: { dataset_id: id },
+              pathname: "/annotation_projects/detail/",
+              query: { annotation_project_id: id },
             }}
           >
             {name}

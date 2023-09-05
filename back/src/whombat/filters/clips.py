@@ -8,6 +8,7 @@ __all__ = [
     "RecordingIDFilter",
     "StartTimeFilter",
     "EndTimeFilter",
+    "ClipFilter",
 ]
 
 
@@ -25,3 +26,11 @@ StartTimeFilter = base.float_filter(models.Clip.start_time)
 
 EndTimeFilter = base.float_filter(models.Clip.end_time)
 """Filter a query by an end time."""
+
+
+ClipFilter = base.combine(
+    uuid=UUIDFilter,
+    recording_id=RecordingIDFilter,
+    start_time=StartTimeFilter,
+    end_time=EndTimeFilter,
+)

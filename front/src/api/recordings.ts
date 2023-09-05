@@ -20,7 +20,7 @@ const DEFAULT_ENDPOINTS = {
 };
 
 // TODO: Add more filters
-const RecordingFilterSchema = z.object({
+export const RecordingFilterSchema = z.object({
   search: z.string().optional(),
   dataset: z.number().int().optional(),
   duration__gt: z.number().optional(),
@@ -39,9 +39,9 @@ const RecordingFilterSchema = z.object({
   longitude__is_null: z.boolean().optional(),
 });
 
-type RecordingFilter = z.infer<typeof RecordingFilterSchema>;
+export type RecordingFilter = z.infer<typeof RecordingFilterSchema>;
 
-const RecordingSchema = z.object({
+export const RecordingSchema = z.object({
   id: z.number().int(),
   uuid: z.string().uuid(),
   path: z.string(),
@@ -63,11 +63,11 @@ const RecordingSchema = z.object({
   features: z.array(FeatureSchema),
 });
 
-type Recording = z.infer<typeof RecordingSchema>;
+export type Recording = z.infer<typeof RecordingSchema>;
 
-const RecordingPageSchema = Page(RecordingSchema);
+export const RecordingPageSchema = Page(RecordingSchema);
 
-const UpdateRecordingSchema = z.object({
+export const UpdateRecordingSchema = z.object({
   date: z.coerce.date().nullable().optional(),
   time: z
     .string()
@@ -79,14 +79,14 @@ const UpdateRecordingSchema = z.object({
   time_expansion: z.coerce.number().optional(),
 });
 
-type UpdateRecording = z.infer<typeof UpdateRecordingSchema>;
+export type UpdateRecording = z.infer<typeof UpdateRecordingSchema>;
 
-const GetRecordingsQuerySchema = z.intersection(
+export const GetRecordingsQuerySchema = z.intersection(
   GetManySchema,
   RecordingFilterSchema,
 );
 
-function registerRecordingAPI(
+export function registerRecordingAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
@@ -215,13 +215,3 @@ function registerRecordingAPI(
     removeFeature,
   };
 }
-
-export {
-  registerRecordingAPI,
-  RecordingSchema,
-  RecordingFilterSchema,
-  UpdateRecordingSchema,
-  type RecordingFilter,
-  type Recording,
-  type UpdateRecording,
-};

@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   }
 
   if (dataset.query.isError) {
-    notFound();
+    return notFound();
   }
 
   return (

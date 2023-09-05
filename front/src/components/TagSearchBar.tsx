@@ -81,12 +81,19 @@ type TagSearchBarProps = {
 
 export default forwardRef<HTMLInputElement, TagSearchBarProps>(
   function TagSearchBar(
-    { onSelect, initialFilter = {}, onBlur, onKeyDown, ...props },
+    {
+      onSelect,
+      initialFilter = {},
+      onBlur,
+      onKeyDown,
+      autoFocus = true,
+      ...props
+    },
     ref,
   ) {
-    const tags = useTags({ initialFilter });
     const [query, setQuery] = useState("");
 
+    const tags = useTags({ initialFilter });
     const getTagColor = useStore((state) => state.getTagColor);
 
     const key = query.split(":")[0];
@@ -119,13 +126,11 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
             <Combobox.Input
               as={Input}
               ref={ref}
-              {...props}
               onBlur={() => {
                 reset();
                 onBlur?.();
               }}
-              autoFocus
-              displayValue={() => ""}
+              autoFocus={autoFocus}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && event.shiftKey) {
@@ -136,6 +141,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                 }
                 onKeyDown?.(event);
               }}
+              {...props}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />

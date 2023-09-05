@@ -11,118 +11,9 @@ import Search from "@/components/Search";
 import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
-import {
-  TimeIcon,
-  LatitudeIcon,
-  LongitudeIcon,
-  DateIcon,
-  TagIcon,
-  IssueIcon,
-  SampleRateIcon,
-  ChannelsIcon,
-  TimeExpansionIcon,
-} from "@/components/icons";
 import { RecordingsNav, SelectedMenu } from "./components";
-import { FloatFilter, NullableFloatFilter } from "@/components/Filters";
-import { type FilterDef } from "@/components/FilterMenu";
+import recordingFilterDefs from "@/components/filters/recordings";
 import "./page.css";
-
-// TODO: Create custom filter for integer, date, time, tags and boolean values
-
-const DurationFilter: FilterDef = {
-  name: "Duration",
-  selector: ({ setFilter }) => (
-    <FloatFilter prefix="duration" name="duration" setFilter={setFilter} />
-  ),
-  description: "Select recordings by duration. Duration is in seconds.",
-  icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const SampleRateFilter: FilterDef = {
-  name: "Sample Rate",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <SampleRateIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const ChannelsFilter: FilterDef = {
-  name: "Channels",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <ChannelsIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const TimeExpansionFilter: FilterDef = {
-  name: "Time Expansion",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <TimeExpansionIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const DateFilter: FilterDef = {
-  name: "Date",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <DateIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const TimeFilter: FilterDef = {
-  name: "Time",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const LatitudeFilter: FilterDef = {
-  name: "Latitude",
-  selector: ({ setFilter }) => (
-    <NullableFloatFilter
-      name="latitude"
-      prefix="latitude"
-      setFilter={setFilter}
-    />
-  ),
-  icon: (
-    <LatitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const LongitudeFilter: FilterDef = {
-  name: "Longitude",
-  selector: ({ setFilter }) => (
-    <NullableFloatFilter
-      name="longitude"
-      prefix="longitude"
-      setFilter={setFilter}
-    />
-  ),
-  icon: (
-    <LongitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const HasTagFilter: FilterDef = {
-  name: "Has Tag",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
-
-const IssuesFilter: FilterDef = {
-  name: "Has Issues",
-  selector: ({ setFilter }) => <FloatFilter setFilter={setFilter} />,
-  icon: (
-    <IssueIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
-  ),
-};
 
 export default function DatasetRecordings() {
   const dataset = useContext(DatasetContext);
@@ -177,18 +68,7 @@ export default function DatasetRecordings() {
           </div>
           <FilterPopover
             filter={recordings.filter}
-            filterDefs={[
-              DurationFilter,
-              SampleRateFilter,
-              ChannelsFilter,
-              TimeExpansionFilter,
-              DateFilter,
-              TimeFilter,
-              LatitudeFilter,
-              LongitudeFilter,
-              HasTagFilter,
-              IssuesFilter,
-            ]}
+            filterDefs={recordingFilterDefs}
           />
         </div>
         <SelectedMenu

@@ -3,9 +3,9 @@ import { useDebounce } from "react-use";
 
 export type Filter<T extends Object> = {
   filter: T;
-  set: <K extends keyof T>(key: K, value: T[K]) => void;
+  set: <K extends keyof T>(key: K, value: T[K], force?: boolean) => void;
   get: <K extends keyof T>(key: K) => T[K];
-  clear: <K extends keyof T>(key: K) => void;
+  clear: <K extends keyof T>(key: K, force?: boolean) => void;
   reset: () => void;
   submit: () => void;
   isFixed: <K extends keyof T>(key: K) => boolean;
@@ -31,13 +31,17 @@ export default function useFilter<T extends Object>({
   const [debouncedState, setDebouncedState] = useState(fixed);
 
   const isFixed = (key: keyof T) => fixed[key] !== undefined;
-  const set = <K extends keyof T>(key: K, value: (typeof state)[K]) => {
-    if (isFixed(key)) return;
+  const set = <K extends keyof T>(
+    key: K,
+    value: (typeof state)[K],
+    force: boolean = false,
+  ) => {
+    if (isFixed(key) && !force) return;
     setState((prev) => ({ ...prev, [key]: value }));
   };
   const get = <K extends keyof T>(key: K): (typeof state)[K] => state[key];
-  const clear = <K extends keyof T>(key: K) => {
-    if (isFixed(key)) return;
+  const clear = <K extends keyof T>(key: K, force: boolean = false) => {
+    if (isFixed(key) && !force) return;
     setState((prev) => {
       // Delete the key from a copy of the state
       const newState = { ...prev };

@@ -45,21 +45,25 @@ function FilterBadge({
 export default function FilterBar<T extends Object>({
   filter,
   total,
+  showIfEmpty = false,
 }: {
   filter: Filter<T>;
-  total: number;
+  total?: number;
+  showIfEmpty?: boolean;
 }) {
   const activeFilters = Object.keys(filter.filter).filter(
     (key) => !filter.isFixed(key as keyof T),
   ).length;
 
-  if (activeFilters === 0) {
+  if (activeFilters === 0 && !showIfEmpty) {
     return null;
   }
 
   return (
     <div className="flex flex-row items-center mt-2">
-      <span className="mr-3 text-stone-500">{total} results</span>
+      {total != null && (
+        <span className="mr-3 text-stone-500">{total} results</span>
+      )}
       <div className="flex flex-row items-center space-x-2">
         <span className="mr-2 text-blue-200">
           <FilterIcon className="inline-block h-5 w-5 mr-1" />

@@ -1,6 +1,7 @@
 import { type HTMLAttributes } from "react";
 import {
-  ClipboardDocumentListIcon,
+  ExclamationTriangleIcon,
+  Square2StackIcon,
   EllipsisHorizontalIcon,
   ArrowsPointingOutIcon,
   Bars2Icon,
@@ -89,4 +90,6 @@ export {
   Bars2Icon as ChannelsIcon,
   ArrowsPointingOutIcon as TimeExpansionIcon,
   EllipsisHorizontalIcon as SampleRateIcon,
+  Square2StackIcon as ClipsIcon,
+  ExclamationTriangleIcon as WarningIcon,
 };

@@ -628,12 +628,7 @@ async def add_tag_to_object(
         "tag_id": tag.id,
         foreign_key: obj.id,  # type: ignore
     }
-    print(data)
-
     object_tag = association_model(**data)
-
-    print("HERE")
-
     getattr(obj, relation_field_name).append(object_tag)  # type: ignore
     session.add(obj)
     await session.flush()

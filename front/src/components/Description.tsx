@@ -1,22 +1,42 @@
-import { type ReactNode, type FC, useState } from "react";
+import { type ReactNode, type FC, useState, type HTMLAttributes } from "react";
 import { EditIcon } from "@/components/icons";
+import classNames from "classnames";
 
-export function DescriptionData({ children }: { children: ReactNode }) {
+export function DescriptionData({
+  children,
+  className,
+  ...rest
+}: { children: ReactNode } & HTMLAttributes<HTMLElement>) {
   return (
-    <dd className="mt-1 text-sm leading-6 text-stone-700 dark:text-stone-400 sm:col-span-2 sm:mt-0">
+    <dd
+      className={classNames(
+        "mt-1 text-sm leading-6 text-stone-700 dark:text-stone-400 sm:col-span-2 sm:mt-0",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </dd>
   );
 }
 
-export function DescriptionTerm({ children }: { children: ReactNode }) {
+export function DescriptionTerm({
+  children,
+  className,
+  ...rest
+}: { children: ReactNode } & HTMLAttributes<HTMLElement>) {
   return (
-    <dt className="text-sm font-medium leading-6 text-stone-900 dark:text-stone-300">
+    <dt
+      className={classNames(
+        "text-sm font-medium leading-6 text-stone-900 dark:text-stone-300",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </dt>
   );
 }
-
 
 export function EditableDescriptionData<T, S>({
   children,
@@ -35,13 +55,13 @@ export function EditableDescriptionData<T, S>({
 
   if (!editing) {
     return (
-      <DescriptionData>
+      <DescriptionData className="flex flex-row justify-between">
         {children}
         <button
           onClick={() => setEditing(true)}
           className="text-sm text-stone-500 underline ml-2"
         >
-          <EditIcon className="w-4 h-4 inline-block" />
+          <EditIcon className="w-5 h-5 inline-block text-blue-500" />
         </button>
       </DescriptionData>
     );
@@ -54,7 +74,7 @@ export function EditableDescriptionData<T, S>({
         value={localValue}
         /* @ts-ignore */
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey) {
             onChange(localValue);
             setEditing(false);
           }
