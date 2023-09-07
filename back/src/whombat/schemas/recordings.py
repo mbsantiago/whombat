@@ -18,6 +18,7 @@ __all__ = [
     "RecordingUpdate",
     "RecordingPreCreate",
     "RecordingWithoutPath",
+    "RecordingNote",
 ]
 
 
@@ -154,3 +155,17 @@ class RecordingUpdate(BaseModel):
 
     time_expansion: float | None = Field(default=None, gt=0)
     """New time expansion factor of the recording."""
+
+
+
+class RecordingNote(BaseSchema):
+    """Schema for a Note attached to a Recording."""
+
+    recording_id: int
+    """The database id of the Note."""
+
+    note_id: int
+    """The database id of the Note."""
+
+    note: Note
+    """The Note attached to the Recording."""

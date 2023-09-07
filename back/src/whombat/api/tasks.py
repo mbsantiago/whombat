@@ -503,3 +503,52 @@ async def delete(
         models.Task.id == task_id,
     )
     return schemas.Task.model_validate(task)
+
+
+async def get_notes(
+    session: AsyncSession,
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    filters: Sequence[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.TaskNote], int]:
+    """Get a page of taks notes.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    limit : int, optional
+        Maximum number of notes to return, by default 100
+
+    offset : int, optional
+        Number of notes to skip, by default 0
+
+    filters : Sequence[Filter], optional
+        Filters to apply to the query, by default None
+
+    sort_by : str, optional
+        Field to sort by, by default "-created_at"
+
+    Returns
+    -------
+    schemas.TaskNoteList
+        List of notes for the task.
+
+    count : int
+        Total number of notes for the task.
+    """
+    notes, count = await common.get_objects(
+        session,
+        models.TaskNote,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return (
+        [schemas.TaskNote.model_validate(note) for note in notes],
+        count,
+    )

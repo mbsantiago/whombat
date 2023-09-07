@@ -14,7 +14,7 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
     # Act
     note = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test",
             created_by_id=user.id,
             is_issue=False,
@@ -53,7 +53,7 @@ async def test_create_note_fails_if_username_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await notes.create(
             session,
-            data=schemas.NoteCreate(
+            data=schemas.NotePostCreate(
                 message="test",
                 created_by_id=user.id,
                 is_issue=False,
@@ -66,7 +66,7 @@ async def test_get_note_by_id(session: AsyncSession, user: schemas.User):
     # Arrange
     note = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test",
             created_by_id=user.id,
             is_issue=False,
@@ -99,7 +99,7 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     # Arrange
     note = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test",
             created_by_id=user.id,
             is_issue=False,
@@ -144,7 +144,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     # Arrange
     note1 = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test1",
             created_by_id=user.id,
             is_issue=False,
@@ -153,7 +153,7 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
 
     note2 = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test2",
             created_by_id=user.id,
             is_issue=False,
@@ -175,7 +175,7 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
     # Arrange
     await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test1",
             created_by_id=user.id,
             is_issue=False,
@@ -184,7 +184,7 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
 
     note = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test2",
             created_by_id=user.id,
             is_issue=False,
@@ -208,7 +208,7 @@ async def test_get_notes_with_offset(
     # Arrange
     note = await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test1",
             created_by_id=user.id,
             is_issue=False,
@@ -217,7 +217,7 @@ async def test_get_notes_with_offset(
 
     await notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test2",
             created_by_id=user.id,
             is_issue=False,

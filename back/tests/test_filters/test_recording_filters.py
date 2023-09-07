@@ -341,7 +341,7 @@ async def test_issues_filter(
 
     note = await api.notes.create(
         session=session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="Test",
             created_by_id=user.id,
             is_issue=True,

@@ -18,6 +18,7 @@ __all__ = [
     "TaskStatusBadgeCreate",
     "TaskTag",
     "TaskTagCreate",
+    "TaskNote",
 ]
 
 
@@ -99,3 +100,17 @@ class Task(TaskCreate):
 
     notes: list[Note]
     """Notes associated with the task."""
+
+
+
+class TaskNote(BaseSchema):
+    """Schema for a task note."""
+
+    task_id: int
+    """ID of the task to which the note belongs."""
+
+    note_id: int
+    """Database ID of the note."""
+
+    note: Note
+    """Note object."""

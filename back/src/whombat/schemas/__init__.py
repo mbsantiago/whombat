@@ -14,7 +14,6 @@ the database.
 
 """
 
-from whombat.schemas.base import Page
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
@@ -25,6 +24,7 @@ from whombat.schemas.annotations import (
     AnnotationCreate,
     AnnotationTagCreate,
 )
+from whombat.schemas.base import Page
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
@@ -42,10 +42,11 @@ from whombat.schemas.features import (
     FeatureNameCreate,
     FeatureNameUpdate,
 )
-from whombat.schemas.notes import Note, NoteCreate, NoteUpdate
+from whombat.schemas.notes import Note, NoteCreate, NotePostCreate, NoteUpdate
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
+    RecordingNote,
     RecordingPreCreate,
     RecordingUpdate,
     RecordingWithoutPath,
@@ -58,6 +59,7 @@ from whombat.schemas.sound_events import (
 )
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
 from whombat.schemas.tasks import (
+    TaskNote,
     Task,
     TaskCreate,
     TaskStatusBadge,
@@ -90,7 +92,7 @@ __all__ = [
     "FeatureNameUpdate",
     "FileState",
     "Note",
-    "NoteCreate",
+    "NotePostCreate",
     "NoteUpdate",
     "Page",
     "Recording",
@@ -115,4 +117,7 @@ __all__ = [
     "User",
     "UserCreate",
     "UserUpdate",
+    "RecordingNote",
+    "NoteCreate",
+    "TaskNote",
 ]

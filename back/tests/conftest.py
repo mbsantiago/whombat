@@ -173,7 +173,7 @@ async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
     """Create a note for testing."""
     note = await api.notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="test_message",
             created_by_id=user.id,
         ),

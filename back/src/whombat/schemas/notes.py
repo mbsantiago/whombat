@@ -8,26 +8,31 @@ from pydantic import Field
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.users import SimpleUser
 
-__all__ = ["Note", "NoteUpdate", "NoteCreate"]
+__all__ = ["Note", "NoteUpdate", "NotePostCreate", "NoteCreate"]
 
 
 class NoteCreate(BaseSchema):
-    """Schema for creating notes."""
+    """Schema for creating notes.
+
+    This schema is used when creating notes from the API as the user
+    does not need to provide the id of the user who created the note.
+    """
 
     uuid: UUID = Field(default_factory=uuid4)
-    """The uuid of the note."""
 
     message: str = Field(min_length=1, max_length=1000)
-    """The message of the note."""
+
+    is_issue: bool = False
+
+
+class NotePostCreate(NoteCreate):
+    """Schema for creating notes."""
 
     created_by_id: UUID
     """The id of the user who created the note."""
 
-    is_issue: bool = False
-    """Whether the note is an issue."""
 
-
-class Note(NoteCreate):
+class Note(NotePostCreate):
     """Schema for Note objects returned to the user."""
 
     id: int

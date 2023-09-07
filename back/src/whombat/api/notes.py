@@ -95,7 +95,7 @@ async def get_many(
 
 async def create(
     session: AsyncSession,
-    data: schemas.NoteCreate,
+    data: schemas.NotePostCreate,
 ) -> schemas.Note:
     """Create a note.
 

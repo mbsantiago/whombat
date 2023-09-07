@@ -24,6 +24,7 @@ __all__ = [
     "get_by_hash",
     "get_by_path",
     "get_many",
+    "get_notes",
     "remove_feature",
     "remove_note",
     "remove_tag",
@@ -784,3 +785,54 @@ async def remove_feature(
         feature_name_id,
     )
     return schemas.Recording.model_validate(recording)
+
+
+async def get_notes(
+    session: AsyncSession,
+    *,
+    limit: int = 1000,
+    offset: int = 0,
+    filters: list[filters.Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.RecordingNote], int]:
+    """Get recording notes.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    limit : int, optional
+        The maximum number of notes to return, by default 100.
+        Set to 0 to return all notes.
+
+    offset : int, optional
+        The number of notes to skip, by default 0
+
+    filters : list[Filter], optional
+        A list of filters to apply to the query, by default None
+
+    sort_by : str, optional
+        A string specifying how to sort the notes, by default
+
+    Returns
+    -------
+    notes : list[schemas.notes.Note]
+        The requested notes.
+
+    count : int
+        The total number of notes that match the given filters.
+
+    """
+    notes, count = await common.get_objects(
+        session,
+        models.RecordingNote,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+
+    return [
+        schemas.RecordingNote.model_validate(note) for note in notes
+    ], count

@@ -10,7 +10,6 @@ from whombat.schemas.sound_events import SoundEvent
 from whombat.schemas.tags import Tag
 from whombat.schemas.users import SimpleUser
 
-
 __all__ = [
     "Annotation",
     "AnnotationCreate",
@@ -63,3 +62,29 @@ class AnnotationTagCreate(BaseSchema):
 
     created_by_id: UUID
     """ID of the user who created this annotation tag."""
+
+
+class AnnotationNoteCreate(BaseSchema):
+    """Schema for data required to create an AnnotationNote."""
+
+    annotation_id: int
+    """ID of the annotation this note is attached to."""
+
+    note_id: int
+    """ID of the note attached to this annotation."""
+
+    created_by_id: UUID
+    """ID of the user who created this annotation note."""
+
+
+class AnnotationNote(AnnotationNoteCreate):
+    """Schema for an AnnotationNote."""
+
+    id: int
+    """Database ID of this annotation note."""
+
+    created_by: SimpleUser
+    """User who created this annotation note."""
+
+    note: Note
+    """Note attached to this annotation."""

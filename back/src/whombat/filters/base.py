@@ -140,17 +140,17 @@ def create_filter_from_field_and_model(
 ) -> Type[F]:
     """Create a filter from a field and model."""
 
-    class _Filter(model):  # type: ignore
+    class _Filter(model):
         """A filter for a field."""
 
         def filter(self, query: Select) -> Select:
             """Filter the query."""
             for field_name in model.model_fields:
-                filter_fn = self._filter_mapping[field_name]
                 value = getattr(self, field_name)
                 if value is None:
                     continue
 
+                filter_fn = self._filter_mapping[field_name]
                 query = filter_fn(query, field, value)
 
             return query

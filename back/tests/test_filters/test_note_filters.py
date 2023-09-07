@@ -57,7 +57,7 @@ async def notes(
     """Create some notes for testing."""
     note1 = await api.notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="note1 - a",
             created_by_id=user1.id,
             is_issue=False,
@@ -66,7 +66,7 @@ async def notes(
 
     note2 = await api.notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="note2 - a",
             created_by_id=user1.id,
             is_issue=True,
@@ -76,7 +76,7 @@ async def notes(
 
     note3 = await api.notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="note3 - b",
             created_by_id=user2.id,
         ),
@@ -84,7 +84,7 @@ async def notes(
 
     note4 = await api.notes.create(
         session,
-        data=schemas.NoteCreate(
+        data=schemas.NotePostCreate(
             message="note4 - b",
             created_by_id=user3.id,
         ),
