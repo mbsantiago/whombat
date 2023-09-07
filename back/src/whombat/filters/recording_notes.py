@@ -5,7 +5,6 @@ from sqlalchemy import Select
 from whombat import models
 from whombat.filters import base
 
-
 __all__ = [
     "RecordingFilter",
     "UserFilter",
@@ -24,24 +23,16 @@ class UserFilter(base.Filter):
     """Filter recording notes by the user who created them."""
 
     eq: int | None = None
-    isin: list[int] | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.eq and not self.isin:
+        if not self.eq:
             return query
 
         query = query.join(
             models.Note, models.Note.id == models.RecordingNote.note_id
         )
-
-        if self.eq:
-            return query.where(models.Note.created_by_id == self.eq)
-
-        if not self.isin:
-            return query
-
-        return query.where(models.Note.created_by_id.in_(self.isin))
+        return query.where(models.Note.created_by_id == self.eq)
 
 
 class MessageFilter(base.Filter):
@@ -83,7 +74,6 @@ class IssueFilter(base.Filter):
         )
 
         return query.where(models.Note.is_issue == self.eq)
-
 
 
 RecordingNoteFilter = base.combine(

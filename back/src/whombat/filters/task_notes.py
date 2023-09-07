@@ -23,24 +23,16 @@ class UserFilter(base.Filter):
     """Filter task notes by the user who created them."""
 
     eq: int | None = None
-    isin: list[int] | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.eq and not self.isin:
+        if not self.eq:
             return query
 
         query = query.join(
             models.Note, models.Note.id == models.TaskNote.note_id
         )
-
-        if self.eq:
-            return query.where(models.Note.created_by_id == self.eq)
-
-        if not self.isin:
-            return query
-
-        return query.where(models.Note.created_by_id.in_(self.isin))
+        return query.where(models.Note.created_by_id == self.eq)
 
 
 class MessageFilter(base.Filter):
@@ -88,24 +80,17 @@ class ProjectFilter(base.Filter):
     """Filter task notes by project."""
 
     eq: int | None = None
-    isin: list[int] | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.eq and not self.isin:
+        if not self.eq:
             return query
 
         query = query.join(
             models.Task, models.Task.id == models.TaskNote.task_id
         )
 
-        if self.eq:
-            return query.where(models.Task.project_id == self.eq)
-
-        if not self.isin:
-            return query
-
-        return query.where(models.Task.project_id.in_(self.isin))
+        return query.where(models.Task.project_id == self.eq)
 
 
 TaskNoteFilter = base.combine(

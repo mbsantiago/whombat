@@ -34,11 +34,10 @@ class ProjectFilter(base.Filter):
     """Get notes created within a specific annotation project."""
 
     eq: int | None = None
-    isin: list[int] | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.eq and not self.isin:
+        if not self.eq:
             return query
 
         AnnotationTask = aliased(models.Task)
@@ -67,18 +66,9 @@ class ProjectFilter(base.Filter):
             )
         )
 
-        if self.eq:
-            return query.where(
-                (AnnotationTask.project_id == self.eq)
-                | (NoteTask.project_id == self.eq)
-            )
-
-        if not self.isin:
-            return query
-
         return query.where(
-            (AnnotationTask.project_id.in_(self.isin))
-            | (NoteTask.project_id.in_(self.isin))
+            (AnnotationTask.project_id == self.eq)
+            | (NoteTask.project_id == self.eq)
         )
 
 

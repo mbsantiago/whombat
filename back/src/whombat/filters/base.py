@@ -166,7 +166,6 @@ class IntegerFilter(Filter):
     ge: int | None = None
     lt: int | None = None
     gt: int | None = None
-    isin: list[int] | None = None
 
 
 def integer_filter(
@@ -184,7 +183,6 @@ class OptionalIntegerFilter(Filter):
     ge: int | None = None
     lt: int | None = None
     gt: int | None = None
-    isin: list[int] | None = None
     is_null: bool | None = None
 
 
@@ -283,7 +281,6 @@ class StringFilter(Filter):
 
     eq: str | None = None
     has: str | None = None
-    isin: list[str] | None = None
 
 
 def string_filter(
@@ -298,7 +295,6 @@ class OptionalStringFilter(Filter):
 
     eq: str | None = None
     has: str | None = None
-    isin: list[str] | None = None
     is_null: bool | None = None
 
 
@@ -313,7 +309,6 @@ class UUIDFilter(Filter):
     """Filter by UUIDs."""
 
     eq: UUID | None = None
-    isin: list[UUID] | None = None
 
 
 def uuid_filter(
