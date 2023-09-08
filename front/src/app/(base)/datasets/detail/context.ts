@@ -1,5 +1,14 @@
 import { createContext } from "react";
-import useDataset from "@/hooks/useDataset";
+import { type Dataset, type DatasetUpdate } from "@/api/datasets";
 
-export const DatasetContext =
-  createContext<ReturnType<typeof useDataset> | null>(null);
+type DatasetContextType = {
+  dataset: Dataset | null;
+  isLoading: boolean;
+  onChange?: (dataset: DatasetUpdate) => void;
+  onDelete?: () => void;
+};
+
+export const DatasetContext = createContext<DatasetContextType>({
+  dataset: null,
+  isLoading: true,
+});

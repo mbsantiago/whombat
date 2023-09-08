@@ -11,15 +11,15 @@ import {
   type TagCreate,
   type TagFilter,
 } from "@/api/tags";
+import { Float } from "@headlessui-float/react";
 import {
-  Fragment,
   useState,
   useEffect,
   forwardRef,
   type InputHTMLAttributes,
   type KeyboardEvent,
 } from "react";
-import { Combobox, Transition } from "@headlessui/react";
+import { Combobox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Input } from "@/components/inputs";
 import Tag from "@/components/Tag";
@@ -99,11 +99,6 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
     const key = query.split(":")[0];
     const value = query.split(":")[1];
 
-    const reset = () => {
-      setQuery("");
-      tags.filter.reset();
-    };
-
     useEffect(() => {
       let key = query.split(":")[0];
       let value = query.split(":")[1];
@@ -120,16 +115,26 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
     }, [query]);
 
     return (
-      <Combobox onChange={(tag: TagType) => onSelect?.(tag)}>
-        <div className="relative mt-1 z-20">
+      <Combobox
+        onChange={(tag: TagType) => {
+          console.log("tag", tag);
+          onSelect?.(tag);
+        }}
+      >
+        <Float
+          as="div"
+          className="relative"
+          placement="bottom"
+          offset={4}
+          leave="transition ease-in duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          flip={true}
+        >
           <div className="relative w-full cursor-default overflow-hidden text-left">
             <Combobox.Input
               as={Input}
               ref={ref}
-              onBlur={() => {
-                reset();
-                onBlur?.();
-              }}
               autoFocus={autoFocus}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
@@ -147,42 +152,34 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
             </Combobox.Button>
           </div>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            afterLeave={reset}
-          >
-            <Combobox.Options className="absolute divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm z-50">
-              {tags.items.length === 0 ? (
-                <NoTagsFound />
-              ) : (
-                <ComboBoxSection>
-                  {tags.items.map((tag) => (
-                    <Combobox.Option
-                      key={tag.id}
-                      className={({ active }) =>
-                        `relative cursor-default select-none py-2 pl-4 ${
-                          active ? "bg-stone-200 dark:bg-stone-600" : ""
-                        }`
-                      }
-                      value={tag}
-                    >
-                      <Tag
-                        disabled
-                        className="pointer-events-none"
-                        tag={tag}
-                        {...getTagColor(tag)}
-                      />
-                    </Combobox.Option>
-                  ))}
-                </ComboBoxSection>
-              )}
-              <CreateNewTag tag={{ key, value }} />
-            </Combobox.Options>
-          </Transition>
-        </div>
+          <Combobox.Options className="w-full divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm overflow-y-scroll">
+            {tags.items.length === 0 ? (
+              <NoTagsFound />
+            ) : (
+              <ComboBoxSection>
+                {tags.items.map((tag) => (
+                  <Combobox.Option
+                    key={tag.id}
+                    className={({ active }) =>
+                      `cursor-default py-2 pl-4 ${
+                        active ? "bg-stone-200 dark:bg-stone-600" : ""
+                      }`
+                    }
+                    value={tag}
+                  >
+                    <Tag
+                      disabled
+                      className="pointer-events-none"
+                      tag={tag}
+                      {...getTagColor(tag)}
+                    />
+                  </Combobox.Option>
+                ))}
+              </ComboBoxSection>
+            )}
+            <CreateNewTag tag={{ key, value }} />
+          </Combobox.Options>
+        </Float>
       </Combobox>
     );
   },

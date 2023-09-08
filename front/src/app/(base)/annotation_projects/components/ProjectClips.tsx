@@ -11,6 +11,7 @@ import { InputGroup, Input } from "@/components/inputs";
 import { FilterIcon } from "@/components/icons";
 import FilterMenu from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
+import Card from "@/components/Card";
 import Toggle from "@/components/Toggle";
 import Button from "@/components/Button";
 import recordingFilterDefs from "@/components/filters/recordings";
@@ -74,7 +75,7 @@ function computeClips({
     let recordingClips: ClipCreate[] = [];
 
     // Compute total number of clips
-    let totalClips = Math.floor(recording.duration / (clipLength - overlap));
+    let totalClips = Math.ceil(recording.duration / (clipLength - overlap));
     for (let i = 0; i < totalClips; i++) {
       // Compute start and end time
       let start_time = i * (clipLength - overlap);
@@ -134,7 +135,7 @@ function SelectRecordings({
   }, [selection, recordings.items]);
 
   return (
-    <div className="flex flex-col gap-3 border p-4 rounded-md border-stone-300 dark:border-stone-700">
+    <Card>
       <div>
         <h2 className="text-lg">Select Recordings</h2>
         <p className="text-stone-500">
@@ -223,7 +224,7 @@ function SelectRecordings({
           </div>
         </InputGroup>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -257,7 +258,7 @@ function ExtractClips({
   }, [onExtraction, selectedRecordings, extraction]);
 
   return (
-    <div className="flex flex-col gap-3 border p-4 rounded-md border-stone-300 dark:border-stone-700">
+    <Card>
       <div>
         <h2 className="text-lg">Clip Extraction</h2>
         <p className="text-stone-500">
@@ -352,7 +353,7 @@ function ExtractClips({
           </InputGroup>
         </>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -366,7 +367,7 @@ function ReviewClips({
   onAdd?: () => void;
 }) {
   return (
-    <div className="border flex flex-col gap-3 p-4 rounded-md border-stone-300 dark:border-stone-700">
+    <Card>
       <h2 className="text-lg">Summary</h2>
       <ul className="list-disc list-inside">
         <li>
@@ -383,7 +384,7 @@ function ReviewClips({
         project.
       </p>
       <Button onClick={onAdd}>Add Clips</Button>
-    </div>
+    </Card>
   );
 }
 

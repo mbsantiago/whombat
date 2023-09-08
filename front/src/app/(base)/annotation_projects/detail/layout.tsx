@@ -22,7 +22,7 @@ function AnnotationProjectHeader({ name }: { name: string }) {
   return (
     <Header>
       <div className="flex w-full flex-row space-x-4 overflow-x-scroll">
-        <H1>{name}</H1>
+        <H1 className="max-w-xl whitespace-nowrap overflow-scroll">{name}</H1>
         <Tabs
           tabs={[
             {

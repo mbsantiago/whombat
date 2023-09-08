@@ -243,6 +243,9 @@ function useRecordingTable({
             />
           );
         },
+        meta: {
+          editable: true,
+        },
       },
       {
         id: "notes",

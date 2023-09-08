@@ -1,7 +1,7 @@
 import { type ReactNode, type HTMLAttributes } from "react";
 import classnames from "classnames";
 
-function H1({
+export function H1({
   children,
   className,
   ...props
@@ -9,7 +9,7 @@ function H1({
   return (
     <h1
       className={classnames(
-        "text-3xl font-bold text-stone-900 dark:text-stone-200",
+        "text-2xl font-bold text-stone-900 dark:text-stone-200",
         className,
       )}
       {...props}
@@ -19,4 +19,38 @@ function H1({
   );
 }
 
-export { H1 };
+export function H3({
+  children,
+  className,
+  ...props
+}: { children: ReactNode } & HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={classnames(
+        "text-lg font-semibold leading-7 text-stone-900 dark:text-stone-200",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+}
+
+export function H4({
+  children,
+  className,
+  ...props
+}: { children: ReactNode } & HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h4
+      className={classnames(
+        "text-md font-semibold leading-6 text-stone-900 dark:text-stone-200",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </h4>
+  );
+}

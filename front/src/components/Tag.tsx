@@ -68,18 +68,15 @@ export default function Tag({
   return (
     <button
       className={classnames(
-        "border rounded-md px-2 whitespace-nowrap",
+        "border rounded-md px-2 whitespace-nowrap tracking-tighter",
         classNames,
         className,
       )}
       {...props}
     >
-      {tag.key}
+      <span className="font-thin">{tag.key}</span>
       <span className="ml-1 font-bold">{tag.value}</span>
-      {withClose && (
-        <CloseIcon className="inline-block w-4 h-4 ml-1" />
-      )
-      }
+      {withClose && <CloseIcon className="inline-block w-4 h-4 ml-1" />}
     </button>
   );
 }

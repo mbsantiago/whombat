@@ -76,6 +76,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();
   const dataset_id = params.get("dataset_id");
   if (!dataset_id) notFound();
+
   const dataset = useDataset({
     dataset_id: parseInt(dataset_id),
   });
@@ -89,7 +90,14 @@ export default function Layout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DatasetContext.Provider value={dataset}>
+    <DatasetContext.Provider
+      value={{
+        dataset: dataset.query.data,
+        isLoading: dataset.query.isLoading,
+        onChange: dataset.update.mutate,
+        onDelete: dataset.delete.mutate,
+      }}
+    >
       <DatasetHeader name={dataset.query.data.name} />
       <div className="p-4">{children}</div>
     </DatasetContext.Provider>

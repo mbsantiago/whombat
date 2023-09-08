@@ -1,10 +1,12 @@
-import { Input, TextArea } from "@/components/inputs";
-import {
-  EditableDescriptionData,
-  DescriptionData,
-  DescriptionTerm,
-} from "@/components/Description";
 import { type Dataset, type DatasetUpdate } from "@/api/datasets";
+import DatasetOverview from "./DatasetOverview";
+import DatasetTagsSummary from "./DatasetTagsSummary";
+import DatasetNotesSummary from "./DatasetNotesSummary";
+import DatasetActions from "./DatasetActions";
+import DatasetUpdateForm from "./DatasetUpdateForm";
+
+import useRecordingTags from "@/hooks/useRecordingTags";
+import useRecordingNotes from "@/hooks/useRecordingNotes";
 
 export default function DatasetDetail({
   dataset,
@@ -13,44 +15,46 @@ export default function DatasetDetail({
   dataset: Dataset;
   onChange?: (data: DatasetUpdate) => void;
 }) {
+  const tags = useRecordingTags({
+    pageSize: -1,
+    filter: {
+      dataset__eq: dataset.id,
+    },
+  });
+
+  const notes = useRecordingNotes({
+    pageSize: -1,
+    filter: {
+      dataset__eq: dataset.id,
+    },
+  });
+
   return (
-    <div>
-      <div className="px-4 sm:px-0">
-        <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-200">
-          Dataset Information
-        </h3>
+    <div className="w-100 flex flex-row flex-wrap lg:flex-nowrap gap-8 justify-between">
+      <div className="grow">
+        <div className="grid grid-cols-2 gap-8">
+          <div className="col-span-2">
+            <DatasetOverview dataset={dataset} />
+          </div>
+          <div className="col-span-2 xl:col-span-1">
+            <DatasetTagsSummary
+              tags={tags.items}
+              isLoading={tags.query.isLoading}
+            />
+          </div>
+          <div className="col-span-2 xl:col-span-1">
+            <DatasetNotesSummary
+              notes={notes.items}
+              isLoading={notes.query.isLoading}
+            />
+          </div>
+        </div>
       </div>
-      <div className="mt-6 border-t border-stone-300 dark:border-stone-700">
-        <dl className="divide-y divide-stone-500">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Name</DescriptionTerm>
-            <EditableDescriptionData
-              value={dataset.name}
-              onChange={(value) => onChange?.({ name: value })}
-              Input={Input}
-              autoFocus
-            >
-              {dataset.name}
-            </EditableDescriptionData>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Description</DescriptionTerm>
-            <EditableDescriptionData
-              value={dataset.description}
-              onChange={(value) => onChange?.({ description: value })}
-              Input={TextArea}
-              autoFocus
-            >
-              {dataset.description}
-            </EditableDescriptionData>
-          </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Created On</DescriptionTerm>
-            <DescriptionData>
-              {dataset.created_at.toLocaleString()}
-            </DescriptionData>
-          </div>
-        </dl>
+      <div className="flex flex-col flex-none max-w-sm gap-4">
+        <DatasetActions />
+        <div className="sticky top-8">
+          <DatasetUpdateForm dataset={dataset} onChange={onChange} />
+        </div>
       </div>
     </div>
   );

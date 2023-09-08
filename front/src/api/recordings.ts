@@ -17,6 +17,8 @@ const DEFAULT_ENDPOINTS = {
   addFeature: "/api/v1/recordings/detail/features/",
   removeFeature: "/api/v1/recordings/detail/features/",
   updateFeature: "/api/v1/recordings/detail/features/",
+  getNotes: "/api/v1/recordings/notes/",
+  getTags: "/api/v1/recordings/tags/",
 };
 
 // TODO: Add more filters
@@ -85,6 +87,75 @@ export const GetRecordingsQuerySchema = z.intersection(
   GetManySchema,
   RecordingFilterSchema,
 );
+
+export const RecordingNoteSchema = z.object({
+  recording_id: z.number().int(),
+  note_id: z.number().int(),
+  note: NoteSchema,
+});
+
+export type RecordingNote = z.infer<typeof RecordingNoteSchema>;
+
+export const RecordingNoteFilter = z.object({
+  recording__eq: z.number().int().optional(),
+  note__eq: z.number().int().optional(),
+  created_by__eq: z.string().uuid().optional(),
+  dataset__eq: z.number().int().optional(),
+  is_issue__eq: z.boolean().optional(),
+  message__eq: z.string().optional(),
+  message__has: z.string().optional(),
+  created_at__before: z.coerce.date().optional(),
+  created_at__after: z.coerce.date().optional(),
+});
+
+export type RecordingNoteFilter = z.infer<typeof RecordingNoteFilter>;
+
+export const RecordingNotePageSchema = Page(RecordingNoteSchema);
+
+export type RecordingNotePage = z.infer<typeof RecordingNotePageSchema>;
+
+export const GetRecordingNotesQuerySchema = z.intersection(
+  GetManySchema,
+  RecordingNoteFilter,
+);
+
+export type GetRecordingNotesQuery = z.infer<
+  typeof GetRecordingNotesQuerySchema
+>;
+
+export const RecordingTagSchema = z.object({
+  recording_id: z.number().int(),
+  tag_id: z.number().int(),
+  tag: TagSchema,
+});
+
+export type RecordingTag = z.infer<typeof RecordingTagSchema>;
+
+export const RecordingTagFilter = z.object({
+  recording__eq: z.number().int().optional(),
+  tag__eq: z.number().int().optional(),
+  created_at__before: z.coerce.date().optional(),
+  created_at__after: z.coerce.date().optional(),
+  dataset__eq: z.number().int().optional(),
+  search: z.string().optional(),
+  key__eq: z.string().optional(),
+  key__has: z.string().optional(),
+  value__eq: z.string().optional(),
+  value__has: z.string().optional(),
+});
+
+export type RecordingTagFilter = z.infer<typeof RecordingTagFilter>;
+
+export const RecordingTagPageSchema = Page(RecordingTagSchema);
+
+export type RecordingTagPage = z.infer<typeof RecordingTagPageSchema>;
+
+export const GetRecordingTagsQuerySchema = z.intersection(
+  GetManySchema,
+  RecordingTagFilter,
+);
+
+export type GetRecordingTagsQuery = z.infer<typeof GetRecordingTagsQuerySchema>;
 
 export function registerRecordingAPI(
   instance: AxiosInstance,
@@ -202,6 +273,18 @@ export function registerRecordingAPI(
     });
   }
 
+  async function getNotes(query: GetRecordingNotesQuery) {
+    const params = GetRecordingNotesQuerySchema.parse(query);
+    const { data } = await instance.get(endpoints.getNotes, { params });
+    return RecordingNotePageSchema.parse(data);
+  }
+
+  async function getTags(query: GetRecordingTagsQuery) {
+    const params = GetRecordingTagsQuerySchema.parse(query);
+    const { data } = await instance.get(endpoints.getTags, { params });
+    return RecordingTagPageSchema.parse(data);
+  }
+
   return {
     getMany,
     get,
@@ -213,5 +296,7 @@ export function registerRecordingAPI(
     removeNote,
     addFeature,
     removeFeature,
+    getNotes,
+    getTags,
   };
 }

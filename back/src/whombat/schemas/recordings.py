@@ -19,6 +19,7 @@ __all__ = [
     "RecordingPreCreate",
     "RecordingWithoutPath",
     "RecordingNote",
+    "RecordingTag"
 ]
 
 
@@ -169,3 +170,17 @@ class RecordingNote(BaseSchema):
 
     note: Note
     """The Note attached to the Recording."""
+
+
+
+class RecordingTag(BaseSchema):
+    """Schema for a Tag attached to a Recording."""
+
+    recording_id: int
+    """The database id of the Tag."""
+
+    tag_id: int
+    """The database id of the Tag."""
+
+    tag: Tag
+    """The Tag attached to the Recording."""

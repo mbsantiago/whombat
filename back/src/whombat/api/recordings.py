@@ -836,3 +836,54 @@ async def get_notes(
     return [
         schemas.RecordingNote.model_validate(note) for note in notes
     ], count
+
+
+async def get_tags(
+    session: AsyncSession,
+    *,
+    limit: int = 1000,
+    offset: int = 0,
+    filters: list[filters.Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.RecordingTag], int]:
+    """Get recording tags.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    limit : int, optional
+        The maximum number of tags to return, by default 100.
+        Set to 0 to return all tags.
+
+    offset : int, optional
+        The number of tags to skip, by default 0
+
+    filters : list[Filter], optional
+        A list of filters to apply to the query, by default None
+
+    sort_by : str, optional
+        A string specifying how to sort the tags, by default
+
+    Returns
+    -------
+    tags : list[schemas.tags.Tag]
+        The requested tags.
+
+    count : int
+        The total number of tags that match the given filters.
+
+    """
+    tags, count = await common.get_objects(
+        session,
+        models.RecordingTag,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+
+    return [
+        schemas.RecordingTag.model_validate(tag) for tag in tags
+    ], count

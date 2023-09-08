@@ -9,8 +9,8 @@ const LoginSchema = z.object({
 type Login = z.infer<typeof LoginSchema>;
 
 const DEFAULT_ENDPOINTS = {
-  login: "/auth/login",
-  logout: "/auth/logout",
+  login: "/api/v1/auth/login",
+  logout: "/api/v1/auth/logout",
 };
 
 function registerAuthAPI(

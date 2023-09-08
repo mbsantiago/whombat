@@ -69,7 +69,7 @@ export function registerTasksApi(
   async function createMany(data: TaskCreate[]): Promise<Task[]> {
     const body = z.array(TaskCreateSchema).parse(data);
     const response = await api.post(endpoints.createMany, body);
-    return response.data;
+    return z.array(TaskSchema).parse(response.data);
   }
 
   async function getMany(query: GetTasks): Promise<TaskPage> {

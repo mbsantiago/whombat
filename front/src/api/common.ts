@@ -11,8 +11,8 @@ const instance = axios.create({
 });
 
 const GetManySchema = z.object({
-  limit: z.number().gte(0).optional(),
-  offset: z.number().gte(0).optional(),
+  limit: z.number().int().gte(-1).optional(),
+  offset: z.number().int().gte(0).optional(),
   sort_by: z.string().optional(),
 });
 

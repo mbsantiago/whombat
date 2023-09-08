@@ -19,7 +19,7 @@ const SimpleUserSchema = z.object({
 type User = z.infer<typeof UserSchema>;
 
 const DEFAULT_ENDPOINTS = {
-  me: "/users/me",
+  me: "/api/v1/users/me",
 };
 
 function registerUserAPI(

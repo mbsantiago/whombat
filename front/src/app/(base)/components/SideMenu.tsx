@@ -1,4 +1,5 @@
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   WhombatIcon,
   DatasetsIcon,
@@ -25,8 +26,6 @@ function SideMenuButton({
   isActive?: boolean;
   href?: string;
 }) {
-  const router = useRouter();
-
   return (
     <Tooltip
       tooltip={
@@ -37,23 +36,20 @@ function SideMenuButton({
         </div>
       }
     >
-      <button
-        onClick={() => {
-          if (href) {
-            router.push(href);
-          }
-        }}
-        className={classnames(
-          {
-            "bg-stone-200 outline outline-2 outline-offset-2 outline-emerald-500 dark:bg-stone-900":
-              isActive,
-          },
-          "group w-full rounded p-2 hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
-        )}
-        {...props}
-      >
-        {children}
-      </button>
+      <Link href={href ?? ""}>
+        <button
+          className={classnames(
+            {
+              "bg-stone-200 outline outline-2 outline-offset-2 outline-emerald-500 dark:bg-stone-900":
+                isActive,
+            },
+            "group w-full rounded p-2 hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+          )}
+          {...props}
+        >
+          {children}
+        </button>
+      </Link>
     </Tooltip>
   );
 }

@@ -5,6 +5,7 @@ from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
 from whombat.filters.task_notes import TaskNoteFilter
 from whombat.filters.tasks import TaskFilter
+from whombat.filters.task_tags import TaskTagFilter
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -140,6 +141,33 @@ async def get_task_notes(
     )
     return schemas.Page(
         items=notes,
+        total=total,
+        offset=offset,
+        limit=limit,
+    )
+
+
+@tasks_router.get(
+    "/tags/",
+    response_model=schemas.Page[schemas.TaskTag],
+)
+async def get_task_tags(
+    session: Session,
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-created_at",
+    filter: TaskTagFilter = Depends(TaskTagFilter),  # type: ignore
+):
+    """Get a page of task tags."""
+    tags, total = await api.tasks.get_tags(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tags,
         total=total,
         offset=offset,
         limit=limit,

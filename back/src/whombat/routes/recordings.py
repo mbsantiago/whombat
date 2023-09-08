@@ -5,6 +5,7 @@ from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
 from whombat.filters.recordings import RecordingFilter
 from whombat.filters.recording_notes import RecordingNoteFilter
+from whombat.filters.recording_tags import RecordingTagFilter
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -165,6 +166,33 @@ async def get_recording_notes(
     )
     return schemas.Page(
         items=notes,
+        total=total,
+        offset=offset,
+        limit=limit,
+    )
+
+
+@recording_router.get(
+    "/tags/",
+    response_model=schemas.Page[schemas.RecordingTag],
+)
+async def get_recording_tags(
+    session: Session,
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-created_at",
+    filter: RecordingTagFilter = Depends(RecordingTagFilter),  # type: ignore
+):
+    """Get a page of tags for a recording."""
+    tags, total = await api.recordings.get_tags(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tags,
         total=total,
         offset=offset,
         limit=limit,

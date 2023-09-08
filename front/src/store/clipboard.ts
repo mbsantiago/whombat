@@ -1,14 +1,13 @@
 import { StateCreator } from "zustand";
 
 interface ClipboardSlice {
-  clipboard: string;
-  copy: (text: string) => void;
+  clipboard: any
+  copy: (value: any) => void;
 }
 
 const createClipboardSlice: StateCreator<ClipboardSlice> = (set) => ({
   clipboard: "",
-  copy: (text: string) => set({ clipboard: text }),
+  copy: (value: any) => set({clipboard: value,}),
 });
 
-
-export { createClipboardSlice, type ClipboardSlice}
+export { createClipboardSlice, type ClipboardSlice };

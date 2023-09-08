@@ -17,7 +17,7 @@ export default function Table<S>({
   onDelete,
 }: {
   table: Table<S>;
-  onCopy?: (value: string) => void;
+  onCopy?: (column_id: string, value: string) => void;
   onDelete?: ({
     row_id,
     column_id,
@@ -54,7 +54,7 @@ export default function Table<S>({
         },
       }}
     >
-      <thead>
+      <thead className="sticky top-0">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
@@ -90,7 +90,7 @@ export default function Table<S>({
       <tbody className="text-stone-800 dark:text-stone-300 text-sm">
         {table.getRowModel().rows.map((row) => {
           return (
-            <tr key={row.id} className="hover:dark:bg-stone-800">
+            <tr key={row.id} className="hover:dark:bg-stone-800 hover:bg-stone-200">
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
@@ -102,7 +102,7 @@ export default function Table<S>({
                       // Copy value on ctrl+c
                       if (event.key === "c" && event.ctrlKey) {
                         const value = row.getValue(cell.column.id) as string;
-                        onCopy?.(value);
+                        onCopy?.(cell.column.id, value);
                         // Copy to clipboard
                         navigator.clipboard.writeText(value);
                       }

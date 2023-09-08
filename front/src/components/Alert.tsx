@@ -56,7 +56,7 @@ export default function Alert({
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-stone-50 dark:bg-stone-700 text-stone-700 dark:text-stone-300 p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-stone-900 dark:text-stone-100"
+                    className="text-lg font-medium leading-6 text-stone-900 dark:text-stone-100 mb-6"
                   >
                     {title}
                   </Dialog.Title>

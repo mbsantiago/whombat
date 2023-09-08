@@ -11,23 +11,24 @@ import Search from "@/components/Search";
 import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
+import { type Tag } from "@/api/tags";
 import { RecordingsNav, SelectedMenu } from "./components";
 import recordingFilterDefs from "@/components/filters/recordings";
 import "./page.css";
 
 export default function DatasetRecordings() {
-  const dataset = useContext(DatasetContext);
+  const { dataset, isLoading } = useContext(DatasetContext);
   const clipboard = useStore((state) => state.clipboard);
   const copy = useStore((state) => state.copy);
   const recordings = useRecordings({
     filter: {
-      dataset: dataset?.query.data?.id,
+      dataset: dataset?.id,
     },
   });
 
   // Remove audio_dir prefix from recording paths
   const items = useMemo(() => {
-    const prefix = dataset?.query.data?.audio_dir;
+    const prefix = dataset?.audio_dir;
     if (prefix == null) return recordings.items ?? [];
     return recordings.items.map((recording) => {
       let path = recording.path;
@@ -36,7 +37,7 @@ export default function DatasetRecordings() {
       }
       return recording;
     });
-  }, [recordings.items, dataset?.query.data?.audio_dir]);
+  }, [recordings.items, dataset?.audio_dir]);
 
   const table = useRecordingTable({
     data: items,
@@ -48,13 +49,13 @@ export default function DatasetRecordings() {
       recordings.removeTag.mutate({ recording_id, tag_id: tag.id }),
   });
 
-  if (dataset?.query.isLoading || recordings.query.isLoading) {
+  if (isLoading || recordings.query.isLoading || dataset == null) {
     return <Loading />;
   }
 
   return (
     <div className="container">
-      <RecordingsNav dataset={dataset?.query.data} />
+      <RecordingsNav dataset={dataset} />
       <div className="flex flex-row space-x-4 justify-between">
         <div className="flex flex-row basis-1/2 space-x-3">
           <div className="grow">
@@ -77,29 +78,53 @@ export default function DatasetRecordings() {
       </div>
       <FilterBar filter={recordings.filter} total={recordings.total} />
       <div className="w-full py-4">
-        <div className="w-full overflow-x-scroll outline outline-1 outline-stone-200 dark:outline-stone-800 rounded-md">
+        <div className="relative w-full max-h-screen overflow-y-scroll overflow-x-scroll outline outline-1 outline-stone-200 dark:outline-stone-800 rounded-md">
           <Table
-            onCopy={(value) => copy(value)}
+            onCopy={(column_id, value) =>
+              copy({
+                context: "recordings_table",
+                column: column_id,
+                value,
+              })
+            }
             onPaste={({ row_id, column_id }) => {
-              if (clipboard != null) {
-                let recording_id = recordings.items[row_id].id;
+              // Check that value in clipboard came from the same column
+              // in this table
+              if (clipboard == null) return;
+              if (typeof clipboard !== "object") return;
+              if (clipboard.context !== "recordings_table") return;
+              if (clipboard.column !== column_id) return;
 
-                if (column_id === "location") {
-                  let { position, isComplete } = parsePosition(clipboard);
+              let recording_id = recordings.items[row_id].id;
 
-                  if (!isComplete) return;
+              if (column_id === "location") {
+                let { position, isComplete } = parsePosition(clipboard.value);
 
-                  let data = {
-                    latitude: position.lat,
-                    longitude: position.lng,
-                  };
-                  recordings.update.mutate({ recording_id, data });
+                if (!isComplete) return;
+
+                let data = {
+                  latitude: position.lat,
+                  longitude: position.lng,
+                };
+                recordings.update.mutate({ recording_id, data });
+                return;
+              }
+
+              if (column_id === "tags") {
+                try {
+                  (clipboard.value as Tag[]).forEach((tag: Tag) => {
+                    recordings.addTag.mutate({
+                      recording_id,
+                      tag_id: tag.id,
+                    });
+                  });
+                } catch {
                   return;
                 }
-
-                let data = { [column_id]: clipboard };
-                recordings.update.mutate({ recording_id, data });
               }
+
+              let data = { [column_id]: clipboard.value };
+              recordings.update.mutate({ recording_id, data });
             }}
             onDelete={({ row_id, column_id }) => {
               let recording_id = recordings.items[row_id].id;
@@ -114,6 +139,16 @@ export default function DatasetRecordings() {
                 let data = { time_expansion: 1 };
                 recordings.update.mutate({ recording_id, data });
                 return;
+              }
+
+              if (column_id === "tags") {
+                let currentTags = recordings.items[row_id].tags;
+                currentTags.forEach((tag: Tag) => {
+                  recordings.removeTag.mutate({
+                    recording_id,
+                    tag_id: tag.id,
+                  });
+                });
               }
 
               let data = { [column_id]: null };

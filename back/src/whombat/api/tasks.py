@@ -552,3 +552,52 @@ async def get_notes(
         [schemas.TaskNote.model_validate(note) for note in notes],
         count,
     )
+
+
+async def get_tags(
+    session: AsyncSession,
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    filters: Sequence[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.TaskTag], int]:
+    """Get a page of task tags.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    limit : int, optional
+        Maximum number of tags to return, by default 100
+
+    offset : int, optional
+        Number of tags to skip, by default 0
+
+    filters : Sequence[Filter], optional
+        Filters to apply to the query, by default None
+
+    sort_by : str, optional
+        Field to sort by, by default "-created_at"
+
+    Returns
+    -------
+    schemas.TaskTagList
+        List of tags for the task.
+
+    count : int
+        Total number of tags for the task.
+    """
+    tags, count = await common.get_objects(
+        session,
+        models.TaskTag,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return (
+        [schemas.TaskTag.model_validate(tag) for tag in tags],
+        count,
+    )
