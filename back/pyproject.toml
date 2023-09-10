@@ -16,6 +16,7 @@ dependencies = [
     "cachetools>=5.3.1",
     "asyncache>=0.3.1",
     "fastapi-pagination>=0.12.8",
+    "librosa>=0.10.1",
 ]
 requires-python = ">=3.11,<3.12"
 readme = "README.rst"

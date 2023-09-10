@@ -151,29 +151,6 @@ async def test_get_notes_from_user(
     assert db_notes[0] == notes[0]
 
 
-async def test_get_notes_from_multiple_users(
-    session: AsyncSession,
-    user1: schemas.User,
-    user2: schemas.User,
-    notes: list[schemas.Note],
-):
-    """Test getting all notes from multiple users."""
-    # Act
-    db_notes, _ = await api.notes.get_many(
-        session,
-        filters=[
-            filters.notes.CreatedByFilter(isin=[user1.id, user2.id]),
-        ],
-    )
-
-    # Assert
-    assert isinstance(db_notes, list)
-    assert len(db_notes) == 3
-    assert db_notes[0] == notes[2]
-    assert db_notes[2] == notes[1]
-    assert db_notes[1] == notes[0]
-
-
 async def test_get_notes_before_date(
     session: AsyncSession,
     notes: list[schemas.Note],

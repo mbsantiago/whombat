@@ -43,7 +43,7 @@ function PopularTags({ popularTags }: { popularTags: [TagType, number][] }) {
         <div className="flex flex-col gap-1">
           <div className="text-sm text-stone-500 text-right pr-2">Tag</div>
           {popularTags.map(([tag, _]) => (
-            <div className="flex-row flex justify-end">
+            <div key={tag.id} className="flex-row flex justify-end">
               <Tag tag={tag} disabled {...getTagColor(tag)} />
             </div>
           ))}
@@ -52,8 +52,8 @@ function PopularTags({ popularTags }: { popularTags: [TagType, number][] }) {
           <div className="text-sm text-stone-500 whitespace-nowrap text-left">
             Recordings
           </div>
-          {popularTags.map(([_, count]) => (
-            <div className="flex flex-row items-center h-6 m-px">
+          {popularTags.map(([tag, count]) => (
+            <div key={tag.id} className="flex flex-row items-center h-6 m-px">
               <div className="w-full flex flex-row h-4 overflow-hidden bg-stone-200 rounded-full dark:bg-stone-700">
                 <div
                   className="flex flex-row items-center justify-center h-4 bg-blue-600 dark:bg-blue-400 text-blue-100 dark:text-blue-900"

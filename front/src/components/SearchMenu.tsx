@@ -59,7 +59,7 @@ export default function SearchMenu<
         keys: fields,
         threshold: 0.3,
       }),
-    [options],
+    [options, fields],
   );
 
   const filteredOptions = useMemo(() => {

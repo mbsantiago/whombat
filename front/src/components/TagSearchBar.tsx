@@ -112,6 +112,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
         tags.filter.set("key__eq", key);
         tags.filter.set("value__has", value);
       }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query]);
 
     return (

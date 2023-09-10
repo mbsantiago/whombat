@@ -6,7 +6,7 @@ import {
 } from "react";
 import { divIcon } from "leaflet";
 import { useMap } from "react-leaflet/hooks";
-import { Marker } from "react-leaflet/Marker";
+import { Marker as LeafletMarker } from "react-leaflet/Marker";
 import { Popup } from "react-leaflet/Popup";
 import "leaflet/dist/leaflet.css";
 
@@ -23,12 +23,14 @@ type Position = {
   lng: number | null;
 };
 
-export default function DraggableMarker({
+export default function Marker({
   center,
   onChange,
+  draggable = true,
   updateOnChange = false,
 }: {
   center: Position;
+  draggable?: boolean;
   onChange?: (position: Position) => void;
   updateOnChange?: boolean;
 }) {
@@ -62,12 +64,12 @@ export default function DraggableMarker({
         }
       },
     }),
-    [],
+    [onChange],
   );
 
   return (
-    <Marker
-      draggable={true}
+    <LeafletMarker
+      draggable={draggable}
       eventHandlers={eventHandlers}
       position={{
         lat: position.lat ?? 0,
@@ -75,7 +77,7 @@ export default function DraggableMarker({
       }}
       ref={markerRef}
       icon={divIcon({
-        className: "marker text-emerald-500",
+        className: "marker text-emerald-500 fill-emerald-500",
         html: MAP_PIN,
       })}
     >
@@ -84,6 +86,6 @@ export default function DraggableMarker({
           Lat: {position.lat}, Lon: {position.lng}
         </span>
       </Popup>
-    </Marker>
+    </LeafletMarker>
   );
 }

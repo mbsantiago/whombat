@@ -9,6 +9,7 @@ from whombat.routes.tasks import tasks_router
 from whombat.routes.clips import clips_router
 from whombat.routes.auth import auth_router
 from whombat.routes.users import users_router
+from whombat.routes.spectrograms import spectrograms_router
 
 __all__ = [
     "main_router",
@@ -56,4 +57,9 @@ main_router.include_router(
     clips_router,
     prefix="/clips",
     tags=["clips"],
+)
+main_router.include_router(
+    spectrograms_router,
+    prefix="/spectrograms",
+    tags=["spectrograms"],
 )

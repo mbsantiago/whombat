@@ -132,7 +132,7 @@ function SelectRecordings({
         onSelection([...recordings.items]);
       }
     }
-  }, [selection, recordings.items]);
+  }, [selection, recordings.items, onSelection]);
 
   return (
     <Card>

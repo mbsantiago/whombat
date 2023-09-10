@@ -18,7 +18,7 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-screen items-center justify-center">
         <div className="flex flex-col items-center">
           <div>
-            <WhombatIcon className="h-32 w-32" />
+            <WhombatIcon width={128} height={128} className="h-32 w-32" />
           </div>
           <div>
             <Loading />

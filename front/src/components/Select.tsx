@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Float } from "@headlessui-float/react";
 import { ExpandIcon, CheckIcon } from "@/components/icons";
 import Button from "@/components/Button";
@@ -24,14 +25,17 @@ export default function Select<T>({
   return (
     <Listbox value={selected.value} onChange={onChange}>
       <Float
+        as="div"
+        className="relative"
         leave="transition ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
         placement="top-end"
         offset={4}
         flip={true}
+        floatingAs={Fragment}
       >
-        <Listbox.Button as="div" className="relative inline-flex">
+        <Listbox.Button as="div" className="inline-flex w-full">
           {label ? (
             <div className="my-auto inline-block">
               <Listbox.Label className="text-sm text-stone-500 whitespace-nowrap">
@@ -42,7 +46,7 @@ export default function Select<T>({
           <Button
             variant="secondary"
             mode="outline"
-            className="w-full cursor-default pl-3 pr-10 text-left shadow-md"
+            className="w-full cursor-default pl-3 pr-10 text-left"
           >
             <span className="block truncate">{selected.label}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

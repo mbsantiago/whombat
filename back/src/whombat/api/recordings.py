@@ -20,7 +20,7 @@ __all__ = [
     "add_tag",
     "create",
     "delete",
-    "get_recording_by_id",
+    "get_by_id",
     "get_by_hash",
     "get_by_path",
     "get_many",
@@ -41,7 +41,7 @@ recording_caches = cache.CacheCollection(schemas.Recording)
     key=lambda _, recording_id: recording_id,
     data_key=lambda recording: recording.id,
 )
-async def get_recording_by_id(
+async def get_by_id(
     session: AsyncSession, recording_id: int
 ) -> schemas.Recording:
     """Get a recording by ID.

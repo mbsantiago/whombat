@@ -1,5 +1,10 @@
-import { type HTMLAttributes } from "react";
+import { type ComponentProps } from "react";
+import Image from "next/image";
 import {
+  ChartBarSquareIcon,
+  SpeakerWaveIcon,
+  AdjustmentsVerticalIcon,
+  DocumentIcon,
   DocumentPlusIcon,
   ArchiveBoxIcon,
   ArrowDownOnSquareIcon,
@@ -48,10 +53,11 @@ import {
   TrashIcon,
   WrenchIcon,
   XMarkIcon,
+  GlobeAsiaAustraliaIcon,
 } from "@heroicons/react/24/outline";
 
-function WhombatIcon(props: HTMLAttributes<HTMLImageElement>) {
-  return <img {...props} src="/whombat.svg" />;
+function WhombatIcon(props: Omit<ComponentProps<typeof Image>, "src" | "alt">) {
+  return <Image alt="Whombat Logo" src="/whombat.svg" {...props} />;
 }
 
 export {
@@ -105,4 +111,9 @@ export {
   WrenchIcon as MissingIcon,
   XMarkIcon as CloseIcon,
   DocumentPlusIcon as NewRecordingIcon,
+  DocumentIcon as RecordingIcon,
+  GlobeAsiaAustraliaIcon as MapIcon,
+  AdjustmentsVerticalIcon as SpectrogramSettingsIcon,
+  SpeakerWaveIcon as AudioIcon,
+  ChartBarSquareIcon as SpectrogramIcon,
 };

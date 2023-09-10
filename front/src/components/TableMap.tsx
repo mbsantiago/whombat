@@ -89,7 +89,7 @@ export default function TableInput({
     <Popover className="w-100 relative flex flex-row">
       <Popover.Button className="grow flex flex-row justify-between items-center gap-2 px-1 text-center">
         <span>{initialValue}</span>
-        <EditIcon className="inline-block h-5 w-5 text-stone-500" />
+        <EditIcon className="flex-none inline-block h-5 w-5 text-stone-500" />
       </Popover.Button>
       <Transition
         as={Fragment}

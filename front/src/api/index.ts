@@ -13,6 +13,7 @@ import { registerRecordingAPI } from "./recordings";
 import { registerAnnotationProjectAPI } from "./annotation_projects";
 import { registerClipApi } from "./clips";
 import { registerTasksApi } from "./tasks";
+import { registerSpectrogramApi } from "./spectrograms";
 
 type APIConfig = {
   baseURL: string;
@@ -38,5 +39,6 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     annotation_projects: registerAnnotationProjectAPI(instance),
     tasks: registerTasksApi(instance),
     clips: registerClipApi(instance),
+    spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
   };
 }

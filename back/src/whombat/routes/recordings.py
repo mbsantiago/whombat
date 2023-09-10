@@ -42,6 +42,21 @@ async def get_recordings(
     )
 
 
+@recording_router.get(
+    "/detail/",
+    response_model=schemas.Recording,
+)
+async def get_recording(
+    session: Session,
+    recording_id: int,
+):
+    """Get a recording."""
+    return await api.recordings.get_by_id(
+        session,
+        recording_id,
+    )
+
+
 @recording_router.patch(
     "/detail/",
     response_model=schemas.Recording,
@@ -140,6 +155,67 @@ async def remove_recording_note(
         session,
         recording_id,
         note_id,
+    )
+    await session.commit()
+    return response
+
+
+@recording_router.post(
+    "/detail/features/",
+    response_model=schemas.Recording,
+)
+async def add_recording_feature(
+    session: Session,
+    recording_id: int,
+    feature_name_id: int,
+    value: float,
+):
+    """Add a feature to a recording."""
+    response = await api.recordings.add_feature(
+        session,
+        recording_id,
+        feature_name_id,
+        value,
+    )
+    await session.commit()
+    return response
+
+
+@recording_router.delete(
+    "/detail/features/",
+    response_model=schemas.Recording,
+)
+async def remove_recording_feature(
+    session: Session,
+    recording_id: int,
+    feature_name_id: int,
+):
+    """Remove a feature from a recording."""
+    response = await api.recordings.remove_feature(
+        session,
+        recording_id,
+        feature_name_id,
+    )
+    await session.commit()
+    return response
+
+
+@recording_router.patch(
+    "/detail/features/",
+    response_model=schemas.Recording,
+)
+async def update_recording_feature(
+    session: Session,
+    recording_id: int,
+    feature_name_id: int,
+    value: float,
+):
+    """Update a feature on a recording."""
+    response = await api.recordings.update_feature(
+        session,
+        recording_id,
+        feature_name_id,
+        value,
     )
     await session.commit()
     return response

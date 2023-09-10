@@ -177,7 +177,7 @@ async def create(
 
     """
     # Make sure recording exists
-    await recordings.get_recording_by_id(session, data.recording_id)
+    await recordings.get_by_id(session, data.recording_id)
 
     clip = await common.create_object(session, models.Clip, data)
     clip_id = clip.id

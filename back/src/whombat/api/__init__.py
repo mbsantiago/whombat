@@ -14,8 +14,9 @@ can be useful if you wish to integrate your annotated data into your own
 scripts or applications.
 """
 from whombat.api import (
-    annotations,
     annotation_projects,
+    annotations,
+    audio,
     clips,
     datasets,
     features,
@@ -23,6 +24,7 @@ from whombat.api import (
     recordings,
     sessions,
     sound_events,
+    spectrograms,
     tags,
     tasks,
     users,
@@ -31,6 +33,7 @@ from whombat.api import (
 __all__ = [
     "annotation_projects",
     "annotations",
+    "audio",
     "clips",
     "datasets",
     "features",
@@ -38,6 +41,7 @@ __all__ = [
     "recordings",
     "sessions",
     "sound_events",
+    "spectrograms",
     "tags",
     "tasks",
     "users",

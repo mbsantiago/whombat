@@ -29,11 +29,9 @@ function SideMenuButton({
   return (
     <Tooltip
       tooltip={
-        <div className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700">
-          <p className="whitespace-nowrap text-stone-700 dark:text-stone-300">
-            {tooltip}
-          </p>
-        </div>
+        <p className="whitespace-nowrap text-stone-700 dark:text-stone-300">
+          {tooltip}
+        </p>
       }
     >
       <Link href={href ?? ""}>
@@ -43,7 +41,7 @@ function SideMenuButton({
               "bg-stone-200 outline outline-2 outline-offset-2 outline-emerald-500 dark:bg-stone-900":
                 isActive,
             },
-            "group w-full rounded p-2 hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+            "group max-w-fit rounded p-2 hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
           )}
           {...props}
         >
@@ -63,7 +61,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
           tooltip={"Datasets"}
           href="/datasets"
         >
-          <DatasetsIcon />
+          <DatasetsIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
@@ -72,7 +70,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
           tooltip={"Annotation Projects"}
           href="/annotation_projects"
         >
-          <AnnotationProjectIcon />
+          <AnnotationProjectIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
@@ -80,7 +78,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
           isActive={pathname === "/exploration"}
           tooltip={"Exploration"}
         >
-          <ExplorationIcon />
+          <ExplorationIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
@@ -88,7 +86,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
           isActive={pathname === "/evaluation"}
           tooltip={"Evaluation"}
         >
-          <EvaluationIcon />
+          <EvaluationIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
     </ul>
@@ -101,23 +99,23 @@ function SecondaryNavigation({ pathname }: { pathname?: string }) {
       <HorizontalDivider />
       <li className="px-3">
         <SideMenuButton isActive={pathname === "/"} tooltip={"Home"} href="/">
-          <HomeIcon />
+          <HomeIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
         <SideMenuButton tooltip={"Messages"}>
-          <MessagesIcon />
+          <MessagesIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
         <SideMenuButton tooltip={"Settings"}>
-          <SettingsIcon />
+          <SettingsIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <HorizontalDivider />
       <li className="px-3">
         <SideMenuButton tooltip={"Log Out"}>
-          <LogOutIcon />
+          <LogOutIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
     </ul>
@@ -133,9 +131,9 @@ function SideMenu() {
       aria-label="Sidebar"
     >
       <div className="flex flex-grow flex-col justify-between overflow-y-auto overflow-x-hidden bg-stone-50 dark:bg-stone-800">
-        <div>
+        <div className="flex flex-col items-center">
           <div className="px-2 py-4">
-            <WhombatIcon />
+            <WhombatIcon width={46} height={46} />
           </div>
           <MainNavigation pathname={pathname} />
         </div>

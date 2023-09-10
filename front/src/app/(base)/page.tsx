@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -6,7 +7,7 @@ export default function Home() {
       <h1 className="text-center text-6xl">
         Welcome to
         <br />
-        <img src="whombat.svg" alt="logo" className="m-2 inline h-16" />
+        <Image src="whombat.svg" alt="logo" width={64} height={64} className="m-2 inline" />
         <span className="font-sans font-bold text-emerald-500 underline decoration-8">
           Whombat
         </span>

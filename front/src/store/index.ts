@@ -1,12 +1,13 @@
-// Global store for the application
+// Global state for the application
 import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createSessionSlice, type SessionSlice } from "./session";
 import { createClipboardSlice, type ClipboardSlice } from "./clipboard";
 import { createColorsSlice, type ColorsSlice } from "./colors";
+import { createSpectrogramSlice, type SpectrogramSlice } from "./spectrogram";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type Store = SessionSlice & ClipboardSlice & ColorsSlice;
+type Store = SessionSlice & ClipboardSlice & ColorsSlice & SpectrogramSlice;
 
 const useStore = create<Store>()(
   persist(
@@ -14,6 +15,7 @@ const useStore = create<Store>()(
       ...createSessionSlice(...a),
       ...createClipboardSlice(...a),
       ...createColorsSlice(...a),
+      ...createSpectrogramSlice(...a),
     }),
     {
       name: "whombat-storage",
@@ -22,7 +24,7 @@ const useStore = create<Store>()(
   ),
 );
 
-const useHydration = () => {
+export const useHydration = () => {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -44,4 +46,3 @@ const useHydration = () => {
 };
 
 export default useStore;
-export { useHydration };

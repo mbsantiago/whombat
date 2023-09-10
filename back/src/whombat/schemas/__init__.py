@@ -24,6 +24,7 @@ from whombat.schemas.annotations import (
     AnnotationCreate,
     AnnotationTagCreate,
 )
+from whombat.schemas.audio import AudioParameters
 from whombat.schemas.base import Page
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
@@ -48,9 +49,9 @@ from whombat.schemas.recordings import (
     RecordingCreate,
     RecordingNote,
     RecordingPreCreate,
+    RecordingTag,
     RecordingUpdate,
     RecordingWithoutPath,
-    RecordingTag,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,
@@ -58,11 +59,18 @@ from whombat.schemas.sound_events import (
     SoundEventFeatureCreate,
     SoundEventUpdate,
 )
+from whombat.schemas.spectrograms import (
+    SpectrogramParameters,
+    STFTParameters,
+    AmplitudeParameters,
+    Scale,
+    Window,
+)
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
 from whombat.schemas.tasks import (
-    TaskNote,
     Task,
     TaskCreate,
+    TaskNote,
     TaskStatusBadge,
     TaskStatusBadgeCreate,
     TaskTag,
@@ -71,12 +79,14 @@ from whombat.schemas.tasks import (
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
+    "AmplitudeParameters",
     "Annotation",
     "AnnotationCreate",
     "AnnotationProject",
     "AnnotationProjectCreate",
     "AnnotationProjectUpdate",
     "AnnotationTagCreate",
+    "AudioParameters",
     "Clip",
     "ClipCreate",
     "ClipFeatureCreate",
@@ -104,11 +114,14 @@ __all__ = [
     "RecordingTag",
     "RecordingUpdate",
     "RecordingWithoutPath",
+    "STFTParameters",
+    "Scale",
     "SimpleUser",
     "SoundEvent",
     "SoundEventCreate",
     "SoundEventFeatureCreate",
     "SoundEventUpdate",
+    "SpectrogramParameters",
     "Tag",
     "TagCreate",
     "TagUpdate",
@@ -122,4 +135,5 @@ __all__ = [
     "User",
     "UserCreate",
     "UserUpdate",
+    "Window",
 ]

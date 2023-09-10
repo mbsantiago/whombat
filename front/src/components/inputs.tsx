@@ -16,9 +16,9 @@ type HasErrors = {
 const BORDER_STYLE = "rounded border border-stone-300 dark:border-stone-600";
 const BACKGROUND_STYLE = "bg-stone-200 dark:bg-stone-700";
 const TEXT_STYLE = "leading-tight text-stone-700 dark:text-stone-300";
-const FOCUS_STYLE = "focus:ring-2 focus:outline-none focus:ring-emerald-500 focus:ring-offset-4 focus:ring-offset-slate-50 focus:dark:ring-offset-stone-900";
+const FOCUS_STYLE = "focus:ring-4 focus:outline-none focus:ring-emerald-500/50";
 const COMMON_STYLE = "w-full p-2.5";
-const INVALID_STYLE = "invalid:focus:ring-red-500 invalid:border-red-500";
+const INVALID_STYLE = "invalid:focus:ring-red-500/50 invalid:border-red-500";
 const DISABLED_STYLE =
   "disabled:bg-stone-300 dark:disabled:bg-stone-800 text-stone-500 dark:text-stone-400";
 

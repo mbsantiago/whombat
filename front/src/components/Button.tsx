@@ -9,7 +9,7 @@ const CLASS_NAMES = {
     primary:
       "border-emerald-500 bg-emerald-300 hover:bg-emerald-500 focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800 disabled:bg-emerald-300 dark:disabled:bg-emerald-700",
     secondary:
-      "border-stone-500 bg-stone-700 hover:bg-stone-800 focus:ring-stone-300 dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-stone-800 disabled:bg-stone-300 dark:disabled:bg-stone-700",
+      "border-stone-300 dark:border-stone-600 bg-stone-100 hover:bg-stone-200 focus:ring-stone-300 dark:bg-stone-700 dark:hover:bg-stone-800 dark:focus:ring-stone-800 disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:text-stone-200",
     danger:
       "border-rose-500 bg-rose-700 hover:bg-rose-800 focus:ring-rose-300 dark:bg-rose-600 dark:hover:bg-rose-700 dark:focus:ring-rose-800 disabled:bg-rose-300 dark:disabled:bg-rose-700",
     success:

@@ -1,13 +1,16 @@
 import { z } from "zod";
 
-const FeatureNameSchema = z.object({
+export const FeatureNameSchema = z.object({
   id: z.number().int(),
   name: z.string(),
 });
 
-const FeatureSchema = z.object({
+export type FeatureName = z.infer<typeof FeatureNameSchema>;
+
+export const FeatureSchema = z.object({
   feature_name: FeatureNameSchema,
   value: z.number(),
 });
 
-export { FeatureSchema, FeatureNameSchema };
+export type Feature = z.infer<typeof FeatureSchema>;
+

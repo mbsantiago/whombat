@@ -69,7 +69,7 @@ export type Recording = z.infer<typeof RecordingSchema>;
 
 export const RecordingPageSchema = Page(RecordingSchema);
 
-export const UpdateRecordingSchema = z.object({
+export const RecordingUpdateSchema = z.object({
   date: z.coerce.date().nullable().optional(),
   time: z
     .string()
@@ -81,7 +81,7 @@ export const UpdateRecordingSchema = z.object({
   time_expansion: z.coerce.number().optional(),
 });
 
-export type UpdateRecording = z.infer<typeof UpdateRecordingSchema>;
+export type RecordingUpdate = z.infer<typeof RecordingUpdateSchema>;
 
 export const GetRecordingsQuerySchema = z.intersection(
   GetManySchema,
@@ -169,24 +169,28 @@ export function registerRecordingAPI(
     return RecordingPageSchema.parse(data);
   }
 
-  async function get(uuid: string): Promise<z.infer<typeof RecordingSchema>> {
-    const { data } = await instance.get(endpoints.get, { params: { uuid } });
+  async function get(
+    recording_id: number,
+  ): Promise<z.infer<typeof RecordingSchema>> {
+    const { data } = await instance.get(endpoints.get, {
+      params: { recording_id },
+    });
     return RecordingSchema.parse(data);
   }
 
   async function update(
     recording_id: number,
-    data: z.infer<typeof UpdateRecordingSchema>,
+    data: z.infer<typeof RecordingUpdateSchema>,
   ): Promise<z.infer<typeof RecordingSchema>> {
-    const body = UpdateRecordingSchema.parse(data);
+    const body = RecordingUpdateSchema.parse(data);
     const { data: res } = await instance.patch(endpoints.update, body, {
       params: { recording_id },
     });
     return RecordingSchema.parse(res);
   }
 
-  async function deleteRecording(uuid: string): Promise<void> {
-    await instance.delete(endpoints.delete, { params: { uuid } });
+  async function deleteRecording(recording_id: number): Promise<void> {
+    await instance.delete(endpoints.delete, { params: { recording_id } });
   }
 
   async function addTag({
@@ -195,14 +199,15 @@ export function registerRecordingAPI(
   }: {
     recording_id: number;
     tag_id: number;
-  }): Promise<void> {
-    await instance.post(
+  }): Promise<Recording> {
+    const data = await instance.post(
       endpoints.addTag,
       {},
       {
         params: { tag_id, recording_id },
       },
     );
+    return RecordingSchema.parse(data);
   }
 
   async function removeTag({
@@ -211,10 +216,11 @@ export function registerRecordingAPI(
   }: {
     recording_id: number;
     tag_id: number;
-  }): Promise<void> {
-    await instance.delete(endpoints.removeTag, {
+  }): Promise<Recording> {
+    const data = await instance.delete(endpoints.removeTag, {
       params: { recording_id, tag_id },
     });
+    return RecordingSchema.parse(data);
   }
 
   async function addNote({
@@ -225,12 +231,13 @@ export function registerRecordingAPI(
     recording_id: number;
     message: string;
     is_issue: boolean;
-  }): Promise<void> {
-    await instance.post(
+  }): Promise<Recording> {
+    const data = await instance.post(
       endpoints.addNote,
       { message, is_issue },
       { params: { recording_id } },
     );
+    return RecordingSchema.parse(data);
   }
 
   async function removeNote({
@@ -239,10 +246,11 @@ export function registerRecordingAPI(
   }: {
     recording_id: number;
     note_id: number;
-  }): Promise<void> {
-    await instance.delete(endpoints.removeNote, {
+  }): Promise<Recording> {
+    const data = await instance.delete(endpoints.removeNote, {
       params: { recording_id, note_id },
     });
+    return RecordingSchema.parse(data);
   }
 
   async function addFeature({
@@ -253,12 +261,13 @@ export function registerRecordingAPI(
     recording_id: number;
     feature_name_id: number;
     value: number;
-  }): Promise<void> {
-    await instance.post(
+  }): Promise<Recording> {
+    const data = await instance.post(
       endpoints.addFeature,
       { feature_name_id, value },
       { params: { recording_id } },
     );
+    return RecordingSchema.parse(data);
   }
 
   async function removeFeature({
@@ -267,10 +276,28 @@ export function registerRecordingAPI(
   }: {
     recording_id: number;
     feature_name_id: number;
-  }): Promise<void> {
-    await instance.delete(endpoints.removeFeature, {
+  }): Promise<Recording> {
+    const data = await instance.delete(endpoints.removeFeature, {
       params: { recording_id, feature_name_id },
     });
+    return RecordingSchema.parse(data);
+  }
+
+  async function updateFeature({
+    recording_id,
+    feature_name_id,
+    value,
+  }: {
+    recording_id: number;
+    feature_name_id: number;
+    value: number;
+  }): Promise<Recording> {
+    const data = await instance.patch(
+      endpoints.updateFeature,
+      { value },
+      { params: { recording_id, feature_name_id } },
+    );
+    return RecordingSchema.parse(data);
   }
 
   async function getNotes(query: GetRecordingNotesQuery) {
@@ -296,6 +323,7 @@ export function registerRecordingAPI(
     removeNote,
     addFeature,
     removeFeature,
+    updateFeature,
     getNotes,
     getTags,
   };

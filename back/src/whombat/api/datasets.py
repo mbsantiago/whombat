@@ -500,7 +500,7 @@ async def add_recording(
 
     """
     dataset = await get_by_id(session, dataset_id=dataset_id)
-    recording = await recordings.get_recording_by_id(
+    recording = await recordings.get_by_id(
         session, recording_id=recording_id
     )
 

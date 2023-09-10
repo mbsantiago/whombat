@@ -63,6 +63,7 @@ export default function Stepper({
       <ol className="relative text-stone-500 border-l border-stone-200 dark:border-stone-700 dark:text-stone-400">
         {steps.map((step, index) => (
           <Step
+            key={step.title}
             Icon={step.icon}
             title={step.title}
             description={step.description}

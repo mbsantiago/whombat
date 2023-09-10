@@ -2,6 +2,7 @@ import { type ReactNode, type ComponentProps } from "react";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet/dist/leaflet.css";
+import "./Map.css"
 
 type Position = {
   lat: number | null;
@@ -12,6 +13,7 @@ export default function Map({
   children,
   center,
   zoom = 13,
+  scrollWheelZoom = false,
   ...props
 }: {
   children: ReactNode;
@@ -25,7 +27,7 @@ export default function Map({
         lng: center.lng ?? 0,
       }}
       zoom={zoom}
-      scrollWheelZoom={false}
+      scrollWheelZoom={scrollWheelZoom}
       {...props}
     >
       <TileLayer

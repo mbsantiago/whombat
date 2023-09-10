@@ -1,4 +1,4 @@
-import { type RecordingFilter, type UpdateRecording } from "@/api/recordings";
+import { type RecordingFilter, type RecordingUpdate } from "@/api/recordings";
 import { useMutation } from "@tanstack/react-query";
 import usePagedQuery from "@/hooks/usePagedQuery";
 import useFilter from "@/hooks/useFilter";
@@ -26,7 +26,7 @@ export default function useRecordings({
       data,
     }: {
       recording_id: number;
-      data: UpdateRecording;
+      data: RecordingUpdate;
     }) => {
       return api.recordings.update(recording_id, data);
     },

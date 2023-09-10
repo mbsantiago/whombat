@@ -8,7 +8,7 @@ export default function Notification() {
         <Transition
           appear
           show={t.visible}
-          className="transform p-4 flex rounded items-center divide-x divide-stone-300 space-x-4 space-x dark:divide-stone-500 shadow-lg bg-stone-50 dark:bg-stone-600 dark:shadow-stone-700"
+          className="transform p-4 flex rounded items-center divide-x divide-stone-300 space-x-4 space-x border dark:divide-stone-500 shadow-lg bg-stone-50 border-stone-200 dark:bg-stone-700 dark:border-stone-800"
           enter="transition-all duration-150"
           enterFrom="opacity-0 scale-50"
           enterTo="opacity-100 scale-100"

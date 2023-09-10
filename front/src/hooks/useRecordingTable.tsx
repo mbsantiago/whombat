@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { type Tag } from "@/api/tags";
-import { type Recording, type UpdateRecording } from "@/api/recordings";
+import { type Recording, type RecordingUpdate } from "@/api/recordings";
+import Link from "next/link";
 import Checkbox from "@/components/TableCheckbox";
 import TableInput from "@/components/TableInput";
 import TableCell from "@/components/TableCell";
@@ -35,12 +36,14 @@ function useRecordingTable({
   removeTag,
 }: {
   data: Recording[];
-  updateData?: (recording_id: number, data: UpdateRecording) => void;
+  updateData?: (recording_id: number, data: RecordingUpdate) => void;
   addTag?: (recording_id: number, tag: Tag) => void;
   removeTag?: (recording_id: number, tag: Tag) => void;
 }) {
+  // State for selected rows
   const [rowSelection, setRowSelection] = useState({});
 
+  // Column definitions
   const columns = useMemo<ColumnDef<Recording>[]>(
     () => [
       {
@@ -78,7 +81,21 @@ function useRecordingTable({
         footer: (props) => props.column.id,
         cell: ({ row }) => {
           const path = row.getValue("path") as string;
-          return <TableCell>{path}</TableCell>;
+          return (
+            <TableCell>
+              <Link
+                className="hover:text-emerald-500 focus:outline-none hover:font-bold focus:ring focus:ring-emerald-500"
+                href={{
+                  pathname: "/recordings/",
+                  query: {
+                    recording_id: row.original.id,
+                  },
+                }}
+              >
+                {path}
+              </Link>
+            </TableCell>
+          );
         },
       },
       {

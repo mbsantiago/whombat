@@ -33,7 +33,7 @@ type Color = {
   level: number;
 };
 
-interface ColorsSlice {
+export type ColorsSlice = {
   colors: {
     tags: { [key: number]: Color };
   };
@@ -42,7 +42,7 @@ interface ColorsSlice {
   clearTagColors: () => void;
 }
 
-const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
+export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
   colors: {
     tags: {},
   },
@@ -83,5 +83,3 @@ const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
     }));
   }
 });
-
-export { createColorsSlice, type ColorsSlice };

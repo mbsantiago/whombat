@@ -1,47 +1,11 @@
 "use client";
 import { toast } from "react-hot-toast";
-import {
-  useSearchParams,
-  useSelectedLayoutSegment,
-  useRouter,
-} from "next/navigation";
-import { type ReactNode } from "react";
-import * as icons from "@/components/icons";
-import Loading from "@/app/loading";
-import Header from "@/components/Header";
-import Tabs from "@/components/Tabs";
+import { useSearchParams, useRouter } from "next/navigation";
 import useAnnotationProject from "@/hooks/useAnnotationProject";
+import { type ReactNode } from "react";
+import Loading from "@/app/loading";
 import { AnnotationProjectContext } from "./context";
-import { H1 } from "@/components/Headings";
-
-function AnnotationProjectHeader({ name }: { name: string }) {
-  const router = useRouter();
-  const params = useSearchParams();
-  const selectedLayoutSegment = useSelectedLayoutSegment();
-
-  return (
-    <Header>
-      <div className="flex w-full flex-row space-x-4 overflow-x-scroll">
-        <H1 className="max-w-xl whitespace-nowrap overflow-scroll">{name}</H1>
-        <Tabs
-          tabs={[
-            {
-              id: "overview",
-              title: "Overview",
-              isActive: selectedLayoutSegment === null,
-              icon: <icons.DatasetIcon className="h-4 w-4 align-middle" />,
-              onClick: () => {
-                router.push(
-                  `/annotation_projects/detail/?${params.toString()}`,
-                );
-              },
-            },
-          ]}
-        />
-      </div>
-    </Header>
-  );
-}
+import ProjectHeader from "../components/ProjectHeader";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();
@@ -49,16 +13,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const annotation_project_id = params.get("annotation_project_id");
 
-  // Go to the annotation projects page if the annotation project id is not
-  // specified.
-  if (annotation_project_id == null) {
-    router.push("/annotation_projects/");
-    return;
-  }
-
   // Fetch the annotation project.
   const project = useAnnotationProject({
-    annotation_project_id: parseInt(annotation_project_id),
+    annotation_project_id: parseInt(annotation_project_id ?? "-1"),
     onDelete: () => {
       // Go to previous page.
       toast.success("Annotation project deleted.");
@@ -70,6 +27,13 @@ export default function Layout({ children }: { children: ReactNode }) {
       });
     },
   });
+
+  // Go to the annotation projects page if the annotation project id is not
+  // specified.
+  if (annotation_project_id == null) {
+    router.push("/annotation_projects/");
+    return;
+  }
 
   if (project.query.isError) {
     // If not found, go to the annotation projects page.
@@ -87,7 +51,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <AnnotationProjectContext.Provider value={project}>
-      <AnnotationProjectHeader name={project.query.data.name} />
+      <ProjectHeader name={project.query.data.name} />
       <div className="p-4">{children}</div>
     </AnnotationProjectContext.Provider>
   );

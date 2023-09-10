@@ -1,0 +1,77 @@
+import { useState, useEffect, RefObject, useCallback } from "react";
+import { useMount, useEvent } from "react-use";
+
+export type DrawFunction = (ctx: CanvasRenderingContext2D) => void;
+
+export default function useCanvas({
+  ref,
+  draw,
+  onMount,
+  onResize,
+  onDraw,
+  onClear,
+  onError,
+}: {
+  ref: RefObject<HTMLCanvasElement>;
+  draw: DrawFunction;
+  onMount?: (ctx: CanvasRenderingContext2D) => void;
+  onResize?: (ctx: CanvasRenderingContext2D) => void;
+  onDraw?: (ctx: CanvasRenderingContext2D) => void;
+  onClear?: (ctx: CanvasRenderingContext2D) => void;
+  onError?: (canvas: HTMLCanvasElement) => void;
+}): RefObject<HTMLCanvasElement> {
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+
+  // Initialize canvas context
+  useMount(() => {
+    const { current: canvas } = ref;
+
+    // If the canvas is not mounted yet, do nothing
+    if (canvas == null) return;
+
+    // Sync the canvas size attributes with the element size
+    // This is particularly useful if the canvas is styled with CSS
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    // Get the drawing context
+    const context = canvas.getContext("2d");
+
+    // If the context is not supported, display an error
+    if (context == null) {
+      canvas.classList.add("border-2", "border-red-500");
+      onError?.(canvas);
+      return;
+    }
+
+    setCtx(context);
+    onMount?.(context);
+  });
+
+  const handleOnResize = useCallback(() => {
+    const { current: canvas } = ref;
+    if (canvas != null && ctx != null) {
+      draw(ctx);
+      onResize?.(ctx);
+    }
+  }, [ctx, draw, ref, onResize]);
+
+  // Resize canvas on window resize
+  useEvent("resize", handleOnResize, ref.current);
+
+  // Draw whenever the draw function changes
+  // And clean up the canvas when the component unmounts
+  useEffect(() => {
+    if (ctx != null) {
+      draw(ctx);
+      onDraw?.(ctx);
+      return () => {
+        const { canvas } = ctx;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        onClear?.(ctx);
+      };
+    }
+  }, [ctx, draw, onDraw, onClear]);
+
+  return ref;
+}
