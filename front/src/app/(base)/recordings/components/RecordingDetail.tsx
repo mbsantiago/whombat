@@ -1,6 +1,4 @@
 import RecordingSpectrogram from "./RecordingSpectrogram";
-import RecordingSoundEventsSummary from "./RecordingUsageSummary";
-import RecordingUsageSummary from "./RecordingUsageSummary";
 import RecordingActions from "./RecordingActions";
 import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingMap from "./RecordingMap";
@@ -36,12 +34,6 @@ export default function RecordingDetail({
               onSettingsClear={onSpectrogramSettingsClear}
               recording={recording}
             />
-          </div>
-          <div className="col-span-2 xl:col-span-1">
-            <RecordingSoundEventsSummary />
-          </div>
-          <div className="col-span-2 xl:col-span-1">
-            <RecordingUsageSummary />
           </div>
         </div>
       </div>

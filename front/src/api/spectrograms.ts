@@ -9,6 +9,8 @@ const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",
 };
 
+export const MIN_DB = -140;
+
 export const SpectrogramWindowSchema = z.object({
   time: IntervalSchema,
   freq: IntervalSchema,
@@ -38,8 +40,9 @@ export const AmplitudeParametersSchema = z
   .object({
     scale: z.enum(["amplitude", "power", "dB"]).default("dB"),
     clamp: z.boolean().default(false),
-    min_dB: z.number().nonpositive().default(-80),
-    max_dB: z.number().nonpositive().default(0),
+    min_dB: z.number().nonpositive().gte(MIN_DB).default(MIN_DB),
+    max_dB: z.number().nonpositive().gte(MIN_DB).default(0),
+    normalize: z.boolean().default(true),
   })
   .refine(
     (data) => {
@@ -74,6 +77,7 @@ export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
   scale: "dB",
   pcen: true,
   cmap: DEFAULT_CMAP,
+  normalize: true,
 };
 
 export function registerSpectrogramApi({

@@ -1,20 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import classNames from "classnames";
 import Toggle from "@/components/Toggle";
 import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
 import Select from "@/components/Select";
-import Dialog from "@/components/Dialog";
+import SlideOver from "@/components/SlideOver";
 import RangeSlider from "@/components/RangeSlider";
 import { InputGroup, Input } from "@/components/inputs";
-import {
-  SettingsIcon,
-  SpectrogramSettingsIcon,
-  CloseIcon,
-  AudioIcon,
-  SpectrogramIcon,
-} from "@/components/icons";
-import { type SpectrogramParameters } from "@/api/spectrograms";
+import { SpectrogramSettingsIcon } from "@/components/icons";
+import { type SpectrogramParameters, MIN_DB } from "@/api/spectrograms";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 
 const SPECTROGRAM_COLORMAPS: Record<
@@ -61,6 +55,14 @@ const SPECTROGRAM_WINDOWS: Record<
   barthann: { id: "barthann", value: "barthann", label: "Bartlett-Hann" },
 };
 
+function SettingsSection({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex flex-col max-w-md w-full gap-2 border rounded-md p-4 dark:border-stone-600">
+      {children}
+    </div>
+  );
+}
+
 function ResamplingSettings({
   settings,
   onChange,
@@ -69,10 +71,10 @@ function ResamplingSettings({
   onChange?: (key: keyof SpectrogramParameters, value: any) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 dark:border-stone-600">
+    <SettingsSection>
       <InputGroup
         name="resample"
-        label="Resample"
+        label="Resampling"
         help={
           settings.resample
             ? "Uncheck to disable resampling."
@@ -98,7 +100,7 @@ function ResamplingSettings({
           />
         </InputGroup>
       )}
-    </div>
+    </SettingsSection>
   );
 }
 
@@ -114,7 +116,7 @@ function STFTSettings({
   }, [settings.window]);
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 dark:border-stone-600">
+    <SettingsSection>
       <InputGroup
         name="windowSize"
         label="Window size"
@@ -154,7 +156,7 @@ function STFTSettings({
           options={Object.values(SPECTROGRAM_WINDOWS)}
         />
       </InputGroup>
-    </div>
+    </SettingsSection>
   );
 }
 
@@ -272,17 +274,17 @@ function FilteringSettings({
   const filterTypes = [
     {
       value: "low",
-      text: "Low",
+      text: "Lowpass",
       label: "Low-pass filter",
     },
     {
       value: "high",
-      text: "High",
+      text: "Highpass",
       label: "High-pass filter",
     },
     {
       value: "band",
-      text: "Band",
+      text: "Bandpass",
       label: "Band-pass filter",
     },
   ];
@@ -297,10 +299,11 @@ function FilteringSettings({
       : "Only frequencies between the selected values will be kept.";
 
   return (
-    <div className="flex flex-col gap-2 p-4 border rounded-md dark:border-stone-600">
+    <SettingsSection>
       <InputGroup name="lowFreq" label="Filtering" help={helpText}>
         <ToggleGroup.Root
           type="single"
+          className="divide-x divide-stone-300 dark:divide-stone-700"
           value={filterType}
           onValueChange={handleChange}
           aria-label="Filter type"
@@ -346,11 +349,11 @@ function FilteringSettings({
           />
         </InputGroup>
       )}
-    </div>
+    </SettingsSection>
   );
 }
 
-function VisualizationsSettings({
+function ColorSettings({
   settings,
   onChange,
 }: {
@@ -358,11 +361,14 @@ function VisualizationsSettings({
   onChange?: (key: keyof SpectrogramParameters, value: any) => void;
 }) {
   const selectedColormap = useMemo(() => {
-    return SPECTROGRAM_COLORMAPS[settings.cmap ?? "viridis"] ?? SPECTROGRAM_COLORMAPS["viridis"];
+    return (
+      SPECTROGRAM_COLORMAPS[settings.cmap ?? "viridis"] ??
+      SPECTROGRAM_COLORMAPS["viridis"]
+    );
   }, [settings.cmap]);
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 dark:border-stone-600">
+    <SettingsSection>
       <InputGroup
         name="colorMap"
         label="Color map"
@@ -374,6 +380,19 @@ function VisualizationsSettings({
           options={Object.values(SPECTROGRAM_COLORMAPS)}
         />
       </InputGroup>
+    </SettingsSection>
+  );
+}
+
+function ClampSettings({
+  settings,
+  onChange,
+}: {
+  settings: SpectrogramParameters;
+  onChange?: (key: keyof SpectrogramParameters, value: any) => void;
+}) {
+  return (
+    <SettingsSection>
       <InputGroup
         name="Clamp"
         label="Clamp Amplitude"
@@ -398,11 +417,11 @@ function VisualizationsSettings({
           help="Select the min and max amplitude values to clamp to."
         >
           <RangeSlider
-            defaultValue={[settings.min_dB ?? -80, settings.max_dB ?? 0]}
-            min={-80}
+            defaultValue={[settings.min_dB ?? MIN_DB, settings.max_dB ?? 0]}
+            min={MIN_DB}
             max={0}
             step={1}
-            minLabel="-80 dB"
+            minLabel={`${MIN_DB} dB`}
             maxLabel="0 dB"
             onValueCommit={(value) => {
               onChange?.("min_dB", value[0]);
@@ -411,77 +430,60 @@ function VisualizationsSettings({
           />
         </InputGroup>
       )}
-    </div>
+    </SettingsSection>
   );
 }
 
-function SpectrogramSettingsDialog({
+function DeNoiseSettings({
   settings,
   onChange,
-  onClear,
-  nyquistFrequency = 44100,
 }: {
   settings: SpectrogramParameters;
   onChange?: (key: keyof SpectrogramParameters, value: any) => void;
-  onClear?: (key: keyof SpectrogramParameters) => void;
-  nyquistFrequency?: number;
 }) {
   return (
-    <div className="flex flex-row gap-2">
-      <div className="w-80 flex flex-col gap-2">
-        <span className="font-semibold text-stone-400 text-center w-full">
-          <AudioIcon className="w-5 h-5 mr-2 inline-block" />
-          Audio
-        </span>
-        <ResamplingSettings settings={settings} onChange={onChange} />
-        <FilteringSettings
-          nyquistFrequency={nyquistFrequency}
-          settings={settings}
-          onChange={onChange}
-          onClear={onClear}
+    <SettingsSection>
+      <InputGroup
+        name="denoise"
+        label="De-noise"
+        help={
+          settings.pcen
+            ? "De-noising is being applied. Uncheck to disable de-noising."
+            : "Check to apply PCEN de-noising."
+        }
+      >
+        <Toggle
+          label="De-noise"
+          checked={settings.pcen ?? false}
+          onChange={(denoise) => onChange?.("pcen", denoise)}
         />
-      </div>
-      <div className="w-80 flex flex-col gap-2">
-        <span className="font-semibold text-stone-400 text-center w-full">
-          <SettingsIcon className="w-5 h-5 mr-2 inline-block" />
-          STFT
-        </span>
-        <STFTSettings settings={settings} onChange={onChange} />
-      </div>
-      <div className="w-80 flex flex-col gap-2">
-        <span className="font-semibold text-stone-400 text-center w-full">
-          <SpectrogramIcon className="w-5 h-5 mr-2 inline-block" />
-          Visualization
-        </span>
-        <DynamicRangeSettings settings={settings} onChange={onChange} />
-        <VisualizationsSettings settings={settings} onChange={onChange} />
-      </div>
-    </div>
+      </InputGroup>
+    </SettingsSection>
   );
 }
 
-
-const AMPLITUDE_SCALES: Record<string, { id: string; value: string; label: string }> = {
+const AMPLITUDE_SCALES: Record<
+  string,
+  { id: string; value: string; label: string }
+> = {
   dB: { id: "dB", value: "dB", label: "decibels (dB)" },
   amplitude: { id: "amplitude", value: "amplitude", label: "amplitude" },
   power: { id: "power", value: "power", label: "power" },
 };
 
-
-
-function DynamicRangeSettings({
+function AmplitudeSettings({
   settings,
   onChange,
 }: {
   settings: SpectrogramParameters;
   onChange?: (key: keyof SpectrogramParameters, value: any) => void;
-  }) {
+}) {
   const selectedScale = useMemo(() => {
     return AMPLITUDE_SCALES[settings.scale ?? "dB"];
   }, [settings.scale]);
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4 dark:border-stone-600">
+    <SettingsSection>
       <InputGroup
         name="scale"
         label="Amplitude Scale"
@@ -494,25 +496,47 @@ function DynamicRangeSettings({
         />
       </InputGroup>
       <InputGroup
-        name="denoise"
-        label="De-noise"
-        help={
-          settings.pcen ? (
-            "De-noising is being applied. Uncheck to disable de-noising."
-          ) : (
-            "Check to apply PCEN de-noising."
-          )
-        }
+        name="normalize"
+        label="Normalize Amplitudes"
+        help="Toggle to normalize amplitude values."
       >
         <Toggle
-          label="De-noise"
-          checked={settings.pcen ?? false}
-          onChange={(denoise) => onChange?.("pcen", denoise)}
+          label="Normalize"
+          checked={settings.normalize ?? false}
+          onChange={(normalize) => onChange?.("normalize", normalize)}
         />
       </InputGroup>
+    </SettingsSection>
+  );
+}
+
+function SpectrogramSettingMenu({
+  settings,
+  onChange,
+  onClear,
+  nyquistFrequency = 44100,
+}: {
+  settings: SpectrogramParameters;
+  onChange?: (key: keyof SpectrogramParameters, value: any) => void;
+  onClear?: (key: keyof SpectrogramParameters) => void;
+  nyquistFrequency?: number;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <ResamplingSettings settings={settings} onChange={onChange} />
+      <FilteringSettings
+        nyquistFrequency={nyquistFrequency}
+        settings={settings}
+        onChange={onChange}
+        onClear={onClear}
+      />
+      <STFTSettings settings={settings} onChange={onChange} />
+      <DeNoiseSettings settings={settings} onChange={onChange} />
+      <ColorSettings settings={settings} onChange={onChange} />
+      <AmplitudeSettings settings={settings} onChange={onChange} />
+      <ClampSettings settings={settings} onChange={onChange} />
     </div>
-  )
-  
+  );
 }
 
 export default function SpectrogramSettings({
@@ -535,37 +559,23 @@ export default function SpectrogramSettings({
           <SpectrogramSettingsIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
-      <Dialog
+      <SlideOver
         title={
-          <div className="flex flex-row gap-8 items-center justify-between">
-            <div>
-              <SpectrogramSettingsIcon className="w-5 h-5 mr-2 inline-block" />
-              Settings
-            </div>
-            <div>
-              <Button
-                mode="text"
-                variant="danger"
-                tabIndex={2}
-                onClick={() => setOpen(false)}
-              >
-                <CloseIcon className="w-5 h-5" />
-              </Button>
-            </div>
+          <div className="flex flex-row items-center">
+            <SpectrogramSettingsIcon className="w-5 h-5 mr-2 inline-block" />
+            Settings
           </div>
         }
         isOpen={open}
         onClose={() => setOpen(false)}
       >
-        {() => (
-          <SpectrogramSettingsDialog
-            nyquistFrequency={nyquistFrequency}
-            settings={settings}
-            onChange={onChange}
-            onClear={onClear}
-          />
-        )}
-      </Dialog>
+        <SpectrogramSettingMenu
+          nyquistFrequency={nyquistFrequency}
+          settings={settings}
+          onChange={onChange}
+          onClear={onClear}
+        />
+      </SlideOver>
     </div>
   );
 }

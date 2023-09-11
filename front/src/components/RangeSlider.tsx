@@ -39,7 +39,7 @@ export default function RangeSlider({
       {thumbs.map((_, i) => (
         <Slider.Thumb
           key={`${name}-${i}`}
-          className="block w-4 h-4 bg-stone-200 rounded-full hover:bg-stone-50 focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
+          className="block w-4 h-4 bg-stone-200 border border-stone-400 rounded-full hover:bg-stone-50 focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
         />
       ))}
       {minLabel != null && (

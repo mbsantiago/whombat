@@ -66,11 +66,12 @@ export default function CreateDataset() {
           </InputGroup>
           <div className="mb-3">
             <Submit
-              text="Create Dataset"
               loading={mutation.isLoading}
               success={mutation.isSuccess}
               error={mutation.isError}
-            />
+            >
+              Create Dataset
+            </Submit>
           </div>
         </form>
       </div>

@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import classNames from "classnames";
 import Spinner from "@/components/Spinner";
-import Button from "@/components/Button";
 import type {
   TextareaHTMLAttributes,
   InputHTMLAttributes,
@@ -156,40 +155,41 @@ export function InputGroup({
 }
 
 export function Submit({
+  children,
   loading = false,
   success = false,
   error = false,
-  text = "Submit",
   loadingMessage = "Please wait. This could take a while...",
   errorMessage = "Something went wrong. Please try again.",
   successMessage = "Success! Redirecting...",
   className,
   ...props
 }: {
+  children: ReactNode;
   loading?: boolean;
   success?: boolean;
   error?: boolean;
-  text?: string;
   loadingMessage?: string;
   errorMessage?: string;
   successMessage?: string;
 } & Omit<InputHTMLAttributes<HTMLButtonElement>, "type">) {
   return (
     <>
-      <Button
-        variant={loading ? "info" : "primary"}
+      <button
         type="submit"
         className={classNames(
-          "m-0 w-full",
-          {
-            "bg-stone-500": !loading,
-          },
+          COMMON_STYLE,
+          BORDER_STYLE,
+          BACKGROUND_STYLE,
+          TEXT_STYLE,
+          FOCUS_STYLE,
+          DISABLED_STYLE,
           className,
         )}
         {...props}
       >
-        {loading ? <Spinner variant="success" /> : text}
-      </Button>
+        {loading ? <Spinner variant="success" /> : children}
+      </button>
       {loading ? (
         <InputInfo message={loadingMessage} />
       ) : error ? (

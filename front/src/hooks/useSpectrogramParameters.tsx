@@ -1,4 +1,18 @@
-/**Hook to handle spectrogram parameters. */
+/**Hook to handle spectrogram parameters.
+ *
+ * This loads the initial parameters from the global state, and allows
+ * the user to change them. The parameters are validated before being
+ * saved to the global state.
+ *
+ * Use this hook to store and manage the state of the spectrogram parameters.
+ * The hook returns an object with the following properties:
+ *
+ * - `parameters`: The current parameters.
+ * - `set`: A function to set a parameter.
+ * - `clear`: A function to clear a parameter.
+ * - `update`: A function to force an update of the global state.
+ *
+ */
 import { useState, useCallback, useMemo } from "react";
 import useStore from "@/store";
 import { useDebounce } from "react-use";

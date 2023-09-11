@@ -72,12 +72,13 @@ export default function CreateProject({
         loading={create.isLoading}
         success={create.isSuccess}
         error={create.isError}
-        text="Create Project"
         loadingMessage="Creating project..."
         errorMessage="Something went wrong. Please try again."
         successMessage="Success! Please continue configuring your project."
         disabled={create.isSuccess}
-      />
+      >
+        Create Project
+      </Submit>
     </form>
   );
 }

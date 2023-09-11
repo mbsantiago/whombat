@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import { Float } from "@headlessui-float/react";
 import { ExpandIcon, CheckIcon } from "@/components/icons";
-import Button from "@/components/Button";
 import { Listbox } from "@headlessui/react";
+import { Submit } from "@/components/inputs";
 
 type Option<T> = {
   id: string | number;
@@ -43,10 +43,8 @@ export default function Select<T>({
               </Listbox.Label>
             </div>
           ) : null}
-          <Button
-            variant="secondary"
-            mode="outline"
-            className="w-full cursor-default pl-3 pr-10 text-left"
+          <Submit
+            className="w-full cursor-default border pl-3 pr-10 text-left"
           >
             <span className="block truncate">{selected.label}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -55,7 +53,7 @@ export default function Select<T>({
                 aria-hidden="true"
               />
             </span>
-          </Button>
+          </Submit>
         </Listbox.Button>
         <Listbox.Options className="max-h-60 w-full overflow-auto rounded-md bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm">
           {options.map((option) => (
