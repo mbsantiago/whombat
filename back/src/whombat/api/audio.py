@@ -11,8 +11,8 @@ from whombat import schemas
 async def load(
     session: AsyncSession,
     recording_id: int,
-    start_time: float,
-    end_time: float,
+    start_time: float | None = None,
+    end_time: float | None = None,
     audio_parameters: schemas.AudioParameters = schemas.AudioParameters(),
     audio_dir: Path = Path.cwd(),
 ):
@@ -39,6 +39,13 @@ async def load(
     """
     # Get recording.
     recording = await recordings.get_by_id(session, recording_id)
+
+    # Set start and end times.
+    if start_time is None:
+        start_time = 0.0
+
+    if end_time is None:
+        end_time = recording.duration
 
     clip = data.Clip(
         recording=data.Recording(

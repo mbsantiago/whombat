@@ -9,7 +9,7 @@ from soundevent.audio import compute_md5_checksum
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, filters, models, schemas
-from whombat.api import common
+from whombat.api import common, notes
 from whombat.core import files
 from whombat.core.common import remove_duplicates
 from whombat.dependencies import get_settings
@@ -29,6 +29,7 @@ __all__ = [
     "remove_note",
     "remove_tag",
     "update",
+    "update_note",
 ]
 
 
@@ -333,8 +334,10 @@ async def create_many(
             partial(_assemble_recording_data, audio_dir=audio_dir),
             data,
         )
-        # Take at most 50 milliseconds per file on average
-        estimated_time = len(data) * 0.05
+        # Take at most 1 second per file on average
+        # Some very large files may take longer, but this is a reasonable
+        # estimate for most files.
+        estimated_time = len(data)
         all_data: list[schemas.RecordingPreCreate | None] = results.get(
             timeout=estimated_time
         )
@@ -612,6 +615,35 @@ async def add_feature(
 
 
 @recording_caches.with_update
+async def update_note(
+    session: AsyncSession,
+    recording_id: int,
+    note_id: int,
+    data: schemas.NoteUpdate,
+) -> schemas.Recording:
+    """Update a note of a recording.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    recording_id : int
+        The ID of the recording to update the note of.
+    note_id : int
+        The ID of the note to update.
+    data : schemas.notes.NoteUpdate
+        The data to update the note with.
+    """
+    recording = await get_by_id(session, recording_id)
+    updated_note = await notes.update(session, note_id, data)
+    recording.notes = [
+        note if note.id != note_id else updated_note
+        for note in recording.notes
+    ]
+    return schemas.Recording.model_validate(recording)
+
+
+@recording_caches.with_update
 async def update_feature(
     session: AsyncSession,
     recording_id: int,
@@ -884,6 +916,4 @@ async def get_tags(
         sort_by=sort_by,
     )
 
-    return [
-        schemas.RecordingTag.model_validate(tag) for tag in tags
-    ], count
+    return [schemas.RecordingTag.model_validate(tag) for tag in tags], count

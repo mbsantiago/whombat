@@ -3,6 +3,7 @@ import logging
 import uuid
 from pathlib import Path
 
+from soundevent import data
 from cachetools import LRUCache
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +13,7 @@ from whombat.api import common, recordings
 from whombat.core import files
 from whombat.dependencies import get_settings
 from whombat.filters.base import Filter
+from whombat.filters.recordings import DatasetFilter
 from whombat.schemas.datasets import DatasetCreate, DatasetUpdate
 
 __all__ = [
@@ -351,7 +353,7 @@ async def update(
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
 
-    dataset_audio_dir = None
+    extra = {}
     if data.audio_dir is not None:
         # Make sure the path is relative to the root audio directory.
         if not data.audio_dir.is_relative_to(audio_dir):
@@ -362,14 +364,15 @@ async def update(
                 f"\n\tAudio directory: {data.audio_dir}"
             )
 
-        dataset_audio_dir = data.audio_dir.relative_to(audio_dir)
+        # If the audio directory has changed, update the path.
+        extra["audio_dir"] = data.audio_dir.relative_to(audio_dir)
 
     db_dataset = await common.update_object(
         session,
         models.Dataset,
         models.Dataset.id == dataset_id,
         data,
-        audio_dir=dataset_audio_dir,
+        **extra,
     )
     return schemas.DatasetWithCounts.model_validate(db_dataset)
 
@@ -500,9 +503,7 @@ async def add_recording(
 
     """
     dataset = await get_by_id(session, dataset_id=dataset_id)
-    recording = await recordings.get_by_id(
-        session, recording_id=recording_id
-    )
+    recording = await recordings.get_by_id(session, recording_id=recording_id)
 
     if not recording.path.is_relative_to(dataset.audio_dir):
         raise ValueError(
@@ -730,3 +731,89 @@ async def get_state(
         )
 
     return ret
+
+
+async def export(
+    session: AsyncSession,
+    dataset_id: int,
+) -> data.Dataset:
+    """Export a dataset to a soundevent dataset.
+
+    This is particularly useful to export the data into a sharable format.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    dataset_id : int
+        The ID of the dataset to export.
+
+    Returns
+    -------
+    dataset : soundevent.Dataset
+        The exported dataset.
+    """
+    # Get dataset info
+    dataset = await common.get_object(
+        session,
+        models.Dataset,
+        models.Dataset.id == dataset_id,
+    )
+
+    # Get all recordings
+    recordings, _ = await common.get_objects(
+        session,
+        models.Recording,
+        limit=-1,
+        filters=[
+            DatasetFilter(dataset=dataset_id),
+        ],
+    )
+
+    soundevent_recordings: list[data.Recording] = [
+        data.Recording(
+            id=recording.uuid,
+            path=recording.path.relative_to(dataset.audio_dir),
+            duration=recording.duration,
+            channels=recording.channels,
+            samplerate=recording.samplerate,
+            time_expansion=recording.time_expansion,
+            hash=recording.hash,
+            date=recording.date,
+            time=recording.time,
+            latitude=recording.latitude,
+            longitude=recording.longitude,
+            tags=[
+                data.Tag(
+                    key=tag.key,
+                    value=tag.value,
+                )
+                for tag in recording.tags
+            ],
+            features=[
+                data.Feature(
+                    name=feature.feature_name.name,
+                    value=feature.value,
+                )
+                for feature in recording.features
+            ],
+            notes=[
+                data.Note(
+                    uuid=note.uuid,
+                    message=note.message,
+                    is_issue=note.is_issue,
+                    created_at=note.created_at,
+                    created_by=note.created_by.username,
+                )
+                for note in recording.notes
+            ]
+        )
+        for recording in recordings
+    ]
+
+    return data.Dataset(
+        id=dataset.uuid,
+        name=dataset.name,
+        description=dataset.description,
+        recordings=soundevent_recordings,
+    )

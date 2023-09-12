@@ -1,5 +1,7 @@
 """REST API routes for datasets."""
 from fastapi import APIRouter, Depends
+from fastapi.responses import Response
+from soundevent.io.formats import aoef
 
 from whombat import api, schemas
 from whombat.dependencies import Session
@@ -90,3 +92,26 @@ async def delete_dataset(
     deleted = await api.datasets.delete(session, dataset_id)
     await session.commit()
     return deleted
+
+
+@dataset_router.get(
+    "/detail/download/",
+    response_model=aoef.DatasetObject,
+)
+async def download_dataset(
+    session: Session,
+    dataset_id: int,
+):
+    """Export a dataset."""
+    dataset = await api.datasets.export(session, dataset_id)
+    dataset_object = aoef.DatasetObject.from_dataset(dataset)
+    info = dataset_object.info
+    filename = f"{dataset.name}_{info.date_created.isoformat()}.json"
+    return Response(
+        dataset_object.model_dump_json(),
+        media_type="application/json",
+        status_code=200,
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}"
+        },
+    )

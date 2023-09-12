@@ -141,6 +141,27 @@ async def add_recording_note(
     return response
 
 
+@recording_router.patch(
+    "/detail/notes/",
+    response_model=schemas.Recording,
+)
+async def update_recording_note(
+    session: Session,
+    recording_id: int,
+    note_id: int,
+    data: schemas.NoteUpdate,
+):
+    """Update a note on a recording."""
+    response = await api.recordings.update_note(
+        session,
+        recording_id,
+        note_id,
+        data,
+    )
+    await session.commit()
+    return response
+
+
 @recording_router.delete(
     "/detail/notes/",
     response_model=schemas.Recording,

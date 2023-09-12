@@ -116,6 +116,7 @@ class Recording(Base):
         viewonly=True,
         back_populates="recordings",
         default_factory=list,
+        order_by=Note.created_at.desc(),
     )
 
     recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
