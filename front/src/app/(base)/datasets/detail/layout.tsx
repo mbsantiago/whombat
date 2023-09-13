@@ -5,6 +5,7 @@ import {
   useSelectedLayoutSegment,
   useRouter,
 } from "next/navigation";
+import toast from "react-hot-toast";
 import { type ReactNode } from "react";
 import * as icons from "@/components/icons";
 import Loading from "@/app/loading";
@@ -73,18 +74,29 @@ function DatasetHeader({ name }: { name: string }) {
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
+  // Get the dataset_id from the URL
   const params = useSearchParams();
   const dataset_id = params.get("dataset_id");
-  if (!dataset_id) notFound();
 
+  // Fetch the dataset from the API
+  const router = useRouter();
   const dataset = useDataset({
-    dataset_id: parseInt(dataset_id),
+    dataset_id: dataset_id == null ? undefined : parseInt(dataset_id),
+    onDelete: () => {
+      toast.success("Dataset deleted");
+      router.push("/datasets/");
+    }
   });
 
-  if (dataset.query.isLoading) {
+  // If no dataset_id is provided, show a 404 page
+  if (!dataset_id) notFound();
+
+  // If the dataset is loading or not yet fetched, show a loading indicator
+  if (dataset.query.isLoading || dataset.query.data == null) {
     return <Loading />;
   }
 
+  // If the dataset is not found, show a 404 page
   if (dataset.query.isError) {
     return notFound();
   }
@@ -96,6 +108,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         isLoading: dataset.query.isLoading,
         onChange: dataset.update.mutate,
         onDelete: dataset.delete.mutate,
+        downloadLink: dataset.downloadLink,
       }}
     >
       <DatasetHeader name={dataset.query.data.name} />

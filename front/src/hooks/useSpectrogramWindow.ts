@@ -49,14 +49,14 @@ export default function useSpectrogramWindow({
   ]);
 
   // Start loading the image
-  const image = useImage({ url });
+  const { isLoading, isError, image } = useImage({ url });
 
   // Create a callback to draw the image on a canvas. The callback takes in a
   // canvas context and the current viewport (window). It will draw the image
   // on the canvas, adjusting the position and size relative to the viewport.
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, view: SpectrogramWindow) => {
-      if (image.isLoading || image.isError) return null;
+      if (isLoading || isError) return null;
       return drawImage({
         ctx,
         image,
@@ -64,7 +64,7 @@ export default function useSpectrogramWindow({
         bounds: spectrogramWindow,
       });
     },
-    [url, image.isLoading, image.isError, spectrogramWindow],
+    [image, isLoading, isError, spectrogramWindow],
   );
 
   return {

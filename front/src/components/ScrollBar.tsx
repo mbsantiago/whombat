@@ -101,7 +101,7 @@ export default function WindowBar({
       let duration = win.time.max - win.time.min;
       let bandwidth = win.freq.max - win.freq.min;
 
-      const newWindow ={
+      return {
         time: {
           min: centerT - duration / 2 + dT,
           max: centerT + duration / 2 + dT,
@@ -111,18 +111,8 @@ export default function WindowBar({
           max: centerF + bandwidth / 2 + dF,
         },
       };
-
-      console.log({
-        msg: "newWindow",
-        minT: newWindow.time.min,
-        maxT: newWindow.time.max,
-        minF: newWindow.freq.min,
-        maxF: newWindow.freq.max,
-      })
-
-      return newWindow;
     },
-    [bounds.time.min, bounds.time.max, bounds.freq.min, bounds.freq.max],
+    [bounds],
   );
 
   useWindowDrag({
@@ -140,18 +130,11 @@ export default function WindowBar({
   //   scrollState,
   // });
 
-  console.log({
-    minT: window.time.min,
-    maxT: window.time.max,
-    minF: window.freq.min,
-    maxF: window.freq.max,
-  });
-
   return (
     <div draggable={false} ref={dragRef}>
       <div
         draggable={false}
-        className="group select-none relative w-full flex flex-row items-center h-8 outline outline-1 rounded-md outline-stone-400 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700 cursor-pointer"
+        className="group select-none relative w-full flex flex-row items-center h-8 outline outline-1 rounded-md outline-stone-300 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700 cursor-pointer"
         ref={barRef}
         {...rest}
       >

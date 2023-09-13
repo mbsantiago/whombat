@@ -62,7 +62,7 @@ export default function SlideOver({
                       </button>
                     </div>
                   </Transition.Child>
-                  <div className="flex h-full flex-col overflow-y-scroll bg-stone-100 dark:bg-stone-700 py-6 shadow-xl">
+                  <div className="flex h-full flex-col overflow-y-scroll bg-stone-100 dark:bg-stone-800 py-6 shadow-xl">
                     <div className="px-4 sm:px-6">
                       <Dialog.Title className="text-base font-semibold leading-6 text-stone-900 dark:text-stone-400">
                         {title}

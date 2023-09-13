@@ -20,6 +20,7 @@ async def stream_recording_audio(
     session: Session,
     settings: WhombatSettings,
     recording_id: int,
+    speed: float = 1,
     # audio_parameters: schemas.AudioParameters = Depends(
     #     schemas.AudioParameters
     # ),
@@ -41,8 +42,8 @@ async def stream_recording_audio(
     Response
         The audio file.
     """
-    audio = await api.recordings.get_by_id(session, recording_id)
-    full_path = settings.audio_dir / audio.path
+    recording = await api.recordings.get_by_id(session, recording_id)
+    full_path = settings.audio_dir / recording.path
 
     start, end = range.replace("bytes=", "").split("-")
     start = int(start)
@@ -51,6 +52,34 @@ async def stream_recording_audio(
     with open(full_path, "rb") as fp:
         fp.seek(start)
         data = fp.read(end - start)
+
+        # We want to adjust the samplerate of the audio if the user has
+        # requested a different playback speed or if the recording has been
+        # time expanded.
+        if start < 32 and (speed != 1 or recording.time_expansion != 1):
+            # Surgically replace the samplerate in the WAV header.
+            # The samplerate should be stored in bytes 24-34 of the header.
+            # as a little-endian unsigned 32-bit integer.
+            samplerate = int(recording.samplerate * speed)
+
+            # We also need to adjust the number of bytes per second.
+            # This is stored in bytes 28-32 of the header. The
+            # ByteRate is the SampleRate * NumChannels * BitsPerSample / 8.
+            # and the BitsPerSample is stored in bytes 34-36 of the header.
+            bits_per_sample = int.from_bytes(
+                data[34 - start : 36 - start], "little"
+            )
+            bytes_per_second = int(
+                samplerate * recording.channels * bits_per_sample / 8
+            )
+
+            data = (
+                data[:24 - start]
+                + samplerate.to_bytes(4, "little")
+                + bytes_per_second.to_bytes(4, "little")
+                + data[32 - start:]
+            )
+
         filesize = str(full_path.stat().st_size)
         headers = {
             "Content-Range": f"bytes {start}-{end}/{filesize}",
@@ -122,7 +151,5 @@ async def download_recording_audio(
     return StreamingResponse(
         content=buffer,
         media_type="audio/wav",
-        headers={
-            "Content-Disposition": f"attachment; filename={id}.wav"
-        },
+        headers={"Content-Disposition": f"attachment; filename={id}.wav"},
     )

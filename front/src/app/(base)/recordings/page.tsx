@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 import useRecording from "@/hooks/useRecording";
-import useSpectrogramParameters from "@/hooks/useSpectrogramParameters";
+import useActiveUser from "@/hooks/useActiveUser";
 import RecordingContex from "./context";
 import Loading from "@/app/loading";
 import RecordingHeader from "./components/RecordingHeader";
@@ -10,12 +10,10 @@ import RecordingDetail from "./components/RecordingDetail";
 export default function RecordingPage() {
   const { recording_id } = useContext(RecordingContex);
 
+  const { data: user } = useActiveUser();
+
   const recording = useRecording({
     recording_id: recording_id,
-  });
-
-  const specSettings = useSpectrogramParameters({
-    recording: recording.query.data,
   });
 
   if (recording.query.isLoading || recording.query.data == null) {
@@ -23,13 +21,16 @@ export default function RecordingPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-8">
+    <div className="flex flex-col gap-4 px-8 pb-4">
       <RecordingHeader recording={recording.query.data} />
       <RecordingDetail
         recording={recording.query.data}
-        spectrogramSettings={specSettings.parameters}
-        onSpectrogramSettingsChange={specSettings.set}
-        onSpectrogramSettingsClear={specSettings.clear}
+        onNoteCreate={recording.addNote.mutate}
+        onNoteDelete={recording.removeNote.mutate}
+        onNoteUpdate={(note_id, data) =>
+          recording.updateNote.mutate({ note_id, data })
+        }
+        currentUser={user}
       />
     </div>
   );

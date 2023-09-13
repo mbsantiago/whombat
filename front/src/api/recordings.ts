@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosInstance } from "axios";
 import { GetManySchema, Page } from "./common";
 import { TagSchema } from "@/api/tags";
-import { NoteSchema } from "@/api/notes";
+import { NoteSchema, NoteUpdateSchema, type NoteUpdate } from "@/api/notes";
 import { FeatureSchema } from "@/api/features";
 
 const DEFAULT_ENDPOINTS = {
@@ -14,6 +14,7 @@ const DEFAULT_ENDPOINTS = {
   removeTag: "/api/v1/recordings/detail/tags/",
   addNote: "/api/v1/recordings/detail/notes/",
   removeNote: "/api/v1/recordings/detail/notes/",
+  updateNote: "/api/v1/recordings/detail/notes/",
   addFeature: "/api/v1/recordings/detail/features/",
   removeFeature: "/api/v1/recordings/detail/features/",
   updateFeature: "/api/v1/recordings/detail/features/",
@@ -200,7 +201,7 @@ export function registerRecordingAPI(
     recording_id: number;
     tag_id: number;
   }): Promise<Recording> {
-    const data = await instance.post(
+    const { data } = await instance.post(
       endpoints.addTag,
       {},
       {
@@ -217,7 +218,7 @@ export function registerRecordingAPI(
     recording_id: number;
     tag_id: number;
   }): Promise<Recording> {
-    const data = await instance.delete(endpoints.removeTag, {
+    const { data } = await instance.delete(endpoints.removeTag, {
       params: { recording_id, tag_id },
     });
     return RecordingSchema.parse(data);
@@ -232,12 +233,30 @@ export function registerRecordingAPI(
     message: string;
     is_issue: boolean;
   }): Promise<Recording> {
-    const data = await instance.post(
+    const { data } = await instance.post(
       endpoints.addNote,
       { message, is_issue },
       { params: { recording_id } },
     );
     return RecordingSchema.parse(data);
+  }
+
+  async function updateNote({
+    recording_id,
+    note_id,
+    data,
+  }: {
+    recording_id: number;
+    note_id: number;
+    data: NoteUpdate;
+  }): Promise<Recording> {
+    const body = NoteUpdateSchema.parse(data);
+    const { data: res } = await instance.patch(
+      endpoints.updateNote,
+      body,
+      { params: { recording_id, note_id } },
+    );
+    return RecordingSchema.parse(res);
   }
 
   async function removeNote({
@@ -247,7 +266,7 @@ export function registerRecordingAPI(
     recording_id: number;
     note_id: number;
   }): Promise<Recording> {
-    const data = await instance.delete(endpoints.removeNote, {
+    const { data } = await instance.delete(endpoints.removeNote, {
       params: { recording_id, note_id },
     });
     return RecordingSchema.parse(data);
@@ -262,7 +281,7 @@ export function registerRecordingAPI(
     feature_name_id: number;
     value: number;
   }): Promise<Recording> {
-    const data = await instance.post(
+    const { data } = await instance.post(
       endpoints.addFeature,
       { feature_name_id, value },
       { params: { recording_id } },
@@ -277,7 +296,7 @@ export function registerRecordingAPI(
     recording_id: number;
     feature_name_id: number;
   }): Promise<Recording> {
-    const data = await instance.delete(endpoints.removeFeature, {
+    const { data } = await instance.delete(endpoints.removeFeature, {
       params: { recording_id, feature_name_id },
     });
     return RecordingSchema.parse(data);
@@ -292,7 +311,7 @@ export function registerRecordingAPI(
     feature_name_id: number;
     value: number;
   }): Promise<Recording> {
-    const data = await instance.patch(
+    const { data } = await instance.patch(
       endpoints.updateFeature,
       { value },
       { params: { recording_id, feature_name_id } },
@@ -321,6 +340,7 @@ export function registerRecordingAPI(
     removeTag,
     addNote,
     removeNote,
+    updateNote,
     addFeature,
     removeFeature,
     updateFeature,

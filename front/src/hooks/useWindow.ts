@@ -37,7 +37,6 @@ export type CenterWindowFn = ({
   freq?: number;
 }) => void;
 
-
 export type ScaleWindowFn = ({
   time,
   freq,
@@ -59,7 +58,7 @@ export interface WindowState {
 /**
  * Compute the intersection of two intervals
  */
-function intersectIntervals(
+export function intersectIntervals(
   interval1: Interval,
   interval2: Interval,
 ): Interval | null {
@@ -76,7 +75,7 @@ function intersectIntervals(
 /**
  * Compute the intersection of two spectrogram windows
  */
-function intersectWindows(
+export function intersectWindows(
   window1: SpectrogramWindow,
   window2: SpectrogramWindow,
 ): SpectrogramWindow | null {
@@ -97,7 +96,7 @@ function intersectWindows(
  * each axis. The extension can be negative and thus contract the original
  * window.
  */
-function extendWindow(
+export function extendWindow(
   window: SpectrogramWindow,
   expandBy: { time: number; freq: number },
 ): SpectrogramWindow {
@@ -108,7 +107,7 @@ function extendWindow(
   };
 }
 
-function getWindowDimensions(window: SpectrogramWindow): {
+export function getWindowDimensions(window: SpectrogramWindow): {
   time: number;
   freq: number;
 } {
@@ -134,7 +133,6 @@ export function adjustWindowToBounds(
   const centerTime = (window.time.max + window.time.min) / 2;
   const centerFreq = (window.freq.max + window.freq.min) / 2;
 
-
   const adjustedCenterTime = Math.min(
     Math.max(centerTime, bounds.time.min + duration / 2),
     bounds.time.max - duration / 2,
@@ -154,7 +152,7 @@ export function adjustWindowToBounds(
       min: adjustedCenterFreq - bandwidth / 2,
       max: adjustedCenterFreq + bandwidth / 2,
     },
-  }
+  };
 
   return intersectWindows(adjustedWindow, bounds) as SpectrogramWindow;
 }
@@ -233,7 +231,7 @@ export default function useWindow({
         setWindowRaw(adjustWindowToBounds(action, bounds));
       }
     },
-    [bounds.time.min, bounds.time.max, bounds.freq.min, bounds.freq.max],
+    [bounds],
   );
 
   const reset = useCallback(() => {

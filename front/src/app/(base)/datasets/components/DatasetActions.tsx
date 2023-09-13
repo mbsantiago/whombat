@@ -1,3 +1,9 @@
+import { useContext } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import api from "@/app/api";
+import { DatasetContext } from "@/app/(base)/datasets/detail/context";
 import Button from "@/components/Button";
 import Alert from "@/components/Alert";
 import {
@@ -7,7 +13,26 @@ import {
   DownloadIcon,
 } from "@/components/icons";
 
-function DeleteProject({ onDelete }: { onDelete?: () => void }) {
+function DeleteDataset() {
+  const { dataset } = useContext(DatasetContext);
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationFn: api.datasets.delete,
+    onSuccess: () => {
+      router.push(`/datasets/`);
+    },
+  });
+
+  const handleDelete = async () => {
+    if (dataset == null) return;
+    toast.promise(mutation.mutateAsync(dataset.id), {
+      loading: "Deleting dataset... please wait",
+      success: "Dataset deleted",
+      error: "Failed to delete dataset",
+    });
+  };
+
   return (
     <Alert
       title={
@@ -31,22 +56,32 @@ function DeleteProject({ onDelete }: { onDelete?: () => void }) {
             <div className="flex flex-col gap-2">
               <p>
                 This action cannot be undone. This will permanently delete the
-                recordings in the dataset and all associated objects.
-                This includes any annotations, notes, and tags associated with
-                the recordings in this dataset.
+                recordings in the dataset and all associated objects. This
+                includes any annotations, notes, and tags associated with the
+                recordings in this dataset.
               </p>
               <p className="font-semibold dark:text-red-400 text-red-600">
-                It is not recommended to delete a dataset with recordings
-                that have been annotated.
+                It is not recommended to delete a dataset with recordings that
+                have been annotated.
               </p>
               <p>Do you want to proceed?</p>
             </div>
             <div className="flex flex-row justify-end gap-2 mt-4">
-              <Button tabIndex={0} mode="text" variant="danger" onClick={onDelete}>
+              <Button
+                tabIndex={0}
+                mode="text"
+                variant="danger"
+                onClick={handleDelete}
+              >
                 <DeleteIcon className="h-5 w-5 inline-block mr-2" />
                 Delete
               </Button>
-              <Button tabIndex={1} mode="outline" variant="primary" onClick={close}>
+              <Button
+                tabIndex={1}
+                mode="outline"
+                variant="primary"
+                onClick={close}
+              >
                 <CloseIcon className="h-5 w-5 inline-block mr-2" />
                 Cancel
               </Button>
@@ -58,19 +93,21 @@ function DeleteProject({ onDelete }: { onDelete?: () => void }) {
   );
 }
 
-export default function ProjectActions({
-  onDelete,
-  onDownload,
+export default function DatasetActions({
+  downloadLink,
 }: {
-  onDelete?: () => void;
-  onDownload?: () => void;
+  downloadLink?: string;
 }) {
   return (
     <div className="flex flex-row gap-2 justify-center">
-      <Button mode="text" variant="primary" onClick={onDownload}>
-        <DownloadIcon className="h-5 w-5 inline-block mr-2" /> Download
-      </Button>
-      <DeleteProject onDelete={onDelete} />
+      {downloadLink != null ? (
+        <a href={downloadLink} target="_blank" download={`dataset.json`}>
+          <Button mode="text" variant="primary">
+            <DownloadIcon className="h-5 w-5 inline-block mr-2" /> Download
+          </Button>
+        </a>
+      ) : null}
+      <DeleteDataset />
     </div>
   );
 }

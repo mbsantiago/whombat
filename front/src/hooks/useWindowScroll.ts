@@ -1,4 +1,4 @@
-import { useUpdateEffect } from "react-use";
+import { useUpdateEffect, useKeyPress } from "react-use";
 import { type ScrollState } from "@/hooks/useMouseWheel";
 
 export default function useWindowScroll({
@@ -13,12 +13,15 @@ export default function useWindowScroll({
   active?: boolean;
   scrollState: ScrollState;
 }) {
+  const [shift] = useKeyPress("Shift");
+  const [ctrl] = useKeyPress("Control");
+
   const { deltaY, eventNum } = scrollState;
   // Update window when scrolling
   useUpdateEffect(() => {
-    if (active) {
+    if (active && shift && !ctrl && deltaY !== 0) {
       let dT = deltaY / 2000;
       shiftWindow?.({ time: dT, freq: 0 }, true);
     }
-  }, [deltaY, eventNum, active]);
+  }, [deltaY, eventNum, active, shift, ctrl, shiftWindow]);
 }

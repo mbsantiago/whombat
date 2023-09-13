@@ -5,6 +5,7 @@
  * Use the API to interact with the Whombat backend.
  */
 import axios from "axios";
+import { registerNotesAPI } from "./notes";
 import { registerAuthAPI } from "./auth";
 import { registerTagAPI } from "./tags";
 import { registerUserAPI } from "./user";
@@ -14,6 +15,7 @@ import { registerAnnotationProjectAPI } from "./annotation_projects";
 import { registerClipApi } from "./clips";
 import { registerTasksApi } from "./tasks";
 import { registerSpectrogramApi } from "./spectrograms";
+import { registerAudioApi } from "./audio";
 
 type APIConfig = {
   baseURL: string;
@@ -34,11 +36,13 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     auth: registerAuthAPI(instance),
     tags: registerTagAPI(instance),
     user: registerUserAPI(instance),
-    datasets: registerDatasetAPI(instance),
+    datasets: registerDatasetAPI({ instance, baseUrl: config.baseURL }),
     recordings: registerRecordingAPI(instance),
     annotation_projects: registerAnnotationProjectAPI(instance),
     tasks: registerTasksApi(instance),
     clips: registerClipApi(instance),
     spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
+    notes: registerNotesAPI(instance),
+    audio: registerAudioApi({ baseUrl: config.baseURL }),
   };
 }

@@ -1,24 +1,25 @@
 import RecordingSpectrogram from "./RecordingSpectrogram";
+import RecordingNotes from "./RecordingNotes";
 import RecordingActions from "./RecordingActions";
 import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingMap from "./RecordingMap";
 import RecordingTagBar from "./RecordingTagBar";
+import { type User } from "@/api/user";
+import { type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type Recording } from "@/api/recordings";
-import { type SpectrogramParameters } from "@/api/spectrograms";
 
 export default function RecordingDetail({
-  spectrogramSettings,
-  onSpectrogramSettingsChange,
-  onSpectrogramSettingsClear,
   recording,
+  currentUser,
+  onNoteCreate,
+  onNoteUpdate,
+  onNoteDelete,
 }: {
-  spectrogramSettings: SpectrogramParameters;
-  onSpectrogramSettingsChange: (
-    key: keyof SpectrogramParameters,
-    value: any,
-  ) => void;
-  onSpectrogramSettingsClear: (key: keyof SpectrogramParameters) => void;
   recording: Recording;
+  currentUser?: User;
+  onNoteCreate?: (note: NoteCreate) => void;
+  onNoteUpdate?: (note_id: number, data: NoteUpdate) => void;
+  onNoteDelete?: (note_id: number) => void;
 }) {
   return (
     <div className="w-100 flex flex-row flex-wrap lg:flex-nowrap gap-8 justify-between">
@@ -29,10 +30,16 @@ export default function RecordingDetail({
           </div>
           <div className="col-span-2">
             <RecordingSpectrogram
-              settings={spectrogramSettings}
-              onSettingsChange={onSpectrogramSettingsChange}
-              onSettingsClear={onSpectrogramSettingsClear}
               recording={recording}
+            />
+          </div>
+          <div className="col-span-2">
+            <RecordingNotes
+              notes={recording.notes}
+              onCreate={onNoteCreate}
+              onUpdate={onNoteUpdate}
+              onDelete={onNoteDelete}
+              currentUser={currentUser}
             />
           </div>
         </div>

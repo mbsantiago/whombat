@@ -1,8 +1,15 @@
 import { type ComponentProps } from "react";
 import Image from "next/image";
 import {
-  ChartBarSquareIcon,
+  ArrowPathRoundedSquareIcon,
+  BoltIcon,
   SpeakerWaveIcon,
+  PlayIcon,
+  PauseIcon,
+  LinkIcon,
+  ArrowLeftOnRectangleIcon,
+  ChatBubbleBottomCenterTextIcon,
+  ChartBarSquareIcon,
   AdjustmentsVerticalIcon,
   DocumentIcon,
   DocumentPlusIcon,
@@ -116,4 +123,12 @@ export {
   AdjustmentsVerticalIcon as SpectrogramSettingsIcon,
   SpeakerWaveIcon as AudioIcon,
   ChartBarSquareIcon as SpectrogramIcon,
+  ChatBubbleBottomCenterTextIcon as NoteIcon,
+  ArrowLeftOnRectangleIcon as GoToIcon,
+  LinkIcon,
+  PlayIcon,
+  PauseIcon,
+  SpeakerWaveIcon as VolumeIcon,
+  BoltIcon as SpeedIcon,
+  ArrowPathRoundedSquareIcon as LoopIcon,
 };

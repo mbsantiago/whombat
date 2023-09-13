@@ -3,7 +3,7 @@ import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Recording } from "@/api/recordings";
 
 // Sizes of the segments
-const DURATIONS = [0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
+const DURATIONS = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
 const OVERLAP = 0.4;
 
 export default function useRecordingSegments({
@@ -27,7 +27,7 @@ export default function useRecordingSegments({
     const duration = getCoveringSegmentDuration(window);
     const segments = getSegments(bounds, duration, OVERLAP);
     return segments;
-  }, [bounds]);
+  }, [bounds, window]);
 
   // Select the segment that best covers the window
   const indexSelected = useMemo(
@@ -42,7 +42,7 @@ export default function useRecordingSegments({
     return {
       prev,
       next,
-    }
+    };
   }, [segments, indexSelected]);
 
   // Return the selected segment and its neighbors
@@ -72,8 +72,20 @@ function getSegments(
   duration: number,
   overlap: number,
 ): SpectrogramWindow[] {
-  const hop = duration * (1 - overlap);
   const fullDuration = window.time.max - window.time.min;
+
+  // If the window is smaller than the segment duration, return
+  // the whole window
+  if (fullDuration <= duration) {
+    return [
+      {
+        time: window.time,
+        freq: window.freq,
+      }
+    ]
+  }
+
+  const hop = duration * (1 - overlap);
   const numSegments = Math.ceil((fullDuration - hop) / hop);
   return Array(numSegments)
     .fill(0)

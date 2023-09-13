@@ -1,4 +1,3 @@
-import { type ImageStatus } from "@/hooks/useImage";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 const FONT_SIZE = 30;
@@ -140,7 +139,7 @@ export function drawImageOnCanvas(
 
 export interface DrawImageProps {
   ctx: CanvasRenderingContext2D;
-  image: ImageStatus;
+  image: HTMLImageElement;
   window: SpectrogramWindow;
   bounds: SpectrogramWindow;
 }
@@ -152,16 +151,5 @@ export default function drawImage({
   bounds,
 }: DrawImageProps) {
   ctx.canvas.setAttribute("class", "");
-
-  if (image.isLoading) {
-    drawLoadingState(ctx);
-    return;
-  }
-
-  if (image.isError && image.error != null) {
-    drawErrorState(ctx, image.error);
-    return;
-  }
-
-  drawImageOnCanvas(ctx, image.image, window, bounds);
+  drawImageOnCanvas(ctx, image, window, bounds);
 }

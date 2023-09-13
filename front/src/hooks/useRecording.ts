@@ -3,7 +3,7 @@ import api from "@/app/api";
 
 import { type RecordingUpdate } from "@/api/recordings";
 import { type Tag } from "@/api/tags";
-import { type Note, type NoteCreate } from "@/api/notes";
+import { type Note, type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type Feature } from "@/api/features";
 
 export default function useRecording({
@@ -13,7 +13,6 @@ export default function useRecording({
   onAddTag,
   onAddNote,
   onRemoveTag,
-  onRemoveNote,
   onAddFeature,
   onRemoveFeature,
   onUpdateFeature,
@@ -24,7 +23,6 @@ export default function useRecording({
   onAddTag?: (tag: Tag) => void;
   onAddNote?: (note: Note) => void;
   onRemoveTag?: (tag: Tag) => void;
-  onRemoveNote?: (note: Note) => void;
   onAddFeature?: (feature: Feature) => void;
   onRemoveFeature?: (feature: Feature) => void;
   onUpdateFeature?: (feature: Feature) => void;
@@ -40,7 +38,6 @@ export default function useRecording({
       return await api.recordings.update(recording_id, data);
     },
     onSuccess: (data) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onUpdate?.(data);
     },
@@ -51,7 +48,6 @@ export default function useRecording({
       return await api.recordings.addTag({ recording_id, tag_id: tag.id });
     },
     onSuccess: (data, tag) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onAddTag?.(tag);
     },
@@ -62,7 +58,6 @@ export default function useRecording({
       return await api.recordings.removeTag({ recording_id, tag_id: tag.id });
     },
     onSuccess: (data, tag) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onRemoveTag?.(tag);
     },
@@ -73,9 +68,7 @@ export default function useRecording({
       return await api.recordings.addNote({ recording_id, ...note });
     },
     onSuccess: (data, note) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
-
       const createdNote = data.notes.find((n) => n.message === note.message);
       if (createdNote != null) {
         onAddNote?.(createdNote);
@@ -83,17 +76,27 @@ export default function useRecording({
     },
   });
 
+  const updateNote = useMutation({
+    mutationFn: async ({ note_id, data }: {
+      note_id: number;
+      data: NoteUpdate;
+    }) => {
+      return await api.recordings.updateNote({recording_id, note_id, data});
+    },
+    onSuccess: (data) => {
+      client.setQueryData(["recording", recording_id], data);
+    },
+  });
+
   const removeNote = useMutation({
-    mutationFn: async (note: Note) => {
+    mutationFn: async (note_id: number) => {
       return await api.recordings.removeNote({
         recording_id,
-        note_id: note.id,
+        note_id,
       });
     },
-    onSuccess: (data, note) => {
-      // Update the local cache
-      client.setQueryData(["recording", recording_id], data);
-      onRemoveNote?.(note);
+    onSuccess: (data) => {
+      return client.setQueryData(["recording", recording_id], data);
     },
   });
 
@@ -106,7 +109,6 @@ export default function useRecording({
       });
     },
     onSuccess: (data, feature) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onAddFeature?.(feature);
     },
@@ -120,7 +122,6 @@ export default function useRecording({
       });
     },
     onSuccess: (data, feature) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onRemoveFeature?.(feature);
     },
@@ -135,7 +136,6 @@ export default function useRecording({
       });
     },
     onSuccess: (data, feature) => {
-      // Update the local cache
       client.setQueryData(["recording", recording_id], data);
       onUpdateFeature?.(feature);
     },
@@ -160,6 +160,7 @@ export default function useRecording({
     addNote,
     removeNote,
     addFeature,
+    updateNote,
     removeFeature,
     updateFeature,
     delete: deleteRecording,

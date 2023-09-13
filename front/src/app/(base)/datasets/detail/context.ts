@@ -6,6 +6,7 @@ type DatasetContextType = {
   isLoading: boolean;
   onChange?: (dataset: DatasetUpdate) => void;
   onDelete?: () => void;
+  downloadLink?: string;
 };
 
 export const DatasetContext = createContext<DatasetContextType>({

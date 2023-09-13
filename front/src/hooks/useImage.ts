@@ -60,7 +60,7 @@ export default function useImage({
     setError("Took too long to load");
     setLoading(false);
     onTimeout?.();
-  }, [url, onTimeout]);
+  }, [onTimeout]);
 
   const [_, cancel] = useTimeoutFn(handleOnTimeout, timeout);
 
@@ -70,7 +70,7 @@ export default function useImage({
     setError(null);
     cancel();
     onLoad?.();
-  }, [url, cancel, onLoad]);
+  }, [cancel, onLoad]);
   useEvent("load", handleOnLoad, ref.current);
 
   // Handle error events
@@ -79,7 +79,7 @@ export default function useImage({
     setError("Unknown error");
     cancel();
     onError?.();
-  }, [url, cancel, onError]);
+  }, [cancel, onError]);
   useEvent("error", handleOnError, ref.current);
 
   // Cancel loading on unmount

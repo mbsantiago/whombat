@@ -1,10 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { type User } from "@/api/user";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { HorizontalDivider } from "@/components/Divider";
 import classnames from "classnames";
-import useStore from "@/store";
+import { UserContext } from "../context";
 
 function Brand() {
   return (
@@ -32,7 +32,7 @@ function UserMenu({ user }: { user?: User }) {
   ];
 
   return (
-    <Menu as="div" className="relative z-50 inline-block text-left">
+    <Menu as="div" className="relative z-10 inline-block text-left">
       <Menu.Button className="inline-flex w-full justify-center rounded-md">
         User
       </Menu.Button>
@@ -105,7 +105,7 @@ function Navigation() {
 }
 
 function NavBar() {
-  const user = useStore((state) => state.user);
+  const { user } = useContext(UserContext);
   if (!user) {
     return null;
   }

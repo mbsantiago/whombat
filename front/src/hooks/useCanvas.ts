@@ -29,13 +29,14 @@ export default function useCanvas({
     // If the canvas is not mounted yet, do nothing
     if (canvas == null) return;
 
-    // Sync the canvas size attributes with the element size
-    // This is particularly useful if the canvas is styled with CSS
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-
     // Get the drawing context
     const context = canvas.getContext("2d");
+
+    // Sync the canvas size attributes with the parent element size
+    // This is particularly useful if the canvas is meant to fill the parent
+    // element
+    canvas.width = canvas.parentElement?.offsetWidth ?? canvas.offsetWidth;
+    canvas.height = canvas.parentElement?.offsetHeight ?? canvas.offsetHeight;
 
     // If the context is not supported, display an error
     if (context == null) {
@@ -51,10 +52,13 @@ export default function useCanvas({
   const handleOnResize = useCallback(() => {
     const { current: canvas } = ref;
     if (canvas != null && ctx != null) {
+      canvas.width = canvas.parentElement?.offsetWidth ?? canvas.offsetWidth;
+      canvas.height = canvas.parentElement?.offsetHeight ?? canvas.offsetHeight;
+
       draw(ctx);
       onResize?.(ctx);
     }
-  }, [ctx, draw, ref, onResize]);
+  }, [ctx, draw, onResize]);
 
   // Resize canvas on window resize
   useEvent("resize", handleOnResize, ref.current);

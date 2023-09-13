@@ -293,17 +293,17 @@ function FilteringSettings({
     filterType === ""
       ? "No frequency filtering is being applied. Select a filter type to enable filtering."
       : filterType === "low"
-      ? "Only frequencies below the selected value will be kept."
+      ? "Click again to disable. Only frequencies below the selected value will be kept."
       : filterType === "high"
-      ? "Only frequencies above the selected value will be kept."
-      : "Only frequencies between the selected values will be kept.";
+      ? "Click again to disable. Only frequencies above the selected value will be kept."
+      : "Click again to disable. Only frequencies between the selected values will be kept.";
 
   return (
     <SettingsSection>
       <InputGroup name="lowFreq" label="Filtering" help={helpText}>
         <ToggleGroup.Root
           type="single"
-          className="divide-x divide-stone-300 dark:divide-stone-700"
+          className="divide-x divide-stone-300 dark:divide-stone-600"
           value={filterType}
           onValueChange={handleChange}
           aria-label="Filter type"
@@ -316,7 +316,7 @@ function FilteringSettings({
                 {
                   "rounded-s": index === 0,
                   "rounded-e": index === filterTypes.length - 1,
-                  "bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 hover:dark:bg-stone-900":
+                  "bg-stone-200 dark:bg-stone-700 hover:bg-emerald-500":
                     filterType != value,
                   "bg-emerald-700 text-emerald-300 dark:bg-emerald-300 dark:text-emerald-700 dark:hover:bg-emerald-400 hover:bg-emerald-800":
                     filterType === value,

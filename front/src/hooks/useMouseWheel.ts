@@ -24,7 +24,7 @@ export default function useMouseWheel(
 
   useEffect(() => {
     const updateScroll = (e: WheelEvent) => {
-      if (e.shiftKey) {
+      if (e.shiftKey || e.ctrlKey || e.altKey) {
         setDeltaY(e.deltaY);
         setDeltaX(e.deltaX);
         setEventNum((prev) => (prev + 1) % 100);

@@ -11,9 +11,11 @@ import useRecordingNotes from "@/hooks/useRecordingNotes";
 export default function DatasetDetail({
   dataset,
   onChange,
+  downloadLink,
 }: {
   dataset: Dataset;
   onChange?: (data: DatasetUpdate) => void;
+  downloadLink?: string;
 }) {
   const tags = useRecordingTags({
     pageSize: -1,
@@ -34,7 +36,7 @@ export default function DatasetDetail({
       <div className="grow">
         <div className="grid grid-cols-2 gap-8">
           <div className="col-span-2">
-            <DatasetOverview dataset={dataset} />
+            <DatasetOverview dataset={dataset} notes={notes.items} />
           </div>
           <div className="col-span-2 xl:col-span-1">
             <DatasetTagsSummary
@@ -51,7 +53,7 @@ export default function DatasetDetail({
         </div>
       </div>
       <div className="flex flex-col flex-none max-w-sm gap-4">
-        <DatasetActions />
+        <DatasetActions downloadLink={downloadLink} />
         <div className="sticky top-8">
           <DatasetUpdateForm dataset={dataset} onChange={onChange} />
         </div>

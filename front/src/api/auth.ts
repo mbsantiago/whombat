@@ -1,19 +1,31 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-const LoginSchema = z.object({
+import { UserSchema, type User } from "@/api/user";
+
+export const LoginSchema = z.object({
   username: z.string(),
   password: z.string(),
 });
 
-type Login = z.infer<typeof LoginSchema>;
+export type Login = z.infer<typeof LoginSchema>;
+
+export const UserCreateSchema = z.object({
+  email: z.string().email(),
+  username: z.string(),
+  password: z.string(),
+  name: z.string(),
+});
+
+export type UserCreate = z.infer<typeof UserCreateSchema>;
 
 const DEFAULT_ENDPOINTS = {
   login: "/api/v1/auth/login",
   logout: "/api/v1/auth/logout",
+  register: "/api/v1/auth/register",
 };
 
-function registerAuthAPI(
+export function registerAuthAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
@@ -29,7 +41,11 @@ function registerAuthAPI(
     return await instance.post(endpoints.logout);
   }
 
-  return { login, logout };
-}
+  async function register(data: UserCreate) {
+    let body = UserCreateSchema.parse(data);
+    let response = await instance.post<User>(endpoints.register, body);
+    return UserSchema.parse(response.data);
+  }
 
-export { registerAuthAPI };
+  return { login, logout, register };
+}

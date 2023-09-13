@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AxiosInstance } from "axios";
 
 import { SimpleUserSchema } from "@/api/user";
 
@@ -34,3 +35,24 @@ export const NoteFilterSchema = z.object({
 });
 
 export type NoteFilter = z.infer<typeof NoteFilterSchema>;
+
+const DEFAULT_ENDPOINTS = {
+  update: "/api/v1/notes/detail/",
+};
+
+export function registerNotesAPI(
+  instance: AxiosInstance,
+  endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
+) {
+  async function update(note_id: number, data: NoteUpdate) {
+    let body = NoteUpdateSchema.parse(data);
+    let response = await instance.patch<Note>(`${endpoints.update}`, body, {
+      params: { note_id },
+    });
+    return NoteSchema.parse(response.data);
+  }
+
+  return {
+    update,
+  };
+}

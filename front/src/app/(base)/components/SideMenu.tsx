@@ -1,4 +1,8 @@
 import { usePathname } from "next/navigation";
+import { useContext } from "react";
+import classnames from "classnames";
+import api from "@/app/api";
+import { UserContext } from "@/app/(base)/context";
 import Link from "next/link";
 import {
   WhombatIcon,
@@ -11,7 +15,6 @@ import {
   SettingsIcon,
   LogOutIcon,
 } from "@/components/icons";
-import classnames from "classnames";
 import { HorizontalDivider } from "@/components/Divider";
 import Tooltip from "@/components/Tooltip";
 
@@ -94,6 +97,8 @@ function MainNavigation({ pathname }: { pathname?: string }) {
 }
 
 function SecondaryNavigation({ pathname }: { pathname?: string }) {
+  const { logout } = useContext(UserContext);
+
   return (
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <HorizontalDivider />
@@ -115,7 +120,7 @@ function SecondaryNavigation({ pathname }: { pathname?: string }) {
       <HorizontalDivider />
       <li className="px-3">
         <SideMenuButton tooltip={"Log Out"}>
-          <LogOutIcon className="w-6 h-6" />
+          <LogOutIcon onClick={() => logout?.()} className="w-6 h-6" />
         </SideMenuButton>
       </li>
     </ul>

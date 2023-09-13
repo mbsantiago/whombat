@@ -253,7 +253,6 @@ function useRecordingTable({
             <TableTags
               tags={tags}
               onAdd={(tag) => {
-                console.log("add tag", tag);
                 table.options.meta?.addTag(row.index, tag);
               }}
               onRemove={(tag) => table.options.meta?.removeTag(row.index, tag)}
@@ -313,7 +312,6 @@ function useRecordingTable({
         removeTag?.(recording_id, tag);
       },
     },
-    debugTable: true,
   });
 
   return table;

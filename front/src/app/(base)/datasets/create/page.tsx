@@ -3,14 +3,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 import Hero from "@/components/Hero";
-import {
-  Submit,
-  Input,
-  InputGroup,
-  TextArea,
-} from "@/components/inputs";
+import { Submit, Input, InputGroup, TextArea } from "@/components/inputs";
 import api from "@/app/api";
 import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
 
@@ -20,7 +16,7 @@ export default function CreateDataset() {
   const mutation = useMutation({
     mutationFn: api.datasets.create,
     onSuccess: (data) => {
-      router.push(`/datasets/${data.uuid}/`);
+      router.push(`/datasets/detail/?dataset_id=${data.id}/`);
     },
   });
 
@@ -33,7 +29,14 @@ export default function CreateDataset() {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: DatasetCreate) => mutation.mutate(data);
+  const onSubmit = async (data: DatasetCreate) => {
+    toast.promise(mutation.mutateAsync(data), {
+      loading:
+        "Creating dataset. Please wait while the folder is scanned for recordings.",
+      success: "Dataset created successfully.",
+      error: "Failed to create dataset.",
+    });
+  };
 
   return (
     <>
@@ -65,13 +68,7 @@ export default function CreateDataset() {
             <Input {...register("audio_dir")} />
           </InputGroup>
           <div className="mb-3">
-            <Submit
-              loading={mutation.isLoading}
-              success={mutation.isSuccess}
-              error={mutation.isError}
-            >
-              Create Dataset
-            </Submit>
+            <Submit>Create Dataset</Submit>
           </div>
         </form>
       </div>

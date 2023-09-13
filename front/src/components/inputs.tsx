@@ -14,7 +14,8 @@ type HasErrors = {
 
 const BORDER_STYLE = "rounded border border-stone-300 dark:border-stone-600";
 const BACKGROUND_STYLE = "bg-stone-200 dark:bg-stone-700";
-const TEXT_STYLE = "leading-tight text-stone-700 dark:text-stone-300";
+const TEXT_STYLE =
+  "leading-tight text-stone-700 dark:text-stone-300 placeholder-stone-500";
 const FOCUS_STYLE = "focus:ring-4 focus:outline-none focus:ring-emerald-500/50";
 const COMMON_STYLE = "w-full p-2.5";
 const INVALID_STYLE = "invalid:focus:ring-red-500/50 invalid:border-red-500";
@@ -156,22 +157,10 @@ export function InputGroup({
 
 export function Submit({
   children,
-  loading = false,
-  success = false,
-  error = false,
-  loadingMessage = "Please wait. This could take a while...",
-  errorMessage = "Something went wrong. Please try again.",
-  successMessage = "Success! Redirecting...",
   className,
   ...props
 }: {
   children: ReactNode;
-  loading?: boolean;
-  success?: boolean;
-  error?: boolean;
-  loadingMessage?: string;
-  errorMessage?: string;
-  successMessage?: string;
 } & Omit<InputHTMLAttributes<HTMLButtonElement>, "type">) {
   return (
     <>
@@ -185,18 +174,12 @@ export function Submit({
           FOCUS_STYLE,
           DISABLED_STYLE,
           className,
+          "relative",
         )}
         {...props}
       >
-        {loading ? <Spinner variant="success" /> : children}
+        {children}
       </button>
-      {loading ? (
-        <InputInfo message={loadingMessage} />
-      ) : error ? (
-        <InputError message={errorMessage} />
-      ) : success ? (
-        <InputSuccess message={successMessage} />
-      ) : null}
     </>
   );
 }

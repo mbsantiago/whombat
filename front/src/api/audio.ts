@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const DEFAULT_ENDPOINTS = {
-  get: "/api/v1/audio/",
+  download: "/api/v1/audio/download/",
+  stream: "/api/v1/audio/stream/",
 };
 
 export const IntervalSchema = z
@@ -59,7 +60,18 @@ export function registerAudioApi({
   endpoints?: typeof DEFAULT_ENDPOINTS;
   baseUrl?: string;
 }) {
-  function getUrl({
+  function getStreamUrl({
+    recording_id,
+    speed = 1,
+  }: {
+    recording_id: number;
+    speed?: number;
+  }) {
+    // Get url
+    return `${baseUrl}${endpoints.stream}?recording_id=${recording_id}&speed=${speed}`;
+  }
+
+  function getDownloadUrl({
     recording_id,
     segment,
     parameters = DEFAULT_AUDIO_PARAMETERS,
@@ -87,10 +99,11 @@ export function registerAudioApi({
     );
 
     // Get url
-    return `${baseUrl}${endpoints.get}?${params}`;
+    return `${baseUrl}${endpoints.download}?${params}`;
   }
 
   return {
-    getUrl,
+    getDownloadUrl,
+    getStreamUrl,
   };
 }

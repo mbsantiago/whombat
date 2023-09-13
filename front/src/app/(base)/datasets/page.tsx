@@ -4,11 +4,30 @@ import Hero from "@/components/Hero";
 import useDatasets from "@/hooks/useDatasets";
 import Dataset from "@/components/Dataset";
 import Button from "@/components/Button";
-import { DatasetIcon, AddIcon } from "@/components/icons";
+import { DatasetIcon, AddIcon, WarningIcon } from "@/components/icons";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
+
+function NoDatasets() {
+  return (
+    <div className="p-8 w-full">
+      <div className="w-full border border-dashed rounded-md border-stone-500 p-4 flex flex-col items-center justify-center text-stone-500">
+        <WarningIcon className="h-8 w-8 text-stone-500" />
+        <p>No datasets found.</p>
+        <p>
+          To create a dataset, click on the
+          <span className="text-emerald-500">
+            <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
+            Create{" "}
+          </span>{" "}
+          button above.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function Datasets() {
   const { items, pagination, query, filter } = useDatasets();
@@ -40,6 +59,7 @@ export default function Datasets() {
           <Loading />
         ) : (
           <>
+            {items.length === 0 && <NoDatasets />}
             <StackedList
               items={items.map((item) => (
                 <Dataset key={item.id} {...item} />

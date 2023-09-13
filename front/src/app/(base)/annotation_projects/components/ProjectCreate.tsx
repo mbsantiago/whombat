@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/app/api";
@@ -29,12 +30,19 @@ export default function CreateProject({
     },
   });
 
+  const onSubmit = async (data: AnnotationProjectCreate) => {
+    toast.promise(create.mutateAsync(data), {
+      loading:
+        "Creating project. Please wait while the folder is scanned for recordings.",
+      success: "Project created!",
+      error: "Something went wrong. Please try again.",
+    });
+  };
+
   return (
     <form
       className="w-full"
-      onSubmit={form.handleSubmit((data: AnnotationProjectCreate) =>
-        create.mutate(data),
-      )}
+      onSubmit={form.handleSubmit(onSubmit)}
     >
       <InputGroup
         label="Name"
@@ -69,12 +77,6 @@ export default function CreateProject({
         />
       </InputGroup>
       <Submit
-        loading={create.isLoading}
-        success={create.isSuccess}
-        error={create.isError}
-        loadingMessage="Creating project..."
-        errorMessage="Something went wrong. Please try again."
-        successMessage="Success! Please continue configuring your project."
         disabled={create.isSuccess}
       >
         Create Project

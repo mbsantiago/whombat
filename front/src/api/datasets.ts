@@ -8,13 +8,16 @@ const DEFAULT_ENDPOINTS = {
   get: "/api/v1/datasets/detail/",
   update: "/api/v1/datasets/detail/",
   delete: "/api/v1/datasets/detail/",
+  download: "/api/v1/datasets/detail/download/",
 };
 
-const DatasetFilterSchema = z.object({
+export const DatasetFilterSchema = z.object({
   search: z.string().optional(),
 });
 
-const DatasetSchema = z.object({
+export type DatasetFilter = z.infer<typeof DatasetFilterSchema>;
+
+export const DatasetSchema = z.object({
   id: z.number().int(),
   uuid: z.string().uuid(),
   name: z.string(),
@@ -24,39 +27,42 @@ const DatasetSchema = z.object({
   created_at: z.coerce.date(),
 });
 
-const DatasetCreateSchema = z.object({
+export type Dataset = z.infer<typeof DatasetSchema>;
+
+export const DatasetCreateSchema = z.object({
   uuid: z.string().uuid().optional(),
   name: z.string().min(1),
   audio_dir: z.string(),
   description: z.string().optional(),
 });
 
-const DatasetUpdateSchema = z.object({
+export type DatasetCreate = z.infer<typeof DatasetCreateSchema>;
+
+export const DatasetUpdateSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
 });
 
-type DatasetUpdate = z.infer<typeof DatasetUpdateSchema>;
+export type DatasetUpdate = z.infer<typeof DatasetUpdateSchema>;
 
-type DatasetFilter = z.infer<typeof DatasetFilterSchema>;
+export const DatasetPageSchema = Page(DatasetSchema);
 
-type DatasetCreate = z.infer<typeof DatasetCreateSchema>;
+export type DatasetPage = z.infer<typeof DatasetPageSchema>;
 
-type Dataset = z.infer<typeof DatasetSchema>;
-
-const DatasetPageSchema = Page(DatasetSchema);
-
-type DatasetPage = z.infer<typeof DatasetPageSchema>;
-
-const GetDatasetsQuerySchema = z.intersection(
+export const GetDatasetsQuerySchema = z.intersection(
   GetManySchema,
   DatasetFilterSchema,
 );
 
-function registerDatasetAPI(
-  instance: AxiosInstance,
-  endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
-) {
+export function registerDatasetAPI({
+  instance,
+  endpoints = DEFAULT_ENDPOINTS,
+  baseUrl = "",
+}: {
+  instance: AxiosInstance;
+  endpoints?: typeof DEFAULT_ENDPOINTS;
+  baseUrl?: string;
+}) {
   async function getMany(
     query: z.infer<typeof GetDatasetsQuerySchema> = {},
   ): Promise<DatasetPage> {
@@ -96,25 +102,16 @@ function registerDatasetAPI(
     return DatasetSchema.parse(data);
   }
 
+  function getDownloadUrl(dataset_id: number): string {
+    return `${baseUrl}${endpoints.download}?dataset_id=${dataset_id}`;
+  }
+
   return {
     getMany,
     create,
     get,
     update,
     delete: delete_,
+    getDownloadUrl,
   };
 }
-
-export {
-  registerDatasetAPI,
-  DatasetSchema,
-  DatasetPageSchema,
-  DatasetCreateSchema,
-  DatasetUpdateSchema,
-  GetDatasetsQuerySchema,
-  type Dataset,
-  type DatasetPage,
-  type DatasetCreate,
-  type DatasetFilter,
-  type DatasetUpdate,
-};

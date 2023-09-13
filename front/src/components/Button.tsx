@@ -67,7 +67,7 @@ export default function Button({
       className={classnames(
         CLASS_NAMES[mode][variant],
         CLASS_NAMES[mode]["common"],
-        "rounded-lg p-2.5 text-center text-sm font-medium focus:outline-none focus:ring-4",
+        "flex flex-row items-center rounded-lg p-2.5 text-center text-sm font-medium focus:outline-none focus:ring-4",
         className,
       )}
       {...props}

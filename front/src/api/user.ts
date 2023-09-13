@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-const UserSchema = z.object({
+export const UserSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
   email: z.string().nullable(),
@@ -10,19 +10,37 @@ const UserSchema = z.object({
   is_superuser: z.boolean(),
 });
 
-const SimpleUserSchema = z.object({
+export type User = z.infer<typeof UserSchema>;
+
+export const SimpleUserSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
   name: z.string().nullable(),
 });
 
-type User = z.infer<typeof UserSchema>;
+export const UserUpdateSchema = z.object({
+  username: z.string().optional(),
+  email: z.string().optional(),
+  name: z.string().optional(),
+});
+
+export type UserUpdate = z.infer<typeof UserUpdateSchema>;
+
+export const PasswordUpdateSchema = z.object({
+  old_password: z.string(),
+  new_password: z.string(),
+});
+
+export type PasswordUpdate = z.infer<typeof PasswordUpdateSchema>;
+
+export type SimpleUser = z.infer<typeof SimpleUserSchema>;
 
 const DEFAULT_ENDPOINTS = {
   me: "/api/v1/users/me",
+  update: "/api/v1/users/me",
 };
 
-function registerUserAPI(
+export function registerUserAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
@@ -31,7 +49,14 @@ function registerUserAPI(
     return UserSchema.parse(response.data);
   }
 
-  return { me: getActiveUser };
-}
+  async function updateActiveUser(data: UserUpdate) {
+    let body = UserUpdateSchema.parse(data);
+    let response = await instance.patch<User>(endpoints.update, body);
+    return UserSchema.parse(response.data);
+  }
 
-export { registerUserAPI, type User, UserSchema, SimpleUserSchema };
+  return {
+    me: getActiveUser,
+    update: updateActiveUser,
+  };
+}
