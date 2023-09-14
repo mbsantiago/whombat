@@ -35,7 +35,7 @@ function getSegments(
       const start = bounds.time.min + index * hop;
       return {
         min: start,
-        max: start + duration,
+        max: Math.min(start + duration, bounds.time.max),
       };
     });
 }

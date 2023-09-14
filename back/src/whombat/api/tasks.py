@@ -535,10 +535,10 @@ async def get_notes(
     Returns
     -------
     schemas.TaskNoteList
-        List of notes for the task.
+        List of task notes.
 
     count : int
-        Total number of notes for the task.
+        Total number of notes that match the filters.
     """
     notes, count = await common.get_objects(
         session,
@@ -584,10 +584,10 @@ async def get_tags(
     Returns
     -------
     schemas.TaskTagList
-        List of tags for the task.
+        List of task tags.
 
     count : int
-        Total number of tags for the task.
+        Total number of tags that match the filters.
     """
     tags, count = await common.get_objects(
         session,

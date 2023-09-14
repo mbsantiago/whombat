@@ -225,11 +225,19 @@ async def create_many(
         If recording does not exist.
 
     """
+
+    def get_key(
+        x: schemas.ClipCreate | models.Clip,
+    ) -> tuple[int, float, float]:
+        return x.recording_id, x.start_time, x.end_time
+
+    keys = {get_key(x) for x in data}
+
     clips = await common.create_objects_without_duplicates(
         session,
         model=models.Clip,
         data=data,
-        key=lambda x: (x.recording_id, x.start_time, x.end_time),
+        key=get_key,
         key_column=tuple_(
             models.Clip.recording_id,
             models.Clip.start_time,
@@ -240,14 +248,19 @@ async def create_many(
     if clips:
         await _create_clip_features(session, clips)
 
-    clip_ids = [clip.id for clip in clips]
     session.expire_all()
 
     clips, _ = await common.get_objects(
         session,
         models.Clip,
         limit=-1,
-        filters=[models.Clip.id.in_(clip_ids)],
+        filters=[
+            tuple_(
+                models.Clip.recording_id,
+                models.Clip.start_time,
+                models.Clip.end_time,
+            ).in_(keys)
+        ],
     )
     return [schemas.Clip.model_validate(clip) for clip in clips]
 

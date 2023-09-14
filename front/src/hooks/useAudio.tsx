@@ -1,9 +1,4 @@
-import {
-  useRef,
-  useCallback,
-  useMemo,
-  type SyntheticEvent,
-} from "react";
+import { useRef, useCallback, useMemo, type SyntheticEvent } from "react";
 import { useSetState, useHarmonicIntervalFn } from "react-use";
 import api from "@/app/api";
 import { type Recording } from "@/api/recordings";
@@ -71,12 +66,7 @@ export default function useAudio({
     samplerate: recording.samplerate,
   });
 
-  const {
-    startTime,
-    endTime,
-    speed,
-    loop,
-  } = state;
+  const { startTime, endTime, speed, loop } = state;
 
   const ref = useRef<HTMLAudioElement>(null);
 
@@ -201,6 +191,11 @@ export default function useAudio({
     onLoadedMetadata,
   ]);
 
+  console.log(
+    "samplerate",
+    ref.current,
+  );
+
   // Some browsers return `Promise` on `.play()` and may throw errors
   // if one tries to execute another `.play()` or `.pause()` while that
   // promise is resolving. So we prevent that with this lock.
@@ -240,9 +235,9 @@ export default function useAudio({
         return;
       }
       time = Math.min(endTime, Math.max(startTime, time));
-      el.currentTime = time;
+      el.currentTime = time / speed;
     },
-    [endTime, startTime],
+    [endTime, startTime, speed],
   );
 
   const volume = useCallback((volume: number) => {
@@ -272,14 +267,17 @@ export default function useAudio({
     el.muted = false;
   }, []);
 
-  // This hook updates the time of the audio element
-  useHarmonicIntervalFn(() => {
+  const updateTime = useCallback(() => {
     const el = ref.current;
     if (!el) {
       return;
     }
-    setState({ time: el.currentTime });
-  }, 1000 / 24);
+    setState({ time: el.currentTime * speed });
+  }, [speed]);
+
+
+  // This hook updates the time of the audio element
+  useHarmonicIntervalFn(updateTime, 1000 / 24);
 
   const setSpeed = useCallback((speed: number) => {
     setState({ speed, playing: false });

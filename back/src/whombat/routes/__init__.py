@@ -12,6 +12,8 @@ from whombat.routes.tags import tags_router
 from whombat.routes.tasks import tasks_router
 from whombat.routes.users import users_router
 from whombat.routes.audio import audio_router
+from whombat.routes.sound_events import sound_events_router
+from whombat.routes.annotations import annotations_router
 
 __all__ = [
     "main_router",
@@ -74,4 +76,14 @@ main_router.include_router(
     audio_router,
     prefix="/audio",
     tags=["audio"],
+)
+main_router.include_router(
+    sound_events_router,
+    prefix="/sound_events",
+    tags=["sound_events"],
+)
+main_router.include_router(
+    annotations_router,
+    prefix="/annotations",
+    tags=["annotations"],
 )

@@ -16,6 +16,8 @@ import { registerClipApi } from "./clips";
 import { registerTasksApi } from "./tasks";
 import { registerSpectrogramApi } from "./spectrograms";
 import { registerAudioApi } from "./audio";
+import { registerSoundEventApi } from "./sound_events";
+import { registerAnnotationsApi } from "./annotations";
 
 type APIConfig = {
   baseURL: string;
@@ -44,5 +46,7 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
     notes: registerNotesAPI(instance),
     audio: registerAudioApi({ baseUrl: config.baseURL }),
+    sound_events: registerSoundEventApi(instance),
+    annotations: registerAnnotationsApi(instance),
   };
 }

@@ -69,7 +69,7 @@ async def get_many(
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
     sort_by: str | None = "-created_at",
-) -> tuple[Sequence[schemas.Annotation], int]:
+) -> tuple[list[schemas.Annotation], int]:
     """Get all annotation projects."""
     annotations, count = await common.get_objects(
         session,
@@ -181,3 +181,101 @@ async def remove_note(
         note_id,
     )
     return schemas.Annotation.model_validate(annotation)
+
+
+async def get_notes(
+    session: AsyncSession,
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    filters: Sequence[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.AnnotationNote], int]:
+    """Get a page of annotation notes.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    limit : int, optional
+        Maximum number of notes to return, by default 100
+
+    offset : int, optional
+        Number of notes to skip, by default 0
+
+    filters : Sequence[Filter], optional
+        Filters to apply to the query, by default None
+
+    sort_by : str, optional
+        Field to sort by, by default "-created_at"
+
+    Returns
+    -------
+    schemas.AnnotationNoteList
+        List of annotation notes.
+
+    count : int
+        Total number of notes that match the filters.
+    """
+    notes, count = await common.get_objects(
+        session,
+        models.AnnotationNote,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return (
+        [schemas.AnnotationNote.model_validate(note) for note in notes],
+        count,
+    )
+
+
+async def get_tags(
+    session: AsyncSession,
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    filters: Sequence[Filter] | None = None,
+    sort_by: str | None = "-created_at",
+) -> tuple[list[schemas.AnnotationTag], int]:
+    """Get a page of annotation tags.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    limit : int, optional
+        Maximum number of tags to return, by default 100
+
+    offset : int, optional
+        Number of tags to skip, by default 0
+
+    filters : Sequence[Filter], optional
+        Filters to apply to the query, by default None
+
+    sort_by : str, optional
+        Field to sort by, by default "-created_at"
+
+    Returns
+    -------
+    schemas.AnnotationTagList
+        List of annotation tags.
+
+    count : int
+        Total number of tags that match the filters.
+    """
+    tags, count = await common.get_objects(
+        session,
+        models.AnnotationTag,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
+    return (
+        [schemas.AnnotationTag.model_validate(tag) for tag in tags],
+        count,
+    )

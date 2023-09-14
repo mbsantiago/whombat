@@ -23,6 +23,8 @@ from whombat.schemas.annotations import (
     Annotation,
     AnnotationCreate,
     AnnotationTagCreate,
+    AnnotationTag,
+    AnnotationNote,
 )
 from whombat.schemas.audio import AudioParameters
 from whombat.schemas.base import Page
@@ -82,9 +84,11 @@ __all__ = [
     "AmplitudeParameters",
     "Annotation",
     "AnnotationCreate",
+    "AnnotationNote",
     "AnnotationProject",
     "AnnotationProjectCreate",
     "AnnotationProjectUpdate",
+    "AnnotationTag",
     "AnnotationTagCreate",
     "AudioParameters",
     "Clip",

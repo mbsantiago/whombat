@@ -117,7 +117,9 @@ export default function CreateAnotationProject() {
                 }}
                 onBack={() => setStep(1)}
                 onDone={() => {
-                  router.push("/annotation_projects");
+                  router.push(
+                    `/annotation_projects/detail/?annotation_project_id=${annotationProject?.id}`,
+                  );
                 }}
               />
               <ProjectClips project={annotationProject as AnnotationProject} />

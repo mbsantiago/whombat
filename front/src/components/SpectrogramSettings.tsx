@@ -7,7 +7,7 @@ import Select from "@/components/Select";
 import SlideOver from "@/components/SlideOver";
 import RangeSlider from "@/components/RangeSlider";
 import { InputGroup, Input } from "@/components/inputs";
-import { SpectrogramSettingsIcon } from "@/components/icons";
+import { SpectrogramSettingsIcon, SettingsIcon } from "@/components/icons";
 import { type SpectrogramParameters, MIN_DB } from "@/api/spectrograms";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 
@@ -556,13 +556,13 @@ export default function SpectrogramSettings({
     <div>
       <Tooltip placement="bottom" tooltip="Spectrogram settings">
         <Button variant="secondary" onClick={() => setOpen(true)}>
-          <SpectrogramSettingsIcon className="w-5 h-5" />
+          <SettingsIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
       <SlideOver
         title={
           <div className="flex flex-row items-center">
-            <SpectrogramSettingsIcon className="w-5 h-5 mr-2 inline-block" />
+            <SettingsIcon className="w-6 h-6 mr-2 inline-block" />
             Settings
           </div>
         }

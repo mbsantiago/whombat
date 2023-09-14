@@ -88,3 +88,16 @@ class AnnotationNote(AnnotationNoteCreate):
 
     note: Note
     """Note attached to this annotation."""
+
+
+class AnnotationTag(AnnotationTagCreate):
+    """Schema for an AnnotationTag."""
+
+    id: int
+    """Database ID of this annotation tag."""
+
+    created_by: SimpleUser
+    """User who created this annotation tag."""
+
+    tag: Tag
+    """Tag attached to this annotation."""

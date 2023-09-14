@@ -21,6 +21,7 @@ export default function ProjectDetail({
   onChange?: (data: AnnotationProjectUpdate) => void;
   onDelete?: () => void;
 }) {
+  const { tags } = project;
   return (
     <div className="w-100 flex flex-row gap-8 justify-between">
       <div className="grow">
@@ -28,7 +29,7 @@ export default function ProjectDetail({
           <div className="col-span-2">
             <ProjectProgress tasks={tasks ?? []} />
           </div>
-          <ProjectTagsSummary />
+          <ProjectTagsSummary project={project} />
           <ProjectSoundEventsSummary />
         </div>
       </div>

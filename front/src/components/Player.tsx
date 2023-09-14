@@ -4,7 +4,6 @@ import {
   useRef,
   useCallback,
   useMemo,
-  useEffect,
 } from "react";
 import { Float } from "@headlessui-float/react";
 import { ExpandIcon } from "@/components/icons";

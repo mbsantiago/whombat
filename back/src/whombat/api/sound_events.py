@@ -367,6 +367,46 @@ async def add_feature(
     )
     return schemas.SoundEvent.model_validate(sound_event)
 
+@sound_event_caches.with_update
+async def update_feature(
+    session: AsyncSession,
+    sound_event_id: int,
+    feature_name_id: int,
+    value: float,
+) -> schemas.SoundEvent:
+    """Update features of a sound event.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+
+    sound_event_id : int
+        The ID of the sound event.
+
+    feature_name_id : int
+        The ID of the feature name.
+
+    Returns
+    -------
+    schemas.SoundEvent
+        The updated sound event.
+
+    Raises
+    ------
+    exceptions.NotFoundError
+        If the sound event does not exist in the database.
+    """
+    sound_event = await common.update_feature_on_object(
+        session=session,
+        model=models.SoundEvent,
+        condition=models.SoundEvent.id == sound_event_id,
+        feature_name_id=feature_name_id,
+        value=value,
+    )
+    return schemas.SoundEvent.model_validate(sound_event
+)
+
 
 @sound_event_caches.with_update
 async def remove_tag(

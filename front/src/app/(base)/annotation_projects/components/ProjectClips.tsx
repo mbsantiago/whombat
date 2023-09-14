@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import useDatasets from "@/hooks/useDatasets";
 import useRecordings from "@/hooks/useRecordings";
 import useAnnotationProject from "@/hooks/useAnnotationProject";
@@ -94,7 +95,10 @@ function computeClips({
     }
 
     // Subsample clips
-    let subsampledClips: ClipCreate[] = getRandomSubarray(recordingClips, maxClips);
+    let subsampledClips: ClipCreate[] = getRandomSubarray(
+      recordingClips,
+      maxClips,
+    );
     clips.push(...subsampledClips);
   }
 
@@ -401,7 +405,17 @@ export default function ProjectClips({
   const [selectedClips, setSelectedClips] = useState<ClipCreate[]>([]);
 
   const onAdd = () => {
-    project.addClips.mutate(selectedClips);
+    toast.promise(project.addClips.mutateAsync(selectedClips, {
+      onSuccess: () => {
+        setSelectedClips([]);
+        setSelectedRecordings([]);
+      },
+    }), {
+      loading: "Adding clips to project...",
+      success:
+        "Clips added to project 🎉! Add more clips or go to the project page to start annotating. ",
+      error: "Failed to add clips to project.",
+    });
   };
 
   return (

@@ -22,7 +22,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
 
   return (
     <Card>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between items-center">
         <H3>
           Task Progress
         </H3>

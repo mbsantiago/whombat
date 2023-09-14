@@ -4,13 +4,31 @@ import Hero from "@/components/Hero";
 import useAnnotationProjects from "@/hooks/useAnnotationProjects";
 import AnnotationProject from "@/components/AnnotationProject";
 import Button from "@/components/Button";
-import { DatasetIcon, AddIcon } from "@/components/icons";
+import { DatasetIcon, AddIcon, SadIcon } from "@/components/icons";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
+import Empty from "@/components/Empty";
 
-export default function Datasets() {
+function NoProjects() {
+  return (
+    <Empty>
+      <SadIcon className="h-8 w-8 text-stone-500" />
+      <p>No annotation project exist yet!</p>
+      <p>
+        To create a new project, click on the
+        <span className="text-emerald-500">
+          <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
+          Create{" "}
+        </span>{" "}
+        button above.
+      </p>
+    </Empty>
+  );
+}
+
+export default function AnnotationProjects() {
   const { items, pagination, query, filter } = useAnnotationProjects();
 
   return (
@@ -38,6 +56,8 @@ export default function Datasets() {
         </div>
         {query.isLoading ? (
           <Loading />
+        ) : items.length === 0 ? (
+          <NoProjects />
         ) : (
           <>
             <StackedList

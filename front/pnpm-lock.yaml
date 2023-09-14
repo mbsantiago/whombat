@@ -35,6 +35,9 @@ dependencies:
   '@tanstack/react-table':
     specifier: ^8.9.7
     version: 8.9.7(react-dom@18.2.0)(react@18.2.0)
+  '@turf/boolean-point-in-polygon':
+    specifier: ^6.5.0
+    version: 6.5.0
   '@types/node':
     specifier: 20.5.1
     version: 20.5.1
@@ -812,6 +815,23 @@ packages:
   /@tanstack/table-core@8.9.7:
     resolution: {integrity: sha512-lkhVcGDxa9GSoDFPkplPDvzsiUACPZrxT3U1edPs0DCMKFhBDgZ7d1DPd7cqHH0JoybfbQ/qiTQYOQBg8sinJg==}
     engines: {node: '>=12'}
+    dev: false
+
+  /@turf/boolean-point-in-polygon@6.5.0:
+    resolution: {integrity: sha512-DtSuVFB26SI+hj0SjrvXowGTUCHlgevPAIsukssW6BG5MlNSBQAo70wpICBNJL6RjukXg8d2eXaAWuD/CqL00A==}
+    dependencies:
+      '@turf/helpers': 6.5.0
+      '@turf/invariant': 6.5.0
+    dev: false
+
+  /@turf/helpers@6.5.0:
+    resolution: {integrity: sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==}
+    dev: false
+
+  /@turf/invariant@6.5.0:
+    resolution: {integrity: sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==}
+    dependencies:
+      '@turf/helpers': 6.5.0
     dev: false
 
   /@types/geojson@7946.0.10:

@@ -30,7 +30,6 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
       router.push(`/login?back=${encodeURIComponent(currentPath)}`);
     },
     onUnauthorized: () => {
-      toast.error("You are not authorized to access this page");
       router.push(`/login?back=${encodeURIComponent(currentPath)}`);
     },
   });

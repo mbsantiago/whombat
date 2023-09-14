@@ -3,8 +3,6 @@ import { type SpectrogramWindow } from "@/api/spectrograms";
 import { useScratch } from "react-use";
 import { type ShiftWindowFn, type SetWindowFn } from "@/hooks/useWindow";
 import useWindowDrag, { type DragFn } from "@/hooks/useWindowDrag";
-import useMouseWheel from "@/hooks/useMouseWheel";
-import useWindowScroll from "@/hooks/useWindowScroll";
 
 type BarPosition = {
   left: number;
@@ -96,7 +94,7 @@ export default function WindowBar({
       let dF = ((high - low) * dy) / elH;
 
       let centerT = ((end - start) * x) / elW;
-      let centerF = ((high - low) * y) / elH;
+      let centerF = ((high - low) * (elH - y)) / elH;
 
       let duration = win.time.max - win.time.min;
       let bandwidth = win.freq.max - win.freq.min;
@@ -107,8 +105,8 @@ export default function WindowBar({
           max: centerT + duration / 2 + dT,
         },
         freq: {
-          min: centerF - bandwidth / 2 + dF,
-          max: centerF + bandwidth / 2 + dF,
+          min: centerF - bandwidth / 2 - dF,
+          max: centerF + bandwidth / 2 - dF,
         },
       };
     },
@@ -121,14 +119,6 @@ export default function WindowBar({
     dragState,
     dragFunction: dragThumb,
   });
-
-  // const scrollState = useMouseWheel(barRef);
-  //
-  // // This hook allows the user to move the spectrogram around with the mouse
-  // useWindowScroll({
-  //   shiftWindow,
-  //   scrollState,
-  // });
 
   return (
     <div draggable={false} ref={dragRef}>

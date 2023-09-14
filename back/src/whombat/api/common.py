@@ -361,6 +361,7 @@ async def create_objects_without_duplicates(
     existing, _ = await get_objects(
         session,
         model,
+        limit=-1,
         filters=[key_column.in_(keys)],
     )
     existing_keys = {key(obj) for obj in existing}
@@ -380,10 +381,10 @@ async def create_objects_without_duplicates(
 
     stmt = insert(model).values(values)
     await session.execute(stmt)
+    await session.flush()
 
     logger.debug("Getting created objects")
 
-    # Return all objects
     created, _ = await get_objects(
         session,
         model,

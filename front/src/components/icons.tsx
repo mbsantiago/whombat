@@ -1,6 +1,9 @@
 import { type ComponentProps } from "react";
 import Image from "next/image";
 import {
+  FaceFrownIcon,
+  HandRaisedIcon,
+  MagnifyingGlassPlusIcon,
   ArrowPathRoundedSquareIcon,
   BoltIcon,
   SpeakerWaveIcon,
@@ -131,4 +134,7 @@ export {
   SpeakerWaveIcon as VolumeIcon,
   BoltIcon as SpeedIcon,
   ArrowPathRoundedSquareIcon as LoopIcon,
+  HandRaisedIcon as DragIcon,
+  MagnifyingGlassPlusIcon as ZoomIcon,
+  FaceFrownIcon as SadIcon,
 };
