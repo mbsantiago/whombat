@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import { AddIcon, TagsIcon } from "@/components/icons";
@@ -12,6 +13,24 @@ function NoTags() {
     <Empty>
       No tags registered for this project. Add some tags to start annotating.
     </Empty>
+  );
+}
+
+function NoAnnotationTags() {
+  return (
+    <div className="text-sm text-stone-500">
+      There are no tags in any of the annotations in this project. Consider
+      creating more annotations, or adding tags to existing annotations.
+    </div>
+  );
+}
+
+function NoTaskTags() {
+  return (
+    <div className="text-sm text-stone-500">
+      There are no tags in any of the tasks in this project. Start annotating to
+      add tags to tasks.
+    </div>
   );
 }
 
@@ -41,11 +60,29 @@ export default function ProjectTagsSummary({
           <TagsIcon className="h-5 w-5 inline-block mr-2" />
           Project Tags
         </H4>
-        <Button mode="text" variant="primary">
-          <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Tags
-        </Button>
+        <Link
+          href={`/annotation_projects/detail/tags/?annotation_project_id=${project.id}`}
+        >
+          <Button mode="text" variant="primary">
+            <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Tags
+          </Button>
+        </Link>
       </div>
-      {projectTags.length === 0 ? <NoTags /> : <div>Tags</div>}
+      {projectTags.length === 0 ? (
+        <NoTags />
+      ) : (
+        <div>
+          There are{" "}
+          <span className="text-blue-500 font-bold">{projectTags.length}</span>{" "}
+          tags registered for this project.
+        </div>
+      )}
+      {annotationTags.items.length === 0 ? (
+        <NoAnnotationTags />
+      ) : (
+        <div> Annotation Tags</div>
+      )}
+      {taskTags.items.length === 0 ? <NoTaskTags /> : <div> Task Tags</div>}
     </Card>
   );
 }

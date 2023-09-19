@@ -8,7 +8,8 @@ import ProjectActions from "./ProjectActions";
 import ProjectUpdateForm from "./ProjectUpdateForm";
 import ProjectProgress from "./ProjectProgress";
 import ProjectTagsSummary from "./ProjectTagsSummary";
-import ProjectSoundEventsSummary from "./ProjectSoundEventsSummary";
+import ProjectNotesSummary from "./ProjectNotesSummary";
+// import ProjectSoundEventsSummary from "./ProjectSoundEventsSummary";
 
 export default function ProjectDetail({
   project,
@@ -21,7 +22,6 @@ export default function ProjectDetail({
   onChange?: (data: AnnotationProjectUpdate) => void;
   onDelete?: () => void;
 }) {
-  const { tags } = project;
   return (
     <div className="w-100 flex flex-row gap-8 justify-between">
       <div className="grow">
@@ -30,7 +30,7 @@ export default function ProjectDetail({
             <ProjectProgress tasks={tasks ?? []} />
           </div>
           <ProjectTagsSummary project={project} />
-          <ProjectSoundEventsSummary />
+          <ProjectNotesSummary project={project}/>
         </div>
       </div>
       <div className="flex flex-col flex-none max-w-sm gap-4">

@@ -8,7 +8,7 @@ from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas
-from whombat.api import common
+from whombat.api import common, notes
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -361,6 +361,47 @@ async def add_status_badge(
         ),
     )
     await session.refresh(task)
+    return schemas.Task.model_validate(task)
+
+
+@task_caches.with_update
+async def update_note(
+    session: AsyncSession,
+    task_id: int,
+    note_id: int,
+    data: schemas.NoteUpdate,
+) -> schemas.Task:
+    """Update a note on a task.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+
+    task_id : int
+        ID of the task.
+
+    note_id : int
+        ID of the note.
+
+    data : schemas.NoteUpdate
+        Data to update the note with.
+
+    Returns
+    -------
+    schemas.Task
+        Task with the updated note.
+
+    Raises
+    ------
+    exceptions.NotFoundError
+        If the task does not have the given note.
+    """
+    task = await get_by_id(session, task_id)
+    updated_note = await notes.update(session, note_id, data)
+    task.notes = [
+        note if note.id != note_id else updated_note for note in task.notes
+    ]
     return schemas.Task.model_validate(task)
 
 

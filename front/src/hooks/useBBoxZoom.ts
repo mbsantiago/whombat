@@ -42,10 +42,11 @@ export default function useBBoxZoom({
       );
 
       if (validateBBox([start, high, end, low])) {
-        setWindow({
+        const newWindow = {
           time: { min: start, max: end },
           freq: { min: low, max: high },
-        });
+        };
+        setWindow(newWindow);
         onZoom?.();
       }
     },

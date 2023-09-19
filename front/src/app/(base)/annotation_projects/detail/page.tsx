@@ -5,14 +5,20 @@ import useTasks from "@/hooks/useTasks";
 import Loading from "@/app/loading";
 import { AnnotationProjectContext } from "./context";
 import ProjectDetail from "../components/ProjectDetail";
+import useAnnotationProject from "@/hooks/useAnnotationProject";
 
 export default function AnnotationProjectHome() {
-  const project = useContext(AnnotationProjectContext);
+  const context = useContext(AnnotationProjectContext);
+
+  const project = useAnnotationProject({
+    annotation_project_id: context?.id ?? -1,
+  });
+
   const tasks = useTasks({
     pageSize: -1,
     filter: {
-      project__eq: project?.query.data?.id ?? -1,
-    }
+      project__eq: context?.id ?? -1,
+    },
   });
 
   if (project == null) return notFound();

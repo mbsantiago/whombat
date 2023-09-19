@@ -2,7 +2,7 @@ import {
   type AnnotationProject,
   type AnnotationProjectUpdate,
 } from "@/api/annotation_projects";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/app/api";
 import { type ClipCreate } from "@/api/clips";
 import { type Task } from "@/api/tasks";
@@ -22,6 +22,8 @@ export default function useAnnotationProject({
   onRemoveTag?: (annotation_project: AnnotationProject) => void;
   onAddClips?: (tasks: Task[]) => void;
 }) {
+  const client = useQueryClient();
+
   const query = useQuery(["annotation_project", annotation_project_id], () =>
     api.annotation_projects.get(annotation_project_id),
   );
@@ -79,6 +81,7 @@ export default function useAnnotationProject({
     },
     onSuccess: (data) => {
       onAddClips?.(data);
+      client.invalidateQueries(["tasks"]);
     }
   });
 

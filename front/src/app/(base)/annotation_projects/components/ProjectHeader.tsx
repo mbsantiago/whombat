@@ -3,7 +3,7 @@ import {
   useSelectedLayoutSegment,
   useRouter,
 } from "next/navigation";
-import { DatasetIcon } from "@/components/icons";
+import { DatasetIcon, TasksIcon, TagsIcon, EditIcon } from "@/components/icons";
 import Header from "@/components/Header";
 import Tabs from "@/components/Tabs";
 import { H1 } from "@/components/Headings";
@@ -23,10 +23,43 @@ export default function AnnotationProjectHeader({ name }: { name: string }) {
               id: "overview",
               title: "Overview",
               isActive: selectedLayoutSegment === null,
-              icon: <DatasetIcon className="h-4 w-4 align-middle" />,
+              icon: <DatasetIcon className="h-5 w-5 align-middle" />,
               onClick: () => {
                 router.push(
                   `/annotation_projects/detail/?${params.toString()}`,
+                );
+              },
+            },
+            {
+              id: "tasks",
+              title: "Tasks",
+              isActive: selectedLayoutSegment === "tasks",
+              icon: <TasksIcon className="h-5 w-5 align-middle" />,
+              onClick: () => {
+                router.push(
+                  `/annotation_projects/detail/tasks/?${params.toString()}`,
+                );
+              },
+            },
+            {
+              id: "tags",
+              title: "Tags",
+              isActive: selectedLayoutSegment === "tags",
+              icon: <TagsIcon className="h-5 w-5 align-middle" />,
+              onClick: () => {
+                router.push(
+                  `/annotation_projects/detail/tags/?${params.toString()}`,
+                );
+              },
+            },
+            {
+              id: "annotate",
+              title: "Annotate",
+              isActive: selectedLayoutSegment === "annotation",
+              icon: <EditIcon className="h-5 w-5 align-middle" />,
+              onClick: () => {
+                router.push(
+                  `/annotation_projects/detail/annotation/?${params.toString()}`,
                 );
               },
             },

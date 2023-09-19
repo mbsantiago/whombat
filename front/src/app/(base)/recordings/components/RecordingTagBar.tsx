@@ -7,8 +7,10 @@ import Tag from "@/components/Tag";
 
 export default function RecordingTagBar({
   recording,
+  label = "Tags",
 }: {
   recording: Recording;
+  label?: string;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
 
@@ -17,7 +19,7 @@ export default function RecordingTagBar({
       <div className="inline-flex">
         <TagIcon className="w-5 h-5 text-stone-500 inline-block mr-1" />
         <span className="text-stone-400 dark:text-stone-600 text-sm">
-          Tags:
+          {label}:
         </span>
       </div>
       <div className="flex flex-row flex-wrap gap-2">

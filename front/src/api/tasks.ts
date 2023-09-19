@@ -4,7 +4,7 @@ import { GetManySchema, Page } from "./common";
 import { ClipCreateSchema } from "@/api/clips";
 import { TagSchema } from "@/api/tags";
 import { SimpleUserSchema } from "@/api/user";
-import { NoteSchema } from "@/api/notes";
+import { NoteSchema, type NoteUpdate, NoteUpdateSchema } from "@/api/notes";
 
 export const StatusBadgeCreateSchema = z.object({
   task_id: z.number(),
@@ -128,6 +128,11 @@ const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/tasks/",
   get: "/api/v1/tasks/detail/",
   delete: "/api/v1/tasks/detail/",
+  addNote: "/api/v1/tasks/detail/notes/",
+  updateNote: "/api/v1/tasks/detail/notes/",
+  removeNote: "/api/v1/tasks/detail/notes/",
+  addTag: "/api/v1/tasks/detail/tags/",
+  removeTag: "/api/v1/tasks/detail/tags/",
   getNotes: "/api/v1/tasks/notes/",
   getTags: "/api/v1/tasks/tags/",
 };
@@ -160,6 +165,101 @@ export function registerTasksApi(
     return TaskSchema.parse(response.data);
   }
 
+  async function addNote({
+    task_id,
+    message,
+    is_issue,
+  }: {
+    task_id: number;
+    message: string;
+    is_issue: boolean;
+  }): Promise<Task> {
+    const response = await instance.post(
+      endpoints.addNote,
+      {
+        message,
+        is_issue,
+      },
+      {
+        params: {
+          task_id,
+        },
+      },
+    );
+    return TaskSchema.parse(response.data);
+  }
+
+  async function updateNote({
+    task_id,
+    note_id,
+    data,
+  }: {
+    task_id: number;
+    note_id: number;
+    data: NoteUpdate;
+  }) {
+    const body = NoteUpdateSchema.parse(data);
+    const response = await instance.patch(endpoints.updateNote, body, {
+      params: {
+        task_id,
+        note_id,
+      },
+    });
+    return TaskSchema.parse(response.data);
+  }
+
+  async function removeNote({
+    task_id,
+    note_id,
+  }: {
+    task_id: number;
+    note_id: number;
+  }) {
+    const response = await instance.delete(endpoints.removeNote, {
+      params: {
+        task_id,
+        note_id,
+      },
+    });
+    return TaskSchema.parse(response.data);
+  }
+
+  async function addTag({
+    task_id,
+    tag_id,
+  }: {
+    task_id: number;
+    tag_id: number;
+  }) {
+    const response = await instance.post(
+      endpoints.addTag,
+      {},
+      {
+        params: {
+          task_id,
+          tag_id,
+        },
+      },
+    );
+    return TaskSchema.parse(response.data);
+  }
+
+  async function removeTag({
+    task_id,
+    tag_id,
+  }: {
+    task_id: number;
+    tag_id: number;
+  }) {
+    const response = await instance.delete(endpoints.removeTag, {
+      params: {
+        task_id,
+        tag_id,
+      },
+    });
+    return TaskSchema.parse(response.data);
+  }
+
   async function getNotes(query: GetTaskNotesQuery) {
     const params = GetTaskNotesQuerySchema.parse(query);
     const { data } = await instance.get(endpoints.getNotes, { params });
@@ -179,5 +279,10 @@ export function registerTasksApi(
     delete: delete_,
     getNotes,
     getTags,
+    addNote,
+    updateNote,
+    removeNote,
+    addTag,
+    removeTag,
   };
 }

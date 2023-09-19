@@ -1,19 +1,21 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useScratch, useMap } from "react-use";
-import useSpectrogramCanvas from "@/hooks/useSpectrogramCanvas";
+import { useMachine, useActor } from "@xstate/react";
+import { assign, spawn } from "xstate";
+import { useEffect, useCallback } from "react";
+import drawTimeAxis from "@/draw/timeAxis";
+import drawFreqAxis from "@/draw/freqAxis";
+import drawOnset from "@/draw/onset";
 import useSpectrogramParameters from "@/hooks/useSpectrogramParameters";
-import useMouseWheel from "@/hooks/useMouseWheel";
-import useAudio from "@/hooks/useAudio";
 import useWindowDrag from "@/hooks/useWindowDrag";
 import useWindowScroll from "@/hooks/useWindowScroll";
 import useWindowZoom from "@/hooks/useWindowZoom";
-import useWindow from "@/hooks/useWindow";
 import useBBoxZoom from "@/hooks/useBBoxZoom";
+import useSpectrogramWindow from "@/hooks/useSpectrogramWindow";
+import useRecordingSegments from "@/hooks/useRecordingSegments";
+import { spectrogramMachine } from "@/machines/spectrogram";
+import { audioMachine } from "@/machines/audio";
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import Player from "@/components/Player";
-import SpectrogramSettings from "@/components/SpectrogramSettings";
-import SpectrogramControls from "@/components/SpectrogramControls";
+import api from "@/app/api";
 
 export type DrawFn = (
   ctx: CanvasRenderingContext2D,
@@ -35,221 +37,185 @@ export default function useSpectrogram({
   bounds,
   initial,
   recording,
-  canDrag = false,
-  canScroll = true,
-  canZoom = true,
-  canBBoxZoom = true,
-  trackAudio = true,
-  frozen = false,
+  dragState,
+  scrollState,
+  scrollRef,
 }: {
   bounds: SpectrogramWindow;
   initial: SpectrogramWindow;
   recording: Recording;
-  canDrag?: boolean;
-  canScroll?: boolean;
-  canZoom?: boolean;
-  canBBoxZoom?: boolean;
-  trackAudio?: boolean;
-  frozen?: boolean;
+  dragState: any;
+  scrollState: any;
+  scrollRef: any;
 }) {
-  const [
-    drawingFunctions,
-    {
-      set: setDrawingFunctions,
-      setAll: setAllDrawingFunctions,
-      remove: removeDrawingFunction,
-      reset: resetDrawingFunctions,
-    },
-  ] = useMap<DrawFn>();
-
-  const [spectrogramState, setSpectrogramState] = useState<SpectrogramState>({
-    canZoom,
-    canScroll,
-    canDrag,
-    canBBoxZoom,
-    frozen,
-  });
-
+  // This hook holds the state for the spectrogram settings
   const settings = useSpectrogramParameters({
     recording,
   });
 
-  const { audio, controls, state } = useAudio({
-    recording,
-    speed: recording.samplerate > 96000 ? 44100 / recording.samplerate : 1,
+  // State machine for the spectrogram
+  const [state, send] = useMachine(spectrogramMachine, {
+    context: {
+      recording,
+      bounds,
+      initial,
+      window: initial,
+    },
+    actions: {
+      initAudio: assign({
+        // @ts-ignore
+        audio: () =>
+          spawn(
+            audioMachine.withContext({
+              audio: new Audio(),
+              recording,
+              startTime: bounds.time.min,
+              endTime: bounds.time.max,
+              currentTime: bounds.time.min,
+              muted: false,
+              volume: 1,
+              speed: 1,
+              loop: true,
+              getAudioURL: api.audio.getStreamUrl,
+            }),
+          ),
+      }),
+    },
   });
 
-  // This holds the state for the current viewport of the spectrogram
-  const currentWindow = useWindow({
-    initial,
-    bounds,
-  });
-
-  const {
-    window: specWindow,
-    centerOn,
-    setWindow,
-    shiftWindow,
-    scaleWindow,
-  } = currentWindow;
+  // State machine for the audio player
+  const [audioState, audioSend] = useActor(state.context.audio);
 
   // Track the audio playback with the spectrogram
   useEffect(() => {
-    if (state.playing && trackAudio) {
-      centerOn({
-        time: state.time,
-      });
+    if (state.matches("playing")) {
+      send({ type: "CENTER_ON", time: audioState.context.currentTime });
     }
-  }, [state.playing, state.time, centerOn, trackAudio]);
+  }, [state.matches("playing"), audioState.context.currentTime]);
 
-  // This hook allows the user to drag the spectrogram around
-  const [dragRef, dragState] = useScratch();
+  // Allow the user to drag the spectrogram around
+  const handleOnDrag = useCallback(
+    (newWindow: SpectrogramWindow) => {
+      send({ type: "PAN_TO", window: newWindow });
+    },
+    [send],
+  );
   useWindowDrag({
-    window: specWindow,
-    setWindow: setWindow,
-    active: spectrogramState.canDrag,
+    window: state.context.window,
+    setWindow: handleOnDrag,
+    active: state.matches("panning"),
     dragState,
   });
 
-  // This hook allows the user to move the spectrogram around with wheel
-  // events
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollState = useMouseWheel(scrollRef);
-
+  // Allow the user to move the spectrogram around with the scroll wheel
+  const handleOnScroll = useCallback(
+    (shiftBy: { time: number; freq: number }, relative: boolean) => {
+      send({ type: "SHIFT_WINDOW", shiftBy, relative });
+    },
+    [send],
+  );
   useWindowScroll({
-    shiftWindow: shiftWindow,
-    active: canScroll,
+    shiftWindow: handleOnScroll,
+    active: state.matches("panning"),
     scrollState,
   });
 
+  // Allow the user to zoom in and out of the spectrogram with the scroll wheel
+  const handleOnScrollZoom = useCallback(
+    (scaleBy: { time?: number; freq?: number }) => {
+      send({ type: "SCALE_WINDOW", scaleBy });
+    },
+    [send],
+  );
   useWindowZoom({
-    active: canZoom,
-    scaleWindow: scaleWindow,
+    active: state.matches("panning"),
+    scaleWindow: handleOnScrollZoom,
     scrollState,
   });
 
-  const { draw: drawBBox } = useBBoxZoom({
-    window: specWindow,
-    setWindow: setWindow,
+  // Allow the user to zoom in and out of the spectrogram by drawing a bounding
+  // box
+  const handleOnBBoxZoom = useCallback(
+    (newWindow: SpectrogramWindow) => {
+      send({ type: "ZOOM_TO", window: newWindow });
+    },
+    [send],
+  );
+  const { draw: drawZoomBBox } = useBBoxZoom({
+    window: state.context.window,
+    setWindow: handleOnBBoxZoom,
     dimensions: {
       width: scrollRef.current?.offsetWidth ?? 0,
       height: scrollRef.current?.offsetHeight ?? 0,
     },
     drag: dragState,
-    active: spectrogramState.canBBoxZoom,
-    onZoom: () => {
-      setSpectrogramState((state) => ({
-        ...state,
-        canDrag: true,
-        canBBoxZoom: false,
-      }));
-    },
+    active: state.matches("zooming"),
   });
 
-  // Blend the user's draw function with the spectrogram's draw function
-  const onDraw = useCallback(
-    (ctx: CanvasRenderingContext2D, window: SpectrogramWindow) => {
-      drawBBox(ctx);
-      Object.values(drawingFunctions).forEach((fn) => fn(ctx, window));
-    },
-    [drawBBox, drawingFunctions],
-  );
-
-  // This hook draws the spectrogram to the canvas
-  const { canvas } = useSpectrogramCanvas({
+  // Get a spectrogram segment that covers the window
+  const { selected, prev, next } = useRecordingSegments({
     recording,
-    window: specWindow,
-    parameters: settings.parameters,
-    currentTime: state.time,
-    onDraw: onDraw,
+    window: state.context.window,
   });
 
-  // Create html elements for the player, spectrogram, and settings menu
-  const PlayerInstance = (
-    <Player audio={audio} controls={controls} state={state} />
-  );
+  // Load the spectrogram segment
+  const { draw: drawSpecWindow } = useSpectrogramWindow({
+    recording_id: recording.id,
+    window: selected,
+    parameters: settings.parameters,
+  });
 
-  const SettingsMenu = (
-    <SpectrogramSettings
-      settings={settings.parameters}
-      onChange={settings.set}
-      onClear={settings.clear}
-    />
-  );
+  // Load the previous and next spectrogram segments in the background
+  useSpectrogramWindow({
+    recording_id: recording.id,
+    window: prev,
+    parameters: settings.parameters,
+  });
+  useSpectrogramWindow({
+    recording_id: recording.id,
+    window: next,
+    parameters: settings.parameters,
+  });
 
-  const Spectrogram = (
-    <div ref={scrollRef} className="w-max-fit h-max-fit w-full h-full">
-      <div
-        ref={dragRef}
-        className="select-none w-max-fit h-max-fit w-full h-full rounded-lg overflow-hidden"
-      >
-        {canvas}
-      </div>
-    </div>
-  );
+  // Draw the spectrogram
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      const window = state.context.window;
+      drawSpecWindow(ctx, window);
+      drawTimeAxis(ctx, window.time);
+      drawFreqAxis(ctx, window.freq);
+      drawZoomBBox(ctx);
 
-  const SpectrogramControlsInstance = (
-    <SpectrogramControls
-      isDragging={spectrogramState.canDrag && !spectrogramState.frozen}
-      isZooming={spectrogramState.canBBoxZoom && !spectrogramState.frozen}
-      onDrag={() => {
-        if (!spectrogramState.frozen) {
-          setSpectrogramState((state) => ({
-            ...state,
-            canDrag: true,
-            canBBoxZoom: false,
-          }));
+      if (audioState.context.currentTime) {
+        if (
+          audioState.context.currentTime < window.time.min ||
+          audioState.context.currentTime > window.time.max
+        ) {
+          return;
         }
-      }}
-      onZoom={() => {
-        if (!spectrogramState.frozen) {
-          setSpectrogramState((state) => ({
-            ...state,
-            canDrag: false,
-            canBBoxZoom: true,
-          }));
-        }
-      }}
-      onReset={() => {
-        if (!spectrogramState.frozen) {
-          currentWindow.reset();
-        }
-      }}
-    />
+
+        const { min, max } = window.time;
+        const x = Math.ceil(
+          (ctx.canvas.width * (audioState.context.currentTime - min)) /
+            (max - min),
+        );
+        drawOnset(ctx, x);
+      }
+    },
+    [
+      drawZoomBBox,
+      drawSpecWindow,
+      audioState.context.currentTime,
+      state.context.window,
+    ],
   );
 
   return {
-    elements: {
-      Player: PlayerInstance,
-      Spectrogram,
-      SettingsMenu,
-      SpectrogramControls: SpectrogramControlsInstance,
-    },
-    state: {
-      parameters: settings,
-      audio: state,
-      scroll: scrollState,
-      drag: dragState,
-      window: currentWindow.window,
-      spectrogram: spectrogramState,
-    },
-    controls: {
-      drawing: {
-        add: setDrawingFunctions,
-        set: setAllDrawingFunctions,
-        remove: removeDrawingFunction,
-        clear: resetDrawingFunctions,
-      },
-      spectrogram: {
-        set: setSpectrogramState,
-      },
-      window: {
-        reset: currentWindow.reset,
-        set: setWindow,
-        scale: scaleWindow,
-        shift: shiftWindow,
-        center: centerOn,
-      },
-    },
-  } as const;
+    state,
+    send,
+    audioState,
+    audioSend,
+    draw,
+    settings,
+  };
 }

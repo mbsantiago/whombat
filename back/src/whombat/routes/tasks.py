@@ -7,6 +7,7 @@ from whombat.filters.task_notes import TaskNoteFilter
 from whombat.filters.tasks import TaskFilter
 from whombat.filters.task_tags import TaskTagFilter
 from whombat.routes.types import Limit, Offset
+from whombat.models.task import TaskState
 
 __all__ = [
     "tasks_router",
@@ -172,3 +173,144 @@ async def get_task_tags(
         offset=offset,
         limit=limit,
     )
+
+
+@tasks_router.get(
+    "/detail/",
+    response_model=schemas.Task,
+)
+async def get_task(
+    session: Session,
+    task_id: int,
+):
+    """Get an annotation task."""
+    task = await api.tasks.get_by_id(session, task_id)
+    return task
+
+
+@tasks_router.post(
+    "/detail/tags/",
+    response_model=schemas.Task,
+)
+async def add_task_tag(
+    session: Session,
+    task_id: int,
+    tag_id: int,
+    user: ActiveUser,
+):
+    """Create a tag for an annotation task."""
+    task = await api.tasks.add_tag(
+        session,
+        task_id,
+        tag_id,
+        user.id,
+    )
+    await session.commit()
+    return task
+
+
+@tasks_router.delete(
+    "/detail/tags/",
+    response_model=schemas.Task,
+)
+async def remove_task_tag(
+    session: Session,
+    task_id: int,
+    tag_id: int,
+):
+    """Remove a tag from an annotation task."""
+    task = await api.tasks.remove_tag(
+        session,
+        task_id,
+        tag_id,
+    )
+    await session.commit()
+    return task
+
+
+@tasks_router.post(
+    "/detail/notes/",
+    response_model=schemas.Task,
+)
+async def add_task_note(
+    session: Session,
+    task_id: int,
+    data: schemas.NoteCreate,
+    user: ActiveUser,
+):
+    """Add a note to an annotation task."""
+    note = await api.notes.create(
+        session,
+        schemas.NotePostCreate(
+            created_by_id=user.id,
+            **dict(data),
+        ),
+    )
+    task = await api.tasks.add_note(
+        session,
+        task_id,
+        note.id,
+    )
+    await session.commit()
+    return task
+
+
+@tasks_router.patch(
+    "/detail/notes/",
+    response_model=schemas.Task,
+)
+async def update_task_note(
+    session: Session,
+    task_id: int,
+    note_id: int,
+    data: schemas.NoteUpdate,
+):
+    """Update a note on an annotation task."""
+    task = await api.tasks.update_note(
+        session,
+        task_id,
+        note_id,
+        data,
+    )
+    await session.commit()
+    return task
+
+
+@tasks_router.post(
+    "/detail/badges/",
+    response_model=schemas.Task,
+)
+async def add_task_badge(
+    session: Session,
+    task_id: int,
+    state: TaskState,
+    user: ActiveUser,
+):
+    """Add a badge to an annotation task."""
+    task = await api.tasks.add_status_badge(
+        session,
+        task_id,
+        user.id,
+        state,
+    )
+    await session.commit()
+    return task
+
+
+@tasks_router.delete(
+    "/detail/badges/",
+    response_model=schemas.Task,
+)
+async def remove_task_badge(
+    session: Session,
+    task_id: int,
+    badge_id: int,
+):
+    """Remove a badge from an annotation task."""
+    task = await api.tasks.remove_status_badge(
+        session,
+        task_id,
+        badge_id,
+    )
+    await session.commit()
+    return task

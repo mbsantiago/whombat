@@ -27,7 +27,7 @@ export type ShiftWindowFn = (
   relative: boolean,
 ) => void;
 
-export type SetWindowFn = Dispatch<SetStateAction<SpectrogramWindow>>;
+export type SetWindowFn = (window: SpectrogramWindow) => void;
 
 export type CenterWindowFn = ({
   time,
@@ -198,6 +198,26 @@ export function centerWindowOn(
   };
 }
 
+export function scaleWindow(
+  window: SpectrogramWindow,
+  { time = 1, freq = 1 }: { time?: number; freq?: number } = {},
+): SpectrogramWindow {
+  const width = (window.time.max - window.time.min) * time;
+  const height = (window.freq.max - window.freq.min) * freq;
+  const timeCenter = (window.time.max + window.time.min) / 2;
+  const freqCenter = (window.freq.max + window.freq.min) / 2;
+  return {
+    time: {
+      min: timeCenter - width / 2,
+      max: timeCenter + width / 2,
+    },
+    freq: {
+      min: freqCenter - height / 2,
+      max: freqCenter + height / 2,
+    },
+  };
+}
+
 /** Hook to manage a window and its bounds.
  * @param {Object} options
  * @param {SpectrogramWindow} options.initial: Initial value of the window.
@@ -257,24 +277,9 @@ export default function useWindow({
     [setWindow],
   );
 
-  const scaleWindow = useCallback(
+  const scale = useCallback(
     ({ time = 1, freq = 1 }: { time?: number; freq?: number } = {}) => {
-      setWindow((win) => {
-        const width = (win.time.max - win.time.min) * time;
-        const height = (win.freq.max - win.freq.min) * freq;
-        const timeCenter = (win.time.max + win.time.min) / 2;
-        const freqCenter = (win.freq.max + win.freq.min) / 2;
-        return {
-          time: {
-            min: timeCenter - width / 2,
-            max: timeCenter + width / 2,
-          },
-          freq: {
-            min: freqCenter - height / 2,
-            max: freqCenter + height / 2,
-          },
-        };
-      });
+      setWindow((win) => scaleWindow(win, { time, freq }));
     },
     [setWindow],
   );
@@ -284,7 +289,7 @@ export default function useWindow({
     setWindow,
     shiftWindow: shift,
     centerOn,
-    scaleWindow,
+    scaleWindow: scale,
     bounds,
     reset,
   };

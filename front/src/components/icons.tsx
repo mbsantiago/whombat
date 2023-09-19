@@ -1,6 +1,9 @@
 import { type ComponentProps } from "react";
 import Image from "next/image";
 import {
+  CursorArrowRaysIcon,
+  SquaresPlusIcon,
+  ClipboardDocumentListIcon,
   FaceFrownIcon,
   HandRaisedIcon,
   MagnifyingGlassPlusIcon,
@@ -110,7 +113,7 @@ export {
   PencilSquareIcon as AnnotationProjectIcon,
   PlusIcon as AddIcon,
   RectangleStackIcon as DatasetsIcon,
-  RectangleStackIcon as TasksIcon,
+  RectangleStackIcon as MissingTaskIcon,
   ShieldCheckIcon as VerifiedIcon,
   SignalIcon as SoundEventIcon,
   Square2StackIcon as ClipsIcon,
@@ -137,4 +140,7 @@ export {
   HandRaisedIcon as DragIcon,
   MagnifyingGlassPlusIcon as ZoomIcon,
   FaceFrownIcon as SadIcon,
+  ClipboardDocumentListIcon as TasksIcon,
+  SquaresPlusIcon as NewAnnotationIcon,
+  CursorArrowRaysIcon as SelectIcon,
 };

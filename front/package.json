@@ -23,6 +23,7 @@
     "@types/node": "20.5.1",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
+    "@xstate/react": "^3.2.2",
     "axios": "^1.5.0",
     "classnames": "^2.3.2",
     "eslint": "8.47.0",
@@ -41,6 +42,7 @@
     "resolvers:^3.3.0": "link:@hookform/resolvers:^3.3.0",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.6",
+    "xstate": "^4.38.2",
     "zod": "3.21.4",
     "zustand": "^4.4.1"
   },

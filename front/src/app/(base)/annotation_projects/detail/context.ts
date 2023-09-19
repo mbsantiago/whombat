@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import useAnnotationProject from "@/hooks/useAnnotationProject";
+import { type AnnotationProject } from "@/api/annotation_projects";
 
-export const AnnotationProjectContext = createContext<ReturnType<
-  typeof useAnnotationProject
-> | null>(null);
+export const AnnotationProjectContext = createContext<AnnotationProject | null>(
+  null,
+);

@@ -27,7 +27,7 @@ export function H3({
   return (
     <h3
       className={classnames(
-        "text-lg font-semibold leading-7 text-stone-900 dark:text-stone-200",
+        "text-lg font-semibold leading-7 items-center text-stone-900 dark:text-stone-200",
         className,
       )}
       {...props}

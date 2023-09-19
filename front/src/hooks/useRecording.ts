@@ -16,6 +16,7 @@ export default function useRecording({
   onAddFeature,
   onRemoveFeature,
   onUpdateFeature,
+  enabled = true,
 }: {
   recording_id: number;
   onUpdate?: (dataset: RecordingUpdate) => void;
@@ -26,11 +27,16 @@ export default function useRecording({
   onAddFeature?: (feature: Feature) => void;
   onRemoveFeature?: (feature: Feature) => void;
   onUpdateFeature?: (feature: Feature) => void;
+  enabled?: boolean;
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["recording", recording_id], () =>
-    api.recordings.get(recording_id),
+  const query = useQuery(
+    ["recording", recording_id],
+    () => api.recordings.get(recording_id),
+    {
+      enabled,
+    },
   );
 
   const update = useMutation({
@@ -77,11 +83,14 @@ export default function useRecording({
   });
 
   const updateNote = useMutation({
-    mutationFn: async ({ note_id, data }: {
+    mutationFn: async ({
+      note_id,
+      data,
+    }: {
       note_id: number;
       data: NoteUpdate;
     }) => {
-      return await api.recordings.updateNote({recording_id, note_id, data});
+      return await api.recordings.updateNote({ recording_id, note_id, data });
     },
     onSuccess: (data) => {
       client.setQueryData(["recording", recording_id], data);

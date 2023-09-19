@@ -131,7 +131,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
           leaveTo="opacity-0"
           flip={true}
         >
-          <div className="relative w-full cursor-default overflow-hidden text-left">
+          <div className="relative w-full cursor-default text-left">
             <Combobox.Input
               as={Input}
               ref={ref}

@@ -93,8 +93,8 @@ export default function WindowBar({
       let dT = ((end - start) * dx) / elW;
       let dF = ((high - low) * dy) / elH;
 
-      let centerT = ((end - start) * x) / elW;
-      let centerF = ((high - low) * (elH - y)) / elH;
+      let centerT = start + ((end - start) * x) / elW;
+      let centerF = low + ((high - low) * (elH - y)) / elH;
 
       let duration = win.time.max - win.time.min;
       let bandwidth = win.freq.max - win.freq.min;

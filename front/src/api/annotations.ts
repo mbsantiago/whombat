@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 import { GetManySchema, Page } from "./common";
-import { ClipCreateSchema } from "@/api/clips";
 import { TagSchema } from "@/api/tags";
 import { SimpleUserSchema } from "@/api/user";
 import { NoteSchema } from "@/api/notes";

@@ -1,17 +1,10 @@
-import {
-  type ReactNode,
-  Fragment,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import { Fragment, useRef, useCallback, useMemo } from "react";
 import { Float } from "@headlessui-float/react";
 import { ExpandIcon } from "@/components/icons";
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
 import { useSlider } from "react-use";
 import { PlayIcon, PauseIcon, SpeedIcon, LoopIcon } from "@/components/icons";
-import { type AudioState, type AudioControls } from "@/hooks/useAudio";
 
 const SPEED_OPTIONS = [
   { id: "0.1", label: "0.1x", value: 0.1 },
@@ -30,18 +23,35 @@ const COMMON_BUTTON_CLASSES =
   "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
 
 export default function Player({
-  audio,
-  state,
-  controls,
+  samplerate,
+  currentTime,
+  startTime,
+  endTime,
+  speed,
+  playing,
+  paused,
+  loop,
+  play,
+  pause,
+  seek,
+  setSpeed,
+  toggleLoop,
 }: {
-  audio: ReactNode;
-  state: AudioState;
-  controls: AudioControls;
+  samplerate: number;
+  currentTime: number;
+  startTime: number;
+  endTime: number;
+  speed: number;
+  playing: boolean;
+  paused: boolean;
+  loop: boolean;
+  play: () => void;
+  pause: () => void;
+  seek: (time: number) => void;
+  setSpeed: (speed: number) => void;
+  toggleLoop: () => void;
 }) {
   const sliderRef = useRef<HTMLDivElement>(null);
-
-  const { seek } = controls;
-  const { time, startTime, endTime, samplerate } = state;
 
   const onScrub = useCallback(
     (value: number) => {
@@ -58,29 +68,28 @@ export default function Player({
 
   const barPosition = useMemo(() => {
     const length = endTime - startTime;
-    const value = (time - startTime) / length;
+    const value = (currentTime - startTime) / length;
     return value * 100;
-  }, [time, startTime, endTime]);
+  }, [currentTime, startTime, endTime]);
 
   const speedOptions = useMemo(() => {
     return SPEED_OPTIONS.filter((option) => option.value * samplerate <= 48000);
   }, [samplerate]);
 
   return (
-    <div className="flex flex-row items-center gap-2 border rounded-md border-stone-600 bg-stone-700 px-2">
-      {audio}
+    <div className="flex flex-row items-center gap-2 border rounded-md border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700 px-2">
       <button
         type="button"
         className={classNames(
-          "text-stone-400 hover:text-stone-200",
+          "text-stone-600 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200",
           COMMON_BUTTON_CLASSES,
         )}
         onClick={() => {
-          if (state.playing && !state.paused) return controls.pause();
-          controls.play();
+          if (playing && !paused) return pause();
+          play();
         }}
       >
-        {state.playing && !state.paused ? (
+        {playing && !paused ? (
           <PauseIcon className="h-5 w-5" />
         ) : (
           <PlayIcon className="h-5 w-5" />
@@ -89,22 +98,24 @@ export default function Player({
       <button
         type="button"
         className={classNames(COMMON_BUTTON_CLASSES, {
-          "text-emerald-500 hover:text-emerald-300": state.loop,
-          "text-stone-400 hover:text-stone-200": !state.loop,
+          "text-emerald-500 dark:hover:text-emerald-300 hover:text-emerald-700":
+            loop,
+          "dark:text-stone-400 dark:hover:text-stone-200 text-stone-600 hover:text-stone-800":
+            !loop,
         })}
-        onClick={() => controls.setLoop(!state.loop)}
+        onClick={() => toggleLoop()}
       >
         <LoopIcon className="h-5 w-5" />
       </button>
       <div className="w-36 ml-2">
-        <div className="flex justify-between text-xs text-stone-400">
-          <p>{secondsToTimeStr(state.time)}</p>
-          <p>{secondsToTimeStr(state.endTime)}</p>
+        <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
+          <p>{secondsToTimeStr(currentTime)}</p>
+          <p>{secondsToTimeStr(endTime)}</p>
         </div>
         <div ref={sliderRef} className="py-1 w-full cursor-pointer">
           <div className="relative h-1 bg-stone-900 rounded-full w-full">
             <div
-              className="h-1 bg-emerald-200 rounded-full relative"
+              className="h-1 bg-emerald-600 dark:bg-emerald-200 rounded-full relative"
               style={{
                 width: `${Math.min(barPosition, 100)}%`,
               }}
@@ -118,8 +129,8 @@ export default function Player({
         </div>
       </div>
       <SelectSpeed
-        speed={state.speed}
-        onChange={(value) => controls.setSpeed(value)}
+        speed={speed}
+        onChange={(value) => setSpeed(value)}
         options={speedOptions}
       />
     </div>
@@ -127,7 +138,8 @@ export default function Player({
 }
 
 /** Taken from https://stackoverflow.com/a/25279399 */
-function secondsToTimeStr(seconds: number): string {
+function secondsToTimeStr(seconds?: number): string {
+  if (seconds === undefined) return "00:00.000";
   return new Date(1000 * seconds)
     .toISOString()
     .substring(11, 22)
@@ -159,7 +171,7 @@ function SelectSpeed({
         <Listbox.Button
           className={classNames(
             COMMON_BUTTON_CLASSES,
-            "text-stone-400 hover:text-stone-200",
+            "text-stone-600 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200",
             "flex flex-row items-center w-full pr-7",
           )}
         >
@@ -174,17 +186,19 @@ function SelectSpeed({
               key={option.id}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${active
-                  ? "bg-emerald-100 text-emerald-900"
-                  : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${
+                  active
+                    ? "bg-emerald-100 text-emerald-900"
+                    : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
-                      }`}
+                    className={`block truncate ${
+                      selected ? "text-emerald-500 font-medium" : "font-normal"
+                    }`}
                   >
                     {option.label}
                   </span>

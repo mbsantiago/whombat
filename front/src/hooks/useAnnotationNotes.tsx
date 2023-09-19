@@ -1,31 +1,27 @@
-import { type TaskFilter } from "@/api/tasks";
-// import { type Task, type TaskCreate } from "@/api/tasks";
+import { type AnnotationNoteFilter } from "@/api/annotations";
 import api from "@/app/api";
-// import { useMutation } from "@tanstack/react-query";
 import usePagedQuery from "@/hooks/usePagedQuery";
 import useFilter from "@/hooks/useFilter";
 
-export default function useTasks({
+export default function useAnnotationNotes({
   filter: initialFilter = {},
   pageSize = 10,
 }: {
-  filter?: TaskFilter;
+  filter?: AnnotationNoteFilter;
   pageSize?: number;
 } = {}) {
-  const filter = useFilter<TaskFilter>({
-    fixed: initialFilter,
-  });
+  const filter = useFilter<AnnotationNoteFilter>({ fixed: initialFilter });
 
   const { query, pagination, items, total } = usePagedQuery({
-    name: "tasks",
-    func: api.tasks.getMany,
-    pageSize,
+    name: "annotation_notes",
+    func: api.annotations.getNotes,
+    pageSize: pageSize,
     filter: filter.filter,
   });
 
   return {
-    filter,
     query,
+    filter,
     pagination,
     items,
     total,
