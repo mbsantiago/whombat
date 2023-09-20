@@ -53,11 +53,12 @@ export default function useSpectrogram({
   const [audioState] = useActor(state.context.audio);
 
   // Track the audio playback with the spectrogram
+  const isPlaying = state.matches("playing");
   useEffect(() => {
-    if (state.matches("playing")) {
+    if (isPlaying) {
       send({ type: "CENTER_ON", time: audioState.context.currentTime });
     }
-  }, [state.matches("playing"), audioState.context.currentTime]);
+  }, [isPlaying, send, audioState.context.currentTime]);
 
   // Allow the user to drag the spectrogram around
   const handleOnDrag = useCallback(

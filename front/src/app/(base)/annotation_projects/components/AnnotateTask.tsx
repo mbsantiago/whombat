@@ -6,7 +6,6 @@ import { useScratch } from "react-use";
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Task } from "@/api/tasks";
-import RecordingTagBar from "@/app/(base)/recordings/components/RecordingTagBar";
 import Loading from "@/app/loading";
 import Button from "@/components/Button";
 import Card from "@/components/Card";

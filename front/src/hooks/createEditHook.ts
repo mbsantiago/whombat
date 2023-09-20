@@ -87,12 +87,17 @@ export default function createEditHook<J>(
       }
     }, [drag.isDragging, object, tmpObject, active, onChange])
 
+    const {
+      start,
+      current
+    } = drag
+
     // On drag modify the object by dragging a single editable element
     useEffect(() => {
       // Only do something if an editable element is being hovered
       if (
-        drag.start != null &&
-        drag.current != null &&
+        start != null &&
+        current != null &&
         hovered != null &&
         active &&
         object != null
@@ -104,8 +109,8 @@ export default function createEditHook<J>(
             setTmpObject(
               func.drag(
                 object,
-                drag.start,
-                drag.current,
+                start,
+                current,
               ),
             )
           }
@@ -114,16 +119,16 @@ export default function createEditHook<J>(
           setTmpObject(
             shiftObject(
               object,
-              drag.start,
-              drag.current,
+              start,
+              current,
             ),
           )
         }
       }
     }, [
       object,
-      drag.start,
-      drag.current,
+      start,
+      current,
       hovered,
       editableElements,
       active,

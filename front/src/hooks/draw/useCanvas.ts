@@ -58,7 +58,7 @@ export default function useCanvas({
       draw(ctx);
       onResize?.(ctx);
     }
-  }, [ctx, draw, onResize]);
+  }, [ref, ctx, draw, onResize]);
 
   // Resize canvas on window resize
   useEvent("resize", handleOnResize, ref.current);

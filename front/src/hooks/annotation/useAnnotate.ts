@@ -102,7 +102,7 @@ export default function useAnnotate({
         geometry,
       });
     },
-    [send],
+    [send, specState.context.window],
   );
   const { draw: drawCreateBBox } = useCreateBBox({
     drag: dragState,
@@ -136,7 +136,7 @@ export default function useAnnotate({
       drawCreateBBox(ctx);
       drawAnnotations(ctx);
     },
-    [drawSpec, drawCreateBBox],
+    [drawSpec, drawCreateBBox, drawAnnotations],
   );
 
   return {

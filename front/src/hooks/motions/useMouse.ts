@@ -81,7 +81,7 @@ export default function useMouse({
     return () => {
       off(document, "mousemove", moveHandler);
     };
-  }, [ref, active]);
+  }, [ref, active, setState]);
 
   // Register on click handler
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function useMouse({
     return () => {
       off(document, "click", clickHandler);
     };
-  }, [ref, active, onClick]);
+  }, [ref, active, onClick, onDblClick]);
 
   return state;
 }
