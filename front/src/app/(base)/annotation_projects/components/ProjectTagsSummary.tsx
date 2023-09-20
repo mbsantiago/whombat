@@ -1,12 +1,12 @@
+import useAnnotationTags from "@/hooks/api/useAnnotationTags";
+import useTaskTags from "@/hooks/api/useTaskTags";
 import Link from "next/link";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
-import { AddIcon, TagsIcon } from "@/components/icons";
-import { type AnnotationProject } from "@/api/annotation_projects";
-import { H4 } from "@/components/Headings";
 import Empty from "@/components/Empty";
-import useAnnotationTags from "@/hooks/useAnnotationTags";
-import useTaskTags from "@/hooks/useTaskTags";
+import { AddIcon, TagsIcon } from "@/components/icons";
+import { H4 } from "@/components/Headings";
+import { type AnnotationProject } from "@/api/annotation_projects";
 
 function NoTags() {
   return (

@@ -51,7 +51,7 @@ export type AudioEvent =
 export const audioStates = {
   initial: "stopped",
   invoke: {
-    src: "setup",
+    src: "setupAudio",
   },
   states: {
     stopped: {
@@ -255,14 +255,10 @@ export const audioServices = {
       cancelAnimationFrame(requestId);
     };
   },
-  setup: (context: AudioContext) => () => {
+  setupAudio: (context: AudioContext) => () => {
     // Create an audio element
     const audio = new Audio();
     context.audio = audio;
-
-    console.log({
-      context,
-    });
 
     // Set the audio element URL
     const url = context.getAudioURL({

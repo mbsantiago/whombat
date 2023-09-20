@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 import { AnnotationProjectContext } from "../context";
-import useTasks from "@/hooks/useTasks";
+import useTasks from "@/hooks/api/useTasks";
 import Empty from "@/components/Empty";
 import Loading from "@/app/loading";
 import AnnotateTask from "../../components/AnnotateTask";

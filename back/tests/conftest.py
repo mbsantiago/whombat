@@ -328,7 +328,7 @@ async def annotation(
     """Create an annotation for testing."""
     annotation = await api.annotations.create(
         session,
-        data=schemas.AnnotationCreate(
+        data=schemas.AnnotationPostCreate(
             created_by_id=user.id,
             task_id=task.id,
             sound_event_id=sound_event.id,

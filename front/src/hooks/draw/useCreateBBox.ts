@@ -1,14 +1,23 @@
 import { useEffect, useState, useCallback } from "react";
 import drawBBox, { BBoxStyle, DEFAULT_BBOX_STYLE } from "@/draw/bbox";
-import useDrag from "@/hooks/useDrag";
-import { type DragState } from "@/hooks/useDrag";
+import useDrag from "@/hooks/motions/useDrag";
+import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type BBox } from "@/utils/types";
 
 export interface UseCreateBBoxProps {
-  drag: DragState;
+  drag: ScratchState;
   active: boolean;
   style?: BBoxStyle;
-  onCreate?: (bbox: BBox) => void;
+  onCreate?: ({
+    bbox,
+    dims,
+  }: {
+    bbox: BBox;
+    dims: {
+      width: number;
+      height: number;
+    };
+  }) => void;
 }
 
 interface CreateBBox {
@@ -24,6 +33,10 @@ export default function useCreateBBox({
   onCreate,
 }: UseCreateBBoxProps): CreateBBox {
   // State of the bbox creation
+  const [dims, setDims] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
   const [bbox, setBBox] = useState<BBox | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
 
@@ -37,6 +50,13 @@ export default function useCreateBBox({
     active,
   });
 
+  const { elW, elH } = drag;
+
+  // Keep track of the dimensions of the element
+  useEffect(() => {
+    if (elW != null && elH != null) setDims({ width: elW, height: elH });
+  }, [elW, elH]);
+
   // Handle start and end of bbox creation
   useEffect(() => {
     if (active) {
@@ -49,11 +69,14 @@ export default function useCreateBBox({
         setIsDrawing(false);
 
         // Create the bbox
-        onCreate?.(bbox);
+        onCreate?.({
+          bbox,
+          dims,
+        });
         setBBox(null);
       }
     }
-  }, [active, isDragging, bbox, onCreate]);
+  }, [active, isDragging, bbox, onCreate, dims]);
 
   // Update the bbox when the starting and current points change
   useEffect(() => {

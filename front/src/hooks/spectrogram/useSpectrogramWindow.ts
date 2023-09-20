@@ -1,13 +1,13 @@
 import { useMemo, useCallback } from "react";
 import drawImage from "@/draw/image";
-import useImage from "@/hooks/useImage";
+import useImage from "@/hooks/spectrogram/useImage";
+import api from "@/app/api";
 import { type Interval } from "@/api/audio";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import {
   type SpectrogramParameters,
   DEFAULT_SPECTROGRAM_PARAMETERS,
 } from "@/api/spectrograms";
-import api from "@/app/api";
 
 type GetUrlFn = ({
   recording_id,

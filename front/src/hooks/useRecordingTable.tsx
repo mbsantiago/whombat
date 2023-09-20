@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import { type Tag } from "@/api/tags";
-import { type Recording, type RecordingUpdate } from "@/api/recordings";
+import * as icons from "@/components/icons";
 import Link from "next/link";
 import Checkbox from "@/components/TableCheckbox";
 import TableInput from "@/components/TableInput";
@@ -8,13 +7,13 @@ import TableCell from "@/components/TableCell";
 import TableMap, { parsePosition } from "@/components/TableMap";
 import TableTags from "@/components/TableTags";
 import TableHeader from "@/components/TableHeader";
-import * as icons from "@/components/icons";
-
+import { type Tag } from "@/api/tags";
+import { type Recording, type RecordingUpdate } from "@/api/recordings";
 import {
   ColumnDef,
+  RowData,
   useReactTable,
   getCoreRowModel,
-  RowData,
 } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {

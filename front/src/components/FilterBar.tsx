@@ -1,4 +1,4 @@
-import { type Filter } from "@/hooks/useFilter";
+import { type Filter } from "@/hooks/api/useFilter";
 import { CloseIcon, FilterIcon } from "@/components/icons";
 
 const OPERATION_MAP: Record<string, string> = {

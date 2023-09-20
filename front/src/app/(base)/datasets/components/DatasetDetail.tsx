@@ -5,8 +5,8 @@ import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetActions from "./DatasetActions";
 import DatasetUpdateForm from "./DatasetUpdateForm";
 
-import useRecordingTags from "@/hooks/useRecordingTags";
-import useRecordingNotes from "@/hooks/useRecordingNotes";
+import useRecordingTags from "@/hooks/api/useRecordingTags";
+import useRecordingNotes from "@/hooks/api/useRecordingNotes";
 
 export default function DatasetDetail({
   dataset,

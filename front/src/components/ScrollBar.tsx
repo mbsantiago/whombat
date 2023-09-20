@@ -1,8 +1,8 @@
 import { type HTMLProps, useRef, useCallback, useMemo } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { useScratch } from "react-use";
-import { type ShiftWindowFn, type SetWindowFn } from "@/hooks/useWindow";
-import useWindowDrag, { type DragFn } from "@/hooks/useWindowDrag";
+import { type ShiftWindowFn, type SetWindowFn } from "@/hooks/spectrogram/useWindow";
+import useWindowDrag, { type DragFn } from "@/hooks/spectrogram/useWindowDrag";
 
 type BarPosition = {
   left: number;

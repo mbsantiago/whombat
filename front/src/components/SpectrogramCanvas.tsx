@@ -1,7 +1,7 @@
 import { useRef, useCallback, type HTMLProps } from "react";
-import useCanvas from "@/hooks/useCanvas";
-import useSpectrogramWindow from "@/hooks/useSpectrogramWindow";
-import useRecordingSegments from "@/hooks/useRecordingSegments";
+import useCanvas from "@/hooks/draw/useCanvas";
+import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
+import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
 import { type Recording } from "@/api/recordings";

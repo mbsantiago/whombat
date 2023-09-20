@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
 from whombat.filters.annotation_notes import AnnotationNoteFilter
-from whombat.filters.annotations import AnnotationFilter
 from whombat.filters.annotation_tags import AnnotationTagFilter
+from whombat.filters.annotations import AnnotationFilter
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -23,14 +23,31 @@ annotations_router = APIRouter()
 async def create_annotation(
     session: Session,
     data: schemas.AnnotationCreate,
+    user: ActiveUser,
 ):
-    """Create multiple annotation annotations."""
-    annotations = await api.annotations.create(
+    """Create annotation."""
+    task = await api.tasks.get_by_id(session, data.task_id)
+
+    # Create the corresponding sound event
+    sound_event = await api.sound_events.create(
         session,
-        data,
+        schemas.SoundEventCreate(
+            recording_id=task.clip.recording_id,
+            geometry=data.geometry,
+        ),
+    )
+
+    # Create the annotation
+    annotation = await api.annotations.create(
+        session,
+        schemas.AnnotationPostCreate(
+            task_id=task.id,
+            created_by_id=user.id,
+            sound_event_id=sound_event.id,
+        ),
     )
     await session.commit()
-    return annotations
+    return annotation
 
 
 @annotations_router.get(

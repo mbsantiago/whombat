@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUpdateEffect } from "react-use";
 import { type Position } from "@/utils/types";
 
-export type DragState = {
+export type ScratchState = {
   isScratching: boolean;
   x?: number;
   y?: number;
@@ -18,6 +18,12 @@ export type DragState = {
   elY?: number;
 };
 
+export type DragState = {
+  isDragging: boolean;
+  start: Position | null;
+  current: Position | null;
+}
+
 export default function useDrag({
   dragState,
   active = true,
@@ -25,7 +31,7 @@ export default function useDrag({
   onDrag,
   onDragEnd,
 }: {
-  dragState: DragState;
+  dragState: ScratchState;
   active?: boolean;
   onDragStart?: (pos: Position) => void;
   onDrag?: (pos: Position) => void;

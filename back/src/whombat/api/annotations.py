@@ -84,7 +84,7 @@ async def get_many(
 
 @caches.with_update
 async def create(
-    session: AsyncSession, data: schemas.AnnotationCreate
+    session: AsyncSession, data: schemas.AnnotationPostCreate
 ) -> schemas.Annotation:
     """Create an annotation project."""
     await common.get_object(

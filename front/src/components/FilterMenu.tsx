@@ -3,7 +3,7 @@ import { Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { FilterIcon, BackIcon } from "@/components/icons";
 import { type SetFilter } from "@/components/Filters";
-import { type Filter } from "@/hooks/useFilter";
+import { type Filter } from "@/hooks/api/useFilter";
 import SearchMenu from "@/components/SearchMenu";
 import Button from "@/components/Button";
 

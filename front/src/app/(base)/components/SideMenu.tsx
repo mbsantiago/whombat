@@ -1,7 +1,6 @@
 import { usePathname } from "next/navigation";
 import { useContext } from "react";
 import classnames from "classnames";
-import api from "@/app/api";
 import { UserContext } from "@/app/(base)/context";
 import Link from "next/link";
 import {

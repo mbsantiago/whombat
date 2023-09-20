@@ -1,21 +1,21 @@
-import { useMachine, useActor } from "@xstate/react";
-import { assign, spawn } from "xstate";
+import { useActor } from "@xstate/react";
 import { useEffect, useCallback } from "react";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
 import drawOnset from "@/draw/onset";
-import useSpectrogramParameters from "@/hooks/useSpectrogramParameters";
-import useWindowDrag from "@/hooks/useWindowDrag";
-import useWindowScroll from "@/hooks/useWindowScroll";
-import useWindowZoom from "@/hooks/useWindowZoom";
-import useBBoxZoom from "@/hooks/useBBoxZoom";
-import useSpectrogramWindow from "@/hooks/useSpectrogramWindow";
-import useRecordingSegments from "@/hooks/useRecordingSegments";
+import useSpectrogramParameters from "@/hooks/spectrogram/useSpectrogramParameters";
+import useWindowDrag from "@/hooks/spectrogram/useWindowDrag";
+import useWindowScroll from "@/hooks/spectrogram/useWindowScroll";
+import useWindowZoom from "@/hooks/spectrogram/useWindowZoom";
+import useBBoxZoom from "@/hooks/spectrogram/useBBoxZoom";
+import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
+import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
 import { spectrogramMachine } from "@/machines/spectrogram";
-import { audioMachine } from "@/machines/audio";
-import { type Recording } from "@/api/recordings";
+
+import { type StateFrom, type EventFrom } from "xstate";
+import { type ScratchState } from "@/hooks/motions/useDrag";
+import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import api from "@/app/api";
 
 export type DrawFn = (
   ctx: CanvasRenderingContext2D,
@@ -34,57 +34,23 @@ export type SpectrogramState = {
  * playback, dragging, scrolling, and settings, with controls for each.
  */
 export default function useSpectrogram({
-  bounds,
-  initial,
-  recording,
+  state,
+  send,
   dragState,
   scrollState,
-  scrollRef,
 }: {
-  bounds: SpectrogramWindow;
-  initial: SpectrogramWindow;
-  recording: Recording;
-  dragState: any;
-  scrollState: any;
-  scrollRef: any;
+  state: StateFrom<typeof spectrogramMachine>;
+  send: (event: EventFrom<typeof spectrogramMachine>) => void;
+  dragState: ScratchState;
+  scrollState: ScrollState;
 }) {
-  // This hook holds the state for the spectrogram settings
-  const settings = useSpectrogramParameters({
-    recording,
-  });
-
-  // State machine for the spectrogram
-  const [state, send] = useMachine(spectrogramMachine, {
-    context: {
-      recording,
-      bounds,
-      initial,
-      window: initial,
-    },
-    actions: {
-      initAudio: assign({
-        // @ts-ignore
-        audio: () =>
-          spawn(
-            audioMachine.withContext({
-              audio: new Audio(),
-              recording,
-              startTime: bounds.time.min,
-              endTime: bounds.time.max,
-              currentTime: bounds.time.min,
-              muted: false,
-              volume: 1,
-              speed: 1,
-              loop: true,
-              getAudioURL: api.audio.getStreamUrl,
-            }),
-          ),
-      }),
-    },
+  // Listen for changes to the spectrogram settings and update global state
+  useSpectrogramParameters({
+    parameters: state.context.parameters,
   });
 
   // State machine for the audio player
-  const [audioState, audioSend] = useActor(state.context.audio);
+  const [audioState] = useActor(state.context.audio);
 
   // Track the audio playback with the spectrogram
   useEffect(() => {
@@ -115,8 +81,10 @@ export default function useSpectrogram({
     [send],
   );
   useWindowScroll({
+    // NOTE: This should be active all the time as it doesn't interfere with
+    // other mouse events
+    active: true,
     shiftWindow: handleOnScroll,
-    active: state.matches("panning"),
     scrollState,
   });
 
@@ -128,7 +96,9 @@ export default function useSpectrogram({
     [send],
   );
   useWindowZoom({
-    active: state.matches("panning"),
+    // NOTE: This should be active all the time as it doesn't interfere with
+    // other mouse events
+    active: true,
     scaleWindow: handleOnScrollZoom,
     scrollState,
   });
@@ -144,37 +114,33 @@ export default function useSpectrogram({
   const { draw: drawZoomBBox } = useBBoxZoom({
     window: state.context.window,
     setWindow: handleOnBBoxZoom,
-    dimensions: {
-      width: scrollRef.current?.offsetWidth ?? 0,
-      height: scrollRef.current?.offsetHeight ?? 0,
-    },
     drag: dragState,
     active: state.matches("zooming"),
   });
 
   // Get a spectrogram segment that covers the window
   const { selected, prev, next } = useRecordingSegments({
-    recording,
+    recording: state.context.recording,
     window: state.context.window,
   });
 
   // Load the spectrogram segment
   const { draw: drawSpecWindow } = useSpectrogramWindow({
-    recording_id: recording.id,
+    recording_id: state.context.recording.id,
     window: selected,
-    parameters: settings.parameters,
+    parameters: state.context.parameters,
   });
 
   // Load the previous and next spectrogram segments in the background
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording_id: state.context.recording.id,
     window: prev,
-    parameters: settings.parameters,
+    parameters: state.context.parameters,
   });
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording_id: state.context.recording.id,
     window: next,
-    parameters: settings.parameters,
+    parameters: state.context.parameters,
   });
 
   // Draw the spectrogram
@@ -213,9 +179,6 @@ export default function useSpectrogram({
   return {
     state,
     send,
-    audioState,
-    audioSend,
     draw,
-    settings,
   };
 }

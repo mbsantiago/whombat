@@ -1,5 +1,5 @@
 import { useUpdateEffect, useKeyPress } from "react-use";
-import { type ScrollState } from "@/hooks/useMouseWheel";
+import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 
 export default function useWindowScroll({
   shiftWindow,

@@ -1,4 +1,4 @@
-import { type Pagination as PaginationType } from "@/hooks/usePagedQuery";
+import { type Pagination as PaginationType } from "@/hooks/api/usePagedQuery";
 import { Input } from "@/components/inputs";
 import Button from "@/components/Button";
 import * as icons from "@/components/icons";

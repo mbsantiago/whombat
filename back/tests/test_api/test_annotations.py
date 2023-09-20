@@ -18,7 +18,7 @@ async def test_created_annotation_is_stored_in_the_database(
     """Test that an annotation is stored in the database."""
     annotation = await api.annotations.create(
         session,
-        data=schemas.AnnotationCreate(
+        data=schemas.AnnotationPostCreate(
             created_by_id=user.id,
             task_id=task.id,
             sound_event_id=sound_event.id,
@@ -47,7 +47,7 @@ async def test_created_annotation_is_returned(
     """Test that an annotation is returned."""
     annotation = await api.annotations.create(
         session,
-        data=schemas.AnnotationCreate(
+        data=schemas.AnnotationPostCreate(
             created_by_id=user.id,
             task_id=task.id,
             sound_event_id=sound_event.id,
@@ -70,7 +70,7 @@ async def test_create_annotation_fails_if_task_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await api.annotations.create(
             session,
-            data=schemas.AnnotationCreate(
+            data=schemas.AnnotationPostCreate(
                 created_by_id=user.id,
                 task_id=999,
                 sound_event_id=sound_event.id,
@@ -87,7 +87,7 @@ async def test_create_annotation_fails_if_sound_event_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await api.annotations.create(
             session,
-            data=schemas.AnnotationCreate(
+            data=schemas.AnnotationPostCreate(
                 created_by_id=user.id,
                 task_id=task.id,
                 sound_event_id=999,
@@ -104,7 +104,7 @@ async def test_create_annotation_fails_if_user_does_not_exist(
     with pytest.raises(exceptions.NotFoundError):
         await api.annotations.create(
             session,
-            data=schemas.AnnotationCreate(
+            data=schemas.AnnotationPostCreate(
                 created_by_id=uuid4(),
                 task_id=task.id,
                 sound_event_id=sound_event.id,

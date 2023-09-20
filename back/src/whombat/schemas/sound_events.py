@@ -26,7 +26,7 @@ class SoundEventCreate(BaseSchema):
     recording_id: int
     """The id of the recording to which the sound event belongs."""
 
-    geometry: Geometry
+    geometry: Geometry = Field(..., discriminator="type")
     """The geometry of the sound event."""
 
     @computed_field

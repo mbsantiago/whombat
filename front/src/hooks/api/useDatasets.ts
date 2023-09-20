@@ -1,7 +1,7 @@
 import { type DatasetFilter } from "@/api/datasets";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/usePagedQuery";
-import useFilter from "@/hooks/useFilter";
+import usePagedQuery from "@/hooks/api/usePagedQuery";
+import useFilter from "@/hooks/api/useFilter";
 
 export default function useDatasets({
   filter: initialFilter = {},

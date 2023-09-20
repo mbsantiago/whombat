@@ -70,37 +70,13 @@ export type MultiPolygon = {
   coordinates: Position[][][];
 };
 
-export type BasicGeometry =
-  | Point
-  | MultiPoint
-  | LineString
-  | MultiLineString
-  | Polygon
-  | MultiPolygon;
-
-export type GeometryCollection = {
-  type: "GeometryCollection";
-  geometries: BasicGeometry[];
-};
-
 export type Geometry =
+  | TimeStamp
+  | TimeInterval
   | Point
-  | MultiPoint
   | LineString
-  | MultiLineString
   | Polygon
-  | MultiPolygon
-  | GeometryCollection;
-
-export type Feature = {
-  type: "Feature";
-  geometry: Geometry | null;
-  properties?: JSONObject | null;
-};
-
-export type FeatureCollection = {
-  type: "FeatureCollection";
-  features: Feature[];
-};
-
-export type GeoJSONGeometry = Geometry | Feature | FeatureCollection;
+  | BoundingBox
+  | MultiPoint
+  | MultiLineString
+  | MultiPolygon;

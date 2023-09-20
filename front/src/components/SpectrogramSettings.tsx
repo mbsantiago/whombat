@@ -7,7 +7,7 @@ import Select from "@/components/Select";
 import SlideOver from "@/components/SlideOver";
 import RangeSlider from "@/components/RangeSlider";
 import { InputGroup, Input } from "@/components/inputs";
-import { SpectrogramSettingsIcon, SettingsIcon } from "@/components/icons";
+import { SettingsIcon } from "@/components/icons";
 import { type SpectrogramParameters, MIN_DB } from "@/api/spectrograms";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 
@@ -19,6 +19,7 @@ const SPECTROGRAM_COLORMAPS: Record<
     label: string;
   }
 > = {
+  gray: { id: "gray", value: "gray", label: "Gray" },
   viridis: { id: "viridis", value: "viridis", label: "Viridis" },
   magma: { id: "magma", value: "magma", label: "Magma" },
   inferno: { id: "inferno", value: "inferno", label: "Inferno" },
@@ -551,7 +552,6 @@ export default function SpectrogramSettings({
   nyquistFrequency?: number;
 }) {
   const [open, setOpen] = useState(false);
-
   return (
     <div>
       <Tooltip placement="bottom" tooltip="Spectrogram settings">

@@ -1,19 +1,19 @@
 "use client";
+import useDataset from "@/hooks/api/useDataset";
+import toast from "react-hot-toast";
 import {
   notFound,
   useSearchParams,
   useSelectedLayoutSegment,
   useRouter,
 } from "next/navigation";
-import toast from "react-hot-toast";
-import { type ReactNode } from "react";
 import * as icons from "@/components/icons";
 import Loading from "@/app/loading";
 import Header from "@/components/Header";
 import Tabs from "@/components/Tabs";
-import useDataset from "@/hooks/useDataset";
 import { DatasetContext } from "./context";
 import { H1 } from "@/components/Headings";
+import { type ReactNode } from "react";
 
 function DatasetHeader({ name }: { name: string }) {
   const router = useRouter();
@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     onDelete: () => {
       toast.success("Dataset deleted");
       router.push("/datasets/");
-    }
+    },
   });
 
   // If no dataset_id is provided, show a 404 page

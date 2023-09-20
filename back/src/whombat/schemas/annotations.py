@@ -6,19 +6,33 @@ from pydantic import Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.notes import Note
-from whombat.schemas.sound_events import SoundEvent
+from whombat.schemas.sound_events import SoundEvent, Geometry
 from whombat.schemas.tags import Tag
 from whombat.schemas.users import SimpleUser
 
 __all__ = [
     "Annotation",
     "AnnotationCreate",
+    "AnnotationPostCreate",
     "AnnotationTagCreate",
 ]
 
 
 class AnnotationCreate(BaseSchema):
     """Schema for data required to create an Annotation."""
+
+    uuid: UUID = Field(default_factory=uuid4)
+    """UUID of this annotation."""
+
+    task_id: int
+    """ID of the task this annotation belongs to."""
+
+    geometry: Geometry = Field(..., discriminator="type")
+    """Geometry of this annotation."""
+
+
+class AnnotationPostCreate(BaseSchema):
+    """Schema to create an Annotation from a SoundEvent."""
 
     uuid: UUID = Field(default_factory=uuid4)
     """UUID of this annotation."""
@@ -33,7 +47,7 @@ class AnnotationCreate(BaseSchema):
     """Sound event this annotation is about."""
 
 
-class Annotation(AnnotationCreate):
+class Annotation(AnnotationPostCreate):
     """Schema for an Annotation."""
 
     id: int

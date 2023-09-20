@@ -4,16 +4,25 @@ import { GetManySchema, Page } from "./common";
 import { TagSchema } from "@/api/tags";
 import { SimpleUserSchema } from "@/api/user";
 import { NoteSchema } from "@/api/notes";
-import { SoundEventSchema } from "@/api/sound_events";
+import { SoundEventSchema, GeometrySchema } from "@/api/sound_events";
 
 export const AnnotationCreateSchema = z.object({
   task_id: z.number(),
-  sound_event_id: z.number(),
+  geometry: GeometrySchema,
 });
 
 export type AnnotationCreate = z.infer<typeof AnnotationCreateSchema>;
 
-export const AnnotationSchema = AnnotationCreateSchema.extend({
+export const AnnotationUpdateSchema = z.object({
+  geometry: GeometrySchema,
+});
+
+export type AnnotationUpdate = z.infer<typeof AnnotationUpdateSchema>;
+
+export const AnnotationSchema = z.object({
+  id: z.number(),
+  uuid: z.string().uuid(),
+  task_id: z.number(),
   created_by: SimpleUserSchema,
   sound_event: SoundEventSchema,
   notes: z.array(NoteSchema),
@@ -121,20 +130,25 @@ const DEFAULT_ENDPOINTS = {
   create: "/api/v1/annotations/",
   getMany: "/api/v1/annotations/",
   get: "/api/v1/annotations/detail/",
+  update: "/api/v1/annotations/detail/",
+  addTag: "/api/v1/annotations/detail/tags/",
+  removeTag: "/api/v1/annotations/detail/tags/",
+  addNote: "/api/v1/annotations/detail/notes/",
+  updateNote: "/api/v1/annotations/detail/notes/",
+  removeNote: "/api/v1/annotations/detail/notes/",
   delete: "/api/v1/annotations/detail/",
   getNotes: "/api/v1/annotations/notes/",
   getTags: "/api/v1/annotations/tags/",
 };
 
-
 export function registerAnnotationsApi(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function create(data: AnnotationCreate): Promise<Annotation[]> {
-    const body = z.array(AnnotationCreateSchema).parse(data);
+  async function create(data: AnnotationCreate): Promise<Annotation> {
+    const body = AnnotationCreateSchema.parse(data);
     const response = await instance.post(endpoints.create, body);
-    return z.array(AnnotationSchema).parse(response.data);
+    return AnnotationSchema.parse(response.data);
   }
 
   async function getMany(query: GetAnnotations): Promise<AnnotationPage> {
@@ -143,14 +157,81 @@ export function registerAnnotationsApi(
     return AnnotationPageSchema.parse(response.data);
   }
 
-  async function get(task_id: number): Promise<Annotation> {
-    const params = { task_id };
+  async function get(annotation_id: number): Promise<Annotation> {
+    const params = { annotation_id };
     const response = await instance.get(endpoints.get, { params });
     return AnnotationSchema.parse(response.data);
   }
 
-  async function delete_(task_id: number): Promise<Annotation> {
-    const params = { task_id };
+  async function update(
+    annotation_id: number,
+    data: AnnotationUpdate,
+  ): Promise<Annotation> {
+    const body = AnnotationUpdateSchema.parse(data);
+    const response = await instance.patch(endpoints.update, body, {
+      params: { annotation_id },
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function addTag(
+    annotation_id: number,
+    tag_id: number,
+  ): Promise<Annotation> {
+    const body = { tag_id };
+    const response = await instance.post(endpoints.addTag, body, {
+      params: { annotation_id },
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function removeTag(
+    annotation_id: number,
+    tag_id: number,
+  ): Promise<Annotation> {
+    const response = await instance.delete(endpoints.removeTag, {
+      params: { annotation_id, tag_id },
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function addNote(
+    annotation_id: number,
+    message: string,
+    is_issue: boolean = false,
+  ): Promise<Annotation> {
+    const body = { message, is_issue };
+    const response = await instance.post(endpoints.addNote, body, {
+      params: { annotation_id},
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function updateNote(
+    annotation_id: number,
+    note_id: number,
+    message: string,
+    is_issue: boolean = false,
+  ): Promise<Annotation> {
+    const body = { message, is_issue };
+    const response = await instance.patch(endpoints.updateNote, body, {
+      params: { annotation_id, note_id },
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function removeNote(
+    annotation_id: number,
+    note_id: number,
+  ): Promise<Annotation> {
+    const response = await instance.delete(endpoints.removeNote, {
+      params: { annotation_id, note_id },
+    });
+    return AnnotationSchema.parse(response.data);
+  }
+
+  async function delete_(annotation_id: number): Promise<Annotation> {
+    const params = { annotation_id };
     const response = await instance.delete(endpoints.delete, { params });
     return AnnotationSchema.parse(response.data);
   }
@@ -171,6 +252,12 @@ export function registerAnnotationsApi(
     create,
     getMany,
     get,
+    update,
+    addTag,
+    removeTag,
+    addNote,
+    updateNote,
+    removeNote,
     delete: delete_,
     getNotes,
     getTags,

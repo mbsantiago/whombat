@@ -22,6 +22,7 @@ from whombat.schemas.annotation_projects import (
 from whombat.schemas.annotations import (
     Annotation,
     AnnotationCreate,
+    AnnotationPostCreate,
     AnnotationTagCreate,
     AnnotationTag,
     AnnotationNote,
@@ -85,6 +86,7 @@ __all__ = [
     "Annotation",
     "AnnotationCreate",
     "AnnotationNote",
+    "AnnotationPostCreate",
     "AnnotationProject",
     "AnnotationProjectCreate",
     "AnnotationProjectUpdate",

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { type DragState } from "@/hooks/useWindowDrag";
-import type { Interval } from "@/api/audio";
-import type { Style } from "@/draw/styles";
 import drawInterval, { DEFAULT_INTERVAL_STYLE } from "@/draw/interval";
+
+import { type Interval } from "@/api/audio";
+import { type Style } from "@/draw/styles";
+import { type DragState } from "@/hooks/motions/useDrag";
 
 export interface UseCreateIntervalProps {
   drag: DragState;

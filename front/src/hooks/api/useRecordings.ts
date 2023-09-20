@@ -1,7 +1,7 @@
 import { type RecordingFilter, type RecordingUpdate } from "@/api/recordings";
 import { useMutation } from "@tanstack/react-query";
-import usePagedQuery from "@/hooks/usePagedQuery";
-import useFilter from "@/hooks/useFilter";
+import usePagedQuery from "@/hooks/api/usePagedQuery";
+import useFilter from "@/hooks/api/useFilter";
 import api from "@/app/api";
 
 export default function useRecordings({

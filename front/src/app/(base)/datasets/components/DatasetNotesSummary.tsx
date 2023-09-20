@@ -54,16 +54,6 @@ function LatestIssues({
   );
 }
 
-function TotalNotes({ notes }: { notes: RecordingNote[] }) {
-  return (
-    <div className="text-stone-500 text-sm">
-      {notes.length === 0
-        ? "No notes"
-        : `There are ${notes.length} notes in this dataset.`}
-    </div>
-  );
-}
-
 export default function DatasetNotesSumary({
   notes,
   isLoading = false,

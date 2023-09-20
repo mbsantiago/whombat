@@ -25,7 +25,7 @@ import { Input } from "@/components/inputs";
 import Tag from "@/components/Tag";
 import Key from "@/components/Key";
 import useStore from "@/store";
-import useTags from "@/hooks/useTags";
+import useTags from "@/hooks/api/useTags";
 
 function ComboBoxSection({ children }: { children: React.ReactNode }) {
   return (

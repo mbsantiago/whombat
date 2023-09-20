@@ -1,9 +1,12 @@
 import { useRef, useCallback } from "react";
 import { useMemo } from "react";
 import { useScratch } from "react-use";
-import useCanvas from "@/hooks/useCanvas";
-import useMouseWheel from "@/hooks/useMouseWheel";
-import useSpectrogram from "@/hooks/useSpectrogram";
+import { useActor, useMachine } from "@xstate/react";
+import { spectrogramMachine } from "@/machines/spectrogram";
+import useCanvas from "@/hooks/draw/useCanvas";
+import useMouseWheel from "@/hooks/motions/useMouseWheel";
+import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
+import useStore from "@/store";
 
 import Card from "@/components/Card";
 import Player from "@/components/Player";
@@ -29,6 +32,9 @@ export default function RecordingSpectrogram({
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollState = useMouseWheel(scrollRef);
 
+  // Get initial spectrogram parameters from global state
+  const parameters = useStore((state) => state.spectrogramSettings);
+
   // These are the absolute bounds of the spectrogram
   const bounds = useMemo(
     () => ({
@@ -47,16 +53,26 @@ export default function RecordingSpectrogram({
     [recording.samplerate, recording.duration],
   );
 
-  const { state, send, audioSend, audioState, settings, draw } = useSpectrogram(
-    {
+  // This hook holds the state for the spectrogram settings
+  // State machine for the spectrogram
+  const [state, send] = useMachine(spectrogramMachine, {
+    context: {
+      recording,
       bounds,
       initial,
-      recording,
-      dragState,
-      scrollState,
-      scrollRef,
+      window: initial,
+      parameters,
     },
-  );
+  });
+
+  const { draw } = useSpectrogram({
+    state,
+    send,
+    dragState,
+    scrollState,
+  });
+
+  const [audioState, audioSend] = useActor(state.context.audio);
 
   const handleOnBarDrag = useCallback(
     (newWindow: SpectrogramWindow) => {
@@ -72,10 +88,7 @@ export default function RecordingSpectrogram({
     [send],
   );
 
-  useCanvas({
-    ref: canvasRef,
-    draw,
-  });
+  useCanvas({ ref: canvasRef, draw });
 
   return (
     <Card>
@@ -88,9 +101,9 @@ export default function RecordingSpectrogram({
           onReset={() => send("RESET")}
         />
         <SpectrogramSettings
-          settings={settings.parameters}
-          onChange={settings.set}
-          onClear={settings.clear}
+          settings={state.context.parameters}
+          onChange={(key, value) => send({ type: "SET_PARAMETER", key, value })}
+          onClear={(key) => send({ type: "CLEAR_PARAMETER", key })}
         />
         <Player
           samplerate={recording.samplerate}

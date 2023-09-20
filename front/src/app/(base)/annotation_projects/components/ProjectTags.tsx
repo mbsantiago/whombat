@@ -1,5 +1,5 @@
 import useStore from "@/store";
-import useAnnotationProject from "@/hooks/useAnnotationProject";
+import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import Tag from "@/components/Tag";
 import TagSearchBar from "@/components/TagSearchBar";
 import SearchMenu from "@/components/SearchMenu";

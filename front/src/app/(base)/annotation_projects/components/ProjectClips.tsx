@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import useDatasets from "@/hooks/useDatasets";
-import useRecordings from "@/hooks/useRecordings";
-import useAnnotationProject from "@/hooks/useAnnotationProject";
+import useDatasets from "@/hooks/api/useDatasets";
+import useRecordings from "@/hooks/api/useRecordings";
+import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import SearchMenu from "@/components/SearchMenu";
 import { type AnnotationProject } from "@/api/annotation_projects";
 import { type Recording } from "@/api/recordings";

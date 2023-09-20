@@ -1,7 +1,7 @@
 "use client";
 import { toast } from "react-hot-toast";
 import { useSearchParams, useRouter } from "next/navigation";
-import useAnnotationProject from "@/hooks/useAnnotationProject";
+import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import { type ReactNode } from "react";
 import Loading from "@/app/loading";
 import { AnnotationProjectContext } from "./context";
