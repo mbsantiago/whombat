@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
-import { GetManySchema, Page } from "./common";
+
 import { TagSchema } from "@/api/tags";
 import { SimpleUserSchema } from "@/api/user";
 import { NoteSchema } from "@/api/notes";
-import { SoundEventSchema, GeometrySchema } from "@/api/sound_events";
+import { GeometrySchema, SoundEventSchema } from "@/api/sound_events";
+
+import { GetManySchema, Page } from "./common";
 
 export const AnnotationCreateSchema = z.object({
   task_id: z.number(),

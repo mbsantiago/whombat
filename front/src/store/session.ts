@@ -1,5 +1,6 @@
 // Purpose: State management for session data
 import { StateCreator } from "zustand";
+
 import { type User } from "@/api/user";
 
 interface SessionSlice {

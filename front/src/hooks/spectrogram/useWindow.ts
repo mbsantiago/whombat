@@ -12,14 +12,15 @@
  * its bounds, and provides functions to manipulate the window.
  */
 
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction } from "react";
+
 import {
-  shiftWindow,
+  adjustWindowToBounds,
   centerWindowOn,
   scaleWindow,
-  adjustWindowToBounds,
+  shiftWindow,
 } from "@/utils/windows";
-import { type Dispatch, type SetStateAction } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export type ShiftWindowFn = (

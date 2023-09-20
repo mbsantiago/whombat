@@ -2,9 +2,9 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import api from "@/app/api";
 
-import { Input, InputGroup, TextArea, Submit } from "@/components/inputs";
+import api from "@/app/api";
+import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
 import {
   type AnnotationProject,
   type AnnotationProjectCreate,

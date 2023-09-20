@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { type Interval } from "@/api/audio";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 

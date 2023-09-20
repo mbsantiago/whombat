@@ -1,13 +1,13 @@
 import {
-  TimeIcon,
+  ChannelsIcon,
+  DateIcon,
+  IssueIcon,
   LatitudeIcon,
   LongitudeIcon,
-  DateIcon,
-  TagIcon,
-  IssueIcon,
   SampleRateIcon,
-  ChannelsIcon,
+  TagIcon,
   TimeExpansionIcon,
+  TimeIcon,
 } from "@/components/icons";
 import { FloatFilter, NullableFloatFilter } from "@/components/Filters";
 import { type FilterDef } from "@/components/FilterMenu";

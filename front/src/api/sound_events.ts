@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
-import { GetManySchema, Page } from "./common";
+
 import { FeatureSchema } from "@/api/features";
 import { TagSchema } from "@/api/tags";
+
+import { GetManySchema, Page } from "./common";
 
 export const GeometrySchema = z.object({
   type: z.string(),

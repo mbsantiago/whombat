@@ -1,18 +1,19 @@
 import { usePathname } from "next/navigation";
 import { useContext } from "react";
 import classnames from "classnames";
-import { UserContext } from "@/app/(base)/context";
 import Link from "next/link";
+
+import { UserContext } from "@/app/(base)/context";
 import {
-  WhombatIcon,
-  DatasetsIcon,
   AnnotationProjectIcon,
-  ExplorationIcon,
+  DatasetsIcon,
   EvaluationIcon,
+  ExplorationIcon,
   HomeIcon,
+  LogOutIcon,
   MessagesIcon,
   SettingsIcon,
-  LogOutIcon,
+  WhombatIcon,
 } from "@/components/icons";
 import { HorizontalDivider } from "@/components/Divider";
 import Tooltip from "@/components/Tooltip";

@@ -1,10 +1,10 @@
 import Button from "@/components/Button";
 import Alert from "@/components/Alert";
 import {
-  DeleteIcon,
-  WarningIcon,
   CloseIcon,
+  DeleteIcon,
   DownloadIcon,
+  WarningIcon,
 } from "@/components/icons";
 
 function DeleteProject({ onDelete }: { onDelete?: () => void }) {

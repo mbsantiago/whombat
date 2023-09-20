@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+
 import Spinner from "@/components/Spinner";
 
 export default function WithLoading({

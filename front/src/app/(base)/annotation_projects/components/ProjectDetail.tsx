@@ -1,9 +1,10 @@
 import Card from "@/components/Card";
 import {
-  type AnnotationProjectUpdate,
   type AnnotationProject,
+  type AnnotationProjectUpdate,
 } from "@/api/annotation_projects";
 import { type Task } from "@/api/tasks";
+
 import ProjectActions from "./ProjectActions";
 import ProjectUpdateForm from "./ProjectUpdateForm";
 import ProjectProgress from "./ProjectProgress";

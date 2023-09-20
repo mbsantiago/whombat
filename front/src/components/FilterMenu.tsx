@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { FilterIcon, BackIcon } from "@/components/icons";
+
+import { BackIcon, FilterIcon } from "@/components/icons";
 import { type SetFilter } from "@/components/Filters";
 import { type Filter } from "@/hooks/api/useFilter";
 import SearchMenu from "@/components/SearchMenu";

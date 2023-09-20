@@ -1,14 +1,15 @@
 "use client";
 import toast from "react-hot-toast";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { QueryClientProvider } from "@tanstack/react-query";
+
 import queryClient from "@/app/client";
 import useActiveUser from "@/hooks/api/useActiveUser";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-
 import Notification from "@/components/Notification";
 import Loading from "@/app/loading";
-import { UserContext } from "./context";
 import { WhombatIcon } from "@/components/icons";
-import { QueryClientProvider } from "@tanstack/react-query";
+
+import { UserContext } from "./context";
 import { NavBar, SideMenu } from "./components";
 
 function WithLogIn({ children }: { children: React.ReactNode }) {

@@ -1,17 +1,19 @@
 import { useMemo } from "react";
+
 import Button from "@/components/Button";
 import MetricBadge from "@/components/MetricBadge";
 import {
   AddIcon,
-  VerifiedIcon,
+  CompleteIcon,
   EditIcon,
   NeedsReviewIcon,
-  CompleteIcon,
+  VerifiedIcon,
 } from "@/components/icons";
 import Card from "@/components/Card";
 import ProgressBar from "@/components/ProgressBar";
 import { H3 } from "@/components/Headings";
 import { type Task } from "@/api/tasks";
+
 import { computeTaskProgress } from "../utils";
 
 export default function ProjectProgress({ tasks }: { tasks: Task[] }) {

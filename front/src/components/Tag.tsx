@@ -2,9 +2,10 @@
  * Definition of the Tag component.
  */
 import { type ButtonHTMLAttributes } from "react";
+import classnames from "classnames";
+
 import { type Tag } from "@/api/tags";
 import { CloseIcon } from "@/components/icons";
-import classnames from "classnames";
 import { ALL_COLORS } from "@/components/colors";
 
 const COLOR_NAMES = [

@@ -1,8 +1,9 @@
 import { z } from "zod";
+
 import {
-  IntervalSchema,
   AudioParametersSchema,
   type Interval,
+  IntervalSchema,
 } from "@/api/audio";
 
 const DEFAULT_ENDPOINTS = {

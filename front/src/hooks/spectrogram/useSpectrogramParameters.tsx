@@ -1,5 +1,6 @@
-import useStore from "@/store";
 import { useDebounce } from "react-use";
+
+import useStore from "@/store";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 
 

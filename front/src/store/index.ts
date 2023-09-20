@@ -1,11 +1,12 @@
 // Global state for the application
 import { useEffect, useState } from "react";
 import { create } from "zustand";
-import { createSessionSlice, type SessionSlice } from "./session";
-import { createClipboardSlice, type ClipboardSlice } from "./clipboard";
-import { createColorsSlice, type ColorsSlice } from "./colors";
-import { createSpectrogramSlice, type SpectrogramSlice } from "./spectrogram";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+import { type SessionSlice, createSessionSlice } from "./session";
+import { type ClipboardSlice, createClipboardSlice } from "./clipboard";
+import { type ColorsSlice, createColorsSlice } from "./colors";
+import { type SpectrogramSlice, createSpectrogramSlice } from "./spectrogram";
 
 type Store = SessionSlice & ClipboardSlice & ColorsSlice & SpectrogramSlice;
 

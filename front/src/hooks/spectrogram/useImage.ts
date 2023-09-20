@@ -10,7 +10,7 @@
  * A timeout can be provided to fail if the image takes too long to load.
  *
  */
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useEvent, useTimeoutFn, useUnmount } from "react-use";
 
 // Default timeout in milliseconds

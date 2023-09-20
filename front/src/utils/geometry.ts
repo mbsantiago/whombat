@@ -3,17 +3,17 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 // import { type Annotation } from '@/api/annotations'
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import type {
-  Position,
-  Onset,
-  Interval,
-  Point,
-  MultiPoint,
-  Polygon,
-  MultiPolygon,
-  LineString,
-  MultiLineString,
   BBox,
   Geometry,
+  Interval,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Onset,
+  Point,
+  Polygon,
+  Position,
 } from "@/utils/types";
 
 type Dims = { width: number; height: number };

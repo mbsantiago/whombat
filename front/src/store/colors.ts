@@ -1,5 +1,6 @@
-import { type Tag } from "@/api/tags";
 import { StateCreator } from "zustand";
+
+import { type Tag } from "@/api/tags";
 
 const COLOR_NAMES = [
   "slate",

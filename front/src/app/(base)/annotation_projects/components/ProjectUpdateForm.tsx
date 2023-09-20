@@ -1,11 +1,11 @@
 import {
-  type AnnotationProjectUpdate,
   type AnnotationProject,
+  type AnnotationProjectUpdate,
 } from "@/api/annotation_projects";
 import {
-  EditableDescriptionData,
   DescriptionData,
   DescriptionTerm,
+  EditableDescriptionData,
 } from "@/components/Description";
 import { H3 } from "@/components/Headings";
 import { Input, TextArea } from "@/components/inputs";

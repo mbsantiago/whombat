@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import drawBBox, { BBoxStyle, DEFAULT_BBOX_STYLE } from "@/draw/bbox";
 import useDrag from "@/hooks/motions/useDrag";
 import { type ScratchState } from "@/hooks/motions/useDrag";

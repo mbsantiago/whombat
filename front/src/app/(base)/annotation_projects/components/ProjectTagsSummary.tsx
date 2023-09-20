@@ -1,6 +1,7 @@
+import Link from "next/link";
+
 import useAnnotationTags from "@/hooks/api/useAnnotationTags";
 import useTaskTags from "@/hooks/api/useTaskTags";
-import Link from "next/link";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import Empty from "@/components/Empty";

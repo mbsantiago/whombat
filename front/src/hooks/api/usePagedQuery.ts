@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { useQuery, type UseQueryResult} from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { type UseQueryResult, useQuery} from "@tanstack/react-query";
+
 import { type GetManyQuery, type Paginated } from "@/api/common";
 
 export type Pagination = {

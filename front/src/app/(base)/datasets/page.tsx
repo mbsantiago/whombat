@@ -1,6 +1,7 @@
 "use client";
-import useDatasets from "@/hooks/api/useDatasets";
 import Link from "next/link";
+
+import useDatasets from "@/hooks/api/useDatasets";
 import Hero from "@/components/Hero";
 import Dataset from "@/components/Dataset";
 import Button from "@/components/Button";
@@ -8,7 +9,7 @@ import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
-import { DatasetIcon, AddIcon, WarningIcon } from "@/components/icons";
+import { AddIcon, DatasetIcon, WarningIcon } from "@/components/icons";
 
 function NoDatasets() {
   return (

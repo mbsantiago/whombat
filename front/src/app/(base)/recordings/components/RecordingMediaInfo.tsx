@@ -2,9 +2,9 @@ import Card from "@/components/Card";
 import { type Recording } from "@/api/recordings";
 import {
   ChannelsIcon,
-  TimeIcon,
   SampleRateIcon,
   TimeExpansionIcon,
+  TimeIcon,
 } from "@/components/icons";
 
 

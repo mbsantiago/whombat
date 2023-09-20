@@ -2,17 +2,18 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import api from "@/app/api";
 
+import api from "@/app/api";
 import Button from "@/components/Button";
-import { NextIcon, CloseIcon, BackIcon } from "@/components/icons";
-import ProjectTags from "../components/ProjectTags";
-import ProjectCreate from "../components/ProjectCreate";
-import ProjectClips from "../components/ProjectClips";
+import { BackIcon, CloseIcon, NextIcon } from "@/components/icons";
 import Hero from "@/components/Hero";
 import Steps from "@/components/Steps";
-import { AnnotationProjectIcon, TagsIcon, ClipsIcon } from "@/components/icons";
+import { AnnotationProjectIcon, ClipsIcon, TagsIcon } from "@/components/icons";
 import { type AnnotationProject } from "@/api/annotation_projects";
+
+import ProjectClips from "../components/ProjectClips";
+import ProjectCreate from "../components/ProjectCreate";
+import ProjectTags from "../components/ProjectTags";
 
 const steps = [
   {

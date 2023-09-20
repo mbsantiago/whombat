@@ -1,10 +1,10 @@
 import { forwardRef } from "react";
 import classNames from "classnames";
 import type {
-  TextareaHTMLAttributes,
   InputHTMLAttributes,
-  ReactNode,
   LabelHTMLAttributes,
+  ReactNode,
+  TextareaHTMLAttributes,
 } from "react";
 
 type HasErrors = {

@@ -1,4 +1,5 @@
-import { useRef, useCallback, type HTMLProps } from "react";
+import { type HTMLProps, useCallback, useRef } from "react";
+
 import useCanvas from "@/hooks/draw/useCanvas";
 import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
 import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
@@ -6,8 +7,8 @@ import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
 import { type Recording } from "@/api/recordings";
 import {
-  type SpectrogramWindow,
   type SpectrogramParameters,
+  type SpectrogramWindow,
 } from "@/api/spectrograms";
 
 export type SpectrogramCanvas = {

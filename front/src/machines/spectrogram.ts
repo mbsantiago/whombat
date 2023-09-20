@@ -1,13 +1,14 @@
-import { createMachine, spawn, assign, ActorRefFrom } from "xstate";
+import { ActorRefFrom, assign, createMachine, spawn } from "xstate";
+
 import {
   adjustWindowToBounds,
   centerWindowOn,
-  shiftWindow,
   scaleWindow,
+  shiftWindow,
 } from "@/utils/windows";
 import {
-  type SpectrogramWindow,
   type SpectrogramParameters,
+  type SpectrogramWindow,
 } from "@/api/spectrograms";
 import { type Recording } from "@/api/recordings";
 import { audioMachine } from "@/machines/audio";

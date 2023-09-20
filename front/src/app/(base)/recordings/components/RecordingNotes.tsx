@@ -1,11 +1,11 @@
 import { useState } from "react";
+
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
-import { NotesIcon, IssueIcon } from "@/components/icons";
-import { TextArea, InputGroup } from "@/components/inputs";
+import { IssueIcon, NotesIcon } from "@/components/icons";
+import { InputGroup, TextArea } from "@/components/inputs";
 import Button from "@/components/Button";
 import Feed from "@/components/Feed";
-
 import { type Note, type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type User } from "@/api/user";
 

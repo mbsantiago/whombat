@@ -1,15 +1,16 @@
-import { useState, useMemo, type ReactNode } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import classNames from "classnames";
+import * as ToggleGroup from "@radix-ui/react-toggle-group";
+
 import Toggle from "@/components/Toggle";
 import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
 import Select from "@/components/Select";
 import SlideOver from "@/components/SlideOver";
 import RangeSlider from "@/components/RangeSlider";
-import { InputGroup, Input } from "@/components/inputs";
+import { Input, InputGroup } from "@/components/inputs";
 import { SettingsIcon } from "@/components/icons";
-import { type SpectrogramParameters, MIN_DB } from "@/api/spectrograms";
-import * as ToggleGroup from "@radix-ui/react-toggle-group";
+import { MIN_DB, type SpectrogramParameters } from "@/api/spectrograms";
 
 const SPECTROGRAM_COLORMAPS: Record<
   string,

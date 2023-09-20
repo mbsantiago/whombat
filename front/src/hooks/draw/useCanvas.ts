@@ -1,5 +1,5 @@
-import { useState, useEffect, RefObject, useCallback } from "react";
-import { useMount, useEvent } from "react-use";
+import { RefObject, useCallback, useEffect, useState } from "react";
+import { useEvent, useMount } from "react-use";
 
 export type DrawFunction = (ctx: CanvasRenderingContext2D) => void;
 

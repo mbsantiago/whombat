@@ -1,6 +1,7 @@
-import { type ReactNode, type FC, useState, type HTMLAttributes } from "react";
-import { EditIcon } from "@/components/icons";
+import { type FC, type HTMLAttributes, type ReactNode, useState } from "react";
 import classNames from "classnames";
+
+import { EditIcon } from "@/components/icons";
 
 export function DescriptionData({
   children,

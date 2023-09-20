@@ -1,7 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
+
 import api from "@/app/api";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
-import { useMutation } from "@tanstack/react-query";
 import { type TagFilter } from "@/api/tags";
 
 export default function useTags({

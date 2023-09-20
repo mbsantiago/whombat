@@ -1,12 +1,13 @@
+import { type User } from "@/api/user";
+import { type NoteCreate, type NoteUpdate } from "@/api/notes";
+import { type Recording } from "@/api/recordings";
+
 import RecordingSpectrogram from "./RecordingSpectrogram";
 import RecordingNotes from "./RecordingNotes";
 import RecordingActions from "./RecordingActions";
 import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingMap from "./RecordingMap";
 import RecordingTagBar from "./RecordingTagBar";
-import { type User } from "@/api/user";
-import { type NoteCreate, type NoteUpdate } from "@/api/notes";
-import { type Recording } from "@/api/recordings";
 
 export default function RecordingDetail({
   recording,

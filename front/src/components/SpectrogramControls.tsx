@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
-import { DragIcon, ZoomIcon, HomeIcon } from "@/components/icons";
+import Tooltip from "@/components/Tooltip";
+import { DragIcon, HomeIcon, ZoomIcon } from "@/components/icons";
 
 export default function SpectrogramControls({
   isDragging,
@@ -16,15 +17,21 @@ export default function SpectrogramControls({
 }) {
   return (
     <div className="flex space-x-2">
-      <Button variant="secondary" onClick={onReset}>
-        <HomeIcon className="w-5 h-5" />
-      </Button>
-      <Button variant={isDragging ? "primary" : "secondary"} onClick={onDrag}>
-        <DragIcon className="w-5 h-5" />
-      </Button>
-      <Button variant={isZooming ? "primary" : "secondary"} onClick={onZoom}>
-        <ZoomIcon className="w-5 h-5" />
-      </Button>
+      <Tooltip tooltip="Reset view" placement="bottom">
+        <Button variant="secondary" onClick={onReset}>
+          <HomeIcon className="w-5 h-5" />
+        </Button>
+      </Tooltip>
+      <Tooltip tooltip="Drag spectrogram" placement="bottom">
+        <Button variant={isDragging ? "primary" : "secondary"} onClick={onDrag}>
+          <DragIcon className="w-5 h-5" />
+        </Button>
+      </Tooltip>
+      <Tooltip tooltip="Zoom to selection" placement="bottom">
+        <Button variant={isZooming ? "primary" : "secondary"} onClick={onZoom}>
+          <ZoomIcon className="w-5 h-5" />
+        </Button>
+      </Tooltip>
     </div>
   );
 }

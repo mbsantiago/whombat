@@ -1,6 +1,7 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import Fuse from "fuse.js";
+
 import Button from "@/components/Button";
 import Search from "@/components/Search";
 

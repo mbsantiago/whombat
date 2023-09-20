@@ -4,9 +4,10 @@
  */
 
 import { Float } from "@headlessui-float/react";
-import { type Tag as TagType } from "@/api/tags";
 import { type HTMLProps } from "react";
 import { Popover } from "@headlessui/react";
+
+import { type Tag as TagType } from "@/api/tags";
 import Tag from "@/components/Tag";
 import TagSearchBar from "@/components/TagSearchBar";
 import { AddIcon } from "@/components/icons";

@@ -1,9 +1,11 @@
 import { Fragment, useContext } from "react";
-import { type User } from "@/api/user";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
-import { HorizontalDivider } from "@/components/Divider";
 import classnames from "classnames";
+
+import { HorizontalDivider } from "@/components/Divider";
+import { type User } from "@/api/user";
+
 import { UserContext } from "../context";
 
 function Brand() {

@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import Card from "@/components/Card";
 import Link from "next/link";
+
+import Card from "@/components/Card";
 import Note from "@/components/Note";
 import { H3 } from "@/components/Headings";
 import { type RecordingNote } from "@/api/recordings";
-import { NotesIcon, CheckIcon, GoToIcon } from "@/components/icons";
+import { CheckIcon, GoToIcon, NotesIcon } from "@/components/icons";
 import Loading from "@/app/loading";
 
 function NoIssues() {

@@ -5,6 +5,7 @@
  * Use the API to interact with the Whombat backend.
  */
 import axios from "axios";
+
 import { registerNotesAPI } from "./notes";
 import { registerAuthAPI } from "./auth";
 import { registerTagAPI } from "./tags";

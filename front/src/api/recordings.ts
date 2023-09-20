@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
-import { GetManySchema, Page } from "./common";
+
 import { TagSchema } from "@/api/tags";
-import { NoteSchema, NoteUpdateSchema, type NoteUpdate } from "@/api/notes";
+import { NoteSchema, type NoteUpdate, NoteUpdateSchema } from "@/api/notes";
 import { FeatureSchema } from "@/api/features";
+
+import { GetManySchema, Page } from "./common";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/recordings/",

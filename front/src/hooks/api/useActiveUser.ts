@@ -1,5 +1,6 @@
 import { type AxiosError, isAxiosError } from "axios";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import api from "@/app/api";
 import { type User } from "@/api/user";
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
+
 import { GetManySchema, Page } from "./common";
 
 const DEFAULT_ENDPOINTS = {

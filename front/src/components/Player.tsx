@@ -1,10 +1,11 @@
-import { Fragment, useRef, useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo, useRef } from "react";
 import { Float } from "@headlessui-float/react";
-import { ExpandIcon } from "@/components/icons";
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
 import { useSlider } from "react-use";
-import { PlayIcon, PauseIcon, SpeedIcon, LoopIcon } from "@/components/icons";
+
+import { ExpandIcon } from "@/components/icons";
+import { LoopIcon, PauseIcon, PlayIcon, SpeedIcon } from "@/components/icons";
 
 const SPEED_OPTIONS = [
   { id: "0.1", label: "0.1x", value: 0.1 },

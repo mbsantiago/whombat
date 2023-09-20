@@ -1,13 +1,14 @@
 import dynamic from "next/dynamic";
 import {
-  useState,
-  useMemo,
-  useEffect,
-  useRef,
   Fragment,
   type HTMLProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import { Popover, Transition } from "@headlessui/react";
+
 import { EditIcon } from "@/components/icons";
 
 // NOTE: The use of dynamic imports is necessary to avoid

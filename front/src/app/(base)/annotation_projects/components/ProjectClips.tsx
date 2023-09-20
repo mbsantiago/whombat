@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import useDatasets from "@/hooks/api/useDatasets";
 import useRecordings from "@/hooks/api/useRecordings";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
@@ -8,7 +9,7 @@ import { type AnnotationProject } from "@/api/annotation_projects";
 import { type Recording } from "@/api/recordings";
 import { type Dataset } from "@/api/datasets";
 import { type ClipCreate } from "@/api/clips";
-import { InputGroup, Input } from "@/components/inputs";
+import { Input, InputGroup } from "@/components/inputs";
 import { FilterIcon } from "@/components/icons";
 import FilterMenu from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";

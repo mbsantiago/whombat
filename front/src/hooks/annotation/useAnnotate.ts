@@ -1,14 +1,14 @@
 import { useCallback } from "react";
-import { useMachine, useActor } from "@xstate/react";
-import { annotateMachine } from "@/machines/annotate";
-import { scaleGeometryToWindow, scaleGeometryToViewport } from "@/utils/geometry";
-import drawBBox from "@/draw/bbox";
+import { useActor, useMachine } from "@xstate/react";
 import toast from "react-hot-toast";
+
+import { annotateMachine } from "@/machines/annotate";
+import { scaleGeometryToViewport, scaleGeometryToWindow } from "@/utils/geometry";
+import drawBBox from "@/draw/bbox";
 import useCreateBBox from "@/hooks/draw/useCreateBBox";
 import useStore from "@/store";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useAnnotations from "@/hooks/api/useAnnotations";
-
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type Task } from "@/api/tasks";

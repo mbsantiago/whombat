@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { Float } from "@headlessui-float/react";
-import { ExpandIcon, CheckIcon } from "@/components/icons";
 import { Listbox } from "@headlessui/react";
+
+import { CheckIcon, ExpandIcon } from "@/components/icons";
 import { Submit } from "@/components/inputs";
 
 type Option<T> = {

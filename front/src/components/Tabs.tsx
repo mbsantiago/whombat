@@ -1,4 +1,4 @@
-import { type ReactNode, type ButtonHTMLAttributes } from "react";
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
 import classnames from "classnames";
 
 type TabType = {

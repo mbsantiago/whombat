@@ -1,6 +1,6 @@
-import { createMachine, assign, spawn, ActorRefFrom } from "xstate";
-import { spectrogramMachine } from "@/machines/spectrogram";
+import { ActorRefFrom, assign, createMachine, spawn } from "xstate";
 
+import { spectrogramMachine } from "@/machines/spectrogram";
 import { type Tag } from "@/api/tags";
 import { type Annotation } from "@/api/annotations";
 import { type Geometry } from "@/api/sound_events";

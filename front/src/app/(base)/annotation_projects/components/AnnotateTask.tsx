@@ -1,32 +1,31 @@
-import { useRef, useCallback } from "react";
-import { useScratch } from "react-use";
 import { useActor } from "@xstate/react";
 import { notFound } from "next/navigation";
-import useCanvas from "@/hooks/draw/useCanvas";
-import useMouseWheel from "@/hooks/motions/useMouseWheel";
-import useRecording from "@/hooks/api/useRecording";
-import useTask from "@/hooks/api/useTask";
-import useAnnotate from "@/hooks/useAnnotate";
+import { useCallback, useRef } from "react";
+import { useScratch } from "react-use";
 
-import Tooltip from "@/components/Tooltip";
-import ScrollBar from "@/components/ScrollBar";
-import Card from "@/components/Card";
+import { type Recording } from "@/api/recordings";
+import { type SpectrogramWindow } from "@/api/spectrograms";
+import { type Task } from "@/api/tasks";
+import RecordingTagBar from "@/app/(base)/recordings/components/RecordingTagBar";
 import Loading from "@/app/loading";
 import Button from "@/components/Button";
+import Card from "@/components/Card";
 import Player from "@/components/Player";
-import SpectrogramSettings from "@/components/SpectrogramSettings";
+import ScrollBar from "@/components/ScrollBar";
 import SpectrogramControls from "@/components/SpectrogramControls";
+import SpectrogramSettings from "@/components/SpectrogramSettings";
+import Tooltip from "@/components/Tooltip";
 import {
   AnnotationProjectIcon,
-  EditIcon,
   DeleteIcon,
+  EditIcon,
   SelectIcon,
 } from "@/components/icons";
-import RecordingTagBar from "@/app/(base)/recordings/components/RecordingTagBar";
-
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type Recording } from "@/api/recordings";
-import { type Task } from "@/api/tasks";
+import useAnnotate from "@/hooks/annotation/useAnnotate";
+import useRecording from "@/hooks/api/useRecording";
+import useTask from "@/hooks/api/useTask";
+import useCanvas from "@/hooks/draw/useCanvas";
+import useMouseWheel from "@/hooks/motions/useMouseWheel";
 
 function AnnotationControls({
   isDrawing,
@@ -110,14 +109,14 @@ function TaskSpectrogram({
     (newWindow: SpectrogramWindow) => {
       specSend({ type: "PAN_TO", window: newWindow });
     },
-    [send],
+    [specSend],
   );
 
   const handleOnBarScroll = useCallback(
     (shiftBy: { time: number; freq: number }, relative: boolean) => {
       specSend({ type: "SHIFT_WINDOW", shiftBy, relative });
     },
-    [send],
+    [specSend],
   );
 
   useCanvas({ ref: canvasRef, draw });

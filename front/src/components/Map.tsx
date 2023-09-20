@@ -1,4 +1,4 @@
-import { type ReactNode, type ComponentProps } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet/dist/leaflet.css";

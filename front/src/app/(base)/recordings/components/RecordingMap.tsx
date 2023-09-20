@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+
 import Card from "@/components/Card";
 import { MapIcon } from "@/components/icons";
 import { type Recording } from "@/api/recordings";

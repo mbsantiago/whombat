@@ -1,5 +1,6 @@
+import { assign, createMachine } from "xstate";
+
 import { type Recording } from "@/api/recordings";
-import { createMachine, assign } from "xstate";
 
 export type GetAudioUrlFn = ({
   recording_id,

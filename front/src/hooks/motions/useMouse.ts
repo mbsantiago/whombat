@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import useRafState from "react-use/lib/useRafState";
 import { off, on } from "react-use/lib/misc/util";
 import { type RefObject } from "react";
+
 import { type Dimensions, type Position } from "@/utils/types";
 
 export interface State {

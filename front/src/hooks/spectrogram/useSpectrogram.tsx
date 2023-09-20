@@ -1,5 +1,7 @@
 import { useActor } from "@xstate/react";
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { type EventFrom, type StateFrom } from "xstate";
+
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
 import drawOnset from "@/draw/onset";
@@ -11,8 +13,6 @@ import useBBoxZoom from "@/hooks/spectrogram/useBBoxZoom";
 import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
 import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
 import { spectrogramMachine } from "@/machines/spectrogram";
-
-import { type StateFrom, type EventFrom } from "xstate";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type SpectrogramWindow } from "@/api/spectrograms";

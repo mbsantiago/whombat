@@ -1,7 +1,8 @@
+import { type ReactNode } from "react";
+
 import { type Note, type NoteUpdate } from "@/api/notes";
 import { type User } from "@/api/user";
-import { NoteIcon, IssueIcon, EditIcon, DeleteIcon } from "@/components/icons";
-import { type ReactNode } from "react";
+import { DeleteIcon, EditIcon, IssueIcon, NoteIcon } from "@/components/icons";
 import Button from "@/components/Button";
 
 export default function Note({

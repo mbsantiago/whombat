@@ -1,11 +1,11 @@
 import { type Dataset } from "@/api/datasets";
 import {
-  RecordingsIcon,
   AddRecordingIcon,
-  UploadIcon,
-  DownloadIcon,
   DeleteIcon,
+  DownloadIcon,
+  RecordingsIcon,
   TagIcon,
+  UploadIcon,
 } from "@/components/icons";
 import Button from "@/components/Button";
 

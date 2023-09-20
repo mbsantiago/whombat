@@ -1,8 +1,8 @@
 import Card from "@/components/Card";
 import { type Dataset, type DatasetUpdate } from "@/api/datasets";
 import {
-  DescriptionTerm,
   DescriptionData,
+  DescriptionTerm,
   EditableDescriptionData,
 } from "@/components/Description";
 import { Input, TextArea } from "@/components/inputs";

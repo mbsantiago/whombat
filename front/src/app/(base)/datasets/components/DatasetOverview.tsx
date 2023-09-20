@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import {
-  RecordingsIcon,
-  WarningIcon,
   IssueIcon,
   NewRecordingIcon,
+  RecordingsIcon,
+  WarningIcon,
 } from "@/components/icons";
 import MetricBadge from "@/components/MetricBadge";
 import { type RecordingNote } from "@/api/recordings";

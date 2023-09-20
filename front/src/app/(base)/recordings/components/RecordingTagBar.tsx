@@ -1,6 +1,5 @@
 import { type Recording } from "@/api/recordings";
 import { type Tag as TagType } from "@/api/tags";
-
 import useStore from "@/store";
 import { TagIcon } from "@/components/icons";
 import Tag from "@/components/Tag";

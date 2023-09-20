@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUpdateEffect } from "react-use";
+
 import { type Position } from "@/utils/types";
 
 export type ScratchState = {

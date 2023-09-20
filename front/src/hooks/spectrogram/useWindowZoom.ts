@@ -1,4 +1,5 @@
-import { useUpdateEffect, useKeyPress } from "react-use";
+import { useKeyPress, useUpdateEffect } from "react-use";
+
 import { type ScaleWindowFn } from "@/hooks/spectrogram/useWindow";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 

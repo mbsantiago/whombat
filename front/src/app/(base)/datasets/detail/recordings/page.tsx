@@ -1,20 +1,22 @@
 "use client";
+import { useContext, useMemo } from "react";
+
 import recordingFilterDefs from "@/components/filters/recordings";
 import useRecordingTable from "@/hooks/useRecordingTable";
 import useStore from "@/store";
 import useRecordings from "@/hooks/api/useRecordings";
-import { useContext, useMemo } from "react";
 import { parsePosition } from "@/components/TableMap";
-
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
 import Search from "@/components/Search";
 import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
-import { DatasetContext } from "../context";
-import { RecordingsNav, SelectedMenu } from "./components";
 import { type Tag } from "@/api/tags";
+
+import { DatasetContext } from "../context";
+
+import { RecordingsNav, SelectedMenu } from "./components";
 import "./page.css";
 
 export default function DatasetRecordings() {

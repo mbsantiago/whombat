@@ -1,4 +1,4 @@
-import { type ReactElement, type Key } from "react";
+import { type Key, type ReactElement } from "react";
 
 type ElementWithKey = ReactElement & { key: Key | null };
 

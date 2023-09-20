@@ -1,19 +1,18 @@
-import { useRef, useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useMemo } from "react";
 import { useScratch } from "react-use";
 import { useActor, useMachine } from "@xstate/react";
+
 import { spectrogramMachine } from "@/machines/spectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useStore from "@/store";
-
 import Card from "@/components/Card";
 import Player from "@/components/Player";
 import ScrollBar from "@/components/ScrollBar";
 import SpectrogramSettings from "@/components/SpectrogramSettings";
 import SpectrogramControls from "@/components/SpectrogramControls";
-
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 

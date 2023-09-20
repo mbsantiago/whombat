@@ -1,13 +1,14 @@
+import toast from "react-hot-toast";
+
 import {
-  RecordingIcon,
-  LocationIcon,
-  TimeIcon,
   DateIcon,
+  LocationIcon,
+  RecordingIcon,
+  TimeIcon,
 } from "@/components/icons";
 import { H3 } from "@/components/Headings";
 import { type Recording } from "@/api/recordings";
 import Tooltip from "@/components/Tooltip";
-import toast from "react-hot-toast";
 
 /** Get the basename of a path
  * Taken from https://stackoverflow.com/a/25221100

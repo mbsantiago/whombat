@@ -6,21 +6,22 @@
  * Additionally, it allows the user to create new tags by typing the tag in the
  * format `key:value` and pressing `Shift`+`Enter`.
  */
-import {
-  type Tag as TagType,
-  type TagCreate,
-  type TagFilter,
-} from "@/api/tags";
 import { Float } from "@headlessui-float/react";
 import {
-  useState,
-  useEffect,
-  forwardRef,
   type InputHTMLAttributes,
   type KeyboardEvent,
+  forwardRef,
+  useEffect,
+  useState,
 } from "react";
 import { Combobox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
+
+import {
+  type TagCreate,
+  type TagFilter,
+  type Tag as TagType,
+} from "@/api/tags";
 import { Input } from "@/components/inputs";
 import Tag from "@/components/Tag";
 import Key from "@/components/Key";

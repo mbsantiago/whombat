@@ -2,7 +2,7 @@ import drawLineString from '@/draw/linestring'
 import drawPolygon from '@/draw/polygon'
 import drawHandle from '@/draw/handle'
 import { type Style } from '@/draw/styles'
-import { type Position, type Geometry } from '@/utils/types'
+import { type Geometry, type Position } from '@/utils/types'
 
 const PRIMARY = '#0d6efd'
 

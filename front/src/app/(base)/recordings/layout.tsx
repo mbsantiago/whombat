@@ -1,6 +1,7 @@
 "use client";
 import { notFound, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
+
 import RecordingContex from "./context";
 
 export default function Layout({ children }: { children: ReactNode }) {

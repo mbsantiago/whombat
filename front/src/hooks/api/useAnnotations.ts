@@ -1,12 +1,12 @@
+import { useMutation } from "@tanstack/react-query";
+
 import api from "@/app/api";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
-import { useMutation } from "@tanstack/react-query";
-
 import {
   type Annotation,
-  type AnnotationFilter,
   type AnnotationCreate,
+  type AnnotationFilter,
 } from "@/api/annotations";
 
 export default function useAnnotations({

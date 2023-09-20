@@ -1,4 +1,4 @@
-import { useEffect, useRef, type HTMLProps } from "react";
+import { type HTMLProps, useEffect, useRef } from "react";
 
 export default function Checkbox({
   indeterminate,

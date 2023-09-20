@@ -1,9 +1,11 @@
 "use client";
 import { useContext } from "react";
+
 import useRecording from "@/hooks/api/useRecording";
 import useActiveUser from "@/hooks/api/useActiveUser";
-import RecordingContex from "./context";
 import Loading from "@/app/loading";
+
+import RecordingContex from "./context";
 import RecordingHeader from "./components/RecordingHeader";
 import RecordingDetail from "./components/RecordingDetail";
 

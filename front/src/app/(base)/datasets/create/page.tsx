@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import Hero from "@/components/Hero";
-import { Submit, Input, InputGroup, TextArea } from "@/components/inputs";
+import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
 import api from "@/app/api";
 import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
 

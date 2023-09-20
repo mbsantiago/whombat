@@ -1,7 +1,7 @@
 import { useCallback } from "react";
+
 import { scaleBBoxToWindow } from "@/utils/geometry";
 import useCreateBBox from "@/hooks/draw/useCreateBBox";
-
 import { type BBox, type Dimensions } from "@/utils/types";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";

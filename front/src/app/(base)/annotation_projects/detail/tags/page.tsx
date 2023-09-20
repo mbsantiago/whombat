@@ -1,8 +1,10 @@
 "use client";
 import { notFound } from "next/navigation";
 import { useContext } from "react";
+
 import { H3 } from "@/components/Headings";
 import { TagsIcon } from "@/components/icons";
+
 import { AnnotationProjectContext } from "../context";
 import ProjectTags from "../../components/ProjectTags";
 

@@ -1,12 +1,12 @@
 import { type Interval } from "@/api/audio";
 import {
-  setFontStyle,
-  setBorderStyle,
-  type TickStyle,
   type AxisStyle,
   DEFAULT_AXIS_STYLE,
-  MINOR_TICK_STYLE,
   MAYOR_TICK_STYLE,
+  MINOR_TICK_STYLE,
+  type TickStyle,
+  setBorderStyle,
+  setFontStyle,
 } from "@/draw/styles";
 
 export function selectResolution(length: number, interval: Interval) {

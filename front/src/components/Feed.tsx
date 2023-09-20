@@ -1,7 +1,8 @@
+import React from "react";
+
 import { type Note as NoteType, type NoteUpdate } from "@/api/notes";
 import { type User } from "@/api/user";
 import Note from "@/components/Note";
-import React from "react";
 
 export default function Feed({
   notes,

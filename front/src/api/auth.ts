@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-import { UserSchema, type User } from "@/api/user";
+import { type User, UserSchema } from "@/api/user";
 
 export const LoginSchema = z.object({
   username: z.string(),

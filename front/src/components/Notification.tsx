@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { Toaster, ToastIcon, resolveValue } from "react-hot-toast";
+import { ToastIcon, Toaster, resolveValue } from "react-hot-toast";
 
 export default function Notification() {
   return (

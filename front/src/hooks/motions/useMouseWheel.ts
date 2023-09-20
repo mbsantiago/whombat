@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import { off, on } from "react-use/lib/misc/util";
 
 export type ScrollState = {
