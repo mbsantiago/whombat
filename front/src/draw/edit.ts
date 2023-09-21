@@ -1,5 +1,5 @@
-import drawLineString from '@/draw/linestring'
-import drawPolygon from '@/draw/polygon'
+import { drawLineString } from '@/draw/linestring'
+import { drawPolygon } from '@/draw/polygon'
 import drawHandle from '@/draw/handle'
 import { type Style } from '@/draw/styles'
 import { type Geometry, type Position } from '@/utils/types'

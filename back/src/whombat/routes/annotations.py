@@ -76,6 +76,25 @@ async def get_annotations(
         offset=offset,
     )
 
+@annotations_router.patch(
+    "/detail/",
+    response_model=schemas.Annotation,
+)
+async def update_annotation(
+    session: Session,
+    annotation_id: int,
+    data: schemas.SoundEventUpdate,
+):
+    """Update an annotation."""
+    annotation = await api.annotations.get_by_id(session, annotation_id)
+    annotation.sound_event = await api.sound_events.update(
+        session,
+        annotation.sound_event.id,
+        data,
+    )
+    await session.commit()
+    return annotation
+
 
 @annotations_router.delete(
     "/detail/",

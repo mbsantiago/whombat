@@ -7,6 +7,7 @@ import {
   type Annotation,
   type AnnotationCreate,
   type AnnotationFilter,
+  type AnnotationUpdate,
 } from "@/api/annotations";
 
 export default function useAnnotations({
@@ -38,6 +39,22 @@ export default function useAnnotations({
     onSuccess: (data, _) => {
       query.refetch();
       onCreate?.(data);
+    },
+  });
+
+  const update = useMutation({
+    mutationFn: ({
+      annotation_id,
+      data,
+    }: {
+      annotation_id: number;
+      data: AnnotationUpdate;
+    }) => {
+      return api.annotations.update(annotation_id, data);
+    },
+    onSuccess: (data, _) => {
+      query.refetch();
+      onUpdate?.(data);
     },
   });
 
@@ -149,6 +166,7 @@ export default function useAnnotations({
     query,
     filter,
     create,
+    update,
     delete: delete_,
     addTag,
     removeTag,

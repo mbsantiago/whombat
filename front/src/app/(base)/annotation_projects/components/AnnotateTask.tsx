@@ -25,6 +25,7 @@ import useRecording from "@/hooks/api/useRecording";
 import useTask from "@/hooks/api/useTask";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useMouseWheel from "@/hooks/motions/useMouseWheel";
+import { useMouse } from "@/hooks/motions/useMouse";
 
 function AnnotationControls({
   isDrawing,
@@ -83,32 +84,34 @@ function TaskSpectrogram({
   task: Task;
   recording: Recording;
 }) {
-  // Reference to the canvas element
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
   // Track the user's mouse drag
   const [dragRef, dragState] = useScratch();
 
+  // Reference to the canvas element
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   // Track the user's mouse scroll
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollState = useMouseWheel(scrollRef);
+  const scrollState = useMouseWheel(canvasRef);
+  const mouseState = useMouse(canvasRef);
 
   const { state, send, draw } = useAnnotate({
     task,
     recording,
-    dragState,
+    scratchState: dragState,
     scrollState,
+    mouseState,
+    ref: canvasRef,
   });
-
   const [specState, specSend] = useActor(state.context.spectrogram);
-
   const [audioState, audioSend] = useActor(specState.context.audio);
 
   const handleOnBarDrag = useCallback(
     (newWindow: SpectrogramWindow) => {
+      send("IDLE")
+      specSend("PAN")
       specSend({ type: "PAN_TO", window: newWindow });
     },
-    [specSend],
+    [specSend, send],
   );
 
   const handleOnBarScroll = useCallback(
@@ -149,10 +152,10 @@ function TaskSpectrogram({
           />
         </div>
         <AnnotationControls
-          isDrawing={state.matches("drawing")}
-          isDeleting={state.matches("deleting")}
-          isSelecting={state.matches("selecting")}
-          isEditing={state.matches("editing")}
+          isDrawing={state.matches("create")}
+          isDeleting={state.matches("delete")}
+          isSelecting={state.matches("edit.selecting")}
+          isEditing={state.matches("edit.editing")}
           onDraw={() => send("DRAW")}
           onDelete={() => send("DELETE")}
           onSelect={() => send("SELECT")}
@@ -180,13 +183,11 @@ function TaskSpectrogram({
         />
       </div>
       <div className="h-96">
-        <div ref={scrollRef} className="w-max-fit h-max-fit w-full h-full">
-          <div
-            ref={dragRef}
-            className="select-none w-max-fit h-max-fit w-full h-full rounded-lg overflow-hidden"
-          >
-            <canvas ref={canvasRef} className="w-full h-full" />
-          </div>
+        <div
+          ref={dragRef}
+          className="select-none w-max-fit h-max-fit w-full h-full rounded-lg overflow-hidden"
+        >
+          <canvas ref={canvasRef} className="w-full h-full" />
         </div>
       </div>
       <ScrollBar

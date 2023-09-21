@@ -1,37 +1,34 @@
-import { useEffect, useState } from 'react'
-import { useMouse } from 'react-use'
+import { useEffect, useState } from "react";
+import { useMouse } from "react-use";
 
-import { isCloseToGeometry } from '@/utils/geometry'
-import { type EditableElement, convertElementToGeometry } from '@/draw/edit'
+import { isCloseToGeometry } from "@/utils/geometry";
+import { type EditableElement, convertElementToGeometry } from "@/draw/edit";
 
 export default function useElementHover<J>({
   elements,
   mouse,
-  isDragging = false,
   active = true,
 }: {
-  elements: EditableElement<J>[]
-  mouse: ReturnType<typeof useMouse>
-  isDragging?: boolean
-  active?: boolean
+  elements: EditableElement<J>[];
+  mouse: ReturnType<typeof useMouse>;
+  active?: boolean;
 }) {
-  const [hovered, setHovered] = useState<number | null>(null)
-  const { elX, elY } = mouse
+  const [hovered, setHovered] = useState<number | null>(null);
+  const { elX, elY } = mouse;
 
   useEffect(() => {
-    if (!isDragging && active) {
-      setHovered(null)
-
+    if (active) {
+      setHovered(null);
       elements.some((element, index) => {
-        const geom = convertElementToGeometry(element)
+        const geom = convertElementToGeometry(element);
         if (isCloseToGeometry([elX, elY], geom)) {
-          setHovered(index)
-          return true
+          setHovered(index);
+          return true;
         }
-        return false
-      })
+        return false;
+      });
     }
-  }, [elements, elX, elY, isDragging, active])
+  }, [elements, elX, elY, active]);
 
-  return hovered
+  return hovered;
 }

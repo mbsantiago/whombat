@@ -3,6 +3,9 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 // import { type Annotation } from '@/api/annotations'
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import type {
+  TimeStamp,
+  TimeInterval,
+  BoundingBox,
   BBox,
   Geometry,
   Interval,
@@ -108,11 +111,11 @@ export function scaleBBoxToViewport(
   window: SpectrogramWindow,
 ): BBox {
   const { width, height } = dims;
-  let [start, top, end, bottom] = bbox;
-  start = scaleTimeToViewport(start, window, width);
-  end = scaleTimeToViewport(end, window, width);
-  top = scaleFreqToViewport(top, window, height);
-  bottom = scaleFreqToViewport(bottom, window, height);
+  const [startTime, lowFreq, endTime, highFreq] = bbox;
+  const start = scaleTimeToViewport(startTime, window, width);
+  const end = scaleTimeToViewport(endTime, window, width);
+  const top = scaleFreqToViewport(highFreq, window, height);
+  const bottom = scaleFreqToViewport(lowFreq, window, height);
   return [start, top, end, bottom];
 }
 
@@ -480,6 +483,12 @@ export function isCloseToGeometry(
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
   switch (geometry.type) {
+    case "TimeStamp":
+      return isCloseToOnset(position, geometry.coordinates, threshold);
+    case "TimeInterval":
+      return isCloseToInterval(position, geometry.coordinates, threshold);
+    case "BoundingBox":
+      return isCloseToBBox(position, geometry.coordinates, threshold);
     case "Point":
       return isCloseToPoint(position, geometry, threshold);
     case "MultiPoint":
@@ -581,6 +590,48 @@ export function shiftMultiPolygon(
   };
 }
 
+export function shiftTimeStamp(
+  geom: TimeStamp,
+  start: Position,
+  end: Position,
+): TimeStamp {
+  const dx = end[0] - start[0];
+  return {
+    ...geom,
+    coordinates: geom.coordinates + dx,
+  };
+}
+
+export function shiftTimeInterval(
+  geom: TimeInterval,
+  start: Position,
+  end: Position,
+): TimeInterval {
+  const dx = end[0] - start[0];
+  return {
+    ...geom,
+    coordinates: [geom.coordinates[0] + dx, geom.coordinates[1] + dx],
+  };
+}
+
+export function shiftBoundingBox(
+  geom: BoundingBox,
+  start: Position,
+  end: Position,
+): BoundingBox {
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+  return {
+    ...geom,
+    coordinates: [
+      geom.coordinates[0] + dx,
+      geom.coordinates[1] + dy,
+      geom.coordinates[2] + dx,
+      geom.coordinates[3] + dy,
+    ],
+  };
+}
+
 export function shiftGeometry(
   geom: Geometry,
   start: Position,
@@ -588,6 +639,15 @@ export function shiftGeometry(
 ): Geometry {
   const { type } = geom;
   switch (type) {
+    case "TimeStamp":
+      return shiftTimeStamp(geom, start, end);
+
+    case "TimeInterval":
+      return shiftTimeInterval(geom, start, end);
+
+    case "BoundingBox":
+      return shiftBoundingBox(geom, start, end);
+
     case "Point":
       return shiftPoint(geom, start, end);
 
@@ -607,6 +667,6 @@ export function shiftGeometry(
       return shiftMultiPolygon(geom, start, end);
 
     default:
-      throw Error;
+      throw Error(`Cannot shift geometry of unknown type ${type}`);
   }
 }

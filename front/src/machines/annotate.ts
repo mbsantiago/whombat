@@ -23,15 +23,31 @@ export type CreateAnnotationEvent = {
   type: "CREATE";
   geometry: Geometry;
 };
+
+export type EditAnnotationEvent = {
+  type: "EDIT";
+  geometry: Geometry;
+};
+
+export type SelectAnnotationEvent = {
+  type: "SELECT_ANNOTATION";
+  annotation: Annotation;
+};
+
+export type DeleteAnnotationEvent = {
+  type: "DELETE_ANNOTATION";
+  annotation: Annotation;
+};
+
 export type AnnotateEvent =
   | { type: "IDLE" }
   | { type: "SELECT" }
-  | { type: "SELECT_ANNOTATION"; annotation: Annotation }
-  | { type: "EDIT"; annotation: Annotation }
   | { type: "DRAW" }
-  | CreateAnnotationEvent
   | { type: "DELETE" }
-  | { type: "DELETE_ANNOTATION"; annotation: Annotation }
+  | SelectAnnotationEvent
+  | EditAnnotationEvent
+  | CreateAnnotationEvent
+  | DeleteAnnotationEvent
   | { type: "ADD_NOTE"; annotation: Annotation }
   | { type: "ADD_STATUS_BADGE"; badge: StatusBadge }
   | { type: "REMOVE_STATUS_BADGE"; badge: StatusBadge }
@@ -48,47 +64,96 @@ export const annotateStates = {
     idle: {
       exit: ["disableSpectrogram"],
     },
-    selecting: {
-      on: {
-        SELECT_ANNOTATION: {
-          target: "editing",
-          actions: "selectAnnotation",
-        },
-      },
-    },
-    editing: {
+    edit: {
+      id: "edit",
       exit: ["clearSelectedAnnotation"],
-    },
-    drawing: {
-      on: {
-        CREATE: {
-          target: "creating",
-          actions: "startAnnotationCreation",
+      initial: "selecting",
+      states: {
+        selecting: {
+          on: {
+            SELECT_ANNOTATION: {
+              target: "editing",
+              actions: "selectAnnotation",
+            },
+          },
+        },
+        editing: {
+          on: {
+            EDIT: {
+              target: "updating",
+            },
+          },
+        },
+        updating: {
+          invoke: {
+            src: "updateAnnotationGeometry",
+            onDone: {
+              target: "editing",
+              actions: "updateSelectedAnnotation",
+            },
+            onError: {
+              target: "editing",
+            },
+          },
         },
       },
     },
-    creating: {
-      invoke: {
-        src: "createAnnotation",
-        onDone: {
-          target: "editing",
-          actions: "finishAnnotationCreation",
+    create: {
+      initial: "drawing",
+      states: {
+        drawing: {
+          on: {
+            CREATE: {
+              target: "creating",
+              actions: "startAnnotationCreation",
+            },
+          },
         },
-        onError: {
-          target: "drawing",
+        creating: {
+          invoke: {
+            src: "createAnnotation",
+            onDone: {
+              target: "#edit.editing",
+              actions: "finishAnnotationCreation",
+            },
+            onError: {
+              target: "drawing",
+            },
+          },
+          exit: ["clearCreationGeometry"],
         },
       },
-      exit: ["clearCreationGeometry"],
     },
-    deleting: {},
+    delete: {
+      initial: "selecting",
+      states: {
+        selecting: {
+          on: {
+            DELETE_ANNOTATION: {
+              target: "deleting",
+            },
+          },
+        },
+        deleting: {
+          invoke: {
+            src: "deleteAnnotation",
+            onDone: {
+              target: "selecting",
+            },
+            onError: {
+              target: "selecting",
+            },
+          },
+        },
+      },
+    },
     tagging: {},
-    failed: {},
   },
   on: {
     IDLE: "idle",
-    SELECT: "selecting",
-    DRAW: "drawing",
-    DELETE: "deleting",
+    SELECT: "edit",
+    DRAW: "create",
+    DELETE: "delete",
     RESET: {
       actions: ["reset"],
       target: "idle",
@@ -97,12 +162,20 @@ export const annotateStates = {
 };
 
 export const annotateActions = {
+  updateSelectedAnnotation: assign({
+    // @ts-ignore
+    selectedAnnotation: (_, event) => event.data,
+  }),
   clearCreationGeometry: assign({
     geometryToCreate: null,
   }),
   startAnnotationCreation: assign({
     geometryToCreate: (_: AnnotateContext, event: CreateAnnotationEvent) =>
       event.geometry,
+  }),
+  finishAnnotationCreation: assign({
+    // @ts-ignore
+    selectedAnnotation: (_: AnnotateContext, data) => data.data,
   }),
   disableSpectrogram: (context: AnnotateContext) => {
     context.spectrogram.send({ type: "DISABLE" });
@@ -148,16 +221,10 @@ export const annotateActions = {
       );
     },
   }),
-  selectAnnotation: (
-    _: AnnotateContext,
-    event: {
-      type: "SELECT_ANNOTATION";
-      annotation: Annotation;
-    },
-  ) =>
-    assign({
-      selectedAnnotation: event.annotation,
-    }),
+  selectAnnotation: assign({
+    selectedAnnotation: (_: AnnotateContext, event: SelectAnnotationEvent) =>
+      event.annotation,
+  }),
   clearSelectedAnnotation: (_: AnnotateContext) =>
     assign({
       selectedAnnotation: null,

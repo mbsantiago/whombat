@@ -52,7 +52,7 @@ class SoundEvent(SoundEventCreate):
 class SoundEventUpdate(BaseSchema):
     """Schema for SoundEvent objects updated by the user."""
 
-    geometry: Geometry
+    geometry: Geometry = Field(..., discriminator="type")
     """The geometry of the sound event."""
 
 

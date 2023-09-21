@@ -52,6 +52,7 @@ export default function useDrag({
         }
       } else if (!isScratching && startPoint != null) {
         setStartPoint(null);
+        setCurrentPoint(null);
         onDragEnd?.(currentPoint ?? startPoint);
       }
     }
