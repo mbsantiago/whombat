@@ -30,6 +30,7 @@ export default function useEditAnnotationGeometry({
   annotation,
   active,
   onChange,
+  onEmptyClick,
   style,
 }: UseEditAnnotationProps) {
   const { geometry } = annotation?.sound_event ?? {};
@@ -72,6 +73,7 @@ export default function useEditAnnotationGeometry({
     active,
     style,
     onChange: handleOnChange,
+    onClickAway: onEmptyClick,
   });
 
   const reconstructed = useMemo(() => {

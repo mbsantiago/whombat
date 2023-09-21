@@ -7,12 +7,13 @@ import { annotateMachine } from "@/machines/annotate";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 import drawGeometry from "@/draw/geometry";
 import useStore from "@/store";
-import useClick from "@/hooks/motions/useClick";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useAnnotations from "@/hooks/api/useAnnotations";
-import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
+import useAnnotateKeyShortcuts from "@/hooks/annotation/useAnnotateKeyShortcuts";
 import useAnnotationCreate from "@/hooks/annotation/useAnnotationCreate";
 import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
+import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
+import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type MouseState } from "@/hooks/motions/useMouse";
@@ -21,21 +22,9 @@ import { type Recording } from "@/api/recordings";
 
 const IDLE_STYLE = {
   borderColor: "rgb(59,130,246)",
+  fillColor: "rgb(59,130,246)",
   borderWidth: 2,
-};
-
-const SELECT_STYLE = {
-  borderColor: "yellow",
-  fillColor: "yellow",
-  borderWidth: 2,
-  fillAlpha: 0.2,
-};
-
-const DELETE_STYLE = {
-  borderColor: "red",
-  fillColor: "red",
-  borderWidth: 3,
-  fillAlpha: 0.2,
+  fillAlpha: 0.1,
 };
 
 export default function useAnnotate({
@@ -68,6 +57,7 @@ export default function useAnnotate({
       tags: [],
       parameters,
       selectedAnnotation: null,
+      geometryType: "BoundingBox",
     },
     services: {
       createAnnotation: async (ctx, _) => {
@@ -137,6 +127,11 @@ export default function useAnnotate({
 
   const [specState, specSend] = useActor(state.context.spectrogram);
 
+  useAnnotateKeyShortcuts({
+    send,
+    cond: state.matches("edit.editing"),
+  });
+
   const { draw: drawSpec } = useSpectrogram({
     state: specState,
     send: specSend,
@@ -149,6 +144,7 @@ export default function useAnnotate({
     window: specState.context.window,
     send,
     active: state.matches("create.drawing"),
+    geometryType: state.context.geometryType,
   });
 
   const drawAnnotationEdit = useAnnotationEdit({
@@ -160,36 +156,22 @@ export default function useAnnotate({
     annotation: state.context.selectedAnnotation,
   });
 
-  const isSelectingToEdit = state.matches("edit.selecting");
-  const isSelectingToDelete = state.matches("delete.selecting");
-  const isSelecting = isSelectingToEdit || isSelectingToDelete;
-
-  const hovered = useHoveredAnnotation({
+  const drawAnnotationDelete = useAnnotationDelete({
+    ref,
     mouse: mouseState,
     annotations: annotations.items,
     window: specState.context.window,
-    active: isSelecting,
+    active: state.matches("delete.selecting"),
+    send,
   });
 
-  // Handle selecting annotation for editing or deleting
-  const handleClick = useCallback(() => {
-    if (hovered == null) return;
-
-    if (isSelectingToEdit) {
-      send({
-        type: "SELECT_ANNOTATION",
-        annotation: hovered,
-      });
-    } else if (isSelectingToDelete) {
-      send({
-        type: "DELETE_ANNOTATION",
-        annotation: hovered,
-      });
-    }
-  }, [hovered, isSelectingToEdit, isSelectingToDelete, send]);
-  useClick({
+  const drawAnnotationSelect = useAnnotationSelect({
     ref,
-    onClick: handleClick,
+    mouse: mouseState,
+    annotations: annotations.items,
+    window: specState.context.window,
+    active: state.matches("edit.selecting"),
+    send,
   });
 
   const drawAnnotations = useCallback(
@@ -203,30 +185,10 @@ export default function useAnnotate({
           item.sound_event.geometry,
           window,
         );
-
-        if (item.id !== hovered?.id) {
-          drawGeometry(ctx, geometry, IDLE_STYLE);
-          continue;
-        }
-
-        if (isSelectingToEdit) {
-          drawGeometry(ctx, geometry, SELECT_STYLE);
-          continue;
-        }
-
-        if (isSelectingToDelete) {
-          drawGeometry(ctx, geometry, DELETE_STYLE);
-          continue;
-        }
+        drawGeometry(ctx, geometry, IDLE_STYLE);
       }
     },
-    [
-      specState.context.window,
-      annotations.items,
-      hovered,
-      isSelectingToEdit,
-      isSelectingToDelete,
-    ],
+    [specState.context.window, annotations.items],
   );
 
   const draw = useCallback(
@@ -235,8 +197,17 @@ export default function useAnnotate({
       drawAnnotations(ctx);
       drawAnnotationCreate(ctx);
       drawAnnotationEdit(ctx);
+      drawAnnotationDelete(ctx);
+      drawAnnotationSelect(ctx);
     },
-    [drawSpec, drawAnnotationCreate, drawAnnotations, drawAnnotationEdit],
+    [
+      drawSpec,
+      drawAnnotationCreate,
+      drawAnnotations,
+      drawAnnotationEdit,
+      drawAnnotationDelete,
+      drawAnnotationSelect,
+    ],
   );
 
   return {

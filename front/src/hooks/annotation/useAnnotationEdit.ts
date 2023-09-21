@@ -28,15 +28,15 @@ export default function useAnnotationEdit({
   drag: ScratchState;
   mouse: MouseState;
   active: boolean;
-  send: (event: EditAnnotationEvent) => void;
+  send: (event: EditAnnotationEvent | "IDLE") => void;
   window: SpectrogramWindow;
   annotation: Annotation | null;
 }) {
-  // Handle edit annotation
   const editState = useDrag({
     dragState: drag,
     active,
   });
+
   const handleEditAnnotation = useCallback(
     (geometry: Geometry) => {
       send({
@@ -47,6 +47,11 @@ export default function useAnnotationEdit({
     },
     [send],
   );
+
+  const handleClickAway = useCallback(() => {
+    send("IDLE");
+  }, [send]);
+
   const { draw } = useEditGeometry({
     drag: editState,
     mouse,
@@ -54,6 +59,7 @@ export default function useAnnotationEdit({
     annotation,
     active,
     onChange: handleEditAnnotation,
+    onEmptyClick: handleClickAway,
     style: EDIT_STYLE,
   });
 

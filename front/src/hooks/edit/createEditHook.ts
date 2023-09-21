@@ -20,6 +20,7 @@ interface UseEditObjectProps<J> {
   active: boolean;
   style: Style;
   onChange?: (obj: J) => void;
+  onClickAway?: () => void;
 }
 
 export default function createEditHook<J>(
@@ -35,7 +36,8 @@ export default function createEditHook<J>(
     object,
     active,
     style,
-    onChange = () => null,
+    onChange,
+    onClickAway,
   }: UseEditObjectProps<J>): {
     object: J | null;
     tmpObject: J | null;
@@ -79,7 +81,7 @@ export default function createEditHook<J>(
           // When dragging ends use the onChange callback with the updated
           // object
           if (tmpObject !== object) {
-            onChange(tmpObject);
+            onChange?.(tmpObject);
           }
         }
       }
@@ -89,12 +91,20 @@ export default function createEditHook<J>(
 
     // On drag modify the object by dragging a single editable element
     useEffect(() => {
+      if (!active) return;
+
+      if (
+        hovered == null &&
+        start != null
+      ) {
+        onClickAway?.()
+      }
+
       // Only do something if an editable element is being hovered
       if (
         start != null &&
         current != null &&
         hovered != null &&
-        active &&
         object != null
       ) {
         if (!shift) {
@@ -108,7 +118,7 @@ export default function createEditHook<J>(
           setTmpObject(shiftObject(object, start, current));
         }
       }
-    }, [object, start, current, hovered, editableElements, active, shift]);
+    }, [object, start, current, hovered, editableElements, active, shift, onClickAway]);
 
     const draw = useCallback(
       (ctx: CanvasRenderingContext2D) => {

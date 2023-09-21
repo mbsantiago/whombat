@@ -17,6 +17,7 @@ export type AnnotateContext = {
   spectrogram: ActorRefFrom<typeof spectrogramMachine>;
   selectedAnnotation: Annotation | null;
   geometryToCreate: Geometry | null;
+  geometryType: "TimeStamp" | "TimeInterval" | "BoundingBox";
 };
 
 export type CreateAnnotationEvent = {
@@ -62,6 +63,7 @@ export const annotateStates = {
   entry: ["setupSpectrogram"],
   states: {
     idle: {
+      entry: ["enableSpectrogram"],
       exit: ["disableSpectrogram"],
     },
     edit: {
@@ -179,6 +181,9 @@ export const annotateActions = {
   }),
   disableSpectrogram: (context: AnnotateContext) => {
     context.spectrogram.send({ type: "DISABLE" });
+  },
+  enableSpectrogram: (context: AnnotateContext) => {
+    context.spectrogram.send({ type: "PAN" });
   },
   setupSpectrogram: assign({
     spectrogram: (context: AnnotateContext) => {
