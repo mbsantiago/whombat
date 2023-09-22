@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
@@ -8,6 +8,7 @@ import {
   type AnnotationCreate,
   type AnnotationFilter,
   type AnnotationUpdate,
+  type AnnotationPage,
 } from "@/api/annotations";
 
 export default function useAnnotations({
@@ -25,7 +26,9 @@ export default function useAnnotations({
 } = {}) {
   const filter = useFilter<AnnotationFilter>({ fixed: initialFilter });
 
-  const { items, total, pagination, query } = usePagedQuery({
+  const client = useQueryClient();
+
+  const { items, total, pagination, query, queryKey } = usePagedQuery({
     name: "annotations",
     func: api.annotations.getMany,
     pageSize: pageSize,
@@ -37,7 +40,14 @@ export default function useAnnotations({
       return api.annotations.create(data);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          total: old.total + 1,
+          items: [data, ...old.items],
+        };
+      });
       onCreate?.(data);
     },
   });
@@ -53,7 +63,18 @@ export default function useAnnotations({
       return api.annotations.update(annotation_id, data);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });
@@ -63,7 +84,15 @@ export default function useAnnotations({
       return api.annotations.delete(annotation_id);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.filter((item) => {
+            return item.id !== data.id;
+          }),
+        };
+      });
       onDelete?.(data);
     },
   });
@@ -79,7 +108,18 @@ export default function useAnnotations({
       return api.annotations.addTag(annotation_id, tag_id);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });
@@ -95,7 +135,18 @@ export default function useAnnotations({
       return api.annotations.removeTag(annotation_id, tag_id);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });
@@ -113,7 +164,18 @@ export default function useAnnotations({
       return api.annotations.addNote(annotation_id, message, is_issue);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });
@@ -129,7 +191,18 @@ export default function useAnnotations({
       return api.annotations.removeNote(annotation_id, note_id);
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });
@@ -154,7 +227,18 @@ export default function useAnnotations({
       );
     },
     onSuccess: (data, _) => {
-      query.refetch();
+      client.setQueryData(queryKey, (old?: AnnotationPage) => {
+        if (old == null) return old;
+        return {
+          ...old,
+          items: old.items.map((item) => {
+            if (item.id === data.id) {
+              return data;
+            }
+            return item;
+          }),
+        };
+      });
       onUpdate?.(data);
     },
   });

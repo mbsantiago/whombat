@@ -9,9 +9,10 @@ import { type Dimensions } from "@/utils/types";
 import { type CreateAnnotationEvent } from "@/machines/annotate";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
+const PRIMARY = "rgb(16 185 129)";
 const CREATE_STYLE = {
-  borderColor: "yellow",
-  fillColor: "yellow",
+  borderColor: PRIMARY,
+  fillColor: PRIMARY,
   borderWidth: 2,
   borderDash: [5, 5],
   fillAlpha: 0.2,
@@ -114,6 +115,9 @@ export default function useAnnotationCreate({
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!active) return;
+
+      ctx.canvas.style.cursor = "crosshair";
+
       if (geometryType === "BoundingBox") {
         drawBBox(ctx);
         return;

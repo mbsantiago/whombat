@@ -1,81 +1,27 @@
 import { useActor } from "@xstate/react";
 import { notFound } from "next/navigation";
 import { useCallback, useRef } from "react";
-import { useScratch } from "react-use";
 
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Task } from "@/api/tasks";
 import Loading from "@/app/loading";
-import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Player from "@/components/Player";
 import ScrollBar from "@/components/ScrollBar";
 import SpectrogramControls from "@/components/SpectrogramControls";
 import SpectrogramSettings from "@/components/SpectrogramSettings";
-import Tooltip from "@/components/Tooltip";
-import {
-  AnnotationProjectIcon,
-  DeleteIcon,
-  EditIcon,
-  SelectIcon,
-} from "@/components/icons";
+import SpectrogramTags from "@/components/SpectrogramTags";
 import useAnnotate from "@/hooks/annotation/useAnnotate";
 import useRecording from "@/hooks/api/useRecording";
 import useTask from "@/hooks/api/useTask";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useMouseWheel from "@/hooks/motions/useMouseWheel";
+import useScratch from "@/hooks/motions/useScratch";
 import { useMouse } from "@/hooks/motions/useMouse";
+import api from "@/app/api";
 
-function AnnotationControls({
-  isDrawing,
-  isDeleting,
-  isSelecting,
-  isEditing,
-  onDraw,
-  onDelete,
-  onSelect,
-}: {
-  isDrawing: boolean;
-  isDeleting: boolean;
-  isSelecting: boolean;
-  isEditing: boolean;
-  onDraw: () => void;
-  onDelete: () => void;
-  onSelect: () => void;
-}) {
-  return (
-    <div className="flex space-x-2">
-      <Tooltip tooltip="Create a new annotation" placement="bottom">
-        <Button variant={isDrawing ? "primary" : "secondary"} onClick={onDraw}>
-          <AnnotationProjectIcon className="w-5 h-5" />
-        </Button>
-      </Tooltip>
-      {!isEditing ? (
-        <Tooltip tooltip="Select an annotation" placement="bottom">
-          <Button
-            variant={isSelecting ? "primary" : "secondary"}
-            onClick={onSelect}
-          >
-            <SelectIcon className="w-5 h-5" />
-          </Button>
-        </Tooltip>
-      ) : (
-        <Button variant="warning" onClick={onSelect}>
-          <EditIcon className="w-5 h-5" />
-        </Button>
-      )}
-      <Tooltip tooltip="Delete an annotation" placement="bottom">
-        <Button
-          variant={isDeleting ? "danger" : "secondary"}
-          onClick={onDelete}
-        >
-          <DeleteIcon className="w-5 h-5" />
-        </Button>
-      </Tooltip>
-    </div>
-  );
-}
+import AnnotationControls from "./AnnotationControls";
 
 function TaskSpectrogram({
   task,
@@ -84,17 +30,17 @@ function TaskSpectrogram({
   task: Task;
   recording: Recording;
 }) {
-  // Track the user's mouse drag
-  const [dragRef, dragState] = useScratch();
-
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Track the user's mouse scroll
+  const dragState = useScratch({
+    ref: canvasRef,
+  });
   const scrollState = useMouseWheel(canvasRef);
   const mouseState = useMouse(canvasRef);
 
-  const { state, send, draw } = useAnnotate({
+  const { state, send, draw, tags } = useAnnotate({
     task,
     recording,
     scratchState: dragState,
@@ -107,8 +53,8 @@ function TaskSpectrogram({
 
   const handleOnBarDrag = useCallback(
     (newWindow: SpectrogramWindow) => {
-      send("IDLE")
-      specSend("PAN")
+      send("IDLE");
+      specSend("PAN");
       specSend({ type: "PAN_TO", window: newWindow });
     },
     [specSend, send],
@@ -156,9 +102,13 @@ function TaskSpectrogram({
           isDeleting={state.matches("delete")}
           isSelecting={state.matches("edit.selecting")}
           isEditing={state.matches("edit.editing")}
+          geometryType={state.context.geometryType}
           onDraw={() => send("DRAW")}
           onDelete={() => send("DELETE")}
           onSelect={() => send("SELECT")}
+          onSelectGeometryType={(type) =>
+            send({ type: "SELECT_GEOMETRY_TYPE", geometryType: type })
+          }
         />
         <Player
           samplerate={recording.samplerate}
@@ -183,12 +133,17 @@ function TaskSpectrogram({
         />
       </div>
       <div className="h-96">
-        <div
-          ref={dragRef}
-          className="select-none w-max-fit h-max-fit w-full h-full rounded-lg overflow-hidden"
+        <SpectrogramTags
+          tags={tags}
+          filter={{
+            project__eq: task.project_id,
+          }}
+          onCreate={(tag) => {
+            api.annotation_projects.addTag(task.project_id, tag.id);
+          }}
         >
           <canvas ref={canvasRef} className="w-full h-full" />
-        </div>
+        </SpectrogramTags>
       </div>
       <ScrollBar
         window={specState.context.window}

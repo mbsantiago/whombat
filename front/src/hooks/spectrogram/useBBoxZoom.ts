@@ -41,7 +41,6 @@ export default function useBBoxZoom({
   const handleSelectZoom = useCallback(
     ({ bbox, dims }: { bbox: BBox; dims: Dimensions }) => {
       const [start, high, end, low] = scaleBBoxToWindow(dims, bbox, window);
-
       if (validateBBox([start, high, end, low])) {
         const newWindow = {
           time: { min: start, max: end },

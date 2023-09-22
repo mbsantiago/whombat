@@ -1,5 +1,5 @@
 import type { Position } from "@/utils/types";
-import { BorderStyle, setBorderStyle } from "@/draw/styles";
+import { BorderStyle, SECONDARY, setBorderStyle } from "@/draw/styles";
 
 const DEFAULT_HANDLE_SIZE = 6;
 
@@ -8,7 +8,7 @@ type HandleStlye = {
 } & BorderStyle;
 
 export const DEFAULT_HANDLE_STYLE = {
-  borderColor: "black",
+  borderColor: SECONDARY,
   borderWidth: 1,
   size: 7,
 };

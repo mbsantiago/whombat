@@ -84,9 +84,11 @@ async def get_many(
 
 @caches.with_update
 async def create(
-    session: AsyncSession, data: schemas.AnnotationPostCreate
+    session: AsyncSession,
+    data: schemas.AnnotationPostCreate,
+    tag_ids: list[int] | None = None,
 ) -> schemas.Annotation:
-    """Create an annotation project."""
+    """Create an annotation object."""
     await common.get_object(
         session, models.Task, models.Task.id == data.task_id
     )
@@ -101,6 +103,21 @@ async def create(
         models.Annotation,
         data,
     )
+
+    if tag_ids:
+        await common.create_objects(
+            session,
+            models.AnnotationTag,
+            [
+                schemas.AnnotationTagCreate(
+                    annotation_id=annotation.id,
+                    tag_id=tag_id,
+                    created_by_id=data.created_by_id,
+                )
+                for tag_id in tag_ids
+            ],
+        )
+
     await session.refresh(annotation)
     return schemas.Annotation.model_validate(annotation)
 
@@ -124,15 +141,32 @@ async def add_tag(
     session: AsyncSession,
     annotation_id: int,
     tag_id: int,
+    user_id: UUID,
 ) -> schemas.Annotation:
     """Add a tag to an annotation project."""
-    annotation = await common.add_tag_to_object(
+    annotation = await get_by_id(session, annotation_id)
+
+    for annotation_tag in annotation.tags:
+        if (
+            annotation_tag.tag.id == tag_id
+            and annotation_tag.created_by_id == user_id
+        ):
+            return annotation
+
+    obj = await common.create_object(
         session,
-        models.Annotation,
-        models.Annotation.id == annotation_id,
-        tag_id,
+        models.AnnotationTag,
+        schemas.AnnotationTagCreate(
+            annotation_id=annotation_id,
+            tag_id=tag_id,
+            created_by_id=user_id,
+        ),
     )
-    return schemas.Annotation.model_validate(annotation)
+    await session.refresh(obj)
+    new_tag = schemas.AnnotationTag.model_validate(obj)
+    annotation.tags.append(new_tag)
+    print(annotation.sound_event.geometry)
+    return annotation
 
 
 @caches.with_update
@@ -158,13 +192,22 @@ async def remove_tag(
     tag_id: int,
 ) -> schemas.Annotation:
     """Remove a tag from an annotation project."""
-    annotation = await common.remove_tag_from_object(
-        session,
-        models.Annotation,
-        models.Annotation.id == annotation_id,
-        tag_id,
-    )
-    return schemas.Annotation.model_validate(annotation)
+    annotation = await get_by_id(session, annotation_id)
+
+    for annotation_tag in annotation.tags:
+        if annotation_tag.id != tag_id:
+            continue
+
+        await common.delete_object(
+            session,
+            models.AnnotationTag,
+            models.AnnotationTag.id == tag_id,
+        )
+
+        annotation.tags = [tag for tag in annotation.tags if tag.id != tag_id]
+        return annotation
+
+    return annotation
 
 
 @caches.with_update

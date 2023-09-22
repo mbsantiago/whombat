@@ -1,8 +1,9 @@
 import { ActorRefFrom, assign, createMachine, spawn } from "xstate";
 
 import { spectrogramMachine } from "@/machines/spectrogram";
+import { getInitialDuration } from "@/utils/windows";
 import { type Tag } from "@/api/tags";
-import { type Annotation } from "@/api/annotations";
+import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Geometry } from "@/api/sound_events";
 import { type StatusBadge } from "@/api/tasks";
 import { type Task } from "@/api/tasks";
@@ -23,6 +24,7 @@ export type AnnotateContext = {
 export type CreateAnnotationEvent = {
   type: "CREATE";
   geometry: Geometry;
+  tag_ids?: number[];
 };
 
 export type EditAnnotationEvent = {
@@ -40,6 +42,23 @@ export type DeleteAnnotationEvent = {
   annotation: Annotation;
 };
 
+export type SelecteGeometryTypeEvent = {
+  type: "SELECT_GEOMETRY_TYPE";
+  geometryType: "TimeStamp" | "TimeInterval" | "BoundingBox";
+};
+
+export type AddTagEvent = {
+  type: "ADD_TAG";
+  annotation: Annotation;
+  tag: Tag;
+}
+
+export type RemoveTagEvent = {
+  type: "REMOVE_TAG";
+  annotation: Annotation;
+  tag: AnnotationTag;
+}
+
 export type AnnotateEvent =
   | { type: "IDLE" }
   | { type: "SELECT" }
@@ -49,17 +68,19 @@ export type AnnotateEvent =
   | EditAnnotationEvent
   | CreateAnnotationEvent
   | DeleteAnnotationEvent
+  | SelecteGeometryTypeEvent
+  | AddTagEvent
+  | RemoveTagEvent
   | { type: "ADD_NOTE"; annotation: Annotation }
   | { type: "ADD_STATUS_BADGE"; badge: StatusBadge }
   | { type: "REMOVE_STATUS_BADGE"; badge: StatusBadge }
   | { type: "UPDATE_NOTE"; annotation: Annotation }
-  | { type: "ADD_TAG"; tag: Tag }
-  | { type: "REMOVE_TAG"; tag: Tag }
   | { type: "ADD_GLOBAL_TAG"; tag: Tag }
   | { type: "REMOVE_GLOBAL_TAG"; tag: Tag };
 
 export const annotateStates = {
   initial: "idle",
+  id: "annotate",
   entry: ["setupSpectrogram"],
   states: {
     idle: {
@@ -84,6 +105,10 @@ export const annotateStates = {
             EDIT: {
               target: "updating",
             },
+            CREATE: {
+              target: "#create.creating",
+              actions: "startAnnotationCreation",
+            },
           },
         },
         updating: {
@@ -101,6 +126,7 @@ export const annotateStates = {
       },
     },
     create: {
+      id: "create",
       initial: "drawing",
       states: {
         drawing: {
@@ -140,7 +166,7 @@ export const annotateStates = {
           invoke: {
             src: "deleteAnnotation",
             onDone: {
-              target: "selecting",
+              target: "#annotate",
             },
             onError: {
               target: "selecting",
@@ -156,14 +182,26 @@ export const annotateStates = {
     SELECT: "edit",
     DRAW: "create",
     DELETE: "delete",
+    SELECT_GEOMETRY_TYPE: {
+      actions: ["selectGeometryType"],
+    },
     RESET: {
       actions: ["reset"],
       target: "idle",
+    },
+    ADD_TAG: {
+      actions: ["addTag"],
+    },
+    REMOVE_TAG: {
+      actions: ["removeTag"],
     },
   },
 };
 
 export const annotateActions = {
+  selectGeometryType: assign({
+    geometryType: (_, event: SelecteGeometryTypeEvent) => event.geometryType,
+  }),
   updateSelectedAnnotation: assign({
     // @ts-ignore
     selectedAnnotation: (_, event) => event.data,
@@ -200,12 +238,19 @@ export const annotateActions = {
         },
       };
 
+      const initialDuration = getInitialDuration({
+        interval: bounds.time,
+        samplerate: context.recording.samplerate,
+        window_size: context.parameters.window_size,
+        hop_size: context.parameters.hop_size,
+      });
+
       const initial = {
         time: {
           min: context.task.clip.start_time,
           max: Math.min(
             context.task.clip.end_time,
-            context.task.clip.start_time + 1,
+            context.task.clip.start_time + initialDuration,
           ),
         },
         freq: {
@@ -243,7 +288,6 @@ export const annotateMachine = createMachine(
       context: {} as AnnotateContext,
       events: {} as AnnotateEvent,
     },
-    id: "annotate",
     ...annotateStates,
   },
   {

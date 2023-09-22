@@ -25,6 +25,7 @@ const TagFilterSchema = z.object({
   key__eq: z.string().optional(),
   value__eq: z.string().optional(),
   value__has: z.string().optional(),
+  project__eq: z.number().int().optional(),
 });
 
 type TagFilter = z.infer<typeof TagFilterSchema>;

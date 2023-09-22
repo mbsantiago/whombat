@@ -3,12 +3,13 @@ import { useActor, useMachine } from "@xstate/react";
 import toast from "react-hot-toast";
 import { type RefObject } from "react";
 
-import { annotateMachine } from "@/machines/annotate";
+import { annotateMachine, type AddTagEvent } from "@/machines/annotate";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 import drawGeometry from "@/draw/geometry";
 import useStore from "@/store";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useAnnotations from "@/hooks/api/useAnnotations";
+import useAnnotationTags from "@/hooks/annotation/useAnnotationTags";
 import useAnnotateKeyShortcuts from "@/hooks/annotation/useAnnotateKeyShortcuts";
 import useAnnotationCreate from "@/hooks/annotation/useAnnotationCreate";
 import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
@@ -19,10 +20,11 @@ import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Task } from "@/api/tasks";
 import { type Recording } from "@/api/recordings";
+import { SECONDARY } from "@/draw/styles";
 
 const IDLE_STYLE = {
-  borderColor: "rgb(59,130,246)",
-  fillColor: "rgb(59,130,246)",
+  borderColor: SECONDARY,
+  fillColor: SECONDARY,
   borderWidth: 2,
   fillAlpha: 0.1,
 };
@@ -59,17 +61,52 @@ export default function useAnnotate({
       selectedAnnotation: null,
       geometryType: "BoundingBox",
     },
-    services: {
-      createAnnotation: async (ctx, _) => {
-        const { task, geometryToCreate } = ctx;
+    actions: {
+      addTag: async (_, event: AddTagEvent) => {
+        const { annotation, tag } = event;
+        const updated = annotations.addTag.mutateAsync({
+          annotation_id: annotation.id,
+          tag_id: tag.id,
+        });
 
-        if (geometryToCreate == null) {
+        toast.promise(updated, {
+          loading: "Adding tag...",
+          success: "Tag added",
+          error: "Failed to add tag",
+        });
+
+        return await updated;
+      },
+      removeTag: async (_, event: AddTagEvent) => {
+        const { annotation, tag } = event;
+        const updated = annotations.removeTag.mutateAsync({
+          annotation_id: annotation.id,
+          tag_id: tag.id,
+        });
+
+        toast.promise(updated, {
+          loading: "Removing tag...",
+          success: "Tag removed",
+          error: "Failed to remove tag",
+        });
+
+        return await updated;
+      },
+    },
+    services: {
+      createAnnotation: async (ctx, event) => {
+        const { task } = ctx;
+        // @ts-ignore
+        const { geometry, tag_ids } = event;
+
+        if (geometry == null) {
           throw new Error("No geometry to create");
         }
 
         const annotation = annotations.create.mutateAsync({
           task_id: task.id,
-          geometry: geometryToCreate,
+          geometry,
+          tag_ids,
         });
 
         toast.promise(annotation, {
@@ -191,6 +228,16 @@ export default function useAnnotate({
     [specState.context.window, annotations.items],
   );
 
+  const tags = useAnnotationTags({
+    annotations: annotations.items,
+    window: specState.context.window,
+    dimensions: {
+      width: ref.current?.width ?? 0,
+      height: ref.current?.height ?? 0,
+    },
+    send,
+  });
+
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       drawSpec(ctx);
@@ -214,5 +261,6 @@ export default function useAnnotate({
     state,
     send,
     draw,
+    tags,
   };
 }

@@ -1,5 +1,10 @@
 import type { Color, JSONObject } from "@/draw/common";
 
+export const PRIMARY = "rgb(16 185 129)"; // emerald-500
+export const SECONDARY = "rgb(59,130,246)"; // blue-500
+export const DANGER = "rgb(239 68 68)"; // red-500
+export const WARNING = "rgb(245 158 11)"; // amber-500
+
 export interface BorderStyle {
   borderColor?: Color;
   borderAlpha?: number;

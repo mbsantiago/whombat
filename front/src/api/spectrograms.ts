@@ -12,6 +12,10 @@ const DEFAULT_ENDPOINTS = {
 
 export const MIN_DB = -140;
 
+export const DEFAULT_WINDOW_SIZE = 0.025;
+
+export const DEFAULT_HOP_SIZE = 0.01;
+
 export const SpectrogramWindowSchema = z.object({
   time: IntervalSchema,
   freq: IntervalSchema,
@@ -21,8 +25,8 @@ export type SpectrogramWindow = z.infer<typeof SpectrogramWindowSchema>;
 
 export const STFTParametersSchema = z
   .object({
-    window_size: z.number().positive().default(0.025),
-    hop_size: z.number().positive().default(0.01),
+    window_size: z.number().positive().default(DEFAULT_WINDOW_SIZE),
+    hop_size: z.number().positive().default(DEFAULT_HOP_SIZE),
     window: z.string().default("hann"),
   })
   .refine(

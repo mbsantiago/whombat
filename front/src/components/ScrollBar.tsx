@@ -1,9 +1,12 @@
 import { type HTMLProps, useCallback, useMemo, useRef } from "react";
-import { useScratch } from "react-use";
 
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type SetWindowFn, type ShiftWindowFn } from "@/hooks/spectrogram/useWindow";
+import {
+  type SetWindowFn,
+  type ShiftWindowFn,
+} from "@/hooks/spectrogram/useWindow";
 import useWindowDrag, { type DragFn } from "@/hooks/spectrogram/useWindowDrag";
+import useScratch from "@/hooks/motions/useScratch";
 
 type BarPosition = {
   left: number;
@@ -70,7 +73,9 @@ export default function WindowBar({
     [window, bounds],
   );
 
-  const [dragRef, dragState] = useScratch();
+  const dragState = useScratch({
+    ref: barRef,
+  });
 
   const dragThumb: DragFn = useCallback(
     ({ window: win, offset }) => {
@@ -122,22 +127,20 @@ export default function WindowBar({
   });
 
   return (
-    <div draggable={false} ref={dragRef}>
+    <div
+      draggable={false}
+      className="group select-none relative w-full flex flex-row items-center h-8 outline outline-1 rounded-md outline-stone-300 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700 cursor-pointer"
+      ref={barRef}
+      {...rest}
+    >
       <div
         draggable={false}
-        className="group select-none relative w-full flex flex-row items-center h-8 outline outline-1 rounded-md outline-stone-300 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700 cursor-pointer"
-        ref={barRef}
-        {...rest}
-      >
-        <div
-          draggable={false}
-          tabIndex={0}
-          className="absolute bg-emerald-300 dark:bg-emerald-700 rounded-md border border-emerald-500 group-hover:bg-emerald-500/80 hover:bg-emerald-500/80 cursor-pointer focus:ring-4 focus:ring-emerald-500/50 focus:outline-none"
-          style={{
-            ...position,
-          }}
-        />
-      </div>
+        tabIndex={0}
+        className="absolute bg-emerald-300 dark:bg-emerald-700 rounded-md border border-emerald-500 group-hover:bg-emerald-500/80 hover:bg-emerald-500/80 cursor-pointer focus:ring-4 focus:ring-emerald-500/50 focus:outline-none"
+        style={{
+          ...position,
+        }}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
 
@@ -7,7 +7,7 @@ import { Submit } from "@/components/inputs";
 
 type Option<T> = {
   id: string | number;
-  label: string;
+  label: ReactNode;
   value: T;
   disabled?: boolean;
 };
@@ -17,11 +17,13 @@ export default function Select<T>({
   selected,
   onChange,
   options,
+  placement = "top-end",
 }: {
   label?: string;
   selected: Option<T>;
   onChange: (value: T) => void;
   options: Option<T>[];
+  placement?: "top-end" | "top-start" | "bottom-end" | "bottom-start" | "bottom";
 }) {
   return (
     <Listbox value={selected.value} onChange={onChange}>
@@ -31,7 +33,7 @@ export default function Select<T>({
         leave="transition ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        placement="top-end"
+        placement={placement}
         offset={4}
         flip={true}
         floatingAs={Fragment}
@@ -39,7 +41,7 @@ export default function Select<T>({
         <Listbox.Button as="div" className="inline-flex w-full">
           {label ? (
             <div className="my-auto inline-block">
-              <Listbox.Label className="text-sm text-stone-500 whitespace-nowrap">
+              <Listbox.Label className="text-sm text-stone-500 dark:text-stone-400 whitespace-nowrap">
                 {label}
               </Listbox.Label>
             </div>
@@ -56,14 +58,14 @@ export default function Select<T>({
             </span>
           </Submit>
         </Listbox.Button>
-        <Listbox.Options className="max-h-60 w-full overflow-auto rounded-md bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm">
+        <Listbox.Options className="max-h-60 w-full overflow-auto rounded-lg bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm">
           {options.map((option) => (
             <Listbox.Option
               key={option.id}
               value={option.value}
               className={({ active }) =>
                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                  active ? "bg-amber-100 text-amber-900" : "text-stone-900 dark:text-stone-300"
+                  active ? "bg-amber-100 text-amber-900" : "text-stone-900 dark:text-stone-400"
                 }`
               }
             >

@@ -32,6 +32,8 @@ export type TaskCreate = z.infer<typeof TaskCreateSchema>;
 
 export const TaskSchema = z.object({
   id: z.number(),
+  clip_id: z.number(),
+  project_id: z.number(),
   clip: ClipCreateSchema,
   tags: z.array(TagSchema),
   status_badges: z.array(StatusBadgeSchema),

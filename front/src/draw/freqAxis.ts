@@ -8,7 +8,7 @@ import {
   setBorderStyle,
   setFontStyle,
 } from "@/draw/styles";
-import { getTicks, selectResolution } from "@/draw/timeAxis";
+import { getTicks, selectResolution, parseNum } from "@/draw/timeAxis";
 
 function drawFreqTick(
   ctx: CanvasRenderingContext2D,
@@ -43,11 +43,6 @@ function drawFreqTick(
   }
 }
 
-export function parseFreq(freq: number): string {
-  if (freq >= 1e5) return freq.toPrecision(2);
-  return Math.round(freq).toString();
-}
-
 export default function drawTimeAxis(
   ctx: CanvasRenderingContext2D,
   interval: Interval,
@@ -57,14 +52,19 @@ export default function drawTimeAxis(
   const { height } = canvas;
   const { min, max } = interval;
   const range = max - min;
-  const { mayorTickStep, minorTickStep } = selectResolution(height, interval);
+  const { mayorTickStep, minorTickStep, digits } = selectResolution(
+    height,
+    interval,
+  );
   const mayorTicks = getTicks(interval, mayorTickStep);
   const minorTicks = getTicks(interval, minorTickStep);
 
   mayorTicks.forEach((freq) => {
     const y = (height * (max - freq)) / range;
     drawFreqTick(ctx, y, {
-      label: parseFreq(freq),
+      // Its best to display frequencies in kHz to get a cleaner axis
+      // Hence the division by 1000 and 3 digits removed
+      label: parseNum(freq / 1000, digits - 3),
       ...style,
       ...MAYOR_TICK_STYLE,
     });

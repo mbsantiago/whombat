@@ -20,6 +20,7 @@ export type PagedList<T> = {
   total: number;
   pagination: Pagination;
   query: UseQueryResult<Paginated<T>, Error>;
+  queryKey: any[];
 };
 
 export default function usePagedQuery<T, S extends Object>({
@@ -35,9 +36,10 @@ export default function usePagedQuery<T, S extends Object>({
 }): PagedList<T> {
   const [page, setPage] = useState(0);
   const [size, setPageSize] = useState(pageSize);
+  const queryKey = [name, page, size, filter];
 
   const query = useQuery<Paginated<T>, Error>(
-    [name, page, size, filter],
+    queryKey,
     () => func({ limit: size, offset: page * size, ...filter }),
     { keepPreviousData: true },
   );
@@ -92,5 +94,6 @@ export default function usePagedQuery<T, S extends Object>({
     total: query.data?.total ?? 0,
     pagination,
     query,
+    queryKey,
   };
 }

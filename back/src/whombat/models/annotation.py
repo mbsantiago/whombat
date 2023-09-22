@@ -100,6 +100,7 @@ class Annotation(Base):
         lazy="joined",
         init=False,
         repr=False,
+        cascade="all, delete-orphan",
         default_factory=list,
     )
 
@@ -174,6 +175,7 @@ class AnnotationTag(Base):
     """Tag attached to the annotation."""
 
     created_by: orm.Mapped[User] = orm.relationship(
+        back_populates="annotation_tags",
         lazy="joined",
         init=False,
         repr=False,

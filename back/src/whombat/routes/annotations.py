@@ -45,6 +45,7 @@ async def create_annotation(
             created_by_id=user.id,
             sound_event_id=sound_event.id,
         ),
+        tag_ids=data.tag_ids,
     )
     await session.commit()
     return annotation
@@ -76,6 +77,7 @@ async def get_annotations(
         offset=offset,
     )
 
+
 @annotations_router.patch(
     "/detail/",
     response_model=schemas.Annotation,
@@ -106,6 +108,46 @@ async def delete_annotation(
 ):
     """Remove a clip from an annotation project."""
     annotation = await api.annotations.delete(session, annotation_id)
+    await session.commit()
+    return annotation
+
+
+@annotations_router.post(
+    "/detail/tags/",
+    response_model=schemas.Annotation,
+)
+async def add_annotation_tag(
+    session: Session,
+    annotation_id: int,
+    tag_id: int,
+    user: ActiveUser,
+):
+    """Add a tag to an annotation annotation."""
+    annotation = await api.annotations.add_tag(
+        session,
+        annotation_id,
+        tag_id,
+        user.id,
+    )
+    await session.commit()
+    return annotation
+
+
+@annotations_router.delete(
+    "/detail/tags/",
+    response_model=schemas.Annotation,
+)
+async def remove_annotation_tag(
+    session: Session,
+    annotation_id: int,
+    tag_id: int,
+):
+    """Remove a tag from an annotation annotation."""
+    annotation = await api.annotations.remove_tag(
+        session,
+        annotation_id,
+        tag_id,
+    )
     await session.commit()
     return annotation
 

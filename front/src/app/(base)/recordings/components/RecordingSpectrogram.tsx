@@ -1,12 +1,12 @@
 import { useCallback, useRef } from "react";
 import { useMemo } from "react";
-import { useScratch } from "react-use";
 import { useActor, useMachine } from "@xstate/react";
 
 import { spectrogramMachine } from "@/machines/spectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
+import useScratch from "@/hooks/motions/useScratch";
 import useStore from "@/store";
 import Card from "@/components/Card";
 import Player from "@/components/Player";
@@ -24,12 +24,8 @@ export default function RecordingSpectrogram({
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Track the user's mouse drag
-  const [dragRef, dragState] = useScratch();
-
-  // Track the user's mouse scroll
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollState = useMouseWheel(scrollRef);
+  const scrollState = useMouseWheel(canvasRef);
+  const dragState = useScratch({ ref: canvasRef });
 
   // Get initial spectrogram parameters from global state
   const parameters = useStore((state) => state.spectrogramSettings);
@@ -121,14 +117,7 @@ export default function RecordingSpectrogram({
         />
       </div>
       <div className="h-96">
-        <div ref={scrollRef} className="w-max-fit h-max-fit w-full h-full">
-          <div
-            ref={dragRef}
-            className="select-none w-max-fit h-max-fit w-full h-full rounded-lg overflow-hidden"
-          >
-            <canvas ref={canvasRef} className="w-full h-full" />
-          </div>
-        </div>
+        <canvas ref={canvasRef} className="w-full h-full" />
       </div>
       <ScrollBar
         window={state.context.window}

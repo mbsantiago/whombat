@@ -93,11 +93,8 @@ export default function createEditHook<J>(
     useEffect(() => {
       if (!active) return;
 
-      if (
-        hovered == null &&
-        start != null
-      ) {
-        onClickAway?.()
+      if (hovered == null && start != null) {
+        onClickAway?.();
       }
 
       // Only do something if an editable element is being hovered
@@ -118,11 +115,32 @@ export default function createEditHook<J>(
           setTmpObject(shiftObject(object, start, current));
         }
       }
-    }, [object, start, current, hovered, editableElements, active, shift, onClickAway]);
+    }, [
+      object,
+      start,
+      current,
+      hovered,
+      editableElements,
+      active,
+      shift,
+      onClickAway,
+    ]);
 
     const draw = useCallback(
       (ctx: CanvasRenderingContext2D) => {
         if (!active || object == null) return;
+
+        // Set the cursor depending on the hovered element
+        ctx.canvas.style.cursor = "default";
+        if (hovered != null) {
+          ctx.canvas.style.cursor = "pointer";
+          if (shift) {
+            ctx.canvas.style.cursor = "move";
+          }
+        }
+        if (tmpObject != null) {
+          ctx.canvas.style.cursor = "grabbing";
+        }
 
         const els = createEditableElementsFn(tmpObject ?? object, {
           width: ctx.canvas.width,

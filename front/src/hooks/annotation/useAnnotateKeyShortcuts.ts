@@ -3,33 +3,38 @@ import { useKeyPressEvent } from "react-use";
 
 export default function useAnnotateKeyShortcuts({
   send,
-  cond,
 }: {
   send: (event: "DRAW" | "SELECT" | "DELETE" | "IDLE") => void;
   cond: boolean;
 }) {
-  const goToDrawing = useCallback(() => {
-    send("DRAW");
-  }, [send]);
+  const goToDrawing = useCallback(
+    (event: KeyboardEvent) => {
+      // Avoid triggering when typing in the text input
+      if (event.target instanceof HTMLInputElement) return
+      send("DRAW");
+    },
+    [send],
+  );
 
-  const goToSelecting = useCallback(() => {
-    send("SELECT");
-  }, [send]);
+  const goToSelecting = useCallback(
+    (event: KeyboardEvent) => {
+      // Avoid triggering when typing in the text input
+      if (event.target instanceof HTMLInputElement) return
+      send("SELECT");
+    },
+    [send],
+  );
 
-  const goToIdle = useCallback(() => {
-    if (!cond) {
-      send("IDLE");
-    }
-  }, [send, cond]);
+  const goToDeleting = useCallback(
+    (event: KeyboardEvent) => {
+      // Avoid triggering when typing in the text input
+      if (event.target instanceof HTMLInputElement) return
+      send("DELETE");
+    },
+    [send],
+  );
 
-  const goToDeleting = useCallback(() => {
-    send("DELETE");
-  }, [send]);
-
-  // Keyboard shortcuts
-  useKeyPressEvent("d", goToDeleting, goToIdle);
-
-  useKeyPressEvent("a", goToDrawing, goToIdle);
-
-  useKeyPressEvent("e", goToSelecting, goToIdle);
+  useKeyPressEvent("d", goToDeleting);
+  useKeyPressEvent("a", goToDrawing);
+  useKeyPressEvent("e", goToSelecting);
 }

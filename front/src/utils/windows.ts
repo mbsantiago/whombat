@@ -1,5 +1,41 @@
 import { type Interval } from "@/api/audio";
-import { type SpectrogramWindow } from "@/api/spectrograms";
+import {
+  type SpectrogramWindow,
+  DEFAULT_WINDOW_SIZE,
+  DEFAULT_HOP_SIZE,
+} from "@/api/spectrograms";
+
+
+// Size of the target initial spectrogram in pixels.
+const TARGET_INITIAL_SIZE = 512 * 1024;
+
+/**
+ * Get the ideal duration of a spectrogram window given the interval and
+ * samplerate of the audio.
+ * The ideal duration is a balance between:
+ * - A large window that provides a good overview of the recording.
+ * - A small window for which the spectrogram computation is fast.
+ * Since the spectrogram computation is O(n^2) in the window size, we want to
+ * avoid huge windows.
+ */
+export function getInitialDuration({
+  interval,
+  samplerate,
+  window_size = DEFAULT_WINDOW_SIZE,
+  hop_size = DEFAULT_HOP_SIZE,
+}: {
+  interval: Interval;
+  samplerate: number;
+  window_size?: number;
+  hop_size?: number;
+}) {
+  const duration = interval.max - interval.min;
+  const n_fft = Math.floor(window_size * samplerate);
+  const specHeight = Math.floor(n_fft / 2) + 1;
+  const specWidth = TARGET_INITIAL_SIZE / specHeight;
+  const windowWidth = specWidth * hop_size;
+  return Math.min(duration, windowWidth);
+}
 
 /**
  * Compute the intersection of two intervals

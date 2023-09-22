@@ -1,4 +1,7 @@
+// @ts-ignore
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+// @ts-ignore
+import bbox from "@turf/bbox";
 
 // import { type Annotation } from '@/api/annotations'
 import { type SpectrogramWindow } from "@/api/spectrograms";
@@ -19,7 +22,20 @@ import type {
   Position,
 } from "@/utils/types";
 
+const MAX_FREQ = 5_000_000;
+
 type Dims = { width: number; height: number };
+
+export function bboxIntersection(bbox1: BBox, bbox2: BBox): BBox | null {
+  const [left1, top1, right1, bottom1] = bbox1;
+  const [left2, top2, right2, bottom2] = bbox2;
+  const left = Math.max(left1, left2);
+  const top = Math.max(top1, top2);
+  const right = Math.min(right1, right2);
+  const bottom = Math.min(bottom1, bottom2);
+  if (left > right || top > bottom) return null;
+  return [left, top, right, bottom];
+}
 
 export function scaleTimeToViewport(
   value: number,
@@ -128,8 +144,8 @@ export function scaleBBoxToWindow(
   let [start, top, end, bottom] = bbox;
   const startTime = scaleXToWindow(start, window, width);
   const endTime = scaleXToWindow(end, window, width);
-  const highFreq = scaleYToWindow(top, window, height);
-  const lowFreq = scaleYToWindow(bottom, window, height);
+  const lowFreq = scaleYToWindow(top, window, height);
+  const highFreq = scaleYToWindow(bottom, window, height);
   return [startTime, lowFreq, endTime, highFreq];
 }
 
@@ -281,11 +297,7 @@ export function scaleGeometryToWindow<T extends Geometry>(
     case "TimeStamp":
       return {
         ...geometry,
-        coordinates: scaleXToWindow(
-          geometry.coordinates,
-          window,
-          dims.width,
-        ),
+        coordinates: scaleXToWindow(geometry.coordinates, window, dims.width),
       };
     case "TimeInterval":
       return {
@@ -668,5 +680,190 @@ export function shiftGeometry(
 
     default:
       throw Error(`Cannot shift geometry of unknown type ${type}`);
+  }
+}
+
+export function isTimeStampInWindow(
+  geom: TimeStamp,
+  window: SpectrogramWindow,
+): boolean {
+  const { time } = window;
+  return geom.coordinates >= time.min && geom.coordinates <= time.max;
+}
+
+export function isTimeIntervalInWindow(
+  geom: TimeInterval,
+  window: SpectrogramWindow,
+): boolean {
+  const { time } = window;
+  const [start, end] = geom.coordinates;
+  return end >= time.min && start <= time.max;
+}
+
+export function isBoundingBoxInWindow(
+  geom: BoundingBox,
+  window: SpectrogramWindow,
+) {
+  const { time, freq } = window;
+  const [startTime, lowFreq, endTime, highFreq] = geom.coordinates;
+  return (
+    startTime <= time.max &&
+    endTime >= time.min &&
+    lowFreq <= freq.max &&
+    highFreq >= freq.min
+  );
+}
+
+export function isPointInWindow(geom: Point, window: SpectrogramWindow) {
+  const { time, freq } = window;
+  const [x, y] = geom.coordinates;
+  return x <= time.max && x >= time.min && y <= freq.max && y >= freq.min;
+}
+
+export function isLineStringInWindow(
+  geom: LineString,
+  window: SpectrogramWindow,
+) {
+  const bbox = computeGeometryBBox(geom);
+  return isBoundingBoxInWindow(
+    { type: "BoundingBox", coordinates: bbox },
+    window,
+  );
+}
+
+export function isPolygonInWindow(geom: Polygon, window: SpectrogramWindow) {
+  const bbox = computeGeometryBBox(geom);
+  return isBoundingBoxInWindow(
+    { type: "BoundingBox", coordinates: bbox },
+    window,
+  );
+}
+
+export function isMultiPointInWindow(
+  geom: MultiPoint,
+  window: SpectrogramWindow,
+) {
+  const { time, freq } = window;
+  return geom.coordinates.some(([x, y]) => {
+    return x <= time.max && x >= time.min && y <= freq.max && y >= freq.min;
+  });
+}
+
+export function isMultiLineStringInWindow(
+  geom: MultiLineString,
+  window: SpectrogramWindow,
+) {
+  return geom.coordinates.some((line) => {
+    return isLineStringInWindow(
+      {
+        type: "LineString",
+        coordinates: line,
+      },
+      window,
+    );
+  });
+}
+
+export function isMultiPolygonInWindow(
+  geom: MultiPolygon,
+  window: SpectrogramWindow,
+) {
+  return geom.coordinates.some((polygon) => {
+    return isPolygonInWindow(
+      {
+        type: "Polygon",
+        coordinates: polygon,
+      },
+      window,
+    );
+  });
+}
+
+export function isGeometryInWindow(
+  geom: Geometry,
+  window: SpectrogramWindow,
+): boolean {
+  const { type } = geom;
+  switch (type) {
+    case "TimeStamp":
+      return isTimeStampInWindow(geom, window);
+
+    case "TimeInterval":
+      return isTimeIntervalInWindow(geom, window);
+
+    case "BoundingBox":
+      return isBoundingBoxInWindow(geom, window);
+
+    case "Point":
+      return isPointInWindow(geom, window);
+
+    case "MultiPoint":
+      return isMultiPointInWindow(geom, window);
+
+    case "LineString":
+      return isLineStringInWindow(geom, window);
+
+    case "MultiLineString":
+      return isMultiLineStringInWindow(geom, window);
+
+    case "Polygon":
+      return isPolygonInWindow(geom, window);
+
+    case "MultiPolygon":
+      return isMultiPolygonInWindow(geom, window);
+
+    default:
+      throw Error(
+        `Cannot check if geometry of unknown type ${type} is in window`,
+      );
+  }
+}
+
+export function computeTimeStampBBox(geometry: TimeStamp): BBox {
+  return [geometry.coordinates, 0, geometry.coordinates, MAX_FREQ];
+}
+
+export function computeTimeIntervalBBox(geometry: TimeInterval): BBox {
+  return [geometry.coordinates[0], 0, geometry.coordinates[1], MAX_FREQ];
+}
+
+export function computeBoundingBoxBBox(geometry: BoundingBox): BBox {
+  return geometry.coordinates;
+}
+
+export function computeGeometryBBox(geometry: Geometry): BBox {
+  const { type } = geometry;
+  switch (type) {
+    case "TimeStamp":
+      return computeTimeStampBBox(geometry);
+
+    case "TimeInterval":
+      return computeTimeIntervalBBox(geometry);
+
+    case "BoundingBox":
+      return computeBoundingBoxBBox(geometry);
+
+    case "Point":
+      return bbox(geometry);
+
+    case "MultiPoint":
+      return bbox(geometry);
+
+    case "LineString":
+      return bbox(geometry);
+
+    case "MultiLineString":
+      return bbox(geometry);
+
+    case "Polygon":
+      return bbox(geometry);
+
+    case "MultiPolygon":
+      return bbox(geometry);
+
+    default:
+      throw Error(
+        `Cannot compute bounding box of unknown geometry type ${type}`,
+      );
   }
 }

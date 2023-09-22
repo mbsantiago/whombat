@@ -9,10 +9,12 @@ import { type SelectAnnotationEvent } from "@/machines/annotate";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Annotation } from "@/api/annotations";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import { WARNING } from '@/draw/styles'
+
 
 const SELECT_STYLE = {
-  borderColor: "yellow",
-  fillColor: "yellow",
+  borderColor: WARNING,
+  fillColor: WARNING,
   borderWidth: 2,
   fillAlpha: 0.2,
 };
@@ -59,6 +61,8 @@ export default function useAnnotationSelect({
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!active || hovered == null) return;
+
+      ctx.canvas.style.cursor = "pointer";
 
       const geometry = scaleGeometryToViewport(
         { width: ctx.canvas.width, height: ctx.canvas.height },

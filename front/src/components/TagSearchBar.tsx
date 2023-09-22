@@ -74,6 +74,7 @@ type TagSearchBarProps = {
   onSelect?: (tag: TagType) => void;
   onBlur?: () => void;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onCreate?: (tag: TagType) => void;
   initialFilter?: TagFilter;
 } & Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -87,6 +88,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
       initialFilter = {},
       onBlur,
       onKeyDown,
+      onCreate,
       autoFocus = true,
       ...props
     },
@@ -142,7 +144,11 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                 if (event.key === "Enter" && event.shiftKey) {
                   event.preventDefault();
                   if (key && value) {
-                    tags.create.mutate({ key, value });
+                    tags.create.mutate({ key, value }, {
+                      onSuccess: (tag) => {
+                        onCreate?.(tag);
+                      }
+                    });
                   }
                 }
                 onKeyDown?.(event);

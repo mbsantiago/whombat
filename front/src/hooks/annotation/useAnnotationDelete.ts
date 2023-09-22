@@ -9,10 +9,11 @@ import { type DeleteAnnotationEvent } from "@/machines/annotate";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Annotation } from "@/api/annotations";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import { DANGER } from "@/draw/styles";
 
 const DELETE_STYLE = {
-  borderColor: "red",
-  fillColor: "red",
+  borderColor: DANGER,
+  fillColor: DANGER,
   borderWidth: 3,
   fillAlpha: 0.2,
 };
@@ -60,6 +61,7 @@ export default function useAnnotationDelete({
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!active || hovered == null) return;
+      ctx.canvas.style.cursor = "pointer";
       const geometry = scaleGeometryToViewport(
         { width: ctx.canvas.width, height: ctx.canvas.height },
         // @ts-ignore

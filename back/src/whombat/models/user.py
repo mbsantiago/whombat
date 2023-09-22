@@ -27,6 +27,7 @@ __all__ = [
 
 if TYPE_CHECKING:
     from whombat.models.note import Note
+    from whombat.models.annotation import AnnotationTag
 
 
 class User(Base):
@@ -83,6 +84,13 @@ class User(Base):
     """Whether the user is verified."""
 
     notes: orm.Mapped[list["Note"]] = orm.relationship(
+        back_populates="created_by",
+        default_factory=list,
+        repr=False,
+        init=False,
+    )
+
+    annotation_tags: orm.Mapped[list["AnnotationTag"]] = orm.relationship(
         back_populates="created_by",
         default_factory=list,
         repr=False,

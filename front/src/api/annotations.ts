@@ -8,53 +8,6 @@ import { GeometrySchema, SoundEventSchema } from "@/api/sound_events";
 
 import { GetManySchema, Page } from "./common";
 
-export const AnnotationCreateSchema = z.object({
-  task_id: z.number(),
-  geometry: GeometrySchema,
-});
-
-export type AnnotationCreate = z.infer<typeof AnnotationCreateSchema>;
-
-export const AnnotationUpdateSchema = z.object({
-  geometry: GeometrySchema,
-});
-
-export type AnnotationUpdate = z.infer<typeof AnnotationUpdateSchema>;
-
-export const AnnotationSchema = z.object({
-  id: z.number(),
-  uuid: z.string().uuid(),
-  task_id: z.number(),
-  created_by: SimpleUserSchema,
-  sound_event: SoundEventSchema,
-  notes: z.array(NoteSchema),
-  tags: z.array(TagSchema),
-});
-
-export type Annotation = z.infer<typeof AnnotationSchema>;
-
-export const AnnotationPageSchema = Page(AnnotationSchema);
-
-export type AnnotationPage = z.infer<typeof AnnotationPageSchema>;
-
-export const AnnotationFilterSchema = z.object({
-  project__eq: z.number().optional(),
-  task__eq: z.number().optional(),
-  recording__eq: z.number().optional(),
-  sound_event__eq: z.number().optional(),
-  created_by__eq: z.string().optional(),
-  tag__eq: z.string().optional(),
-});
-
-export type AnnotationFilter = z.infer<typeof AnnotationFilterSchema>;
-
-export const GetAnnotationsSchema = z.intersection(
-  GetManySchema,
-  AnnotationFilterSchema,
-);
-
-export type GetAnnotations = z.infer<typeof GetAnnotationsSchema>;
-
 export const AnnotationNoteSchema = z.object({
   annotation_id: z.number().int(),
   note_id: z.number().int(),
@@ -91,8 +44,10 @@ export type GetAnnotationNotesQuery = z.infer<
 >;
 
 export const AnnotationTagSchema = z.object({
-  task_id: z.number().int(),
+  id: z.number().int(),
   tag_id: z.number().int(),
+  created_by: SimpleUserSchema,
+  created_at: z.coerce.date(),
   tag: TagSchema,
 });
 
@@ -127,6 +82,54 @@ export const GetAnnotationTagsQuerySchema = z.intersection(
 export type GetAnnotationTagsQuery = z.infer<
   typeof GetAnnotationTagsQuerySchema
 >;
+
+export const AnnotationCreateSchema = z.object({
+  task_id: z.number(),
+  geometry: GeometrySchema,
+  tag_ids: z.array(z.number()).optional(),
+});
+
+export type AnnotationCreate = z.infer<typeof AnnotationCreateSchema>;
+
+export const AnnotationUpdateSchema = z.object({
+  geometry: GeometrySchema,
+});
+
+export type AnnotationUpdate = z.infer<typeof AnnotationUpdateSchema>;
+
+export const AnnotationSchema = z.object({
+  id: z.number(),
+  uuid: z.string().uuid(),
+  task_id: z.number(),
+  created_by: SimpleUserSchema,
+  sound_event: SoundEventSchema,
+  notes: z.array(AnnotationNoteSchema),
+  tags: z.array(AnnotationTagSchema),
+});
+
+export type Annotation = z.infer<typeof AnnotationSchema>;
+
+export const AnnotationPageSchema = Page(AnnotationSchema);
+
+export type AnnotationPage = z.infer<typeof AnnotationPageSchema>;
+
+export const AnnotationFilterSchema = z.object({
+  project__eq: z.number().optional(),
+  task__eq: z.number().optional(),
+  recording__eq: z.number().optional(),
+  sound_event__eq: z.number().optional(),
+  created_by__eq: z.string().optional(),
+  tag__eq: z.string().optional(),
+});
+
+export type AnnotationFilter = z.infer<typeof AnnotationFilterSchema>;
+
+export const GetAnnotationsSchema = z.intersection(
+  GetManySchema,
+  AnnotationFilterSchema,
+);
+
+export type GetAnnotations = z.infer<typeof GetAnnotationsSchema>;
 
 const DEFAULT_ENDPOINTS = {
   create: "/api/v1/annotations/",
@@ -180,10 +183,13 @@ export function registerAnnotationsApi(
     annotation_id: number,
     tag_id: number,
   ): Promise<Annotation> {
-    const body = { tag_id };
-    const response = await instance.post(endpoints.addTag, body, {
-      params: { annotation_id },
-    });
+    const response = await instance.post(
+      endpoints.addTag,
+      {},
+      {
+        params: { annotation_id, tag_id },
+      },
+    );
     return AnnotationSchema.parse(response.data);
   }
 
@@ -204,7 +210,7 @@ export function registerAnnotationsApi(
   ): Promise<Annotation> {
     const body = { message, is_issue };
     const response = await instance.post(endpoints.addNote, body, {
-      params: { annotation_id},
+      params: { annotation_id },
     });
     return AnnotationSchema.parse(response.data);
   }

@@ -64,8 +64,6 @@ async def get_spectrogram(
     if data_range > 0:
         data = (data - data.min()) / data_range
 
-    print(data.shape)
-
     image = images.array_to_image(
         data,
         cmap=spectrogram_parameters.cmap,

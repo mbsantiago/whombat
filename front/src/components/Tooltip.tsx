@@ -26,7 +26,7 @@ export default function Tooltip({
     | "left-end";
   offset?: number;
 }) {
-  const content = <div className="max-w-fit">{children}</div>;
+  const content = <span className="max-w-fit">{children}</span>;
   const [hoverable, hovered] = useHover(content);
 
   return (
@@ -41,10 +41,11 @@ export default function Tooltip({
         leave="transition duration-50 ease-in"
         leaveFrom="scale-100 opacity-100"
         leaveTo="scale-95 opacity-0"
+        portal={true}
         flip={true}
       >
         <Popover.Button as={Fragment}>{hoverable}</Popover.Button>
-        <Popover.Panel className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700">
+        <Popover.Panel static className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 pointer-events-none">
           {tooltip}
         </Popover.Panel>
       </Float>

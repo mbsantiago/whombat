@@ -13,16 +13,24 @@ export function selectResolution(length: number, interval: Interval) {
   const duration = interval.max - interval.min;
   const valPerPixel = duration / length;
 
-  let step = 10 ** Math.ceil(Math.log10(valPerPixel * 40));
+  let digits = Math.floor(Math.log10(valPerPixel * 50)) + 1;
+  let step = 10 ** digits;
 
   if (duration / step <= 3) {
     step /= 2;
+    digits -= 1;
   }
 
   return {
+    digits,
     mayorTickStep: step,
     minorTickStep: step / 5,
   };
+}
+
+export function parseNum(value: number, digits: number): string {
+  const numDigits = Math.floor(Math.log10(value + 1)) + 1;
+  return value.toPrecision(numDigits - Math.min(digits, 0));
 }
 
 export function getTicks(interval: Interval, step: number): number[] {
@@ -63,10 +71,6 @@ function drawTimeTick(
   }
 }
 
-export function parseTime(time: number): string {
-  return time.toPrecision(3);
-}
-
 export default function drawTimeAxis(
   ctx: CanvasRenderingContext2D,
   interval: Interval,
@@ -76,14 +80,17 @@ export default function drawTimeAxis(
   const { width } = canvas;
   const { min, max } = interval;
   const range = max - min;
-  const { mayorTickStep, minorTickStep } = selectResolution(width, interval);
+  const { mayorTickStep, minorTickStep, digits } = selectResolution(
+    width,
+    interval,
+  );
   const mayorTicks = getTicks(interval, mayorTickStep);
   const minorTicks = getTicks(interval, minorTickStep);
 
   mayorTicks.forEach((time) => {
     const x = (width * (time - min)) / range;
     drawTimeTick(ctx, x, {
-      label: parseTime(time),
+      label: parseNum(time, digits),
       ...style,
       ...MAYOR_TICK_STYLE,
     });

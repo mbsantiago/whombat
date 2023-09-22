@@ -80,6 +80,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
         <SideMenuButton
           isActive={pathname === "/exploration"}
           tooltip={"Exploration"}
+          href="/exploration"
         >
           <ExplorationIcon className="w-6 h-6" />
         </SideMenuButton>
@@ -88,6 +89,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
         <SideMenuButton
           isActive={pathname === "/evaluation"}
           tooltip={"Evaluation"}
+          href="/evaluation"
         >
           <EvaluationIcon className="w-6 h-6" />
         </SideMenuButton>

@@ -144,9 +144,20 @@ export default function useSpectrogram({
     parameters: state.context.parameters,
   });
 
+  const isZooming = state.matches("zooming");
+  const isPanning = state.matches("panning");
+
   // Draw the spectrogram
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
+      if (isZooming) {
+        ctx.canvas.style.cursor = "zoom-in";
+      } else if (isPanning) {
+        ctx.canvas.style.cursor = "grab";
+      } else {
+        ctx.canvas.style.cursor = "default";
+      }
+
       const window = state.context.window;
       drawSpecWindow(ctx, window);
       drawTimeAxis(ctx, window.time);
@@ -170,6 +181,8 @@ export default function useSpectrogram({
       }
     },
     [
+      isZooming,
+      isPanning,
       drawZoomBBox,
       drawSpecWindow,
       audioState.context.currentTime,
