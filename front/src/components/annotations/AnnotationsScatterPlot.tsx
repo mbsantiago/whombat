@@ -69,7 +69,7 @@ function Spectrogram({ annotation }: { annotation: Annotation | null }) {
   );
 }
 
-export default function SoundEventScatterPlot({
+export default function AnnotationsScatterPlot({
   annotations,
 }: {
   annotations: Annotation[];

@@ -5,9 +5,8 @@ import { useContext } from "react";
 import useTasks from "@/hooks/api/useTasks";
 import Empty from "@/components/Empty";
 import Loading from "@/app/loading";
-
-import { AnnotationProjectContext } from "../context";
-import AnnotateTask from "../../components/AnnotateTask";
+import AnnotateTask from "@/components/annotation_projects/AnnotateTask";
+import { AnnotationProjectContext } from "@/app/contexts";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);

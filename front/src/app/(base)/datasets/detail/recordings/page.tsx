@@ -13,8 +13,7 @@ import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
 import { type Tag } from "@/api/tags";
-
-import { DatasetContext } from "../context";
+import { DatasetContext } from "@/app/contexts";
 
 import { RecordingsNav, SelectedMenu } from "./components";
 import "./page.css";

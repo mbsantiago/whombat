@@ -1,14 +1,18 @@
 import { type ReactNode } from "react";
 
+import Spinner from "@/components/Spinner";
+
 export default function MetricBadge({
   icon,
   title,
   value,
+  isLoading = false,
   onClick,
 }: {
   icon: ReactNode;
   title: ReactNode;
   value: number;
+  isLoading?: boolean;
   onClick?: () => void;
 }) {
   return (
@@ -18,7 +22,11 @@ export default function MetricBadge({
       </button>
       <div className="flex-grow-0">
         <div className="inline-flex items-baseline gap-2">
-          <span className="text-xl font-bold">{value.toLocaleString()}</span>
+          {isLoading ? (
+            <Spinner className="h-5 w-5" variant="info" />
+          ) : (
+            <span className="text-xl font-bold">{value.toLocaleString()}</span>
+          )}
         </div>
         <div className="text-sm font-thin">{title}</div>
       </div>

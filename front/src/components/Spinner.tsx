@@ -21,15 +21,18 @@ function getClassName(variant: Variant) {
 
 export default function Spinner({
   variant = "primary",
+  className = "w-8 h-8",
 }: {
   variant?: Variant;
+  className?: string;
 }) {
   return (
     <div role="status">
       <svg
         aria-hidden="true"
         className={classnames(
-          "mr-2 inline h-8 w-8 animate-spin text-stone-200 dark:text-stone-600",
+          className,
+          "mr-2 inline animate-spin text-stone-200 dark:text-stone-600",
           getClassName(variant),
         )}
         viewBox="0 0 100 101"

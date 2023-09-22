@@ -14,8 +14,7 @@ import Loading from "@/app/loading";
 import Header from "@/components/Header";
 import Tabs from "@/components/Tabs";
 import { H1 } from "@/components/Headings";
-
-import { DatasetContext } from "./context";
+import { DatasetContext } from "@/app/contexts";
 
 
 function DatasetHeader({ name }: { name: string }) {

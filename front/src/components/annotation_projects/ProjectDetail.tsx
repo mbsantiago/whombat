@@ -15,11 +15,13 @@ import ProjectNotesSummary from "./ProjectNotesSummary";
 export default function ProjectDetail({
   project,
   tasks,
+  isLoading = false,
   onChange,
   onDelete,
 }: {
   project: AnnotationProject;
   tasks?: Task[];
+  isLoading?: boolean;
   onChange?: (data: AnnotationProjectUpdate) => void;
   onDelete?: () => void;
 }) {
@@ -28,10 +30,10 @@ export default function ProjectDetail({
       <div className="grow">
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
-            <ProjectProgress tasks={tasks ?? []} />
+            <ProjectProgress tasks={tasks ?? []} isLoading={isLoading} />
           </div>
           <ProjectTagsSummary project={project} />
-          <ProjectNotesSummary project={project}/>
+          <ProjectNotesSummary project={project} />
         </div>
       </div>
       <div className="flex flex-col flex-none max-w-sm gap-4">

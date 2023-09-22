@@ -5,10 +5,8 @@ import { notFound } from "next/navigation";
 import useTasks from "@/hooks/api/useTasks";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import Loading from "@/app/loading";
-
-import ProjectDetail from "../components/ProjectDetail";
-
-import { AnnotationProjectContext } from "./context";
+import ProjectDetail from "@/components/annotation_projects/ProjectDetail";
+import { AnnotationProjectContext } from "@/app/contexts";
 
 export default function AnnotationProjectHome() {
   const context = useContext(AnnotationProjectContext);
@@ -33,6 +31,7 @@ export default function AnnotationProjectHome() {
       project={project.query.data}
       onChange={project.update.mutate}
       onDelete={project.delete.mutate}
+      isLoading={project.query.isLoading || tasks.query.isLoading}
     />
   );
 }

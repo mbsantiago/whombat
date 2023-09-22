@@ -1,12 +1,10 @@
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
 import classnames from "classnames";
 
 import { HorizontalDivider } from "@/components/Divider";
 import { type User } from "@/api/user";
-
-import { UserContext } from "../context";
 
 function Brand() {
   return (
@@ -106,11 +104,7 @@ function Navigation() {
   );
 }
 
-function NavBar() {
-  const { user } = useContext(UserContext);
-  if (!user) {
-    return null;
-  }
+export function NavBar({ user }: { user: User }) {
   return (
     <nav>
       <div className="z-50 flex max-w-screen-xl flex-wrap items-center justify-between p-4">
@@ -121,5 +115,3 @@ function NavBar() {
     </nav>
   );
 }
-
-export { NavBar };

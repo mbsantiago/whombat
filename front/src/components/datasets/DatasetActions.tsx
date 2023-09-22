@@ -1,12 +1,11 @@
 import toast from "react-hot-toast";
-import { useContext } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import Button from "@/components/Button";
 import Alert from "@/components/Alert";
-import { DatasetContext } from "@/app/(base)/datasets/detail/context";
+import { type Dataset } from "@/api/datasets";
 import {
   CloseIcon,
   DeleteIcon,
@@ -14,8 +13,7 @@ import {
   WarningIcon,
 } from "@/components/icons";
 
-function DeleteDataset() {
-  const { dataset } = useContext(DatasetContext);
+function DeleteDataset({ dataset }: { dataset: Dataset }) {
   const router = useRouter();
 
   const mutation = useMutation({
@@ -95,8 +93,10 @@ function DeleteDataset() {
 }
 
 export default function DatasetActions({
+  dataset,
   downloadLink,
 }: {
+  dataset: Dataset;
   downloadLink?: string;
 }) {
   return (
@@ -108,7 +108,7 @@ export default function DatasetActions({
           </Button>
         </a>
       ) : null}
-      <DeleteDataset />
+      <DeleteDataset dataset={dataset} />
     </div>
   );
 }

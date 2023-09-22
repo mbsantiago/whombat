@@ -4,9 +4,8 @@ import { useContext } from "react";
 
 import { H3 } from "@/components/Headings";
 import { TagsIcon } from "@/components/icons";
-
-import { AnnotationProjectContext } from "../context";
-import ProjectTags from "../../components/ProjectTags";
+import ProjectTags from "@/components/annotation_projects/ProjectTags";
+import { AnnotationProjectContext } from "@/app/contexts";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);

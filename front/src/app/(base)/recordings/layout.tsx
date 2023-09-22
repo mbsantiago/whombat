@@ -2,7 +2,7 @@
 import { notFound, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 
-import RecordingContex from "./context";
+import { RecordingContext } from "@/app/contexts";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();
@@ -10,12 +10,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   if (!recording_id) notFound();
 
   return (
-    <RecordingContex.Provider
+    <RecordingContext.Provider
       value={{
         recording_id: parseInt(recording_id),
       }}
     >
       {children}
-    </RecordingContex.Provider>
+    </RecordingContext.Provider>
   );
 }

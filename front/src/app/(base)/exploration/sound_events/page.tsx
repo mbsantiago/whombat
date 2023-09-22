@@ -1,12 +1,16 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import useAnnotations from "@/hooks/api/useAnnotations";
 import Tabs from "@/components/Tabs";
 import { ListIcon, GalleryIcon, PlotIcon } from "@/components/icons";
+import AnnotationGallery from "@/components/annotations/AnnotationsGallery";
 
-import SoundEventScatterPlot from "./components/SoundEventScatterPlot";
-import SoundEventGallery from "./components/SoundEventGallery";
+const AnnotationsScatterPlot = dynamic(
+  () => import("@/components/annotations/AnnotationsScatterPlot"),
+  { ssr: false },
+);
 
 export default function Page() {
   const [view, setView] = useState("list");
@@ -47,9 +51,9 @@ export default function Page() {
       {view === "list" ? (
         <div>list</div>
       ) : view === "gallery" ? (
-        <SoundEventGallery annotations={annotations.items} />
+        <AnnotationGallery annotations={annotations.items} />
       ) : (
-        <SoundEventScatterPlot annotations={annotations.items} />
+        <AnnotationsScatterPlot annotations={annotations.items} />
       )}
     </div>
   );

@@ -7,9 +7,8 @@ import useTasks from "@/hooks/api/useTasks";
 import { H3 } from "@/components/Headings";
 import { TasksIcon } from "@/components/icons";
 import { type Task } from "@/api/tasks";
-
-import ProjectClips from "../../components/ProjectClips";
-import { AnnotationProjectContext } from "../context";
+import ProjectClips from "@/components/annotation_projects/ProjectClips";
+import { AnnotationProjectContext } from "@/app/contexts";
 
 function TasksSummary({ tasks }: { tasks: Task[] }) {
   const recordings = useMemo(() => {

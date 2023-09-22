@@ -1,7 +1,6 @@
 "use client";
 import Hero from "@/components/Hero";
-
-import EvaluationSetList from "./components/EvaluationSetList";
+import EvaluationSetList from "@/components/evaluation/EvaluationSetList";
 
 export default function Page() {
   return (

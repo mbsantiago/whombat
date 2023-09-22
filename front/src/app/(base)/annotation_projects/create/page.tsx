@@ -10,10 +10,9 @@ import Hero from "@/components/Hero";
 import Steps from "@/components/Steps";
 import { AnnotationProjectIcon, ClipsIcon, TagsIcon } from "@/components/icons";
 import { type AnnotationProject } from "@/api/annotation_projects";
-
-import ProjectClips from "../components/ProjectClips";
-import ProjectCreate from "../components/ProjectCreate";
-import ProjectTags from "../components/ProjectTags";
+import ProjectClips from "@/components/annotation_projects/ProjectClips";
+import ProjectCreate from "@/components/annotation_projects/ProjectCreate";
+import ProjectTags from "@/components/annotation_projects/ProjectTags";
 
 const steps = [
   {

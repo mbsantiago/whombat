@@ -4,13 +4,11 @@ import { useContext } from "react";
 import useRecording from "@/hooks/api/useRecording";
 import useActiveUser from "@/hooks/api/useActiveUser";
 import Loading from "@/app/loading";
-
-import RecordingContex from "./context";
-import RecordingHeader from "./components/RecordingHeader";
-import RecordingDetail from "./components/RecordingDetail";
+import RecordingDetail from "@/components/recordings/RecordingDetail";
+import { RecordingContext } from "@/app/contexts";
 
 export default function RecordingPage() {
-  const { recording_id } = useContext(RecordingContex);
+  const { recording_id } = useContext(RecordingContext);
 
   const { data: user } = useActiveUser();
 
@@ -23,17 +21,14 @@ export default function RecordingPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 px-8 pb-4">
-      <RecordingHeader recording={recording.query.data} />
-      <RecordingDetail
-        recording={recording.query.data}
-        onNoteCreate={recording.addNote.mutate}
-        onNoteDelete={recording.removeNote.mutate}
-        onNoteUpdate={(note_id, data) =>
-          recording.updateNote.mutate({ note_id, data })
-        }
-        currentUser={user}
-      />
-    </div>
+    <RecordingDetail
+      recording={recording.query.data}
+      onNoteCreate={recording.addNote.mutate}
+      onNoteDelete={recording.removeNote.mutate}
+      onNoteUpdate={(note_id, data) =>
+        recording.updateNote.mutate({ note_id, data })
+      }
+      currentUser={user}
+    />
   );
 }

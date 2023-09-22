@@ -3,7 +3,7 @@ import { useContext } from "react";
 import classnames from "classnames";
 import Link from "next/link";
 
-import { UserContext } from "@/app/(base)/context";
+import { UserContext } from "@/app/contexts";
 import {
   AnnotationProjectIcon,
   DatasetsIcon,

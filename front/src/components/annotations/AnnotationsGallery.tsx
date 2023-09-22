@@ -6,7 +6,7 @@ import { type Annotation } from "@/api/annotations";
 
 // TODO: Finish this
 
-export default function SoundEventGallery({
+export default function AnnotationsGallery({
   annotations,
 }: {
   annotations: Annotation[];
@@ -29,6 +29,18 @@ export default function SoundEventGallery({
             duration: 1246.2825,
             samplerate: 48000,
             time_expansion: 1,
+            channels: 1,
+            hash: "",
+            uuid: "",
+            path: "",
+            latitude: null,
+            longitude: null,
+            date: null,
+            time: null,
+            features: [],
+            notes: [],
+            tags: [],
+            created_at: new Date(),
           }}
           annotation={annotation}
         />

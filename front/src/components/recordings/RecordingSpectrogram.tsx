@@ -108,7 +108,6 @@ export default function RecordingSpectrogram({
           speed={audioState.context.speed}
           loop={audioState.context.loop}
           playing={state.matches("playing")}
-          paused={!state.matches("playing")}
           play={() => send("PLAY")}
           pause={() => send("PAUSE")}
           seek={(time: number) => audioSend({ type: "SEEK", time })}

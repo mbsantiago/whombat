@@ -2,9 +2,8 @@
 import { useContext } from "react";
 import { notFound } from "next/navigation";
 
-import DatasetDetail from "../components/DatasetDetail";
-
-import { DatasetContext } from "./context";
+import DatasetDetail from "@/components/datasets/DatasetDetail";
+import { DatasetContext } from "@/app/contexts";
 
 export default function DatasetHome() {
   const { dataset, onChange, downloadLink } = useContext(DatasetContext);

@@ -32,6 +32,17 @@ export default function AnnotationProjectHeader({ name }: { name: string }) {
               },
             },
             {
+              id: "annotate",
+              title: "Annotate",
+              isActive: selectedLayoutSegment === "annotation",
+              icon: <EditIcon className="h-5 w-5 align-middle" />,
+              onClick: () => {
+                router.push(
+                  `/annotation_projects/detail/annotation/?${params.toString()}`,
+                );
+              },
+            },
+            {
               id: "tasks",
               title: "Tasks",
               isActive: selectedLayoutSegment === "tasks",
@@ -50,17 +61,6 @@ export default function AnnotationProjectHeader({ name }: { name: string }) {
               onClick: () => {
                 router.push(
                   `/annotation_projects/detail/tags/?${params.toString()}`,
-                );
-              },
-            },
-            {
-              id: "annotate",
-              title: "Annotate",
-              isActive: selectedLayoutSegment === "annotation",
-              icon: <EditIcon className="h-5 w-5 align-middle" />,
-              onClick: () => {
-                router.push(
-                  `/annotation_projects/detail/annotation/?${params.toString()}`,
                 );
               },
             },

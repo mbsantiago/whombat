@@ -54,7 +54,7 @@ export default function DatasetDetail({
         </div>
       </div>
       <div className="flex flex-col flex-none max-w-sm gap-4">
-        <DatasetActions downloadLink={downloadLink} />
+        <DatasetActions dataset={dataset} downloadLink={downloadLink} />
         <div className="sticky top-8">
           <DatasetUpdateForm dataset={dataset} onChange={onChange} />
         </div>

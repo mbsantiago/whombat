@@ -13,10 +13,15 @@ import Card from "@/components/Card";
 import ProgressBar from "@/components/ProgressBar";
 import { H3 } from "@/components/Headings";
 import { type Task } from "@/api/tasks";
+import { computeTaskProgress } from "@/utils/annotation_projects";
 
-import { computeTaskProgress } from "../utils";
-
-export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
+export default function ProjectProgress({
+  tasks,
+  isLoading = false,
+}: {
+  tasks: Task[];
+  isLoading?: boolean;
+}) {
   const { missing, needReview, completed, verified } = useMemo(
     () => computeTaskProgress(tasks),
     [tasks],
@@ -25,9 +30,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
   return (
     <Card>
       <div className="flex flex-row justify-between items-center">
-        <H3>
-          Task Progress
-        </H3>
+        <H3>Task Progress</H3>
         <Button mode="text" variant="primary">
           <AddIcon className="h-5 w-5 inline-block mr-2" /> Add tasks
         </Button>
@@ -37,6 +40,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
           icon={<EditIcon className="h-8 w-8 inline-block text-blue-500" />}
           title="Remaining"
           value={missing}
+          isLoading={isLoading}
         />
         <MetricBadge
           icon={
@@ -44,6 +48,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
           }
           title="Need Review"
           value={needReview}
+          isLoading={isLoading}
         />
         <MetricBadge
           icon={
@@ -51,6 +56,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
           }
           title="Completed"
           value={completed}
+          isLoading={isLoading}
         />
         <MetricBadge
           icon={
@@ -58,6 +64,7 @@ export default function ProjectProgress({ tasks }: { tasks: Task[] }) {
           }
           title="Verified"
           value={verified}
+          isLoading={isLoading}
         />
       </div>
       <div className="mt-4">
