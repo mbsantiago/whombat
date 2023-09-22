@@ -4,8 +4,6 @@ import toast from "react-hot-toast";
 import { type RefObject } from "react";
 
 import { annotateMachine, type AddTagEvent } from "@/machines/annotate";
-import { scaleGeometryToViewport } from "@/utils/geometry";
-import drawGeometry from "@/draw/geometry";
 import useStore from "@/store";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useAnnotations from "@/hooks/api/useAnnotations";
@@ -15,19 +13,12 @@ import useAnnotationCreate from "@/hooks/annotation/useAnnotationCreate";
 import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
 import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
 import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
+import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Task } from "@/api/tasks";
 import { type Recording } from "@/api/recordings";
-import { SECONDARY } from "@/draw/styles";
-
-const IDLE_STYLE = {
-  borderColor: SECONDARY,
-  fillColor: SECONDARY,
-  borderWidth: 2,
-  fillAlpha: 0.1,
-};
 
 export default function useAnnotate({
   task,
@@ -211,22 +202,10 @@ export default function useAnnotate({
     send,
   });
 
-  const drawAnnotations = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      const window = specState.context.window;
-      const items = annotations.items;
-      for (const item of items) {
-        const geometry = scaleGeometryToViewport(
-          { width: ctx.canvas.width, height: ctx.canvas.height },
-          // @ts-ignore
-          item.sound_event.geometry,
-          window,
-        );
-        drawGeometry(ctx, geometry, IDLE_STYLE);
-      }
-    },
-    [specState.context.window, annotations.items],
-  );
+  const drawAnnotations = useAnnotationDraw({
+    window: specState.context.window,
+    annotations: annotations.items,
+  });
 
   const tags = useAnnotationTags({
     annotations: annotations.items,

@@ -5,7 +5,7 @@ import useCreateBBox from "@/hooks/draw/useCreateBBox";
 import { type BBox, type Dimensions } from "@/utils/types";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type SetWindowFn } from "@/hooks/spectrogram/useWindow";
+import { type ZoomToEvent } from "@/machines/spectrogram";
 
 export const ZOOM_SELECTION_STYLE = {
   fillAlpha: 0.3,
@@ -25,18 +25,16 @@ function validateBBox(bbox: BBox): boolean {
   return true;
 }
 
-export default function useBBoxZoom({
+export default function useSpectrogramBBoxZoom({
   window,
-  setWindow,
   drag,
   active = false,
-  onZoom,
+  send,
 }: {
   window: SpectrogramWindow;
-  setWindow: SetWindowFn;
   drag: ScratchState;
   active: boolean;
-  onZoom?: (window: SpectrogramWindow) => void;
+  send: (event: ZoomToEvent) => void;
 }) {
   const handleSelectZoom = useCallback(
     ({ bbox, dims }: { bbox: BBox; dims: Dimensions }) => {
@@ -46,18 +44,18 @@ export default function useBBoxZoom({
           time: { min: start, max: end },
           freq: { min: low, max: high },
         };
-        setWindow(newWindow);
-        onZoom?.(newWindow);
+        send({ type: "ZOOM_TO", window: newWindow });
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [window, setWindow, onZoom],
+    [window, send],
   );
 
-  return useCreateBBox({
+  const { draw } = useCreateBBox({
     drag,
     onCreate: handleSelectZoom,
     active,
     style: ZOOM_SELECTION_STYLE,
   });
+
+  return draw;
 }

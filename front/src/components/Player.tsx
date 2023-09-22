@@ -30,7 +30,6 @@ export default function Player({
   endTime,
   speed,
   playing,
-  paused,
   loop,
   play,
   pause,
@@ -44,7 +43,6 @@ export default function Player({
   endTime: number;
   speed: number;
   playing: boolean;
-  paused: boolean;
   loop: boolean;
   play: () => void;
   pause: () => void;
@@ -63,9 +61,7 @@ export default function Player({
     [startTime, endTime, seek],
   );
 
-  useSlider(sliderRef, {
-    onScrub,
-  });
+  useSlider(sliderRef, { onScrub });
 
   const barPosition = useMemo(() => {
     const length = endTime - startTime;
@@ -86,11 +82,11 @@ export default function Player({
           COMMON_BUTTON_CLASSES,
         )}
         onClick={() => {
-          if (playing && !paused) return pause();
+          if (playing) return pause();
           play();
         }}
       >
-        {playing && !paused ? (
+        {playing ? (
           <PauseIcon className="h-5 w-5" />
         ) : (
           <PlayIcon className="h-5 w-5" />

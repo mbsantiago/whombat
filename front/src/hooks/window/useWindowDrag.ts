@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUpdateEffect } from "react-use";
 
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type SetWindowFn } from "@/hooks/spectrogram/useWindow";
+import { type SetWindowFn } from "@/hooks/window/useWindow";
 
 export type DragState = {
   isScratching: boolean;

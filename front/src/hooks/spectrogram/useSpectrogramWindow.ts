@@ -57,13 +57,18 @@ export default function useSpectrogramWindow({
   // on the canvas, adjusting the position and size relative to the viewport.
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, view: SpectrogramWindow) => {
-      if (isLoading || isError) return null;
-      return drawImage({
-        ctx,
-        image,
-        window: view,
-        bounds: spectrogramWindow,
-      });
+      if (isError) return null;
+      if (isLoading) {
+        ctx.canvas.classList.add("animate-pulse", "bg-stone-400");
+      } else {
+        ctx.canvas.classList.remove("animate-pulse", "bg-stone-400");
+        drawImage({
+          ctx,
+          image,
+          window: view,
+          bounds: spectrogramWindow,
+        });
+      }
     },
     [image, isLoading, isError, spectrogramWindow],
   );

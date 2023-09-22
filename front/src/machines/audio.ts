@@ -50,11 +50,16 @@ export type AudioEvent =
   | SetEndTimeEvent;
 
 export const audioStates = {
-  initial: "stopped",
-  invoke: {
-    src: "setupAudio",
-  },
+  initial: "setup",
   states: {
+    setup: {
+      invoke: {
+        src: "setupAudio",
+      },
+      always: {
+        target: "stopped",
+      },
+    },
     stopped: {
       on: {
         PLAY: {
@@ -75,6 +80,26 @@ export const audioStates = {
         STOP: {
           target: "stopped",
           actions: ["stop"],
+        },
+        // NOTE: When these actions are called in the playing state, they
+        // should force an external transition to the playing state so
+        // that the playing service is restarted with the correct
+        // context.
+        TOGGLE_LOOP: {
+          actions: ["toggleLoop"],
+          target: "playing",
+        },
+        CHANGE_RECORDING: {
+          actions: ["changeRecording"],
+          target: "playing",
+        },
+        SET_START_TIME: {
+          actions: ["setStartTime"],
+          target: "playing",
+        },
+        SET_END_TIME: {
+          actions: ["setEndTime"],
+          target: "playing",
         },
       },
     },
@@ -104,7 +129,8 @@ export const audioStates = {
       actions: ["toggleLoop"],
     },
     SET_SPEED: {
-      actions: ["setSpeed"],
+      target: "setup",
+      actions: ["setSpeed", "stop"],
     },
     CHANGE_RECORDING: {
       actions: ["changeRecording"],
@@ -130,11 +156,12 @@ export const audioActions = {
   },
   stop: (context: AudioContext) => {
     context.audio.pause();
-    context.audio.currentTime = context.startTime;
+    context.currentTime = context.startTime;
+    context.audio.currentTime = context.startTime / context.speed;
   },
   seek: assign({
     currentTime: (context: AudioContext, event: SeekEvent) => {
-      context.audio.currentTime = event.time * context.speed;
+      context.audio.currentTime = event.time / context.speed;
       return event.time;
     },
   }),
@@ -213,6 +240,8 @@ export const audioActions = {
 
 export const audioServices = {
   playing: (context: AudioContext) => (send: any) => {
+    let requestId: number;
+
     const onTimeUpdate = () => {
       // Get the current time of the audio element, adjusted for the speed
       const currentTime = context.audio.currentTime * context.speed;
@@ -226,15 +255,13 @@ export const audioServices = {
       // If the current time is past the end time, loop back to the start
       // time
       if (currentTime >= context.endTime && context.loop) {
-        context.audio.currentTime = context.startTime / context.speed;
-        return;
+        send({ type: "SEEK", time: context.startTime });
       }
 
       // If the current time is before the start time, seek to the start
       // time
       if (currentTime < context.startTime) {
-        context.audio.currentTime = context.startTime / context.speed;
-        return;
+        send({ type: "SEEK", time: context.startTime });
       }
 
       // Otherwise update the current time
@@ -244,11 +271,11 @@ export const audioServices = {
       });
 
       // Request the next animation frame
-      requestAnimationFrame(onTimeUpdate);
+      requestId = requestAnimationFrame(onTimeUpdate);
     };
 
     // Create a request animation frame loop to update the current time
-    const requestId = requestAnimationFrame(onTimeUpdate);
+    requestId = requestAnimationFrame(onTimeUpdate);
 
     return () => {
       // Cancel the request animation frame loop when the service is
@@ -276,11 +303,6 @@ export const audioServices = {
 
     // Attach the listener to the audio element
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
-
-    return () => {
-      // Remove the listener when the service is stopped
-      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
-    };
   },
 };
 

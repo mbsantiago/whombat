@@ -27,19 +27,23 @@ export type ChangeRecordingEvent = {
   type: "CHANGE_RECORDING";
   recording: Recording;
 };
+
 export type SetWindowEvent = {
   type: "SET_WINDOW";
   window: SpectrogramWindow;
 };
+
 export type SetParameterEvent = {
   type: "SET_PARAMETER";
   key: keyof SpectrogramParameters;
   value: any;
 };
+
 export type ClearParameterEvent = {
   type: "CLEAR_PARAMETER";
   key: keyof SpectrogramParameters;
 };
+
 export type ZoomToEvent = { type: "ZOOM_TO"; window: SpectrogramWindow };
 export type PanToEvent = { type: "PAN_TO"; window: SpectrogramWindow };
 export type CenterOnEvent = { type: "CENTER_ON"; time: number };
@@ -52,6 +56,7 @@ export type ScaleWindowEvent = {
   type: "SCALE_WINDOW";
   scaleBy: { time?: number; freq?: number };
 };
+
 export type UpdateEvent = {
   type: "UPDATE";
   bounds: SpectrogramWindow;
@@ -215,8 +220,8 @@ export const spectrogramActions = {
       return event.bounds;
     },
     initial: (_, event: UpdateEvent) => event.initial,
-    window: (context: SpectrogramContext, event: UpdateEvent) => {
-      return adjustWindowToBounds(context.window, event.bounds);
+    window: (_: SpectrogramContext, event: UpdateEvent) => {
+      return event.initial;
     },
   }),
   changeRecording: assign({

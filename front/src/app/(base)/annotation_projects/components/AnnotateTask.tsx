@@ -118,7 +118,6 @@ function TaskSpectrogram({
           speed={audioState.context.speed}
           loop={audioState.context.loop}
           playing={state.matches("idle") && specState.matches("playing")}
-          paused={!state.matches("idle") || !specState.matches("playing")}
           play={() => {
             send("IDLE");
             specSend("PLAY");
@@ -176,6 +175,9 @@ export default function AnnotateTask({ task_id }: { task_id: number }) {
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-row gap-4">
+        {recording.query.data.duration}
+      </div>
       <TaskSpectrogram
         task={task.query.data}
         recording={recording.query.data}

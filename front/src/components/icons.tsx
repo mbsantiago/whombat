@@ -1,6 +1,9 @@
 import { type ComponentProps, type HTMLProps } from "react";
 import Image from "next/image";
 import {
+  Squares2X2Icon,
+  PresentationChartLineIcon,
+  ListBulletIcon,
   AdjustmentsVerticalIcon,
   ArchiveBoxIcon,
   ArrowDownOnSquareIcon,
@@ -266,4 +269,7 @@ export {
   PolygonIcon,
   TimeIntervalIcon,
   TimeStampIcon,
+  ListBulletIcon as ListIcon,
+  PresentationChartLineIcon as PlotIcon,
+  Squares2X2Icon as GalleryIcon,
 };
