@@ -58,6 +58,19 @@ async def create_evaluation_tasks(
     return evaluation_tasks
 
 
+@evaluation_tasks_router.get(
+    "/detail/",
+    response_model=schemas.EvaluationTask,
+)
+async def get_evaluation_task(
+    session: Session,
+    evaluation_task_id: int,
+):
+    """Get a evaluation_task."""
+    task = await api.evaluation_tasks.get_by_id(session, evaluation_task_id)
+    return task
+
+
 @evaluation_tasks_router.delete(
     "/detail/",
     response_model=schemas.Task,

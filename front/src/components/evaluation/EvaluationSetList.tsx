@@ -1,22 +1,22 @@
 import Link from "next/link";
 
-import useDatasets from "@/hooks/api/useDatasets";
-import Dataset from "@/components/Dataset";
+import useEvaluationSets from "@/hooks/api/useEvaluationSets";
+import EvaluationSet from "@/components/EvaluationSet";
 import Button from "@/components/Button";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
-import { AddIcon, DatasetIcon, WarningIcon } from "@/components/icons";
+import { AddIcon, TasksIcon, WarningIcon } from "@/components/icons";
 
 function NoEvaluationSets() {
   return (
     <Empty>
       <WarningIcon className="h-8 w-8 text-stone-500" />
-      <p>No datasets found.</p>
+      <p>No evaluation sets found.</p>
       <p>
-        To create a dataset, click on the
+        To create an evaluation set, click on the
         <span className="text-emerald-500">
           <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
           Create{" "}
@@ -28,7 +28,7 @@ function NoEvaluationSets() {
 }
 
 export default function EvaluationSets() {
-  const { items, pagination, query, filter } = useDatasets();
+  const { items, pagination, query, filter } = useEvaluationSets();
 
   return (
     <div className="flex w-full flex-col space-y-2 p-8">
@@ -36,15 +36,15 @@ export default function EvaluationSets() {
         <div className="flex-grow">
           <Search
             label="Search"
-            placeholder="Search dataset..."
+            placeholder="Search evaluation set..."
             value={filter.get("search")}
             onChange={(value) => filter.set("search", value)}
             onSubmit={() => filter.submit()}
-            icon={<DatasetIcon />}
+            icon={<TasksIcon />}
           />
         </div>
         <div className="h-full">
-          <Link href="/datasets/create">
+          <Link href="/evaluation/create/">
             <Button variant="primary">
               <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
             </Button>
@@ -58,10 +58,10 @@ export default function EvaluationSets() {
           {items.length === 0 && <NoEvaluationSets />}
           <StackedList
             items={items.map((item) => (
-              <Dataset key={item.id} {...item} />
+              <EvaluationSet key={item.id} {...item} />
             ))}
           />
-          <Pagination {...pagination} />
+          {items.length > 0 && <Pagination {...pagination} />}
         </>
       )}
     </div>
