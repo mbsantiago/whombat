@@ -22,11 +22,8 @@ export default function DatasetRecordings() {
   const { dataset, isLoading } = useContext(DatasetContext);
 
   // Fetch recordings for this dataset
-  const recordings = useRecordings({
-    filter: {
-      dataset: dataset?.id,
-    },
-  });
+  const filter = useMemo(() => ({ dataset: dataset?.id }), [dataset?.id]);
+  const recordings = useRecordings({ filter });
 
   // Remove audio_dir prefix from recording paths
   const items = useMemo(() => {
@@ -183,7 +180,7 @@ export default function DatasetRecordings() {
       </div>
       <FilterBar filter={recordings.filter} total={recordings.total} />
       <div className="w-full py-4">
-        <div className="relative w-full max-h-screen overflow-y-scroll overflow-x-scroll outline outline-1 outline-stone-200 dark:outline-stone-800 rounded-md">
+        <div className="w-full max-h-screen overflow-y-scroll overflow-x-scroll outline outline-1 outline-stone-200 dark:outline-stone-800 rounded-md">
           <Table
             onCopy={handleCopy}
             onPaste={handlePaste}

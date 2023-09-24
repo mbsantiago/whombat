@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 
 import useDatasets from "@/hooks/api/useDatasets";
@@ -120,12 +120,11 @@ function SelectRecordings({
     pageSize: 1000,
   });
 
-  const recordings = useRecordings({
-    pageSize: 10000,
-    filter: {
-      dataset: selection?.dataset?.id ?? -1,
-    },
-  });
+  const filter = useMemo(
+    () => ({ dataset: selection?.dataset?.id ?? -1 }),
+    [selection?.dataset?.id],
+  );
+  const recordings = useRecordings({ pageSize: 10000, filter });
 
   useEffect(() => {
     if (selection?.dataset != null) {
@@ -406,17 +405,20 @@ export default function ProjectClips({
   const [selectedClips, setSelectedClips] = useState<ClipCreate[]>([]);
 
   const onAdd = () => {
-    toast.promise(project.addClips.mutateAsync(selectedClips, {
-      onSuccess: () => {
-        setSelectedClips([]);
-        setSelectedRecordings([]);
+    toast.promise(
+      project.addClips.mutateAsync(selectedClips, {
+        onSuccess: () => {
+          setSelectedClips([]);
+          setSelectedRecordings([]);
+        },
+      }),
+      {
+        loading: "Adding clips to project...",
+        success:
+          "Clips added to project 🎉! Add more clips or go to the project page to start annotating. ",
+        error: "Failed to add clips to project.",
       },
-    }), {
-      loading: "Adding clips to project...",
-      success:
-        "Clips added to project 🎉! Add more clips or go to the project page to start annotating. ",
-      error: "Failed to add clips to project.",
-    });
+    );
   };
 
   return (

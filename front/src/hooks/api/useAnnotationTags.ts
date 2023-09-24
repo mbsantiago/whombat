@@ -3,8 +3,11 @@ import api from "@/app/api";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
 
+
+const emptyFilter = {};
+
 export default function useAnnotationTags({
-  filter: initialFilter = {},
+  filter: initialFilter = emptyFilter,
   pageSize = 10,
 }: {
   filter?: AnnotationTagFilter;

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Link from "next/link";
 
 import useAnnotationTags from "@/hooks/api/useAnnotationTags";
@@ -40,19 +41,18 @@ export default function ProjectTagsSummary({
 }: {
   project: AnnotationProject;
 }) {
-  const annotationTags = useAnnotationTags({
-    filter: {
-      project__eq: project.id,
-    },
-  });
+  const {
+    tags, id
+  } = project;
 
-  const taskTags = useTaskTags({
-    filter: {
-      project__eq: project.id,
-    },
-  });
-
-  const projectTags = project.tags;
+  const filter = useMemo(
+    () => ({
+      project__eq: id,
+    }),
+    [id],
+  );
+  const annotationTags = useAnnotationTags({ filter });
+  const taskTags = useTaskTags({ filter });
 
   return (
     <Card>
@@ -62,19 +62,19 @@ export default function ProjectTagsSummary({
           Project Tags
         </H4>
         <Link
-          href={`/annotation_projects/detail/tags/?annotation_project_id=${project.id}`}
+          href={`/annotation_projects/detail/tags/?annotation_project_id=${id}`}
         >
           <Button mode="text" variant="primary">
             <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Tags
           </Button>
         </Link>
       </div>
-      {projectTags.length === 0 ? (
+      {tags.length === 0 ? (
         <NoTags />
       ) : (
         <div>
           There are{" "}
-          <span className="text-blue-500 font-bold">{projectTags.length}</span>{" "}
+          <span className="text-blue-500 font-bold">{tags.length}</span>{" "}
           tags registered for this project.
         </div>
       )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDebounce } from "react-use";
 
 export type Filter<T extends Object> = {
@@ -29,6 +29,12 @@ export default function useFilter<T extends Object>({
 }): Filter<T> {
   const [state, setState] = useState(fixed);
   const [debouncedState, setDebouncedState] = useState(fixed);
+
+  // Reset the state when the fixed filter changes
+  useEffect(() => {
+    setState(fixed);
+    setDebouncedState(fixed);
+  }, [fixed]);
 
   const isFixed = (key: keyof T) => fixed[key] !== undefined;
   const set = <K extends keyof T>(

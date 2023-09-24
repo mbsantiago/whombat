@@ -1,5 +1,6 @@
 """REST API routes for annotation tasks."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
+from typing import Annotated
 
 from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
@@ -283,7 +284,7 @@ async def update_task_note(
 async def add_task_badge(
     session: Session,
     task_id: int,
-    state: TaskState,
+    state: Annotated[TaskState, Body(embed=True)],
     user: ActiveUser,
 ):
     """Add a badge to an annotation task."""

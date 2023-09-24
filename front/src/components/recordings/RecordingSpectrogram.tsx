@@ -61,6 +61,9 @@ export default function RecordingSpectrogram({
   });
 
   const { draw } = useSpectrogram({
+    recording,
+    bounds,
+    initial,
     state,
     send,
     dragState,

@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { notFound } from "next/navigation";
 
 import useTasks from "@/hooks/api/useTasks";
@@ -15,12 +15,11 @@ export default function AnnotationProjectHome() {
     annotation_project_id: context?.id ?? -1,
   });
 
-  const tasks = useTasks({
-    pageSize: -1,
-    filter: {
-      project__eq: context?.id ?? -1,
-    },
-  });
+  const filter = useMemo(
+    () => ({ project__eq: context?.id ?? -1 }),
+    [context?.id],
+  );
+  const tasks = useTasks({ pageSize: -1, filter });
 
   if (project == null) return notFound();
   if (project.query.data == null) return <Loading />;

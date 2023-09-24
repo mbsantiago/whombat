@@ -8,8 +8,9 @@ import { NoteSchema, type NoteUpdate, NoteUpdateSchema } from "@/api/notes";
 
 import { GetManySchema, Page } from "./common";
 
+export type State = "assigned" | "completed" | "verified" | "rejected";
+
 export const StatusBadgeCreateSchema = z.object({
-  task_id: z.number(),
   state: z.enum(["assigned", "completed", "verified", "rejected"]),
 });
 
@@ -51,6 +52,12 @@ export const TaskFilterSchema = z.object({
   dataset__isin: z.array(z.number()).optional(),
   project__eq: z.number().optional(),
   project__isin: z.array(z.number()).optional(),
+  recording_tag__eq: z.number().optional(),
+  pending__eq: z.boolean().optional(),
+  assigned__eq: z.boolean().optional(),
+  verified__eq: z.boolean().optional(),
+  rejected__eq: z.boolean().optional(),
+  assigned_to__eq: z.string().uuid().optional(),
 });
 
 export type TaskFilter = z.infer<typeof TaskFilterSchema>;
@@ -137,6 +144,8 @@ const DEFAULT_ENDPOINTS = {
   removeNote: "/api/v1/tasks/detail/notes/",
   addTag: "/api/v1/tasks/detail/tags/",
   removeTag: "/api/v1/tasks/detail/tags/",
+  addBadge: "/api/v1/tasks/detail/badges/",
+  removeBadge: "/api/v1/tasks/detail/badges/",
   getNotes: "/api/v1/tasks/notes/",
   getTags: "/api/v1/tasks/tags/",
 };
@@ -228,6 +237,32 @@ export function registerTasksApi(
     return TaskSchema.parse(response.data);
   }
 
+  async function addBadge({
+    task_id,
+    state,
+  }: {
+    task_id: number;
+    state: string;
+  }) {
+    const body = StatusBadgeCreateSchema.parse({ state });
+    const response = await instance.post(endpoints.addBadge, body, {
+      params: {
+        task_id,
+      },
+    });
+    return TaskSchema.parse(response.data);
+  }
+
+  async function removeBadge(task_id: number, badge_id: number) {
+    const response = await instance.delete(endpoints.removeBadge, {
+      params: {
+        task_id,
+        badge_id,
+      },
+    });
+    return TaskSchema.parse(response.data);
+  }
+
   async function addTag({
     task_id,
     tag_id,
@@ -288,5 +323,7 @@ export function registerTasksApi(
     removeNote,
     addTag,
     removeTag,
+    addBadge,
+    removeBadge,
   };
 }

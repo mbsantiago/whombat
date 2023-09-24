@@ -5,8 +5,10 @@ import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
 import api from "@/app/api";
 
+const emptyFilter = {};
+
 export default function useRecordings({
-  filter: initialFilter = {},
+  filter: initialFilter = emptyFilter,
   pageSize = 20,
 }: {
   filter?: RecordingFilter;

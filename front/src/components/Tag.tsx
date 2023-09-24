@@ -1,7 +1,7 @@
 /** @module Tag.
  * Definition of the Tag component.
  */
-import { type ButtonHTMLAttributes } from "react";
+import { type HTMLProps } from "react";
 import classnames from "classnames";
 
 import { type Tag } from "@/api/tags";
@@ -55,19 +55,21 @@ export default function Tag({
   tag,
   color,
   level = 1,
-  withClose = false,
   className,
+  onClick,
+  onClose,
   ...props
 }: {
   tag: Tag;
   level: (typeof LEVELS)[number];
   color: (typeof COLOR_NAMES)[number];
   withClose?: boolean;
-  onRemove?: () => void;
-} & ButtonHTMLAttributes<HTMLButtonElement>) {
+  onClick?: () => void;
+  onClose?: () => void;
+} & HTMLProps<HTMLDivElement>) {
   const classNames = getClassNames(color, level);
   return (
-    <button
+    <div
       className={classnames(
         "border rounded-md px-2 whitespace-nowrap tracking-tighter",
         classNames,
@@ -75,10 +77,16 @@ export default function Tag({
       )}
       {...props}
     >
-      <span className="font-thin">{tag.key}</span>
-      <span className="ml-1 font-bold">{tag.value}</span>
-      {withClose && <CloseIcon className="inline-block w-4 h-4 ml-1" />}
-    </button>
+      <button type="button" className="group" onClick={onClick}>
+        <span className="font-thin">{tag.key}</span>
+        <span className="ml-1 font-bold group-hover:underline group-hover:decoration-2 group-hover:underline-offset-2">{tag.value}</span>
+      </button>
+      {onClose != null && (
+        <button type="button" className="group" onClick={onClose}>
+          <CloseIcon className="inline-block w-4 h-4 ml-1 group-hover:stroke-3 group-hover:text-red-500" />
+        </button>
+      )}
+    </div>
   );
 }
 

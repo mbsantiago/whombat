@@ -5,8 +5,10 @@ import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
 import { type TagFilter } from "@/api/tags";
 
+const emptyFilter = {};
+
 export default function useTags({
-  initialFilter = {},
+  initialFilter = emptyFilter,
   pageSize = 10,
 }: {
   initialFilter?: TagFilter;

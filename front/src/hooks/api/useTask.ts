@@ -4,6 +4,7 @@ import api from "@/app/api";
 import { type Tag } from "@/api/tags";
 import { type Note, type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type Feature } from "@/api/features";
+import { type StatusBadge, type State } from "@/api/tasks";
 
 export default function useTask({
   task_id,
@@ -11,6 +12,8 @@ export default function useTask({
   onAddTag,
   onAddNote,
   onRemoveTag,
+  onAddBadge,
+  onRemoveBadge,
 }: {
   task_id: number;
   onDelete?: () => void;
@@ -20,12 +23,12 @@ export default function useTask({
   onAddFeature?: (feature: Feature) => void;
   onRemoveFeature?: (feature: Feature) => void;
   onUpdateFeature?: (feature: Feature) => void;
+  onAddBadge?: (state: State) => void;
+  onRemoveBadge?: (badge: StatusBadge) => void;
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["task", task_id], () =>
-    api.tasks.get(task_id),
-  );
+  const query = useQuery(["task", task_id], () => api.tasks.get(task_id));
 
   const addTag = useMutation({
     mutationFn: async (tag: Tag) => {
@@ -61,11 +64,14 @@ export default function useTask({
   });
 
   const updateNote = useMutation({
-    mutationFn: async ({ note_id, data }: {
+    mutationFn: async ({
+      note_id,
+      data,
+    }: {
       note_id: number;
       data: NoteUpdate;
     }) => {
-      return await api.tasks.updateNote({task_id, note_id, data});
+      return await api.tasks.updateNote({ task_id, note_id, data });
     },
     onSuccess: (data) => {
       client.setQueryData(["task", task_id], data);
@@ -95,6 +101,23 @@ export default function useTask({
     },
   });
 
+  const addBadge = useMutation({
+    mutationFn: (state: State) => api.tasks.addBadge({ task_id, state }),
+    onSuccess: (data, state) => {
+      client.setQueryData(["task", task_id], data);
+      onAddBadge?.(state);
+    },
+  });
+
+  const removeBadge = useMutation({
+    mutationFn: (badge: StatusBadge) =>
+      api.tasks.removeBadge(task_id, badge.id),
+    onSuccess: (data, badge) => {
+      client.setQueryData(["task", task_id], data);
+      onRemoveBadge?.(badge);
+    },
+  });
+
   return {
     query,
     addTag,
@@ -102,6 +125,8 @@ export default function useTask({
     addNote,
     removeNote,
     updateNote,
+    addBadge,
+    removeBadge,
     delete: deleteTask,
   };
 }

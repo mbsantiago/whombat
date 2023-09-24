@@ -10,19 +10,27 @@ const OPERATION_MAP: Record<string, string> = {
   le: "≤",
 };
 
-function FilterBadge({
+export function FilterBadge({
   field,
   value,
   onRemove,
 }: {
   field: string;
-  value: string;
+  value: string | number | boolean;
   onRemove?: () => void;
 }) {
   let [fieldName, operation] = field.split("__");
 
   if (operation in OPERATION_MAP) {
     operation = OPERATION_MAP[operation];
+  }
+
+  if (typeof value === "boolean") {
+    value = value ? "yes" : "no";
+  }
+
+  if (typeof value === "number") {
+    value = value.toLocaleString();
   }
 
   return (
@@ -46,10 +54,12 @@ export default function FilterBar<T extends Object>({
   filter,
   total,
   showIfEmpty = false,
+  withLabel = true,
 }: {
   filter: Filter<T>;
   total?: number;
   showIfEmpty?: boolean;
+  withLabel?: boolean;
 }) {
   const activeFilters = Object.keys(filter.filter).filter(
     (key) => !filter.isFixed(key as keyof T),
@@ -60,15 +70,17 @@ export default function FilterBar<T extends Object>({
   }
 
   return (
-    <div className="flex flex-row items-center mt-2">
+    <div className="flex flex-row items-center">
       {total != null && (
         <span className="mr-3 text-stone-500">{total} results</span>
       )}
       <div className="flex flex-row items-center space-x-2">
-        <span className="mr-2 text-blue-200">
-          <FilterIcon className="inline-block h-5 w-5 mr-1" />
-          filters:
-        </span>
+        {withLabel && (
+          <span className="mr-2 text-blue-200">
+            <FilterIcon className="inline-block h-5 w-5 mr-1" />
+            filters:
+          </span>
+        )}
         {Object.entries(filter.filter)
           .filter(([key, _]) => !filter.isFixed(key as keyof T))
           .map(([key, value]) => {

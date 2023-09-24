@@ -45,7 +45,7 @@ export default function Tooltip({
         flip={true}
       >
         <Popover.Button as={Fragment}>{hoverable}</Popover.Button>
-        <Popover.Panel static className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 pointer-events-none">
+        <Popover.Panel static className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 text-sm pointer-events-none">
           {tooltip}
         </Popover.Panel>
       </Float>

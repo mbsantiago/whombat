@@ -9,8 +9,7 @@ import { type SelectAnnotationEvent } from "@/machines/annotate";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Annotation } from "@/api/annotations";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { WARNING } from '@/draw/styles'
-
+import { WARNING } from "@/draw/styles";
 
 const SELECT_STYLE = {
   borderColor: WARNING,
@@ -31,7 +30,7 @@ export default function useAnnotationSelect({
   mouse: MouseState;
   annotations: Annotation[];
   window: SpectrogramWindow;
-  send: (event: SelectAnnotationEvent | "IDLE") => void;
+  send: (event: SelectAnnotationEvent | { type: "IDLE" }) => void;
   active: boolean;
 }) {
   const hovered = useHoveredAnnotation({
@@ -44,7 +43,7 @@ export default function useAnnotationSelect({
   const handleClick = useCallback(() => {
     if (!active) return;
     if (hovered == null) {
-      send("IDLE");
+      send({ type: "IDLE" });
     } else {
       send({
         type: "SELECT_ANNOTATION",

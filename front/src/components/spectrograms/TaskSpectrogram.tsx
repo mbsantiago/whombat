@@ -1,34 +1,38 @@
 import { useActor } from "@xstate/react";
-import { notFound } from "next/navigation";
 import { useCallback, useRef } from "react";
+import { type StateFrom, type EventFrom } from "xstate";
 
+import { annotateMachine } from "@/machines/annotate";
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Task } from "@/api/tasks";
-import Loading from "@/app/loading";
+import { type Annotation } from "@/api/annotations";
 import Card from "@/components/Card";
 import Player from "@/components/Player";
 import ScrollBar from "@/components/ScrollBar";
 import SpectrogramControls from "@/components/SpectrogramControls";
 import SpectrogramSettings from "@/components/SpectrogramSettings";
 import SpectrogramTags from "@/components/SpectrogramTags";
+import AnnotationControls from "@/components/annotation/AnnotationControls";
 import useAnnotate from "@/hooks/annotation/useAnnotate";
-import useRecording from "@/hooks/api/useRecording";
-import useTask from "@/hooks/api/useTask";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useScratch from "@/hooks/motions/useScratch";
 import { useMouse } from "@/hooks/motions/useMouse";
 import api from "@/app/api";
 
-import AnnotationControls from "./AnnotationControls";
-
-function TaskSpectrogram({
+export default function TaskSpectrogram({
+  state,
+  send,
   task,
   recording,
+  annotations,
 }: {
+  state: StateFrom<typeof annotateMachine>;
+  send: (event: EventFrom<typeof annotateMachine>) => void;
   task: Task;
   recording: Recording;
+  annotations: Annotation[];
 }) {
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,12 +44,14 @@ function TaskSpectrogram({
   const scrollState = useMouseWheel(canvasRef);
   const mouseState = useMouse(canvasRef);
 
-  const { state, send, draw, tags } = useAnnotate({
-    task,
+  const { draw, tags } = useAnnotate({
+    state,
+    send,
     recording,
     scratchState: dragState,
     scrollState,
     mouseState,
+    annotations,
     ref: canvasRef,
   });
   const [specState, specSend] = useActor(state.context.spectrogram);
@@ -53,7 +59,7 @@ function TaskSpectrogram({
 
   const handleOnBarDrag = useCallback(
     (newWindow: SpectrogramWindow) => {
-      send("IDLE");
+      send({ type: "IDLE" });
       specSend("PAN");
       specSend({ type: "PAN_TO", window: newWindow });
     },
@@ -77,15 +83,15 @@ function TaskSpectrogram({
             isDragging={state.matches("idle") && specState.matches("panning")}
             isZooming={state.matches("idle") && specState.matches("zooming")}
             onDrag={() => {
-              send("IDLE");
+              send({ type: "IDLE" });
               specSend("PAN");
             }}
             onZoom={() => {
-              send("IDLE");
+              send({ type: "IDLE" });
               specSend("ZOOM");
             }}
             onReset={() => {
-              send("IDLE");
+              send({ type: "IDLE" });
               specSend("RESET");
             }}
           />
@@ -103,9 +109,9 @@ function TaskSpectrogram({
           isSelecting={state.matches("edit.selecting")}
           isEditing={state.matches("edit.editing")}
           geometryType={state.context.geometryType}
-          onDraw={() => send("DRAW")}
-          onDelete={() => send("DELETE")}
-          onSelect={() => send("SELECT")}
+          onDraw={() => send({ type: "DRAW" })}
+          onDelete={() => send({ type: "DELETE" })}
+          onSelect={() => send({ type: "SELECT" })}
           onSelectGeometryType={(type) =>
             send({ type: "SELECT_GEOMETRY_TYPE", geometryType: type })
           }
@@ -119,12 +125,12 @@ function TaskSpectrogram({
           loop={audioState.context.loop}
           playing={state.matches("idle") && specState.matches("playing")}
           play={() => {
-            send("IDLE");
+            send({ type: "IDLE" });
             specSend("PLAY");
           }}
           pause={() => {
             specSend("PAUSE");
-            send("IDLE");
+            send({ type: "IDLE" });
           }}
           seek={(time: number) => audioSend({ type: "SEEK", time })}
           setSpeed={(speed: number) => audioSend({ type: "SET_SPEED", speed })}
@@ -151,37 +157,5 @@ function TaskSpectrogram({
         shiftWindow={handleOnBarScroll}
       />
     </Card>
-  );
-}
-
-export default function AnnotateTask({ task_id }: { task_id: number }) {
-  // Get information about the task
-  const task = useTask({ task_id });
-  const { recording_id } = task.query.data?.clip ?? {};
-
-  // Get info about the recording
-  const recording = useRecording({
-    recording_id: recording_id ?? -1,
-    enabled: recording_id != null,
-  });
-
-  if (task.query.isLoading || recording.query.isLoading) {
-    return <Loading />;
-  }
-
-  if (task.query.data == null || recording.query.data == null) {
-    return notFound();
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-row gap-4">
-        {recording.query.data.duration}
-      </div>
-      <TaskSpectrogram
-        task={task.query.data}
-        recording={recording.query.data}
-      />
-    </div>
   );
 }

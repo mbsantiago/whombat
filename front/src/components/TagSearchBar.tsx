@@ -81,11 +81,13 @@ type TagSearchBarProps = {
   "onSelect" | "onChange" | "onKeyDown" | "onBlur"
 >;
 
+const emptyFilter = {};
+
 export default forwardRef<HTMLInputElement, TagSearchBarProps>(
   function TagSearchBar(
     {
       onSelect,
-      initialFilter = {},
+      initialFilter = emptyFilter,
       onBlur,
       onKeyDown,
       onCreate,

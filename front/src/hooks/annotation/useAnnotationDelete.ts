@@ -31,7 +31,7 @@ export default function useAnnotationDelete({
   annotations: Annotation[];
   window: SpectrogramWindow;
   active: boolean;
-  send: (event: DeleteAnnotationEvent | "IDLE") => void;
+  send: (event: DeleteAnnotationEvent | { type: "IDLE" }) => void;
 }) {
   const hovered = useHoveredAnnotation({
     mouse,
@@ -44,7 +44,7 @@ export default function useAnnotationDelete({
     if (!active) return;
 
     if (hovered == null) {
-      send("IDLE");
+      send({ type: "IDLE" });
     } else {
       send({
         type: "DELETE_ANNOTATION",

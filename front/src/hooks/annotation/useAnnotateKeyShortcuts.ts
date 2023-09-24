@@ -4,14 +4,16 @@ import { useKeyPressEvent } from "react-use";
 export default function useAnnotateKeyShortcuts({
   send,
 }: {
-  send: (event: "DRAW" | "SELECT" | "DELETE" | "IDLE") => void;
+  send: (
+    event: { type: "DRAW" } | { type: "SELECT" } | { type: "DELETE" },
+  ) => void;
   cond: boolean;
 }) {
   const goToDrawing = useCallback(
     (event: KeyboardEvent) => {
       // Avoid triggering when typing in the text input
-      if (event.target instanceof HTMLInputElement) return
-      send("DRAW");
+      if (event.target instanceof HTMLInputElement) return;
+      send({ type: "DRAW" });
     },
     [send],
   );
@@ -19,8 +21,8 @@ export default function useAnnotateKeyShortcuts({
   const goToSelecting = useCallback(
     (event: KeyboardEvent) => {
       // Avoid triggering when typing in the text input
-      if (event.target instanceof HTMLInputElement) return
-      send("SELECT");
+      if (event.target instanceof HTMLInputElement) return;
+      send({ type: "SELECT" });
     },
     [send],
   );
@@ -28,8 +30,8 @@ export default function useAnnotateKeyShortcuts({
   const goToDeleting = useCallback(
     (event: KeyboardEvent) => {
       // Avoid triggering when typing in the text input
-      if (event.target instanceof HTMLInputElement) return
-      send("DELETE");
+      if (event.target instanceof HTMLInputElement) return;
+      send({ type: "DELETE" });
     },
     [send],
   );

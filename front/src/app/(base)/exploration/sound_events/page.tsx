@@ -12,6 +12,7 @@ const AnnotationsScatterPlot = dynamic(
   { ssr: false },
 );
 
+
 export default function Page() {
   const [view, setView] = useState("list");
 

@@ -40,12 +40,11 @@ function TasksSummary({ tasks }: { tasks: Task[] }) {
 export default function Page() {
   const project = useContext(AnnotationProjectContext);
 
-  const tasks = useTasks({
-    pageSize: -1,
-    filter: {
-      project__eq: project?.id ?? -1,
-    },
-  });
+  const filter = useMemo(
+    () => ({ project__eq: project?.id ?? -1 }),
+    [project?.id],
+  );
+  const tasks = useTasks({ pageSize: -1, filter });
 
   if (project == null) return notFound();
 

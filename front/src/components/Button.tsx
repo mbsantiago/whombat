@@ -5,8 +5,7 @@ import type { Variant } from "@/components/common";
 
 type Mode = "filled" | "outline" | "text";
 
-const FOCUS_STYLE =
-  "focus:ring-4 focus:ring-emerald-500/50 focus:outline-none";
+const FOCUS_STYLE = "focus:ring-4 focus:ring-emerald-500/50 focus:outline-none";
 
 const CLASS_NAMES = {
   filled: {
@@ -27,14 +26,10 @@ const CLASS_NAMES = {
   outline: {
     primary:
       "border-emerald-500 hover:bg-emerald-300 dark:hover:bg-emerald-700",
-    secondary:
-      "border-stone-500 hover:bg-stone-300 dark:hover:bg-stone-700",
-    danger:
-      "border-rose-500 hover:bg-rose-300 dark:hover:bg-rose-700",
-    success:
-      "border-green-500 hover:bg-green-300 dark:hover:bg-green-700",
-    warning:
-      "border-yellow-500 hover:bg-yellow-300 dark:hover:bg-yellow-700",
+    secondary: "border-stone-500 hover:bg-stone-300 dark:hover:bg-stone-700",
+    danger: "border-rose-500 hover:bg-rose-300 dark:hover:bg-rose-700",
+    success: "border-green-500 hover:bg-green-300 dark:hover:bg-green-700",
+    warning: "border-yellow-500 hover:bg-yellow-300 dark:hover:bg-yellow-700",
     info: "border-blue-500 hover:bg-blue-300 dark:hover:bg-blue-700",
     common: "border bg-transparent text-stone-900 dark:text-stone-100",
   },
@@ -55,28 +50,40 @@ const CLASS_NAMES = {
   },
 };
 
+export function getButtonClassName({
+  variant = "primary",
+  mode = "filled",
+  padding = "p-2.5",
+}: {
+  variant?: Variant;
+  mode?: Mode;
+  padding?: string;
+}) {
+  return classnames(
+    CLASS_NAMES[mode][variant],
+    CLASS_NAMES[mode]["common"],
+    FOCUS_STYLE,
+    padding,
+    "group flex flex-row items-center rounded-lg text-center text-sm font-medium",
+  );
+}
+
 export default function Button({
   children,
   variant = "primary",
   mode = "filled",
+  padding = "p-2.5",
   className,
   ...props
 }: {
   children: ReactNode;
   variant?: Variant;
+  padding?: string;
   mode?: Mode;
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  const baseClass = getButtonClassName({ variant, mode, padding });
   return (
-    <button
-      className={classnames(
-        CLASS_NAMES[mode][variant],
-        CLASS_NAMES[mode]["common"],
-        FOCUS_STYLE,
-        "flex flex-row items-center rounded-lg p-2.5 text-center text-sm font-medium",
-        className,
-      )}
-      {...props}
-    >
+    <button className={classnames(baseClass, className)} {...props}>
       {children}
     </button>
   );

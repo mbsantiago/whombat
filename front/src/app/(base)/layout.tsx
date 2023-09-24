@@ -72,10 +72,10 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
 }
 
 function Contents({ children }: { children: ReactNode }) {
-  const { user } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
   return (
     <div className="flex flex-row w-full h-full">
-      <SideMenu />
+      <SideMenu logout={logout} />
       <main className="w-full h-full">
         <NavBar user={user} />
         {children}

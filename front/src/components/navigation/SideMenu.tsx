@@ -1,9 +1,7 @@
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
 import classnames from "classnames";
 import Link from "next/link";
 
-import { UserContext } from "@/app/contexts";
 import {
   AnnotationProjectIcon,
   DatasetsIcon,
@@ -98,9 +96,13 @@ function MainNavigation({ pathname }: { pathname?: string }) {
   );
 }
 
-function SecondaryNavigation({ pathname }: { pathname?: string }) {
-  const { logout } = useContext(UserContext);
-
+function SecondaryNavigation({
+  pathname,
+  logout,
+}: {
+  pathname?: string;
+  logout?: () => void;
+}) {
   return (
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <HorizontalDivider />
@@ -129,7 +131,7 @@ function SecondaryNavigation({ pathname }: { pathname?: string }) {
   );
 }
 
-function SideMenu() {
+export function SideMenu({ logout }: { logout?: () => void }) {
   const pathname = usePathname();
   return (
     <aside
@@ -144,10 +146,8 @@ function SideMenu() {
           </div>
           <MainNavigation pathname={pathname} />
         </div>
-        <SecondaryNavigation pathname={pathname} />
+        <SecondaryNavigation pathname={pathname} logout={logout} />
       </div>
     </aside>
   );
 }
-
-export { SideMenu };

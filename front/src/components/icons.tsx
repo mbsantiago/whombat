@@ -1,6 +1,8 @@
 import { type ComponentProps, type HTMLProps } from "react";
 import Image from "next/image";
 import {
+  CheckBadgeIcon,
+  UserIcon,
   Squares2X2Icon,
   PresentationChartLineIcon,
   ListBulletIcon,
@@ -272,4 +274,5 @@ export {
   ListBulletIcon as ListIcon,
   PresentationChartLineIcon as PlotIcon,
   Squares2X2Icon as GalleryIcon,
+  UserIcon,
 };

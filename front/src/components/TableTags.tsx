@@ -28,6 +28,9 @@ function TagBarPopover({
       onSelect={(tag) => {
         onAdd?.(tag);
       }}
+      onCreate={(tag) => {
+        onAdd?.(tag);
+      }}
       autoFocus={true}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
@@ -74,29 +77,21 @@ export default function TableTags({
           leave="transition duration-150 ease-in"
           leaveFrom="scale-100 opacity-100"
           leaveTo="scale-95 opacity-0"
-          portal={false}
-          composable={true}
+          portal={true}
         >
-          <Float.Reference>
-            <Popover.Button
-              as={Button}
-              variant="secondary"
-              mode="text"
-              className="whitespace-nowrap py-1"
-            >
+          <Popover.Button
+            as="div"
+          >
+            <Button mode="text" variant="secondary" padding="py-1">
               <AddIcon className="inline-block h-5 w-5 align-middle" />
               add
-            </Popover.Button>
-          </Float.Reference>
-          <div className="absolute">
-            <Float.Content>
-              <Popover.Panel className="w-72 relative" focus unmount>
-                {({ close }) => (
-                  <TagBarPopover onClose={close} onAdd={onAdd} {...props} />
-                )}
-              </Popover.Panel>
-            </Float.Content>
-          </div>
+            </Button>
+          </Popover.Button>
+          <Popover.Panel className="w-72" focus unmount>
+            {({ close }) => (
+              <TagBarPopover onClose={close} onAdd={onAdd} {...props} />
+            )}
+          </Popover.Panel>
         </Float>
       </Popover>
       {/* Display the list of tags and allow users to remove a tag from */}

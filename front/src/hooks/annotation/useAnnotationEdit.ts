@@ -34,7 +34,9 @@ export default function useAnnotationEdit({
   drag: ScratchState;
   mouse: MouseState;
   active: boolean;
-  send: (event: EditAnnotationEvent | CreateAnnotationEvent | "IDLE") => void;
+  send: (
+    event: EditAnnotationEvent | CreateAnnotationEvent | { type: "IDLE" },
+  ) => void;
   window: SpectrogramWindow;
   annotation: Annotation | null;
 }) {
@@ -71,7 +73,7 @@ export default function useAnnotationEdit({
   );
 
   const handleClickAway = useCallback(() => {
-    send("IDLE");
+    send({ type: "IDLE" });
   }, [send]);
 
   const { draw: drawEdit } = useEditGeometry({

@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { type Dataset, type DatasetUpdate } from "@/api/datasets";
 import useRecordingTags from "@/hooks/api/useRecordingTags";
 import useRecordingNotes from "@/hooks/api/useRecordingNotes";
@@ -8,7 +10,6 @@ import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetActions from "./DatasetActions";
 import DatasetUpdateForm from "./DatasetUpdateForm";
 
-
 export default function DatasetDetail({
   dataset,
   onChange,
@@ -18,19 +19,14 @@ export default function DatasetDetail({
   onChange?: (data: DatasetUpdate) => void;
   downloadLink?: string;
 }) {
-  const tags = useRecordingTags({
-    pageSize: -1,
-    filter: {
+  const filter = useMemo(
+    () => ({
       dataset__eq: dataset.id,
-    },
-  });
-
-  const notes = useRecordingNotes({
-    pageSize: -1,
-    filter: {
-      dataset__eq: dataset.id,
-    },
-  });
+    }),
+    [dataset.id],
+  );
+  const tags = useRecordingTags({ pageSize: -1, filter });
+  const notes = useRecordingNotes({ pageSize: -1, filter });
 
   return (
     <div className="w-100 flex flex-row flex-wrap lg:flex-nowrap gap-8 justify-between">

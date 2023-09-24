@@ -1,10 +1,12 @@
-import { type TaskFilter } from "@/api/tasks";
 import api from "@/app/api";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
+import { type TaskFilter } from "@/api/tasks";
+
+const emptyFilter = {};
 
 export default function useTasks({
-  filter: initialFilter = {},
+  filter: initialFilter = emptyFilter,
   pageSize = 10,
 }: {
   filter?: TaskFilter;

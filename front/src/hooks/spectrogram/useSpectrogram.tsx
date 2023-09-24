@@ -1,5 +1,6 @@
 import { useSelector } from "@xstate/react";
 import { useCallback } from "react";
+import { useUpdateEffect } from "react-use";
 import { type EventFrom, type StateFrom } from "xstate";
 
 import drawTimeAxis from "@/draw/timeAxis";
@@ -12,6 +13,7 @@ import useSpectrogramScrollZoom from "@/hooks/spectrogram/useSpectrogramScrollZo
 import useSpectrogramDrag from "@/hooks/spectrogram/useSpectrogramDrag";
 import { spectrogramMachine } from "@/machines/spectrogram";
 import { audioMachine } from "@/machines/audio";
+import { type Recording } from "@/api/recordings";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type SpectrogramWindow } from "@/api/spectrograms";
@@ -36,11 +38,17 @@ const selectTime = (state: StateFrom<typeof audioMachine>) =>
  * playback, dragging, scrolling, and settings, with controls for each.
  */
 export default function useSpectrogram({
+  recording,
+  bounds,
+  initial,
   state,
   send,
   dragState,
   scrollState,
 }: {
+  recording: Recording;
+  bounds?: SpectrogramWindow;
+  initial?: SpectrogramWindow;
   state: StateFrom<typeof spectrogramMachine>;
   send: (event: EventFrom<typeof spectrogramMachine>) => void;
   dragState: ScratchState;
@@ -48,6 +56,20 @@ export default function useSpectrogram({
 }) {
   // State machine for the audio player
   const currentTime = useSelector(state.context.audio, selectTime);
+
+  // Update the spectrogram when recording changes
+  useUpdateEffect(() => {
+    if (recording != null) {
+      send({ type: "CHANGE_RECORDING", recording });
+    }
+  }, [recording, send]);
+
+  // Update the spectrogram when bounds change
+  useUpdateEffect(() => {
+    if (bounds != null && initial != null) {
+      send({ type: "UPDATE", bounds, initial });
+    }
+  }, [bounds, initial, send]);
 
   // Allow the user to drag the spectrogram around
   useSpectrogramDrag({

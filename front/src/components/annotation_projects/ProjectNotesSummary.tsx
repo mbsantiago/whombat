@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
@@ -21,17 +23,15 @@ export default function ProjectNotesSummary({
 }: {
   project: AnnotationProject;
 }) {
-  const annotationNotes = useAnnotationNotes({
-    filter: {
+  const filter = useMemo(
+    () => ({
       project__eq: project.id,
-    },
-  });
+    }),
+    [project.id],
+  );
 
-  const taskNotes = useTaskNotes({
-    filter: {
-      project__eq: project.id,
-    },
-  });
+  const annotationNotes = useAnnotationNotes({ filter });
+  const taskNotes = useTaskNotes({ filter });
 
   const isLoading =
     annotationNotes.query.isLoading || taskNotes.query.isLoading;

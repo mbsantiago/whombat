@@ -49,7 +49,7 @@ export default function useClick({
                   height: elH,
                 },
               });
-            }, 200);
+            }, 100);
             break;
           case 2:
             clearTimeout(timer);

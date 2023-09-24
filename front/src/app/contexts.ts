@@ -29,9 +29,14 @@ export const RecordingContext = createContext<RecordingContextType>({
   recording_id: -1,
 });
 
-export const AnnotationProjectContext = createContext<AnnotationProject | null>(
-  null,
-);
+export const AnnotationProjectContext = createContext<AnnotationProject>({
+  id: -1,
+  name: "",
+  description: "",
+  tags: [],
+  created_at: new Date(),
+  uuid: "",
+});
 
 type DatasetContextType = {
   dataset: Dataset | null;

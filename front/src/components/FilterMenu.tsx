@@ -1,12 +1,12 @@
 import { type ReactNode, useState } from "react";
-import { Popover, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Float } from "@headlessui-float/react";
+import { Popover } from "@headlessui/react";
 
 import { BackIcon, FilterIcon } from "@/components/icons";
 import { type SetFilter } from "@/components/Filters";
 import { type Filter } from "@/hooks/api/useFilter";
 import SearchMenu from "@/components/SearchMenu";
-import Button from "@/components/Button";
+import Button, { getButtonClassName } from "@/components/Button";
 
 export type FilterDef = {
   icon?: ReactNode;
@@ -78,7 +78,7 @@ function FilterPanel<T extends Object>({
           variant="warning"
           onClick={() => setSelectedFilter(null)}
         >
-          <BackIcon className="w-5 h-5" />
+          <BackIcon className="w-5 h-5 group-hover:stroke-3" />
         </Button>
       </div>
       {selectedFilter.description != null ? (
@@ -104,24 +104,28 @@ export default function FilterPopover<T extends Object>({
   filter,
   filterDefs,
   button,
+  mode = "filled",
+  variant = "primary",
+  className,
 }: {
   filter: Filter<T>;
   filterDefs: FilterDef[];
   button?: ReactNode;
+  mode?: "filled" | "outline" | "text";
+  variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";
+  className?: string;
 }) {
+  if (className == null) {
+    className = getButtonClassName({ mode, variant });
+  }
+
   return (
     <Popover as="div" className="relative inline-block text-left">
-      <div>
-        <Popover.Button as={Button}>
-          {button != null ? (
-            button
-          ) : (
-            <FilterIcon className="h-4 w-4 stroke-2 text-emerald-900" />
-          )}
-        </Popover.Button>
-      </div>
-      <Transition
-        as={Fragment}
+      <Float
+        placement="bottom"
+        flip={true}
+        portal={true}
+        offset={4}
         enter="transition ease-out duration-100"
         enterFrom="transform opacity-0 scale-95"
         enterTo="transform opacity-100 scale-100"
@@ -129,15 +133,22 @@ export default function FilterPopover<T extends Object>({
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
+        <Popover.Button className={className}>
+          {button != null ? (
+            button
+          ) : (
+            <FilterIcon className="h-4 w-4 stroke-2" />
+          )}
+        </Popover.Button>
         <Popover.Panel
           unmount
-          className="absolute right-0 mt-2 w-96 origin-top-right divide-y divide-stone-100 rounded-md bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-500 shadow-md dark:shadow-stone-800 ring-1 ring-stone-900 ring-opacity-5 focus:outline-none z-50"
+          className="w-96 divide-y divide-stone-100 rounded-md bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-500 shadow-md dark:shadow-stone-800 ring-1 ring-stone-900 ring-opacity-5 focus:outline-none z-50"
         >
           <div className="p-4">
             <FilterPanel filter={filter} filterDefs={filterDefs} />
           </div>
         </Popover.Panel>
-      </Transition>
+      </Float>
     </Popover>
   );
 }

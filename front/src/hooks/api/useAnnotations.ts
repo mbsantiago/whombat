@@ -11,8 +11,10 @@ import {
   type AnnotationPage,
 } from "@/api/annotations";
 
+const emptyFilter = {};
+
 export default function useAnnotations({
-  filter: initialFilter = {},
+  filter: initialFilter = emptyFilter,
   pageSize = 100,
   onCreate,
   onDelete,

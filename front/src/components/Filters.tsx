@@ -1,6 +1,9 @@
 import { useState } from "react";
 
+import Button from "@/components/Button";
+import TagSearchBar from "@/components/TagSearchBar";
 import Checkbox from "@/components/TableCheckbox";
+import { CheckIcon, CloseIcon } from "@/components/icons";
 
 export type SetFilter = ({
   name,
@@ -184,6 +187,58 @@ export function NullableFloatFilter({
         onChange={setIsNull}
         onSubmit={() => {
           setFilter({ name: `${prefix}__is_null`, value: isNull });
+        }}
+      />
+    </div>
+  );
+}
+
+export function BooleanFilter({
+  setFilter,
+  prefix = "",
+}: {
+  setFilter: SetFilter;
+  prefix?: string;
+}) {
+  return (
+    <div className="flex flex-row justify-center w-full gap-2">
+      <Button
+        mode="text"
+        variant="primary"
+        onClick={() => {
+          setFilter({ name: `${prefix}__eq`, value: true });
+        }}
+      >
+        <CheckIcon className="w-5 h-5 mr-1 group-hover:stroke-3" />
+        Yes
+      </Button>
+      <Button
+        mode="text"
+        variant="danger"
+        onClick={() => {
+          setFilter({ name: `${prefix}__eq`, value: false });
+        }}
+      >
+        <CloseIcon className="w-5 h-5 mr-1 group-hover:stroke-3" />
+        No
+      </Button>
+    </div>
+  );
+}
+
+
+export function TagFilter({
+  setFilter,
+  prefix = "",
+}: {
+  setFilter: SetFilter;
+  prefix?: string;
+}) {
+  return (
+    <div className="flex flex-col w-full gap-2">
+      <TagSearchBar
+        onSelect={(tag) => {
+          setFilter({ name: `${prefix}__eq`, value: tag.id });
         }}
       />
     </div>
