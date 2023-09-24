@@ -1,10 +1,7 @@
 "use client";
-import { useContext } from "react";
-import toast from "react-hot-toast";
+import { useContext, useState, useCallback } from "react";
 
-import useRecording from "@/hooks/api/useRecording";
 import useAnnotationTasks from "@/hooks/annotation/useAnnotationTasks";
-import useTask from "@/hooks/api/useTask";
 import useStateParams from "@/hooks/useStateParams";
 import AnnotationProgress from "@/components/annotation/AnnotationProgress";
 import Empty from "@/components/Empty";
@@ -12,9 +9,13 @@ import Loading from "@/app/loading";
 import AnnotateTask from "@/components/annotation/AnnotateTask";
 import { AnnotationProjectContext } from "@/app/contexts";
 import { CompleteIcon } from "@/components/icons";
+import { type Tag } from "@/api/tags";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);
+
+  // Current tags
+  const [tags, setTags] = useState<Tag[]>([]);
 
   // Load annotation tasks for this project
   const { isLoading, filter, total, complete, pending, refresh, current } =
@@ -30,32 +31,28 @@ export default function Page() {
     (value: string) => parseInt(value, 10),
   );
 
-  // Get information about the task
-  const task = useTask({
-    task_id: task_id,
-    onAddBadge: (state) => {
-      switch (state) {
-        case "completed":
-          toast.success("Task done!");
-          break;
-        case "rejected":
-          toast.success("Task set for review");
-          break;
-        case "verified":
-          toast.success("Task verified!");
-          break;
-        default:
-          break;
-      }
-      refresh();
+  const onAddTag = useCallback(
+    (tag: Tag) => {
+      setTags((tags) => {
+        if (tags.includes(tag)) {
+          return tags;
+        }
+        return [...tags, tag];
+      });
     },
-  });
+    [setTags],
+  );
 
-  // Get information about the recording
-  const recording = useRecording({
-    recording_id: task.query.data?.clip.recording_id ?? -1,
-    enabled: task.query.data != null,
-  });
+  const onRemoveTag = useCallback(
+    (tag: Tag) => {
+      setTags((tags) => tags.filter((t) => t.id !== tag.id));
+    },
+    [setTags],
+  );
+
+  const onClearTags = useCallback(() => {
+    setTags([]);
+  }, [setTags]);
 
   if (isLoading || task_id == null) {
     return <Loading />;
@@ -88,18 +85,15 @@ export default function Page() {
             to continue annotating.
           </p>
         </Empty>
-      ) : recording.query.isLoading ||
-        task.query.isLoading ||
-        recording.query.data == null ||
-        task.query.data == null ? (
-        <Loading />
       ) : (
         <AnnotateTask
+          task_id={task_id}
           project={project}
-          task={task.query.data}
-          recording={recording.query.data}
-          addBadge={task.addBadge.mutate}
-          removeBadge={task.removeBadge.mutate}
+          refresh={refresh}
+          tags={tags}
+          addTag={onAddTag}
+          removeTag={onRemoveTag}
+          clearTags={onClearTags}
         />
       )}
     </div>

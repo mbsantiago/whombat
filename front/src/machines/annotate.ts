@@ -5,20 +5,31 @@ import { getInitialDuration } from "@/utils/windows";
 import { type Tag } from "@/api/tags";
 import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Geometry } from "@/api/sound_events";
-import { type StatusBadge } from "@/api/tasks";
 import { type Task } from "@/api/tasks";
 import { type Recording } from "@/api/recordings";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 
 export type AnnotateContext = {
-  tags: Tag[];
-  task: Task;
+  // Global settings
   parameters: SpectrogramParameters;
+  geometryType: "TimeStamp" | "TimeInterval" | "BoundingBox";
+
+  // Data for current task
+  task: Task;
   recording: Recording;
+
+  // Spectrogram Machine
   spectrogram: ActorRefFrom<typeof spectrogramMachine>;
+
+  // Annotation state
   selectedAnnotation: Annotation | null;
   geometryToCreate: Geometry | null;
-  geometryType: "TimeStamp" | "TimeInterval" | "BoundingBox";
+};
+
+export type AnnotateContextWithData = AnnotateContext & {
+  task: Task;
+  recording: Recording;
+  annotations: Annotation[];
 };
 
 export type CreateAnnotationEvent = {
@@ -51,36 +62,31 @@ export type AddTagEvent = {
   type: "ADD_TAG";
   annotation: Annotation;
   tag: Tag;
-}
+};
 
 export type RemoveTagEvent = {
   type: "REMOVE_TAG";
   annotation: Annotation;
   tag: AnnotationTag;
-}
+};
 
 export type AnnotateEvent =
   | { type: "IDLE" }
   | { type: "SELECT" }
   | { type: "DRAW" }
   | { type: "DELETE" }
+  | { type: "CLEAR_GLOBAL_TAGS" }
   | SelectAnnotationEvent
   | EditAnnotationEvent
   | CreateAnnotationEvent
   | DeleteAnnotationEvent
   | SelecteGeometryTypeEvent
   | AddTagEvent
-  | RemoveTagEvent
-  | { type: "ADD_NOTE"; annotation: Annotation }
-  | { type: "ADD_STATUS_BADGE"; badge: StatusBadge }
-  | { type: "REMOVE_STATUS_BADGE"; badge: StatusBadge }
-  | { type: "UPDATE_NOTE"; annotation: Annotation }
-  | { type: "ADD_GLOBAL_TAG"; tag: Tag }
-  | { type: "REMOVE_GLOBAL_TAG"; tag: Tag };
+  | RemoveTagEvent;
 
-export const annotateStates = {
-  initial: "idle",
+const annotateStates = {
   id: "annotate",
+  initial: "idle",
   entry: ["setupSpectrogram"],
   states: {
     idle: {
@@ -175,25 +181,36 @@ export const annotateStates = {
         },
       },
     },
-    tagging: {},
   },
   on: {
+    // Annotation state flow control
     IDLE: "idle",
     SELECT: "edit",
     DRAW: "create",
     DELETE: "delete",
-    SELECT_GEOMETRY_TYPE: {
-      actions: ["selectGeometryType"],
-    },
     RESET: {
       actions: ["reset"],
       target: "idle",
     },
+    // Annotation actions
     ADD_TAG: {
       actions: ["addTag"],
     },
     REMOVE_TAG: {
       actions: ["removeTag"],
+    },
+    ADD_NOTE: {
+      actions: ["addNote"],
+    },
+    UPDATE_NOTE: {
+      actions: ["updateNote"],
+    },
+    REMOVE_NOTE: {
+      actions: ["removeNote"],
+    },
+    // Geometry type selection
+    SELECT_GEOMETRY_TYPE: {
+      actions: ["selectGeometryType"],
     },
   },
 };
@@ -218,52 +235,52 @@ export const annotateActions = {
     selectedAnnotation: (_: AnnotateContext, data) => data.data,
   }),
   disableSpectrogram: (context: AnnotateContext) => {
-    context.spectrogram.send({ type: "DISABLE" });
+    context.spectrogram?.send({ type: "DISABLE" });
   },
   enableSpectrogram: (context: AnnotateContext) => {
-    context.spectrogram.send({ type: "PAN" });
+    context.spectrogram?.send({ type: "PAN" });
   },
   setupSpectrogram: assign({
     spectrogram: (context: AnnotateContext) => {
       if (context.spectrogram != null) return context.spectrogram;
 
+      const { task, recording, parameters } = context;
       const bounds = {
         time: {
-          min: context.task.clip.start_time,
-          max: context.task.clip.end_time,
+          min: task.clip.start_time,
+          max: task.clip.end_time,
         },
         freq: {
           min: 0,
-          max: context.recording.samplerate / 2,
+          max: recording.samplerate / 2,
         },
       };
 
       const initialDuration = getInitialDuration({
         interval: bounds.time,
-        samplerate: context.recording.samplerate,
-        window_size: context.parameters.window_size,
-        hop_size: context.parameters.hop_size,
+        samplerate: recording.samplerate,
+        window_size: parameters.window_size,
+        hop_size: parameters.hop_size,
       });
 
       const initial = {
         time: {
-          min: context.task.clip.start_time,
+          min: task.clip.start_time,
           max: Math.min(
-            context.task.clip.end_time,
-            context.task.clip.start_time + initialDuration,
+            task.clip.end_time,
+            task.clip.start_time + initialDuration,
           ),
         },
         freq: {
           min: 0,
-          max: context.recording.samplerate / 2,
+          max: recording.samplerate / 2,
         },
       };
 
       return spawn(
-        // @ts-ignore
         spectrogramMachine.withContext({
-          recording: context.recording,
-          parameters: context.parameters,
+          recording: recording,
+          parameters: parameters,
           bounds,
           initial,
           window: initial,

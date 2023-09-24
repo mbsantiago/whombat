@@ -1,10 +1,11 @@
+import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import { type Tag } from "@/api/tags";
 import { type Note, type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type Feature } from "@/api/features";
-import { type StatusBadge, type State } from "@/api/tasks";
+import { type StatusBadge, type State, type TaskTag } from "@/api/tasks";
 
 export default function useTask({
   task_id,
@@ -41,12 +42,12 @@ export default function useTask({
   });
 
   const removeTag = useMutation({
-    mutationFn: async (tag: Tag) => {
+    mutationFn: async (tag: TaskTag) => {
       return await api.tasks.removeTag({ task_id, tag_id: tag.id });
     },
     onSuccess: (data, tag) => {
       client.setQueryData(["task", task_id], data);
-      onRemoveTag?.(tag);
+      onRemoveTag?.(tag.tag);
     },
   });
 
@@ -118,6 +119,12 @@ export default function useTask({
     },
   });
 
+  const clearTags = useCallback(async () => {
+    for (const tag of query.data?.tags ?? []) {
+      await removeTag.mutateAsync(tag);
+    }
+  }, [query.data?.tags, removeTag]);
+
   return {
     query,
     addTag,
@@ -128,5 +135,6 @@ export default function useTask({
     addBadge,
     removeBadge,
     delete: deleteTask,
+    clearTags,
   };
 }

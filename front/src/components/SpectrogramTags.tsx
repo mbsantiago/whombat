@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { type ReactNode, type HTMLProps } from "react";
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
+import classNames from "classnames";
 
 import useStore from "@/store";
 import TagSearchBar from "@/components/TagSearchBar";
@@ -75,6 +76,56 @@ export function SpectrogramTag({ tag: annotationTag, onClick }: TagElement) {
   );
 }
 
+export function AddTagButton({
+  filter,
+  onCreate,
+  onAdd,
+}: {
+  filter?: TagFilter;
+  onCreate?: (tag: TagType) => void;
+  onAdd?: (tag: TagType) => void;
+}) {
+  return (
+    <Popover as="div">
+      <Float
+        zIndex={999}
+        placement="bottom"
+        offset={4}
+        enter="transition duration-200 ease-out"
+        enterFrom="scale-95 opacity-0"
+        enterTo="scale-100 opacity-100"
+        leave="transition duration-150 ease-in"
+        leaveFrom="scale-100 opacity-100"
+        leaveTo="scale-95 opacity-0"
+        portal={true}
+      >
+        <Popover.Button className="group focus:outline-none rounded focus:ring-4 focus:ring-emerald-500/50 hover:text-emerald-500">
+          +<TagIcon className="w-4 h-4 inline-block ml-1 stroke-2" />
+          <span className="absolute whitespace-nowrap hidden transition-all duration-200 ml-1 opacity-0 group-hover:inline-block group-hover:opacity-100">
+            Add tag
+          </span>
+        </Popover.Button>
+        <Popover.Panel className="w-52" focus unmount>
+          {({ close }) => (
+            <TagBarPopover
+              filter={filter}
+              onClose={close}
+              onCreate={(tag) => {
+                onCreate?.(tag);
+                close();
+              }}
+              onAdd={(tag) => {
+                onAdd?.(tag);
+                close();
+              }}
+            />
+          )}
+        </Popover.Panel>
+      </Float>
+    </Popover>
+  );
+}
+
 export function TagGroup({
   group,
   filter,
@@ -87,7 +138,12 @@ export function TagGroup({
   const { x, y } = group.position;
   return (
     <div
-      className="h-5 flex flex-col gap-2 absolute px-2 text-stone-300 "
+      className={classNames(
+        {
+          "pointer-events-none": !group.active,
+        },
+        "h-5 flex flex-col gap-2 absolute px-2 text-stone-300 ",
+      )}
       style={{
         left: x,
         top: y,
@@ -97,45 +153,17 @@ export function TagGroup({
         {group.tags.map((tagElement) => (
           <SpectrogramTag key={tagElement.tag.id} {...tagElement} />
         ))}
-        <Popover as="div">
-          <Float
-            zIndex={999}
-            placement="bottom"
-            offset={4}
-            enter="transition duration-200 ease-out"
-            enterFrom="scale-95 opacity-0"
-            enterTo="scale-100 opacity-100"
-            leave="transition duration-150 ease-in"
-            leaveFrom="scale-100 opacity-100"
-            leaveTo="scale-95 opacity-0"
-            portal={true}
-          >
-            <Popover.Button className="group focus:outline-none rounded focus:ring-4 focus:ring-emerald-500/50 hover:text-emerald-500">
-              +<TagIcon className="w-4 h-4 inline-block ml-1 stroke-2" />
-              <span className="absolute whitespace-nowrap hidden transition-all duration-200 ml-1 opacity-0 group-hover:inline-block group-hover:opacity-100">
-                Add tag
-              </span>
-            </Popover.Button>
-            <Popover.Panel className="w-52" focus unmount>
-              {({ close }) => (
-                <TagBarPopover
-                  filter={filter}
-                  onClose={close}
-                  onCreate={(tag) => {
-                    onCreate?.(tag);
-                    group.onAdd(tag);
-                    close();
-                  }}
-                  onAdd={(tag) => {
-                    group.onAdd(tag);
-                    close();
-                  }}
-                />
-              )}
-            </Popover.Panel>
-          </Float>
-        </Popover>
       </div>
+      <AddTagButton
+        filter={filter}
+        onCreate={(tag) => {
+          onCreate?.(tag);
+          group.onAdd(tag);
+        }}
+        onAdd={(tag) => {
+          group.onAdd(tag);
+        }}
+      />
     </div>
   );
 }

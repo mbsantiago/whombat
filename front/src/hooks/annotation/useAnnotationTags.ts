@@ -28,6 +28,7 @@ export type TagGroup = {
   tags: TagElement[];
   onAdd: (tag: Tag) => void;
   position: Position;
+  active: boolean;
 };
 
 function getLabelPosition(
@@ -73,11 +74,13 @@ export default function useAnnotationTags({
   window,
   dimensions,
   send,
+  active = true,
 }: {
   annotations: Annotation[];
   window: SpectrogramWindow;
   dimensions: Dimensions;
   send: (event: any) => void;
+  active?: boolean;
 }) {
   // Remove annotations that are not in the window
   const annotationsInWindow = useMemo(() => {
@@ -100,9 +103,9 @@ export default function useAnnotationTags({
 
       // When clicking on the add button, add a new tag to the annotation
       const onAdd = (tag: Tag) => send({ type: "ADD_TAG", annotation, tag });
-      return { tags: group, onAdd, position, annotation };
+      return { tags: group, onAdd, position, annotation, active };
     });
-  }, [annotationsInWindow, send, window, dimensions]);
+  }, [annotationsInWindow, send, window, dimensions, active]);
 
   return groups;
 }

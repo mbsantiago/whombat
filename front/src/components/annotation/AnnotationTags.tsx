@@ -14,12 +14,14 @@ import TagSearchBar from "@/components/TagSearchBar";
 export default function AnnotationTags({
   tags,
   project,
+  onClick,
   onAddTag,
   onRemoveTag,
   onClearTags,
 }: {
   tags: TagType[];
   project: AnnotationProject;
+  onClick?: (tag: TagType) => void;
   onAddTag?: (tag: TagType) => void;
   onRemoveTag?: (tag: TagType) => void;
   onClearTags?: () => void;
@@ -29,7 +31,7 @@ export default function AnnotationTags({
   const filter = useMemo(() => ({ project__eq: project.id }), [project.id]);
   return (
     <Card>
-      <H3 className="text-center cursor-help">
+      <H3 className="text-center">
         <Tooltip
           tooltip={
             <div className="w-48 text-center">
@@ -39,16 +41,22 @@ export default function AnnotationTags({
           }
           placement="top"
         >
-          Current Tags
+          <span className="cursor-help">Current Tags</span>
         </Tooltip>
       </H3>
-      <div className="flex flex-row gap-1">
+      <div className="flex flex-row w-full gap-1">
         <Tooltip tooltip="Clear tags" placement="top">
           <Button onClick={onClearTags} mode="text" variant="danger">
             <DeleteIcon className="h-5 w-5" />
           </Button>
         </Tooltip>
-        <TagSearchBar onSelect={onAddTag} initialFilter={filter} />
+        <div className="grow">
+          <TagSearchBar
+            onSelect={onAddTag}
+            initialFilter={filter}
+            placeholder="Add tags..."
+          />
+        </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1">
         {tags.map((tag) => (
@@ -57,6 +65,7 @@ export default function AnnotationTags({
             tag={tag}
             withClose={true}
             {...getTagColor(tag)}
+            onClick={() => onClick?.(tag)}
             onClose={() => onRemoveTag?.(tag)}
           />
         ))}

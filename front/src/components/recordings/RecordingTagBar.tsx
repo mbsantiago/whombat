@@ -1,15 +1,16 @@
-import { type Recording } from "@/api/recordings";
 import { type Tag as TagType } from "@/api/tags";
 import useStore from "@/store";
 import { TagIcon } from "@/components/icons";
 import Tag from "@/components/Tag";
 
 export default function RecordingTagBar({
-  recording,
+  tags,
   label = "Tags",
+  onClick,
 }: {
-  recording: Recording;
+  tags: TagType[]
   label?: string;
+  onClick?: (tag: TagType) => void;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
 
@@ -22,8 +23,13 @@ export default function RecordingTagBar({
         </span>
       </div>
       <div className="flex flex-row flex-wrap gap-2">
-        {recording.tags.map((tag: TagType) => (
-          <Tag key={tag.id} tag={tag} {...getTagColor(tag)} />
+        {tags.map((tag: TagType) => (
+          <Tag
+            key={tag.id}
+            tag={tag}
+            {...getTagColor(tag)}
+            onClick={() => onClick?.(tag)}
+          />
         ))}
       </div>
     </div>

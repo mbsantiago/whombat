@@ -141,6 +141,10 @@ export default function AnnotationSpectrogram({
     [drawSpectrogram, drawAnnotation],
   );
 
+  if (state.context.audio == null) {
+    throw new Error("Audio is not initialized");
+  }
+
   const [audioState, audioSend] = useActor(state.context.audio);
 
   useCanvas({ ref: canvasRef, draw });

@@ -20,7 +20,7 @@ export type SpectrogramContext = {
   window: SpectrogramWindow;
   bounds: SpectrogramWindow;
   parameters: SpectrogramParameters;
-  audio: ActorRefFrom<typeof audioMachine>;
+  audio?: ActorRefFrom<typeof audioMachine>;
 };
 
 export type ChangeRecordingEvent = {
@@ -146,10 +146,10 @@ export const spectrogramStates = {
 
 export const spectrogramActions = {
   play: (context: SpectrogramContext) => {
-    context.audio.send("PLAY");
+    context.audio?.send("PLAY");
   },
   pause: (context: SpectrogramContext) => {
-    context.audio.send("PAUSE");
+    context.audio?.send("PAUSE");
   },
   setParameter: assign({
     parameters: (
@@ -212,11 +212,11 @@ export const spectrogramActions = {
   }),
   update: assign({
     bounds: (context, event: UpdateEvent) => {
-      context.audio.send({
+      context.audio?.send({
         type: "SET_START_TIME",
         time: event.bounds.time.min,
       });
-      context.audio.send({ type: "SET_END_TIME", time: event.bounds.time.max });
+      context.audio?.send({ type: "SET_END_TIME", time: event.bounds.time.max });
       return event.bounds;
     },
     initial: (_, event: UpdateEvent) => event.initial,
@@ -226,7 +226,7 @@ export const spectrogramActions = {
   }),
   changeRecording: assign({
     recording: (context: SpectrogramContext, event: ChangeRecordingEvent) => {
-      context.audio.send({
+      context.audio?.send({
         type: "CHANGE_RECORDING",
         recording: event.recording,
       });

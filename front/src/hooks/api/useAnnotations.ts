@@ -19,12 +19,16 @@ export default function useAnnotations({
   onCreate,
   onDelete,
   onUpdate,
+  onAddTag,
+  onRemoveTag,
 }: {
   filter?: AnnotationFilter;
   pageSize?: number;
   onCreate?: (annotation: Annotation) => void;
   onDelete?: (annotation: Annotation) => void;
   onUpdate?: (annotation: Annotation) => void;
+  onAddTag?: (annotation: Annotation) => void;
+  onRemoveTag?: (annotation: Annotation) => void;
 } = {}) {
   const filter = useFilter<AnnotationFilter>({ fixed: initialFilter });
 
@@ -109,7 +113,7 @@ export default function useAnnotations({
     }) => {
       return api.annotations.addTag(annotation_id, tag_id);
     },
-    onSuccess: (data, _) => {
+    onSuccess: (data) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
         if (old == null) return old;
         return {
@@ -122,7 +126,7 @@ export default function useAnnotations({
           }),
         };
       });
-      onUpdate?.(data);
+      onAddTag?.(data);
     },
   });
 
@@ -149,7 +153,7 @@ export default function useAnnotations({
           }),
         };
       });
-      onUpdate?.(data);
+      onRemoveTag?.(data);
     },
   });
 

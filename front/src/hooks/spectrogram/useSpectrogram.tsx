@@ -46,7 +46,7 @@ export default function useSpectrogram({
   dragState,
   scrollState,
 }: {
-  recording: Recording;
+  recording?: Recording;
   bounds?: SpectrogramWindow;
   initial?: SpectrogramWindow;
   state: StateFrom<typeof spectrogramMachine>;

@@ -71,7 +71,7 @@ export default function Tag({
   return (
     <div
       className={classnames(
-        "border rounded-md px-2 whitespace-nowrap tracking-tighter",
+        "border rounded-md px-2 whitespace-nowrap tracking-tighter max-w-fit",
         classNames,
         className,
       )}

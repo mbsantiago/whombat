@@ -10,6 +10,42 @@ import { GetManySchema, Page } from "./common";
 
 export type State = "assigned" | "completed" | "verified" | "rejected";
 
+export const TaskTagSchema = z.object({
+  id: z.number().int(),
+  task_id: z.number().int(),
+  tag_id: z.number().int(),
+  tag: TagSchema,
+});
+
+export type TaskTag = z.infer<typeof TaskTagSchema>;
+
+export const TaskTagFilter = z.object({
+  task__eq: z.number().int().optional(),
+  recording__eq: z.number().int().optional(),
+  tag__eq: z.number().int().optional(),
+  created_at__before: z.coerce.date().optional(),
+  created_at__after: z.coerce.date().optional(),
+  project__eq: z.number().int().optional(),
+  search: z.string().optional(),
+  key__eq: z.string().optional(),
+  key__has: z.string().optional(),
+  value__eq: z.string().optional(),
+  value__has: z.string().optional(),
+});
+
+export type TaskTagFilter = z.infer<typeof TaskTagFilter>;
+
+export const TaskTagPageSchema = Page(TaskTagSchema);
+
+export type TaskTagPage = z.infer<typeof TaskTagPageSchema>;
+
+export const GetTaskTagsQuerySchema = z.intersection(
+  GetManySchema,
+  TaskTagFilter,
+);
+
+export type GetTaskTagsQuery = z.infer<typeof GetTaskTagsQuerySchema>;
+
 export const StatusBadgeCreateSchema = z.object({
   state: z.enum(["assigned", "completed", "verified", "rejected"]),
 });
@@ -36,7 +72,7 @@ export const TaskSchema = z.object({
   clip_id: z.number(),
   project_id: z.number(),
   clip: ClipCreateSchema,
-  tags: z.array(TagSchema),
+  tags: z.array(TaskTagSchema),
   status_badges: z.array(StatusBadgeSchema),
   notes: z.array(NoteSchema),
 });
@@ -98,41 +134,6 @@ export const GetTaskNotesQuerySchema = z.intersection(
 );
 
 export type GetTaskNotesQuery = z.infer<typeof GetTaskNotesQuerySchema>;
-
-export const TaskTagSchema = z.object({
-  task_id: z.number().int(),
-  tag_id: z.number().int(),
-  tag: TagSchema,
-});
-
-export type TaskTag = z.infer<typeof TaskTagSchema>;
-
-export const TaskTagFilter = z.object({
-  task__eq: z.number().int().optional(),
-  recording__eq: z.number().int().optional(),
-  tag__eq: z.number().int().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
-  project__eq: z.number().int().optional(),
-  search: z.string().optional(),
-  key__eq: z.string().optional(),
-  key__has: z.string().optional(),
-  value__eq: z.string().optional(),
-  value__has: z.string().optional(),
-});
-
-export type TaskTagFilter = z.infer<typeof TaskTagFilter>;
-
-export const TaskTagPageSchema = Page(TaskTagSchema);
-
-export type TaskTagPage = z.infer<typeof TaskTagPageSchema>;
-
-export const GetTaskTagsQuerySchema = z.intersection(
-  GetManySchema,
-  TaskTagFilter,
-);
-
-export type GetTaskTagsQuery = z.infer<typeof GetTaskTagsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   createMany: "/api/v1/tasks/",

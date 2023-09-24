@@ -127,14 +127,12 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
         }}
       >
         <Float
-          as="div"
-          className="relative"
-          placement="bottom"
           offset={4}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
-          flip={true}
+          autoPlacement
+          portal={true}
         >
           <div className="relative w-full cursor-default text-left">
             <Combobox.Input
@@ -161,7 +159,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
             </Combobox.Button>
           </div>
-          <Combobox.Options className="w-full divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm overflow-y-scroll">
+          <Combobox.Options className="max-w-sm divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm overflow-y-scroll">
             {tags.items.length === 0 ? (
               <NoTagsFound />
             ) : (

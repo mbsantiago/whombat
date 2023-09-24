@@ -2,6 +2,7 @@ import Card from "@/components/Card";
 import Tooltip from "@/components/Tooltip";
 import Button from "@/components/Button";
 import StatusBadge from "@/components/StatusBadge";
+import Loading from "@/app/loading";
 import { CheckIcon, CloseIcon, VerifiedIcon } from "@/components/icons";
 import { H3 } from "@/components/Headings";
 import { type Task } from "@/api/tasks";
@@ -14,7 +15,7 @@ export default function TaskStatus({
   verify,
   removeBadge,
 }: {
-  task: Task;
+  task?: Task;
   done?: () => void;
   review?: () => void;
   verify?: () => void;
@@ -24,13 +25,17 @@ export default function TaskStatus({
     <Card>
       <H3 className="text-center">Task Status</H3>
       <div className="flex flex-row flex-wrap gap-2">
-        {task.status_badges.map((badge) => (
-          <StatusBadge
-            key={badge.id}
-            badge={badge}
-            onRemove={() => removeBadge?.(badge)}
-          />
-        ))}
+        {task == null ? (
+          <Loading />
+        ) : (
+          task.status_badges.map((badge) => (
+            <StatusBadge
+              key={badge.id}
+              badge={badge}
+              onRemove={() => removeBadge?.(badge)}
+            />
+          ))
+        )}
       </div>
       <div className="flex flex-row justify-center gap-2">
         <Tooltip tooltip="Task Done!" placement="bottom">
