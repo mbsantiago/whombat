@@ -21,6 +21,7 @@ manner.
 
 """
 
+import typing
 import enum
 from uuid import UUID, uuid4
 
@@ -33,6 +34,9 @@ from whombat.models.clip import Clip
 from whombat.models.note import Note
 from whombat.models.tag import Tag
 from whombat.models.user import User
+
+if typing.TYPE_CHECKING:
+    from whombat.models.evaluation_task import EvaluationTask
 
 __all__ = [
     "Task",
@@ -123,6 +127,15 @@ class Task(Base):
         back_populates="task",
         cascade="all",
         lazy="joined",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    evaluation_tasks: orm.Mapped[list["EvaluationTask"]] = orm.relationship(
+        "EvaluationTask",
+        back_populates="task",
+        cascade="all, delete-orphan",
         init=False,
         repr=False,
         default_factory=list,

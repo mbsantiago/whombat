@@ -14,6 +14,8 @@ from whombat.routes.users import users_router
 from whombat.routes.audio import audio_router
 from whombat.routes.sound_events import sound_events_router
 from whombat.routes.annotations import annotations_router
+from whombat.routes.evaluation_sets import evaluation_sets_router
+from whombat.routes.evaluation_tasks import evaluation_tasks_router
 
 __all__ = [
     "main_router",
@@ -86,4 +88,14 @@ main_router.include_router(
     annotations_router,
     prefix="/annotations",
     tags=["annotations"],
+)
+main_router.include_router(
+    evaluation_sets_router,
+    prefix="/evaluation_sets",
+    tags=["evaluation_sets"],
+)
+main_router.include_router(
+    evaluation_tasks_router,
+    prefix="/evaluation_tasks",
+    tags=["evaluation_tasks"],
 )

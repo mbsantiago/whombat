@@ -19,6 +19,8 @@ from whombat.api import (
     audio,
     clips,
     datasets,
+    evaluation_sets,
+    evaluation_tasks,
     features,
     notes,
     recordings,
@@ -45,4 +47,6 @@ __all__ = [
     "tags",
     "tasks",
     "users",
+    "evaluation_sets",
+    "evaluation_tasks",
 ]

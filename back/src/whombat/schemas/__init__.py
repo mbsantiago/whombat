@@ -22,10 +22,10 @@ from whombat.schemas.annotation_projects import (
 from whombat.schemas.annotations import (
     Annotation,
     AnnotationCreate,
-    AnnotationPostCreate,
-    AnnotationTagCreate,
-    AnnotationTag,
     AnnotationNote,
+    AnnotationPostCreate,
+    AnnotationTag,
+    AnnotationTagCreate,
 )
 from whombat.schemas.audio import AudioParameters
 from whombat.schemas.base import Page
@@ -39,6 +39,15 @@ from whombat.schemas.datasets import (
     DatasetUpdate,
     DatasetWithCounts,
     FileState,
+)
+from whombat.schemas.evaluation_sets import (
+    EvaluationSet,
+    EvaluationSetCreate,
+    EvaluationSetUpdate,
+)
+from whombat.schemas.evaluation_tasks import (
+    EvaluationTask,
+    EvaluationTaskCreate,
 )
 from whombat.schemas.features import (
     Feature,
@@ -63,10 +72,10 @@ from whombat.schemas.sound_events import (
     SoundEventUpdate,
 )
 from whombat.schemas.spectrograms import (
-    SpectrogramParameters,
-    STFTParameters,
     AmplitudeParameters,
     Scale,
+    SpectrogramParameters,
+    STFTParameters,
     Window,
 )
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
@@ -103,6 +112,11 @@ __all__ = [
     "DatasetRecordingCreate",
     "DatasetUpdate",
     "DatasetWithCounts",
+    "EvaluationSet",
+    "EvaluationSetCreate",
+    "EvaluationSetUpdate",
+    "EvaluationTask",
+    "EvaluationTaskCreate",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",

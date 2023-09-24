@@ -198,8 +198,6 @@ async def create_many(
     at the same time. This is more efficient than calling `create_clip`
     multiple times.
 
-    The provided lists must be of the same length.
-
     Parameters
     ----------
     session : AsyncSession

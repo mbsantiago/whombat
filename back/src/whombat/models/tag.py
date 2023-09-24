@@ -44,15 +44,16 @@ from sqlalchemy import UniqueConstraint
 from whombat.models.base import Base
 
 if TYPE_CHECKING:
+    from whombat.models.annotation import AnnotationTag
     from whombat.models.annotation_project import (
         AnnotationProject,
         AnnotationProjectTag,
     )
     from whombat.models.clip import Clip, ClipTag
+    from whombat.models.evaluation_set import EvaluationSetTag
     from whombat.models.recording import Recording, RecordingTag
     from whombat.models.sound_event import SoundEvent, SoundEventTag
     from whombat.models.task import TaskTag
-    from whombat.models.annotation import AnnotationTag
 
 
 __all__ = [
@@ -153,6 +154,15 @@ class Tag(Base):
     )
 
     annotation_tags: orm.Mapped[list["AnnotationTag"]] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+
+    evaluation_set_tags: orm.Mapped[
+        list["EvaluationSetTag"]
+    ] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,
