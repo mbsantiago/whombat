@@ -5,10 +5,14 @@ import {
   type EvaluationSetUpdate,
 } from "@/api/evaluation_sets";
 import api from "@/app/api";
-import { type EvaluationTaskCreate, type EvaluationTask } from "@/api/evaluation_tasks";
+import {
+  type EvaluationTaskCreate,
+  type EvaluationTask,
+} from "@/api/evaluation_tasks";
 
 export default function useEvaluationSet({
   evaluation_set_id,
+  enabled = true,
   onUpdate,
   onDelete,
   onAddTag,
@@ -16,6 +20,7 @@ export default function useEvaluationSet({
   onAddTasks,
 }: {
   evaluation_set_id: number;
+  enabled?: boolean;
   onUpdate?: (evaluation_set: EvaluationSet) => void;
   onDelete?: (evaluation_set: EvaluationSet) => void;
   onAddTag?: (evaluation_set: EvaluationSet) => void;
@@ -24,13 +29,17 @@ export default function useEvaluationSet({
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["evaluation_set", evaluation_set_id], () =>
-    api.evaluation_sets.get(evaluation_set_id),
+  const query = useQuery(
+    ["evaluation_set", evaluation_set_id],
+    () => api.evaluation_sets.get(evaluation_set_id),
+    {
+      enabled,
+    },
   );
 
   const update = useMutation({
     mutationFn: async (data: EvaluationSetUpdate) => {
-      return await api.evaluation_sets.update(evaluation_set_id, data);
+      return await api.evaluation_sets.update({ evaluation_set_id, data });
     },
     onSuccess: (data) => {
       onUpdate?.(data);

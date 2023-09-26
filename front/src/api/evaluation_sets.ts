@@ -10,9 +10,16 @@ const DEFAULT_ENDPOINTS = {
   get: "/api/v1/evaluation_sets/detail/",
   update: "/api/v1/evaluation_sets/detail/",
   delete: "/api/v1/evaluation_sets/detail/",
-  addTag: "/api/v1/annotation_projects/detail/tags/",
-  removeTag: "/api/v1/annotation_projects/detail/tags/",
+  addTag: "/api/v1/evaluation_sets/detail/tags/",
+  removeTag: "/api/v1/evaluation_sets/detail/tags/",
 };
+
+export enum EvaluationMode {
+  SOUND_EVENT_DETECTION = "sound_event_detection",
+  SOUND_EVENT_CLASSIFICATION = "sound_event_classification",
+  CLIP_CLASSIFICATION = "clip_classification",
+  CLIP_MULTILABEL_CLASSIFICATION = "clip_multilabel_classification",
+}
 
 export const EvaluationSetFilterSchema = z.object({
   search: z.string().optional(),
@@ -23,6 +30,7 @@ export type EvaluationSetFilter = z.infer<typeof EvaluationSetFilterSchema>;
 export const EvaluationSetCreateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
+  mode: z.nativeEnum(EvaluationMode),
 });
 
 export type EvaluationSetCreate = z.infer<typeof EvaluationSetCreateSchema>;
@@ -77,10 +85,13 @@ export function registerEvaluationSetAPI(
     return EvaluationSetSchema.parse(res.data);
   }
 
-  async function update(
-    evaluation_set_id: number,
-    data: EvaluationSetUpdate,
-  ): Promise<EvaluationSet> {
+  async function update({
+    evaluation_set_id,
+    data,
+  }: {
+    evaluation_set_id: number;
+    data: EvaluationSetUpdate;
+  }): Promise<EvaluationSet> {
     const res = await instance.patch(endpoints.update, data, {
       params: { evaluation_set_id },
     });

@@ -84,9 +84,7 @@ export default function Pagination({
       >
         <icons.LastIcon className="h-5 w-5 fill-transparent stroke-inherit" />
       </Button>
-      <div>
-        <SetPageSize pageSize={pageSize} setPageSize={setPageSize} />
-      </div>
+      <SetPageSize pageSize={pageSize} setPageSize={setPageSize} />
     </div>
   );
 }

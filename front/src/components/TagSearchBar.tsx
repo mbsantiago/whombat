@@ -76,6 +76,7 @@ type TagSearchBarProps = {
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
   onCreate?: (tag: TagType) => void;
   initialFilter?: TagFilter;
+  canCreate?: boolean;
 } & Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "onSelect" | "onChange" | "onKeyDown" | "onBlur"
@@ -92,6 +93,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
       onKeyDown,
       onCreate,
       autoFocus = true,
+      canCreate = true,
       ...props
     },
     ref,
@@ -127,10 +129,14 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
         }}
       >
         <Float
-          offset={4}
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+          offset={8}
+          enter="transition duration-200 ease-out"
+          enterFrom="scale-95 opacity-0"
+          enterTo="scale-100 opacity-100"
+          leave="transition duration-150 ease-in"
+          leaveFrom="scale-100 opacity-100"
+          leaveTo="scale-95 opacity-0"
+          placement="bottom"
           autoPlacement
           portal={true}
         >
@@ -141,14 +147,17 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               autoFocus={autoFocus}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter" && event.shiftKey) {
+                if (event.key === "Enter" && event.shiftKey && canCreate) {
                   event.preventDefault();
                   if (key && value) {
-                    tags.create.mutate({ key, value }, {
-                      onSuccess: (tag) => {
-                        onCreate?.(tag);
-                      }
-                    });
+                    tags.create.mutate(
+                      { key, value },
+                      {
+                        onSuccess: (tag) => {
+                          onCreate?.(tag);
+                        },
+                      },
+                    );
                   }
                 }
                 onKeyDown?.(event);
@@ -168,7 +177,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                   <Combobox.Option
                     key={tag.id}
                     className={({ active }) =>
-                      `cursor-default py-2 pl-4 ${
+                      `cursor-default py-2 pl-4 pr-2 ${
                         active ? "bg-stone-200 dark:bg-stone-600" : ""
                       }`
                     }
@@ -184,7 +193,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                 ))}
               </ComboBoxSection>
             )}
-            <CreateNewTag tag={{ key, value }} />
+            {canCreate && <CreateNewTag tag={{ key, value }} />}
           </Combobox.Options>
         </Float>
       </Combobox>

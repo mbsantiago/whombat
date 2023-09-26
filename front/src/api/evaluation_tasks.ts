@@ -26,7 +26,6 @@ export type EvaluationTaskCreate = z.infer<typeof EvaluationTaskCreateSchema>;
 
 export const EvaluationTaskSchema = EvaluationTaskCreateSchema.extend({
   id: z.number(),
-  uuid: z.string().uuid(),
   task: TaskSchema,
 });
 

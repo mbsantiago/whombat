@@ -16,7 +16,7 @@ from whombat.models.clip import Clip, ClipFeature, ClipTag
 from whombat.models.dataset import Dataset, DatasetRecording
 from whombat.models.evaluated_clip import EvaluatedClip
 from whombat.models.evaluated_sound_event import EvaluatedSoundEvent
-from whombat.models.evaluation import Evaluation, EvaluationTag
+from whombat.models.evaluation import Evaluation
 from whombat.models.evaluation_set import EvaluationSet, EvaluationSetTag
 from whombat.models.evaluation_task import EvaluationTask
 from whombat.models.feature import FeatureName
@@ -51,8 +51,6 @@ from whombat.models.task import (
     TaskTag,
 )
 from whombat.models.token import AccessToken
-from whombat.models.training_guess import TrainingGuess, TrainingGuessTags
-from whombat.models.training_session import TrainingSession
 from whombat.models.user import User
 
 __all__ = [
@@ -73,7 +71,6 @@ __all__ = [
     "Evaluation",
     "EvaluationSet",
     "EvaluationSetTag",
-    "EvaluationTag",
     "EvaluationTask",
     "FeatureName",
     "ModelRun",
@@ -97,8 +94,5 @@ __all__ = [
     "TaskState",
     "TaskStatusBadge",
     "TaskTag",
-    "TrainingGuess",
-    "TrainingGuessTags",
-    "TrainingSession",
     "User",
 ]

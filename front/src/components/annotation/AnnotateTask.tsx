@@ -13,6 +13,7 @@ import TaskSpectrogram from "@/components/spectrograms/TaskSpectrogram";
 import AnnotationTags from "@/components/annotation/AnnotationTags";
 import TaskStatus from "@/components/tasks/TaskStatus";
 import TaskTags from "@/components/tasks/TaskTags";
+import api from "@/app/api";
 import useTask from "@/hooks/api/useTask";
 import useRecording from "@/hooks/api/useRecording";
 import useStore from "@/store";
@@ -77,6 +78,10 @@ export default function AnnotateTask({
   const { mutateAsync: addTagAsync } = annotations.addTag;
   const onAddAnnotationTag = useCallback(
     async (annotation: Annotation, tag: Tag) => {
+      if (!project.tags.some((t) => t.id === tag.id)) {
+        await api.annotation_projects.addTag(project.id, tag.id);
+      }
+
       await toast.promise(
         addTagAsync({
           annotation_id: annotation.id,
@@ -89,7 +94,7 @@ export default function AnnotateTask({
         },
       );
     },
-    [addTagAsync],
+    [addTagAsync, project.id, project.tags],
   );
 
   const { mutateAsync: removeTagAsync } = annotations.removeTag;
@@ -113,7 +118,6 @@ export default function AnnotateTask({
   const { mutateAsync: createAnnotationAsync } = annotations.create;
   const onCreateAnnotation = useCallback(
     async (task: Task, geometry: Geometry, tag_ids?: number[]) => {
-      console.log("Creating annotation", task, geometry, tag_ids)
       // Use the current tags if none are provided
       if (tag_ids == null) {
         tag_ids = tags.map((tag) => tag.id);

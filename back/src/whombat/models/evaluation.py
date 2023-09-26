@@ -24,11 +24,11 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
-from whombat.models.tag import Tag
+from whombat.models.evaluation_set import EvaluationSet
+from whombat.models.model_run import ModelRun
 
 __all__ = [
     "Evaluation",
-    "EvaluationTag",
 ]
 
 
@@ -46,39 +46,28 @@ class Evaluation(Base):
     )
     """Model Run ID."""
 
-    clip_level: orm.Mapped[bool] = orm.mapped_column(nullable=False)
-    """Evaluate at the clip level."""
-
-    sound_event_level: orm.Mapped[bool] = orm.mapped_column(nullable=False)
-    """Evaluate at the sound event level."""
-
-    tags: orm.Mapped[list[Tag]] = orm.relationship(
-        "Tag",
-        secondary="evaluation_tag",
-    )
-
-
-class EvaluationTag(Base):
-    """Evaluation Tag model."""
-
-    __tablename__ = "evaluation_tag"
-
-    evaluation_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("evaluation.id"),
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
         nullable=False,
-        primary_key=True,
     )
-    """Evaluation ID."""
+    """Evaluation Set ID."""
 
-    tag_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("tag.id"),
-        nullable=False,
-        primary_key=True,
+    model_run: orm.Mapped[ModelRun] = orm.relationship(
+        "ModelRun",
+        back_populates="evaluations",
+        lazy="joined",
+        init=False,
+        repr=False,
     )
+    """Model Run to which the evaluation belongs."""
 
-    __table_args__ = (
-        UniqueConstraint(
-            "evaluation_id",
-            "tag_id",
-        ),
+    evaluation_set: orm.Mapped[EvaluationSet] = orm.relationship(
+        "EvaluationSet",
+        back_populates="evaluations",
+        lazy="joined",
+        init=False,
+        repr=False,
     )
+    """Evaluation Set to which the evaluation belongs."""
+
+    __table_args__ = (UniqueConstraint("model_run_id", "evaluation_set_id"),)

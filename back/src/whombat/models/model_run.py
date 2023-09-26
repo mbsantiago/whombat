@@ -16,13 +16,25 @@ annotation project. By comparing the model's predictions to the annotations, it
 is possible to assess the model's accuracy and identify areas where it is
 struggling. This information can be used to improve the model by refining the
 training data or adjusting the model's parameters.
+
+Model runs can also be created by users to test their own ability to identify
+sound events. This can be done by creating a model run from an evaluation set
+and then annotating the clips in the model run. The user can then compare their
+annotations to the model's predictions to see how well they performed.
 """
+
+import typing
+from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
+from whombat.models.evaluation_set import EvaluationSet
 from whombat.models.note import Note
+
+if typing.TYPE_CHECKING:
+    from whombat.models.evaluation import Evaluation
 
 __all__ = [
     "ModelRun",
@@ -38,11 +50,47 @@ class ModelRun(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """Unique identifier of the model run."""
 
-    name: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4,
+        kw_only=True,
+        unique=True,
+    )
+    """Unique identifier of the model run."""
+
+    created_by_id: orm.Mapped[UUID] = orm.mapped_column(
+        ForeignKey("user.id"),
+        nullable=True,
+    )
+    """Unique identifier of the user who created the model run."""
+
+    name: orm.Mapped[str] = orm.mapped_column(nullable=True)
     """Name of the model run."""
 
-    version: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    version: orm.Mapped[str] = orm.mapped_column(nullable=True)
     """Version of the model used to generate the predictions."""
+
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
+        nullable=False,
+    )
+    """Unique identifier of the evaluation set."""
+
+    evaluation_set: orm.Mapped[EvaluationSet] = orm.relationship(
+        "EvaluationSet",
+        back_populates="model_runs",
+        lazy="joined",
+        init=False,
+        repr=False,
+    )
+    """Evaluation set to which the model run belongs."""
+
+    evaluations: orm.Mapped[list["Evaluation"]] = orm.relationship(
+        "Evaluation",
+        back_populates="model_run",
+        cascade="all, delete-orphan",
+        init=False,
+        repr=False,
+    )
 
 
 class ModelRunNote(Base):

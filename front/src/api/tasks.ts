@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-import { ClipCreateSchema } from "@/api/clips";
+import { ClipSchema } from "@/api/clips";
 import { TagSchema } from "@/api/tags";
 import { SimpleUserSchema } from "@/api/user";
 import { NoteSchema, type NoteUpdate, NoteUpdateSchema } from "@/api/notes";
@@ -71,7 +71,7 @@ export const TaskSchema = z.object({
   id: z.number(),
   clip_id: z.number(),
   project_id: z.number(),
-  clip: ClipCreateSchema,
+  clip: ClipSchema,
   tags: z.array(TaskTagSchema),
   status_badges: z.array(StatusBadgeSchema),
   notes: z.array(NoteSchema),

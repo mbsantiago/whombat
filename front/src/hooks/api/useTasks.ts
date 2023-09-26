@@ -8,9 +8,11 @@ const emptyFilter = {};
 export default function useTasks({
   filter: initialFilter = emptyFilter,
   pageSize = 10,
+  enabled = true,
 }: {
   filter?: TaskFilter;
   pageSize?: number;
+  enabled?: boolean;
 } = {}) {
   const filter = useFilter<TaskFilter>({
     fixed: initialFilter,
@@ -21,6 +23,7 @@ export default function useTasks({
     func: api.tasks.getMany,
     pageSize,
     filter: filter.filter,
+    enabled,
   });
 
   return {

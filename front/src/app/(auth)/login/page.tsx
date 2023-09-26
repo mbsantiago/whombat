@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { WhombatIcon } from "@/components/icons";
 import { Input, InputGroup } from "@/components/inputs";
 import api from "@/app/api";
 
@@ -51,6 +52,9 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="mb-4">
+        <WhombatIcon width={128} height={128} />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <InputGroup

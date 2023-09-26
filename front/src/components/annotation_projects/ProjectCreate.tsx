@@ -32,18 +32,14 @@ export default function CreateProject({
 
   const onSubmit = async (data: AnnotationProjectCreate) => {
     toast.promise(create.mutateAsync(data), {
-      loading:
-        "Creating project. Please wait while the folder is scanned for recordings.",
-      success: "Project created!",
+      loading: "Creating Evaluation Set...",
+      success: "Evaluation Set created!",
       error: "Something went wrong. Please try again.",
     });
   };
 
   return (
-    <form
-      className="w-full"
-      onSubmit={form.handleSubmit(onSubmit)}
-    >
+    <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
       <InputGroup
         label="Name"
         name="name"
@@ -76,11 +72,7 @@ export default function CreateProject({
           {...form.register("annotation_instructions")}
         />
       </InputGroup>
-      <Submit
-        disabled={create.isSuccess}
-      >
-        Create Project
-      </Submit>
+      <Submit disabled={create.isSuccess}>Create Project</Submit>
     </form>
   );
 }

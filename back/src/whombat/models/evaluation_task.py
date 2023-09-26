@@ -48,6 +48,7 @@ class EvaluationTask(Base):
 
     task: orm.Mapped[Task] = orm.relationship(
         "Task",
+        lazy="joined",
         back_populates="evaluation_tasks",
         init=False,
     )

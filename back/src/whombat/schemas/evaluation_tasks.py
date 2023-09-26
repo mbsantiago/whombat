@@ -1,9 +1,5 @@
 """Schemas for evaluation tasks."""
 
-from uuid import UUID, uuid4
-
-from pydantic import Field
-
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tasks import Task
 
@@ -18,9 +14,6 @@ class EvaluationTaskCreate(BaseSchema):
 
     task_id: int
     """ID of the task added to the evaluation set."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """UUID of the evaluation task."""
 
 
 class EvaluationTask(EvaluationTaskCreate):

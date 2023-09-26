@@ -6,6 +6,7 @@ from pydantic import Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
+from whombat.models.evaluation_set import EvaluationMode
 
 __all__ = [
     "EvaluationSet",
@@ -21,10 +22,12 @@ class EvaluationSetCreate(BaseSchema):
     """The unique identifier of the evaluation set."""
 
     name: str = Field(..., min_length=1)
-    """The name of the dataset."""
+    """The name of the evaluation set."""
 
-    description: str | None = Field(None)
-    """The description of the dataset."""
+    description: str | None = Field(default=None)
+    """The description of the evaluation set."""
+
+    mode: EvaluationMode
 
 
 class EvaluationSet(EvaluationSetCreate):

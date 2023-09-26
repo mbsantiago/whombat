@@ -3,7 +3,7 @@ import classnames from "classnames";
 
 import type { Variant } from "@/components/common";
 
-type Mode = "filled" | "outline" | "text";
+export type Mode = "filled" | "outline" | "text";
 
 const FOCUS_STYLE = "focus:ring-4 focus:ring-emerald-500/50 focus:outline-none";
 

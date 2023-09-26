@@ -23,16 +23,21 @@ export type PagedList<T> = {
   queryKey: any[];
 };
 
+// @ts-ignore
+const emptyList = []
+
 export default function usePagedQuery<T, S extends Object>({
   name,
   func,
   pageSize,
   filter,
+  enabled = true,
 }: {
   name: string;
   func: (query: GetManyQuery) => Promise<Paginated<T>>;
   pageSize: number;
   filter: S;
+  enabled?: boolean;
 }): PagedList<T> {
   const [page, setPage] = useState(0);
   const [size, setPageSize] = useState(pageSize);
@@ -41,7 +46,7 @@ export default function usePagedQuery<T, S extends Object>({
   const query = useQuery<Paginated<T>, Error>(
     queryKey,
     () => func({ limit: size, offset: page * size, ...filter }),
-    { keepPreviousData: true },
+    { keepPreviousData: true, enabled },
   );
 
   const numPages = Math.ceil((query.data?.total ?? 0) / size);
@@ -90,7 +95,8 @@ export default function usePagedQuery<T, S extends Object>({
   };
 
   return {
-    items: query.data?.items ?? [],
+    // @ts-ignore
+    items: query.data?.items ?? emptyList,
     total: query.data?.total ?? 0,
     pagination,
     query,

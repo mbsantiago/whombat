@@ -53,6 +53,7 @@ export default function AnnotationTags({
         <div className="grow">
           <TagSearchBar
             onSelect={onAddTag}
+            onCreate={onAddTag}
             initialFilter={filter}
             placeholder="Add tags..."
           />

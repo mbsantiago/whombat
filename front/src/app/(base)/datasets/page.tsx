@@ -66,7 +66,7 @@ export default function Datasets() {
                 <Dataset key={item.id} {...item} />
               ))}
             />
-            <Pagination {...pagination} />
+            {pagination.numPages > 0 && <Pagination {...pagination} />}
           </>
         )}
       </div>

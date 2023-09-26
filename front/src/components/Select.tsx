@@ -38,7 +38,7 @@ export default function Select<T>({
         flip={true}
         floatingAs={Fragment}
       >
-        <Listbox.Button as="div" className="inline-flex w-full">
+        <Listbox.Button as="div" className="inline-flex gap-2 w-full">
           {label ? (
             <div className="my-auto inline-block">
               <Listbox.Label className="text-sm text-stone-500 dark:text-stone-400 whitespace-nowrap">
