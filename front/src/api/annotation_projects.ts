@@ -40,7 +40,7 @@ export type AnnotationProject = z.infer<typeof AnnotationProjectSchema>;
 export const AnnotationProjectCreateSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  annotation_instructions: z.string().optional(),
+  annotation_instructions: z.string().nullable().optional(),
 });
 
 export type AnnotationProjectCreate = z.infer<

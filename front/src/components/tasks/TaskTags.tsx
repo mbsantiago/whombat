@@ -32,7 +32,6 @@ export default function TaskTags({
           <Tag
             key={taskTag.id}
             tag={taskTag.tag}
-            withClose={true}
             {...getTagColor(taskTag.tag)}
             onClose={() => onRemoveTag?.(taskTag)}
           />

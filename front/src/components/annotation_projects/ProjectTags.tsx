@@ -60,7 +60,6 @@ export default function AnnotationTags({
               <Tag
                 key={tag.id}
                 tag={tag}
-                withClose
                 {...getTagColor(tag)}
                 onClose={() => {
                   project.removeTag.mutate(tag.id);

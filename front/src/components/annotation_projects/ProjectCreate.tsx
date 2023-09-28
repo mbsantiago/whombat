@@ -31,7 +31,7 @@ export default function CreateProject({
   });
 
   const onSubmit = async (data: AnnotationProjectCreate) => {
-    toast.promise(create.mutateAsync(data), {
+    return toast.promise(create.mutateAsync(data), {
       loading: "Creating Evaluation Set...",
       success: "Evaluation Set created!",
       error: "Something went wrong. Please try again.",

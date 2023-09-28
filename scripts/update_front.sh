@@ -3,4 +3,4 @@
 rm -rf back/src/whombat/statics/*
 cd front
 pnpm run build
-mv dist/* ../back/src/whombat/statics/
+mv out/* ../back/src/whombat/statics/

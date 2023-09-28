@@ -54,7 +54,7 @@ export default function ProjectUpdateForm({
             <EditableDescriptionData
               value={project.annotation_instructions}
               onChange={(value) =>
-                onChange?.({ annotation_instructions: value })
+                onChange?.({ annotation_instructions: value ?? "" })
               }
               rows={6}
               Input={TextArea}
