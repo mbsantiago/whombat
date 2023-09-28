@@ -14,7 +14,7 @@ To use whombat, follow these steps:
 Clone the repository:
 
 ```shell
-git clone https://github.com/yourusername/whombat.git
+git clone https://github.com/mbsantiago/whombat.git
 ```
 
 Install the required dependencies:
