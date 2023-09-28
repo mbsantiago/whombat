@@ -1,6 +1,7 @@
 import { useActor } from "@xstate/react";
 import { useCallback, useRef } from "react";
 
+import useSpectrogramParameters from "@/hooks/spectrogram/useSpectrogramParameters";
 import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Recording } from "@/api/recordings";
 import { type Geometry } from "@/api/sound_events";
@@ -81,6 +82,10 @@ export default function TaskSpectrogram({
   if (specState.context.audio == null) {
     throw new Error("Audio is not initialized");
   }
+
+  useSpectrogramParameters({
+    parameters: specState.context.parameters,
+  })
 
   const [audioState, audioSend] = useActor(specState.context.audio);
 

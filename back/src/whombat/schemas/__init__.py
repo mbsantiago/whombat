@@ -18,6 +18,7 @@ from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
     AnnotationProjectUpdate,
+    AnnotationProjectTagCreate,
 )
 from whombat.schemas.annotations import (
     Annotation,
@@ -182,4 +183,5 @@ __all__ = [
     "Window",
     "RecordingTagCreate",
     "RecordingFeatureCreate",
+    "AnnotationProjectTagCreate",
 ]

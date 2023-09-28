@@ -6,9 +6,9 @@ from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import Select, func, insert, select
-from sqlalchemy.inspection import inspect
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql._typing import _ColumnExpressionArgument
 from sqlalchemy.sql.expression import ColumnElement
@@ -184,8 +184,8 @@ async def get_objects(
     session: AsyncSession,
     model: type[A],
     *,
-    limit: int = 1000,
-    offset: int = 0,
+    limit: int | None = 1000,
+    offset: int | None = 0,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
     sort_by: _ColumnExpressionArgument | str | None = None,
 ) -> tuple[Sequence[A], int]:
@@ -227,14 +227,20 @@ async def get_objects(
         else:
             query = query.where(filter_)
 
+    count = await get_count(session, model, query)
+
     if sort_by is not None:
         if isinstance(sort_by, str):
             sort_by = get_sort_by_col_from_str(model, sort_by)
 
         query = query.order_by(sort_by)
 
-    count = await get_count(session, model, query)
-    query = query.limit(limit).offset(offset)
+    if limit is not None:
+        query = query.limit(limit)
+
+    if offset is not None:
+        query = query.offset(offset)
+
     result = await session.execute(query)
     return result.unique().scalars().all(), count
 
@@ -375,7 +381,7 @@ async def create_objects_without_duplicates(
 
     logger.debug("Number of missing objects: %s", len(missing))
 
-    if not missing:
+    if not missing and not return_all:
         return []
 
     values = [get_values(obj) for obj in missing]
@@ -394,7 +400,7 @@ async def create_objects_without_duplicates(
             session,
             model,
             filters=[key_column.in_(all_keys)],
-            limit=-1,
+            limit=None,
         )
         return created
 
@@ -402,7 +408,7 @@ async def create_objects_without_duplicates(
         session,
         model,
         filters=[key_column.in_(keys)],
-        limit=-1,
+        limit=None,
     )
     return created
 

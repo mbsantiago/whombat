@@ -1,21 +1,24 @@
 "use client";
-import Link from "next/link";
-
 import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
 import Hero from "@/components/Hero";
 import AnnotationProject from "@/components/AnnotationProject";
-import Button from "@/components/Button";
+import Link from "@/components/Link";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
-import { AddIcon, DatasetIcon, SadIcon } from "@/components/icons";
+import {
+  AddIcon,
+  DatasetIcon,
+  WarningIcon,
+  UploadIcon,
+} from "@/components/icons";
 
 function NoProjects() {
   return (
     <Empty>
-      <SadIcon className="h-8 w-8 text-stone-500" />
+      <WarningIcon className="h-16 w-16 text-stone-500" />
       <p>No annotation project exist yet!</p>
       <p>
         To create a new project, click on the
@@ -47,16 +50,22 @@ export default function AnnotationProjects() {
               icon={<DatasetIcon />}
             />
           </div>
-          <div className="h-full">
-            <Link href="/annotation_projects/create/">
-              <Button variant="primary">
-                <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
-              </Button>
+          <div className="h-full inline-flex gap-4">
+            <Link mode="text" href="/annotation_projects/create/">
+              <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
+            </Link>
+            <Link mode="text" href="/annotation_projects/import/">
+              <UploadIcon className="inline-block h-4 w-4 align-middle" />{" "}
+              Import
             </Link>
           </div>
         </div>
         {query.isLoading ? (
-          <Loading />
+          <Empty>
+            <div className="p-8">
+              <Loading />
+            </div>
+          </Empty>
         ) : items.length === 0 ? (
           <NoProjects />
         ) : (

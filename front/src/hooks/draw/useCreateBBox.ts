@@ -87,8 +87,8 @@ export default function useCreateBBox({
       if (start != null && current != null) {
         const left = Math.min(start[0], current[0]);
         const right = Math.max(start[0], current[0]);
-        const top = Math.min(start[1], current[1]);
-        const bottom = Math.max(start[1], current[1]);
+        const top = Math.max(start[1], current[1]);
+        const bottom = Math.min(start[1], current[1]);
         setBBox([left, top, right, bottom]);
       }
     }

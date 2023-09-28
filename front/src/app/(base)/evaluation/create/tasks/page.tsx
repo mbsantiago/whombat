@@ -84,8 +84,6 @@ export default function Page() {
     enabled: evaluation_set_id != -1,
   });
 
-  console.log({ evaluation_set_id })
-
   const { mutateAsync: createTasks } = evaluationSetTasks.create;
   const onAddTasks = useCallback(
     async (tasks: EvaluationTaskCreate[]) => {

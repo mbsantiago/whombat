@@ -39,17 +39,17 @@ export default function TaskStatus({
       </div>
       <div className="flex flex-row justify-center gap-2">
         <Tooltip tooltip="Task Done!" placement="bottom">
-          <Button mode="outline" variant="primary" onClick={done}>
+          <Button mode="text" variant="primary" onClick={done}>
             <CheckIcon className="w-6 h-6" />
           </Button>
         </Tooltip>
         <Tooltip tooltip="Needs review" placement="bottom">
-          <Button mode="outline" variant="danger" onClick={review}>
+          <Button mode="text" variant="danger" onClick={review}>
             <CloseIcon className="w-6 h-6" />
           </Button>
         </Tooltip>
         <Tooltip tooltip="Verified" placement="bottom">
-          <Button mode="outline" variant="warning" onClick={verify}>
+          <Button mode="text" variant="warning" onClick={verify}>
             <VerifiedIcon className="w-6 h-6" />
           </Button>
         </Tooltip>

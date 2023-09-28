@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useState, useCallback } from "react";
 
+import useStore from "@/store";
 import useAnnotationTasks from "@/hooks/annotation/useAnnotationTasks";
 import useStateParams from "@/hooks/useStateParams";
 import AnnotationProgress from "@/components/annotation/AnnotationProgress";
@@ -14,6 +15,9 @@ import api from "@/app/api";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);
+
+  // Get spectrogram settings
+  const parameters = useStore((state) => state.spectrogramSettings);
 
   // Current tags
   const [tags, setTags] = useState<Tag[]>([]);
@@ -106,6 +110,7 @@ export default function Page() {
         </Empty>
       ) : (
         <AnnotateTask
+          parameters={parameters}
           task_id={task_id}
           project={project}
           refresh={refresh}

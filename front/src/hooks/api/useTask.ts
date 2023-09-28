@@ -29,7 +29,9 @@ export default function useTask({
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["task", task_id], () => api.tasks.get(task_id));
+  const query = useQuery(["task", task_id], () => api.tasks.get(task_id), {
+    refetchOnWindowFocus: false,
+  });
 
   const addTag = useMutation({
     mutationFn: async (tag: Tag) => {

@@ -1,5 +1,6 @@
 """REST API routes for annotation projects."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
+from soundevent.io.formats import aoef
 
 from whombat import api, schemas
 from whombat.dependencies import Session
@@ -133,3 +134,20 @@ async def remove_tag_from_annotation_project(
     )
     await session.commit()
     return project
+
+
+@annotation_projects_router.post(
+    "/import/",
+    response_model=schemas.AnnotationProject,
+)
+async def import_annotation_project(
+    session: Session,
+    annotation_project: UploadFile,
+):
+    """Import an annotation project."""
+    data = aoef.AnnotationProjectObject.model_validate_json(
+        annotation_project.file.read()
+    ).to_annotation_project()
+    imported = await api.annotation_projects.import_project(session, data)
+    await session.commit()
+    return imported

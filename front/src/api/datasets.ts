@@ -108,8 +108,9 @@ export function registerDatasetAPI({
     return `${baseUrl}${endpoints.download}?dataset_id=${dataset_id}`;
   }
 
-  function importDataset(data: FormData): Promise<Dataset> {
-    return instance.post(endpoints.import, data);
+  async function importDataset(data: FormData) {
+    const { data: res } = await instance.post(endpoints.import, data);
+    return DatasetSchema.parse(res);
   }
 
   return {

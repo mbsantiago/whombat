@@ -14,6 +14,7 @@ const DEFAULT_ENDPOINTS = {
   removeTask: "/api/v1/annotation_projects/detail/tasks/",
   addTag: "/api/v1/annotation_projects/detail/tags/",
   removeTag: "/api/v1/annotation_projects/detail/tags/",
+  import: "/api/v1/annotation_projects/import/",
 };
 
 export const AnnotationProjectFilterSchema = z.object({
@@ -29,7 +30,7 @@ export const AnnotationProjectSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
   description: z.string(),
-  annotation_instructions: z.string().optional(),
+  annotation_instructions: z.string().nullable().optional(),
   created_at: z.coerce.date(),
   tags: z.array(TagSchema),
 });
@@ -139,6 +140,11 @@ export function registerAnnotationProjectAPI(
     return AnnotationProjectSchema.parse(data);
   }
 
+  async function importProject(data: FormData) {
+    const { data: res } = await instance.post(endpoints.import, data);
+    return AnnotationProjectSchema.parse(res);
+  }
+
   return {
     getMany,
     get,
@@ -147,5 +153,6 @@ export function registerAnnotationProjectAPI(
     delete: delete_,
     addTag,
     removeTag,
+    import: importProject,
   };
 }

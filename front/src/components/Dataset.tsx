@@ -21,7 +21,7 @@ export default function Dataset({
   created_at,
 }: DatasetType) {
   return (
-    <div>
+    <div className="w-full">
       <div className="px-4 sm:px-0">
         <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-100">
           <span className="inline-block h-6 w-6 align-middle text-stone-500">
@@ -37,7 +37,7 @@ export default function Dataset({
             {name}
           </Link>
         </h3>
-        <p className="mt-1 max-w-2xl text-sm leading-5 text-stone-600 dark:text-stone-400">
+        <p className="mt-1 w-full text-sm leading-5 text-stone-600 dark:text-stone-400">
           {description}
         </p>
       </div>

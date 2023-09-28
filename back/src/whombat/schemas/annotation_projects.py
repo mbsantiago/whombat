@@ -51,3 +51,13 @@ class AnnotationProjectUpdate(BaseSchema):
 
     annotation_instructions: str | None = None
     """Project instructions for annotating."""
+
+
+class AnnotationProjectTagCreate(BaseSchema):
+    """Schema for creating an annotation project tag."""
+
+    tag_id: int
+    """Database ID of the tag."""
+
+    annotation_project_id: int
+    """Database ID of the annotation project."""

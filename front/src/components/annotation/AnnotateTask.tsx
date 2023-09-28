@@ -6,6 +6,7 @@ import { type State, type Task } from "@/api/tasks";
 import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Geometry } from "@/api/sound_events";
 import { type AnnotationProject } from "@/api/annotation_projects";
+import { type SpectrogramParameters } from "@/api/spectrograms";
 import Loading from "@/app/loading";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
@@ -14,13 +15,13 @@ import AnnotationTags from "@/components/annotation/AnnotationTags";
 import TaskStatus from "@/components/tasks/TaskStatus";
 import TaskTags from "@/components/tasks/TaskTags";
 import useTask from "@/hooks/api/useTask";
-import useStore from "@/store";
 import useAnnotations from "@/hooks/api/useAnnotations";
 
 export default function AnnotateTask({
   task_id,
   project,
   tags,
+  parameters,
   addTag,
   removeTag,
   clearTags,
@@ -29,6 +30,7 @@ export default function AnnotateTask({
   task_id: number;
   project: AnnotationProject;
   tags: Tag[];
+  parameters: SpectrogramParameters;
   addTag: (tag: Tag) => void;
   removeTag: (tag: Tag) => void;
   clearTags: () => void;
@@ -64,8 +66,6 @@ export default function AnnotateTask({
   const filter = useMemo(() => ({ task__eq: task_id }), [task_id]);
   const annotations = useAnnotations({ filter });
 
-  // Get spectrogram settings
-  const parameters = useStore((state) => state.spectrogramSettings);
 
   const { mutateAsync: addTagAsync } = annotations.addTag;
   const onAddAnnotationTag = useCallback(

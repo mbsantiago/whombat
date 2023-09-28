@@ -1,9 +1,7 @@
-import Link from "next/link";
-
 import useEvaluationSets from "@/hooks/api/useEvaluationSets";
 import EvaluationSet from "@/components/EvaluationSet";
-import Button from "@/components/Button";
 import StackedList from "@/components/StackedList";
+import Link from "@/components/Link";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
@@ -44,10 +42,8 @@ export default function EvaluationSets() {
           />
         </div>
         <div className="h-full">
-          <Link href="/evaluation/create/">
-            <Button variant="primary">
-              <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
-            </Button>
+          <Link mode="text" href="/evaluation/create/">
+            <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
           </Link>
         </div>
       </div>
