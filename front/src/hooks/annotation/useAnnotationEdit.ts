@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, type RefObject } from "react";
 import { useKeyPress } from "react-use";
 
 import useDrag from "@/hooks/motions/useDrag";
+import useScratch from "@/hooks/motions/useScratch";
 import useEditGeometry from "@/hooks/edit/useEditAnnotation";
 import {
   type EditAnnotationEvent,
@@ -9,7 +10,6 @@ import {
 } from "@/machines/annotate";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Annotation } from "@/api/annotations";
-import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Geometry } from "@/utils/types";
 
@@ -24,14 +24,13 @@ const EDIT_STYLE = {
 };
 
 export default function useAnnotationEdit({
-  drag,
   mouse,
   active,
   send,
   window,
   annotation,
+  ref,
 }: {
-  drag: ScratchState;
   mouse: MouseState;
   active: boolean;
   send: (
@@ -39,6 +38,7 @@ export default function useAnnotationEdit({
   ) => void;
   window: SpectrogramWindow;
   annotation: Annotation | null;
+  ref: RefObject<HTMLCanvasElement>;
 }) {
   const [control] = useKeyPress("Control");
 
@@ -46,6 +46,11 @@ export default function useAnnotationEdit({
     if (control) {
     }
   }, [control]);
+
+  const drag = useScratch({
+    ref,
+    active,
+  });
 
   const editState = useDrag({
     dragState: drag,

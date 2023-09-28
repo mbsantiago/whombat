@@ -1,6 +1,10 @@
 import { type ComponentProps, type HTMLProps } from "react";
 import Image from "next/image";
 import {
+  UserGroupIcon,
+  ArrowTrendingUpIcon,
+  AcademicCapIcon,
+  CpuChipIcon,
   UserIcon,
   Squares2X2Icon,
   PresentationChartLineIcon,
@@ -274,4 +278,8 @@ export {
   WhombatIcon,
   WrenchIcon as MissingIcon,
   XMarkIcon as CloseIcon,
+  CpuChipIcon as ModelIcon,
+  AcademicCapIcon as TrainIcon,
+  ArrowTrendingUpIcon as ScoreIcon,
+  UserGroupIcon as UsersIcon,
 };

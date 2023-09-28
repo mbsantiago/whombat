@@ -1,5 +1,5 @@
 import { useSelector } from "@xstate/react";
-import { useCallback } from "react";
+import { useCallback, type RefObject } from "react";
 import { useUpdateEffect } from "react-use";
 import { type EventFrom, type StateFrom } from "xstate";
 
@@ -15,7 +15,6 @@ import { spectrogramMachine } from "@/machines/spectrogram";
 import { audioMachine } from "@/machines/audio";
 import { type Recording } from "@/api/recordings";
 import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export type DrawFn = (
@@ -44,7 +43,7 @@ export default function useSpectrogram({
   state,
   send,
   dragState,
-  scrollState,
+  ref,
 }: {
   recording?: Recording;
   bounds?: SpectrogramWindow;
@@ -52,8 +51,12 @@ export default function useSpectrogram({
   state: StateFrom<typeof spectrogramMachine>;
   send: (event: EventFrom<typeof spectrogramMachine>) => void;
   dragState: ScratchState;
-  scrollState: ScrollState;
+  ref: RefObject<HTMLCanvasElement>;
 }) {
+  if (state.context.audio == null) {
+    throw new Error("Audio is not initialized");
+  }
+
   // State machine for the audio player
   const currentTime = useSelector(state.context.audio, selectTime);
 
@@ -84,8 +87,8 @@ export default function useSpectrogram({
     // NOTE: This should be active all the time as it doesn't interfere with
     // other mouse events
     active: true,
-    scrollState,
     send,
+    ref,
   });
 
   // Allow the user to zoom in and out of the spectrogram with the scroll wheel
@@ -93,8 +96,8 @@ export default function useSpectrogram({
     // NOTE: This should be active all the time as it doesn't interfere with
     // other mouse events
     active: true,
-    scrollState,
     send,
+    ref,
   });
 
   // Allow the user to zoom in and out of the spectrogram by drawing a bounding

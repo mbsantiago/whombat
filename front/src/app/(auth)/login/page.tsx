@@ -75,7 +75,7 @@ export default function LoginForm() {
           </InputGroup>
         </div>
         <div>
-          <Input type="submit" value="Submit" />
+          <Input type="submit" value="Sign in" />
         </div>
       </form>
     </div>

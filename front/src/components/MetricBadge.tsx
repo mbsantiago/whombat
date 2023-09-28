@@ -11,7 +11,7 @@ export default function MetricBadge({
 }: {
   icon: ReactNode;
   title: ReactNode;
-  value: number;
+  value: number | string;
   isLoading?: boolean;
   onClick?: () => void;
 }) {

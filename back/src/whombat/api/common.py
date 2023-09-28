@@ -311,6 +311,7 @@ async def create_objects_without_duplicates(
     data: Sequence[B],
     key: Callable[[A | B], Any],
     key_column: ColumnElement | InstrumentedAttribute,
+    return_all: bool = False,
 ) -> Sequence[A]:
     """Create multiple objects.
 
@@ -338,6 +339,9 @@ async def create_objects_without_duplicates(
         The column to use for querying existing objects. This is used in
         conjunction with `key` to query the database for existing objects.
 
+    return_all: bool
+        Whether to return all objects, or only those created.
+
     Returns
     -------
     Sequence[A]
@@ -354,7 +358,7 @@ async def create_objects_without_duplicates(
     data = remove_duplicates(list(data), key=key)
 
     # Get existing objects
-    keys = [key(obj) for obj in data]
+    all_keys = [key(obj) for obj in data]
 
     logger.debug("Getting existing objects")
 
@@ -362,7 +366,7 @@ async def create_objects_without_duplicates(
         session,
         model,
         limit=-1,
-        filters=[key_column.in_(keys)],
+        filters=[key_column.in_(all_keys)],
     )
     existing_keys = {key(obj) for obj in existing}
 
@@ -385,10 +389,20 @@ async def create_objects_without_duplicates(
 
     logger.debug("Getting created objects")
 
+    if return_all:
+        created, _ = await get_objects(
+            session,
+            model,
+            filters=[key_column.in_(all_keys)],
+            limit=-1,
+        )
+        return created
+
     created, _ = await get_objects(
         session,
         model,
         filters=[key_column.in_(keys)],
+        limit=-1,
     )
     return created
 

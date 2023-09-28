@@ -63,7 +63,6 @@ export default function Tag({
   tag: Tag;
   level: (typeof LEVELS)[number];
   color: (typeof COLOR_NAMES)[number];
-  withClose?: boolean;
   onClick?: () => void;
   onClose?: () => void;
 } & HTMLProps<HTMLDivElement>) {

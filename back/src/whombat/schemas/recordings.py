@@ -19,7 +19,9 @@ __all__ = [
     "RecordingPreCreate",
     "RecordingWithoutPath",
     "RecordingNote",
-    "RecordingTag"
+    "RecordingTag",
+    "RecordingTagCreate",
+    "RecordingFeatureCreate",
 ]
 
 
@@ -158,12 +160,11 @@ class RecordingUpdate(BaseModel):
     """New time expansion factor of the recording."""
 
 
-
 class RecordingNote(BaseSchema):
     """Schema for a Note attached to a Recording."""
 
     recording_id: int
-    """The database id of the Note."""
+    """The database id of the recording."""
 
     note_id: int
     """The database id of the Note."""
@@ -172,15 +173,47 @@ class RecordingNote(BaseSchema):
     """The Note attached to the Recording."""
 
 
-
 class RecordingTag(BaseSchema):
     """Schema for a Tag attached to a Recording."""
 
     recording_id: int
-    """The database id of the Tag."""
+    """The database id of the recording."""
 
     tag_id: int
     """The database id of the Tag."""
 
     tag: Tag
     """The Tag attached to the Recording."""
+
+
+class RecordingTagCreate(BaseSchema):
+    """Schema for creating a Tag attached to a Recording."""
+
+    recording_id: int
+    """The database id of the recording."""
+
+    tag_id: int
+    """The database id of the Tag."""
+
+
+class RecordingFeatureCreate(BaseSchema):
+    """Schema for creating a Feature attached to a Recording."""
+
+    recording_id: int
+    """The database id of the recording."""
+
+    feature_name_id: int
+    """The database id of the Feature name."""
+
+    value: float
+    """The value of the Feature."""
+
+
+class RecordingNoteCreate(BaseSchema):
+    """Schema for creating a Note attached to a Recording."""
+
+    recording_id: int
+    """The database id of the recording."""
+
+    note_id: int
+    """The database id of the Note."""

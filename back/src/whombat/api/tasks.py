@@ -4,7 +4,7 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
-from sqlalchemy import tuple_
+from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas
@@ -277,6 +277,10 @@ async def add_tag(
             created_by_id=created_by_id,
         ),
     )
+
+    # Add tag to project if it is not already there
+    await _add_tag_to_project(session, task_id, tag_id)
+
     await session.refresh(task)
     return schemas.Task.model_validate(task)
 
@@ -642,3 +646,33 @@ async def get_tags(
         [schemas.TaskTag.model_validate(tag) for tag in tags],
         count,
     )
+
+
+async def _add_tag_to_project(
+    session: AsyncSession,
+    task_id: int,
+    tag_id: int,
+):
+    stmt = (
+        select(models.AnnotationProject)
+        .join(
+            models.Task, models.Task.project_id == models.AnnotationProject.id
+        )
+        .where(models.Task.id == task_id)
+    )
+    obj = await session.execute(stmt)
+    annotation_project = obj.scalars().unique().first()
+
+    if annotation_project is None:
+        return
+
+    for tag in annotation_project.tags:
+        if tag.id == tag_id:
+            return
+
+    project_tag = models.AnnotationProjectTag(
+        annotation_project_id=annotation_project.id,
+        tag_id=tag_id,
+    )
+    session.add(project_tag)
+    await session.flush()

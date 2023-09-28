@@ -10,6 +10,7 @@ const DEFAULT_ENDPOINTS = {
   update: "/api/v1/datasets/detail/",
   delete: "/api/v1/datasets/detail/",
   download: "/api/v1/datasets/detail/download/",
+  import: "/api/v1/datasets/import/",
 };
 
 export const DatasetFilterSchema = z.object({
@@ -107,6 +108,10 @@ export function registerDatasetAPI({
     return `${baseUrl}${endpoints.download}?dataset_id=${dataset_id}`;
   }
 
+  function importDataset(data: FormData): Promise<Dataset> {
+    return instance.post(endpoints.import, data);
+  }
+
   return {
     getMany,
     create,
@@ -114,5 +119,6 @@ export function registerDatasetAPI({
     update,
     delete: delete_,
     getDownloadUrl,
+    import: importDataset,
   };
 }

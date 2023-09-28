@@ -55,11 +55,11 @@ export default function EvaluationSetTags({
             options={evaluationSet.tags}
             fields={["key", "value"]}
             limit={6}
+            static={false}
             renderOption={(tag) => (
               <Tag
                 key={tag.id}
                 tag={tag}
-                withClose
                 onClose={() => onRemoveTag?.(tag)}
                 {...getTagColor(tag)}
               />

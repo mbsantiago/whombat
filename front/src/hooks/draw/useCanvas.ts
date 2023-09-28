@@ -29,14 +29,14 @@ export default function useCanvas({
     // If the canvas is not mounted yet, do nothing
     if (canvas == null) return;
 
-    // Get the drawing context
-    const context = canvas.getContext("2d");
-
     // Sync the canvas size attributes with the parent element size
     // This is particularly useful if the canvas is meant to fill the parent
     // element
     canvas.width = canvas.parentElement?.offsetWidth ?? canvas.offsetWidth;
     canvas.height = canvas.parentElement?.offsetHeight ?? canvas.offsetHeight;
+
+    // Get the drawing context
+    const context = canvas.getContext("2d");
 
     // If the context is not supported, display an error
     if (context == null) {
@@ -61,7 +61,7 @@ export default function useCanvas({
   }, [ref, ctx, draw, onResize]);
 
   // Resize canvas on window resize
-  useEvent("resize", handleOnResize, ref.current);
+  useEvent("resize", handleOnResize, window);
 
   // Draw whenever the draw function changes
   // And clean up the canvas when the component unmounts

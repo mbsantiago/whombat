@@ -2,20 +2,21 @@
 from fastapi import APIRouter
 
 from whombat.routes.annotation_projects import annotation_projects_router
+from whombat.routes.annotations import annotations_router
+from whombat.routes.audio import audio_router
 from whombat.routes.auth import auth_router
 from whombat.routes.clips import clips_router
 from whombat.routes.datasets import dataset_router
+from whombat.routes.evaluation_sets import evaluation_sets_router
+from whombat.routes.evaluation_tasks import evaluation_tasks_router
 from whombat.routes.notes import notes_router
+from whombat.routes.prediction_runs import prediction_runs_router
 from whombat.routes.recordings import recording_router
+from whombat.routes.sound_events import sound_events_router
 from whombat.routes.spectrograms import spectrograms_router
 from whombat.routes.tags import tags_router
 from whombat.routes.tasks import tasks_router
 from whombat.routes.users import users_router
-from whombat.routes.audio import audio_router
-from whombat.routes.sound_events import sound_events_router
-from whombat.routes.annotations import annotations_router
-from whombat.routes.evaluation_sets import evaluation_sets_router
-from whombat.routes.evaluation_tasks import evaluation_tasks_router
 
 __all__ = [
     "main_router",
@@ -98,4 +99,9 @@ main_router.include_router(
     evaluation_tasks_router,
     prefix="/evaluation_tasks",
     tags=["evaluation_tasks"],
+)
+main_router.include_router(
+    prediction_runs_router,
+    prefix="/prediction_runs",
+    tags=["prediction_runs"],
 )

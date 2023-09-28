@@ -111,7 +111,7 @@ export function drawImageOnCanvas(
   bounds: SpectrogramWindow,
 ) {
   ctx.fillStyle = COLORS.BACKGROUND;
-  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   const interval = bounds.time;
   const maxFreq = bounds.freq.max;

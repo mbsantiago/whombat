@@ -3,10 +3,11 @@ import { createContext } from "react";
 import { type AnnotationProject } from "@/api/annotation_projects";
 import { type User, type UserUpdate } from "@/api/user";
 import { type Dataset, type DatasetUpdate } from "@/api/datasets";
+import { type Tag } from "@/api/tags";
 import {
+  EvaluationMode,
   type EvaluationSet,
   type EvaluationSetUpdate,
-  type EvaluationSetCreate,
 } from "@/api/evaluation_sets";
 
 export type UserContextType = {
@@ -57,16 +58,21 @@ export const DatasetContext = createContext<DatasetContextType>({
 });
 
 type EvaluationSetContextType = {
-  create?: (data: EvaluationSetCreate) => Promise<EvaluationSet>;
-  update?: ({
-    evaluation_set_id,
-    data,
-  }: {
-    evaluation_set_id: number;
-    data: EvaluationSetUpdate;
-  }) => Promise<EvaluationSet>;
-  delete?: (evaluation_set_id: number) => Promise<EvaluationSet>;
+  evaluationSet: EvaluationSet;
+  update?: (data: EvaluationSetUpdate) => Promise<EvaluationSet>;
+  delete?: () => Promise<EvaluationSet>;
+  addTag?: (tag: Tag) => Promise<EvaluationSet>;
+  removeTag?: (tag: Tag) => Promise<EvaluationSet>;
 };
 
-export const EvaluationSetContext =
-  createContext<EvaluationSetContextType>({});
+export const EvaluationSetContext = createContext<EvaluationSetContextType>({
+  evaluationSet: {
+    id: -1,
+    name: "",
+    description: "",
+    tags: [],
+    uuid: "",
+    mode: EvaluationMode.CLIP_CLASSIFICATION,
+    created_at: new Date(),
+  },
+});

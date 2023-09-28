@@ -1,10 +1,11 @@
 """Whombat Python API to interact with user objects in the database."""
+import secrets
 import uuid
 
 from cachetools import LRUCache
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
+from whombat import cache, exceptions, models, schemas
 from whombat.api import common
 from whombat.dependencies.users import UserDatabase, UserManager
 from whombat.filters import Filter
@@ -300,3 +301,48 @@ async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
         models.User.id == user_id,
     )
     return schemas.User.model_validate(user)
+
+
+@users_cache.cached(
+    name="anonymous_user",
+    cache=LRUCache(maxsize=1),
+    key=lambda _: 0,
+    data_key=lambda _: 0,
+)
+async def get_anonymous_user(session) -> schemas.User:
+    """Get the anonymous user.
+
+    This user is used for when no user is specified.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    Returns
+    -------
+    user : schemas.User
+        The admin user.
+
+    """
+    try:
+        obj = await common.get_object(
+            session,
+            models.User,
+            (models.User.is_superuser) & (models.User.username == "whombat"),
+        )
+        return schemas.User.model_validate(obj)
+    except exceptions.NotFoundError:
+        return await create(
+            session,
+            schemas.UserCreate(
+                username="whombat",
+                password=_generate_random_password(),
+                email="whombat@admin.com",
+                is_superuser=True,
+            ),
+        )
+
+
+def _generate_random_password(length=32):
+    return secrets.token_urlsafe(length)

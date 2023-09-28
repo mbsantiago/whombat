@@ -30,7 +30,7 @@ export default function RecordingDetail({
         <div className="grow">
           <div className="grid grid-cols-2 gap-8">
             <div className="col-span-2">
-              <RecordingTagBar recording={recording} />
+              <RecordingTagBar tags={recording.tags} />
             </div>
             <div className="col-span-2">
               <RecordingSpectrogram recording={recording} />

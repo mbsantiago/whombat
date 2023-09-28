@@ -64,7 +64,6 @@ export default function AnnotationTags({
           <Tag
             key={tag.id}
             tag={tag}
-            withClose={true}
             {...getTagColor(tag)}
             onClick={() => onClick?.(tag)}
             onClose={() => onRemoveTag?.(tag)}

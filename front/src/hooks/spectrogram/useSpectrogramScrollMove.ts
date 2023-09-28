@@ -1,17 +1,16 @@
-import { useCallback } from "react";
+import { useCallback, type RefObject } from "react";
 
-import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type ShiftWindowEvent } from "@/machines/spectrogram";
 import useWindowScroll from "@/hooks/window/useWindowScroll";
 
 export default function useSpectrogramScrollMove({
   active,
-  scrollState,
   send,
+  ref,
 }: {
   active: boolean;
-  scrollState: ScrollState;
   send: (event: ShiftWindowEvent) => void;
+  ref: RefObject<HTMLCanvasElement>;
 }) {
   const handleOnScroll = useCallback(
     (shiftBy: { time: number; freq: number }, relative: boolean) => {
@@ -22,6 +21,6 @@ export default function useSpectrogramScrollMove({
   useWindowScroll({
     active,
     shiftWindow: handleOnScroll,
-    scrollState,
+    ref,
   });
 }

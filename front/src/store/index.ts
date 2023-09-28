@@ -20,7 +20,7 @@ const useStore = create<Store>()(
     }),
     {
       name: "whombat-storage",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );

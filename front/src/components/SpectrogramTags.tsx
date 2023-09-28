@@ -180,7 +180,7 @@ export default function SpectrogramTags({
   onCreate?: (tag: TagType) => void;
 }) {
   return (
-    <div className="w-full h-full relative overflow-hidden">
+    <div className="rounded w-full h-full relative overflow-hidden">
       {children}
       {tags.map((group) => (
         <TagGroup

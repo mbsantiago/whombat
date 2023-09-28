@@ -6,7 +6,6 @@ import classNames from "classnames";
 import { computeGeometryBBox } from "@/utils/geometry";
 import { spectrogramMachine } from "@/machines/spectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
-import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useScratch from "@/hooks/motions/useScratch";
 import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
@@ -88,7 +87,6 @@ export default function AnnotationSpectrogram({
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const scrollState = useMouseWheel(canvasRef);
   const dragState = useScratch({ ref: canvasRef });
 
   // Compute the bounds and initial view from the annotation
@@ -125,7 +123,7 @@ export default function AnnotationSpectrogram({
     state,
     send,
     dragState,
-    scrollState,
+    ref: canvasRef,
   });
 
   const drawAnnotation = useAnnotationDraw({

@@ -4,7 +4,6 @@ import { useActor, useMachine } from "@xstate/react";
 
 import { spectrogramMachine } from "@/machines/spectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
-import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useScratch from "@/hooks/motions/useScratch";
 import useStore from "@/store";
@@ -24,7 +23,6 @@ export default function RecordingSpectrogram({
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const scrollState = useMouseWheel(canvasRef);
   const dragState = useScratch({ ref: canvasRef });
 
   // Get initial spectrogram parameters from global state
@@ -67,8 +65,12 @@ export default function RecordingSpectrogram({
     state,
     send,
     dragState,
-    scrollState,
+    ref: canvasRef,
   });
+
+  if (state.context.audio == null) {
+    throw new Error("Audio is not initialized");
+  }
 
   const [audioState, audioSend] = useActor(state.context.audio);
 

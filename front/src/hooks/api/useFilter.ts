@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDebounce } from "react-use";
 
 export type Filter<T extends Object> = {
@@ -9,6 +9,7 @@ export type Filter<T extends Object> = {
   reset: () => void;
   submit: () => void;
   isFixed: <K extends keyof T>(key: K) => boolean;
+  size: number;
 };
 
 /**
@@ -27,8 +28,8 @@ export default function useFilter<T extends Object>({
   debounce?: number;
   prefix?: string;
 }): Filter<T> {
-  const [state, setState] = useState(fixed);
-  const [debouncedState, setDebouncedState] = useState(fixed);
+  const [state, setState] = useState<T>(fixed);
+  const [debouncedState, setDebouncedState] = useState<T>(fixed);
 
   // Reset the state when the fixed filter changes
   useEffect(() => {
@@ -36,7 +37,11 @@ export default function useFilter<T extends Object>({
     setDebouncedState(fixed);
   }, [fixed]);
 
-  const isFixed = (key: keyof T) => fixed[key] !== undefined;
+  const isFixed = useCallback(
+    (key: keyof T) => fixed[key] !== undefined,
+    [fixed],
+  );
+
   const set = <K extends keyof T>(
     key: K,
     value: (typeof state)[K],
@@ -52,12 +57,6 @@ export default function useFilter<T extends Object>({
       // Delete the key from a copy of the state
       const newState = { ...prev };
       delete newState[key];
-
-      // Reset to initial value if it exists
-      const initialValue = fixed[key];
-      if (initialValue !== undefined) {
-        newState[key] = initialValue;
-      }
 
       // Do not debounce when clearing
       setDebouncedState(newState);
@@ -79,6 +78,11 @@ export default function useFilter<T extends Object>({
     setDebouncedState(state);
   };
 
+  const size = useMemo(() => {
+    // @ts-ignore
+    return Object.keys(state).filter((key) => !isFixed(key)).length;
+  }, [state, isFixed]);
+
   return {
     filter: debouncedState,
     set,
@@ -86,6 +90,7 @@ export default function useFilter<T extends Object>({
     clear,
     reset,
     submit,
+    size,
     isFixed,
   };
 }

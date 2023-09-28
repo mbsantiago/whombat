@@ -1,6 +1,6 @@
 """Evaluation model.
 
-An Evaluation can be conducted on a Model Run to get information about the
+An Evaluation can be conducted on a Prediction Run to get information about the
 performance of the ML model. Evaluation is only possible on processed clips
 that have also been completely annotated. If there are any fully annotated
 clips that have also been processed by the model, we can ground truth the
@@ -24,8 +24,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
-from whombat.models.evaluation_set import EvaluationSet
-from whombat.models.model_run import ModelRun
+from whombat.models.prediction_run import PredictionRun
 
 __all__ = [
     "Evaluation",
@@ -40,34 +39,62 @@ class Evaluation(Base):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """Evaluation ID."""
 
-    model_run_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("model_run.id"),
+    prediction_run_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("prediction_run.id"),
         nullable=False,
     )
     """Model Run ID."""
 
-    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("evaluation_set.id"),
+    prediction_run: orm.Mapped[PredictionRun] = orm.relationship(
+        "PredictionRun",
+        back_populates="evaluation",
+        init=False,
+        repr=False,
+    )
+    """Prediction Run to which the evaluation belongs."""
+
+    score: orm.Mapped[float] = orm.mapped_column(nullable=True, default=0)
+    """Overall score of the evaluation."""
+
+    metrics: orm.Mapped[list["EvaluationMetric"]] = orm.relationship(
+        "EvaluationMetric",
+        back_populates="evaluation",
+        lazy="joined",
+        init=False,
+        repr=False,
+    )
+
+
+class EvaluationMetric(Base):
+    """Evaluation metric model."""
+
+    __tablename__ = "evaluation_metric"
+
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """Evaluation metric ID."""
+
+    evaluation_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation.id"),
         nullable=False,
     )
-    """Evaluation Set ID."""
+    """Evaluation ID."""
 
-    model_run: orm.Mapped[ModelRun] = orm.relationship(
-        "ModelRun",
-        back_populates="evaluations",
-        lazy="joined",
+    name: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """Name of the metric."""
+
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """Value of the metric."""
+
+    evaluation: orm.Mapped[Evaluation] = orm.relationship(
+        "Evaluation",
+        back_populates="metrics",
         init=False,
         repr=False,
     )
-    """Model Run to which the evaluation belongs."""
 
-    evaluation_set: orm.Mapped[EvaluationSet] = orm.relationship(
-        "EvaluationSet",
-        back_populates="evaluations",
-        lazy="joined",
-        init=False,
-        repr=False,
+    __table_args__ = (
+        UniqueConstraint(
+            "evaluation_id",
+            "name",
+        ),
     )
-    """Evaluation Set to which the evaluation belongs."""
-
-    __table_args__ = (UniqueConstraint("model_run_id", "evaluation_set_id"),)

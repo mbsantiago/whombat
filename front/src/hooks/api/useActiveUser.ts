@@ -21,6 +21,7 @@ export default function useActiveUser({
       return await api.user.me();
     },
     {
+      retry: 2,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       refetchOnMount: true,

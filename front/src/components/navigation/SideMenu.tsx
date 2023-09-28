@@ -1,7 +1,8 @@
 import { usePathname } from "next/navigation";
 import classnames from "classnames";
-import Link from "next/link";
+import { type ComponentProps } from "react";
 
+import Link from "@/components/Link";
 import {
   AnnotationProjectIcon,
   DatasetsIcon,
@@ -22,7 +23,7 @@ function SideMenuButton({
   isActive,
   href,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+}: ComponentProps<typeof Link> & {
   tooltip?: string;
   isActive?: boolean;
   href?: string;
@@ -35,19 +36,18 @@ function SideMenuButton({
         </p>
       }
     >
-      <Link href={href ?? ""}>
-        <button
-          className={classnames(
-            {
-              "bg-stone-200 outline outline-2 outline-offset-2 outline-emerald-500 dark:bg-stone-900":
-                isActive,
-            },
-            "group max-w-fit rounded p-2 hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
-          )}
-          {...props}
-        >
-          {children}
-        </button>
+      <Link
+        href={href ?? ""}
+        mode="text"
+        variant={isActive ? "primary" : "secondary"}
+        className={classnames(
+          isActive
+            ? "bg-stone-200 dark:bg-stone-900"
+            : "hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+        )}
+        {...props}
+      >
+        {children}
       </Link>
     </Tooltip>
   );
@@ -58,7 +58,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <li className="px-3">
         <SideMenuButton
-          isActive={pathname === "/datasets"}
+          isActive={pathname?.startsWith("/datasets")}
           tooltip={"Datasets"}
           href="/datasets"
         >
@@ -67,7 +67,7 @@ function MainNavigation({ pathname }: { pathname?: string }) {
       </li>
       <li className="px-3">
         <SideMenuButton
-          isActive={pathname === "/annotation_projects"}
+          isActive={pathname?.startsWith("/annotation_projects")}
           tooltip={"Annotation Projects"}
           href="/annotation_projects"
         >
@@ -76,20 +76,20 @@ function MainNavigation({ pathname }: { pathname?: string }) {
       </li>
       <li className="px-3">
         <SideMenuButton
-          isActive={pathname === "/exploration"}
-          tooltip={"Exploration"}
-          href="/exploration"
-        >
-          <ExplorationIcon className="w-6 h-6" />
-        </SideMenuButton>
-      </li>
-      <li className="px-3">
-        <SideMenuButton
-          isActive={pathname === "/evaluation"}
+          isActive={pathname?.startsWith("/evaluation")}
           tooltip={"Evaluation"}
           href="/evaluation"
         >
           <EvaluationIcon className="w-6 h-6" />
+        </SideMenuButton>
+      </li>
+      <li className="px-3">
+        <SideMenuButton
+          isActive={pathname?.startsWith("/exploration")}
+          tooltip={"Exploration"}
+          href="/exploration"
+        >
+          <ExplorationIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
     </ul>
@@ -112,18 +112,18 @@ function SecondaryNavigation({
         </SideMenuButton>
       </li>
       <li className="px-3">
-        <SideMenuButton tooltip={"Messages"}>
+        <SideMenuButton href="/" tooltip={"Messages"}>
           <MessagesIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">
-        <SideMenuButton tooltip={"Settings"}>
+        <SideMenuButton href="/" tooltip={"Settings"}>
           <SettingsIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <HorizontalDivider />
       <li className="px-3">
-        <SideMenuButton tooltip={"Log Out"}>
+        <SideMenuButton href="/logout" tooltip={"Log Out"}>
           <LogOutIcon onClick={() => logout?.()} className="w-6 h-6" />
         </SideMenuButton>
       </li>

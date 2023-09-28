@@ -1,4 +1,5 @@
-import { ActorRefFrom, assign, createMachine, spawn } from "xstate";
+import { ActorRefFrom, assign, createMachine, spawn, actions } from "xstate";
+const { stop } = actions;
 
 import { spectrogramMachine } from "@/machines/spectrogram";
 import { getInitialDuration } from "@/utils/windows";
@@ -70,6 +71,11 @@ export type RemoveTagEvent = {
   tag: AnnotationTag;
 };
 
+export type ChangeTask = {
+  type: "CHANGE_TASK";
+  task: Task;
+};
+
 export type AnnotateEvent =
   | { type: "IDLE" }
   | { type: "SELECT" }
@@ -82,13 +88,17 @@ export type AnnotateEvent =
   | DeleteAnnotationEvent
   | SelecteGeometryTypeEvent
   | AddTagEvent
+  | ChangeTask
   | RemoveTagEvent;
 
 const annotateStates = {
   id: "annotate",
-  initial: "idle",
-  entry: ["setupSpectrogram"],
+  initial: "setup",
   states: {
+    setup: {
+      exit: ["setupSpectrogram"],
+      always: "idle",
+    },
     idle: {
       entry: ["enableSpectrogram"],
       exit: ["disableSpectrogram"],
@@ -212,6 +222,10 @@ const annotateStates = {
     SELECT_GEOMETRY_TYPE: {
       actions: ["selectGeometryType"],
     },
+    CHANGE_TASK: {
+      actions: ["changeTask"],
+      target: "setup",
+    },
   },
 };
 
@@ -240,11 +254,19 @@ export const annotateActions = {
   enableSpectrogram: (context: AnnotateContext) => {
     context.spectrogram?.send({ type: "PAN" });
   },
+  changeTask: assign({
+    task: (_, event: ChangeTask) => event.task,
+    recording: (_: AnnotateContext, event: ChangeTask) =>
+      event.task.clip.recording,
+  }),
   setupSpectrogram: assign({
     spectrogram: (context: AnnotateContext) => {
-      if (context.spectrogram != null) return context.spectrogram;
+      if (context.spectrogram != null) {
+        stop((ctx: AnnotateContext) => ctx.spectrogram);
+      }
 
-      const { task, recording, parameters } = context;
+      const { task, parameters } = context;
+      const { recording } = task.clip;
       const bounds = {
         time: {
           min: task.clip.start_time,
@@ -279,8 +301,8 @@ export const annotateActions = {
 
       return spawn(
         spectrogramMachine.withContext({
-          recording: recording,
-          parameters: parameters,
+          recording,
+          parameters,
           bounds,
           initial,
           window: initial,

@@ -6,21 +6,22 @@
  */
 import axios from "axios";
 
-import { registerNotesAPI } from "./notes";
-import { registerAuthAPI } from "./auth";
-import { registerTagAPI } from "./tags";
-import { registerUserAPI } from "./user";
-import { registerDatasetAPI } from "./datasets";
-import { registerRecordingAPI } from "./recordings";
 import { registerAnnotationProjectAPI } from "./annotation_projects";
-import { registerClipApi } from "./clips";
-import { registerTasksApi } from "./tasks";
-import { registerSpectrogramApi } from "./spectrograms";
-import { registerAudioApi } from "./audio";
-import { registerSoundEventApi } from "./sound_events";
 import { registerAnnotationsApi } from "./annotations";
+import { registerAudioApi } from "./audio";
+import { registerAuthAPI } from "./auth";
+import { registerClipApi } from "./clips";
+import { registerDatasetAPI } from "./datasets";
 import { registerEvaluationSetAPI } from "./evaluation_sets";
 import { registerEvaluationTaskAPI } from "./evaluation_tasks";
+import { registerNotesAPI } from "./notes";
+import { registerPredictionRunAPI } from "./prediction_runs";
+import { registerRecordingAPI } from "./recordings";
+import { registerSoundEventApi } from "./sound_events";
+import { registerSpectrogramApi } from "./spectrograms";
+import { registerTagAPI } from "./tags";
+import { registerTasksApi } from "./tasks";
+import { registerUserAPI } from "./user";
 
 type APIConfig = {
   baseURL: string;
@@ -38,20 +39,21 @@ const DEFAULT_CONFIG: APIConfig = {
 export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
   let instance = axios.create(config);
   return {
-    auth: registerAuthAPI(instance),
-    tags: registerTagAPI(instance),
-    user: registerUserAPI(instance),
-    datasets: registerDatasetAPI({ instance, baseUrl: config.baseURL }),
-    recordings: registerRecordingAPI(instance),
     annotation_projects: registerAnnotationProjectAPI(instance),
-    tasks: registerTasksApi(instance),
-    clips: registerClipApi(instance),
-    spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
-    notes: registerNotesAPI(instance),
-    audio: registerAudioApi({ baseUrl: config.baseURL }),
-    sound_events: registerSoundEventApi(instance),
     annotations: registerAnnotationsApi(instance),
+    audio: registerAudioApi({ baseUrl: config.baseURL }),
+    auth: registerAuthAPI(instance),
+    clips: registerClipApi(instance),
+    datasets: registerDatasetAPI({ instance, baseUrl: config.baseURL }),
     evaluation_sets: registerEvaluationSetAPI(instance),
     evaluation_tasks: registerEvaluationTaskAPI(instance),
+    notes: registerNotesAPI(instance),
+    prediction_runs: registerPredictionRunAPI(instance),
+    recordings: registerRecordingAPI(instance),
+    sound_events: registerSoundEventApi(instance),
+    spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
+    tags: registerTagAPI(instance),
+    tasks: registerTasksApi(instance),
+    user: registerUserAPI(instance),
   };
 }

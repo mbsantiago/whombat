@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useActor, useMachine } from "@xstate/react";
 import { type RefObject } from "react";
 
@@ -19,23 +19,19 @@ import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
 import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
 import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
 import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Task } from "@/api/tasks";
 import { type Geometry } from "@/api/sound_events";
 import { type SpectrogramParameters } from "@/api/spectrograms";
-import { type Recording } from "@/api/recordings";
 import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Tag } from "@/api/tags";
 
 export default function useAnnotateSpectrogram({
   task,
   annotations,
-  recording,
   parameters,
   mouseState,
   scratchState,
-  scrollState,
   ref,
   onAddTag,
   onRemoveTag,
@@ -44,30 +40,27 @@ export default function useAnnotateSpectrogram({
   onDeleteAnnotation,
 }: {
   task: Task;
-  recording: Recording;
   annotations: Annotation[];
   parameters: SpectrogramParameters;
   mouseState: MouseState;
   scratchState: ScratchState;
-  scrollState: ScrollState;
   ref: RefObject<HTMLCanvasElement>;
-  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<void>;
-  onRemoveTag?: (annotation: Annotation, tag: AnnotationTag) => Promise<void>;
+  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<Annotation>;
+  onRemoveTag?: (annotation: Annotation, tag: AnnotationTag) => Promise<Annotation>;
   onCreateAnnotation?: (
     task: Task,
     geometry: Geometry,
     tag_ids?: number[],
-  ) => Promise<void>;
+  ) => Promise<Annotation>;
   onUpdateAnnotationGeometry?: (
     annotation: Annotation,
     geometry: Geometry,
-  ) => Promise<void>;
-  onDeleteAnnotation?: (annotation: Annotation) => Promise<void>;
+  ) => Promise<Annotation>;
+  onDeleteAnnotation?: (annotation: Annotation) => Promise<Annotation>;
 }) {
   const [state, send] = useMachine(annotateMachine, {
     context: {
       task,
-      recording,
       parameters,
       selectedAnnotation: null,
       geometryType: "BoundingBox",
@@ -112,8 +105,14 @@ export default function useAnnotateSpectrogram({
     },
   });
 
+  // Make sure the task is updated when the task prop changes
+  useEffect(() => {
+    send({ type: "CHANGE_TASK", task })
+  }, [task, send])
+
   const [specState, specSend] = useActor(state.context.spectrogram);
 
+  // Attach keyboard listeners for annotation shortcuts
   useAnnotateKeyShortcuts({
     send,
     cond: state.matches("edit.editing"),
@@ -123,8 +122,8 @@ export default function useAnnotateSpectrogram({
     state: specState,
     send: specSend,
     dragState: scratchState,
-    scrollState,
-    recording: state.context.recording,
+    recording: specState.context.recording,
+    ref,
   });
 
   const drawAnnotationCreate = useAnnotationCreate({
@@ -136,8 +135,8 @@ export default function useAnnotateSpectrogram({
   });
 
   const drawAnnotationEdit = useAnnotationEdit({
-    drag: scratchState,
     mouse: mouseState,
+    ref,
     active: state.matches("edit.editing"),
     send,
     window: specState.context.window,
@@ -183,9 +182,9 @@ export default function useAnnotateSpectrogram({
       drawSpec(ctx);
       drawAnnotations(ctx);
       drawAnnotationCreate(ctx);
-      drawAnnotationEdit(ctx);
       drawAnnotationDelete(ctx);
       drawAnnotationSelect(ctx);
+      drawAnnotationEdit(ctx);
     },
     [
       drawSpec,

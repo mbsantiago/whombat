@@ -44,10 +44,10 @@ export type STFTParameters = z.input<typeof STFTParametersSchema>;
 export const AmplitudeParametersSchema = z
   .object({
     scale: z.enum(["amplitude", "power", "dB"]).default("dB"),
-    clamp: z.boolean().default(false),
-    min_dB: z.number().nonpositive().gte(MIN_DB).default(MIN_DB),
+    clamp: z.boolean().default(true),
+    min_dB: z.number().nonpositive().gte(MIN_DB).default(-80),
     max_dB: z.number().nonpositive().gte(MIN_DB).default(0),
-    normalize: z.boolean().default(true),
+    normalize: z.boolean().default(false),
   })
   .refine(
     (data) => {
@@ -69,20 +69,22 @@ export const SpectrogramParametersSchema = AudioParametersSchema.and(
     z.object({
       channel: z.number().nonnegative().int().default(0),
       pcen: z.boolean().default(false),
-      cmap: z.string().default("cividis"),
+      cmap: z.string().default("grays"),
     }),
   );
 
 export type SpectrogramParameters = z.input<typeof SpectrogramParametersSchema>;
 
-const DEFAULT_CMAP: string = "cividis";
+const DEFAULT_CMAP: string = "gray";
 
 export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
   resample: false,
   scale: "dB",
-  pcen: true,
+  pcen: false,
   cmap: DEFAULT_CMAP,
-  normalize: true,
+  normalize: false,
+  clamp: true,
+  min_dB: -80,
 };
 
 export function registerSpectrogramApi({

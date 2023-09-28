@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas
 from whombat.api import common
+from whombat.api.tasks import _add_tag_to_project
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -162,10 +163,13 @@ async def add_tag(
             created_by_id=user_id,
         ),
     )
+
+    # Add tag to project if it is not already there
+    await _add_tag_to_project(session, annotation.task_id, tag_id)
+
     await session.refresh(obj)
     new_tag = schemas.AnnotationTag.model_validate(obj)
     annotation.tags.append(new_tag)
-    print(annotation.sound_event.geometry)
     return annotation
 
 

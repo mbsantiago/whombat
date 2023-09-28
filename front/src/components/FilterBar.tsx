@@ -34,7 +34,7 @@ export function FilterBadge({
   }
 
   return (
-    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600 ring-1 ring-inset ring-blue-500/10">
+    <span className="inline-flex items-center whitespace-nowrap rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600 ring-1 ring-inset ring-blue-500/10">
       <span className="align-middle h-full">
         {fieldName} {operation} {value}
       </span>

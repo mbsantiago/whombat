@@ -1,6 +1,9 @@
 """REST API routes for datasets."""
-from fastapi import APIRouter, Depends
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, UploadFile, Body
 from fastapi.responses import Response
+from pydantic import DirectoryPath
 from soundevent.io.formats import aoef
 
 from whombat import api, schemas
@@ -111,7 +114,30 @@ async def download_dataset(
         dataset_object.model_dump_json(),
         media_type="application/json",
         status_code=200,
-        headers={
-            "Content-Disposition": f"attachment; filename={filename}"
-        },
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@dataset_router.post(
+    "/import/",
+    response_model=schemas.DatasetWithCounts,
+)
+async def import_dataset(
+    session: Session,
+    dataset: UploadFile,
+    audio_dir: Annotated[DirectoryPath, Body()],
+):
+    """Import a dataset."""
+    if not audio_dir.exists():
+        raise FileNotFoundError(f"Audio directory {audio_dir} does not exist.")
+
+    data = aoef.DatasetObject.model_validate_json(
+        dataset.file.read()
+    ).to_dataset()
+    imported = await api.datasets.import_dataset(
+        session,
+        data,
+        dataset_audio_dir=audio_dir,
+    )
+    await session.commit()
+    return imported

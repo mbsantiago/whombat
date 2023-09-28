@@ -15,7 +15,7 @@ function TasksSummary({ tasks }: { tasks: Task[] }) {
     const recordings = new Set();
 
     for (const task of tasks) {
-      recordings.add(task.clip.recording_id);
+      recordings.add(task.clip.recording.id);
     }
 
     return recordings.size;

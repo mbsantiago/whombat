@@ -1,32 +1,35 @@
 "use client";
-import Link from "next/link";
 
 import useDatasets from "@/hooks/api/useDatasets";
 import Hero from "@/components/Hero";
 import Dataset from "@/components/Dataset";
-import Button from "@/components/Button";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";
 import Loading from "@/app/loading";
-import { AddIcon, DatasetIcon, WarningIcon } from "@/components/icons";
+import Link from "@/components/Link";
+import Empty from "@/components/Empty";
+import {
+  AddIcon,
+  DatasetIcon,
+  WarningIcon,
+  UploadIcon,
+} from "@/components/icons";
 
 function NoDatasets() {
   return (
-    <div className="p-8 w-full">
-      <div className="w-full border border-dashed rounded-md border-stone-500 p-4 flex flex-col items-center justify-center text-stone-500">
-        <WarningIcon className="h-8 w-8 text-stone-500" />
-        <p>No datasets found.</p>
-        <p>
-          To create a dataset, click on the
-          <span className="text-emerald-500">
-            <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
-            Create{" "}
-          </span>{" "}
-          button above.
-        </p>
-      </div>
-    </div>
+    <Empty>
+      <WarningIcon className="h-8 w-8 text-stone-500" />
+      <p>No datasets found.</p>
+      <p>
+        To create a dataset, click on the
+        <span className="text-emerald-500">
+          <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
+          Create{" "}
+        </span>{" "}
+        button above.
+      </p>
+    </Empty>
   );
 }
 
@@ -49,10 +52,14 @@ export default function Datasets() {
             />
           </div>
           <div className="h-full">
-            <Link href="/datasets/create">
-              <Button variant="primary">
-                <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
-              </Button>
+            <Link mode="text" href="/datasets/create">
+              <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
+            </Link>
+          </div>
+          <div className="h-full">
+            <Link mode="text" href="/datasets/import">
+              <UploadIcon className="inline-block h-4 w-4 align-middle" />{" "}
+              Import
             </Link>
           </div>
         </div>
@@ -66,7 +73,7 @@ export default function Datasets() {
                 <Dataset key={item.id} {...item} />
               ))}
             />
-            {pagination.numPages > 0 && <Pagination {...pagination} />}
+            {pagination.numPages > 1 && <Pagination {...pagination} />}
           </>
         )}
       </div>

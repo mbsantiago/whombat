@@ -13,9 +13,7 @@ import TaskSpectrogram from "@/components/spectrograms/TaskSpectrogram";
 import AnnotationTags from "@/components/annotation/AnnotationTags";
 import TaskStatus from "@/components/tasks/TaskStatus";
 import TaskTags from "@/components/tasks/TaskTags";
-import api from "@/app/api";
 import useTask from "@/hooks/api/useTask";
-import useRecording from "@/hooks/api/useRecording";
 import useStore from "@/store";
 import useAnnotations from "@/hooks/api/useAnnotations";
 
@@ -62,12 +60,6 @@ export default function AnnotateTask({
     onAddBadge,
   });
 
-  // Get recording data
-  const recording = useRecording({
-    recording_id: task.query.data?.clip.recording_id ?? -1,
-    enabled: task.query.data != null,
-  });
-
   // Get info about the task annotations
   const filter = useMemo(() => ({ task__eq: task_id }), [task_id]);
   const annotations = useAnnotations({ filter });
@@ -78,11 +70,7 @@ export default function AnnotateTask({
   const { mutateAsync: addTagAsync } = annotations.addTag;
   const onAddAnnotationTag = useCallback(
     async (annotation: Annotation, tag: Tag) => {
-      if (!project.tags.some((t) => t.id === tag.id)) {
-        await api.annotation_projects.addTag(project.id, tag.id);
-      }
-
-      await toast.promise(
+      return await toast.promise(
         addTagAsync({
           annotation_id: annotation.id,
           tag_id: tag.id,
@@ -94,13 +82,13 @@ export default function AnnotateTask({
         },
       );
     },
-    [addTagAsync, project.id, project.tags],
+    [addTagAsync],
   );
 
   const { mutateAsync: removeTagAsync } = annotations.removeTag;
   const onRemoveAnnotationTag = useCallback(
     async (annotation: Annotation, tag: AnnotationTag) => {
-      await toast.promise(
+      return await toast.promise(
         removeTagAsync({
           annotation_id: annotation.id,
           tag_id: tag.id,
@@ -122,7 +110,7 @@ export default function AnnotateTask({
       if (tag_ids == null) {
         tag_ids = tags.map((tag) => tag.id);
       }
-      await toast.promise(
+      return await toast.promise(
         createAnnotationAsync({
           task_id: task.id,
           geometry,
@@ -141,7 +129,7 @@ export default function AnnotateTask({
   const { mutateAsync: updateAnnotationAsync } = annotations.update;
   const onUpdateAnnotationGeometry = useCallback(
     async (annotation: Annotation, geometry: Geometry) => {
-      await toast.promise(
+      return await toast.promise(
         updateAnnotationAsync({
           annotation_id: annotation.id,
           data: { geometry },
@@ -159,7 +147,7 @@ export default function AnnotateTask({
   const { mutateAsync: deleteAnnotationAsync } = annotations.delete;
   const onDeleteAnnotation = useCallback(
     async (annotation: Annotation) => {
-      await toast.promise(deleteAnnotationAsync(annotation.id), {
+      return await toast.promise(deleteAnnotationAsync(annotation.id), {
         loading: "Deleting annotation...",
         success: "Annotation deleted!",
         error: "Failed to delete annotation.",
@@ -172,15 +160,15 @@ export default function AnnotateTask({
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-center gap-4">
         <div>
-          {recording.query.isLoading || recording.query.data == null ? (
+          {task.query.isLoading || task.query.data == null ? (
             <Loading />
           ) : (
-            <RecordingHeader recording={recording.query.data} />
+            <RecordingHeader recording={task.query.data.clip.recording} />
           )}
         </div>
         <div className="grow">
           <RecordingTagBar
-            tags={recording.query.data?.tags ?? []}
+            tags={task.query.data?.clip.recording.tags ?? []}
             label="Recording Tags"
             onClick={(tag) => addTag(tag)}
           />
@@ -189,15 +177,14 @@ export default function AnnotateTask({
       <div className="flex flex-row gap-3">
         <div className="grow flex flex-col gap-3">
           {task.query.isLoading ||
-          task.query.data == null ||
-          recording.query.isLoading ||
-          recording.query.data == null ? (
+          task.query.data == null
+          ? (
             <Loading />
           ) : (
             <TaskSpectrogram
               task={task.query.data}
               annotations={annotations.items}
-              recording={recording.query.data}
+              recording={task.query.data.clip.recording}
               parameters={parameters}
               onAddTag={onAddAnnotationTag}
               onRemoveTag={onRemoveAnnotationTag}

@@ -11,9 +11,8 @@ from whombat.models.tag import Tag
 from whombat.models.task import Task
 
 if typing.TYPE_CHECKING:
-    from whombat.models.evaluation import Evaluation
     from whombat.models.evaluation_task import EvaluationTask
-    from whombat.models.model_run import ModelRun
+    from whombat.models.prediction_run import PredictionRun
 
 __all__ = [
     "EvaluationSet",
@@ -154,17 +153,8 @@ class EvaluationSet(Base):
         repr=False,
     )
 
-    model_runs: orm.Mapped[list["ModelRun"]] = orm.relationship(
-        "ModelRun",
-        back_populates="evaluation_set",
-        default_factory=list,
-        cascade="all, delete-orphan",
-        init=False,
-        repr=False,
-    )
-
-    evaluations: orm.Mapped[list["Evaluation"]] = orm.relationship(
-        "Evaluation",
+    prediction_runs: orm.Mapped[list["PredictionRun"]] = orm.relationship(
+        "PredictionRun",
         back_populates="evaluation_set",
         default_factory=list,
         cascade="all, delete-orphan",

@@ -19,7 +19,6 @@ import SpectrogramTags from "@/components/SpectrogramTags";
 import AnnotationControls from "@/components/annotation/AnnotationControls";
 import useAnnotateSpectrogram from "@/hooks/annotation/useAnnotateSpectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
-import useMouseWheel from "@/hooks/motions/useMouseWheel";
 import useScratch from "@/hooks/motions/useScratch";
 import { useMouse } from "@/hooks/motions/useMouse";
 import api from "@/app/api";
@@ -39,18 +38,21 @@ export default function TaskSpectrogram({
   annotations: Annotation[];
   recording: Recording;
   parameters: SpectrogramParameters;
-  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<void>;
-  onRemoveTag?: (annotation: Annotation, tag: AnnotationTag) => Promise<void>;
+  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<Annotation>;
+  onRemoveTag?: (
+    annotation: Annotation,
+    tag: AnnotationTag,
+  ) => Promise<Annotation>;
   onCreateAnnotation?: (
     task: Task,
     geometry: Geometry,
     tag_ids?: number[],
-  ) => Promise<void>;
+  ) => Promise<Annotation>;
   onUpdateAnnotationGeometry?: (
     annotation: Annotation,
     geometry: Geometry,
-  ) => Promise<void>;
-  onDeleteAnnotation?: (annotation: Annotation) => Promise<void>;
+  ) => Promise<Annotation>;
+  onDeleteAnnotation?: (annotation: Annotation) => Promise<Annotation>;
 }) {
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,16 +61,13 @@ export default function TaskSpectrogram({
   const dragState = useScratch({
     ref: canvasRef,
   });
-  const scrollState = useMouseWheel(canvasRef);
   const mouseState = useMouse(canvasRef);
 
   const { state, send, draw, tags } = useAnnotateSpectrogram({
     task,
-    recording,
     annotations,
     parameters,
     scratchState: dragState,
-    scrollState,
     mouseState,
     ref: canvasRef,
     onAddTag,

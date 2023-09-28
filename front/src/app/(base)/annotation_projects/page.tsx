@@ -66,9 +66,9 @@ export default function AnnotationProjects() {
                 <AnnotationProject key={item.id} {...item} />
               ))}
             />
-            <Pagination {...pagination} />
           </>
         )}
+        {pagination.numPages > 1 && <Pagination {...pagination} />}
       </div>
     </>
   );

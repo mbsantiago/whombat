@@ -30,6 +30,7 @@ function FilterCombobox({
       </div>
       <SearchMenu
         options={filterDefs}
+        static={false}
         renderOption={(filter) => (
           <>
             {filter.icon ?? filter.icon}

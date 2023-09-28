@@ -1,17 +1,16 @@
-import { useCallback } from "react";
+import { useCallback, type RefObject } from "react";
 
 import useWindowZoom from "@/hooks/window/useWindowZoom";
-import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type ScaleWindowEvent } from "@/machines/spectrogram";
 
 export default function useSpectrogramScrollZoom({
   active,
-  scrollState,
   send,
+  ref,
 }: {
   active: boolean;
-  scrollState: ScrollState;
   send: (event: ScaleWindowEvent) => void;
+  ref: RefObject<HTMLCanvasElement>;
 }) {
   const handleOnScrollZoom = useCallback(
     (scaleBy: { time?: number; freq?: number }) => {
@@ -22,6 +21,6 @@ export default function useSpectrogramScrollZoom({
   useWindowZoom({
     active,
     scaleWindow: handleOnScrollZoom,
-    scrollState,
+    ref,
   });
 }

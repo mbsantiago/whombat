@@ -59,9 +59,8 @@ export default function useSpectrogramWindow({
     (ctx: CanvasRenderingContext2D, view: SpectrogramWindow) => {
       if (isError) return null;
       if (isLoading) {
-        ctx.canvas.classList.add("animate-pulse", "bg-stone-400");
+        ctx.canvas.classList.add("animate-pluse");
       } else {
-        ctx.canvas.classList.remove("animate-pulse", "bg-stone-400");
         drawImage({
           ctx,
           image,

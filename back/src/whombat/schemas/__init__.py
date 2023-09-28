@@ -49,6 +49,14 @@ from whombat.schemas.evaluation_tasks import (
     EvaluationTask,
     EvaluationTaskCreate,
 )
+from whombat.schemas.evaluations import (
+    Evaluation,
+    EvaluationCreate,
+    EvaluationMetric,
+    EvaluationMetricCreate,
+    EvaluationMetricUpdate,
+    EvaluationUpdate,
+)
 from whombat.schemas.features import (
     Feature,
     FeatureName,
@@ -56,6 +64,11 @@ from whombat.schemas.features import (
     FeatureNameUpdate,
 )
 from whombat.schemas.notes import Note, NoteCreate, NotePostCreate, NoteUpdate
+from whombat.schemas.prediction_runs import (
+    PredictionRun,
+    PredictionRunCreate,
+    PredictionRunUpdate,
+)
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
@@ -64,6 +77,8 @@ from whombat.schemas.recordings import (
     RecordingTag,
     RecordingUpdate,
     RecordingWithoutPath,
+    RecordingTagCreate,
+    RecordingFeatureCreate,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,
@@ -112,11 +127,17 @@ __all__ = [
     "DatasetRecordingCreate",
     "DatasetUpdate",
     "DatasetWithCounts",
+    "Evaluation",
+    "EvaluationCreate",
+    "EvaluationMetric",
+    "EvaluationMetricCreate",
+    "EvaluationMetricUpdate",
     "EvaluationSet",
     "EvaluationSetCreate",
     "EvaluationSetUpdate",
     "EvaluationTask",
     "EvaluationTaskCreate",
+    "EvaluationUpdate",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",
@@ -127,6 +148,9 @@ __all__ = [
     "NotePostCreate",
     "NoteUpdate",
     "Page",
+    "PredictionRun",
+    "PredictionRunCreate",
+    "PredictionRunUpdate",
     "Recording",
     "RecordingCreate",
     "RecordingNote",
@@ -156,4 +180,6 @@ __all__ = [
     "UserCreate",
     "UserUpdate",
     "Window",
+    "RecordingTagCreate",
+    "RecordingFeatureCreate",
 ]

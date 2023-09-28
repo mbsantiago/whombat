@@ -10,6 +10,7 @@ import AnnotateTask from "@/components/annotation/AnnotateTask";
 import { AnnotationProjectContext } from "@/app/contexts";
 import { CompleteIcon } from "@/components/icons";
 import { type Tag } from "@/api/tags";
+import api from "@/app/api";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);
@@ -18,10 +19,19 @@ export default function Page() {
   const [tags, setTags] = useState<Tag[]>([]);
 
   // Load annotation tasks for this project
-  const { isLoading, filter, total, complete, pending, refresh, current } =
-    useAnnotationTasks({
-      project,
-    });
+  const {
+    isLoading,
+    filter,
+    total,
+    complete,
+    pending,
+    refresh,
+    current,
+    next,
+    previous,
+  } = useAnnotationTasks({
+    project,
+  });
 
   // Get task_id from URL
   const [task_id] = useStateParams(
@@ -33,6 +43,10 @@ export default function Page() {
 
   const onAddTag = useCallback(
     (tag: Tag) => {
+      if (!project.tags.includes(tag)) {
+        api.annotation_projects.addTag(project.id, tag.id);
+      }
+
       setTags((tags) => {
         if (tags.includes(tag)) {
           return tags;
@@ -40,7 +54,7 @@ export default function Page() {
         return [...tags, tag];
       });
     },
-    [setTags],
+    [setTags, project.id, project.tags],
   );
 
   const onRemoveTag = useCallback(
@@ -73,6 +87,8 @@ export default function Page() {
         complete={complete}
         filter={filter}
         pending={pending}
+        next={next}
+        previous={previous}
       />
       {current == null ? (
         <Empty>
@@ -81,8 +97,11 @@ export default function Page() {
           </div>
           <p className="text-lg font-medium">Congratulations!</p>
           <p>
-            You have completed all tasks in this project. Add additional tasks
-            to continue annotating.
+            You have completed all tasks in this project{" "}
+            {filter.size > 0 ? "with the current filter settings. " : ""}
+            Add additional tasks
+            {filter.size > 0 ? ", or change the filter settings, " : ""}to
+            continue annotating.
           </p>
         </Empty>
       ) : (

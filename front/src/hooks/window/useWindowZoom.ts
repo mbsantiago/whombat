@@ -1,30 +1,37 @@
-import { useKeyPress, useUpdateEffect } from "react-use";
+import { type RefObject, useCallback } from "react";
 
+import useMouseWheel, { type ScrollState } from "@/hooks/motions/useMouseWheel";
 import { type ScaleWindowFn } from "@/hooks/window/useWindow";
-import { type ScrollState } from "@/hooks/motions/useMouseWheel";
 
 export default function useWindowZoom({
   scaleWindow,
-  scrollState,
+  ref,
   active = true,
 }: {
   scaleWindow?: ScaleWindowFn;
   active?: boolean;
-  scrollState: ScrollState;
+  ref: RefObject<HTMLCanvasElement>;
 }) {
-  const [shift] = useKeyPress("Shift");
-  const [ctrl] = useKeyPress("Control");
-
-  const { deltaY, eventNum } = scrollState;
   // Update window when scrolling
-  useUpdateEffect(() => {
-    if (active && deltaY !== 0) {
-      const factor = deltaY > 0 ? 1.1 : 1 / 1.1;
-      if (ctrl && !shift) {
-        scaleWindow?.({ time: factor, freq: 1 });
-      } else if (ctrl && shift) {
-        scaleWindow?.({ time: 1, freq: factor });
+  const onScroll = useCallback(
+    (state: ScrollState) => {
+      const { deltaY, shift, ctrl, input } = state;
+
+      if (active && deltaY !== 0) {
+        const factor = deltaY > 0 ? 1.1 : 1 / 1.1;
+        if (ctrl && !shift && !input) {
+          scaleWindow?.({ time: factor, freq: 1 });
+        } else if (ctrl && shift && !input) {
+          scaleWindow?.({ time: 1, freq: factor });
+        }
       }
-    }
-  }, [deltaY, eventNum, active, ctrl, shift, scaleWindow]);
+    },
+    [active, scaleWindow],
+  );
+
+  useMouseWheel({
+    ref,
+    onScroll,
+    preventDefault: true,
+  });
 }

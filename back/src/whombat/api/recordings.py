@@ -4,12 +4,13 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
+import soundevent
 from cachetools import LRUCache
 from soundevent.audio import compute_md5_checksum
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, filters, models, schemas
-from whombat.api import common, notes
+from whombat import cache, exceptions, filters, models, schemas
+from whombat.api import common, features, notes, tags, users
 from whombat.core import files
 from whombat.core.common import remove_duplicates
 from whombat.dependencies import get_settings
@@ -30,6 +31,7 @@ __all__ = [
     "remove_tag",
     "update",
     "update_note",
+    "validate_path",
 ]
 
 
@@ -917,3 +919,104 @@ async def get_tags(
     )
 
     return [schemas.RecordingTag.model_validate(tag) for tag in tags], count
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    recording: soundevent.Recording,
+    audio_dir: Path | None = None,
+) -> schemas.Recording:
+    """Create a recording from a soundevent.Recording."""
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
+    data = schemas.RecordingCreate(
+        uuid=recording.id,
+        path=recording.path,
+        time_expansion=recording.time_expansion,
+        date=recording.date,
+        time=recording.time,
+        latitude=recording.latitude,
+        longitude=recording.longitude,
+    )
+
+    created = await create(session, data, audio_dir=audio_dir)
+
+    for tag in recording.tags:
+        tag = await tags.get_or_create(
+            session,
+            schemas.TagCreate(
+                key=tag.key,
+                value=tag.value,
+            ),
+        )
+        created = await add_tag(session, created.id, tag.id)
+
+    anonymous = await users.get_anonymous_user(session)
+
+    for note in recording.notes:
+        user_id = anonymous.id
+        if note.created_by:
+            try:
+                user = await users.get_by_username(session, note.created_by)
+                user_id = user.id
+            except exceptions.NotFoundError:
+                pass
+
+        note = await notes.create(
+            session,
+            schemas.NotePostCreate(
+                message=note.message,
+                is_issue=note.is_issue,
+                created_by_id=user_id,
+            ),
+        )
+        created = await add_note(session, created.id, note.id)
+
+    for feature in recording.features:
+        feature_name = await features.get_or_create(
+            session,
+            schemas.FeatureNameCreate(
+                name=feature.name,
+            ),
+        )
+        created = await add_feature(
+            session,
+            created.id,
+            feature_name.id,
+            feature.value,
+        )
+
+    return created
+
+
+def validate_path(
+    path: Path,
+    audio_dir: Path,
+) -> Path:
+    """Validate that a path is relative to the audio directory.
+
+    Parameters
+    ----------
+    path : Path
+        The path to validate, can be absolute or relative. If absolute,
+        it must be relative to the audio directory. If relative,
+        it will be assumed to be relative to the audio directory and
+        the file will be checked to exist.
+
+    audio_dir : Path
+        The directory to check the path against.
+    """
+    if path.is_absolute():
+        if not path.is_relative_to(audio_dir):
+            raise ValueError(
+                f"The path {path} is not relative to the audio directory "
+                f"{audio_dir}."
+            )
+        path = path.relative_to(audio_dir)
+
+    absolute_path = audio_dir / path
+    if not absolute_path.is_file():
+        raise ValueError(f"File {path} does not exist.")
+
+    return path
