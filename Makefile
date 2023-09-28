@@ -9,3 +9,9 @@ frontend-dev:
 
 dev:
 	bash ./scripts/start_dev.sh
+
+install:
+	bash ./scripts/install.sh
+
+run:
+	bash ./scripts/run.sh

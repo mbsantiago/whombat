@@ -21,6 +21,10 @@ app.mount(
 
 origins = [
     "http://localhost:3000",
+    "http://localhost:5000",
+    "http://0.0.0.0:5000",
+    "https://localhost:5000",
+    "https://0.0.0.0:5000",
 ]
 
 app.add_middleware(
