@@ -74,8 +74,8 @@ lint/pyright:
 lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/pyright ## check style
 
 format:
-	black src tests
 	isort src tests
+	black src tests
 
 test:
 	pytest

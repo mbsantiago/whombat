@@ -46,7 +46,10 @@ from whombat.schemas.evaluation_sets import (
     EvaluationSetCreate,
     EvaluationSetUpdate,
 )
-from whombat.schemas.evaluation_tasks import EvaluationTask, EvaluationTaskCreate
+from whombat.schemas.evaluation_tasks import (
+    EvaluationTask,
+    EvaluationTaskCreate,
+)
 from whombat.schemas.evaluations import (
     Evaluation,
     EvaluationCreate,
