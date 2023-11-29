@@ -42,7 +42,7 @@ cookie_transport = CookieTransport(
     cookie_max_age=3600,
     cookie_name="whombatauth",
     cookie_secure=False,
-    cookie_domain="localhost",
+    cookie_domain="0.0.0.0",
     cookie_samesite="lax",
 )
 """We are using the cookie transport to store the access token in a cookie."""
