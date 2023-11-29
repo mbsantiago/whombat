@@ -14,6 +14,7 @@ the database.
 
 """
 
+from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
@@ -114,6 +115,7 @@ __all__ = [
     "AnnotationPostCreate",
     "AnnotationProject",
     "AnnotationProjectCreate",
+    "AnnotationProjectTagCreate",
     "AnnotationProjectUpdate",
     "AnnotationTag",
     "AnnotationTagCreate",
@@ -149,14 +151,17 @@ __all__ = [
     "NotePostCreate",
     "NoteUpdate",
     "Page",
+    "PluginInfo",
     "PredictionRun",
     "PredictionRunCreate",
     "PredictionRunUpdate",
     "Recording",
     "RecordingCreate",
+    "RecordingFeatureCreate",
     "RecordingNote",
     "RecordingPreCreate",
     "RecordingTag",
+    "RecordingTagCreate",
     "RecordingUpdate",
     "RecordingWithoutPath",
     "STFTParameters",
@@ -181,7 +186,4 @@ __all__ = [
     "UserCreate",
     "UserUpdate",
     "Window",
-    "RecordingTagCreate",
-    "RecordingFeatureCreate",
-    "AnnotationProjectTagCreate",
 ]

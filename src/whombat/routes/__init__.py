@@ -17,6 +17,7 @@ from whombat.routes.spectrograms import spectrograms_router
 from whombat.routes.tags import tags_router
 from whombat.routes.tasks import tasks_router
 from whombat.routes.users import users_router
+from whombat.routes.plugins import plugin_router
 
 __all__ = [
     "main_router",
@@ -104,4 +105,9 @@ main_router.include_router(
     prediction_runs_router,
     prefix="/prediction_runs",
     tags=["prediction_runs"],
+)
+main_router.include_router(
+    plugin_router,
+    prefix="/plugins",
+    tags=["plugins"],
 )

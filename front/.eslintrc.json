@@ -19,6 +19,7 @@
         ],
         "newlines-between": "always"
       }
-    ]
+    ],
+    "@next/next/no-img-element": "off"
   }
 }

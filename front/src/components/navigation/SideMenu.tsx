@@ -5,6 +5,7 @@ import { type ComponentProps } from "react";
 import Link from "@/components/Link";
 import {
   AnnotationProjectIcon,
+  PluginIcon,
   DatasetsIcon,
   EvaluationIcon,
   ExplorationIcon,
@@ -114,6 +115,11 @@ function SecondaryNavigation({
       <li className="px-3">
         <SideMenuButton href="/" tooltip={"Messages"}>
           <MessagesIcon className="w-6 h-6" />
+        </SideMenuButton>
+      </li>
+      <li className="px-3">
+        <SideMenuButton href="/plugins" tooltip={"Plugins"}>
+          <PluginIcon className="w-6 h-6" />
         </SideMenuButton>
       </li>
       <li className="px-3">

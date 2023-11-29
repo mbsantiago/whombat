@@ -22,6 +22,7 @@ import { registerSpectrogramApi } from "./spectrograms";
 import { registerTagAPI } from "./tags";
 import { registerTasksApi } from "./tasks";
 import { registerUserAPI } from "./user";
+import { registerPluginsAPI } from "./plugins";
 
 type APIConfig = {
   baseURL: string;
@@ -55,5 +56,6 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     tags: registerTagAPI(instance),
     tasks: registerTasksApi(instance),
     user: registerUserAPI(instance),
+    plugins: registerPluginsAPI(instance),
   };
 }
