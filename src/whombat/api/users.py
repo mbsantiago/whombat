@@ -3,6 +3,7 @@ import secrets
 import uuid
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, exceptions, models, schemas
@@ -16,6 +17,7 @@ __all__ = [
     "get_by_email",
     "get_by_username",
     "get_many",
+    "get_by_data",
     "update",
     "delete",
 ]
@@ -36,7 +38,6 @@ def _get_user_manager(session: AsyncSession) -> UserManager:
     -------
     UserManager
         The user manager.
-
     """
     return UserManager(
         UserDatabase(session, models.User),
@@ -104,7 +105,6 @@ async def get_by_username(
     Raises
     ------
     whombat.exceptions.NotFoundError
-
     """
     obj = await common.get_object(
         session, models.User, models.User.username == username
@@ -139,7 +139,6 @@ async def get_by_email(
     Raises
     ------
     whombat.exceptions.NotFoundError
-
     """
     obj = await common.get_object(
         session, models.User, models.User.email == email
@@ -238,7 +237,6 @@ async def create(
                 password="password",
                 email="email",
             )
-
     """
     user_manager = _get_user_manager(session)
     db_user = await user_manager.create(data)
@@ -274,7 +272,6 @@ async def update(
     ------
     sqlalchemy.exc.NoResultFound
         If no user with the given id exists.
-
     """
     user_manager = _get_user_manager(session)
     db_user = await user_manager.get(user_id)
@@ -293,7 +290,6 @@ async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
 
     user_id : uuid.UUID
         The id of the user to delete.
-
     """
     user = await common.delete_object(
         session,
@@ -323,7 +319,6 @@ async def get_anonymous_user(session) -> schemas.User:
     -------
     user : schemas.User
         The admin user.
-
     """
     try:
         obj = await common.get_object(
@@ -342,6 +337,40 @@ async def get_anonymous_user(session) -> schemas.User:
                 is_superuser=True,
             ),
         )
+
+
+async def get_by_data(
+    session: AsyncSession,
+    data: data.User,
+) -> schemas.User:
+    """Get a user by data.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    data : data.User
+        The data to search for.
+
+    Returns
+    -------
+    user : schemas.User
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+    """
+    if data.uuid:
+        return await get_by_id(session, data.uuid)
+
+    if data.username:
+        return await get_by_username(session, data.username)
+
+    if data.email:
+        return await get_by_email(session, data.email)
+
+    raise exceptions.NotFoundError("No user data provided.")
 
 
 def _generate_random_password(length=32):

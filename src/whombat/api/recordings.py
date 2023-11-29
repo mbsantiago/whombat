@@ -66,7 +66,6 @@ async def get_by_id(
     ------
     NotFoundError
         If a recording with the given ID does not exist.
-
     """
     recording = await common.get_object(
         session,
@@ -104,7 +103,6 @@ async def get_by_hash(
     ------
     NotFoundError
         If a recording with the given hash does not exist.
-
     """
     recording = await common.get_object(
         session,
@@ -142,7 +140,6 @@ async def get_by_path(
     ------
     NotFoundError
         If a recording with the given path does not exist.
-
     """
     recording = await common.get_object(
         session,
@@ -187,7 +184,6 @@ async def get_many(
 
     count : int
         The total number of recordings that match the given filters.
-
     """
     recordings, count = await common.get_objects(
         session,
@@ -271,7 +267,6 @@ async def create(
     -------
     recording : schemas.recordings.Recording
         The created recording.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -321,7 +316,6 @@ async def create_many(
     - do not already exist in the database.
 
     Any files that do not meet these criteria will be silently ignored.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -385,7 +379,6 @@ async def update(
     -------
     recording : schemas.recordings.Recording
         The updated recording.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -448,7 +441,6 @@ def adjust_time_expansion(
 
     time_expansion : float
         The new time expansion.
-
     """
     # Adjustment should be relative to the current time expansion
     factor = time_expansion / recording.time_expansion
@@ -483,7 +475,6 @@ async def delete(
     -------
     This will also delete all features, notes, tags and sound events
     associated with the recording. Use with caution.
-
     """
     obj = await common.delete_object(
         session,
@@ -516,7 +507,6 @@ async def add_note(
     -------
     recording : schemas.recordings.Recording
         The updated recording.
-
     """
     recording = await common.add_note_to_object(
         session,
@@ -560,7 +550,6 @@ async def add_tag(
     ----
     The tag will only be added if it does not already exist.
     Otherwise it will be ignored.
-
     """
     recording = await common.add_tag_to_object(
         session,
@@ -604,7 +593,6 @@ async def add_feature(
     ------
     whombat.exceptions.NotFoundError
         If no recording with the given hash exists.
-
     """
     recording = await common.add_feature_to_object(
         session,
@@ -680,7 +668,6 @@ async def update_feature(
 
     whombat.exceptions.NotFoundError
         If the recording does not have the given feature.
-
     """
     recording = await common.update_feature_on_object(
         session,
@@ -856,7 +843,6 @@ async def get_notes(
 
     count : int
         The total number of notes that match the given filters.
-
     """
     notes, count = await common.get_objects(
         session,
@@ -907,7 +893,6 @@ async def get_tags(
 
     count : int
         The total number of tags that match the given filters.
-
     """
     tags, count = await common.get_objects(
         session,
@@ -931,7 +916,7 @@ async def from_soundevent(
         audio_dir = get_settings().audio_dir
 
     data = schemas.RecordingCreate(
-        uuid=recording.id,
+        uuid=recording.uuid,
         path=recording.path,
         time_expansion=recording.time_expansion,
         date=recording.date,
@@ -958,7 +943,7 @@ async def from_soundevent(
         user_id = anonymous.id
         if note.created_by:
             try:
-                user = await users.get_by_username(session, note.created_by)
+                user = await users.get_by_data(session, note.created_by)
                 user_id = user.id
             except exceptions.NotFoundError:
                 pass

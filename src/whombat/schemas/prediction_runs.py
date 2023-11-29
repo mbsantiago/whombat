@@ -4,7 +4,6 @@ from uuid import UUID, uuid4
 from pydantic import Field, computed_field, model_validator
 
 from whombat.schemas.base import BaseSchema
-from whombat.schemas.evaluation_sets import EvaluationSet
 from whombat.schemas.evaluations import Evaluation
 from whombat.schemas.users import SimpleUser
 

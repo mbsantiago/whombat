@@ -49,7 +49,7 @@ async def load(
 
     clip = data.Clip(
         recording=data.Recording(
-            id=recording.uuid,
+            uuid=recording.uuid,
             path=audio_dir / recording.path,
             duration=recording.duration,
             samplerate=recording.samplerate,
@@ -65,14 +65,14 @@ async def load(
 
     # Resample audio.
     if audio_parameters.resample:
-        wav = audio.resample(wav, audio_parameters.samplerate)
+        wav = audio.resample_audio(wav, audio_parameters.samplerate)
 
     # Filter audio.
     if (
         audio_parameters.low_freq is not None
         or audio_parameters.high_freq is not None
     ):
-        wav = audio.filter(
+        wav = audio.filter_audio(
             wav,
             low_freq=audio_parameters.low_freq,
             high_freq=audio_parameters.high_freq,

@@ -773,7 +773,7 @@ async def export(
 
     soundevent_recordings: list[data.Recording] = [
         data.Recording(
-            id=recording.uuid,
+            uuid=recording.uuid,
             path=recording.path.relative_to(dataset.audio_dir),
             duration=recording.duration,
             channels=recording.channels,
@@ -803,8 +803,13 @@ async def export(
                     uuid=note.uuid,
                     message=note.message,
                     is_issue=note.is_issue,
-                    created_at=note.created_at,
-                    created_by=note.created_by.username,
+                    created_on=note.created_at,
+                    created_by=data.User(
+                        uuid=note.created_by.id,
+                        username=note.created_by.username,
+                        name=note.created_by.name,
+                        email=note.created_by.email,
+                    )
                 )
                 for note in recording.notes
             ],
@@ -813,7 +818,7 @@ async def export(
     ]
 
     return data.Dataset(
-        id=dataset.uuid,
+        uuid=dataset.uuid,
         name=dataset.name,
         description=dataset.description,
         recordings=soundevent_recordings,
@@ -877,7 +882,7 @@ async def import_dataset(
 
         recording_tags_info = [
             schemas.RecordingTagCreate(
-                recording_id=recordings_mapping[recording.id],
+                recording_id=recordings_mapping[recording.uuid],
                 tag_id=tags_mapping[(tag.key, tag.value)],
             )
             for recording in dataset.recordings
@@ -919,7 +924,7 @@ async def import_dataset(
 
         features_info = [
             schemas.RecordingFeatureCreate(
-                recording_id=recordings_mapping[recording.id],
+                recording_id=recordings_mapping[recording.uuid],
                 feature_name_id=feature_names_mapping[feature.name],
                 value=feature.value,
             )
@@ -970,14 +975,14 @@ async def import_dataset(
             )
             note = await notes.create(session, info)
             await recordings.add_note(
-                session, recordings_mapping[recording.id], note_id=note.id
+                session, recordings_mapping[recording.uuid], note_id=note.id
             )
 
     db_dataset = await common.create_object(
         session,
         models.Dataset,
         schemas.DatasetCreate(
-            uuid=dataset.id,
+            uuid=dataset.uuid,
             audio_dir=dataset_audio_dir,
             name=dataset.name,
             description=dataset.description,
@@ -1018,7 +1023,7 @@ def _validate_soundevent_recording(
         hash = compute_md5_checksum(audio_dir / path)
 
     return schemas.RecordingPreCreate(
-        uuid=recording.id,
+        uuid=recording.uuid,
         path=path,
         duration=recording.duration,
         channels=recording.channels,

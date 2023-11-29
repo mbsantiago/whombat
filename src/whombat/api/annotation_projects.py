@@ -185,8 +185,9 @@ async def import_project(
     data: sd.AnnotationProject,
 ) -> schemas.AnnotationProject:
     """Import an annotation project."""
+    # FIX: This is currently broken due to changes in soundevent
     # Get recordings
-    recording_uuids = {task.clip.recording.id for task in data.tasks}
+    recording_uuids = {task.clip.recording.uuid for task in data.tasks}
 
     stmt = select(models.Recording.id, models.Recording.uuid).filter(
         models.Recording.uuid.in_(recording_uuids)
@@ -201,7 +202,7 @@ async def import_project(
     clips_info = [
         schemas.ClipCreate(
             uuid=task.clip.uuid,
-            recording_id=recording_mapping[task.clip.recording.id],
+            recording_id=recording_mapping[task.clip.recording.uuid],
             start_time=task.clip.start_time,
             end_time=task.clip.end_time,
         )

@@ -1,6 +1,6 @@
 """REST API routes for annotation projects."""
 from fastapi import APIRouter, Depends, UploadFile
-from soundevent.io.formats import aoef
+from soundevent.io import load
 
 from whombat import api, schemas
 from whombat.dependencies import Session
@@ -145,9 +145,8 @@ async def import_annotation_project(
     annotation_project: UploadFile,
 ):
     """Import an annotation project."""
-    data = aoef.AnnotationProjectObject.model_validate_json(
-        annotation_project.file.read()
-    ).to_annotation_project()
+    # FIX: This is not working
+    data = load(annotation_project.file)
     imported = await api.annotation_projects.import_project(session, data)
     await session.commit()
     return imported

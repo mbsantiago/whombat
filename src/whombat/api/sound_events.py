@@ -4,7 +4,7 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
-from soundevent.features import compute_geometric_features
+from soundevent.geometry import compute_geometric_features
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas

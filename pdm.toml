@@ -1,0 +1,3 @@
+[venv]
+in_project = true
+with_pip = true

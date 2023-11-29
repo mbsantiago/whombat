@@ -1,13 +1,9 @@
-=======
-Credits
-=======
+# Credits
 
-Development Lead
-----------------
+## Development Lead
 
 * Santiago Martinez Balvanera <santiago.balvanera.20@ucl.ac.uk>
 
-Contributors
-------------
+## Contributors
 
 None yet. Why not be the first?
