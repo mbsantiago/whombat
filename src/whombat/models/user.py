@@ -26,8 +26,8 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from whombat.models.note import Note
     from whombat.models.annotation import AnnotationTag
+    from whombat.models.note import Note
 
 
 class User(Base):

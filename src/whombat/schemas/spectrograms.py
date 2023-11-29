@@ -122,4 +122,3 @@ class SpectrogramParameters(STFTParameters, AmplitudeParameters):
 
     cmap: str = "gray"
     """Colormap to use for spectrogram."""
-

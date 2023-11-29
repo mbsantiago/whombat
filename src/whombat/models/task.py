@@ -21,8 +21,8 @@ manner.
 
 """
 
-import typing
 import enum
+import typing
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm

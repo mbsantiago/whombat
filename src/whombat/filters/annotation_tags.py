@@ -153,14 +153,18 @@ class ProjectFilter(base.Filter):
         if not self.eq:
             return query
 
-        return query.join(
-            models.Annotation,
-            models.Annotation.id == models.AnnotationTag.annotation_id,
-        ).join(
-            models.Task,
-            models.Task.id == models.Annotation.task_id,
-        ).where(
-            models.Task.project_id == self.eq,
+        return (
+            query.join(
+                models.Annotation,
+                models.Annotation.id == models.AnnotationTag.annotation_id,
+            )
+            .join(
+                models.Task,
+                models.Task.id == models.Annotation.task_id,
+            )
+            .where(
+                models.Task.project_id == self.eq,
+            )
         )
 
 

@@ -102,7 +102,6 @@ class Task(TaskCreate):
     """Notes associated with the task."""
 
 
-
 class TaskNote(BaseSchema):
     """Schema for a task note."""
 

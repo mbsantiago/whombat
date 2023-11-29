@@ -4,9 +4,9 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
+from whombat.models.evaluation_set import EvaluationMode
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
-from whombat.models.evaluation_set import EvaluationMode
 
 __all__ = [
     "EvaluationSet",

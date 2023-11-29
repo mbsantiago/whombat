@@ -74,10 +74,10 @@ async def stream_recording_audio(
             )
 
             data = (
-                data[:24 - start]
+                data[: 24 - start]
                 + samplerate.to_bytes(4, "little")
                 + bytes_per_second.to_bytes(4, "little")
-                + data[32 - start:]
+                + data[32 - start :]
             )
 
         filesize = str(full_path.stat().st_size)

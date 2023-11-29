@@ -367,6 +367,7 @@ async def add_feature(
     )
     return schemas.SoundEvent.model_validate(sound_event)
 
+
 @sound_event_caches.with_update
 async def update_feature(
     session: AsyncSession,
@@ -404,8 +405,7 @@ async def update_feature(
         feature_name_id=feature_name_id,
         value=value,
     )
-    return schemas.SoundEvent.model_validate(sound_event
-)
+    return schemas.SoundEvent.model_validate(sound_event)
 
 
 @sound_event_caches.with_update

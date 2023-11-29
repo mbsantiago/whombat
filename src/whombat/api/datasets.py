@@ -809,7 +809,7 @@ async def export(
                         username=note.created_by.username,
                         name=note.created_by.name,
                         email=note.created_by.email,
-                    )
+                    ),
                 )
                 for note in recording.notes
             ],

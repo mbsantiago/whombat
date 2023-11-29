@@ -17,8 +17,8 @@ the database.
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
-    AnnotationProjectUpdate,
     AnnotationProjectTagCreate,
+    AnnotationProjectUpdate,
 )
 from whombat.schemas.annotations import (
     Annotation,
@@ -46,10 +46,7 @@ from whombat.schemas.evaluation_sets import (
     EvaluationSetCreate,
     EvaluationSetUpdate,
 )
-from whombat.schemas.evaluation_tasks import (
-    EvaluationTask,
-    EvaluationTaskCreate,
-)
+from whombat.schemas.evaluation_tasks import EvaluationTask, EvaluationTaskCreate
 from whombat.schemas.evaluations import (
     Evaluation,
     EvaluationCreate,
@@ -73,13 +70,13 @@ from whombat.schemas.prediction_runs import (
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
+    RecordingFeatureCreate,
     RecordingNote,
     RecordingPreCreate,
     RecordingTag,
+    RecordingTagCreate,
     RecordingUpdate,
     RecordingWithoutPath,
-    RecordingTagCreate,
-    RecordingFeatureCreate,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,

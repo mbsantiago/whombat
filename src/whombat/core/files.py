@@ -1,8 +1,8 @@
 """File handling functions."""
 import logging
-from threading import Timer
 from dataclasses import dataclass
 from pathlib import Path
+from threading import Timer
 
 from soundevent.audio import (
     MediaInfo,

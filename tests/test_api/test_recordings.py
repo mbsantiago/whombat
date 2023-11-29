@@ -956,16 +956,16 @@ async def test_get_recordings_with_offset(
         samplerate=44100,
         duration=1,
     )
-    recording1 = await recordings.create(session, schemas.RecordingCreate(path=path1))
+    recording1 = await recordings.create(
+        session, schemas.RecordingCreate(path=path1)
+    )
 
     path2 = random_wav_factory(
         channels=1,
         samplerate=44100,
         duration=1,
     )
-    await recordings.create(
-        session, schemas.RecordingCreate(path=path2)
-    )
+    await recordings.create(session, schemas.RecordingCreate(path=path2))
 
     # Act
     recording_list, _ = await recordings.get_many(session, offset=1)

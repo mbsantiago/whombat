@@ -33,8 +33,8 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from whombat.models.recording import Recording, RecordingNote
     from whombat.models.annotation import Annotation, AnnotationNote
+    from whombat.models.recording import Recording, RecordingNote
 
 
 class Note(Base):
