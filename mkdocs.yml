@@ -1,0 +1,111 @@
+site_name: Whombat
+site_url: https://mbsantiago.github.io/whombat/
+nav:
+  - Home: README.md
+  - User Guide:
+      - user_guide/index.md
+      - Installation: user_guide/installation.md
+      - Configuration: user_guide/configuration.md
+      - FAQ: user_guide/faq.md
+  - Developer Guide:
+      - developer_guide/index.md
+      - Quickstart: developer_guide/quickstart.md
+      - Architecture: developer_guide/architecture.md
+      - Design Principles: developer_guide/design_principles.md
+      - Database Layer: developer_guide/database.md
+      - Python API: developer_guide/api.md
+      - HTTP REST API: developer_guide/rest_api.md
+      - Command Line Interface: developer_guide/cli.md
+      - Front End: developer_guide/front_end.md
+      - Plugins: developer_guide/plugins.md
+      - Contributing: CONTRIBUTING.md
+      - Code of Conduct: CODE_OF_CONDUCT.md
+  - About the Project:
+      - Authors: AUTHORS.md
+      - Sponsors: sponsors.md
+theme:
+  name: material
+  logo: assets/logo.svg
+  font:
+    text: Mulish
+  favicon: assets/favicon.svg
+  features:
+    - content.code.copy
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: ["src"]
+          import:
+            - https://docs.python.org/3.11/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+            - https://docs.xarray.dev/en/stable/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://docs.scipy.org/doc/scipy/objects.inv
+            - https://shapely.readthedocs.io/en/stable/objects.inv
+            - https://mbsantiago.github.io/soundevent/objects.inv
+          options:
+            show_source: false
+            show_root_toc_entry: true
+            show_symbol_type_toc: true
+            show_root_heading: true
+            show_category_heading: true
+            show_symbol_type_heading: true
+            show_if_no_docstring: true
+            docstring_style: "numpy"
+            docstring_section_style: "table"
+            summary: true
+            signature_crossrefs: true
+            show_signature_annotations: true
+            filters:
+              - "!^_"
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+watch:
+  - docs
+  - src
+markdown_extensions:
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - admonition
+  - tables
+  - pymdownx.critic
+  - pymdownx.keys
+  - pymdownx.details
+  - pymdownx.superfences:
+      preserve_tabs: true
+  - pymdownx.snippets
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - toc:
+      toc_depth: 4
+      permalink: "#"
+      separator: "_"
+extra_javascript:
+  - javascripts/jquery-3.3.1.min.js
+  - javascripts/jquery.json-viewer.js
+  - javascripts/json-viewer.js
+extra_css:
+  - stylesheets/jquery.json-viewer.css
+  - css/mkdocstrings.css
