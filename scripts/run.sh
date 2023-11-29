@@ -1,9 +1,6 @@
 #!/bin/bash
 # Description: Run whombat
 
-# Go to the backend directory
-cd back
-
 echo "Starting whombat..."
 
 # Run whombat. This assumes that whombat is already installed

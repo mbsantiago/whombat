@@ -4,8 +4,6 @@
 # Load environment variables for development
 source scripts/dev_env.sh
 
-cd back
-
 # Make sure there is a virtual environment
 if [ ! -d .venv ]; then
   pmd install
