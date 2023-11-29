@@ -30,61 +30,57 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test clean-docs ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc clean-test clean-docs
 
-clean-build: ## remove build artifacts
+clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
-clean-pyc: ## remove Python file artifacts
+clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
+clean-test:
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-clean-docs: ## remove docs artifacts
+clean-docs:
 	rm -fr site/
 
-lint/flake8: ## check style with flake8
+lint/flake8:
 	flake8 src tests
 
-lint/black: ## check style with black
+lint/black:
 	black --check src tests
 
-lint/pylint: ## check style with pylint
+lint/pylint:
 	pylint src tests
 
-lint/pycodestyle: ## check style with pycodestyle
+lint/pycodestyle:
 	pycodestyle src
 
-lint/pydocstyle: ## check style with pydocstyle
+lint/pydocstyle:
 	pydocstyle src
 
-lint/pyright: ## check style with pyright
+lint/pyright:
 	pyright src
 
 lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/pyright ## check style
 
-format: ## format code with black
+format:
 	black src tests
 	isort src tests
 
-test: ## run tests quickly with the default Python
+test:
 	pytest
 
-test-all: ## run tests on every Python version with tox
-	tox
-
-coverage: ## check code coverage quickly with the default Python
+coverage:
 	coverage run --source whombat -m pytest
 	coverage report -m
 	coverage html
@@ -94,21 +90,12 @@ docs:
 	mkdocs build
 	URL="site/index.html"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 
-servedocs: ## compile the docs watching for changes
+docs-serve:
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 	@$(ENV_PREFIX)mkdocs serve
 
-release: dist ## package and upload a release
-	twine upload dist/*
-
-install: clean ## install the package to the active Python's site-packages
+install: clean
 	pip install .
-
-install-dev: clean ## install the package to the active Python's site-packages
-	pip install -e .
-
-install-dev-no-deps: clean ## install the package to the active Python's site-packages
-	pip install -e . --no-deps
 
 dev:
 	uvicorn src.whombat.app:app --reload --port $(WHOMBAT_BACKEND_DEV_PORT)
