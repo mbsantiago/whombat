@@ -16,14 +16,14 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.models.base import Base
 
 __all__ = [
-    "EvaluatedClip",
+    "ClipEvaluation",
 ]
 
 
-class EvaluatedClip(Base):
+class ClipEvaluation(Base):
     """Evaluated Clip model."""
 
-    __tablename__ = "evaluated_clip"
+    __tablename__ = "clip_evaluation"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     """Evaluated clip ID."""

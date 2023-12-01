@@ -19,7 +19,7 @@ from whombat.models.clip_prediction import (
     ClipPredictionTag,
 )
 from whombat.models.dataset import Dataset, DatasetRecording
-from whombat.models.evaluated_clip import EvaluatedClip
+from whombat.models.clip_evaluation import ClipEvaluation
 from whombat.models.evaluated_sound_event import EvaluatedSoundEvent
 from whombat.models.evaluation import Evaluation
 from whombat.models.evaluation_set import EvaluationSet, EvaluationSetTag
@@ -69,7 +69,7 @@ __all__ = [
     "ClipTag",
     "Dataset",
     "DatasetRecording",
-    "EvaluatedClip",
+    "ClipEvaluation",
     "EvaluatedSoundEvent",
     "Evaluation",
     "EvaluationSet",
