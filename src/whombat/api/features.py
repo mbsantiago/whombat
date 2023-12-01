@@ -3,6 +3,7 @@
 from typing import Any, Sequence
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas
@@ -52,7 +53,6 @@ async def get_by_id(
     ------
     exceptions.NotFoundError
         If the feature name was not found.
-
     """
     db_feature_name = await common.get_object(
         session=session,
@@ -90,7 +90,6 @@ async def get_by_name(
     ------
     exceptions.NotFoundError
         If the feature name was not found.
-
     """
     db_feature_name = await common.get_object(
         session=session,
@@ -125,7 +124,6 @@ async def get_recordings(
     -------
     names : list[str]
         The names of all features.
-
     """
     db_feature_names, count = await common.get_objects(
         session=session,
@@ -162,7 +160,6 @@ async def create(
     ------
     whombat.exceptions.DuplicateObjectError
         If the feature already exists.
-
     """
     feature = await common.create_object(
         session=session,
@@ -192,7 +189,6 @@ async def create_many(
     -------
     feature_names : list[models.FeatureName]
         The feature names.
-
     """
     feature_names = await common.create_objects_without_duplicates(
         session=session,
@@ -226,7 +222,6 @@ async def get_or_create(
     -------
     name : str
         The name of the feature.
-
     """
     feature_name = await common.get_or_create_object(
         session=session,
@@ -268,7 +263,6 @@ async def update(
 
     whombat.exceptions.NotFoundError
         If the old name does not exist.
-
     """
     feature_name = await common.update_object(
         session=session,
@@ -298,7 +292,6 @@ async def delete(
     -------
     name : str
         The name of the feature.
-
     """
     obj = await common.delete_object(
         session=session,
@@ -334,4 +327,53 @@ def find(
     """
     return next(
         (f for f in features if f.feature_name.name == feature_name), default
+    )
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    feature: data.Feature,
+) -> schemas.Feature:
+    """Create a feature from a soundevent Feature object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    feature: data.Feature
+        The soundevent feature object.
+
+    Returns
+    -------
+    schemas.FeatureCreate
+        The feature.
+    """
+    feature_name = await get_or_create(
+        session=session,
+        data=schemas.FeatureNameCreate(name=feature.name),
+    )
+    return schemas.Feature(
+        feature_name=feature_name,
+        value=feature.value,
+    )
+
+
+def to_soundevent(
+    feature: schemas.Feature,
+) -> data.Feature:
+    """Create a soundevent Feature object from a feature.
+
+    Parameters
+    ----------
+    feature : schemas.Feature
+        The feature.
+
+    Returns
+    -------
+    data.Feature
+        The soundevent feature object.
+    """
+    return data.Feature(
+        name=feature.feature_name.name,
+        value=feature.value,
     )

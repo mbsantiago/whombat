@@ -18,6 +18,7 @@ __all__ = [
     "get_by_username",
     "get_many",
     "get_by_data",
+    "to_soundevent",
     "update",
     "delete",
 ]
@@ -339,6 +340,10 @@ async def get_anonymous_user(session) -> schemas.User:
         )
 
 
+def _generate_random_password(length=32):
+    return secrets.token_urlsafe(length)
+
+
 async def get_by_data(
     session: AsyncSession,
     data: data.User,
@@ -361,17 +366,88 @@ async def get_by_data(
     ------
     whombat.exceptions.NotFoundError
     """
-    if data.uuid:
-        return await get_by_id(session, data.uuid)
+    if data.email:
+        return await get_by_email(session, data.email)
 
     if data.username:
         return await get_by_username(session, data.username)
 
-    if data.email:
-        return await get_by_email(session, data.email)
+    if data.uuid:
+        return await get_by_id(session, data.uuid)
 
     raise exceptions.NotFoundError("No user data provided.")
 
 
-def _generate_random_password(length=32):
-    return secrets.token_urlsafe(length)
+async def from_soundevent(
+    session: AsyncSession,
+    user: data.User,
+) -> schemas.User:
+    """Get or create a user from a soundevent user object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    user : data.User
+        The soundevent user object to get or create.
+
+    Returns
+    -------
+    user : schemas.User
+        The user object.
+
+    Raises
+    ------
+    whombat.exceptions.DuplicateObjectError
+        If a user with the same username or email already exists.
+
+    Notes
+    -----
+    If no user with the same username, email or UUID exists, a new user will be
+    created with a random password and marked as inactive.
+    """
+    try:
+        return await get_by_data(session, user)
+    except exceptions.NotFoundError:
+        manager = _get_user_manager(session)
+        password = _generate_random_password()
+        hashed_password = manager.password_helper.hash(password)
+        created_user = await manager.user_db.create(
+            dict(
+                id=user.uuid,
+                username=user.username,
+                email=user.email,
+                name=user.name,
+                hashed_password=hashed_password,
+                is_active=False,
+                is_superuser=False,
+            )
+        )
+        await session.flush()
+        return schemas.User.model_validate(created_user)
+
+
+def to_soundevent(
+    user: schemas.User,
+) -> data.User:
+    """Convert a user instance to soundevent object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    user : schemas.User
+        The user to get the data from.
+
+    Returns
+    -------
+    user : data.User
+        The soundevent user object.
+    """
+    return data.User(
+        uuid=user.id,
+        username=user.username,
+        email=user.email,
+        name=user.name,
+    )

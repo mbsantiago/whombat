@@ -1,6 +1,7 @@
 """API functions to interact with tags."""
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -275,7 +276,6 @@ async def update(
     ------
     exceptions.NotFoundError
         If the tag does not exist.
-
     """
     tag = await common.update_object(
         session=session,
@@ -304,3 +304,51 @@ async def delete(session: AsyncSession, tag_id: int) -> schemas.Tag:
         condition=models.Tag.id == tag_id,
     )
     return schemas.Tag.model_validate(obj)
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    tag: data.Tag,
+) -> schemas.Tag:
+    """Create a tag from a soundevent Tag object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session.
+    tag: data.Tag
+        The soundevent tag object.
+
+    Returns
+    -------
+    schemas.TagCreate
+        The tag.
+    """
+    return await get_or_create(
+        session=session,
+        data=schemas.TagCreate(
+            key=tag.key,
+            value=tag.value,
+        ),
+    )
+
+
+def to_soundevent(
+    tag: schemas.Tag,
+) -> data.Tag:
+    """Create a soundevent Tag object from a tag.
+
+    Parameters
+    ----------
+    tag : schemas.Tag
+        The tag.
+
+    Returns
+    -------
+    data.Tag
+        The soundevent tag object.
+    """
+    return data.Tag(
+        key=tag.key,
+        value=tag.value,
+    )

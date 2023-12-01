@@ -4,10 +4,11 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
+from soundevent import data
 from soundevent.geometry import compute_geometric_features
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
+from whombat import cache, exceptions, models, schemas
 from whombat.api import common, features
 from whombat.filters.base import Filter
 
@@ -525,4 +526,68 @@ async def _create_sound_event_features(
         session,
         models.SoundEventFeature,
         data=data,
+    )
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    sound_event: data.SoundEvent,
+    recording_id: int,
+) -> schemas.SoundEvent:
+    """Create a sound event from a soundevent SoundEvent object.
+
+    Parameters
+    ----------
+    session
+        The database session.
+    sound_event
+        The soundevent sound event object.
+    recording_id
+        The ID of the recording you want to add the sound event to.
+
+    Returns
+    -------
+    schemas.SoundEvent
+        The sound event.
+    """
+    try:
+        return await get_by_uuid(session, sound_event.uuid)
+    except exceptions.NotFoundError:
+        pass
+
+    if sound_event.geometry is None:
+        raise ValueError("The sound event does not have a geometry.")
+
+    return await create(
+        session,
+        schemas.SoundEventCreate(
+            recording_id=recording_id,
+            uuid=sound_event.uuid,
+            geometry=sound_event.geometry,
+        ),
+    )
+
+
+def to_soundevent(
+    sound_event: schemas.SoundEvent,
+) -> data.SoundEvent:
+    """Create a soundevent SoundEvent object from a sound event.
+
+    Parameters
+    ----------
+    sound_event : schemas.SoundEvent
+        The sound event.
+
+    Returns
+    -------
+    data.SoundEvent
+        The soundevent sound event object.
+    """
+    return data.SoundEvent(
+        uuid=sound_event.uuid,
+        geometry=sound_event.geometry,
+        features=[
+            features.to_soundevent(f)
+            for f in sound_event.features
+        ],
     )

@@ -4,10 +4,11 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
+from whombat import cache, exceptions, models, schemas
 from whombat.api import common, features, recordings
 from whombat.filters.base import Filter
 
@@ -57,7 +58,6 @@ async def get_by_uuid(
     ------
     exceptions.NotFoundError
         Raised if clip with UUID `uuid` is not found.
-
     """
     clip = await common.get_object(
         session,
@@ -93,7 +93,6 @@ async def get_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
     ------
     exceptions.NotFoundError
         Raised if clip with ID `id` is not found.
-
     """
     clip = await common.get_object(
         session, models.Clip, models.Clip.id == clip_id
@@ -174,7 +173,6 @@ async def create(
 
     whombat.exceptions.NotFoundError
         If recording does not exist.
-
     """
     # Make sure recording exists
     await recordings.get_by_id(session, data.recording_id)
@@ -221,7 +219,6 @@ async def create_many(
 
     whombat.exceptions.NotFoundError
         If recording does not exist.
-
     """
 
     def get_key(
@@ -286,7 +283,6 @@ async def delete(
     ------
     exceptions.NotFoundError
         Raised if clip does not exist in the database.
-
     """
     obj = await common.delete_object(
         session,
@@ -324,7 +320,6 @@ async def add_tag(
     ------
     exceptions.NotFoundError
         Raised if clip does not exist in the database.
-
     """
     clip = await common.add_tag_to_object(
         session,
@@ -367,7 +362,6 @@ async def add_feature(
     ------
     whombat.exceptions.NotFoundError
         If clip does not exist.
-
     """
     clip = await common.add_feature_to_object(
         session,
@@ -414,7 +408,6 @@ async def update_feature(
     ------
     exceptions.NotFoundError
         Raised if clip does not exist in the database.
-
     """
     clip = await common.update_feature_on_object(
         session,
@@ -454,7 +447,6 @@ async def remove_tag(
     ------
     exceptions.NotFoundError
         Raised if clip does not exist in the database.
-
     """
     clip = await common.remove_tag_from_object(
         session,
@@ -493,7 +485,6 @@ async def remove_feature(
     ------
     exceptions.NotFoundError
         Raised if clip does not exist in the database.
-
     """
     clip = await common.remove_feature_from_object(
         session,
@@ -516,7 +507,6 @@ async def _create_clip_features(
         Database session.
     clips : list[schemas.Clip]
         List of clips to create features for.
-
     """
     clip_features = [
         (clip.id, name, value)
@@ -562,7 +552,6 @@ def compute_clip_duration(clip: schemas.Clip | models.Clip) -> float:
     -------
     float
         Duration of clip.
-
     """
     return clip.end_time - clip.start_time
 
@@ -586,6 +575,65 @@ def compute_clip_features(
     -------
     dict[str, float]
         Dictionary of feature names and values.
-
     """
     return {name: func(clip) for name, func in CLIP_FEATURES.items()}
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    clip: data.Clip,
+) -> schemas.Clip:
+    """Create a clip from a soundevent Clip object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    clip : data.Clip
+        The soundevent Clip object.
+
+    Returns
+    -------
+    clip : schemas.Clip
+        The created clip.
+    """
+    try:
+        return await get_by_uuid(session, clip.uuid)
+    except exceptions.NotFoundError:
+        pass
+
+    recording = await recordings.from_soundevent(session, clip.recording)
+
+    return await create(
+        session,
+        schemas.ClipCreate(
+            uuid=clip.uuid,
+            recording_id=recording.id,
+            start_time=clip.start_time,
+            end_time=clip.end_time,
+        ),
+    )
+
+
+def to_soundevent(
+    clip: schemas.Clip,
+) -> data.Clip:
+    """Create a soundevent Clip object from a clip.
+
+    Parameters
+    ----------
+    clip : schemas.Clip
+        The clip.
+
+    Returns
+    -------
+    clip : data.Clip
+        The soundevent Clip object.
+    """
+    return data.Clip(
+        uuid=clip.uuid,
+        recording=recordings.to_soundevent(clip.recording),
+        start_time=clip.start_time,
+        end_time=clip.end_time,
+    )

@@ -1,8 +1,11 @@
 """API functions to interact with notes."""
 
+from uuid import UUID
+
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common, users
 from whombat.filters.base import Filter
 
@@ -35,10 +38,37 @@ async def get_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
     ------
     whombat.exceptions.NotFoundError
         If the given note does not exist.
-
     """
     note = await common.get_object(
         session, models.Note, models.Note.id == note_id
+    )
+    return schemas.Note.model_validate(note)
+
+
+async def get_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Note:
+    """Get a note by its UUID.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    uuid
+        The UUID of the note.
+
+    Returns
+    -------
+    note
+        The note with the given UUID.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If the given note does not exist.
+    """
+    note = await common.get_object(
+        session,
+        models.Note,
+        models.Note.uuid == uuid,
     )
     return schemas.Note.model_validate(note)
 
@@ -80,7 +110,6 @@ async def get_many(
 
     count : int
         The total number of notes that match the given filters.
-
     """
     notes, count = await common.get_objects(
         session,
@@ -116,7 +145,6 @@ async def create(
     ------
     whombat.exceptions.NotFoundError
         If the given user does not exist.
-
     """
     await users.get_by_id(session, user_id=data.created_by_id)
     note = await common.create_object(session, models.Note, data)
@@ -151,7 +179,6 @@ async def update(
     ------
     whombat.exceptions.NotFoundError
         If the given note does not exist.
-
     """
     note = await common.update_object(
         session,
@@ -175,6 +202,76 @@ async def delete(
 
     note_id : int
         The ID of the note to delete.
-
     """
     await common.delete_object(session, models.Note, models.Note.id == note_id)
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    note: data.Note,
+) -> schemas.Note:
+    """Create a note from a soundevent Note object.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+
+    note : data.Note
+        The soundevent Note object.
+
+    Returns
+    -------
+    note : schemas.Note
+        The created note.
+    """
+    try:
+        return await get_by_uuid(session, note.uuid)
+    except exceptions.NotFoundError:
+        pass
+
+    if note.created_by is None:
+        user = await users.get_anonymous_user(session)
+    else:
+        user = await users.from_soundevent(session, note.created_by)
+
+    return await create(
+        session,
+        schemas.NotePostCreate(
+            created_at=note.created_on,
+            uuid=note.uuid,
+            message=note.message,
+            created_by_id=user.id,
+            is_issue=note.is_issue,
+        ),
+    )
+
+
+def to_soundevent(
+    note: schemas.Note,
+) -> data.Note:
+    """Create a soundevent Note object from a note.
+
+    Parameters
+    ----------
+    note : schemas.Note
+        The note.
+
+    Returns
+    -------
+    note : data.Note
+        The soundevent Note object.
+    """
+    user = note.created_by
+    return data.Note(
+        uuid=note.uuid,
+        created_on=note.created_at,
+        message=note.message,
+        # TODO: Add other fields!
+        created_by=data.User(
+            uuid=user.id,
+            username=user.username,
+            name=user.name,
+        ),
+        is_issue=note.is_issue,
+    )

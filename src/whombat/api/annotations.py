@@ -4,10 +4,11 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
-from whombat.api import common
+from whombat import cache, exceptions, models, schemas
+from whombat.api import common, notes, sound_events, tags, users
 from whombat.api.tasks import _add_tag_to_project
 from whombat.filters.base import Filter
 
@@ -325,4 +326,164 @@ async def get_tags(
     return (
         [schemas.AnnotationTag.model_validate(tag) for tag in tags],
         count,
+    )
+
+
+async def create_from_soundevent(
+    session: AsyncSession,
+    sound_event_annotation: data.SoundEventAnnotation,
+    task_id: int,
+) -> schemas.Annotation:
+    """Create an annotation from a sound event annotation.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+    sound_event_annotation : data.SoundEventAnnotation
+        The sound event annotation to create the annotation from.
+    task_id : int
+        The ID of the task to add the annotation to.
+
+    Returns
+    -------
+    schemas.Annotation
+        The created annotation.
+    """
+
+    if sound_event_annotation.created_by is None:
+        user = await users.get_anonymous_user(session)
+    else:
+        user = await users.from_soundevent(
+            session, sound_event_annotation.created_by
+        )
+
+    task = await common.get_object(
+        session,
+        models.Task,
+        models.Task.id == task_id,
+    )
+
+    sound_event = await sound_events.from_soundevent(
+        session,
+        sound_event_annotation.sound_event,
+        task.clip.recording.id,
+    )
+
+    annotation = await create(
+        session,
+        schemas.AnnotationPostCreate(
+            created_by_id=user.id,
+            sound_event_id=sound_event.id,
+            task_id=task.id,
+            created_at=sound_event_annotation.created_on,
+        ),
+    )
+
+    for se_tag in sound_event_annotation.tags:
+        tag = await tags.from_soundevent(session, se_tag)
+        annotation = await add_tag(session, annotation.id, tag.id, user.id)
+
+    for se_note in sound_event_annotation.notes:
+        note = await notes.from_soundevent(session, se_note)
+        annotation = await add_note(session, annotation.id, note.id)
+
+    return annotation
+
+
+async def update_from_soundevent(
+    session: AsyncSession,
+    annotation: schemas.Annotation,
+    sound_event_annotation: data.SoundEventAnnotation,
+) -> schemas.Annotation:
+    """Update an annotation from a sound event annotation.
+
+    This function will add any tags or notes that are in the sound event
+    annotation but not in the annotation. It will not remove any tags or notes.
+
+    Parameters
+    ----------
+    session
+        SQLAlchemy AsyncSession.
+    annotation
+        The annotation to update.
+    sound_event_annotation
+        The sound event annotation to update the annotation from.
+
+    Returns
+    -------
+    schemas.Annotation
+        The updated annotation.
+
+    Notes
+    -----
+    Since `soundevent` annotation tags do not store the user that created them,
+    any tag that is added to the annotation will be attributed to the creator
+    of the annotation.
+    """
+    if not annotation.uuid == sound_event_annotation.uuid:
+        raise ValueError(
+            "Annotation UUID does not match SoundEventAnnotation UUID"
+        )
+
+    tag_keys = {(t.tag.key, t.tag.value) for t in annotation.tags}
+    note_keys = {n.uuid for n in annotation.notes}
+
+    for se_tag in sound_event_annotation.tags:
+        if (se_tag.key, se_tag.value) in tag_keys:
+            continue
+
+        tag = await tags.from_soundevent(session, se_tag)
+        annotation = await add_tag(
+            session,
+            annotation.id,
+            tag.id,
+            annotation.created_by.id,
+        )
+
+    for se_note in sound_event_annotation.notes:
+        if se_note.uuid in note_keys:
+            continue
+
+        note = await notes.from_soundevent(session, se_note)
+        annotation = await add_note(session, annotation.id, note.id)
+
+    return annotation
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    sound_event_annotation: data.SoundEventAnnotation,
+    task_id: int,
+) -> schemas.Annotation:
+    """Get or create an annotation from a `soundevent` annotation.
+
+    If an annotation with the same UUID already exists, it will be updated
+    with any tags or notes that are in the `soundevent` annotation but not in
+    current state of the annotation.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        SQLAlchemy AsyncSession.
+    sound_event_annotation : data.SoundEventAnnotation
+        The sound event annotation to create the annotation from.
+    task_id : int
+        The ID of the task to add the annotation to.
+
+    Returns
+    -------
+    schemas.Annotation
+        The created annotation.
+    """
+    try:
+        annotation = await get_by_uuid(session, sound_event_annotation.uuid)
+        return await update_from_soundevent(
+            session, annotation, sound_event_annotation
+        )
+    except exceptions.NotFoundError:
+        pass
+
+    return await create_from_soundevent(
+        session, sound_event_annotation, task_id
     )

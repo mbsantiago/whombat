@@ -4,11 +4,12 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
-from sqlalchemy import select, tuple_
+from soundevent import data
+from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, models, schemas
-from whombat.api import common, notes
+from whombat.api import clips, common, notes, tags, users
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -206,7 +207,6 @@ async def create_many(
     -------
     list[schemas.Task]
         Created tasks.
-
     """
     tasks = await common.create_objects_without_duplicates(
         session,
@@ -676,3 +676,146 @@ async def _add_tag_to_project(
     )
     session.add(project_tag)
     await session.flush()
+
+
+async def from_soundevent_task(
+    session: AsyncSession,
+    task: data.AnnotationTask,
+    project_id: int,
+) -> schemas.Task:
+    """Get or create a task from a `soundevent` task.
+
+    Parameters
+    ----------
+    session
+        An async database session.
+    task
+        The `soundevent` task.
+    project_id
+        The ID of the annotation project to which the task belongs.
+
+    Returns
+    -------
+    schemas.Task
+        The created task.
+    """
+    try:
+        return await get_by_uuid(session, task.uuid)
+    except Exception:
+        pass
+
+    clip = await clips.from_soundevent(session, task.clip)
+
+    return await create(
+        session,
+        schemas.TaskCreate(
+            clip_id=clip.id,
+            project_id=project_id,
+            uuid=task.uuid,
+        ),
+    )
+
+
+async def update_from_soundevent_clip_annotation(
+    session: AsyncSession,
+    task: schemas.Task,
+    clip_annotation: data.ClipAnnotation,
+) -> schemas.Task:
+    """Update a task from a `soundevent` clip annotation.
+
+    This will add any tags and notes that are not already present on the task.
+    This function does not remove any existing tags or notes.
+
+    Parameters
+    ----------
+    session
+        An async database session.
+
+    Returns
+    -------
+    schemas.Task
+        The updated task.
+    """
+    anon = await users.get_anonymous_user(session)
+
+    # Add tags
+    tag_keys = {(t.tag.key, t.tag.value) for t in task.tags}
+    for se_tag in clip_annotation.tags:
+        if (se_tag.key, se_tag.value) in tag_keys:
+            continue
+
+        tag = await tags.from_soundevent(session, se_tag)
+        task = await add_tag(
+            session,
+            task.id,
+            tag.id,
+            anon.id,
+        )
+
+    # Add notes
+    note_keys = {n.uuid for n in task.notes}
+    for se_note in clip_annotation.notes:
+        if se_note.uuid in note_keys:
+            continue
+
+        note = await notes.from_soundevent(session, se_note)
+        task = await add_note(
+            session,
+            task.id,
+            note.id,
+        )
+
+    return task
+
+
+async def from_soundevent_clip_annotation(
+    session: AsyncSession,
+    clip_annotation: data.ClipAnnotation,
+    project_id: int,
+) -> schemas.Task:
+    """Get or create a task from a `soundevent` clip annotation.
+
+    Parameters
+    ----------
+    session
+        An async database session.
+    clip_annotation
+        The `soundevent` clip annotation.
+    project_id
+        The ID of the annotation project to which the task belongs.
+
+    Returns
+    -------
+    schemas.Task
+        The created task.
+    """
+    try:
+        task = await common.get_object(
+            session,
+            models.Task,
+            and_(
+                models.Task.clip.has(models.Clip.uuid == clip_annotation.clip),
+                models.Task.project_id == project_id,
+            ),
+        )
+        return await update_from_soundevent_clip_annotation(
+            session,
+            schemas.Task.model_validate(task),
+            clip_annotation,
+        )
+    except Exception:
+        pass
+
+    clip = await clips.from_soundevent(session, clip_annotation.clip)
+    task = await create(
+        session,
+        schemas.TaskCreate(
+            clip_id=clip.id,
+            project_id=project_id,
+        ),
+    )
+    return await update_from_soundevent_clip_annotation(
+        session,
+        task,
+        clip_annotation,
+    )

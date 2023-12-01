@@ -5,12 +5,11 @@ from pathlib import Path
 
 from cachetools import LRUCache
 from soundevent import data
-from soundevent.audio import compute_md5_checksum
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, exceptions, models, schemas
-from whombat.api import common, notes, recordings, users
+from whombat.api import common, recordings
 from whombat.core import files
 from whombat.dependencies import get_settings
 from whombat.filters.base import Filter
@@ -65,7 +64,6 @@ async def get_by_id(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given ID exists.
-
     """
     dataset = await common.get_object(
         session,
@@ -102,7 +100,6 @@ async def get_by_name(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given name exists.
-
     """
     dataset = await common.get_object(
         session,
@@ -139,7 +136,6 @@ async def get_by_uuid(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given UUID exists.
-
     """
     dataset = await common.get_object(
         session,
@@ -176,7 +172,6 @@ async def get_by_audio_dir(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given audio directory exists.
-
     """
     dataset = await common.get_object(
         session,
@@ -216,7 +211,6 @@ async def get_many(
     Returns
     -------
     datasets : list[schemas.Dataset]
-
     """
     datasets, count = await common.get_objects(
         session,
@@ -261,7 +255,6 @@ async def create(
         If a dataset with the given name or audio directory already exists.
     pydantic.ValidationError
         If the given audio directory does not exist.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -349,7 +342,6 @@ async def update(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given UUID exists.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -397,7 +389,6 @@ async def delete(
     ------
     whombat.exceptions.NotFoundError
         If no dataset with the given id exists.
-
     """
     obj = await common.delete_object(
         session,
@@ -447,7 +438,6 @@ async def add_file(
 
     ValueError
         If the file is not part of the dataset audio directory.
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -501,7 +491,6 @@ async def add_recording(
     ------
     ValueError
         If the recording is not part of the dataset audio directory.
-
     """
     dataset = await get_by_id(session, dataset_id=dataset_id)
     recording = await recordings.get_by_id(session, recording_id=recording_id)
@@ -554,7 +543,6 @@ async def add_recordings(
 
     recordings: list[schemas.Recording]
         The recordings to add to the dataset.
-
     """
     data = []
     for recording in recordings:
@@ -678,7 +666,6 @@ async def get_state(
     Returns
     -------
     files : list[schemas.DatasetFile]
-
     """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
@@ -734,6 +721,107 @@ async def get_state(
     return ret
 
 
+async def from_soundevent(
+    session: AsyncSession,
+    dataset: data.Dataset,
+    dataset_audio_dir: Path | None = None,
+    audio_dir: Path | None = None,
+) -> schemas.DatasetWithCounts:
+    """Create a dataset from a soundevent dataset.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    dataset : soundevent.Dataset
+        The soundevent dataset.
+    dataset_audio_dir : Path, optional
+        The audio directory of the dataset, by default None. If None, the
+        audio directory from the settings will be used.
+    audio_dir : Path, optional
+        The root audio directory, by default None. If None, the root audio
+        directory from the settings will be used.
+
+    Returns
+    -------
+    dataset : schemas.Dataset
+        The dataset.
+    """
+    try:
+        return await get_by_uuid(session, dataset.uuid)
+    except exceptions.NotFoundError:
+        pass
+
+    if dataset_audio_dir is None:
+        dataset_audio_dir = get_settings().audio_dir
+
+    data = schemas.DatasetCreate(
+        created_at=dataset.created_on,
+        uuid=dataset.uuid,
+        audio_dir=dataset_audio_dir,
+        name=dataset.name,
+        description=dataset.description,
+    )
+
+    whombat_dataset, _ = await create(session, data, audio_dir=audio_dir)
+
+    for rec in dataset.recordings:
+        recording = await recordings.from_soundevent(
+            session,
+            rec,
+            audio_dir=audio_dir,
+        )
+        await add_recording(
+            session,
+            dataset_id=whombat_dataset.id,
+            recording_id=recording.id,
+        )
+
+    return schemas.DatasetWithCounts(
+        **dict(whombat_dataset),
+        recording_count=len(dataset.recordings),
+    )
+
+
+async def to_soundevent(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+) -> data.Dataset:
+    """Create a soundevent dataset from a dataset.
+
+    Parameters
+    ----------
+    session : AsyncSession
+        The database session to use.
+    dataset : schemas.Dataset
+        The dataset.
+
+    Returns
+    -------
+    dataset : soundevent.Dataset
+        The soundevent dataset.
+    """
+    recs, _ = await recordings.get_many(
+        session,
+        limit=-1,
+        filters=[
+            DatasetFilter(dataset=dataset.id),
+        ],
+    )
+
+    soundevent_recordings: list[data.Recording] = [
+        recordings.to_soundevent(recording) for recording in recs
+    ]
+
+    return data.Dataset(
+        uuid=dataset.uuid,
+        name=dataset.name,
+        description=dataset.description,
+        created_on=dataset.created_at,
+        recordings=soundevent_recordings,
+    )
+
+
 async def export(
     session: AsyncSession,
     dataset_id: int,
@@ -754,75 +842,8 @@ async def export(
     dataset : soundevent.Dataset
         The exported dataset.
     """
-    # Get dataset info
-    dataset = await common.get_object(
-        session,
-        models.Dataset,
-        models.Dataset.id == dataset_id,
-    )
-
-    # Get all recordings
-    recordings, _ = await common.get_objects(
-        session,
-        models.Recording,
-        limit=-1,
-        filters=[
-            DatasetFilter(dataset=dataset_id),
-        ],
-    )
-
-    soundevent_recordings: list[data.Recording] = [
-        data.Recording(
-            uuid=recording.uuid,
-            path=recording.path.relative_to(dataset.audio_dir),
-            duration=recording.duration,
-            channels=recording.channels,
-            samplerate=recording.samplerate,
-            time_expansion=recording.time_expansion,
-            hash=recording.hash,
-            date=recording.date,
-            time=recording.time,
-            latitude=recording.latitude,
-            longitude=recording.longitude,
-            tags=[
-                data.Tag(
-                    key=tag.key,
-                    value=tag.value,
-                )
-                for tag in recording.tags
-            ],
-            features=[
-                data.Feature(
-                    name=feature.feature_name.name,
-                    value=feature.value,
-                )
-                for feature in recording.features
-            ],
-            notes=[
-                data.Note(
-                    uuid=note.uuid,
-                    message=note.message,
-                    is_issue=note.is_issue,
-                    created_on=note.created_at,
-                    created_by=data.User(
-                        uuid=note.created_by.id,
-                        username=note.created_by.username,
-                        name=note.created_by.name,
-                        email=note.created_by.email,
-                    ),
-                )
-                for note in recording.notes
-            ],
-        )
-        for recording in recordings
-    ]
-
-    return data.Dataset(
-        uuid=dataset.uuid,
-        name=dataset.name,
-        description=dataset.description,
-        recordings=soundevent_recordings,
-    )
+    dataset = await get_by_id(session, dataset_id=dataset_id)
+    return await to_soundevent(session, dataset)
 
 
 async def import_dataset(
@@ -841,197 +862,9 @@ async def import_dataset(
     if not dataset_audio_dir.is_relative_to(audio_dir):
         raise ValueError("Dataset audio dir is not in the whombat audio dir")
 
-    recording_info = [
-        _validate_soundevent_recording(recording, audio_dir)
-        for recording in dataset.recordings
-    ]
-
-    db_recordings = await common.create_objects_without_duplicates(
+    return await from_soundevent(
         session,
-        models.Recording,
-        recording_info,
-        key=lambda x: x.uuid,
-        key_column=models.Recording.uuid,
-        return_all=True,
-    )
-
-    recordings_mapping = {
-        recording.uuid: recording.id for recording in db_recordings
-    }
-
-    tags_info = [
-        schemas.TagCreate(
-            key=tag.key,
-            value=tag.value,
-        )
-        for recording in dataset.recordings
-        for tag in recording.tags
-    ]
-
-    if tags_info:
-        db_tags = await common.create_objects_without_duplicates(
-            session,
-            models.Tag,
-            tags_info,
-            key=lambda x: (x.key, x.value),
-            key_column=tuple_(models.Tag.key, models.Tag.value),
-            return_all=True,
-        )
-
-        tags_mapping = {(tag.key, tag.value): tag.id for tag in db_tags}
-
-        recording_tags_info = [
-            schemas.RecordingTagCreate(
-                recording_id=recordings_mapping[recording.uuid],
-                tag_id=tags_mapping[(tag.key, tag.value)],
-            )
-            for recording in dataset.recordings
-            for tag in recording.tags
-        ]
-
-        await common.create_objects_without_duplicates(
-            session,
-            models.RecordingTag,
-            recording_tags_info,
-            key=lambda x: (x.recording_id, x.tag_id),
-            key_column=tuple_(
-                models.RecordingTag.recording_id,
-                models.RecordingTag.tag_id,
-            ),
-        )
-
-    features_names_info = [
-        schemas.FeatureNameCreate(
-            name=feature.name,
-        )
-        for recording in dataset.recordings
-        for feature in recording.features
-    ]
-
-    if features_names_info:
-        db_feature_names = await common.create_objects_without_duplicates(
-            session,
-            models.FeatureName,
-            features_names_info,
-            key=lambda x: x.name,
-            key_column=models.FeatureName.name,
-            return_all=True,
-        )
-
-        feature_names_mapping = {
-            feature.name: feature.id for feature in db_feature_names
-        }
-
-        features_info = [
-            schemas.RecordingFeatureCreate(
-                recording_id=recordings_mapping[recording.uuid],
-                feature_name_id=feature_names_mapping[feature.name],
-                value=feature.value,
-            )
-            for recording in dataset.recordings
-            for feature in recording.features
-        ]
-
-        await common.create_objects_without_duplicates(
-            session,
-            models.RecordingFeature,
-            features_info,
-            key=lambda x: (x.recording_id, x.feature_name_id),
-            key_column=tuple_(
-                models.RecordingFeature.recording_id,
-                models.RecordingFeature.feature_name_id,
-            ),
-        )
-
-    all_notes = [
-        (recording, note)
-        for recording in dataset.recordings
-        for note in recording.notes
-    ]
-
-    if all_notes:
-        anon = await users.get_anonymous_user(session)
-        users_mapping = {}
-        for recording in dataset.recordings:
-            for note in recording.notes:
-                if not note.created_by:
-                    continue
-
-                try:
-                    user = await common.get_object(
-                        session,
-                        models.User,
-                        models.User.username == note.created_by,
-                    )
-                    users_mapping[note.created_by] = user.id
-                except exceptions.NotFoundError:
-                    continue
-
-        for recording, note in all_notes:
-            info = schemas.NotePostCreate(
-                message=note.message,
-                is_issue=note.is_issue,
-                created_by_id=users_mapping.get(note.created_by, anon.id),
-            )
-            note = await notes.create(session, info)
-            await recordings.add_note(
-                session, recordings_mapping[recording.uuid], note_id=note.id
-            )
-
-    db_dataset = await common.create_object(
-        session,
-        models.Dataset,
-        schemas.DatasetCreate(
-            uuid=dataset.uuid,
-            audio_dir=dataset_audio_dir,
-            name=dataset.name,
-            description=dataset.description,
-        ),
-    )
-
-    dataset_audio_dir = dataset_audio_dir.relative_to(audio_dir)
-
-    dataset_recording_info = [
-        schemas.DatasetRecordingCreate(
-            dataset_id=db_dataset.id,
-            recording_id=db_recording.id,
-            path=db_recording.path.relative_to(dataset_audio_dir),
-        )
-        for db_recording in db_recordings
-    ]
-
-    await common.create_objects(
-        session,
-        models.DatasetRecording,
-        dataset_recording_info,
-    )
-
-    await session.refresh(db_dataset)
-
-    return schemas.DatasetWithCounts.model_validate(db_dataset)
-
-
-def _validate_soundevent_recording(
-    recording: data.Recording,
-    audio_dir: Path,
-) -> schemas.RecordingPreCreate:
-    """Validate a soundevent recording."""
-    path = recordings.validate_path(recording.path, audio_dir)
-
-    hash = recording.hash
-    if hash is None:
-        hash = compute_md5_checksum(audio_dir / path)
-
-    return schemas.RecordingPreCreate(
-        uuid=recording.uuid,
-        path=path,
-        duration=recording.duration,
-        channels=recording.channels,
-        samplerate=recording.samplerate,
-        time_expansion=recording.time_expansion,
-        date=recording.date,
-        time=recording.time,
-        latitude=recording.latitude,
-        longitude=recording.longitude,
-        hash=hash,
+        dataset,
+        dataset_audio_dir=dataset_audio_dir,
+        audio_dir=audio_dir,
     )

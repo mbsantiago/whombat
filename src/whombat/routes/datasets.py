@@ -106,7 +106,7 @@ async def download_dataset(
     dataset_id: int,
 ):
     """Export a dataset."""
-    dataset = await api.datasets.export(session, dataset_id)
+    dataset = await api.datasets.to_soundevent(session, dataset_id)
     obj = aoef.to_aeof(dataset)
     filename = f"{dataset.name}_{obj.created_on.isoformat()}.json"
     return Response(

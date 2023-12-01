@@ -4,13 +4,13 @@ from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
 
-import soundevent
 from cachetools import LRUCache
+from soundevent import data
 from soundevent.audio import compute_md5_checksum
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, filters, models, schemas
-from whombat.api import common, features, notes, tags, users
+from whombat import cache, filters, models, schemas
+from whombat.api import common, features, notes, tags
 from whombat.core import files
 from whombat.core.common import remove_duplicates
 from whombat.dependencies import get_settings
@@ -908,7 +908,7 @@ async def get_tags(
 
 async def from_soundevent(
     session: AsyncSession,
-    recording: soundevent.Recording,
+    recording: data.Recording,
     audio_dir: Path | None = None,
 ) -> schemas.Recording:
     """Create a recording from a soundevent.Recording."""
@@ -927,52 +927,58 @@ async def from_soundevent(
 
     created = await create(session, data, audio_dir=audio_dir)
 
-    for tag in recording.tags:
-        tag = await tags.get_or_create(
-            session,
-            schemas.TagCreate(
-                key=tag.key,
-                value=tag.value,
-            ),
-        )
+    for se_tag in recording.tags:
+        tag = await tags.from_soundevent(session, se_tag)
         created = await add_tag(session, created.id, tag.id)
 
-    anonymous = await users.get_anonymous_user(session)
-
     for note in recording.notes:
-        user_id = anonymous.id
-        if note.created_by:
-            try:
-                user = await users.get_by_data(session, note.created_by)
-                user_id = user.id
-            except exceptions.NotFoundError:
-                pass
-
-        note = await notes.create(
-            session,
-            schemas.NotePostCreate(
-                message=note.message,
-                is_issue=note.is_issue,
-                created_by_id=user_id,
-            ),
-        )
+        note = await notes.from_soundevent(session, note)
         created = await add_note(session, created.id, note.id)
 
     for feature in recording.features:
-        feature_name = await features.get_or_create(
-            session,
-            schemas.FeatureNameCreate(
-                name=feature.name,
-            ),
-        )
+        feature = await features.from_soundevent(session, feature)
         created = await add_feature(
             session,
             created.id,
-            feature_name.id,
+            feature.feature_name.id,
             feature.value,
         )
 
     return created
+
+
+def to_soundevent(
+    recording: schemas.Recording,
+    audio_dir: Path | None = None,
+) -> data.Recording:
+    """Create a soundevent.Recording from a recording."""
+    if audio_dir is None:
+        audio_dir = get_settings().audio_dir
+
+    rec_tags = [tags.to_soundevent(tag) for tag in recording.tags]
+
+    rec_notes = [notes.to_soundevent(note) for note in recording.notes]
+
+    rec_features = [
+        features.to_soundevent(feature) for feature in recording.features
+    ]
+
+    # TODO: When ownership and rights are implemented, add them here.
+    return data.Recording(
+        uuid=recording.uuid,
+        path=audio_dir / recording.path,
+        time_expansion=recording.time_expansion,
+        channels=recording.channels,
+        samplerate=recording.samplerate,
+        duration=recording.duration,
+        date=recording.date,
+        time=recording.time,
+        latitude=recording.latitude,
+        longitude=recording.longitude,
+        tags=rec_tags,
+        notes=rec_notes,
+        features=rec_features,
+    )
 
 
 def validate_path(
