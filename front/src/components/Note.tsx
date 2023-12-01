@@ -32,7 +32,7 @@ export default function Note({
           <span className="flex-1">{note.created_by.username}</span>
           <span className="text-xs font-normal text-stone-400">
             {" "}
-            {note.created_at.toLocaleString()}
+            {note.created_on.toLocaleString()}
           </span>
         </h4>
         <p className="text-sm text-stone-500">{note.message}</p>

@@ -29,7 +29,7 @@ export const SoundEventSchema = SoundEventCreateSchema.extend({
   id: z.number(),
   tags: z.array(TagSchema),
   features: z.array(FeatureSchema),
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
 });
 
 export type SoundEvent = z.infer<typeof SoundEventSchema>;
@@ -49,8 +49,8 @@ export const SoundEventFilterSchema = z.object({
   tag__isin: z.array(z.number()).optional(),
   geometry_type__eq: z.string().optional(),
   geometry_type__isin: z.array(z.string()).optional(),
-  created_at__before: z.date().optional(),
-  created_at__after: z.date().optional(),
+  created_on__before: z.date().optional(),
+  created_on__after: z.date().optional(),
   recording__eq: z.number().optional(),
   recording__isin: z.array(z.number()).optional(),
   recording_tag__eq: z.number().optional(),

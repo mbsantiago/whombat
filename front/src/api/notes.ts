@@ -12,7 +12,7 @@ export type NoteCreate = z.infer<typeof NoteCreateSchema>;
 
 export const NoteSchema = NoteCreateSchema.extend({
   id: z.number().int(),
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
   created_by: SimpleUserSchema,
 });
 

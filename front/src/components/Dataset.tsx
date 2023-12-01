@@ -18,7 +18,7 @@ export default function Dataset({
   name,
   description,
   recording_count,
-  created_at,
+  created_on,
 }: DatasetType) {
   return (
     <div className="w-full">
@@ -48,7 +48,7 @@ export default function Dataset({
         />
         <Atom
           label={<CalendarIcon className="h-4 w-4 align-middle" />}
-          value={created_at.toDateString()}
+          value={created_on.toDateString()}
         />
       </div>
     </div>

@@ -23,8 +23,8 @@ export const TaskTagFilter = z.object({
   task__eq: z.number().int().optional(),
   recording__eq: z.number().int().optional(),
   tag__eq: z.number().int().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
   project__eq: z.number().int().optional(),
   search: z.string().optional(),
   key__eq: z.string().optional(),
@@ -118,8 +118,8 @@ export const TaskNoteFilter = z.object({
   is_issue__eq: z.boolean().optional(),
   message__eq: z.string().optional(),
   message__has: z.string().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
 });
 
 export type TaskNoteFilter = z.infer<typeof TaskNoteFilter>;

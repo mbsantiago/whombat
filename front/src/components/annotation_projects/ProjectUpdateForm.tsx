@@ -66,7 +66,7 @@ export default function ProjectUpdateForm({
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Created On</DescriptionTerm>
             <DescriptionData>
-              {project.created_at.toLocaleString()}
+              {project.created_on.toLocaleString()}
             </DescriptionData>
           </div>
         </dl>

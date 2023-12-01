@@ -40,7 +40,7 @@ export const AnnotationProjectContext = createContext<AnnotationProject>({
   name: "",
   description: "",
   tags: [],
-  created_at: new Date(),
+  created_on: new Date(),
   uuid: "",
 });
 
@@ -73,6 +73,6 @@ export const EvaluationSetContext = createContext<EvaluationSetContextType>({
     tags: [],
     uuid: "",
     mode: EvaluationMode.CLIP_CLASSIFICATION,
-    created_at: new Date(),
+    created_on: new Date(),
   },
 });

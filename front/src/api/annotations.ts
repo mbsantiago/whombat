@@ -24,8 +24,8 @@ export const AnnotationNoteFilterSchema = z.object({
   is_issue__eq: z.boolean().optional(),
   message__eq: z.string().optional(),
   message__has: z.string().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
 });
 
 export type AnnotationNoteFilter = z.infer<typeof AnnotationNoteFilterSchema>;
@@ -47,7 +47,7 @@ export const AnnotationTagSchema = z.object({
   id: z.number().int(),
   tag_id: z.number().int(),
   created_by: SimpleUserSchema,
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
   tag: TagSchema,
 });
 
@@ -58,8 +58,8 @@ export const AnnotationTagFilterSchema = z.object({
   annotation__eq: z.number().optional(),
   recording__eq: z.number().int().optional(),
   tag__eq: z.number().int().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
   project__eq: z.number().int().optional(),
   search: z.string().optional(),
   key__eq: z.string().optional(),

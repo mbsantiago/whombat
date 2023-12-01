@@ -40,7 +40,7 @@ export default function AnnotationsGallery({
             features: [],
             notes: [],
             tags: [],
-            created_at: new Date(),
+            created_on: new Date(),
           }}
           annotation={annotation}
         />

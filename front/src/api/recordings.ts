@@ -62,7 +62,7 @@ export const RecordingSchema = z.object({
     .nullable(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
   tags: z.array(TagSchema),
   notes: z.array(NoteSchema),
   features: z.array(FeatureSchema),
@@ -107,8 +107,8 @@ export const RecordingNoteFilter = z.object({
   is_issue__eq: z.boolean().optional(),
   message__eq: z.string().optional(),
   message__has: z.string().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
 });
 
 export type RecordingNoteFilter = z.infer<typeof RecordingNoteFilter>;
@@ -137,8 +137,8 @@ export type RecordingTag = z.infer<typeof RecordingTagSchema>;
 export const RecordingTagFilter = z.object({
   recording__eq: z.number().int().optional(),
   tag__eq: z.number().int().optional(),
-  created_at__before: z.coerce.date().optional(),
-  created_at__after: z.coerce.date().optional(),
+  created_on__before: z.coerce.date().optional(),
+  created_on__after: z.coerce.date().optional(),
   dataset__eq: z.number().int().optional(),
   search: z.string().optional(),
   key__eq: z.string().optional(),

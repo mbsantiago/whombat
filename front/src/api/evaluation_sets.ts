@@ -38,7 +38,7 @@ export type EvaluationSetCreate = z.infer<typeof EvaluationSetCreateSchema>;
 export const EvaluationSetSchema = EvaluationSetCreateSchema.extend({
   id: z.number(),
   uuid: z.string().uuid(),
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
   tags: z.array(TagSchema),
 });
 

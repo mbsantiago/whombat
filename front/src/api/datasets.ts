@@ -26,7 +26,7 @@ export const DatasetSchema = z.object({
   description: z.string(),
   audio_dir: z.string(),
   recording_count: z.number().int(),
-  created_at: z.coerce.date(),
+  created_on: z.coerce.date(),
 });
 
 export type Dataset = z.infer<typeof DatasetSchema>;

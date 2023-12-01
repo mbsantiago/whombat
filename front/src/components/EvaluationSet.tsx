@@ -9,7 +9,7 @@ export default function EvaluationSet({
   id,
   name,
   description,
-  created_at,
+  created_on,
 }: EvaluationSetType) {
   return (
     <div>
@@ -35,7 +35,7 @@ export default function EvaluationSet({
       <div className="flex flex-row py-4">
         <Atom
           label={<CalendarIcon className="h-4 w-4 align-middle" />}
-          value={created_at.toDateString()}
+          value={created_on.toDateString()}
         />
       </div>
     </div>
