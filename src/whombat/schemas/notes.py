@@ -41,7 +41,7 @@ class Note(NotePostCreate):
     created_by: SimpleUser
     """The user who created the note."""
 
-    created_at: datetime.datetime = Field(
+    created_on: datetime.datetime = Field(
         default_factory=datetime.datetime.now
     )
     """The time at which the note was created."""

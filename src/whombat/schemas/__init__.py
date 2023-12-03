@@ -1,36 +1,50 @@
 """Schemas for Whombat data models.
 
-The Whombat Python API returns these schemas to the user, and
-they are the main way that the user interacts with the data.
+The Whombat Python API returns these schemas to the user, and they are
+the main way that the user interacts with the data.
 
-Schemas are defined using Pydantic, and are used to
-validate data before it is inserted into the database, and also to
-validate data before it is returned to the user.
+Schemas are defined using Pydantic, and are used to validate data before
+it is inserted into the database, and also to validate data before it is
+returned to the user.
 
-Most database models have multiple schemas, a main schema that
-is used to return data to the user, and a create and update
-schema that is used to validate data before it is inserted into
-the database.
-
+Most database models have multiple schemas, a main schema that is used
+to return data to the user, and a create and update schema that is used
+to validate data before it is inserted into the database.
 """
 
-from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
     AnnotationProjectTagCreate,
     AnnotationProjectUpdate,
 )
-from whombat.schemas.annotations import (
-    Annotation,
-    AnnotationCreate,
-    AnnotationNote,
-    AnnotationPostCreate,
-    AnnotationTag,
-    AnnotationTagCreate,
+from whombat.schemas.annotation_tasks import (
+    AnnotationTask,
+    AnnotationTaskCreate,
+    AnnotationTaskStatusBadge,
+    AnnotationTaskStatusBadgeCreate,
 )
 from whombat.schemas.audio import AudioParameters
 from whombat.schemas.base import Page
+from whombat.schemas.clip_annotations import (
+    ClipAnnotation,
+    ClipAnnotationCreate,
+    ClipAnnotationNote,
+    ClipAnnotationNoteCreate,
+    ClipAnnotationTag,
+    ClipAnnotationTagCreate,
+)
+from whombat.schemas.clip_evaluations import (
+    ClipEvaluation,
+    ClipEvaluationCreate,
+    ClipEvaluationMetricCreate,
+)
+from whombat.schemas.clip_predictions import (
+    ClipPrediction,
+    ClipPredictionCreate,
+    ClipPredictionTag,
+    ClipPredictionTagCreate,
+)
 from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
 from whombat.schemas.datasets import (
     Dataset,
@@ -47,17 +61,11 @@ from whombat.schemas.evaluation_sets import (
     EvaluationSetCreate,
     EvaluationSetUpdate,
 )
-from whombat.schemas.evaluation_tasks import (
-    EvaluationTask,
-    EvaluationTaskCreate,
-)
 from whombat.schemas.evaluations import (
     Evaluation,
     EvaluationCreate,
     EvaluationMetric,
     EvaluationMetricCreate,
-    EvaluationMetricUpdate,
-    EvaluationUpdate,
 )
 from whombat.schemas.features import (
     Feature,
@@ -65,22 +73,34 @@ from whombat.schemas.features import (
     FeatureNameCreate,
     FeatureNameUpdate,
 )
+from whombat.schemas.model_runs import ModelRun, ModelRunCreate, ModelRunUpdate
 from whombat.schemas.notes import Note, NoteCreate, NotePostCreate, NoteUpdate
-from whombat.schemas.prediction_runs import (
-    PredictionRun,
-    PredictionRunCreate,
-    PredictionRunUpdate,
-)
+from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
     RecordingFeatureCreate,
     RecordingNote,
+    RecordingOwner,
+    RecordingOwnerCreate,
     RecordingPreCreate,
     RecordingTag,
     RecordingTagCreate,
     RecordingUpdate,
     RecordingWithoutPath,
+)
+from whombat.schemas.sound_event_annotations import (
+    SoundEventAnnotation,
+    SoundEventAnnotationCreate,
+    SoundEventAnnotationNote,
+    SoundEventAnnotationPostCreate,
+    SoundEventAnnotationTag,
+    SoundEventAnnotationTagCreate,
+)
+from whombat.schemas.sound_event_evaluations import (
+    SoundEventEvaluation,
+    SoundEventEvaluationCreate,
+    SoundEventEvaluationMetricCreate,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,
@@ -96,33 +116,36 @@ from whombat.schemas.spectrograms import (
     Window,
 )
 from whombat.schemas.tags import Tag, TagCreate, TagUpdate
-from whombat.schemas.tasks import (
-    Task,
-    TaskCreate,
-    TaskNote,
-    TaskStatusBadge,
-    TaskStatusBadgeCreate,
-    TaskTag,
-    TaskTagCreate,
-)
+from whombat.schemas.user_runs import UserRun, UserRunCreate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
     "AmplitudeParameters",
-    "Annotation",
-    "AnnotationCreate",
-    "AnnotationNote",
-    "AnnotationPostCreate",
     "AnnotationProject",
     "AnnotationProjectCreate",
     "AnnotationProjectTagCreate",
     "AnnotationProjectUpdate",
-    "AnnotationTag",
-    "AnnotationTagCreate",
+    "AnnotationTask",
+    "AnnotationTaskCreate",
+    "AnnotationTaskStatusBadge",
+    "AnnotationTaskStatusBadgeCreate",
     "AudioParameters",
     "Clip",
+    "ClipAnnotation",
+    "ClipAnnotationCreate",
+    "ClipAnnotationNote",
+    "ClipAnnotationNoteCreate",
+    "ClipAnnotationTag",
+    "ClipAnnotationTagCreate",
     "ClipCreate",
+    "ClipEvaluation",
+    "ClipEvaluationCreate",
+    "ClipEvaluationMetricCreate",
     "ClipFeatureCreate",
+    "ClipPrediction",
+    "ClipPredictionCreate",
+    "ClipPredictionTag",
+    "ClipPredictionTagCreate",
     "Dataset",
     "DatasetCreate",
     "DatasetFile",
@@ -134,31 +157,29 @@ __all__ = [
     "EvaluationCreate",
     "EvaluationMetric",
     "EvaluationMetricCreate",
-    "EvaluationMetricUpdate",
     "EvaluationSet",
     "EvaluationSetCreate",
     "EvaluationSetUpdate",
-    "EvaluationTask",
-    "EvaluationTaskCreate",
-    "EvaluationUpdate",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",
     "FeatureNameUpdate",
     "FileState",
+    "ModelRun",
+    "ModelRunCreate",
+    "ModelRunUpdate",
     "Note",
     "NoteCreate",
     "NotePostCreate",
     "NoteUpdate",
     "Page",
     "PluginInfo",
-    "PredictionRun",
-    "PredictionRunCreate",
-    "PredictionRunUpdate",
     "Recording",
     "RecordingCreate",
     "RecordingFeatureCreate",
     "RecordingNote",
+    "RecordingOwner",
+    "RecordingOwnerCreate",
     "RecordingPreCreate",
     "RecordingTag",
     "RecordingTagCreate",
@@ -168,22 +189,26 @@ __all__ = [
     "Scale",
     "SimpleUser",
     "SoundEvent",
+    "SoundEventAnnotation",
+    "SoundEventAnnotationCreate",
+    "SoundEventAnnotationNote",
+    "SoundEventAnnotationPostCreate",
+    "SoundEventAnnotationTag",
+    "SoundEventAnnotationTagCreate",
     "SoundEventCreate",
+    "SoundEventEvaluation",
+    "SoundEventEvaluationCreate",
+    "SoundEventEvaluationMetricCreate",
     "SoundEventFeatureCreate",
     "SoundEventUpdate",
     "SpectrogramParameters",
     "Tag",
     "TagCreate",
     "TagUpdate",
-    "Task",
-    "TaskCreate",
-    "TaskNote",
-    "TaskStatusBadge",
-    "TaskStatusBadgeCreate",
-    "TaskTag",
-    "TaskTagCreate",
     "User",
     "UserCreate",
+    "UserRun",
+    "UserRunCreate",
     "UserUpdate",
     "Window",
 ]

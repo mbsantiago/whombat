@@ -7,7 +7,6 @@ from pydantic import Field, model_validator
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
 from whombat.schemas.recordings import Recording
-from whombat.schemas.tags import Tag
 
 __all__ = [
     "Clip",
@@ -48,9 +47,6 @@ class Clip(ClipCreate):
     recording: Recording
     """Recording information for the clip."""
 
-    tags: list[Tag] = Field(default_factory=list)
-    """The tags associated with the clip."""
-
     features: list[Feature] = Field(default_factory=list)
     """The features associated with the clip."""
 
@@ -62,7 +58,7 @@ class ClipFeatureCreate(BaseSchema):
     """The id of the clip to which the feature belongs."""
 
     feature_name_id: int
-    """The id of the feature to which the clip belongs."""
+    """The id of the feature name."""
 
     value: float
     """The value of the feature."""

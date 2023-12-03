@@ -4,7 +4,6 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
-from whombat.models.evaluation_set import EvaluationMode
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
 
@@ -27,7 +26,7 @@ class EvaluationSetCreate(BaseSchema):
     description: str | None = Field(default=None)
     """The description of the evaluation set."""
 
-    mode: EvaluationMode
+    task: str
 
 
 class EvaluationSet(EvaluationSetCreate):

@@ -11,6 +11,7 @@ from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
 from whombat.schemas.notes import Note
 from whombat.schemas.tags import Tag
+from whombat.schemas.users import SimpleUser
 
 __all__ = [
     "Recording",
@@ -46,6 +47,9 @@ class RecordingMetadata(BaseSchema):
     time_expansion: float = Field(default=1.0, gt=0)
     """The time expansion factor of the recording."""
 
+    rights: str | None = None
+    """A text describing the usage rights of the recording."""
+
 
 class RecordingMediaInfo(BaseSchema):
     """Media information associated with a recording."""
@@ -56,11 +60,12 @@ class RecordingMediaInfo(BaseSchema):
     duration: float
     """The duration of the audio file in seconds.
 
-    This is the duration of the original audio file, not the time expanded
-    version. This can vary depending on the time expansion factor. If
-    the stored file has a duration of 10 seconds and a time expansion
-    factor is 2, this means that the original recording was 5 seconds
-    long. So the duration of the original recording is 5 seconds, not 10.
+    This is the duration of the original audio file, not the time
+    expanded version. This can vary depending on the time expansion
+    factor. If the stored file has a duration of 10 seconds and a time
+    expansion factor is 2, this means that the original recording was 5
+    seconds long. So the duration of the original recording is 5
+    seconds, not 10.
     """
 
     channels: int
@@ -89,6 +94,9 @@ class RecordingObjects(BaseSchema):
 
     notes: list[Note] = Field(default_factory=list)
     """The notes associated with the recording."""
+
+    owners: list[SimpleUser] = Field(default_factory=list)
+    """The users that own the recording."""
 
 
 class RecordingCreate(RecordingMetadata):
@@ -159,6 +167,9 @@ class RecordingUpdate(BaseModel):
     time_expansion: float | None = Field(default=None, gt=0)
     """New time expansion factor of the recording."""
 
+    rights: str | None = None
+    """A text describing the usage rights of the recording."""
+
 
 class RecordingNote(BaseSchema):
     """Schema for a Note attached to a Recording."""
@@ -184,6 +195,19 @@ class RecordingTag(BaseSchema):
 
     tag: Tag
     """The Tag attached to the Recording."""
+
+
+class RecordingOwner(BaseSchema):
+    """Schema for the owner of a Recording."""
+
+    recording_id: int
+    """The database id of the recording."""
+
+    user_id: UUID
+    """The database id of the user that owns the recording."""
+
+    user: SimpleUser
+    """The user that owns the recording."""
 
 
 class RecordingTagCreate(BaseSchema):
@@ -217,3 +241,13 @@ class RecordingNoteCreate(BaseSchema):
 
     note_id: int
     """The database id of the Note."""
+
+
+class RecordingOwnerCreate(BaseSchema):
+    """Schema for specifying the owner of a Recording."""
+
+    recording_id: int
+    """The database id of the recording."""
+
+    user_id: UUID
+    """The database id of the user that owns the recording."""

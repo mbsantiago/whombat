@@ -44,8 +44,6 @@ class SoundEventPrediction(Base):
         model.
     predicted_tags
         A list of predicted tags associated with the sound event prediction.
-    clip_prediction
-        The clip prediction to which the sound event prediction belongs.
     created_on
         The date and time when the sound event prediction was created.
 

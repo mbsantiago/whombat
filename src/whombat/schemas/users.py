@@ -3,6 +3,7 @@
 import uuid
 
 from fastapi_users import schemas
+from pydantic import EmailStr
 
 from whombat.schemas.base import BaseSchema
 
@@ -12,6 +13,7 @@ class SimpleUser(BaseSchema):
 
     id: uuid.UUID
     username: str
+    email: EmailStr | None = None
     name: str | None = None
 
 

@@ -7,7 +7,6 @@ from soundevent.data.geometries import Geometry, GeometryType
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
-from whombat.schemas.tags import Tag
 
 __all__ = [
     "SoundEventCreate",
@@ -41,9 +40,6 @@ class SoundEvent(SoundEventCreate):
 
     id: int
     """The id of the sound event."""
-
-    tags: list[Tag] = Field(default_factory=list)
-    """The tags associated with the sound event."""
 
     features: list[Feature] = Field(default_factory=list)
     """The features associated with the sound event."""

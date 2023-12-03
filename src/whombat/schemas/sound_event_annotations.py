@@ -1,4 +1,4 @@
-"""Schemas for Annotation related objects."""
+"""Schemas for Sound Event Annotation related objects."""
 
 from uuid import UUID, uuid4
 
@@ -11,15 +11,15 @@ from whombat.schemas.tags import Tag
 from whombat.schemas.users import SimpleUser
 
 __all__ = [
-    "Annotation",
-    "AnnotationCreate",
-    "AnnotationPostCreate",
-    "AnnotationTagCreate",
+    "SoundEventAnnotation",
+    "SoundEventAnnotationCreate",
+    "SoundEventAnnotationPostCreate",
+    "SoundEventAnnotationTagCreate",
 ]
 
 
-class AnnotationNoteCreate(BaseSchema):
-    """Schema for data required to create an AnnotationNote."""
+class SoundEventAnnotationNoteCreate(BaseSchema):
+    """Schema for data required to create an SoundEventAnnotationNote."""
 
     annotation_id: int
     """ID of the annotation this note is attached to."""
@@ -31,8 +31,8 @@ class AnnotationNoteCreate(BaseSchema):
     """ID of the user who created this annotation note."""
 
 
-class AnnotationNote(AnnotationNoteCreate):
-    """Schema for an AnnotationNote."""
+class SoundEventAnnotationNote(SoundEventAnnotationNoteCreate):
+    """Schema for an SoundEventAnnotationNote."""
 
     id: int
     """Database ID of this annotation note."""
@@ -44,8 +44,8 @@ class AnnotationNote(AnnotationNoteCreate):
     """Note attached to this annotation."""
 
 
-class AnnotationTagCreate(BaseSchema):
-    """Schema for data required to create an AnnotationTag."""
+class SoundEventAnnotationTagCreate(BaseSchema):
+    """Schema for data required to create an SoundEventAnnotationTag."""
 
     annotation_id: int
     """ID of the annotation this tag is attached to."""
@@ -57,8 +57,8 @@ class AnnotationTagCreate(BaseSchema):
     """ID of the user who created this annotation tag."""
 
 
-class AnnotationTag(AnnotationTagCreate):
-    """Schema for an AnnotationTag."""
+class SoundEventAnnotationTag(SoundEventAnnotationTagCreate):
+    """Schema for an SoundEventAnnotationTag."""
 
     id: int
     """Database ID of this annotation tag."""
@@ -70,14 +70,14 @@ class AnnotationTag(AnnotationTagCreate):
     """Tag attached to this annotation."""
 
 
-class AnnotationCreate(BaseSchema):
-    """Schema for data required to create an Annotation."""
+class SoundEventAnnotationCreate(BaseSchema):
+    """Schema for data required to create an SoundEventAnnotation."""
 
     uuid: UUID = Field(default_factory=uuid4)
     """UUID of this annotation."""
 
-    task_id: int
-    """ID of the task this annotation belongs to."""
+    clip_annotation_id: int
+    """ID of the clip annotation this annotation belongs to."""
 
     geometry: Geometry = Field(..., discriminator="type")
     """Geometry of this annotation."""
@@ -86,14 +86,14 @@ class AnnotationCreate(BaseSchema):
     """IDs of the tags attached to this annotation."""
 
 
-class AnnotationPostCreate(BaseSchema):
-    """Schema to create an Annotation from a SoundEvent."""
+class SoundEventAnnotationPostCreate(BaseSchema):
+    """Schema to create an SoundEventAnnotation from a SoundEvent."""
 
     uuid: UUID = Field(default_factory=uuid4)
     """UUID of this annotation."""
 
-    task_id: int
-    """ID of the task this annotation belongs to."""
+    clip_annotation_id: int
+    """ID of the clip annotation this annotation belongs to."""
 
     created_by_id: UUID
     """ID of the user who created this annotation."""
@@ -102,8 +102,8 @@ class AnnotationPostCreate(BaseSchema):
     """Sound event this annotation is about."""
 
 
-class Annotation(AnnotationPostCreate):
-    """Schema for an Annotation."""
+class SoundEventAnnotation(SoundEventAnnotationPostCreate):
+    """Schema for an SoundEventAnnotation."""
 
     id: int
     """Database ID of this annotation."""
@@ -116,5 +116,5 @@ class Annotation(AnnotationPostCreate):
     notes: list[Note] = Field(default_factory=list)
     """Notes attached to this annotation."""
 
-    tags: list[AnnotationTag] = Field(default_factory=list)
+    tags: list[SoundEventAnnotationTag] = Field(default_factory=list)
     """Tags attached to this annotation."""

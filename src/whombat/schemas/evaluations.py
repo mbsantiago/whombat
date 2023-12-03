@@ -1,4 +1,5 @@
 """Schemas for Evaluations."""
+from uuid import UUID, uuid4
 from pydantic import Field
 
 from whombat.schemas.base import BaseSchema
@@ -6,10 +7,8 @@ from whombat.schemas.base import BaseSchema
 __all__ = [
     "EvaluationMetricCreate",
     "EvaluationMetric",
-    "EvaluationMetricUpdate",
     "EvaluationCreate",
     "Evaluation",
-    "EvaluationUpdate",
 ]
 
 
@@ -33,18 +32,11 @@ class EvaluationMetric(EvaluationMetricCreate):
     """Evaluation metric identifier."""
 
 
-class EvaluationMetricUpdate(BaseSchema):
-    """Evaluation metric update schema."""
-
-    value: float
-    """Value of the metric."""
-
-
 class EvaluationCreate(BaseSchema):
     """Evaluation creation schema."""
 
-    prediction_run_id: int
-    """Model Run ID."""
+    uuid: UUID = Field(default_factory=uuid4)
+    """Unique identifier of the evaluation."""
 
     score: float = Field(default=0, ge=0, le=1)
     """Overall score of the evaluation."""
@@ -58,10 +50,3 @@ class Evaluation(EvaluationCreate):
 
     metrics: list[EvaluationMetric] = Field(default_factory=list)
     """List of metrics of the evaluation."""
-
-
-class EvaluationUpdate(BaseSchema):
-    """Evaluation update schema."""
-
-    score: float = Field(default=0, ge=0, le=1)
-    """Overall score of the evaluation."""
