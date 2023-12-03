@@ -24,7 +24,7 @@ RecordingFilter = base.integer_filter(models.RecordingTag.recording_id)
 """Filter recording tag by recording."""
 
 
-CreatedAtFilter = base.date_filter(models.RecordingTag.created_at)
+CreatedAtFilter = base.date_filter(models.RecordingTag.created_on)
 """Filter recording tags by creation date."""
 
 
@@ -124,5 +124,5 @@ RecordingTagFilter = base.combine(
     key=KeyFilter,
     recording=RecordingFilter,
     dataset=DatasetFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedAtFilter,
 )

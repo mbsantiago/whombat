@@ -15,15 +15,15 @@ __all__ = [
 ]
 
 TaskFilter = base.integer_filter(
-    models.Annotation.task_id,
+    models.SoundEventAnnotation.clip_annotation_id,
 )
 
 SoundEventFilter = base.integer_filter(
-    models.Annotation.sound_event_id,
+    models.SoundEventAnnotation.sound_event_id,
 )
 
 CreatedByFilter = base.string_filter(
-    models.Annotation.created_by_id,
+    models.SoundEventAnnotation.created_by_id,
 )
 
 
@@ -38,10 +38,11 @@ class ProjectFilter(base.Filter):
             return query
 
         return query.join(
-            models.Task,
-            models.Task.id == models.Annotation.task_id,
+            models.AnnotationTask,
+            models.AnnotationTask.id
+            == models.SoundEventAnnotation.clip_annotation_id,
         ).where(
-            models.Task.project_id == self.eq,
+            models.AnnotationTask.annotation_project_id == self.eq,
         )
 
 
@@ -57,12 +58,13 @@ class RecordingFilter(base.Filter):
 
         return (
             query.join(
-                models.Task,
-                models.Task.id == models.Annotation.task_id,
+                models.AnnotationTask,
+                models.AnnotationTask.id
+                == models.SoundEventAnnotation.clip_annotation_id,
             )
             .join(
                 models.Clip,
-                models.Clip.id == models.Task.clip_id,
+                models.Clip.id == models.AnnotationTask.clip_id,
             )
             .where(
                 models.Clip.recording_id == self.eq,
@@ -80,8 +82,8 @@ class TagFilter(base.Filter):
         if not self.eq:
             return query
 
-        return query.join(models.AnnotationTag).where(
-            models.AnnotationTag.tag_id == self.eq,
+        return query.join(models.SoundEventAnnotationTag).where(
+            models.SoundEventAnnotationTag.tag_id == self.eq,
         )
 
 

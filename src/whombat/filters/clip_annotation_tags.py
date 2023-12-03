@@ -6,31 +6,33 @@ from whombat import models
 from whombat.filters import base
 
 __all__ = [
-    "CreatedAtFilter",
+    "CreatedOnFilter",
     "KeyFilter",
     "ProjectFilter",
     "SearchFilter",
     "TagFilter",
-    "TaskFilter",
+    "ClipAnnotationFilter",
     "TaskTagFilter",
     "UserFilter",
     "ValueFilter",
 ]
 
-TagFilter = base.integer_filter(models.TaskTag.tag_id)
-"""Filter task tag by tag."""
+TagFilter = base.integer_filter(models.ClipAnnotationTag.tag_id)
+"""Filter clip annotation tag by tag."""
 
 
-TaskFilter = base.integer_filter(models.TaskTag.task_id)
-"""Filter task tag by task."""
+ClipAnnotationFilter = base.integer_filter(
+    models.ClipAnnotationTag.clip_annotation_id
+)
+"""Filter tag by the clip annotation to which it belongs."""
 
 
-CreatedAtFilter = base.date_filter(models.TaskTag.created_at)
-"""Filter task tags by creation date."""
+CreatedOnFilter = base.date_filter(models.ClipAnnotationTag.created_on)
+"""Filter tag by creation date."""
 
 
 class UserFilter(base.Filter):
-    """Filter task tags by the user who added them."""
+    """Filter tags by the user who added them."""
 
     eq: int | None = None
 
@@ -39,7 +41,7 @@ class UserFilter(base.Filter):
         if not self.eq:
             return query
 
-        return query.where(models.TaskTag.created_by_id == self.eq)
+        return query.where(models.ClipAnnotationTag.created_by_id == self.eq)
 
 
 class KeyFilter(base.Filter):
@@ -53,7 +55,9 @@ class KeyFilter(base.Filter):
         if not self.eq and not self.has:
             return query
 
-        query = query.join(models.Tag, models.Tag.id == models.TaskTag.tag_id)
+        query = query.join(
+            models.Tag, models.Tag.id == models.ClipAnnotationTag.tag_id
+        )
 
         if self.eq:
             query = query.where(models.Tag.key == self.eq)
@@ -75,7 +79,9 @@ class ValueFilter(base.Filter):
         if not self.eq and not self.has:
             return query
 
-        query = query.join(models.Tag, models.Tag.id == models.TaskTag.tag_id)
+        query = query.join(
+            models.Tag, models.Tag.id == models.ClipAnnotationTag.tag_id
+        )
 
         if self.eq:
             query = query.where(models.Tag.value == self.eq)
@@ -97,7 +103,7 @@ class SearchFilter(base.Filter):
             return query
 
         return query.join(
-            models.Tag, models.Tag.id == models.TaskTag.tag_id
+            models.Tag, models.Tag.id == models.ClipAnnotationTag.tag_id
         ).where(
             models.Tag.key.contains(self.search)
             | models.Tag.value.contains(self.search)
@@ -115,10 +121,15 @@ class ProjectFilter(base.Filter):
             return query
 
         query = query.join(
-            models.Task, models.Task.id == models.TaskTag.task_id
+            models.ClipAnnotation,
+            models.ClipAnnotation.id
+            == models.ClipAnnotationTag.clip_annotation_id,
+        ).join(
+            models.AnnotationTask,
+            models.AnnotationTask.clip_id == models.ClipAnnotation.clip_id,
         )
 
-        return query.where(models.Task.project_id == self.eq)
+        return query.where(models.AnnotationTask.annotation_project_id == self.eq)
 
 
 TaskTagFilter = base.combine(
@@ -126,8 +137,8 @@ TaskTagFilter = base.combine(
     tag=TagFilter,
     value=ValueFilter,
     key=KeyFilter,
-    task=TaskFilter,
+    task=ClipAnnotationFilter,
     project=ProjectFilter,
     user=UserFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedOnFilter,
 )

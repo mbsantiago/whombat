@@ -1,4 +1,4 @@
-"""Filters for Tasks."""
+"""Filters for Annotation Tasks."""
 from uuid import UUID
 
 from sqlalchemy import Select, select
@@ -26,7 +26,7 @@ class RecordingTagFilter(base.Filter):
         return (
             query.join(
                 models.Clip,
-                models.Clip.id == models.Task.clip_id,
+                models.Clip.id == models.AnnotationTask.clip_id,
             )
             .join(
                 models.Recording,
@@ -43,7 +43,7 @@ class RecordingTagFilter(base.Filter):
 
 
 class PendingFilter(base.Filter):
-    """Filter for tasks if pending."""
+    """Filter for annotation tasks if pending."""
 
     eq: bool | None = None
 
@@ -53,8 +53,9 @@ class PendingFilter(base.Filter):
             return query
 
         return query.where(
-            models.Task.status_badges.any(
-                models.TaskStatusBadge.state == models.TaskState.completed,
+            models.AnnotationTask.status_badges.any(
+                models.AnnotationStatusBadge.state
+                == models.AnnotationState.completed,
             )
             != self.eq,
         )
@@ -71,8 +72,9 @@ class IsVerifiedFilter(base.Filter):
             return query
 
         return query.where(
-            models.Task.status_badges.any(
-                models.TaskStatusBadge.state == models.TaskState.verified,
+            models.AnnotationTask.status_badges.any(
+                models.AnnotationStatusBadge.state
+                == models.AnnotationState.verified,
             )
             == self.eq,
         )
@@ -89,8 +91,9 @@ class IsRejectedFilter(base.Filter):
             return query
 
         return query.where(
-            models.Task.status_badges.any(
-                models.TaskStatusBadge.state == models.TaskState.rejected,
+            models.AnnotationTask.status_badges.any(
+                models.AnnotationStatusBadge.state
+                == models.AnnotationState.rejected,
             )
             == self.eq,
         )
@@ -107,8 +110,9 @@ class IsAssignedFilter(base.Filter):
             return query
 
         return query.where(
-            models.Task.status_badges.any(
-                models.TaskStatusBadge.state == models.TaskState.assigned,
+            models.AnnotationTask.status_badges.any(
+                models.AnnotationStatusBadge.state
+                == models.AnnotationState.assigned,
             )
             == self.eq,
         )
@@ -125,10 +129,11 @@ class AssignedToFilter(base.Filter):
             return query
 
         return query.join(
-            models.TaskStatusBadge,
+            models.AnnotationStatusBadge,
         ).where(
-            models.TaskStatusBadge.state == models.TaskState.assigned,
-            models.TaskStatusBadge.user_id == self.eq,
+            models.AnnotationStatusBadge.state
+            == models.AnnotationState.assigned,
+            models.AnnotationStatusBadge.user_id == self.eq,
         )
 
 
@@ -140,7 +145,9 @@ class ProjectFilter(base.Filter):
     def filter(self, query: Select) -> Select:
         """Filter the query."""
         if self.eq is not None:
-            query = query.where(models.Task.project_id == self.eq)
+            query = query.where(
+                models.AnnotationTask.annotation_project_id == self.eq
+            )
 
         return query
 
@@ -168,7 +175,7 @@ class DatasetFilter(base.Filter):
             .where(models.DatasetRecording.dataset_id == self.eq)
         )
 
-        return query.where(models.Task.clip_id.in_(subquery))
+        return query.where(models.AnnotationTask.clip_id.in_(subquery))
 
 
 TaskFilter = base.combine(

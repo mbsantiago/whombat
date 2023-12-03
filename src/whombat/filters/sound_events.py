@@ -21,7 +21,7 @@ GeometryTypeFilter = base.string_filter(models.SoundEvent.geometry_type)
 """Filter by geometry type."""
 
 
-CreatedAtFilter = base.date_filter(models.SoundEvent.created_at)
+CreatedAtFilter = base.date_filter(models.SoundEvent.created_on)
 """Filter by created at."""
 
 
@@ -36,7 +36,7 @@ UUIDFilter = base.uuid_filter(models.SoundEvent.uuid)
 SoundEventFilter = base.combine(
     recording=RecordingFilter,
     geometry_type=GeometryTypeFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedAtFilter,
     id=IDFilter,
     uuid=UUIDFilter,
 )

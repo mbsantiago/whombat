@@ -1,6 +1,5 @@
 """Filters for Notes."""
 from sqlalchemy import Select
-from sqlalchemy.orm import aliased
 
 from whombat import models
 from whombat.filters import base
@@ -21,7 +20,7 @@ MessageFilter = base.string_filter(models.Note.message)
 CreatedByFilter = base.uuid_filter(models.Note.created_by_id)
 """Filter notes by the user who created them."""
 
-CreatedAtFilter = base.date_filter(models.Note.created_at)
+CreatedAtFilter = base.date_filter(models.Note.created_on)
 
 IssueFilter = base.boolean_filter(models.Note.is_issue)
 """Filter notes by whether they are issues or not."""
@@ -40,42 +39,38 @@ class ProjectFilter(base.Filter):
         if not self.eq:
             return query
 
-        AnnotationTask = aliased(models.Task)
-        NoteTask = aliased(models.Task)
-
         query = (
             query.join(
-                models.AnnotationNote,
-                models.AnnotationNote.note_id == models.Note.id,
+                models.SoundEventAnnotationNote,
+                models.SoundEventAnnotationNote.note_id == models.Note.id,
             )
             .join(
-                models.Annotation,
-                models.Annotation.id == models.AnnotationNote.annotation_id,
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.id
+                == models.SoundEventAnnotationNote.sound_event_annotation_id,
             )
             .join(
-                AnnotationTask,
-                AnnotationTask.id == models.Annotation.task_id,
+                models.ClipAnnotation,
+                models.ClipAnnotation.id
+                == models.SoundEventAnnotation.clip_annotation_id,
             )
             .join(
-                models.TaskNote,
-                models.TaskNote.note_id == models.Note.id,
+                models.ClipAnnotationNote,
+                models.ClipAnnotationNote.note_id == models.Note.id,
             )
             .join(
-                NoteTask,
-                NoteTask.id == models.TaskNote.task_id,
+                models.AnnotationTask,
+                models.AnnotationTask.clip_id == models.ClipAnnotation.clip_id,
             )
         )
 
-        return query.where(
-            (AnnotationTask.project_id == self.eq)
-            | (NoteTask.project_id == self.eq)
-        )
+        return query.where(models.AnnotationTask.annotation_project_id == self.eq)
 
 
 NoteFilter = base.combine(
     message=MessageFilter,
     created_by=CreatedByFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedAtFilter,
     is_issue=IssueFilter,
     uuid=UUIDFilter,
     project=ProjectFilter,

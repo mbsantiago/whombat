@@ -56,7 +56,7 @@ class MessageFilter(base.Filter):
         return query.where(models.Note.message.contains(self.contains))
 
 
-CreatedAtFilter = base.date_filter(models.RecordingNote.created_at)
+CreatedAtFilter = base.date_filter(models.RecordingNote.created_on)
 
 
 class IssueFilter(base.Filter):
@@ -80,6 +80,6 @@ RecordingNoteFilter = base.combine(
     recording=RecordingFilter,
     user=UserFilter,
     message=MessageFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedAtFilter,
     is_issue=IssueFilter,
 )

@@ -18,15 +18,17 @@ __all__ = [
     "ProjectFilter",
 ]
 
-TagFilter = base.integer_filter(models.AnnotationTag.tag_id)
+TagFilter = base.integer_filter(models.SoundEventAnnotationTag.tag_id)
 """Filter annotation tag by tag."""
 
 
-AnnotationFilter = base.integer_filter(models.AnnotationTag.annotation_id)
+AnnotationFilter = base.integer_filter(
+    models.SoundEventAnnotationTag.sound_event_annotation_id
+)
 """Filter annotation tag by annotation."""
 
 
-CreatedAtFilter = base.date_filter(models.AnnotationTag.created_at)
+CreatedAtFilter = base.date_filter(models.SoundEventAnnotationTag.created_on)
 """Filter annotation tags by creation date."""
 
 
@@ -42,7 +44,7 @@ class KeyFilter(base.Filter):
             return query
 
         query = query.join(
-            models.Tag, models.Tag.id == models.AnnotationTag.tag_id
+            models.Tag, models.Tag.id == models.SoundEventAnnotationTag.tag_id
         )
 
         if self.eq:
@@ -66,7 +68,7 @@ class ValueFilter(base.Filter):
             return query
 
         query = query.join(
-            models.Tag, models.Tag.id == models.AnnotationTag.tag_id
+            models.Tag, models.Tag.id == models.SoundEventAnnotationTag.tag_id
         )
 
         if self.eq:
@@ -89,7 +91,7 @@ class SearchFilter(base.Filter):
             return query
 
         return query.join(
-            models.Tag, models.Tag.id == models.AnnotationTag.tag_id
+            models.Tag, models.Tag.id == models.SoundEventAnnotationTag.tag_id
         ).where(
             models.Tag.key.contains(self.search)
             | models.Tag.value.contains(self.search)
@@ -107,10 +109,11 @@ class TaskFilter(base.Filter):
             return query
 
         return query.join(
-            models.Annotation,
-            models.Annotation.id == models.AnnotationTag.annotation_id,
+            models.SoundEventAnnotation,
+            models.SoundEventAnnotation.id
+            == models.SoundEventAnnotationTag.sound_event_annotation_id,
         ).where(
-            models.Annotation.task_id == self.eq,
+            models.SoundEventAnnotation.clip_annotation_id == self.eq,
         )
 
 
@@ -126,16 +129,18 @@ class RecordingFilter(base.Filter):
 
         return (
             query.join(
-                models.Annotation,
-                models.Annotation.id == models.AnnotationTag.annotation_id,
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.id
+                == models.SoundEventAnnotationTag.sound_event_annotation_id,
             )
             .join(
-                models.Task,
-                models.Task.id == models.Annotation.task_id,
+                models.AnnotationTask,
+                models.AnnotationTask.id
+                == models.SoundEventAnnotation.clip_annotation_id,
             )
             .join(
                 models.Clip,
-                models.Clip.id == models.Task.clip_id,
+                models.Clip.id == models.AnnotationTask.clip_id,
             )
             .where(
                 models.Clip.recording_id == self.eq,
@@ -155,15 +160,17 @@ class ProjectFilter(base.Filter):
 
         return (
             query.join(
-                models.Annotation,
-                models.Annotation.id == models.AnnotationTag.annotation_id,
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.id
+                == models.SoundEventAnnotationTag.sound_event_annotation_id,
             )
             .join(
-                models.Task,
-                models.Task.id == models.Annotation.task_id,
+                models.AnnotationTask,
+                models.AnnotationTask.id
+                == models.SoundEventAnnotation.clip_annotation_id,
             )
             .where(
-                models.Task.project_id == self.eq,
+                models.AnnotationTask.annotation_project_id == self.eq,
             )
         )
 
@@ -174,7 +181,7 @@ AnnotationTagFilter = base.combine(
     value=ValueFilter,
     key=KeyFilter,
     annotation=AnnotationFilter,
-    created_at=CreatedAtFilter,
+    created_on=CreatedAtFilter,
     task=TaskFilter,
     recording=RecordingFilter,
     project=ProjectFilter,
