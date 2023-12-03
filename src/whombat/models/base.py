@@ -48,8 +48,8 @@ class GeometryType(types.TypeDecorator):
 class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
     """Base class for SqlAlchemy Models."""
 
-    created_at: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        name="created_at",
+    created_on: orm.Mapped[datetime.datetime] = orm.mapped_column(
+        name="created_on",
         default_factory=datetime.datetime.utcnow,
         kw_only=True,
     )

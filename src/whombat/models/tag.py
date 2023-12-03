@@ -43,19 +43,6 @@ from sqlalchemy import UniqueConstraint
 
 from whombat.models.base import Base
 
-if TYPE_CHECKING:
-    from whombat.models.annotation import AnnotationTag
-    from whombat.models.annotation_project import (
-        AnnotationProject,
-        AnnotationProjectTag,
-    )
-    from whombat.models.clip import Clip, ClipTag
-    from whombat.models.evaluation_set import EvaluationSetTag
-    from whombat.models.recording import Recording, RecordingTag
-    from whombat.models.sound_event import SoundEvent, SoundEventTag
-    from whombat.models.task import TaskTag
-
-
 __all__ = [
     "Tag",
 ]
@@ -64,19 +51,50 @@ __all__ = [
 class Tag(Base):
     """Tag model for tag table.
 
-    This model represents the tag table in the database.
+    Attributes
+    ----------
+    id
+        The database id of the tag.
+    key
+        The key of the tag. The key serves as a way to group tags into
+        coherent categories, similar to a namespace.
+    value
+        The value of the tag, the actual content of the tag.
+
+    Parameters
+    ----------
+    key : str
+        The key of the tag.
+    value : str
+        The value of the tag.
     """
 
     __tablename__ = "tag"
+    __table_args__ = (UniqueConstraint("key", "value"),)
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
-    """The id of the tag."""
-
     key: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """The key of the tag."""
-
     value: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """The value of the tag."""
+
+    # ========================================================================
+    # Relationships (backrefs)
+
+    if TYPE_CHECKING:
+        from whombat.models.annotation_project import (
+            AnnotationProject,
+            AnnotationProjectTag,
+        )
+        from whombat.models.clip import Clip
+        from whombat.models.clip_annotation import (
+            ClipAnnotation,
+            ClipAnnotationTag,
+        )
+        from whombat.models.evaluation_set import EvaluationSetTag
+        from whombat.models.recording import Recording, RecordingTag
+        from whombat.models.sound_event import SoundEvent
+        from whombat.models.sound_event_annotation import (
+            SoundEventAnnotationTag,
+        )
 
     recordings: orm.Mapped[list["Recording"]] = orm.relationship(
         back_populates="tags",
@@ -86,46 +104,44 @@ class Tag(Base):
         viewonly=True,
         default_factory=list,
     )
-
     recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,
         default_factory=list,
     )
-
-    clips: orm.Mapped[list["Clip"]] = orm.relationship(
-        back_populates="tags",
-        secondary="clip_tag",
-        init=False,
-        repr=False,
-        viewonly=True,
-        default_factory=list,
-    )
-
-    clip_tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
+    sound_event_annotation_tags: orm.Mapped[
+        list["SoundEventAnnotationTag"]
+    ] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,
         default_factory=list,
     )
-
-    sound_events: orm.Mapped[list["SoundEvent"]] = orm.relationship(
+    clip_annotations: orm.Mapped[list["ClipAnnotation"]] = orm.relationship(
         back_populates="tags",
-        secondary="sound_event_tag",
+        secondary="clip_annotation_tag",
         init=False,
         repr=False,
         viewonly=True,
         default_factory=list,
     )
-
-    sound_event_tags: orm.Mapped[list["SoundEventTag"]] = orm.relationship(
+    clip_annotation_tags: orm.Mapped[
+        list["ClipAnnotationTag"]
+    ] = orm.relationship(
         back_populates="tag",
         init=False,
         repr=False,
         default_factory=list,
     )
-
+    evaluation_set_tags: orm.Mapped[
+        list["EvaluationSetTag"]
+    ] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
     annotation_projects: orm.Mapped[
         list["AnnotationProject"]
     ] = orm.relationship(
@@ -136,7 +152,6 @@ class Tag(Base):
         viewonly=True,
         default_factory=list,
     )
-
     annotation_project_tags: orm.Mapped[
         list["AnnotationProjectTag"]
     ] = orm.relationship(
@@ -145,28 +160,3 @@ class Tag(Base):
         repr=False,
         default_factory=list,
     )
-
-    task_tags: orm.Mapped[list["TaskTag"]] = orm.relationship(
-        back_populates="tag",
-        init=False,
-        repr=False,
-        default_factory=list,
-    )
-
-    annotation_tags: orm.Mapped[list["AnnotationTag"]] = orm.relationship(
-        back_populates="tag",
-        init=False,
-        repr=False,
-        default_factory=list,
-    )
-
-    evaluation_set_tags: orm.Mapped[
-        list["EvaluationSetTag"]
-    ] = orm.relationship(
-        back_populates="tag",
-        init=False,
-        repr=False,
-        default_factory=list,
-    )
-
-    __table_args__ = (UniqueConstraint("key", "value"),)

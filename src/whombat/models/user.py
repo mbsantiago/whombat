@@ -2,15 +2,15 @@
 
 Most interactions with the database are done through the User class.
 When creating annotations, notes, etc. the user is automatically
-associated with the object, to help track who did what. This allows
-for a more collaborative environment, where users can see others
+associated with the object, to help track who did what. This allows for
+a more collaborative environment, where users can see others
 contributions and comment on them, and understand any potential
 conflicts or biases in the annotations.
 
 Whombat stores minimal information about users. The only required
 information is a username, which is used to identify the user.
-Additional information can be added, such as a full name, email,
-and affiliation. This information is not required.
+Additional information can be added, such as a full name, email, and
+affiliation. This information is not required.
 """
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
@@ -25,63 +25,64 @@ __all__ = [
 ]
 
 
-if TYPE_CHECKING:
-    from whombat.models.annotation import AnnotationTag
-    from whombat.models.note import Note
-
-
 class User(Base):
     """Model for a user.
 
+    Attributes
+    ----------
+    id
+        The unique identifier for the user.
+    email
+        The email address of the user.
+    hashed_password
+        The hashed password of the user.
+    username
+        The username of the user.
+    name
+        The full name of the user.
+    is_active
+        Whether the user is active. Inactive users cannot log in.
+    is_superuser
+        Whether the user is a superuser. Superusers have all permissions.
+    is_verified
+        Whether the user is verified.
+
     Notes
     -----
-    We are using the fastapi-users package to handle user
-    authentication. This package is built on top of
-    SQLAlchemy. The User class inherits from the
-    SQLAlchemyBaseUserTableUUID class, which provides
-    the id, email, hashed_password, is_active, and
-    is_superuser attributes. The username and name
-    attribute is added to the User class.
+    We are using the fastapi-users package to handle user authentication. This
+    package is built on top of SQLAlchemy. The User class inherits from the
+    SQLAlchemyBaseUserTableUUID class, which provides the id, email,
+    hashed_password, is_active, and is_superuser attributes. The username and
+    name attribute is added to the User class.
 
+    Do not instantiate this class directly. Instead, use the create_user
+    function of the `whombat.api.users` module.
     """
 
     __tablename__ = "user"
 
-    id: orm.Mapped[UUID] = orm.mapped_column(
-        primary_key=True,
-        default_factory=uuid4,
-        init=False,
-    )
-    """The unique identifier for the user."""
-
     email: orm.Mapped[str] = orm.mapped_column(
-        String(length=320),
-        unique=True,
-        index=True,
+        String(length=320), unique=True, index=True,
     )
-    """The email address of the user."""
-
-    hashed_password: orm.Mapped[str] = orm.mapped_column(
-        String(length=1024),
+    hashed_password: orm.Mapped[str] = orm.mapped_column(String(length=1024))
+    username: orm.Mapped[str] = orm.mapped_column(unique=True)
+    id: orm.Mapped[UUID] = orm.mapped_column(
+        primary_key=True, default_factory=uuid4, kw_only=False
     )
-    """The hashed password of the user."""
-
-    username: orm.Mapped[str] = orm.mapped_column(
-        unique=True,
-    )
-    """The username of the user."""
-
     name: orm.Mapped[str | None] = orm.mapped_column(default=None)
-    """The full name of the user."""
-
     is_active: orm.Mapped[bool] = orm.mapped_column(default=True)
-    """Whether the user is active."""
-
     is_superuser: orm.Mapped[bool] = orm.mapped_column(default=False)
-    """Whether the user is a superuser."""
-
     is_verified: orm.Mapped[bool] = orm.mapped_column(default=False)
-    """Whether the user is verified."""
+
+    # Back references
+
+    if TYPE_CHECKING:
+        from whombat.models.user_run import UserRun
+        from whombat.models.note import Note
+        from whombat.models.recording import Recording, RecordingOwner
+        from whombat.models.sound_event_annotation import (
+            SoundEventAnnotationTag,
+        )
 
     notes: orm.Mapped[list["Note"]] = orm.relationship(
         back_populates="created_by",
@@ -89,9 +90,30 @@ class User(Base):
         repr=False,
         init=False,
     )
-
-    annotation_tags: orm.Mapped[list["AnnotationTag"]] = orm.relationship(
+    sound_event_annotation_tags: orm.Mapped[
+        list["SoundEventAnnotationTag"]
+    ] = orm.relationship(
         back_populates="created_by",
+        default_factory=list,
+        repr=False,
+        init=False,
+    )
+    recordings: orm.Mapped[list["Recording"]] = orm.relationship(
+        back_populates="owners",
+        secondary="recording_owner",
+        viewonly=True,
+        default_factory=list,
+        repr=False,
+        init=False,
+    )
+    recording_owner: orm.Mapped[list["RecordingOwner"]] = orm.relationship(
+        back_populates="user",
+        default_factory=list,
+        repr=False,
+        init=False,
+    )
+    user_runs: orm.Mapped[list["UserRun"]] = orm.relationship(
+        back_populates="user",
         default_factory=list,
         repr=False,
         init=False,

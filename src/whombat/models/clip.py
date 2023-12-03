@@ -1,20 +1,23 @@
 """Clip model.
 
-A clip is a contiguous fragment of a recording, defined by its start and end
-times. While recordings are the base source of information, clips are the unit
-of work in the app. When annotating audio, users are provided with a clip to
-annotate, rather than the entire recording. Similarly, machine learning models
-are typically run on audio clips instead of whole recordings. There are several
-reasons for this. Firstly, working with very long audio files can be
-computationally prohibitive both for visualizing and annotating. Secondly,
-standardizing the duration of clips makes it easier to perform consistent and
-comparable annotations across different recordings. Finally, many machine
-learning models process audio files in clips and generate a prediction per
-clip, making it logical to adopt this structure in the app. By working with
-clips, users can also easily focus on specific parts of the recording, and
-identify relevant sound events with greater ease.
+A clip is a contiguous fragment of a recording, defined by its start and
+end times. While recordings are the base source of information, clips
+are the unit of work in the app. When annotating audio, users are
+provided with a clip to annotate, rather than the entire recording.
+Similarly, machine learning models are typically run on audio clips
+instead of whole recordings. There are several reasons for this.
+Firstly, working with very long audio files can be computationally
+prohibitive both for visualizing and annotating. Secondly, standardizing
+the duration of clips makes it easier to perform consistent and
+comparable annotations across different recordings. Finally, many
+machine learning models process audio files in clips and generate a
+prediction per clip, making it logical to adopt this structure in the
+app. By working with clips, users can also easily focus on specific
+parts of the recording, and identify relevant sound events with greater
+ease.
 """
 
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -23,84 +26,51 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from whombat.models.base import Base
 from whombat.models.feature import FeatureName
 from whombat.models.recording import Recording
-from whombat.models.tag import Tag
+
+if TYPE_CHECKING:
+    pass
 
 __all__ = [
     "Clip",
-    "ClipTag",
     "ClipFeature",
 ]
 
 
 class Clip(Base):
-    """Clip model for clip table.
+    """Clip Model.
 
-    This model represents the clip table in the database.
+    Attributes
+    ----------
+    id
+        The database id of the clip.
+    uuid
+        The UUID of the clip.
+    start_time
+        The start time of the clip in seconds.
+    end_time
+        The end time of the clip in seconds.
+    recording
+        The recording to which the clip belongs.
+    features
+        A list of features associated with the clip.
+    created_on
+        The date and time the clip was created.
 
+    Parameters
+    ----------
+    recording_id : int
+        The database id of the recording to which the clip belongs.
+    start_time : float
+        Start time of the clip in seconds, with respect to the start of
+        the recording.
+    end_time : float
+        End time of the clip in seconds, with respect to the start of
+        the recording.
+    uuid : UUID, optional
+        The UUID of the clip.
     """
 
     __tablename__ = "clip"
-
-    id: orm.Mapped[int] = orm.mapped_column(
-        primary_key=True,
-        init=False,
-    )
-    """The id of the clip."""
-
-    uuid: orm.Mapped[UUID] = orm.mapped_column(
-        default_factory=uuid4,
-        kw_only=True,
-        unique=True,
-    )
-    """The UUID of the clip."""
-
-    recording_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("recording.id"),
-        nullable=False,
-    )
-
-    start_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    """The start time of the clip in seconds."""
-
-    end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    """The end time of the clip in seconds."""
-
-    recording: orm.Mapped[Recording] = orm.relationship(
-        back_populates="clips",
-        lazy="joined",
-        init=False,
-        repr=False,
-    )
-    """The recording to which the clip belongs."""
-
-    tags: orm.Mapped[list[Tag]] = orm.relationship(
-        secondary="clip_tag",
-        lazy="joined",
-        back_populates="clips",
-        default_factory=list,
-        viewonly=True,
-        repr=False,
-    )
-    """The tags associated with the clip."""
-
-    clip_tags: orm.Mapped[list["ClipTag"]] = orm.relationship(
-        lazy="joined",
-        back_populates="clip",
-        default_factory=list,
-        cascade="all, delete-orphan",
-        repr=False,
-    )
-
-    features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
-        "ClipFeature",
-        lazy="joined",
-        back_populates="clip",
-        default_factory=list,
-        cascade="all, delete-orphan",
-        repr=False,
-    )
-    """The features associated with the clip."""
-
     __table_args__ = (
         UniqueConstraint(
             "recording_id",
@@ -109,98 +79,83 @@ class Clip(Base):
         ),
     )
 
-
-class ClipTag(Base):
-    """ClipTag model for clip_tag table.
-
-    Tags can be added to clips to indicate the presence of a sound event in the
-    clip, or to describe the clip in some way. For example, a tag could be used
-    to indicate that a clip contains a bird call, or that it contains a
-    particular species of bird.
-
-    """
-
-    __tablename__ = "clip_tag"
-
-    clip_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("clip.id"),
-        nullable=False,
-        primary_key=True,
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    uuid: orm.Mapped[UUID] = orm.mapped_column(
+        default_factory=uuid4, kw_only=True, unique=True
     )
-    """The id of the clip to which the tag belongs."""
-
-    tag_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("tag.id"),
-        nullable=False,
-        primary_key=True,
+    recording_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("recording.id"), nullable=False
     )
-    """The id of the tag."""
+    start_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
 
-    clip: orm.Mapped[Clip] = orm.relationship(
-        init=False,
-        repr=False,
-    )
-    """The clip to which the tag belongs."""
-
-    tag: orm.Mapped[Tag] = orm.relationship(
-        init=False,
-        repr=False,
+    # Relations
+    recording: orm.Mapped[Recording] = orm.relationship(
+        back_populates="clips",
         lazy="joined",
+        init=False,
+        repr=False,
     )
-    """The tag."""
-
-    __table_args__ = (
-        UniqueConstraint(
-            "clip_id",
-            "tag_id",
-        ),
+    features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
+        "ClipFeature",
+        lazy="joined",
+        back_populates="clip",
+        default_factory=list,
+        cascade="all, delete-orphan",
+        repr=False,
     )
 
 
 class ClipFeature(Base):
-    """ClipFeature model for clip_feature table.
+    """Clip Feature Model.
 
-    In clips, features are useful for describing the acoustic
-    content of the entire soundscape, such as the signal-to-noise
-    ratio or acoustic indices.
+    Attributes
+    ----------
+    value : float
+        The value of the feature.
+    feature_name : FeatureName
+        The name of the feature.
+
+    Parameters
+    ----------
+    clip_id : int
+        The database id of the clip to which the feature belongs.
+    feature_name_id : int
+        The database id of the feature name.
+    value : float
+        The value of the feature.
     """
 
     __tablename__ = "clip_feature"
-
-    clip_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("clip.id"),
-        nullable=False,
-        primary_key=True,
-    )
-    """The id of the clip to which the feature belongs."""
-
-    feature_name_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("feature_name.id"),
-        nullable=False,
-        primary_key=True,
-    )
-    """The id of the feature name."""
-
-    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    """The value of the feature."""
-
-    feature_name: orm.Mapped[FeatureName] = orm.relationship(
-        init=False,
-        repr=False,
-        lazy="joined",
-    )
-    """The name of the feature."""
-
-    clip: orm.Mapped[Clip] = orm.relationship(
-        init=False,
-        repr=False,
-        cascade="all",
-    )
-    """The clip to which the feature belongs."""
-
     __table_args__ = (
         UniqueConstraint(
             "clip_id",
             "feature_name_id",
         ),
+    )
+
+    clip_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("clip.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    feature_name_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("feature_name.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+
+    # Relations
+    feature_name: orm.Mapped[FeatureName] = orm.relationship(
+        init=False,
+        repr=False,
+        lazy="joined",
+    )
+
+    # Relations (back-refs)
+    clip: orm.Mapped[Clip] = orm.relationship(
+        back_populates="features",
+        init=False,
+        repr=False,
     )
