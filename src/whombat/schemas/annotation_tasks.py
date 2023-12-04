@@ -21,7 +21,7 @@ __all__ = [
 class AnnotationTaskCreate(BaseSchema):
     """Schema for creating a new task."""
 
-    project_id: int
+    annotation_project_id: int
     """ID of the project to which the task belongs."""
 
     clip_id: int
@@ -40,7 +40,7 @@ class AnnotationTaskStatusBadgeCreate(BaseSchema):
     state: AnnotationState
     """State of the task."""
 
-    user_id: UUID
+    user_id: UUID | None
     """ID of the user to whom the status badge refers."""
 
 
@@ -50,7 +50,7 @@ class AnnotationTaskStatusBadge(AnnotationTaskStatusBadgeCreate):
     id: int
     """Database ID of the status badge."""
 
-    user: SimpleUser
+    user: SimpleUser | None
     """User to whom the status badge refers."""
 
 

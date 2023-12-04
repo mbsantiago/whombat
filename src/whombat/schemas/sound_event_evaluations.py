@@ -9,7 +9,6 @@ from whombat.schemas.features import Feature
 from whombat.schemas.sound_event_annotations import SoundEventAnnotation
 from whombat.schemas.sound_event_predictions import SoundEventPrediction
 
-
 __all__ = [
     "SoundEventEvaluation",
     "SoundEventEvaluationCreate",

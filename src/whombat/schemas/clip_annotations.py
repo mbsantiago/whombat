@@ -1,12 +1,13 @@
 """Schemas for Clip Annotations related objects."""
 
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import Field
 
 from whombat.schemas.base import BaseSchema
+from whombat.schemas.clips import Clip
 from whombat.schemas.notes import Note
-from whombat.schemas.sound_events import Geometry, SoundEvent
+from whombat.schemas.sound_event_annotations import SoundEventAnnotation
 from whombat.schemas.tags import Tag
 from whombat.schemas.users import SimpleUser
 
@@ -29,18 +30,12 @@ class ClipAnnotationNoteCreate(BaseSchema):
     note_id: int
     """ID of the note attached to this annotation."""
 
-    created_by_id: UUID
-    """ID of the user who created this annotation note."""
-
 
 class ClipAnnotationNote(ClipAnnotationNoteCreate):
     """Schema for an ClipAnnotationNote."""
 
     id: int
     """Database ID of this annotation note."""
-
-    created_by: SimpleUser
-    """User who created this annotation note."""
 
     note: Note
     """Note attached to this annotation."""
@@ -55,7 +50,7 @@ class ClipAnnotationTagCreate(BaseSchema):
     tag_id: int
     """ID of the tag attached to this annotation."""
 
-    created_by_id: UUID
+    created_by_id: UUID | None = None
     """ID of the user who created this annotation tag."""
 
 
@@ -65,7 +60,7 @@ class ClipAnnotationTag(ClipAnnotationTagCreate):
     id: int
     """Database ID of this annotation tag."""
 
-    created_by: SimpleUser
+    created_by: SimpleUser | None
     """User who created this annotation tag."""
 
     tag: Tag
@@ -75,32 +70,13 @@ class ClipAnnotationTag(ClipAnnotationTagCreate):
 class ClipAnnotationCreate(BaseSchema):
     """Schema for data required to create an ClipAnnotation."""
 
+    uuid: UUID = Field(
+        default_factory=uuid4,
+        description="UUID of the annotation.",
+    )
+
     clip_id: int
     """ID of the clip this annotation is attached to."""
-
-    sound_event_id: int
-    """ID of the sound event attached to this annotation."""
-
-    created_by_id: UUID
-    """ID of the user who created this annotation."""
-
-    start_time_seconds: float
-    """Start time of the annotation in seconds."""
-
-    end_time_seconds: float
-    """End time of the annotation in seconds."""
-
-    probability: float = Field(
-        1.0,
-        ge=0.0,
-        le=1.0,
-        description="Probability of the annotation being correct.",
-    )
-
-    geometry: Geometry = Field(
-        None,
-        description="Geometry of the annotation.",
-    )
 
 
 class ClipAnnotation(ClipAnnotationCreate):
@@ -109,13 +85,10 @@ class ClipAnnotation(ClipAnnotationCreate):
     id: int
     """Database ID of this annotation."""
 
-    created_by: SimpleUser
-    """User who created this annotation."""
+    clip: Clip
+    """Clip this annotation is attached to."""
 
-    sound_event: SoundEvent
-    """Sound event attached to this annotation."""
-
-    notes: list[ClipAnnotationNote] = Field(
+    notes: list[Note] = Field(
         default_factory=list,
         description="Notes attached to this annotation.",
     )
@@ -123,4 +96,9 @@ class ClipAnnotation(ClipAnnotationCreate):
     tags: list[ClipAnnotationTag] = Field(
         default_factory=list,
         description="Tags attached to this annotation.",
+    )
+
+    sound_events: list[SoundEventAnnotation] = Field(
+        default_factory=list,
+        description="Sound events attached to this annotation.",
     )

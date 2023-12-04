@@ -27,18 +27,12 @@ class SoundEventAnnotationNoteCreate(BaseSchema):
     note_id: int
     """ID of the note attached to this annotation."""
 
-    created_by_id: UUID
-    """ID of the user who created this annotation note."""
-
 
 class SoundEventAnnotationNote(SoundEventAnnotationNoteCreate):
     """Schema for an SoundEventAnnotationNote."""
 
     id: int
     """Database ID of this annotation note."""
-
-    created_by: SimpleUser
-    """User who created this annotation note."""
 
     note: Note
     """Note attached to this annotation."""
@@ -53,7 +47,7 @@ class SoundEventAnnotationTagCreate(BaseSchema):
     tag_id: int
     """ID of the tag attached to this annotation."""
 
-    created_by_id: UUID
+    created_by_id: UUID | None
     """ID of the user who created this annotation tag."""
 
 
@@ -63,7 +57,7 @@ class SoundEventAnnotationTag(SoundEventAnnotationTagCreate):
     id: int
     """Database ID of this annotation tag."""
 
-    created_by: SimpleUser
+    created_by: SimpleUser | None
     """User who created this annotation tag."""
 
     tag: Tag
@@ -95,7 +89,7 @@ class SoundEventAnnotationPostCreate(BaseSchema):
     clip_annotation_id: int
     """ID of the clip annotation this annotation belongs to."""
 
-    created_by_id: UUID
+    created_by_id: UUID | None
     """ID of the user who created this annotation."""
 
     sound_event_id: int
@@ -108,7 +102,7 @@ class SoundEventAnnotation(SoundEventAnnotationPostCreate):
     id: int
     """Database ID of this annotation."""
 
-    created_by: SimpleUser
+    created_by: SimpleUser | None
     """User who created this annotation."""
 
     sound_event: SoundEvent

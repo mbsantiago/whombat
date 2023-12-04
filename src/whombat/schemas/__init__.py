@@ -102,6 +102,12 @@ from whombat.schemas.sound_event_evaluations import (
     SoundEventEvaluationCreate,
     SoundEventEvaluationMetricCreate,
 )
+from whombat.schemas.sound_event_predictions import (
+    SoundEventPrediction,
+    SoundEventPredictionCreate,
+    SoundEventPredictionTag,
+    SoundEventPredictionTagCreate,
+)
 from whombat.schemas.sound_events import (
     SoundEvent,
     SoundEventCreate,
@@ -200,6 +206,10 @@ __all__ = [
     "SoundEventEvaluationCreate",
     "SoundEventEvaluationMetricCreate",
     "SoundEventFeatureCreate",
+    "SoundEventPrediction",
+    "SoundEventPredictionCreate",
+    "SoundEventPredictionTag",
+    "SoundEventPredictionTagCreate",
     "SoundEventUpdate",
     "SpectrogramParameters",
     "Tag",
