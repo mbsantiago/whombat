@@ -18,6 +18,8 @@ __all__ = [
     "get_by_tag_and_value",
     "get_many",
     "update",
+    "from_soundevent",
+    "to_soundevent",
 ]
 
 
@@ -38,9 +40,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    tag_id : int
+    tag_id
         The ID of the tag.
 
     Returns
@@ -76,11 +78,11 @@ async def get_by_tag_and_value(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    key : str
+    key
         The key of the tag.
-    value : str
+    value
         The value of the tag.
 
     Returns
@@ -113,27 +115,22 @@ async def get_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    limit : int, optional
+    limit
         The maximum number of tags to return, by default 1000. If
         -1 is given, all tags will be returned.
-
-    offset : int, optional
+    offset
         The number of tags to skip, by default 0.
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply, by default None.
-
-    sort_by : str, optional
+    sort_by
         Field to sort by, by default "key".
 
     Returns
     -------
-    list[schemas.Tag]
+    tags : list[schemas.Tag]
         The tags that match the given filters.
-
     count : int
         The total number of tags that match the given filters.
     """
@@ -157,12 +154,10 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    key : str
-        The key of the tag.
-    value : str
-        The value of the tag.
+    data
+        The data to create the tag with.
 
     Returns
     -------
@@ -192,10 +187,9 @@ async def create_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    data: list[schemas.Tag]
+    data
         The tags to create.
 
     Returns
@@ -225,12 +219,10 @@ async def get_or_create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    key : str
-        The key of the tag.
-    value : str
-        The value of the tag.
+    data
+        The data to create the tag with.
 
     Returns
     -------
@@ -258,13 +250,11 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    tag_id : int
+    tag_id
         The ID of the tag to update.
-
-    data : schemas.TagUpdate
+    data
         The data to update.
 
     Returns
@@ -292,10 +282,9 @@ async def delete(session: AsyncSession, tag_id: int) -> schemas.Tag:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    tag_id : int
+    tag_id
         The id of the tag to delete.
     """
     obj = await common.delete_object(
@@ -314,9 +303,9 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    tag: data.Tag
+    tag
         The soundevent tag object.
 
     Returns
@@ -340,7 +329,7 @@ def to_soundevent(
 
     Parameters
     ----------
-    tag : schemas.Tag
+    tag
         The tag.
 
     Returns

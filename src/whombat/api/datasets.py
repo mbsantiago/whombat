@@ -21,13 +21,15 @@ __all__ = [
     "add_recording",
     "create",
     "delete",
-    "get_many",
-    "get_by_id",
+    "from_soundevent",
     "get_by_audio_dir",
+    "get_by_id",
     "get_by_name",
     "get_by_uuid",
-    "get_state",
+    "get_many",
     "get_recordings",
+    "get_state",
+    "to_soundevent",
     "update",
 ]
 
@@ -51,9 +53,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    dataset_id : int
+    dataset_id
         The ID of the dataset to get.
 
     Returns
@@ -87,9 +89,9 @@ async def get_by_name(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    name : str
+    name
         The name of the dataset to get.
 
     Returns
@@ -123,9 +125,9 @@ async def get_by_uuid(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    uuid : uuid.UUID
+    uuid
         The UUID of the dataset to get.
 
     Returns
@@ -159,9 +161,9 @@ async def get_by_audio_dir(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    audio_dir : Path
+    audio_dir
         The audio directory of the dataset to get.
 
     Returns
@@ -187,25 +189,21 @@ async def get_many(
     limit: int = 100,
     offset: int = 0,
     filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.DatasetWithCounts], int]:
     """Get all datasets.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    limit : int, optional
+    limit
         The maximum number of datasets to return, by default 100
-
-    offset : int, optional
+    offset
         The number of datasets to skip, by default 0
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the query, by default None.
-
-    sort_by : str, optional
+    sort_by
         The column to sort the datasets by, by default None.
 
     Returns
@@ -239,10 +237,9 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : DatasetCreate
+    data
         The data to use to create the dataset.
 
     Returns
@@ -321,16 +318,13 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to update.
-
-    data : DatasetUpdate
+    data
         The data to update the dataset with.
-
-    audio_dir : Path, optional
+    audio_dir
         The root audio directory, by default None. If None, the root audio
         directory from the settings will be used.
 
@@ -379,10 +373,9 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to delete.
 
     Raises
@@ -412,17 +405,13 @@ async def add_file(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to add the file to.
-
-    data : schemas.RecordingCreate
+    data
         The data to create the recording with.
-
-
-    audio_dir : Path, optional
+    audio_dir
         The root audio directory, by default None. If None, the root audio
         directory from the settings will be used.
 
@@ -473,13 +462,11 @@ async def add_recording(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to add the recording to.
-
-    recording_id : int
+    recording_id
         The ID of the recording to add to the dataset.
 
     Returns
@@ -535,13 +522,11 @@ async def add_recordings(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset : schemas.Dataset
+    dataset
         The dataset to add the recordings to.
-
-    recordings: list[schemas.Recording]
+    recordings
         The recordings to add to the dataset.
     """
     data = []
@@ -588,29 +573,23 @@ async def get_recordings(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to get the recordings of.
-
-    limit : int, optional
+    limit
         The maximum number of recordings to return, by default 1000.
         If set to -1, all recordings will be returned.
-
-    offset : int, optional
+    offset
         The number of recordings to skip, by default 0.
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the query, by default None.
-
-    sort_by : str, optional
+    sort_by
         The column to sort the recordings by, by default None.
 
     Returns
     -------
     recordings : list[schemas.DatasetRecording]
-
     count : int
         The total number of recordings in the dataset.
     """
@@ -653,13 +632,11 @@ async def get_state(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    dataset_id : int
+    dataset_id
         The ID of the dataset to get the files for.
-
-    audio_dir : Path, optional
+    audio_dir
         The root audio directory, by default None. If None, the root audio
         directory from the settings will be used.
 
@@ -731,14 +708,14 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    dataset : soundevent.Dataset
+    dataset
         The soundevent dataset.
-    dataset_audio_dir : Path, optional
+    dataset_audio_dir
         The audio directory of the dataset, by default None. If None, the
         audio directory from the settings will be used.
-    audio_dir : Path, optional
+    audio_dir
         The root audio directory, by default None. If None, the root audio
         directory from the settings will be used.
 
@@ -756,7 +733,7 @@ async def from_soundevent(
         dataset_audio_dir = get_settings().audio_dir
 
     data = schemas.DatasetCreate(
-        created_at=dataset.created_on,
+        created_on=dataset.created_on,
         uuid=dataset.uuid,
         audio_dir=dataset_audio_dir,
         name=dataset.name,
@@ -791,9 +768,9 @@ async def to_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    dataset : schemas.Dataset
+    dataset
         The dataset.
 
     Returns
@@ -817,54 +794,6 @@ async def to_soundevent(
         uuid=dataset.uuid,
         name=dataset.name,
         description=dataset.description,
-        created_on=dataset.created_at,
+        created_on=dataset.created_on,
         recordings=soundevent_recordings,
-    )
-
-
-async def export(
-    session: AsyncSession,
-    dataset_id: int,
-) -> data.Dataset:
-    """Export a dataset to a soundevent dataset.
-
-    This is particularly useful to export the data into a sharable format.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session to use.
-    dataset_id : int
-        The ID of the dataset to export.
-
-    Returns
-    -------
-    dataset : soundevent.Dataset
-        The exported dataset.
-    """
-    dataset = await get_by_id(session, dataset_id=dataset_id)
-    return await to_soundevent(session, dataset)
-
-
-async def import_dataset(
-    session: AsyncSession,
-    dataset: data.Dataset,
-    dataset_audio_dir: Path | None = None,
-    audio_dir: Path | None = None,
-) -> schemas.DatasetWithCounts:
-    """Import a soundevent dataset."""
-    if audio_dir is None:
-        audio_dir = get_settings().audio_dir
-
-    if dataset_audio_dir is None:
-        dataset_audio_dir = get_settings().audio_dir
-
-    if not dataset_audio_dir.is_relative_to(audio_dir):
-        raise ValueError("Dataset audio dir is not in the whombat audio dir")
-
-    return await from_soundevent(
-        session,
-        dataset,
-        dataset_audio_dir=dataset_audio_dir,
-        audio_dir=audio_dir,
     )

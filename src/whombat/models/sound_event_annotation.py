@@ -1,5 +1,5 @@
 """Annotation model."""
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -44,12 +44,12 @@ class SoundEventAnnotation(Base):
 
     Parameters
     ----------
-    created_by_id : int
-        The id of the user who created the annotation.
     sound_event_id : int
         The id of the sound event annotated by the annotation.
     clip_annotation_id : int
         The id of the clip annotation to which the annotation belongs.
+    created_by_id : int, optional
+        The id of the user who created the annotation.
     uuid : UUID, optional
         The UUID of the annotation. If not provided, a new UUID will be
         generated.
@@ -67,9 +67,8 @@ class SoundEventAnnotation(Base):
         ForeignKey("clip_annotation.id"),
         nullable=False,
     )
-    created_by_id: orm.Mapped[int] = orm.mapped_column(
+    created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         ForeignKey("user.id"),
-        nullable=False,
     )
     sound_event_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event.id"),
@@ -81,7 +80,7 @@ class SoundEventAnnotation(Base):
         init=False,
         repr=False,
     )
-    created_by: orm.Mapped[User] = orm.relationship(
+    created_by: orm.Mapped[Optional[User]] = orm.relationship(
         lazy="joined",
         init=False,
         repr=False,
@@ -190,7 +189,7 @@ class SoundEventAnnotationTag(Base):
         The id of the annotation to which the annotation tag belongs.
     tag_id : int
         The id of the tag attached to the annotation.
-    created_by_id : int
+    created_by_id : int, optional
         The id of the user who created the annotation tag.
     """
 
@@ -206,7 +205,9 @@ class SoundEventAnnotationTag(Base):
         ForeignKey("sound_event_annotation.id")
     )
     tag_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("tag.id"))
-    created_by_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("user.id"))
+    created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
+        ForeignKey("user.id")
+    )
 
     # Relationships
     sound_event_annotation: orm.Mapped[
@@ -222,7 +223,7 @@ class SoundEventAnnotationTag(Base):
         init=False,
         repr=False,
     )
-    created_by: orm.Mapped[User] = orm.relationship(
+    created_by: orm.Mapped[Optional[User]] = orm.relationship(
         back_populates="sound_event_annotation_tags",
         lazy="joined",
         init=False,

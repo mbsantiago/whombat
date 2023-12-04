@@ -39,9 +39,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    feature_name_id : int
+    feature_name_id
         The ID of the feature name.
 
     Returns
@@ -76,9 +76,9 @@ async def get_by_name(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    feature_name : str
+    feature_name
         The name of the feature name.
 
     Returns
@@ -105,20 +105,23 @@ async def get_recordings(
     limit: int = 1000,
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.FeatureName], int]:
     """Get all feature names.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    search : str, optional
-        A search string to filter the results.
-    limit : int, optional
+    limit
         The maximum number of features to return. Defaults to 1000.
         Set to -1 to return all features.
-    offset : int, optional
+    offset
         The number of features to skip.
+    filters
+        Filters to apply to the query.
+    sort_by
+        The field to sort by.
 
     Returns
     -------
@@ -131,6 +134,7 @@ async def get_recordings(
         limit=limit,
         offset=offset,
         filters=filters,
+        sort_by=sort_by,
     )
     return [
         schemas.FeatureName.model_validate(r) for r in db_feature_names
@@ -146,10 +150,10 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    name : str
-        The name of the feature.
+    data
+        The data to create the feature with.
 
     Returns
     -------
@@ -179,10 +183,9 @@ async def create_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : list[schemas.FeatureNameCreate]
+    data
         The feature names to create.
 
     Returns
@@ -212,10 +215,9 @@ async def get_or_create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : schemas.FeatureNameCreate
+    data
         The feature name to get or create.
 
     Returns
@@ -242,14 +244,12 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    feature_name_id : int
+    feature_name_id
         The id of the feature name to change.
-
-    new_name : str
-        The new name of the feature.
+    data
+        Data to update the feature name with.
 
     Returns
     -------
@@ -282,10 +282,9 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature to delete.
 
     Returns
@@ -313,11 +312,11 @@ def find(
 
     Parameters
     ----------
-    features : Sequence[schemas.Feature]
+    features
         The features to search.
-    feature_name : str
+    feature_name
         The name of the feature to find.
-    default : Any, optional
+    default
         The default value to return if the feature is not found.
 
     Returns
@@ -338,9 +337,9 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    feature: data.Feature
+    feature
         The soundevent feature object.
 
     Returns
@@ -365,7 +364,7 @@ def to_soundevent(
 
     Parameters
     ----------
-    feature : schemas.Feature
+    feature
         The feature.
 
     Returns

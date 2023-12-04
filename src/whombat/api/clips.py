@@ -14,15 +14,17 @@ from whombat.filters.base import Filter
 
 __all__ = [
     "add_feature",
-    "add_tag",
     "create",
     "create_many",
     "delete",
     "get_by_uuid",
     "get_many",
     "remove_feature",
-    "remove_tag",
     "update_feature",
+    "compute_clip_duration",
+    "compute_clip_features",
+    "from_soundevent",
+    "to_soundevent",
 ]
 
 
@@ -43,10 +45,9 @@ async def get_by_uuid(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    uuid : UUID
+    clip_uuid
         UUID of clip.
 
     Returns
@@ -78,10 +79,9 @@ async def get_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    id : int
+    clip_id
         ID of clip.
 
     Returns
@@ -106,31 +106,27 @@ async def get_many(
     limit: int = 1000,
     offset: int = 0,
     filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.Clip], int]:
     """Get clips from the database.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    limit : int, optional
+    limit
         Maximum number of clips to return, by default 1000.
         Set to -1 to return all clips.
-
-    offset : int, optional
+    offset
         Offset to start returning clips from, by default 0.
-
-    filters : list[Filter], optional
+    filters
         List of filters to apply, by default None.
-
-    sort_by : str, optional
-        Sort clips by this column, by default "-created_at".
+    sort_by
+        Sort clips by this column, by default "-created_on".
 
     Returns
     -------
-    list[schemas.Clip]
+    clips : list[schemas.Clip]
         List of clips.
     count : int
         Total number of clips that match the filters.
@@ -155,10 +151,9 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    data : schemas.ClipCreate
+    data
         Data to create clip from.
 
     Returns
@@ -170,7 +165,6 @@ async def create(
     ------
     whombat.exceptions.DuplicateObjectError
         If clip with same start and end time already exists for the recording.
-
     whombat.exceptions.NotFoundError
         If recording does not exist.
     """
@@ -198,10 +192,10 @@ async def create_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    data : list[schemas.ClipCreate]
+    data
+        List of data to create clips from.
 
     Returns
     -------
@@ -213,10 +207,8 @@ async def create_many(
     ------
     ValueError
         If the lists are not of the same length.
-
     whombat.exceptions.DuplicateObjectError
         If clip with same start and end time already exists for the recording.
-
     whombat.exceptions.NotFoundError
         If recording does not exist.
     """
@@ -273,10 +265,9 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    clip_id : int
+    clip_id
         Clip ID.
 
     Raises
@@ -293,44 +284,6 @@ async def delete(
 
 
 @clips_cache.with_update
-async def add_tag(
-    session: AsyncSession,
-    clip_id: int,
-    tag_id: int,
-) -> schemas.Clip:
-    """Add tag to clip.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        Database session.
-
-    clip_id : int
-        ID of clip to add tag to.
-
-    tag_id : int
-        ID of tag to add to clip.
-
-    Returns
-    -------
-    schemas.Clip
-        Clip.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip does not exist in the database.
-    """
-    clip = await common.add_tag_to_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-        tag_id,
-    )
-    return schemas.Clip.model_validate(clip)
-
-
-@clips_cache.with_update
 async def add_feature(
     session: AsyncSession,
     clip_id: int,
@@ -341,16 +294,13 @@ async def add_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    clip_id : int
+    clip_id
         ID of clip to add feature to.
-
-    feature_name_id : int
+    feature_name_id
         ID of feature name to add to clip.
-
-    value : float
+    value
         Feature value.
 
     Returns
@@ -387,16 +337,13 @@ async def update_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    clip_id : int
+    clip_id
         ID of clip to update feature for.
-
-    feature_name_id : int
+    feature_name_id
         ID of feature name to update.
-
-    value : float
+    value
         New value for feature.
 
     Returns
@@ -420,44 +367,6 @@ async def update_feature(
 
 
 @clips_cache.with_update
-async def remove_tag(
-    session: AsyncSession,
-    clip_id: int,
-    tag_id: int,
-) -> schemas.Clip:
-    """Remove tag from clip.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        Database session.
-
-    clip_id : int
-        ID of clip to remove tag from.
-
-    tag_id : int
-        ID of tag to remove from clip.
-
-    Returns
-    -------
-    schemas.Clip
-        The updated clip.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip does not exist in the database.
-    """
-    clip = await common.remove_tag_from_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-        tag_id,
-    )
-    return schemas.Clip.model_validate(clip)
-
-
-@clips_cache.with_update
 async def remove_feature(
     session: AsyncSession,
     clip_id: int,
@@ -467,13 +376,11 @@ async def remove_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-
-    clip_id : int
+    clip_id
         ID of clip to remove feature from.
-
-    feature_name_id : int
+    feature_name_id
         ID of feature name to remove from clip.
 
     Returns
@@ -503,9 +410,9 @@ async def _create_clip_features(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         Database session.
-    clips : list[schemas.Clip]
+    clips
         List of clips to create features for.
     """
     clip_features = [
@@ -545,7 +452,7 @@ def compute_clip_duration(clip: schemas.Clip | models.Clip) -> float:
 
     Parameters
     ----------
-    clip : schemas.Clip
+    clip
         Clip to compute duration for.
 
     Returns
@@ -568,7 +475,7 @@ def compute_clip_features(
 
     Parameters
     ----------
-    clip : schemas.Clip
+    clip
         Clip to compute features for.
 
     Returns
@@ -587,10 +494,9 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    clip : data.Clip
+    clip
         The soundevent Clip object.
 
     Returns
@@ -623,7 +529,7 @@ def to_soundevent(
 
     Parameters
     ----------
-    clip : schemas.Clip
+    clip
         The clip.
 
     Returns

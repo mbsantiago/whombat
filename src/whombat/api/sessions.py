@@ -32,7 +32,6 @@ async def create(
         The database URL to use, by default it is set to
         ``sqlite+aiosqlite://``, which is an in-memory database.
 
-
     Yields
     ------
     session: AsyncSession
@@ -42,25 +41,24 @@ async def create(
     --------
     To create a database session, use the ``async with`` syntax.
 
-    .. code-block:: python
-
-        async with create_session() as session:
-            # Do stuff with the session
-            # ...
+    ```python
+    async with create_session() as session:
+        # Do stuff with the session
+        # ...
+    ```
 
     You can specify a database URL to use.
 
-    .. code-block:: python
-
-        async with create_session("sqlite+aiosqlite:///my_db.db") as session:
-            # Do stuff with the session
-            # ...
+    ```python
+    async with create_session("sqlite+aiosqlite:///my_db.db") as session:
+        # Do stuff with the session
+        # ...
+    ```
 
     Note
     ----
     This function is asynchronous, so it must be called with the ``await``
     keyword.
-
     """
     engine = utils.create_db_engine(db_url)
     await utils.create_db_and_tables(engine)

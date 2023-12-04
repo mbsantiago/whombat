@@ -20,43 +20,25 @@ annotations are of high quality and that any errors or inconsistencies
 are identified and corrected in a timely manner.
 """
 
-from typing import TYPE_CHECKING
-import enum
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
+from soundevent import data
 from whombat.models.base import Base
 from whombat.models.clip import Clip
 from whombat.models.clip_annotation import ClipAnnotation
 from whombat.models.user import User
-
 
 if TYPE_CHECKING:
     from whombat.models.annotation_project import AnnotationProject
 
 __all__ = [
     "AnnotationTask",
-    "AnnotationState",
     "AnnotationStatusBadge",
 ]
-
-
-class AnnotationState(enum.Enum):
-    """Task state."""
-
-    assigned = "assigned"
-    """Task has been assigned to an annotator."""
-
-    completed = "completed"
-    """Task has been completed by an annotator."""
-
-    verified = "verified"
-    """Task has been verified by a reviewer."""
-
-    rejected = "rejected"
-    """Task has been rejected by a reviewer."""
 
 
 class AnnotationTask(Base):
@@ -137,8 +119,6 @@ class AnnotationTask(Base):
     )
 
 
-
-
 class AnnotationStatusBadge(Base):
     """Annotation status badge model.
 
@@ -159,10 +139,10 @@ class AnnotationStatusBadge(Base):
     ----------
     annotation_task_id : int
         The database id of the task to which the status badge belongs.
-    user_id : int
-        The database id of the user to whom the status badge refers.
-    state : AnnotationState
+    state : soundevent.data.AnnotationState
         The annotation status to which the badge refers.
+    user_id : int, optional
+        The database id of the user to whom the status badge refers.
     """
 
     __tablename__ = "annotation_status_badge"
@@ -178,19 +158,19 @@ class AnnotationStatusBadge(Base):
         ForeignKey("annotation_task.id"),
         nullable=False,
     )
-    user_id: orm.Mapped[int] = orm.mapped_column(
+    user_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         ForeignKey("user.id"),
-        nullable=False,
     )
-    state: orm.Mapped[AnnotationState]
+    state: orm.Mapped[data.AnnotationState]
 
     # Relationships
     annotation_task: orm.Mapped[AnnotationTask] = orm.relationship(
         back_populates="status_badges",
         init=False,
     )
-    user: orm.Mapped[User] = orm.relationship(
+    user: orm.Mapped[Optional[User]] = orm.relationship(
         User,
         init=False,
+        repr=False,
         lazy="joined",
     )

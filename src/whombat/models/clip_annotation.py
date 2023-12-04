@@ -1,6 +1,6 @@
 """Clip Annotation Model."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -180,7 +180,7 @@ class ClipAnnotationTag(Base):
         ForeignKey("tag.id"),
         primary_key=True,
     )
-    created_by_id: orm.Mapped[int] = orm.mapped_column(
+    created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         ForeignKey("user.id"),
     )
 
@@ -190,7 +190,7 @@ class ClipAnnotationTag(Base):
         repr=False,
         lazy="joined",
     )
-    created_by: orm.Mapped[User] = orm.relationship(
+    created_by: orm.Mapped[Optional[User]] = orm.relationship(
         init=False,
         repr=False,
         lazy="joined",

@@ -184,7 +184,7 @@ async def get_many(
     limit: int = 100,
     offset: int = 0,
     filters: Sequence[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.EvaluationSet], int]:
     """Get multiple evaluation sets.
 
@@ -199,7 +199,7 @@ async def get_many(
     filters : Sequence[Filter], optional
         A list of filters to apply, by default None.
     sort_by : str, optional
-        The field to sort by, by default "-created_at".
+        The field to sort by, by default "-created_on".
 
     Returns
     -------

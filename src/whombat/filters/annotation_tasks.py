@@ -3,6 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import Select, select
 
+from soundevent import data
 from whombat import models
 from whombat.filters import base
 
@@ -55,7 +56,7 @@ class PendingFilter(base.Filter):
         return query.where(
             models.AnnotationTask.status_badges.any(
                 models.AnnotationStatusBadge.state
-                == models.AnnotationState.completed,
+                == data.AnnotationState.completed,
             )
             != self.eq,
         )
@@ -74,7 +75,7 @@ class IsVerifiedFilter(base.Filter):
         return query.where(
             models.AnnotationTask.status_badges.any(
                 models.AnnotationStatusBadge.state
-                == models.AnnotationState.verified,
+                == data.AnnotationState.verified,
             )
             == self.eq,
         )
@@ -93,7 +94,7 @@ class IsRejectedFilter(base.Filter):
         return query.where(
             models.AnnotationTask.status_badges.any(
                 models.AnnotationStatusBadge.state
-                == models.AnnotationState.rejected,
+                == data.AnnotationState.rejected,
             )
             == self.eq,
         )
@@ -112,7 +113,7 @@ class IsAssignedFilter(base.Filter):
         return query.where(
             models.AnnotationTask.status_badges.any(
                 models.AnnotationStatusBadge.state
-                == models.AnnotationState.assigned,
+                == data.AnnotationState.assigned,
             )
             == self.eq,
         )
@@ -132,7 +133,7 @@ class AssignedToFilter(base.Filter):
             models.AnnotationStatusBadge,
         ).where(
             models.AnnotationStatusBadge.state
-            == models.AnnotationState.assigned,
+            == data.AnnotationState.assigned,
             models.AnnotationStatusBadge.user_id == self.eq,
         )
 

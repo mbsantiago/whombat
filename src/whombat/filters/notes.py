@@ -64,7 +64,9 @@ class ProjectFilter(base.Filter):
             )
         )
 
-        return query.where(models.AnnotationTask.annotation_project_id == self.eq)
+        return query.where(
+            models.AnnotationTask.annotation_project_id == self.eq
+        )
 
 
 NoteFilter = base.combine(

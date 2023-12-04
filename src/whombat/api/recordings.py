@@ -3,6 +3,7 @@ import warnings
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
+from uuid import UUID
 
 from cachetools import LRUCache
 from soundevent import data
@@ -10,7 +11,7 @@ from soundevent.audio import compute_md5_checksum
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import cache, filters, models, schemas
-from whombat.api import common, features, notes, tags
+from whombat.api import common, features, notes, tags, users
 from whombat.core import files
 from whombat.core.common import remove_duplicates
 from whombat.dependencies import get_settings
@@ -18,17 +19,21 @@ from whombat.dependencies import get_settings
 __all__ = [
     "add_feature",
     "add_note",
+    "add_owner",
     "add_tag",
     "create",
     "delete",
-    "get_by_id",
+    "from_soundevent",
     "get_by_hash",
+    "get_by_id",
     "get_by_path",
     "get_many",
     "get_notes",
     "remove_feature",
     "remove_note",
+    "remove_owner",
     "remove_tag",
+    "to_soundevent",
     "update",
     "update_note",
     "validate_path",
@@ -51,10 +56,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording.
 
     Returns
@@ -88,10 +92,9 @@ async def get_by_hash(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_hash : str
+    recording_hash
         The hash of the recording.
 
     Returns
@@ -125,10 +128,9 @@ async def get_by_path(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_path : str
+    recording_path
         The path of the recording.
 
     Returns
@@ -155,33 +157,28 @@ async def get_many(
     limit: int = 1000,
     offset: int = 0,
     filters: list[filters.Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.Recording], int]:
     """Get all recordings.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    limit : int, optional
+    limit
         The maximum number of recordings to return, by default 100.
         Set to 0 to return all recordings.
-
-    offset : int, optional
+    offset
         The number of recordings to skip, by default 0
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the query, by default None
-
-    sort_by : str, optional
+    sort_by
         A string specifying how to sort the recordings, by default
 
     Returns
     -------
     recordings : list[schemas.recordings.Recording]
         The requested recordings.
-
     count : int
         The total number of recordings that match the given filters.
     """
@@ -253,13 +250,11 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : schemas.RecordingCreate
+    data
         The data to create the recording with.
-
-    audio_dir : Path
+    audio_dir
         The root directory for audio files. If not given, it will
         default to the value of `settings.audio_dir`.
 
@@ -297,10 +292,9 @@ async def create_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data: list[schemas.RecordingCreate]
+    data
         The data to create the recordings with.
 
     Returns
@@ -362,16 +356,13 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to update.
-
-    data : RecordingUpdate
+    data
         The data to update the recording with.
-
-    audio_dir : Path
+    audio_dir
         The root directory for audio files. If not given, it will
         default to the value of `settings.audio_dir`.
 
@@ -436,10 +427,9 @@ def adjust_time_expansion(
 
     Parameters
     ----------
-    recording : models.Recording
+    recording
         The recording to adjust.
-
-    time_expansion : float
+    time_expansion
         The new time expansion.
     """
     # Adjustment should be relative to the current time expansion
@@ -465,10 +455,9 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to delete.
 
     Warning
@@ -494,13 +483,11 @@ async def add_note(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording.
-
-    note_id : int
+    note_id
         The ID of the note.
 
     Returns
@@ -527,13 +514,11 @@ async def add_tag(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to add the tag to.
-
-    tag_id : int
+    tag_id
         The ID of the tag to add.
 
     Returns
@@ -572,16 +557,13 @@ async def add_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to add the feature to.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature name.
-
-    value : float
+    value
         The value of the feature.
 
     Returns
@@ -605,6 +587,59 @@ async def add_feature(
 
 
 @recording_caches.with_update
+async def add_owner(
+    session: AsyncSession,
+    recording_id: int,
+    owner_id: UUID,
+) -> schemas.Recording:
+    """Add an owner to a recording.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    recording_id
+        The ID of the recording to add the owner to.
+    owner_id
+        The ID of the owner to add.
+
+    Returns
+    -------
+    recording : schemas.recordings.Recording
+        The updated recording.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If no recording with the given hash exists.
+
+    Note
+    ----
+    The owner will only be added if it does not already exist.
+    Otherwise it will be ignored.
+    """
+    recording = await common.get_object(
+        session,
+        models.Recording,
+        models.Recording.id == recording_id,
+    )
+
+    for owner in recording.owners:
+        if owner.id == owner_id:
+            return schemas.Recording.model_validate(recording)
+
+    user = await common.get_object(
+        session,
+        models.User,
+        models.User.id == owner_id,
+    )
+    recording.owners.append(user)
+    await session.flush()
+    await session.refresh(recording)
+    return schemas.Recording.model_validate(recording)
+
+
+@recording_caches.with_update
 async def update_note(
     session: AsyncSession,
     recording_id: int,
@@ -615,13 +650,13 @@ async def update_note(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    recording_id : int
+    recording_id
         The ID of the recording to update the note of.
-    note_id : int
+    note_id
         The ID of the note to update.
-    data : schemas.notes.NoteUpdate
+    data
         The data to update the note with.
     """
     recording = await get_by_id(session, recording_id)
@@ -644,16 +679,13 @@ async def update_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to update the feature of.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature name.
-
-    value : float
+    value
         The new value of the feature.
 
     Returns
@@ -689,13 +721,11 @@ async def remove_note(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to remove the note from.
-
-    note_id : int
+    note_id
         The ID of the note to remove.
 
     Returns
@@ -732,13 +762,11 @@ async def remove_tag(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to remove the tag from.
-
-    tag_id : int
+    tag_id
         The ID of the tag to remove.
 
     Returns
@@ -766,6 +794,55 @@ async def remove_tag(
 
 
 @recording_caches.with_update
+async def remove_owner(
+    session: AsyncSession,
+    recording_id: int,
+    owner_id: UUID,
+) -> schemas.Recording:
+    """Remove an owner from a recording.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    recording_id
+        The ID of the recording to remove the owner from.
+    owner_id
+        The ID of the owner to remove.
+
+    Returns
+    -------
+    recording : schemas.recordings.Recording
+        The updated recording.
+
+    Raises
+    ------
+    whombat.exceptions.NotFoundError
+        If no recording with the given id exists.
+
+    Note
+    ----
+    The owner will only be removed from the recording if it exists,
+    otherwise it will be ignored.
+    """
+    recording = await common.get_object(
+        session,
+        models.Recording,
+        models.Recording.id == recording_id,
+    )
+    for owner in recording.owners:
+        if owner.id == owner_id:
+            recording.owners.remove(owner)
+            break
+    else:
+        return schemas.Recording.model_validate(recording)
+
+    await session.flush()
+    await session.refresh(recording)
+    return schemas.Recording.model_validate(recording)
+
+
+@recording_caches.with_update
 async def remove_feature(
     session: AsyncSession,
     recording_id: int,
@@ -775,13 +852,11 @@ async def remove_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    recording_id : int
+    recording_id
         The ID of the recording to remove the feature from.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature to remove.
 
     Returns
@@ -814,33 +889,28 @@ async def get_notes(
     limit: int = 1000,
     offset: int = 0,
     filters: list[filters.Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.RecordingNote], int]:
     """Get recording notes.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    limit : int, optional
+    limit
         The maximum number of notes to return, by default 100.
         Set to 0 to return all notes.
-
-    offset : int, optional
+    offset
         The number of notes to skip, by default 0
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the query, by default None
-
-    sort_by : str, optional
+    sort_by
         A string specifying how to sort the notes, by default
 
     Returns
     -------
     notes : list[schemas.notes.Note]
         The requested notes.
-
     count : int
         The total number of notes that match the given filters.
     """
@@ -864,33 +934,28 @@ async def get_tags(
     limit: int = 1000,
     offset: int = 0,
     filters: list[filters.Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.RecordingTag], int]:
     """Get recording tags.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    limit : int, optional
+    limit
         The maximum number of tags to return, by default 100.
         Set to 0 to return all tags.
-
-    offset : int, optional
+    offset
         The number of tags to skip, by default 0
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the query, by default None
-
-    sort_by : str, optional
+    sort_by
         A string specifying how to sort the tags, by default
 
     Returns
     -------
     tags : list[schemas.tags.Tag]
         The requested tags.
-
     count : int
         The total number of tags that match the given filters.
     """
@@ -911,7 +976,23 @@ async def from_soundevent(
     recording: data.Recording,
     audio_dir: Path | None = None,
 ) -> schemas.Recording:
-    """Create a recording from a soundevent.Recording."""
+    """Create a recording from a soundevent.Recording.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    recording
+        The soundevent.Recording to create the recording from.
+    audio_dir
+        The root directory for audio files. If not given, it will
+        default to the value of `settings.audio_dir`.
+
+    Returns
+    -------
+    recording : schemas.recordings.Recording
+        The created recording.
+    """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
 
@@ -951,7 +1032,21 @@ def to_soundevent(
     recording: schemas.Recording,
     audio_dir: Path | None = None,
 ) -> data.Recording:
-    """Create a soundevent.Recording from a recording."""
+    """Create a soundevent.Recording from a recording.
+
+    Parameters
+    ----------
+    recording
+        The recording to create the soundevent.Recording from.
+    audio_dir
+        The root directory for audio files. If not given, it will
+        default to the value of `settings.audio_dir`.
+
+    Returns
+    -------
+    recording : soundevent.Recording
+        The created soundevent.Recording.
+    """
     if audio_dir is None:
         audio_dir = get_settings().audio_dir
 
@@ -963,7 +1058,8 @@ def to_soundevent(
         features.to_soundevent(feature) for feature in recording.features
     ]
 
-    # TODO: When ownership and rights are implemented, add them here.
+    rec_owners = [users.to_soundevent(owner) for owner in recording.owners]
+
     return data.Recording(
         uuid=recording.uuid,
         path=audio_dir / recording.path,
@@ -975,9 +1071,11 @@ def to_soundevent(
         time=recording.time,
         latitude=recording.latitude,
         longitude=recording.longitude,
+        rights=recording.rights,
         tags=rec_tags,
         notes=rec_notes,
         features=rec_features,
+        owners=rec_owners,
     )
 
 
@@ -989,14 +1087,24 @@ def validate_path(
 
     Parameters
     ----------
-    path : Path
+    path
         The path to validate, can be absolute or relative. If absolute,
         it must be relative to the audio directory. If relative,
         it will be assumed to be relative to the audio directory and
         the file will be checked to exist.
-
-    audio_dir : Path
+    audio_dir
         The directory to check the path against.
+
+    Returns
+    -------
+    path : Path
+        The validated path.
+
+    Raises
+    ------
+    ValueError
+        If the path is not relative to the audio directory, or if the
+        file does not exist.
     """
     if path.is_absolute():
         if not path.is_relative_to(audio_dir):

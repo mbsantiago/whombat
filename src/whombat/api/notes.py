@@ -12,8 +12,11 @@ from whombat.filters.base import Filter
 __all__ = [
     "create",
     "delete",
+    "from_soundevent",
     "get_by_id",
+    "get_by_uuid",
     "get_many",
+    "to_soundevent",
     "update",
 ]
 
@@ -23,10 +26,9 @@ async def get_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    note_id : int
+    note_id
         The ID of the note.
 
     Returns
@@ -79,7 +81,7 @@ async def get_many(
     limit: int = 100,
     offset: int = 0,
     filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.Note], int]:
     """Get all notes.
 
@@ -88,26 +90,21 @@ async def get_many(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    limit : int, optional
+    limit
         The maximum number of notes to return.
-
-    offset : int, optional
+    offset
         The number of notes to skip.
-
-    filters : list[whombat.filters.base.Filter], optional
+    filters
         A list of filters to apply to the notes.
-
-    sort_by : str, optional
+    sort_by
         The field to sort the notes by.
 
     Returns
     -------
     notes : schemas.notes.Notes
         The requested notes.
-
     count : int
         The total number of notes that match the given filters.
     """
@@ -130,10 +127,9 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : schemas.notes.NoteCreate
+    data
         The data to create the note with.
 
     Returns
@@ -161,12 +157,10 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    note_id : int
+    note_id
         The ID of the note to update.
-
     data:
         The data to update the note with.
 
@@ -197,11 +191,11 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    note_id : int
+    note_id
         The ID of the note to delete.
+
     """
     await common.delete_object(session, models.Note, models.Note.id == note_id)
 
@@ -214,10 +208,9 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    note : data.Note
+    note
         The soundevent Note object.
 
     Returns
@@ -238,7 +231,7 @@ async def from_soundevent(
     return await create(
         session,
         schemas.NotePostCreate(
-            created_at=note.created_on,
+            created_on=note.created_on,
             uuid=note.uuid,
             message=note.message,
             created_by_id=user.id,
@@ -254,7 +247,7 @@ def to_soundevent(
 
     Parameters
     ----------
-    note : schemas.Note
+    note
         The note.
 
     Returns
@@ -265,11 +258,11 @@ def to_soundevent(
     user = note.created_by
     return data.Note(
         uuid=note.uuid,
-        created_on=note.created_at,
+        created_on=note.created_on,
         message=note.message,
-        # TODO: Add other fields!
         created_by=data.User(
             uuid=user.id,
+            email=user.email,
             username=user.username,
             name=user.name,
         ),

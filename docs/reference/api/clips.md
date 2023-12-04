@@ -1,0 +1,3 @@
+# Clips
+
+::: whombat.api.clips

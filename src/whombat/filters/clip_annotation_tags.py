@@ -129,7 +129,9 @@ class ProjectFilter(base.Filter):
             models.AnnotationTask.clip_id == models.ClipAnnotation.clip_id,
         )
 
-        return query.where(models.AnnotationTask.annotation_project_id == self.eq)
+        return query.where(
+            models.AnnotationTask.annotation_project_id == self.eq
+        )
 
 
 TaskTagFilter = base.combine(

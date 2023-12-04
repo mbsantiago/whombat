@@ -11,7 +11,6 @@ from whombat.models.annotation_project import (
     AnnotationProjectTag,
 )
 from whombat.models.annotation_task import (
-    AnnotationState,
     AnnotationStatusBadge,
     AnnotationTask,
 )
@@ -72,7 +71,6 @@ __all__ = [
     "AccessToken",
     "AnnotationProject",
     "AnnotationProjectTag",
-    "AnnotationState",
     "AnnotationStatusBadge",
     "AnnotationTask",
     "Base",

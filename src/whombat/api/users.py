@@ -19,6 +19,8 @@ __all__ = [
     "get_many",
     "get_by_data",
     "to_soundevent",
+    "from_soundevent",
+    "get_anonymous_user",
     "update",
     "delete",
 ]
@@ -32,7 +34,7 @@ def _get_user_manager(session: AsyncSession) -> UserManager:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
 
     Returns
@@ -59,10 +61,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    user_id : uuid.UUID
+    user_id
         The id to use.
 
     Returns
@@ -93,10 +94,9 @@ async def get_by_username(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    username : str
+    username
         The username to use.
 
     Returns
@@ -127,10 +127,9 @@ async def get_by_email(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    email : str
+    email
         The email to use.
 
     Returns
@@ -153,26 +152,22 @@ async def get_many(
     offset: int = 0,
     limit: int = 100,
     filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.User], int]:
     """Get all users.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    offset : int, optional
+    offset
         The number of users to skip, by default 0.
-
-    limit : int, optional
+    limit
         The number of users to get, by default 100.
-
-    filters : list[Filter], optional
+    filters
         The filters to apply, by default None.
-
-    sort_by : str, optional
-        The field to sort by, by default "-created_at".
+    sort_by
+        The field to sort by, by default "-created_on".
 
     Returns
     -------
@@ -206,10 +201,9 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : schemas.UserCreate
+    data
         The data to use for the user creation.
 
     Returns
@@ -256,18 +250,17 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    user_id : uuid.UUID
+    user_id
         The id of the user to update.
-
-    data : schemas.UserUpdate
+    data
         The data to update the user with.
 
     Returns
     -------
     user : schemas.User
+        The updated user.
 
     Raises
     ------
@@ -286,11 +279,15 @@ async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    user_id : uuid.UUID
+    user_id
         The id of the user to delete.
+
+    Returns
+    -------
+    user : schemas.User
+        The deleted user.
     """
     user = await common.delete_object(
         session,
@@ -313,7 +310,7 @@ async def get_anonymous_user(session) -> schemas.User:
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
 
     Returns
@@ -352,10 +349,9 @@ async def get_by_data(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    data : data.User
+    data
         The data to search for.
 
     Returns
@@ -386,9 +382,9 @@ async def from_soundevent(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    user : data.User
+    user
         The soundevent user object to get or create.
 
     Returns
@@ -428,16 +424,13 @@ async def from_soundevent(
 
 
 def to_soundevent(
-    user: schemas.User,
+    user: schemas.SimpleUser,
 ) -> data.User:
     """Convert a user instance to soundevent object.
 
     Parameters
     ----------
-    session : AsyncSession
-        The database session to use.
-
-    user : schemas.User
+    user
         The user to get the data from.
 
     Returns

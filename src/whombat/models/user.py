@@ -62,7 +62,9 @@ class User(Base):
     __tablename__ = "user"
 
     email: orm.Mapped[str] = orm.mapped_column(
-        String(length=320), unique=True, index=True,
+        String(length=320),
+        unique=True,
+        index=True,
     )
     hashed_password: orm.Mapped[str] = orm.mapped_column(String(length=1024))
     username: orm.Mapped[str] = orm.mapped_column(unique=True)
@@ -77,12 +79,12 @@ class User(Base):
     # Back references
 
     if TYPE_CHECKING:
-        from whombat.models.user_run import UserRun
         from whombat.models.note import Note
         from whombat.models.recording import Recording, RecordingOwner
         from whombat.models.sound_event_annotation import (
             SoundEventAnnotationTag,
         )
+        from whombat.models.user_run import UserRun
 
     notes: orm.Mapped[list["Note"]] = orm.relationship(
         back_populates="created_by",

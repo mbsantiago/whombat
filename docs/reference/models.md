@@ -149,11 +149,6 @@ consistent, it's essential to note that some minor differences do exist.
         heading_level: 4
         members: None
 
-::: whombat.models.AnnotationState
-    options:
-        heading_level: 4
-        members: None
-
 ::: whombat.models.AnnotationStatusBadge
     options:
         heading_level: 4

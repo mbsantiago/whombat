@@ -235,7 +235,7 @@ async def get_objects(
 
         query = query.order_by(sort_by)
 
-    if limit is not None:
+    if limit is not None and limit >= 0:
         query = query.limit(limit)
 
     if offset is not None:
@@ -274,9 +274,9 @@ async def create_object(
     except IntegrityError as e:
         await session.rollback()
         raise exceptions.DuplicateObjectError(
-            f"A {model.__name__} could not be created due to a duplicate object"
-            " error. This is likely due to a unique constraint violation."
-            f" Data: {data}"
+            f"A {model.__name__} could not be created due to a duplicate"
+            " object error. This is likely due to a unique constraint "
+            f" violation. Data: {data}"
         ) from e
     return obj
 
@@ -305,7 +305,6 @@ async def create_objects(
 
     data : Sequence[B]
         The data to use for creation of the objects.
-
     """
     stmt = insert(model).values([get_values(obj) for obj in data])
     await session.execute(stmt)
@@ -358,7 +357,6 @@ async def create_objects_without_duplicates(
     ValueError
         If `avoid_duplicates` is True and `key` or `key_column` are
         not provided.
-
     """
     # Remove duplicates from data
     data = remove_duplicates(list(data), key=key)
@@ -523,9 +521,9 @@ async def update_object(
     except IntegrityError as e:
         await session.rollback()
         raise exceptions.DuplicateObjectError(
-            f"A {model.__name__} could not be updated due to a duplicate object"
-            " error. This is likely due to a unique constraint violation."
-            f" Data: {data}"
+            f"A {model.__name__} could not be updated due to a duplicate"
+            " object error. This is likely due to a unique constraint"
+            f" violation. Data: {data}"
         ) from e
     await session.refresh(obj)
     return obj
@@ -570,9 +568,9 @@ async def add_note_to_object(
 
     note = await get_object(session, models.Note, models.Note.id == note_id)
 
-    # NOTE: This is a bit hacky. Here we assume that the note association models
-    # and the relation fields are named in a certain way. This is not ideal,
-    # but it works for now.
+    # NOTE: This is a bit hacky. Here we assume that the note
+    # association models and the relation fields are named in a
+    # certain way. This is not ideal, but it works for now.
     name = _to_snake_case(model.__name__)
     foreign_key = f"{name}_id"
     relation_field_name = f"{name}_notes"

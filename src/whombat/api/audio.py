@@ -13,8 +13,8 @@ async def load(
     recording_id: int,
     start_time: float | None = None,
     end_time: float | None = None,
-    audio_parameters: schemas.AudioParameters = schemas.AudioParameters(),
     audio_dir: Path = Path.cwd(),
+    audio_parameters: schemas.AudioParameters = schemas.AudioParameters(),
 ):
     """Load audio.
 
@@ -22,13 +22,15 @@ async def load(
     ----------
     session : Session
         SQLAlchemy session.
-    recording_id : int
+    recording_id
         Recording ID.
-    start_time : float
+    start_time
         Start time in seconds.
-    end_time : float
+    end_time
         End time in seconds.
-    parameters : AudioParameters
+    audio_dir
+        The directory where the audio files are stored.
+    audio_parameters
         Audio parameters.
 
     Returns

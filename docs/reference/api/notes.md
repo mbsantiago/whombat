@@ -1,0 +1,3 @@
+# Notes
+
+::: whombat.api.notes

@@ -27,15 +27,17 @@ async def compute(
 
     Parameters
     ----------
-    session : Session
+    session
         SQLAlchemy session.
-    recording_id : int
+    recording_id
         Recording ID.
-    start_time : float
+    start_time
         Start time in seconds.
-    end_time : float
+    end_time
         End time in seconds.
-    parameters : SpectrogramParameters
+    audio_dir
+        The directory where the audio files are stored.
+    spectrogram_parameters : SpectrogramParameters
         Spectrogram parameters.
 
     Returns
@@ -49,7 +51,7 @@ async def compute(
         recording_id,
         start_time,
         end_time,
-        audio_parameters,
+        audio_parameters=audio_parameters,
         audio_dir=audio_dir,
     )
 

@@ -12,7 +12,6 @@ from whombat.models.clip_prediction import ClipPrediction
 from whombat.models.feature import FeatureName
 from whombat.models.sound_event_evaluation import SoundEventEvaluation
 
-
 if TYPE_CHECKING:
     from whombat.models.evaluation import Evaluation
 

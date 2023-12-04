@@ -13,16 +13,18 @@ from whombat.api import common, features
 from whombat.filters.base import Filter
 
 __all__ = [
+    "add_feature",
     "create",
     "create_many",
-    "get_many",
-    "get_by_uuid",
-    "add_tag",
-    "add_feature",
-    "remove_tag",
-    "remove_feature",
-    "update",
     "delete",
+    "from_soundevent",
+    "get_by_id",
+    "get_by_uuid",
+    "get_many",
+    "remove_feature",
+    "to_soundevent",
+    "update",
+    "update_feature",
 ]
 
 
@@ -43,9 +45,9 @@ async def get_by_id(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    id : int
+    id
         The ID of the sound event.
 
     Returns
@@ -80,9 +82,9 @@ async def get_by_uuid(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    uuid : UUID
+    uuid
         The UUID of the sound event.
 
     Returns
@@ -108,32 +110,27 @@ async def get_many(
     limit: int = 1000,
     offset: int = 0,
     filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_at",
+    sort_by: str | None = "-created_on",
 ) -> tuple[list[schemas.SoundEvent], int]:
     """Get a list of sound events.
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    limit : int, optional
+    limit
         The maximum number of sound events to return, by default 1000.
-
-    offset : int, optional
+    offset
         The number of sound events to skip, by default 0.
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply to the sound events, by default None.
-
-    sort_by : str, optional
-        The field to sort the sound events by, by default "-created_at".
+    sort_by
+        The field to sort the sound events by, by default "-created_on".
 
     Returns
     -------
-    list[schemas.SoundEvent]
+    sound_events : list[schemas.SoundEvent]
         The list of sound events.
-
     count : int
         The total number of sound events.
     """
@@ -157,9 +154,9 @@ async def create(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-    data : schemas.SoundEventCreate
+    data
         The data of the sound event.
 
     Returns
@@ -186,7 +183,20 @@ async def create_many(
     session: AsyncSession,
     data: list[schemas.SoundEventCreate],
 ) -> list[schemas.SoundEvent]:
-    """Create multiple sound events."""
+    """Create multiple sound events.
+
+    Parameters
+    ----------
+    session
+        The database session.
+    data
+        A list of sound event data to create.
+
+    Returns
+    -------
+    sound_events : list[schemas.SoundEvent]
+        The created sound events.
+    """
     sound_events = await common.create_objects_without_duplicates(
         session=session,
         model=models.SoundEvent,
@@ -218,13 +228,11 @@ async def update(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_event_id : int
+    sound_event_id
         The ID of the sound event.
-
-    data : schemas.SoundEventUpdate
+    data
         The data to update the sound event with.
 
     Returns
@@ -272,10 +280,9 @@ async def delete(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_event_id : int
+    sound_event_id
         The ID of the sound event.
 
     Raises
@@ -292,44 +299,6 @@ async def delete(
 
 
 @sound_event_caches.with_update
-async def add_tag(
-    session: AsyncSession,
-    sound_event_id: int,
-    tag_id: int,
-) -> schemas.SoundEvent:
-    """Add tags to a sound event.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-
-    sound_event_id : int
-        The ID of the sound event.
-
-    tag_id : int
-        The ID of the tag.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.add_tag_to_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        tag_id=tag_id,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.with_update
 async def add_feature(
     session: AsyncSession,
     sound_event_id: int,
@@ -340,13 +309,11 @@ async def add_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_event_id : int
+    sound_event_id
         The ID of the sound event.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature name.
 
     Returns
@@ -380,13 +347,11 @@ async def update_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_event_id : int
+    sound_event_id
         The ID of the sound event.
-
-    feature_name_id : int
+    feature_name_id
         The ID of the feature name.
 
     Returns
@@ -410,44 +375,6 @@ async def update_feature(
 
 
 @sound_event_caches.with_update
-async def remove_tag(
-    session: AsyncSession,
-    sound_event_id: int,
-    tag_id: int,
-) -> schemas.SoundEvent:
-    """Remove tags from a sound event.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-
-    sound_event_id : int
-        The ID of the sound event.
-
-    tag_id : int
-        The ID of the tag.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.remove_tag_from_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        tag_id=tag_id,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.with_update
 async def remove_feature(
     session: AsyncSession,
     sound_event_id: int,
@@ -457,13 +384,11 @@ async def remove_feature(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_event_id : int
+    sound_event_id
         The ID of the sound event.
-
-    features_name_id : int
+    features_name_id
         The ID of the feature name.
 
     Returns
@@ -493,10 +418,9 @@ async def _create_sound_event_features(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session.
-
-    sound_events : list[schemas.SoundEvent]
+    sound_events
         The sound events.
     """
     all_features = []
@@ -568,14 +492,12 @@ async def from_soundevent(
     )
 
 
-def to_soundevent(
-    sound_event: schemas.SoundEvent,
-) -> data.SoundEvent:
+def to_soundevent(sound_event: schemas.SoundEvent) -> data.SoundEvent:
     """Create a soundevent SoundEvent object from a sound event.
 
     Parameters
     ----------
-    sound_event : schemas.SoundEvent
+    sound_event
         The sound event.
 
     Returns
@@ -586,8 +508,5 @@ def to_soundevent(
     return data.SoundEvent(
         uuid=sound_event.uuid,
         geometry=sound_event.geometry,
-        features=[
-            features.to_soundevent(f)
-            for f in sound_event.features
-        ],
+        features=[features.to_soundevent(f) for f in sound_event.features],
     )
