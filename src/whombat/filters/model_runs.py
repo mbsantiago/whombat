@@ -72,6 +72,22 @@ class HasEvaluationFilter(base.Filter):
         return query.where(models.ModelRun.evaluations.any())
 
 
+class EvaluationSetFilter(base.Filter):
+    """Filter for model runs that are in an evaluation set."""
+
+    eq: int | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter for user runs that are in an evaluation set."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.EvaluationSetModelRun,
+            models.EvaluationSetModelRun.model_run_id == models.ModelRun.id,
+        ).filter(models.EvaluationSetModelRun.evaluation_set_id == self.eq)
+
+
 ModelRunFilter = base.combine(
     model_name=NameFilter,
     model_version=VersionFilter,

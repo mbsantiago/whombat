@@ -13,7 +13,7 @@ from whombat.filters import (
     recordings,
     sound_events,
     tags,
-    tasks,
+    annotation_tasks,
 )
 from whombat.filters.base import Filter
 
@@ -26,6 +26,6 @@ __all__ = [
     "clips",
     "annotation_projects",
     "datasets",
-    "tasks",
+    "annotation_tasks",
     "Filter",
 ]
