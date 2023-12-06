@@ -4,10 +4,11 @@ from typing import Sequence
 from uuid import UUID
 
 from cachetools import LRUCache
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
-from whombat.api import common
+from whombat import cache, exceptions, models, schemas
+from whombat.api import common, sound_events, tags
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -284,18 +285,19 @@ async def remove_tag(
     return schemas.SoundEventPrediction.model_validate(prediction)
 
 
-async def from_soundevent(
+async def create_from_soundevent(
     session: AsyncSession,
     data: data.SoundEventPrediction,
     clip_prediction_id: int,
 ) -> schemas.SoundEventPrediction:
-    """Get the Whombat representation of a sound event prediction.
+    """Create a new Whombat sound event prediction from a sound event
+    prediction in soundevent format.
 
     Parameters
     ----------
     session
         SQLAlchemy database session.
-    sound_event_prediction
+    data
         A sound event prediction in soundevent format.
     clip_prediction_id
         ID of the clip prediction that the sound event prediction belongs to.
@@ -303,7 +305,7 @@ async def from_soundevent(
     Returns
     -------
     sound_event_prediction : schemas.SoundEventPrediction
-        The sound event prediction in Whombat format.
+        The created sound event prediction.
     """
     clip_prediction = await common.get_object(
         session,
@@ -323,46 +325,88 @@ async def from_soundevent(
             uuid=data.uuid,
             clip_prediction_id=clip_prediction.id,
             sound_event_id=sound_event.id,
-            created_on=data.created_on,
             score=data.score,
         ),
     )
 
-    for predicted_tag in data.predicted_tags:
-        tag = 
+    return prediction
 
 
-
-    return schemas.SoundEventPrediction(
-        created_on=data.created_on,
-        uuid=data.uuid,
-        sound_event=sound_event,
-        predicted_tags=predicted_tags,
-    )
-
-
-async def to_soundevent(
+async def from_soundevent(
     session: AsyncSession,
-    sound_event_prediction_id: int,
-) -> schemas.SoundEvent:
-    """Get the sound event that a sound event prediction predicts.
+    data: data.SoundEventPrediction,
+    clip_prediction_id: int,
+) -> schemas.SoundEventPrediction:
+    """Get the Whombat representation of a sound event prediction.
 
     Parameters
     ----------
     session
         SQLAlchemy database session.
-    sound_event_prediction_id
-        ID of the sound event prediction.
+    data
+        A sound event prediction in soundevent format.
+    clip_prediction_id
+        ID of the clip prediction that the sound event prediction belongs to.
 
     Returns
     -------
-    sound_event : schemas.SoundEvent
-        The sound event that the sound event prediction predicts.
+    sound_event_prediction : schemas.SoundEventPrediction
+        The sound event prediction in Whombat format.
     """
-    prediction = await common.get_object(
-        session,
-        models.SoundEventPrediction,
-        models.SoundEventPrediction.id == sound_event_prediction_id,
+    try:
+        prediction = await get_by_uuid(session, data.uuid)
+    except exceptions.NotFoundError:
+        prediction = await create_from_soundevent(
+            session,
+            data,
+            clip_prediction_id,
+        )
+
+    existing_tags = {
+        (t.tag.key, t.tag.value) for t in prediction.predicted_tags
+    }
+    for predicted_tag in data.tags:
+        if (predicted_tag.tag.key, predicted_tag.tag.value) in existing_tags:
+            continue
+        tag = await tags.from_soundevent(session, predicted_tag.tag)
+        prediction = await add_tag(
+            session,
+            prediction.id,
+            tag.id,
+            predicted_tag.score,
+        )
+
+    return prediction
+
+
+def to_soundevent(
+    sound_event_prediction: schemas.SoundEventPrediction,
+) -> data.SoundEventPrediction:
+    """Get the the sound event prediction in `soundevent` format.
+
+    Parameters
+    ----------
+    sound_event_prediction
+        The sound event prediction to convert to soundevent format.
+
+    Returns
+    -------
+    sound_event : data.SoundEventPrediction
+        The sound event prediction in soundevent format.
+    """
+    sound_event = sound_events.to_soundevent(
+        sound_event_prediction.sound_event,
     )
 
-    return schemas.SoundEvent.model_validate(prediction.sound_event)
+    return data.SoundEventPrediction(
+        uuid=sound_event_prediction.uuid,
+        sound_event=sound_event,
+        score=sound_event_prediction.score,
+        tags=[
+            data.PredictedTag(
+                tag=tags.to_soundevent(tag.tag),
+                score=tag.score,
+            )
+            for tag in sound_event_prediction.predicted_tags
+        ],
+    )

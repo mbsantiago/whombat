@@ -1,15 +1,21 @@
 """Python API to manage predicted tags."""
 
 
+from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from whombat import schemas
 from whombat.api import tags
 
+__all__ = [
+    "create",
+    "from_soundevent",
+    "to_soundevent",
+]
+
 
 async def create(
-    session: AsyncSession,
-    tag_id: int,
-    score: float
+    session: AsyncSession, tag_id: int, score: float
 ) -> schemas.PredictedTag:
     """Create a new predicted tag.
 
@@ -37,32 +43,43 @@ async def create(
 
 async def from_soundevent(
     session: AsyncSession,
-    data.
-) -> list[schemas.PredictedTag]:
-    """Get predicted tags from a sound event prediction.
+    data: data.PredictedTag,
+) -> schemas.PredictedTag:
+    """Get predicted tag from a soundevent PredictedTag object.
 
     Parameters
     ----------
     session
         SQLAlchemy database session.
-    sound_event_prediction_id
-        ID of the sound event prediction.
+    data
+        The soundevent PredictedTag object.
 
     Returns
     -------
-    predicted_tags : list[schemas.PredictedTag]
-        List of predicted tags.
+    predicted_tag : schemas.PredictedTag
+        Predicted tag.
     """
-    predicted_tags = []
-    prediction = await sound_event_predictions.get_by_id(
-        session,
-        sound_event_prediction_id,
+    tag = await tags.from_soundevent(session, data.tag)
+    return schemas.PredictedTag(
+        tag=tag,
+        score=data.score,
     )
-    for tag in prediction.predicted_tags:
-        predicted_tags.append(
-            schemas.PredictedTag(
-                tag=tag.tag,
-                score=tag.score,
-            )
-        )
-    return predicted_tags
+
+
+def to_soundevent(predicted_tag: schemas.PredictedTag) -> data.PredictedTag:
+    """Get a soundevent PredictedTag object from a predicted tag.
+
+    Parameters
+    ----------
+    predicted_tag
+        The predicted tag.
+
+    Returns
+    -------
+    data.PredictedTag
+        The soundevent PredictedTag object.
+    """
+    return data.PredictedTag(
+        tag=tags.to_soundevent(predicted_tag.tag),
+        score=predicted_tag.score,
+    )

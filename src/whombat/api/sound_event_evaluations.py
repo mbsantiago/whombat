@@ -1,4 +1,4 @@
-"""API functions to interact with clip evaluations."""
+"""API functions to interact with sound event evaluations."""
 from uuid import UUID
 
 from soundevent import data
@@ -20,13 +20,13 @@ from whombat.api.common import (
 )
 
 
-class ClipEvaluationAPI(
+class SoundEventEvaluationAPI(
     BaseAPI[
         UUID,
-        models.ClipEvaluation,
-        schemas.ClipEvaluation,
-        schemas.ClipEvaluationCreate,
-        schemas.ClipEvaluationUpdate,
+        models.SoundEventEvaluation,
+        schemas.SoundEventEvaluation,
+        schemas.SoundEventEvaluationCreate,
+        schemas.SoundEventEvaluationUpdate,
     ]
 ):
     """API for sound event evaluations."""
@@ -34,9 +34,9 @@ class ClipEvaluationAPI(
     async def add_metric(
         self,
         session: AsyncSession,
-        obj: schemas.ClipEvaluation,
+        obj: schemas.SoundEventEvaluation,
         metric: schemas.Feature,
-    ) -> schemas.ClipEvaluation:
+    ) -> schemas.SoundEventEvaluation:
         """Add a metric to a sound event evaluation."""
         for m in obj.metrics:
             if m.feature_name == metric.feature_name:
@@ -47,9 +47,9 @@ class ClipEvaluationAPI(
 
         await create_object(
             session,
-            models.ClipEvaluationMetric,
-            schemas.ClipEvaluationMetricCreate(
-                clip_evaluation_id=obj.id,
+            models.SoundEventEvaluationMetric,
+            schemas.SoundEventEvaluationMetricCreate(
+                sound_event_evaluation_id=obj.id,
                 feature_name_id=metric.feature_name.id,
                 value=metric.value,
             ),
@@ -61,9 +61,9 @@ class ClipEvaluationAPI(
     async def update_metric(
         self,
         session: AsyncSession,
-        obj: schemas.ClipEvaluation,
+        obj: schemas.SoundEventEvaluation,
         metric: schemas.Feature,
-    ) -> schemas.ClipEvaluation:
+    ) -> schemas.SoundEventEvaluation:
         """Update a metric of a sound event evaluation."""
         for m in obj.metrics:
             if m.feature_name == metric.feature_name:
@@ -76,11 +76,11 @@ class ClipEvaluationAPI(
 
         await update_object(
             session,
-            models.ClipEvaluationMetric,
+            models.SoundEventEvaluationMetric,
             and_(
-                models.ClipEvaluationMetric.clip_evaluation_id
+                models.SoundEventEvaluationMetric.sound_event_evaluation_id
                 == obj.id,
-                models.ClipEvaluationMetric.feature_name_id
+                models.SoundEventEvaluationMetric.feature_name_id
                 == metric.feature_name.id,
             ),
             value=metric.value,
@@ -99,9 +99,9 @@ class ClipEvaluationAPI(
     async def remove_metric(
         self,
         session: AsyncSession,
-        obj: schemas.ClipEvaluation,
+        obj: schemas.SoundEventEvaluation,
         metric: schemas.Feature,
-    ) -> schemas.ClipEvaluation:
+    ) -> schemas.SoundEventEvaluation:
         """Remove a metric from a sound event evaluation."""
         for m in obj.metrics:
             if m.feature_name == metric.feature_name:
@@ -114,11 +114,11 @@ class ClipEvaluationAPI(
 
         await delete_object(
             session,
-            models.ClipEvaluationMetric,
+            models.SoundEventEvaluationMetric,
             and_(
-                models.ClipEvaluationMetric.clip_evaluation_id
+                models.SoundEventEvaluationMetric.sound_event_evaluation_id
                 == obj.id,
-                models.ClipEvaluationMetric.feature_name_id
+                models.SoundEventEvaluationMetric.feature_name_id
                 == metric.feature_name.id,
             ),
         )
@@ -139,13 +139,28 @@ class ClipEvaluationAPI(
         self,
         session: AsyncSession,
         data: data.Match,
-    ) -> schemas.ClipEvaluation:
+        clip_evaluation: schemas.ClipEvaluation,
+    ) -> schemas.SoundEventEvaluation:
         """Create a sound event evaluation from a sound event evaluation."""
+        sound_event_annotation = None
+        if data.target:
+            sound_event_annotation = (
+                await sound_event_annotations.from_soundevent(
+                    session, data.target, clip_evaluation.clip_annotation.id
+                )
+            )
 
+        sound_event_prediction = None
+        if data.source:
+            sound_event_prediction = (
+                await sound_event_predictions.from_soundevent(
+                    session, data.source, clip_evaluation.clip_prediction.id
+                )
+            )
 
         obj = await self.create(
             session,
-            schemas.ClipEvaluationCreate(
+            schemas.SoundEventEvaluationCreate(
                 clip_evaluation_id=clip_evaluation.id,
                 source_id=sound_event_prediction.id
                 if sound_event_prediction
@@ -167,9 +182,31 @@ class ClipEvaluationAPI(
 
         return obj
 
+    def to_soundevent(
+        self,
+        obj: schemas.SoundEventEvaluation,
+    ) -> data.Match:
+        """Convert a sound event evaluation to soundevent format."""
+        source = None
+        if obj.source:
+            source = sound_event_predictions.to_soundevent(obj.source)
+
+        target = None
+        if obj.target:
+            target = sound_event_annotations.to_soundevent(obj.target)
+
+        return data.Match(
+            uuid=obj.uuid,
+            affinity=obj.affinity,
+            score=obj.score,
+            source=source,
+            target=target,
+            metrics=[features.to_soundevent(m) for m in obj.metrics],
+        )
+
     @classmethod
     def _key_fn(
-        cls, obj: schemas.ClipEvaluation | models.ClipEvaluation
+        cls, obj: schemas.SoundEventEvaluation | models.SoundEventEvaluation
     ) -> tuple[int, int | None, int | None]:
         return (
             obj.clip_evaluation_id,
@@ -180,10 +217,10 @@ class ClipEvaluationAPI(
     @classmethod
     def _get_key_column(cls) -> ColumnElement:
         return tuple_(
-            models.ClipEvaluation.clip_evaluation_id,
-            models.ClipEvaluation.source_id,
-            models.ClipEvaluation.target_id,
+            models.SoundEventEvaluation.clip_evaluation_id,
+            models.SoundEventEvaluation.source_id,
+            models.SoundEventEvaluation.target_id,
         )
 
 
-clip_evaluations = ClipEvaluationAPI()
+sound_event_evaluations = SoundEventEvaluationAPI()

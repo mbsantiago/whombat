@@ -2,251 +2,317 @@
 import uuid
 from typing import Sequence
 
-from cachetools import LRUCache
+from soundevent import data
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, models, schemas
-from whombat.api import common
+from whombat import exceptions, models, schemas
+from whombat.api import clip_annotations, tags
+from whombat.api.common import BaseAPI, create_object, delete_object
+from whombat.api.model_runs import model_runs
+from whombat.api.user_runs import user_runs
 from whombat.filters.base import Filter
+from whombat.filters.clip_annotations import (
+    EvaluationSetFilter as ClipAnnotationEvaluationSetFilter,
+)
+from whombat.filters.model_runs import (
+    EvaluationSetFilter as ModelRunEvaluationSetFilter,
+)
+from whombat.filters.user_runs import (
+    EvaluationSetFilter as UserRunEvaluationSetFilter,
+)
 
 __all__ = [
-    "create",
-    "delete",
-    "get_many",
-    "get_by_id",
-    "get_by_name",
-    "get_by_uuid",
-    "update",
+    "EvaluationSetAPI",
 ]
 
 
-evaluation_sets_cache = cache.CacheCollection(schemas.EvaluationSet)
-
-
-@evaluation_sets_cache.cached(
-    name="evaluation_set_by_id",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, evaluation_set_id: evaluation_set_id,
-    data_key=lambda evaluation_set: evaluation_set.id,
-)
-async def get_by_id(
-    session: AsyncSession,
-    evaluation_set_id: int,
-) -> schemas.EvaluationSet:
-    """Get an evaluation set by its ID.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    evaluation_set_id : int
-        The ID of the evaluation set.
-
-    Returns
-    -------
-    schemas.EvaluationSet
-        The evaluation set.
-
-    Raises
-    ------
-    whombat.exceptions.NotFound
-        If the evaluation set does not exist.
-    """
-    dataset = await common.get_object(
-        session,
+class EvaluationSetAPI(
+    BaseAPI[
+        uuid.UUID,
         models.EvaluationSet,
-        models.EvaluationSet.id == evaluation_set_id,
-    )
-    return schemas.EvaluationSet.model_validate(dataset)
+        schemas.EvaluationSet,
+        schemas.EvaluationSetCreate,
+        schemas.EvaluationSetUpdate,
+    ]
+):
+    async def add_clip_annotation(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        annotation: schemas.ClipAnnotation,
+    ) -> schemas.EvaluationSet:
+        """Add a clip annotation to an evaluation set."""
+        await create_object(
+            session,
+            models.EvaluationSetAnnotation,
+            evaluation_set_id=obj.id,
+            clip_annotation_id=annotation.id,
+        )
+        return obj
+
+    async def remove_clip_annotation(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        annotation: schemas.ClipAnnotation,
+    ) -> schemas.EvaluationSet:
+        """Remove a clip annotation from an evaluation set."""
+        await delete_object(
+            session,
+            models.EvaluationSetAnnotation,
+            and_(
+                models.EvaluationSetAnnotation.evaluation_set_id == obj.id,
+                models.EvaluationSetAnnotation.clip_annotation_id
+                == annotation.id,
+            ),
+        )
+        return obj
+
+    async def add_tag(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        tag: schemas.Tag,
+    ) -> schemas.EvaluationSet:
+        """Add a tag to an annotation project."""
+        if tag in obj.tags:
+            raise ValueError(
+                f"Annotation project {obj.id} already has tag {tag.id}."
+            )
+
+        await create_object(
+            session,
+            models.EvaluationSetTag,
+            evaluation_set_id=obj.id,
+            tag_id=tag.id,
+        )
+
+        obj = obj.model_copy(update=dict(tags=[*obj.tags, tag]))
+        self._update_cache(obj)
+        return obj
+
+    async def remove_tag(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        tag: schemas.Tag,
+    ) -> schemas.EvaluationSet:
+        """Remove a tag from an annotation project."""
+        if tag not in obj.tags:
+            raise ValueError(
+                f"Annotation project {obj.id} does not have tag {tag.id}."
+            )
+
+        await delete_object(
+            session,
+            models.EvaluationSetTag,
+            and_(
+                models.EvaluationSetTag.evaluation_set_id == obj.id,
+                models.EvaluationSetTag.tag_id == tag.id,
+            ),
+        )
+
+        obj = obj.model_copy(
+            update=dict(tags=[t for t in obj.tags if t.id != tag.id])
+        )
+        self._update_cache(obj)
+        return obj
+
+    async def get_model_runs(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = None,
+    ) -> tuple[Sequence[schemas.ModelRun], int]:
+        """Get all model runs in an evaluation set."""
+        return await model_runs.get_many(
+            session,
+            limit=limit,
+            offset=offset,
+            filters=[
+                ModelRunEvaluationSetFilter(eq=obj.id),
+                *(filters or []),
+            ],
+            sort_by=sort_by,
+        )
+
+    async def add_model_run(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        model_run: schemas.ModelRun,
+    ) -> schemas.EvaluationSet:
+        """Add a model run to an evaluation set."""
+        await create_object(
+            session,
+            models.EvaluationSetModelRun,
+            evaluation_set_id=obj.id,
+            model_run_id=model_run.id,
+        )
+
+        return obj
+
+    async def remove_model_run(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        model_run: schemas.ModelRun,
+    ) -> schemas.EvaluationSet:
+        """Remove a model run from an evaluation set."""
+        await delete_object(
+            session,
+            models.EvaluationSetModelRun,
+            and_(
+                models.EvaluationSetModelRun.evaluation_set_id == obj.id,
+                models.EvaluationSetModelRun.model_run_id == model_run.id,
+            ),
+        )
+
+        return obj
+
+    async def get_user_runs(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = None,
+    ) -> tuple[Sequence[schemas.UserRun], int]:
+        """Get all user runs in an evaluation set."""
+        return await user_runs.get_many(
+            session,
+            limit=limit,
+            offset=offset,
+            filters=[UserRunEvaluationSetFilter(eq=obj.id), *(filters or [])],
+            sort_by=sort_by,
+        )
+
+    async def add_user_run(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        user_run: schemas.UserRun,
+    ) -> schemas.EvaluationSet:
+        """Add a user run to an evaluation set."""
+        await create_object(
+            session,
+            models.EvaluationSetUserRun,
+            evaluation_set_id=obj.id,
+            user_run_id=user_run.id,
+        )
+
+        return obj
+
+    async def remove_user_run(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        user_run: schemas.UserRun,
+    ) -> schemas.EvaluationSet:
+        """Remove a user run from an evaluation set."""
+        await delete_object(
+            session,
+            models.EvaluationSetUserRun,
+            and_(
+                models.EvaluationSetUserRun.evaluation_set_id == obj.id,
+                models.EvaluationSetUserRun.user_run_id == user_run.id,
+            ),
+        )
+
+        return obj
+
+    async def get_clip_annotations(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[Sequence[schemas.ClipAnnotation], int]:
+        """Get all clip annotations in an evaluation set."""
+        return await clip_annotations.get_many(
+            session,
+            limit=limit,
+            offset=offset,
+            filters=[
+                ClipAnnotationEvaluationSetFilter(eq=obj.id),
+                *(filters or []),
+            ],
+            sort_by=sort_by,
+        )
+
+    async def from_soundevent(
+        self, session: AsyncSession, data: data.EvaluationSet
+    ) -> schemas.EvaluationSet:
+        """Create an evaluation set from an object in `soundevent` format."""
+        try:
+            obj = await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            obj = await self._create_from_soundevent(session, data)
+
+        self._update_cache(obj)
+        return obj
+
+    async def to_soundevent(
+        self, session: AsyncSession, obj: schemas.EvaluationSet
+    ) -> data.EvaluationSet:
+        """Create an object in `soundevent` format from an evaluation set."""
+        anns, _ = await self.get_clip_annotations(session, obj, limit=-1)
+
+        return data.EvaluationSet(
+            uuid=obj.uuid,
+            created_on=obj.created_on,
+            name=obj.name,
+            description=obj.description,
+            evaluation_tags=[tags.to_soundevent(t) for t in obj.tags],
+            clip_annotations=[clip_annotations.to_soundevent(a) for a in anns],
+        )
+
+    async def _create_from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.EvaluationSet,
+    ) -> schemas.EvaluationSet:
+        """Create an evaluation set from an object in `soundevent` format."""
+        obj = await self.create(
+            session,
+            schemas.EvaluationSetCreate(
+                uuid=data.uuid,
+                created_on=data.created_on,
+                name=data.name,
+                description=data.description,
+            ),
+        )
+        return obj
+
+    async def _update_from_soundevent(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        data: data.EvaluationSet,
+    ) -> schemas.EvaluationSet:
+        """Update an evaluation set from an object in `soundevent` format."""
+
+        _existing_tags = {(t.key, t.value) for t in obj.tags}
+        for t in data.evaluation_tags:
+            if (t.key, t.value) not in _existing_tags:
+                tag = await tags.from_soundevent(session, t)
+                obj = await self.add_tag(session, obj, tag)
+
+        for a in data.clip_annotations:
+            ann = await clip_annotations.from_soundevent(session, a)
+            obj = await self.add_clip_annotation(session, obj, ann)
+
+        return obj
 
 
-@evaluation_sets_cache.cached(
-    name="evaluation_set_by_uuid",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, evaluation_set_uuid: evaluation_set_uuid,
-    data_key=lambda evaluation_set: evaluation_set.uuid,
-)
-async def get_by_uuid(
-    session: AsyncSession,
-    evaluation_set_uuid: uuid.UUID,
-) -> schemas.EvaluationSet:
-    """Get an evaluation set by its UUID.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    evaluation_set_uuid : uuid.UUID
-        The UUID of the evaluation set.
-
-    Returns
-    -------
-    schemas.EvaluationSet
-        The evaluation set.
-
-    Raises
-    ------
-    whombat.exceptions.NotFound
-        If the evaluation set does not exist.
-    """
-    dataset = await common.get_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.uuid == evaluation_set_uuid,
-    )
-    return schemas.EvaluationSet.model_validate(dataset)
-
-
-@evaluation_sets_cache.cached(
-    name="evaluation_set_by_name",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, evaluation_set_name: evaluation_set_name,
-    data_key=lambda evaluation_set: evaluation_set.name,
-)
-async def get_by_name(
-    session: AsyncSession,
-    evaluation_set_name: str,
-) -> schemas.EvaluationSet:
-    """Get an evaluation set by its name.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    evaluation_set_name : str
-        The name of the evaluation set.
-
-    Returns
-    -------
-    schemas.EvaluationSet
-        The evaluation set.
-
-    Raises
-    ------
-    whombat.exceptions.NotFound
-        If the evaluation set does not exist.
-    """
-    dataset = await common.get_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.name == evaluation_set_name,
-    )
-    return schemas.EvaluationSet.model_validate(dataset)
-
-
-@evaluation_sets_cache.with_update
-async def create(
-    session: AsyncSession,
-    data: schemas.EvaluationSetCreate,
-) -> schemas.EvaluationSet:
-    """Create an annotation project."""
-    annotation_project = await common.create_object(
-        session,
-        models.EvaluationSet,
-        data,
-    )
-    return schemas.EvaluationSet.model_validate(annotation_project)
-
-
-@evaluation_sets_cache.with_update
-async def update(
-    session: AsyncSession,
-    evaluation_set_id: int,
-    data: schemas.EvaluationSetUpdate,
-) -> schemas.EvaluationSet:
-    """Update an evaluation set."""
-    evaluation_set = await common.update_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.id == evaluation_set_id,
-        data,
-    )
-    return schemas.EvaluationSet.model_validate(evaluation_set)
-
-
-@evaluation_sets_cache.with_clear
-async def delete(
-    session: AsyncSession,
-    evaluation_set_id: int,
-) -> schemas.EvaluationSet:
-    """Delete an evaluation set."""
-    evaluation_set = await common.delete_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.id == evaluation_set_id,
-    )
-    return schemas.EvaluationSet.model_validate(evaluation_set)
-
-
-async def get_many(
-    session: AsyncSession,
-    *,
-    limit: int = 100,
-    offset: int = 0,
-    filters: Sequence[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.EvaluationSet], int]:
-    """Get multiple evaluation sets.
-
-    Parameters
-    ----------
-    session : AsyncSession
-        The database session.
-    limit : int, optional
-        The maximum number of evaluation sets to return, by default 100.
-    offset : int, optional
-        The number of evaluation sets to skip, by default 0.
-    filters : Sequence[Filter], optional
-        A list of filters to apply, by default None.
-    sort_by : str, optional
-        The field to sort by, by default "-created_on".
-
-    Returns
-    -------
-    tuple[list[schemas.EvaluationSet], int]
-        A tuple containing the list of evaluation sets and the total number of
-        evaluation sets.
-    """
-    annotation_projects, count = await common.get_objects(
-        session,
-        models.EvaluationSet,
-        limit=limit,
-        offset=offset,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [
-        schemas.EvaluationSet.model_validate(ap) for ap in annotation_projects
-    ], count
-
-
-@evaluation_sets_cache.with_update
-async def add_tag(
-    session: AsyncSession,
-    evaluation_set_id: int,
-    tag_id: int,
-) -> schemas.EvaluationSet:
-    """Add a tag to an annotation project."""
-    evaluation_set = await common.add_tag_to_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.id == evaluation_set_id,
-        tag_id,
-    )
-    return schemas.EvaluationSet.model_validate(evaluation_set)
-
-
-@evaluation_sets_cache.with_update
-async def remove_tag(
-    session: AsyncSession,
-    evaluation_set_id: int,
-    tag_id: int,
-) -> schemas.EvaluationSet:
-    """Remove a tag from an annotation project."""
-    evaluation_set = await common.remove_tag_from_object(
-        session,
-        models.EvaluationSet,
-        models.EvaluationSet.id == evaluation_set_id,
-        tag_id,
-    )
-    return schemas.EvaluationSet.model_validate(evaluation_set)
+evaluation_sets = EvaluationSetAPI()

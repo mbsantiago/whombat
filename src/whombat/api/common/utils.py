@@ -22,6 +22,7 @@ __all__ = [
     "add_note_to_object",
     "add_tag_to_object",
     "create_object",
+    "create_objects",
     "create_objects_without_duplicates",
     "delete_object",
     "get_count",
@@ -248,7 +249,7 @@ async def get_objects(
 async def create_object(
     session: AsyncSession,
     model: type[A],
-    data: BaseModel,
+    data: BaseModel | None = None,
     **kwargs: Any,
 ) -> A:
     """Create an object.
@@ -267,7 +268,12 @@ async def create_object(
     A
         The created object.
     """
-    obj = model(**{**get_values(data), **kwargs})
+    args = {}
+    if data is not None:
+        args.update(get_values(data))
+    args.update(kwargs)
+
+    obj = model(**args)
     try:
         session.add(obj)
         await session.flush()
@@ -477,7 +483,7 @@ async def update_object(
     session: AsyncSession,
     model: type[A],
     condition: _ColumnExpressionArgument,
-    data: BaseModel,
+    data: BaseModel | None = None,
     **kwargs: Any,
 ) -> A:
     """Update an object based on some condition.
@@ -508,10 +514,14 @@ async def update_object(
     """
     obj = await get_object(session, model, condition)
 
-    update_with = {
-        **{key: getattr(data, key) for key in data.model_fields_set},
-        **kwargs,
-    }
+    update_with = {}
+
+    if data is not None:
+        update_with.update({
+            **{key: getattr(data, key) for key in data.model_fields_set},
+        })
+
+    update_with.update(kwargs)
 
     for key, value in update_with.items():
         setattr(obj, key, value)

@@ -1,4 +1,3 @@
-"""API functions to interact with model runs."""
 from typing import Sequence
 from uuid import UUID
 
@@ -6,28 +5,28 @@ from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import clip_predictions
+from whombat.api import clip_predictions, users
 from whombat.api.common import BaseAPI, create_object
 from whombat.filters.base import Filter
-from whombat.filters.clip_predictions import ModelRunFilter
+from whombat.filters.clip_predictions import UserRunFilter
 
 
-class ModelRunAPI(
+class UserRunAPI(
     BaseAPI[
         UUID,
-        models.ModelRun,
-        schemas.ModelRun,
-        schemas.ModelRunCreate,
-        schemas.ModelRunUpdate,
+        models.UserRun,
+        schemas.UserRun,
+        schemas.UserRunCreate,
+        schemas.UserRunUpdate,
     ]
 ):
-    _model = models.ModelRun
-    _schema = schemas.ModelRun
+    _model = models.UserRun
+    _schema = schemas.UserRun
 
     async def get_clip_predictions(
         self,
         session: AsyncSession,
-        obj: schemas.ModelRun,
+        obj: schemas.UserRun,
         *,
         limit: int | None = 1000,
         offset: int = 0,
@@ -39,7 +38,7 @@ class ModelRunAPI(
             limit=limit,
             offset=offset,
             filters=[
-                ModelRunFilter(eq=obj.id),
+                UserRunFilter(eq=obj.id),
                 *(filters or []),
             ],
             sort_by=sort_by,
@@ -48,16 +47,16 @@ class ModelRunAPI(
     async def add_clip_prediction(
         self,
         session: AsyncSession,
-        obj: schemas.ModelRun,
+        obj: schemas.UserRun,
         clip_prediction: schemas.ClipPrediction,
         raise_if_exists: bool = False,
-    ) -> schemas.ModelRun:
+    ) -> schemas.UserRun:
         try:
             await create_object(
                 session,
-                models.ModelRunPrediction,
-                schemas.ModelRunPredictionCreate(
-                    model_run_id=obj.id,
+                models.UserRunPrediction,
+                schemas.UserRunPredictionCreate(
+                    user_run_id=obj.id,
                     clip_prediction_id=clip_prediction.id,
                 ),
             )
@@ -69,9 +68,9 @@ class ModelRunAPI(
     async def update_from_soundevent(
         self,
         session: AsyncSession,
-        obj: schemas.ModelRun,
-        data: data.ModelRun,
-    ) -> schemas.ModelRun:
+        obj: schemas.UserRun,
+        data: data.PredictionSet,
+    ) -> schemas.UserRun:
         for clip_prediction in data.clip_predictions:
             prediction = await clip_predictions.from_soundevent(
                 session,
@@ -81,39 +80,39 @@ class ModelRunAPI(
         return obj
 
     async def from_soundevent(
-        self, session: AsyncSession, data: data.ModelRun
-    ) -> schemas.ModelRun:
+        self,
+        session: AsyncSession,
+        data: data.PredictionSet,
+        user: data.User,
+    ) -> schemas.UserRun:
+        whombat_user = await users.from_soundevent(session, user)
+
         try:
             model_run = await self.get(session, data.uuid)
         except exceptions.NotFoundError:
             model_run = await self.create(
                 session,
-                schemas.ModelRunCreate(
+                schemas.UserRunCreate(
                     uuid=data.uuid,
                     created_on=data.created_on,
-                    name=data.name,
-                    version=data.version or "",
-                    description=data.description,
+                    user_id=whombat_user.id,
                 ),
             )
         return await self.update_from_soundevent(session, model_run, data)
 
     async def to_soundevent(
-        self, session: AsyncSession, obj: schemas.ModelRun
-    ) -> data.ModelRun:
+        self, session: AsyncSession, obj: schemas.UserRun
+    ) -> data.PredictionSet:
         predictions, _ = await self.get_clip_predictions(
             session, obj, limit=-1
         )
-        return data.ModelRun(
+        return data.PredictionSet(
             uuid=obj.uuid,
             created_on=obj.created_on,
-            name=obj.name,
-            version=obj.version,
-            description=obj.description,
             clip_predictions=[
                 clip_predictions.to_soundevent(cp) for cp in predictions
             ],
         )
 
 
-model_runs = ModelRunAPI()
+user_runs = UserRunAPI()

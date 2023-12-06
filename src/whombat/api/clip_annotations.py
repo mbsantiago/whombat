@@ -148,6 +148,7 @@ async def get_many(
     ], count
 
 
+@caches.with_update
 async def create(
     session: AsyncSession,
     data: schemas.ClipAnnotationCreate,
