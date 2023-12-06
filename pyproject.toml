@@ -39,8 +39,6 @@ line-length = 79
 venvPath = "."
 venv = ".venv"
 include = ["src", "tests"]
-verboseOutput = true
-useLibraryCodeForTypes = true
 
 [tool.mypy]
 mypy_path = ".venv/lib/python3.11/site-packages"
@@ -50,6 +48,11 @@ convention = "numpy"
 
 [tool.isort]
 profile = "black"
+line_length = 79
+
+[tool.ruff]
+line-length = 79
+target-version = "py311"
 
 [tool.pdm]
 [tool.pdm.dev-dependencies]
