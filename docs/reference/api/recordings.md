@@ -1,3 +1,0 @@
-# Recordings
-
-::: whombat.api.recordings

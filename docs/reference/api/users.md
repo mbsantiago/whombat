@@ -1,3 +1,0 @@
-# Users
-
-::: whombat.api.users

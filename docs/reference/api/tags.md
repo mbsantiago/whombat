@@ -1,3 +1,0 @@
-# Tags
-
-::: whombat.api.tags

@@ -1,3 +1,0 @@
-# Spectrograms
-
-::: whombat.api.spectrograms

@@ -1,3 +1,0 @@
-# Audio
-
-::: whombat.api.audio

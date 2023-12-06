@@ -282,3 +282,87 @@ async def remove_tag(
             await session.refresh(prediction)
 
     return schemas.SoundEventPrediction.model_validate(prediction)
+
+
+async def from_soundevent(
+    session: AsyncSession,
+    data: data.SoundEventPrediction,
+    clip_prediction_id: int,
+) -> schemas.SoundEventPrediction:
+    """Get the Whombat representation of a sound event prediction.
+
+    Parameters
+    ----------
+    session
+        SQLAlchemy database session.
+    sound_event_prediction
+        A sound event prediction in soundevent format.
+    clip_prediction_id
+        ID of the clip prediction that the sound event prediction belongs to.
+
+    Returns
+    -------
+    sound_event_prediction : schemas.SoundEventPrediction
+        The sound event prediction in Whombat format.
+    """
+    clip_prediction = await common.get_object(
+        session,
+        models.ClipPrediction,
+        models.ClipPrediction.id == clip_prediction_id,
+    )
+
+    sound_event = await sound_events.from_soundevent(
+        session,
+        data.sound_event,
+        recording_id=clip_prediction.clip.recording_id,
+    )
+
+    prediction = await create(
+        session,
+        schemas.SoundEventPredictionCreate(
+            uuid=data.uuid,
+            clip_prediction_id=clip_prediction.id,
+            sound_event_id=sound_event.id,
+            created_on=data.created_on,
+            score=data.score,
+        ),
+    )
+
+    for predicted_tag in data.predicted_tags:
+        tag = 
+
+
+
+    return schemas.SoundEventPrediction(
+        created_on=data.created_on,
+        uuid=data.uuid,
+        sound_event=sound_event,
+        predicted_tags=predicted_tags,
+    )
+
+
+async def to_soundevent(
+    session: AsyncSession,
+    sound_event_prediction_id: int,
+) -> schemas.SoundEvent:
+    """Get the sound event that a sound event prediction predicts.
+
+    Parameters
+    ----------
+    session
+        SQLAlchemy database session.
+    sound_event_prediction_id
+        ID of the sound event prediction.
+
+    Returns
+    -------
+    sound_event : schemas.SoundEvent
+        The sound event that the sound event prediction predicts.
+    """
+    prediction = await common.get_object(
+        session,
+        models.SoundEventPrediction,
+        models.SoundEventPrediction.id == sound_event_prediction_id,
+    )
+
+    return schemas.SoundEvent.model_validate(prediction.sound_event)
