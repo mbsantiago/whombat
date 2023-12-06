@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 from pydantic import Field
 
-from whombat.models.annotation_task import AnnotationState
+from soundevent.data import AnnotationState
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.clip_annotations import ClipAnnotation
 from whombat.schemas.clips import Clip

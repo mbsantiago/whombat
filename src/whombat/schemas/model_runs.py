@@ -9,6 +9,7 @@ __all__ = [
     "ModelRunUpdate",
     "ModelRunCreate",
     "ModelRun",
+    "ModelRunPredictionCreate",
 ]
 
 
@@ -46,3 +47,13 @@ class ModelRunUpdate(BaseSchema):
 
     description: str | None = None
     """The description of the model used to generate the model run."""
+
+
+class ModelRunPredictionCreate(BaseSchema):
+    """Model Run Prediction creation schema."""
+
+    model_run_id: int
+    """The model run identifier."""
+
+    clip_prediction_id: int
+    """The clip prediction identifier."""

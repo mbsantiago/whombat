@@ -14,6 +14,7 @@ __all__ = [
     "ClipEvaluation",
     "ClipEvaluationCreate",
     "ClipEvaluationMetricCreate",
+    "ClipEvaluationUpdate",
 ]
 
 
@@ -25,6 +26,9 @@ class ClipEvaluationCreate(BaseSchema):
 
     clip_prediction_id: int
     """ID of the clip prediction being evaluated."""
+
+    evaluation_id: int
+    """ID of the evaluation to which the clip evaluation belongs."""
 
     score: float
     """Overall score of the evaluation."""
@@ -52,8 +56,23 @@ class ClipEvaluation(ClipEvaluationCreate):
     """Evaluation metrics."""
 
 
+class ClipEvaluationUpdate(
+    BaseSchema,
+):
+    """Schema for updating an existing Clip Evaluation."""
+
+    score: float | None = None
+    """Overall score of the evaluation."""
+
+    uuid: UUID | None = None
+    """UUID of the Clip Evaluation."""
+
+
 class ClipEvaluationMetricCreate(BaseSchema):
+    """Schema for creating a new Clip Evaluation Metric."""
+
     clip_evaluation_id: int
+    """ID of the clip evaluation."""
 
     feature_name_id: int
     """ID of the feature name."""

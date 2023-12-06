@@ -23,9 +23,6 @@ class ClipPredictionCreate(BaseSchema):
     clip_id: int
     """ID of the clip to which this prediction belongs."""
 
-    score: float
-    """Overall score of the prediction."""
-
     uuid: UUID = Field(default_factory=uuid4)
     """UUID of the prediction."""
 

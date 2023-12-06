@@ -26,8 +26,6 @@ class EvaluationSetCreate(BaseSchema):
     description: str | None = Field(default=None)
     """The description of the evaluation set."""
 
-    task: str
-
 
 class EvaluationSet(EvaluationSetCreate):
     """Schema for EvaluationSet objects returned to the user."""

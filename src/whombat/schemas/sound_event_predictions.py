@@ -19,9 +19,6 @@ __all__ = [
 class SoundEventPredictionCreate(BaseSchema):
     """Schema for creating a new sound event prediction."""
 
-    tag_ids: list[int] = Field(default_factory=list)
-    """IDs of the tags to be predicted."""
-
     clip_prediction_id: int
     """ID of the clip prediction to which the sound event prediction
     belongs."""

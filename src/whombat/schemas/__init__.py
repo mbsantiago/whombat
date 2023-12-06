@@ -38,6 +38,7 @@ from whombat.schemas.clip_evaluations import (
     ClipEvaluation,
     ClipEvaluationCreate,
     ClipEvaluationMetricCreate,
+    ClipEvaluationUpdate,
 )
 from whombat.schemas.clip_predictions import (
     ClipPrediction,
@@ -64,8 +65,8 @@ from whombat.schemas.evaluation_sets import (
 from whombat.schemas.evaluations import (
     Evaluation,
     EvaluationCreate,
-    EvaluationMetric,
     EvaluationMetricCreate,
+    EvaluationUpdate,
 )
 from whombat.schemas.features import (
     Feature,
@@ -73,7 +74,12 @@ from whombat.schemas.features import (
     FeatureNameCreate,
     FeatureNameUpdate,
 )
-from whombat.schemas.model_runs import ModelRun, ModelRunCreate, ModelRunUpdate
+from whombat.schemas.model_runs import (
+    ModelRun,
+    ModelRunCreate,
+    ModelRunPredictionCreate,
+    ModelRunUpdate,
+)
 from whombat.schemas.notes import Note, NoteCreate, NotePostCreate, NoteUpdate
 from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
@@ -101,6 +107,7 @@ from whombat.schemas.sound_event_evaluations import (
     SoundEventEvaluation,
     SoundEventEvaluationCreate,
     SoundEventEvaluationMetricCreate,
+    SoundEventEvaluationUpdate,
 )
 from whombat.schemas.sound_event_predictions import (
     SoundEventPrediction,
@@ -121,8 +128,13 @@ from whombat.schemas.spectrograms import (
     STFTParameters,
     Window,
 )
-from whombat.schemas.tags import Tag, TagCreate, TagUpdate
-from whombat.schemas.user_runs import UserRun, UserRunCreate
+from whombat.schemas.tags import PredictedTag, Tag, TagCreate, TagUpdate
+from whombat.schemas.user_runs import (
+    UserRun,
+    UserRunCreate,
+    UserRunPredictionCreate,
+    UserRunUpdate,
+)
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [
@@ -147,6 +159,7 @@ __all__ = [
     "ClipEvaluation",
     "ClipEvaluationCreate",
     "ClipEvaluationMetricCreate",
+    "ClipEvaluationUpdate",
     "ClipFeatureCreate",
     "ClipPrediction",
     "ClipPredictionCreate",
@@ -161,11 +174,11 @@ __all__ = [
     "DatasetWithCounts",
     "Evaluation",
     "EvaluationCreate",
-    "EvaluationMetric",
     "EvaluationMetricCreate",
     "EvaluationSet",
     "EvaluationSetCreate",
     "EvaluationSetUpdate",
+    "EvaluationUpdate",
     "Feature",
     "FeatureName",
     "FeatureNameCreate",
@@ -173,6 +186,7 @@ __all__ = [
     "FileState",
     "ModelRun",
     "ModelRunCreate",
+    "ModelRunPredictionCreate",
     "ModelRunUpdate",
     "Note",
     "NoteCreate",
@@ -180,6 +194,7 @@ __all__ = [
     "NoteUpdate",
     "Page",
     "PluginInfo",
+    "PredictedTag",
     "Recording",
     "RecordingCreate",
     "RecordingFeatureCreate",
@@ -205,6 +220,7 @@ __all__ = [
     "SoundEventEvaluation",
     "SoundEventEvaluationCreate",
     "SoundEventEvaluationMetricCreate",
+    "SoundEventEvaluationUpdate",
     "SoundEventFeatureCreate",
     "SoundEventPrediction",
     "SoundEventPredictionCreate",
@@ -219,6 +235,8 @@ __all__ = [
     "UserCreate",
     "UserRun",
     "UserRunCreate",
+    "UserRunPredictionCreate",
+    "UserRunUpdate",
     "UserUpdate",
     "Window",
 ]

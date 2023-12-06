@@ -23,10 +23,10 @@ class SoundEventEvaluationCreate(BaseSchema):
     """ID of the clip evaluation to which the sound event evaluation
     belongs."""
 
-    source_id: int
+    source_id: int | None 
     """ID of the source sound event prediction."""
 
-    target_id: int
+    target_id: int | None
     """ID of the target sound event annotation."""
 
     affinity: float
@@ -45,14 +45,27 @@ class SoundEventEvaluation(SoundEventEvaluationCreate):
     id: int
     """Database ID of the evaluation."""
 
-    source: SoundEventPrediction
+    source: SoundEventPrediction | None
     """Source sound event prediction."""
 
-    target: SoundEventAnnotation
+    target: SoundEventAnnotation | None
     """Target sound event annotation."""
 
     metrics: list[Feature] = Field(default_factory=list)
     """Evaluation metrics."""
+
+
+class SoundEventEvaluationUpdate(BaseSchema):
+    """Schema for updating a sound event evaluation."""
+
+    affinity: float | None = None
+    """Affinity of the match between the source and target."""
+
+    score: float | None = None
+    """Overall score of the evaluation."""
+
+    uuid: UUID | None = None
+    """UUID of the Sound Event Evaluation."""
 
 
 class SoundEventEvaluationMetricCreate(BaseSchema):
