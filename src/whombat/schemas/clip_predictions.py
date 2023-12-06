@@ -14,6 +14,7 @@ __all__ = [
     "ClipPredictionCreate",
     "ClipPredictionTag",
     "ClipPredictionTagCreate",
+    "ClipPredictionUpdate",
 ]
 
 
@@ -64,3 +65,10 @@ class ClipPrediction(ClipPredictionCreate):
 
     predicted_tags: list[ClipPredictionTag] = Field(default_factory=list)
     """Tags of the prediction."""
+
+
+class ClipPredictionUpdate(BaseSchema):
+    """Schema for updating a clip prediction."""
+
+    uuid: UUID | None = None
+    """UUID of the prediction."""

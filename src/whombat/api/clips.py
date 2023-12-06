@@ -3,444 +3,311 @@
 from typing import Sequence
 from uuid import UUID
 
-from cachetools import LRUCache
 from soundevent import data
-from sqlalchemy import tuple_
+from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common, features, recordings
-from whombat.filters.base import Filter
+from whombat.api.common import BaseAPI
 
 __all__ = [
-    "add_feature",
-    "create",
-    "create_many",
-    "delete",
-    "get_by_uuid",
-    "get_many",
-    "remove_feature",
-    "update_feature",
+    "ClipAPI",
     "compute_clip_duration",
     "compute_clip_features",
-    "from_soundevent",
-    "to_soundevent",
+    "clips",
 ]
 
 
-clips_cache = cache.CacheCollection(schemas.Clip)
-
-
-@clips_cache.cached(
-    name="clip_by_uuid",
-    cache=LRUCache(maxsize=1000),
-    key=lambda _, uuid: uuid,
-    data_key=lambda clip: clip.uuid,
-)
-async def get_by_uuid(
-    session: AsyncSession,
-    clip_uuid: UUID,
-) -> schemas.Clip:
-    """Get clip by UUID.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_uuid
-        UUID of clip.
-
-    Returns
-    -------
-    schemas.Clip
-        The clip info.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip with UUID `uuid` is not found.
-    """
-    clip = await common.get_object(
-        session,
+class ClipAPI(
+    BaseAPI[
+        UUID,
         models.Clip,
-        models.Clip.uuid == clip_uuid,
-    )
-    return schemas.Clip.model_validate(clip)
+        schemas.Clip,
+        schemas.ClipCreate,
+        schemas.ClipUpdate,
+    ]
+):
+    _model = models.Clip
+    _schema = schemas.Clip
 
+    async def add_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.Clip,
+        feature: schemas.Feature,
+    ) -> schemas.Clip:
+        """Add feature to clip.
 
-@clips_cache.cached(
-    name="clip_by_id",
-    cache=LRUCache(maxsize=1000),
-    key=lambda _, clip_id: clip_id,
-    data_key=lambda clip: clip.id,
-)
-async def get_by_id(session: AsyncSession, clip_id: int) -> schemas.Clip:
-    """Get clip by ID.
+        Parameters
+        ----------
+        session
+            Database session.
+        obj
+            Clip to add feature to.
+        feature
+            Feature to add to clip.
 
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_id
-        ID of clip.
+        Returns
+        -------
+        schemas.Clip
+            Updated clip.
 
-    Returns
-    -------
-    schemas.Clip
-        The clip info.
+        Raises
+        ------
+        whombat.exceptions.NotFoundError
+            If clip does not exist.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                raise ValueError(
+                    f"Clip {obj.id} already has a feature with feature name "
+                    f"{feature.feature_name}."
+                )
 
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip with ID `id` is not found.
-    """
-    clip = await common.get_object(
-        session, models.Clip, models.Clip.id == clip_id
-    )
-    return schemas.Clip.model_validate(clip)
+        await common.create_object(
+            session,
+            models.ClipFeature,
+            schemas.ClipFeatureCreate(
+                clip_id=obj.id,
+                feature_name_id=feature.feature_name.id,
+                value=feature.value,
+            ),
+        )
 
+        obj = obj.model_copy(update=dict(features=[*obj.features, feature]))
+        self._update_cache(obj)
+        return obj
 
-async def get_many(
-    session: AsyncSession,
-    *,
-    limit: int = 1000,
-    offset: int = 0,
-    filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.Clip], int]:
-    """Get clips from the database.
+    async def update_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.Clip,
+        feature: schemas.Feature,
+    ) -> schemas.Clip:
+        """Update a feature value for a clip.
 
-    Parameters
-    ----------
-    session
-        Database session.
-    limit
-        Maximum number of clips to return, by default 1000.
-        Set to -1 to return all clips.
-    offset
-        Offset to start returning clips from, by default 0.
-    filters
-        List of filters to apply, by default None.
-    sort_by
-        Sort clips by this column, by default "-created_on".
+        If the clip does not have the feature, it will be added.
 
-    Returns
-    -------
-    clips : list[schemas.Clip]
-        List of clips.
-    count : int
-        Total number of clips that match the filters.
-    """
-    clips, count = await common.get_objects(
-        session,
-        models.Clip,
-        limit=limit,
-        offset=offset,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [schemas.Clip.model_validate(clip) for clip in clips], count
+        Parameters
+        ----------
+        session
+            Database session.
+        obj
+            Clip to update feature for.
+        feature
+            Feature to update.
 
+        Returns
+        -------
+        schemas.Clip
+            The updated clip.
 
-@clips_cache.with_update
-async def create(
-    session: AsyncSession,
-    data: schemas.ClipCreate,
-) -> schemas.Clip:
-    """Create a clip from a recording.
+        Raises
+        ------
+        exceptions.NotFoundError
+            Raised if clip does not exist in the database.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                break
+        else:
+            raise ValueError(
+                f"Clip {obj} does not have a feature with feature "
+                f"name {feature.feature_name}."
+            )
 
-    Parameters
-    ----------
-    session
-        Database session.
-    data
-        Data to create clip from.
+        await common.update_object(
+            session,
+            models.ClipFeature,
+            and_(
+                models.ClipFeature.clip_id == obj.id,
+                models.ClipFeature.feature_name_id == feature.feature_name.id,
+            ),
+            value=feature.value,
+        )
 
-    Returns
-    -------
-    schemas.Clip
-        Created clip.
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    f if f.feature_name != feature.feature_name else feature
+                    for f in obj.features
+                ]
+            )
+        )
+        self._update_cache(obj)
+        return obj
 
-    Raises
-    ------
-    whombat.exceptions.DuplicateObjectError
-        If clip with same start and end time already exists for the recording.
-    whombat.exceptions.NotFoundError
-        If recording does not exist.
-    """
-    # Make sure recording exists
-    await recordings.get_by_id(session, data.recording_id)
+    async def remove_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.Clip,
+        feature: schemas.Feature,
+    ) -> schemas.Clip:
+        """Remove feature from clip.
 
-    clip = await common.create_object(session, models.Clip, data)
-    clip_id = clip.id
+        Parameters
+        ----------
+        session
+            Database session.
+        obj
+            Clip to remove feature from.
+        feature
+            Feature to remove from clip.
 
-    await _create_clip_features(session, [clip])
+        Returns
+        -------
+        schemas.Clip
+            The updated clip.
 
-    session.expire(clip)
-    return await get_by_id(session, clip_id)
+        Raises
+        ------
+        exceptions.NotFoundError
+            Raised if clip does not exist in the database.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                break
+        else:
+            raise ValueError(
+                f"Clip {obj} does not have a feature with feature "
+                f"name {feature.feature_name}."
+            )
 
+        await common.delete_object(
+            session,
+            models.ClipFeature,
+            and_(
+                models.ClipFeature.clip_id == obj.id,
+                models.ClipFeature.feature_name_id == feature.feature_name.id,
+            ),
+        )
 
-async def create_many(
-    session: AsyncSession,
-    data: list[schemas.ClipCreate],
-) -> list[schemas.Clip]:
-    """Create multiple clips.
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    f
+                    for f in obj.features
+                    if f.feature_name != feature.feature_name
+                ]
+            )
+        )
+        self._update_cache(obj)
+        return obj
 
-    Use this function to create multiple clips from multiple recordings
-    at the same time. This is more efficient than calling `create_clip`
-    multiple times.
+    async def _create_clip_features(
+        self,
+        session: AsyncSession,
+        clips: Sequence[models.Clip],
+    ) -> None:
+        """Create features for clips.
 
-    Parameters
-    ----------
-    session
-        Database session.
-    data
-        List of data to create clips from.
+        Parameters
+        ----------
+        session
+            Database session.
+        clips
+            List of clips to create features for.
+        """
+        clip_features = [
+            (clip.id, name, value)
+            for clip in clips
+            for name, value in compute_clip_features(clip).items()
+        ]
 
-    Returns
-    -------
-    list[schemas.Clip]
-        Created clips. Note that clips that could not be created
-        or already exist will not be returned.
+        # Get feature names
+        names = {name for _, name, _ in clip_features}
 
-    Raises
-    ------
-    ValueError
-        If the lists are not of the same length.
-    whombat.exceptions.DuplicateObjectError
-        If clip with same start and end time already exists for the recording.
-    whombat.exceptions.NotFoundError
-        If recording does not exist.
-    """
+        feature_names: dict[str, schemas.FeatureName] = {
+            name: await features.get_or_create(
+                session, data=schemas.FeatureNameCreate(name=name)
+            )
+            for name in names
+        }
 
-    def get_key(
-        x: schemas.ClipCreate | models.Clip,
+        data = [
+            schemas.ClipFeatureCreate(
+                clip_id=clip_id,
+                feature_name_id=feature_names[name].id,
+                value=value,
+            )
+            for clip_id, name, value in clip_features
+        ]
+
+        await common.create_objects(session, models.ClipFeature, data)
+
+    async def from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.Clip,
+    ) -> schemas.Clip:
+        """Create a clip from a soundevent Clip object.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        data
+            The soundevent Clip object.
+
+        Returns
+        -------
+        clip : schemas.Clip
+            The created clip.
+        """
+        try:
+            return await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            pass
+
+        recording = await recordings.from_soundevent(session, data.recording)
+
+        return await self.create(
+            session,
+            schemas.ClipCreate(
+                uuid=data.uuid,
+                recording_id=recording.id,
+                start_time=data.start_time,
+                end_time=data.end_time,
+            ),
+        )
+
+    def to_soundevent(
+        self,
+        obj: schemas.Clip,
+    ) -> data.Clip:
+        """Create a soundevent Clip object from a clip.
+
+        Parameters
+        ----------
+        obj
+            The clip.
+
+        Returns
+        -------
+        clip : data.Clip
+            The soundevent Clip object.
+        """
+        return data.Clip(
+            uuid=obj.uuid,
+            recording=recordings.to_soundevent(obj.recording),
+            start_time=obj.start_time,
+            end_time=obj.end_time,
+        )
+
+    @classmethod
+    def _key_fn(
+        cls, obj: schemas.Clip | models.Clip
     ) -> tuple[int, float, float]:
-        return x.recording_id, x.start_time, x.end_time
+        return obj.recording_id, obj.start_time, obj.end_time
 
-    keys = {get_key(x) for x in data}
-
-    clips = await common.create_objects_without_duplicates(
-        session,
-        model=models.Clip,
-        data=data,
-        key=get_key,
-        key_column=tuple_(
-            models.Clip.recording_id,
-            models.Clip.start_time,
-            models.Clip.end_time,
-        ),
-    )
-
-    if clips:
-        await _create_clip_features(session, clips)
-
-    session.expire_all()
-
-    clips, _ = await common.get_objects(
-        session,
-        models.Clip,
-        limit=-1,
-        filters=[
-            tuple_(
-                models.Clip.recording_id,
-                models.Clip.start_time,
-                models.Clip.end_time,
-            ).in_(keys)
-        ],
-    )
-    return [schemas.Clip.model_validate(clip) for clip in clips]
-
-
-@clips_cache.with_clear
-async def delete(
-    session: AsyncSession,
-    clip_id: int,
-) -> schemas.Clip:
-    """Delete clip.
-
-    This will also delete all associated tags and features.
-    For this reason, it is recommended to delete clips using
-    the `delete_clips` function.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_id
-        Clip ID.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip does not exist in the database.
-    """
-    obj = await common.delete_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-    )
-    return schemas.Clip.model_validate(obj)
-
-
-@clips_cache.with_update
-async def add_feature(
-    session: AsyncSession,
-    clip_id: int,
-    feature_name_id: int,
-    value: float,
-) -> schemas.Clip:
-    """Add feature to clip.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_id
-        ID of clip to add feature to.
-    feature_name_id
-        ID of feature name to add to clip.
-    value
-        Feature value.
-
-    Returns
-    -------
-    schemas.Clip
-        Updated clip.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If clip does not exist.
-    """
-    clip = await common.add_feature_to_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-        feature_name_id,
-        value,
-    )
-
-    return schemas.Clip.model_validate(clip)
-
-
-@clips_cache.with_update
-async def update_feature(
-    session: AsyncSession,
-    clip_id: int,
-    feature_name_id: int,
-    value: float,
-) -> schemas.Clip:
-    """Update a feature value for a clip.
-
-    If the clip does not have the feature, it will be added.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_id
-        ID of clip to update feature for.
-    feature_name_id
-        ID of feature name to update.
-    value
-        New value for feature.
-
-    Returns
-    -------
-    schemas.Clip
-        The updated clip.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip does not exist in the database.
-    """
-    clip = await common.update_feature_on_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-        feature_name_id,
-        value,
-    )
-    return schemas.Clip.model_validate(clip)
-
-
-@clips_cache.with_update
-async def remove_feature(
-    session: AsyncSession,
-    clip_id: int,
-    feature_name_id: int,
-) -> schemas.Clip:
-    """Remove feature from clip.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clip_id
-        ID of clip to remove feature from.
-    feature_name_id
-        ID of feature name to remove from clip.
-
-    Returns
-    -------
-    schemas.Clip
-        The updated clip.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        Raised if clip does not exist in the database.
-    """
-    clip = await common.remove_feature_from_object(
-        session,
-        models.Clip,
-        models.Clip.id == clip_id,
-        feature_name_id,
-    )
-    return schemas.Clip.model_validate(clip)
-
-
-async def _create_clip_features(
-    session: AsyncSession,
-    clips: Sequence[models.Clip],
-) -> None:
-    """Create features for clips.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    clips
-        List of clips to create features for.
-    """
-    clip_features = [
-        (clip.id, name, value)
-        for clip in clips
-        for name, value in compute_clip_features(clip).items()
-    ]
-
-    # Get feature names
-    names = {name for _, name, _ in clip_features}
-
-    feature_names: dict[str, schemas.FeatureName] = {
-        name: await features.get_or_create(
-            session, data=schemas.FeatureNameCreate(name=name)
+    @classmethod
+    def _get_key_columns(cls):
+        return tuple_(
+            cls._model.recording_id,
+            cls._model.start_time,
+            cls._model.end_time,
         )
-        for name in names
-    }
-
-    data = [
-        schemas.ClipFeatureCreate(
-            clip_id=clip_id,
-            feature_name_id=feature_names[name].id,
-            value=value,
-        )
-        for clip_id, name, value in clip_features
-    ]
-
-    await common.create_objects(session, models.ClipFeature, data)
 
 
 DURATION = "duration"
@@ -486,60 +353,4 @@ def compute_clip_features(
     return {name: func(clip) for name, func in CLIP_FEATURES.items()}
 
 
-async def from_soundevent(
-    session: AsyncSession,
-    clip: data.Clip,
-) -> schemas.Clip:
-    """Create a clip from a soundevent Clip object.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    clip
-        The soundevent Clip object.
-
-    Returns
-    -------
-    clip : schemas.Clip
-        The created clip.
-    """
-    try:
-        return await get_by_uuid(session, clip.uuid)
-    except exceptions.NotFoundError:
-        pass
-
-    recording = await recordings.from_soundevent(session, clip.recording)
-
-    return await create(
-        session,
-        schemas.ClipCreate(
-            uuid=clip.uuid,
-            recording_id=recording.id,
-            start_time=clip.start_time,
-            end_time=clip.end_time,
-        ),
-    )
-
-
-def to_soundevent(
-    clip: schemas.Clip,
-) -> data.Clip:
-    """Create a soundevent Clip object from a clip.
-
-    Parameters
-    ----------
-    clip
-        The clip.
-
-    Returns
-    -------
-    clip : data.Clip
-        The soundevent Clip object.
-    """
-    return data.Clip(
-        uuid=clip.uuid,
-        recording=recordings.to_soundevent(clip.recording),
-        start_time=clip.start_time,
-        end_time=clip.end_time,
-    )
+clips = ClipAPI()

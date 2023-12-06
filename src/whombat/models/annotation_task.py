@@ -158,7 +158,7 @@ class AnnotationStatusBadge(Base):
         ForeignKey("annotation_task.id"),
         nullable=False,
     )
-    user_id: orm.Mapped[Optional[int]] = orm.mapped_column(
+    user_id: orm.Mapped[Optional[UUID]] = orm.mapped_column(
         ForeignKey("user.id"),
     )
     state: orm.Mapped[data.AnnotationState]

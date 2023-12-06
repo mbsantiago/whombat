@@ -7,17 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import models, schemas
-from whombat.api import (
-    features,
-    sound_event_annotations,
-    sound_event_predictions,
-)
+from whombat.api import features
 from whombat.api.common import (
     BaseAPI,
     create_object,
     delete_object,
     update_object,
 )
+from whombat.api.sound_event_annotations import sound_event_annotations
+from whombat.api.sound_event_predictions import sound_event_predictions
 
 
 class SoundEventEvaluationAPI(
@@ -146,7 +144,9 @@ class SoundEventEvaluationAPI(
         if data.target:
             sound_event_annotation = (
                 await sound_event_annotations.from_soundevent(
-                    session, data.target, clip_evaluation.clip_annotation.id
+                    session,
+                    data.target,
+                    clip_evaluation.clip_annotation,
                 )
             )
 

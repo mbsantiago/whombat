@@ -12,6 +12,7 @@ __all__ = [
     "Clip",
     "ClipCreate",
     "ClipFeatureCreate",
+    "ClipUpdate",
 ]
 
 
@@ -49,6 +50,13 @@ class Clip(ClipCreate):
 
     features: list[Feature] = Field(default_factory=list)
     """The features associated with the clip."""
+
+
+class ClipUpdate(BaseSchema):
+    """Schema for updating a clip."""
+
+    uuid: UUID | None = None
+    """The unique identifier of the clip."""
 
 
 class ClipFeatureCreate(BaseSchema):

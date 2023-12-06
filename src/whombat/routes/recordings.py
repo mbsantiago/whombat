@@ -23,7 +23,7 @@ async def get_recordings(
     session: Session,
     limit: Limit = 10,
     offset: Offset = 0,
-    sort_by: str = "-created_at",
+    sort_by: str = "-created_on",
     filter: RecordingFilter = Depends(RecordingFilter),  # type: ignore
 ):
     """Get a page of datasets."""
@@ -250,7 +250,7 @@ async def get_recording_notes(
     session: Session,
     limit: Limit = 10,
     offset: Offset = 0,
-    sort_by: str = "-created_at",
+    sort_by: str = "-created_on",
     filter: RecordingNoteFilter = Depends(RecordingNoteFilter),  # type: ignore
 ):
     """Get a page of notes for a recording."""
@@ -277,7 +277,7 @@ async def get_recording_tags(
     session: Session,
     limit: Limit = 10,
     offset: Offset = 0,
-    sort_by: str = "-created_at",
+    sort_by: str = "-created_on",
     filter: RecordingTagFilter = Depends(RecordingTagFilter),  # type: ignore
 ):
     """Get a page of tags for a recording."""

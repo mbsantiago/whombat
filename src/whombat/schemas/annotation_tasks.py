@@ -3,18 +3,20 @@
 from uuid import UUID, uuid4
 
 from pydantic import Field
-
 from soundevent.data import AnnotationState
+
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.clip_annotations import ClipAnnotation
 from whombat.schemas.clips import Clip
 from whombat.schemas.users import SimpleUser
 
 __all__ = [
+    "AnnotationStatusBadge",
+    "AnnotationStatusBadgeCreate",
+    "AnnotationStatusBadgeUpdate",
     "AnnotationTask",
     "AnnotationTaskCreate",
-    "AnnotationTaskStatusBadge",
-    "AnnotationTaskStatusBadgeCreate",
+    "AnnotationTaskUpdate",
 ]
 
 
@@ -31,10 +33,10 @@ class AnnotationTaskCreate(BaseSchema):
     """UUID of the task."""
 
 
-class AnnotationTaskStatusBadgeCreate(BaseSchema):
+class AnnotationStatusBadgeCreate(BaseSchema):
     """Schema for creating a new task status badge."""
 
-    task_id: int
+    annotation_task_id: int
     """ID of the task to which the status badge belongs."""
 
     state: AnnotationState
@@ -44,14 +46,18 @@ class AnnotationTaskStatusBadgeCreate(BaseSchema):
     """ID of the user to whom the status badge refers."""
 
 
-class AnnotationTaskStatusBadge(AnnotationTaskStatusBadgeCreate):
+class AnnotationStatusBadge(AnnotationStatusBadgeCreate):
     """Schema for a task status badge."""
-
-    id: int
-    """Database ID of the status badge."""
 
     user: SimpleUser | None
     """User to whom the status badge refers."""
+
+
+class AnnotationStatusBadgeUpdate(BaseSchema):
+    """Schema for updating a task status badge."""
+
+    state: AnnotationState | None = None
+    """State of the task."""
 
 
 class AnnotationTask(AnnotationTaskCreate):
@@ -63,7 +69,13 @@ class AnnotationTask(AnnotationTaskCreate):
     clip: Clip
     """Clip info for the task."""
 
-    status_badges: list[AnnotationTaskStatusBadge]
+    status_badges: list[AnnotationStatusBadge]
     """Status badges for the task."""
 
     clip_annotation: ClipAnnotation
+
+
+class AnnotationTaskUpdate(BaseSchema):
+    """Schema for updating a task."""
+
+    uuid: UUID | None = None

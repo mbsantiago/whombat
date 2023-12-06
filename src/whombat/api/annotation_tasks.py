@@ -1,405 +1,269 @@
 """Python API for interacting with Tasks."""
 
-from typing import Sequence
 from uuid import UUID
 
-from cachetools import LRUCache
 from soundevent import data
-from sqlalchemy import tuple_
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, models, schemas
-from whombat.api import clips, common, users
-from whombat.filters.base import Filter
+from whombat import exceptions, models, schemas
+from whombat.api import common, users
+from whombat.api.common import BaseAPI
+from whombat.api.clips import clips
+from whombat.api.status_badges import status_badges
 
 __all__ = [
-    "get_by_id",
-    "get_by_uuid",
-    "get_many",
-    "create",
-    "create_many",
-    "add_status_badge",
-    "remove_status_badge",
-    "delete",
-    "from_soundevent",
-    "to_soundevent",
+    "AnnotationTaskAPI",
+    "annotation_tasks",
 ]
 
 
-task_caches = cache.CacheCollection(schemas.AnnotationTask)
-
-
-@task_caches.cached(
-    name="task_by_id",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, task_id: task_id,
-    data_key=lambda task: task.id,
-)
-async def get_by_id(
-    session: AsyncSession,
-    task_id: int,
-) -> schemas.AnnotationTask:
-    """Get a task by its ID.
-
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    task_id
-        ID of the task.
-
-    Returns
-    -------
-    schemas.AnnotationTask
-        Task with the given ID.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If no task with the given ID exists.
-    """
-    task = await common.get_object(
-        session,
+class AnnotationTaskAPI(
+    BaseAPI[
+        UUID,
         models.AnnotationTask,
-        models.AnnotationTask.id == task_id,
-    )
-    return schemas.AnnotationTask.model_validate(task)
+        schemas.AnnotationTask,
+        schemas.AnnotationTaskCreate,
+        schemas.AnnotationTaskUpdate,
+    ]
+):
+    """API for tasks."""
 
+    _model = models.AnnotationTask
+    _schema = schemas.AnnotationTask
 
-@task_caches.cached(
-    name="task_by_uuid",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, task_uuid: task_uuid,
-    data_key=lambda task: task.uuid,
-)
-async def get_by_uuid(
-    session: AsyncSession,
-    task_uuid: UUID,
-) -> schemas.AnnotationTask:
-    """Get a task by its UUID.
+    async def add_status_badge(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+        badge: schemas.AnnotationStatusBadge,
+    ) -> schemas.AnnotationTask:
+        """Add a status badge to a task.
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    task_uuid
-        UUID of the task.
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        obj
+            Task to add the status badge to.
+        badge
+            Status badge to add.
 
-    Returns
-    -------
-    schemas.AnnotationTask
-        Task with the given UUID.
+        Returns
+        -------
+        schemas.AnnotationTask
+            Task with the new status badge.
+        """
+        for b in obj.status_badges:
+            if b.user == badge.user and b.state == badge.state:
+                raise exceptions.DuplicateObjectError(
+                    f"Status badge {badge} already exists in " f"task {obj.id}"
+                )
 
-    Raises
-    ------
-    exceptions.NotFoundError
-        If no task with the given UUID exists.
-    """
-    task = await common.get_object(
-        session, models.AnnotationTask, models.AnnotationTask.uuid == task_uuid
-    )
-    return schemas.AnnotationTask.model_validate(task)
+        await common.create_object(
+            session,
+            models.AnnotationStatusBadge,
+            schemas.AnnotationStatusBadgeCreate(
+                user_id=badge.user.id if badge.user else None,
+                state=badge.state,
+                annotation_task_id=obj.id,
+            ),
+        )
 
+        obj = obj.model_copy(
+            update=dict(
+                status_badges=[*obj.status_badges, badge],
+            )
+        )
+        return obj
 
-async def get_many(
-    session: AsyncSession,
-    *,
-    limit: int = 100,
-    offset: int = 0,
-    filters: Sequence[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.AnnotationTask], int]:
-    """Get a list of tasks.
+    async def remove_status_badge(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+        badge: schemas.AnnotationStatusBadge,
+    ) -> schemas.AnnotationTask:
+        """Remove a status badge from a task.
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    limit
-        Maximum number of tasks to return, by default 100
-    offset
-        Number of tasks to skip, by default 0
-    filters
-        Filters to apply to the query, by default None
-    sort_by
-        Field to sort by, by default "-created_on"
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        obj
+            Task to remove the status badge from.
+        badge
+            Status badge to remove.
 
-    Returns
-    -------
-    annotation_tasks : schemas.AnnotationTaskList
-        List of tasks matching the given criteria.
-    count : int
-        Total number of tasks matching the given criteria.
-    """
-    tasks, count = await common.get_objects(
-        session,
-        models.AnnotationTask,
-        limit=limit,
-        offset=offset,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [
-        schemas.AnnotationTask.model_validate(task) for task in tasks
-    ], count
+        Returns
+        -------
+        schemas.AnnotationTask
+            Task with the status badge removed.
+        """
+        for b in obj.status_badges:
+            if b.user == badge.user and b.state == badge.state:
+                user_id = b.user.id if b.user else None
+                await common.delete_object(
+                    session,
+                    models.AnnotationStatusBadge,
+                    and_(
+                        models.AnnotationStatusBadge.annotation_task_id
+                        == obj.id,
+                        models.AnnotationStatusBadge.user_id == user_id,
+                        models.AnnotationStatusBadge.state == b.state,
+                    ),
+                )
+                break
+        else:
+            raise exceptions.NotFoundError(
+                f"Status badge {badge} does not exist in " f"task {obj.id}"
+            )
 
+        obj = obj.model_copy(
+            update=dict(
+                status_badges=[b for b in obj.status_badges if b != badge],
+            )
+        )
+        return obj
 
-async def create(
-    session: AsyncSession,
-    data: schemas.AnnotationTaskCreate,
-) -> schemas.AnnotationTask:
-    """Create a new task.
+    async def from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.AnnotationTask,
+        annotation_project: schemas.AnnotationProject,
+    ) -> schemas.AnnotationTask:
+        """Get or create a task from a `soundevent` task.
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    data
-        Task to create.
+        Parameters
+        ----------
+        session
+            An async database session.
+        data
+            The `soundevent` task.
+        annotation_project
+            The annotation project to which the task belongs.
 
-    Returns
-    -------
-    schemas.AnnotationTask
-        Created task.
+        Returns
+        -------
+        schemas.AnnotationTask
+            The created task.
+        """
+        try:
+            obj = await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            obj = await self._create_from_soundevent(
+                session,
+                data,
+                annotation_project,
+            )
 
-    Raises
-    ------
-    exceptions.DuplicateObjectError
-        If a task with the given clip and project already exists.
-    """
-    # Make sure the clip and project exist
-    await common.get_object(
-        session,
-        models.Clip,
-        models.Clip.id == data.clip_id,
-    )
-    await common.get_object(
-        session,
-        models.AnnotationProject,
-        models.AnnotationProject.id == data.annotation_project_id,
-    )
-    task = await common.create_object(session, models.AnnotationTask, data)
-    await session.refresh(task)
-    return schemas.AnnotationTask.model_validate(task)
+        return await self._update_from_soundevent(session, obj, data)
 
+    def to_soundevent(
+        self, task: schemas.AnnotationTask
+    ) -> data.AnnotationTask:
+        """Convert a task to a `soundevent` task.
 
-async def create_many(
-    session: AsyncSession,
-    data: list[schemas.AnnotationTaskCreate],
-) -> list[schemas.AnnotationTask]:
-    """Create a list of new tasks.
+        Parameters
+        ----------
+        task
+            The task to convert.
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    data
-        Tasks to create.
+        Returns
+        -------
+        data.AnnotationTask
+            The converted task.
+        """
+        return data.AnnotationTask(
+            uuid=task.uuid,
+            clip=clips.to_soundevent(task.clip),
+            status_badges=[
+                data.StatusBadge(
+                    owner=users.to_soundevent(sb.user) if sb.user else None,
+                    state=sb.state,
+                    created_on=sb.created_on,
+                )
+                for sb in task.status_badges
+            ],
+            created_on=task.created_on,
+        )
 
-    Returns
-    -------
-    list[schemas.AnnotationTask]
-        Created tasks.
-    """
-    tasks = await common.create_objects_without_duplicates(
-        session,
-        model=models.AnnotationTask,
-        data=data,
-        key=lambda task: (task.clip_id, task.annotation_project_id),
-        key_column=tuple_(
-            models.AnnotationTask.clip_id,
-            models.AnnotationTask.annotation_project_id,
-        ),
-    )
-    return [schemas.AnnotationTask.model_validate(task) for task in tasks]
+    async def _update_from_soundevent(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+        data: data.AnnotationTask,
+    ) -> schemas.AnnotationTask:
+        """Update a task from a `soundevent` task.
 
+        Parameters
+        ----------
+        session
+            An async database session.
+        obj
+            The task to update.
+        data
+            The `soundevent` task.
 
-async def add_status_badge(
-    session: AsyncSession,
-    annotation_task_id: int,
-    state: data.AnnotationState,
-    user_id: UUID | None = None,
-) -> schemas.AnnotationTask:
-    """Add a status badge to a task.
+        Returns
+        -------
+        schemas.AnnotationTask
+            The updated task.
+        """
+        current_status_badges = {
+            (b.user_id, b.state) for b in obj.status_badges
+        }
+        for status_badge in data.status_badges:
+            if (
+                status_badge.owner.uuid if status_badge.owner else None,
+                status_badge.state,
+            ) in current_status_badges:
+                continue
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    annotation_task_id
-        ID of the task.
-    user_id
-        ID of the user to whom the status badge refers.
-    state
-        State of the task assigned by the user.
+            badge = await status_badges.from_soundevent(
+                session,
+                status_badge,
+                obj,
+            )
+            obj = await self.add_status_badge(
+                session,
+                obj,
+                badge,
+            )
 
-    Returns
-    -------
-    schemas.AnnotationTask
-        Task with the new status badge.
-    """
-    # Make sure the task and user exist
-    task = await common.get_object(
-        session,
-        models.AnnotationTask,
-        models.AnnotationTask.id == annotation_task_id,
-    )
-    await common.get_object(session, models.User, models.User.id == user_id)
-    await common.create_object(
-        session,
-        models.AnnotationStatusBadge,
-        schemas.AnnotationTaskStatusBadgeCreate(
-            task_id=annotation_task_id,
-            user_id=user_id,
-            state=state,
-        ),
-    )
-    await session.refresh(task)
-    return schemas.AnnotationTask.model_validate(task)
+        return obj
 
+    async def _create_from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.AnnotationTask,
+        annotation_project: schemas.AnnotationProject,
+    ) -> schemas.AnnotationTask:
+        """Create a task from a `soundevent` task.
 
-@task_caches.with_update
-async def remove_status_badge(
-    session: AsyncSession,
-    annotation_task_id: int,
-    status_badge_id: int,
-) -> schemas.AnnotationTask:
-    """Remove a status badge from a task.
+        Parameters
+        ----------
+        session
+            An async database session.
+        data
+            The `soundevent` task.
+        annotation_project_id
+            The ID of the annotation project to which the task belongs.
 
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    annotation_task_id
-        ID of the task.
-    status_badge_id
-        ID of the status badge.
-
-    Returns
-    -------
-    schemas.AnnotationTask
-        Task with the status badge removed.
-    """
-    # Make sure the task exists
-    obj = await common.get_object(
-        session,
-        models.AnnotationTask,
-        models.AnnotationTask.id == annotation_task_id,
-    )
-    await common.delete_object(
-        session,
-        models.AnnotationStatusBadge,
-        models.AnnotationStatusBadge.id == status_badge_id,
-    )
-    await session.refresh(obj)
-    return schemas.AnnotationTask.model_validate(obj)
-
-
-@task_caches.with_clear
-async def delete(
-    session: AsyncSession,
-    annotation_task_id: int,
-) -> schemas.AnnotationTask:
-    """Delete a task.
-
-    Parameters
-    ----------
-    session
-        SQLAlchemy AsyncSession.
-    annotation_task_id
-        ID of the task.
-
-    Returns
-    -------
-    schemas.AnnotationTask
-        Deleted task.
-    """
-    task = await common.delete_object(
-        session,
-        models.AnnotationTask,
-        models.AnnotationTask.id == annotation_task_id,
-    )
-    return schemas.AnnotationTask.model_validate(task)
-
-
-async def from_soundevent(
-    session: AsyncSession,
-    data: data.AnnotationTask,
-    annotation_project_id: int,
-) -> schemas.AnnotationTask:
-    """Get or create a task from a `soundevent` task.
-
-    Parameters
-    ----------
-    session
-        An async database session.
-    data
-        The `soundevent` task.
-    annotation_project_id
-        The ID of the annotation project to which the task belongs.
-
-    Returns
-    -------
-    schemas.AnnotationTask
-        The created task.
-    """
-    try:
-        annotation_task = await get_by_uuid(session, data.uuid)
-    except exceptions.NotFoundError:
+        Returns
+        -------
+        schemas.AnnotationTask
+            The created task.
+        """
         clip = await clips.from_soundevent(session, data.clip)
-        annotation_task = await create(
+        return await self.create(
             session,
             schemas.AnnotationTaskCreate(
                 clip_id=clip.id,
-                annotation_project_id=annotation_project_id,
+                annotation_project_id=annotation_project.id,
                 uuid=data.uuid,
                 created_on=data.created_on,
             ),
         )
 
-    current_status_badges = {
-        (b.user_id, b.state) for b in annotation_task.status_badges
-    }
-    for status_badge in data.status_badges:
-        if (
-            status_badge.owner.uuid if status_badge.owner else None,
-            status_badge.state,
-        ) in current_status_badges:
-            continue
 
-        annotation_task = await add_status_badge(
-            session,
-            annotation_task.id,
-            status_badge.state,
-            user_id=status_badge.owner.uuid if status_badge.owner else None,
-        )
-
-    return annotation_task
-
-
-def to_soundevent(task: schemas.AnnotationTask) -> data.AnnotationTask:
-    """Convert a task to a `soundevent` task.
-
-    Parameters
-    ----------
-    task
-        The task to convert.
-
-    Returns
-    -------
-    data.AnnotationTask
-        The converted task.
-    """
-    return data.AnnotationTask(
-        uuid=task.uuid,
-        clip=clips.to_soundevent(task.clip),
-        status_badges=[
-            data.StatusBadge(
-                owner=users.to_soundevent(sb.user) if sb.user else None,
-                state=sb.state,
-                created_on=sb.created_on,
-            )
-            for sb in task.status_badges
-        ],
-        created_on=task.created_on,
-    )
+annotation_tasks = AnnotationTaskAPI()

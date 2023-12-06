@@ -15,6 +15,10 @@ __all__ = [
     "SoundEventAnnotationCreate",
     "SoundEventAnnotationPostCreate",
     "SoundEventAnnotationTagCreate",
+    "SoundEventAnnotationTag",
+    "SoundEventAnnotationNoteCreate",
+    "SoundEventAnnotationNote",
+    "SoundEventAnnotationUpdate",
 ]
 
 
@@ -112,3 +116,10 @@ class SoundEventAnnotation(SoundEventAnnotationPostCreate):
 
     tags: list[SoundEventAnnotationTag] = Field(default_factory=list)
     """Tags attached to this annotation."""
+
+
+class SoundEventAnnotationUpdate(BaseSchema):
+    """Schema for data required to update an SoundEventAnnotation."""
+
+    uuid: UUID | None = None
+    """UUID of this annotation."""

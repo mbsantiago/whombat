@@ -23,7 +23,7 @@ async def get_clips(
     limit: Limit = 10,
     offset: Offset = 0,
     filter: ClipFilter = Depends(ClipFilter),  # type: ignore
-    sort_by: str = "-created_at",
+    sort_by: str = "-created_on",
 ):
     """Get a page of clips."""
     tasks, total = await api.clips.get_many(
@@ -60,13 +60,13 @@ async def create_clips(
 
 @clips_router.delete(
     "/detail/",
-    response_model=schemas.Task,
+    response_model=schemas.Clip,
 )
 async def delete_clip(
     session: Session,
     clip_id: int,
 ):
     """Delete a clip."""
-    task = await api.clips.delete(session, clip_id)
+    clip = await api.clips.delete(session, clip_id)
     await session.commit()
-    return task
+    return clip

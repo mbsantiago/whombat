@@ -19,10 +19,12 @@ from whombat.schemas.annotation_projects import (
     AnnotationProjectUpdate,
 )
 from whombat.schemas.annotation_tasks import (
+    AnnotationStatusBadge,
+    AnnotationStatusBadgeCreate,
+    AnnotationStatusBadgeUpdate,
     AnnotationTask,
     AnnotationTaskCreate,
-    AnnotationTaskStatusBadge,
-    AnnotationTaskStatusBadgeCreate,
+    AnnotationTaskUpdate,
 )
 from whombat.schemas.audio import AudioParameters
 from whombat.schemas.base import Page
@@ -33,6 +35,7 @@ from whombat.schemas.clip_annotations import (
     ClipAnnotationNoteCreate,
     ClipAnnotationTag,
     ClipAnnotationTagCreate,
+    ClipAnnotationUpdate,
 )
 from whombat.schemas.clip_evaluations import (
     ClipEvaluation,
@@ -45,8 +48,14 @@ from whombat.schemas.clip_predictions import (
     ClipPredictionCreate,
     ClipPredictionTag,
     ClipPredictionTagCreate,
+    ClipPredictionUpdate,
 )
-from whombat.schemas.clips import Clip, ClipCreate, ClipFeatureCreate
+from whombat.schemas.clips import (
+    Clip,
+    ClipCreate,
+    ClipFeatureCreate,
+    ClipUpdate,
+)
 from whombat.schemas.datasets import (
     Dataset,
     DatasetCreate,
@@ -102,6 +111,7 @@ from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotationPostCreate,
     SoundEventAnnotationTag,
     SoundEventAnnotationTagCreate,
+    SoundEventAnnotationUpdate,
 )
 from whombat.schemas.sound_event_evaluations import (
     SoundEventEvaluation,
@@ -114,6 +124,7 @@ from whombat.schemas.sound_event_predictions import (
     SoundEventPredictionCreate,
     SoundEventPredictionTag,
     SoundEventPredictionTagCreate,
+    SoundEventPredictionUpdate,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,
@@ -143,10 +154,12 @@ __all__ = [
     "AnnotationProjectCreate",
     "AnnotationProjectTagCreate",
     "AnnotationProjectUpdate",
+    "AnnotationStatusBadge",
+    "AnnotationStatusBadgeCreate",
+    "AnnotationStatusBadgeUpdate",
     "AnnotationTask",
     "AnnotationTaskCreate",
-    "AnnotationTaskStatusBadge",
-    "AnnotationTaskStatusBadgeCreate",
+    "AnnotationTaskUpdate",
     "AudioParameters",
     "Clip",
     "ClipAnnotation",
@@ -155,6 +168,7 @@ __all__ = [
     "ClipAnnotationNoteCreate",
     "ClipAnnotationTag",
     "ClipAnnotationTagCreate",
+    "ClipAnnotationUpdate",
     "ClipCreate",
     "ClipEvaluation",
     "ClipEvaluationCreate",
@@ -165,6 +179,8 @@ __all__ = [
     "ClipPredictionCreate",
     "ClipPredictionTag",
     "ClipPredictionTagCreate",
+    "ClipPredictionUpdate",
+    "ClipUpdate",
     "Dataset",
     "DatasetCreate",
     "DatasetFile",
@@ -216,6 +232,7 @@ __all__ = [
     "SoundEventAnnotationPostCreate",
     "SoundEventAnnotationTag",
     "SoundEventAnnotationTagCreate",
+    "SoundEventAnnotationUpdate",
     "SoundEventCreate",
     "SoundEventEvaluation",
     "SoundEventEvaluationCreate",
@@ -226,6 +243,7 @@ __all__ = [
     "SoundEventPredictionCreate",
     "SoundEventPredictionTag",
     "SoundEventPredictionTagCreate",
+    "SoundEventPredictionUpdate",
     "SoundEventUpdate",
     "SpectrogramParameters",
     "Tag",

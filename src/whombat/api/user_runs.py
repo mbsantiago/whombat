@@ -5,7 +5,8 @@ from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import clip_predictions, users
+from whombat.api import users
+from whombat.api.clip_predictions import clip_predictions
 from whombat.api.common import BaseAPI, create_object
 from whombat.filters.base import Filter
 from whombat.filters.clip_predictions import UserRunFilter
@@ -32,7 +33,7 @@ class UserRunAPI(
         offset: int = 0,
         filters: Sequence[Filter] | None = None,
         sort_by: str | None = None,
-    ) -> tuple[list[schemas.ClipPrediction], int]:
+    ) -> tuple[Sequence[schemas.ClipPrediction], int]:
         return await clip_predictions.get_many(
             session,
             limit=limit,
@@ -101,7 +102,9 @@ class UserRunAPI(
         return await self.update_from_soundevent(session, model_run, data)
 
     async def to_soundevent(
-        self, session: AsyncSession, obj: schemas.UserRun
+        self,
+        session: AsyncSession,
+        obj: schemas.UserRun,
     ) -> data.PredictionSet:
         predictions, _ = await self.get_clip_predictions(
             session, obj, limit=-1

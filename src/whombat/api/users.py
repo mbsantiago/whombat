@@ -56,7 +56,7 @@ def _get_user_manager(session: AsyncSession) -> UserManager:
 async def get_by_id(
     session: AsyncSession,
     user_id: uuid.UUID,
-) -> schemas.User:
+) -> schemas.SimpleUser:
     """Get a user by id.
 
     Parameters
@@ -77,7 +77,7 @@ async def get_by_id(
     obj = await common.get_object(
         session, models.User, models.User.id == user_id
     )
-    return schemas.User.model_validate(obj)
+    return schemas.SimpleUser.model_validate(obj)
 
 
 @users_cache.cached(
@@ -89,7 +89,7 @@ async def get_by_id(
 async def get_by_username(
     session: AsyncSession,
     username: str,
-) -> schemas.User:
+) -> schemas.SimpleUser:
     """Get a user by username.
 
     Parameters
@@ -110,7 +110,7 @@ async def get_by_username(
     obj = await common.get_object(
         session, models.User, models.User.username == username
     )
-    return schemas.User.model_validate(obj)
+    return schemas.SimpleUser.model_validate(obj)
 
 
 @users_cache.cached(
@@ -122,7 +122,7 @@ async def get_by_username(
 async def get_by_email(
     session: AsyncSession,
     email: str,
-) -> schemas.User:
+) -> schemas.SimpleUser:
     """Get a user by email.
 
     Parameters
@@ -143,7 +143,7 @@ async def get_by_email(
     obj = await common.get_object(
         session, models.User, models.User.email == email
     )
-    return schemas.User.model_validate(obj)
+    return schemas.SimpleUser.model_validate(obj)
 
 
 async def get_many(
@@ -344,7 +344,7 @@ def _generate_random_password(length=32):
 async def get_by_data(
     session: AsyncSession,
     data: data.User,
-) -> schemas.User:
+) -> schemas.SimpleUser:
     """Get a user by data.
 
     Parameters
@@ -377,7 +377,7 @@ async def get_by_data(
 async def from_soundevent(
     session: AsyncSession,
     user: data.User,
-) -> schemas.User:
+) -> schemas.SimpleUser:
     """Get or create a user from a soundevent user object.
 
     Parameters
@@ -420,7 +420,7 @@ async def from_soundevent(
             )
         )
         await session.flush()
-        return schemas.User.model_validate(created_user)
+        return schemas.SimpleUser.model_validate(created_user)
 
 
 def to_soundevent(

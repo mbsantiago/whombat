@@ -13,6 +13,7 @@ __all__ = [
     "SoundEventPredictionCreate",
     "SoundEventPredictionTag",
     "SoundEventPredictionTagCreate",
+    "SoundEventPredictionUpdate",
 ]
 
 
@@ -67,3 +68,13 @@ class SoundEventPrediction(SoundEventPredictionCreate):
 
     predicted_tags: list[SoundEventPredictionTag] = []
     """Tags of the prediction."""
+
+
+class SoundEventPredictionUpdate(BaseSchema):
+    """Schema for updating a sound event prediction."""
+
+    uuid: UUID | None
+    """UUID of the prediction.""" ""
+
+    score: float | None
+    """Overall score of the prediction."""

@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import models, schemas
-from whombat.api import clip_annotations, clip_predictions, features
+from whombat.api import clip_annotations, features
+from whombat.api.clip_predictions import clip_predictions
 from whombat.api.sound_event_evaluations import sound_event_evaluations
 from whombat.filters.base import Filter
 from whombat.filters.sound_event_evaluations import ClipEvaluationFilter
@@ -190,7 +191,8 @@ class ClipEvaluationAPI(
         session: AsyncSession,
         obj: schemas.ClipEvaluation,
     ) -> data.ClipEvaluation:
-        """Create a clip evaluation in soundevent format from a clip evaluation in whombat format.
+        """Create a clip evaluation in soundevent format from a clip evaluation
+        in whombat format.
 
         Parameters
         ----------

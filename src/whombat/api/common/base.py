@@ -1,7 +1,7 @@
 """Base API interface."""
 
 from abc import ABC
-from typing import Any, Callable, Generic, Hashable, Sequence, TypeVar
+from typing import Any, Generic, Hashable, Sequence, TypeVar
 
 import cachetools
 from pydantic import BaseModel
@@ -269,16 +269,18 @@ class BaseAPI(
         pk = self._get_pk_from_obj(obj)
         self._cache[pk] = obj
 
-    def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
-        column = getattr(self._model, "uuid")
+    @classmethod
+    def _get_pk_condition(cls, pk: PrimaryKey) -> _ColumnExpressionArgument:
+        column = getattr(cls._model, "uuid")
         if not column:
             raise NotImplementedError(
-                f"The model {self._model.__name__} does not have a column named"
+                f"The model {cls._model.__name__} does not have a column named"
                 " uuid"
             )
         return column == pk
 
-    def _get_pk_from_obj(self, obj: WhombatSchema) -> PrimaryKey:
+    @classmethod
+    def _get_pk_from_obj(cls, obj: WhombatSchema) -> PrimaryKey:
         pk = getattr(obj, "uuid")
         if not pk:
             raise NotImplementedError(

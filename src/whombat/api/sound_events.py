@@ -3,510 +3,306 @@
 from typing import Sequence
 from uuid import UUID
 
-from cachetools import LRUCache
 from soundevent import data
 from soundevent.geometry import compute_geometric_features
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common, features
-from whombat.filters.base import Filter
+from whombat.api.common import BaseAPI
 
 __all__ = [
-    "add_feature",
-    "create",
-    "create_many",
-    "delete",
-    "from_soundevent",
-    "get_by_id",
-    "get_by_uuid",
-    "get_many",
-    "remove_feature",
-    "to_soundevent",
-    "update",
-    "update_feature",
+    "SoundEventAPI",
+    "sound_events",
 ]
 
 
-sound_event_caches = cache.CacheCollection(schemas.SoundEvent)
-
-
-@sound_event_caches.cached(
-    name="sound_event_by_id",
-    cache=LRUCache(maxsize=1000),
-    key=lambda _, id: id,
-    data_key=lambda sound_event: sound_event.id,
-)
-async def get_by_id(
-    session: AsyncSession,
-    id: int,
-) -> schemas.SoundEvent:
-    """Get a sound event by its ID.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    id
-        The ID of the sound event.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.get_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == id,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.cached(
-    name="sound_event_by_uuid",
-    cache=LRUCache(maxsize=1000),
-    key=lambda _, uuid: uuid,
-    data_key=lambda sound_event: sound_event.uuid,
-)
-async def get_by_uuid(
-    session: AsyncSession,
-    uuid: UUID,
-) -> schemas.SoundEvent:
-    """Get a sound event by its UUID.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    uuid
-        The UUID of the sound event.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.get_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.uuid == uuid,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-async def get_many(
-    session: AsyncSession,
-    limit: int = 1000,
-    offset: int = 0,
-    filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.SoundEvent], int]:
-    """Get a list of sound events.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    limit
-        The maximum number of sound events to return, by default 1000.
-    offset
-        The number of sound events to skip, by default 0.
-    filters
-        A list of filters to apply to the sound events, by default None.
-    sort_by
-        The field to sort the sound events by, by default "-created_on".
-
-    Returns
-    -------
-    sound_events : list[schemas.SoundEvent]
-        The list of sound events.
-    count : int
-        The total number of sound events.
-    """
-    sound_events, count = await common.get_objects(
-        session=session,
-        model=models.SoundEvent,
-        limit=limit,
-        offset=offset,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [schemas.SoundEvent.model_validate(s) for s in sound_events], count
-
-
-@sound_event_caches.with_update
-async def create(
-    session: AsyncSession,
-    data: schemas.SoundEventCreate,
+class SoundEventAPI(
+    BaseAPI[
+        UUID,
+        models.SoundEvent,
+        schemas.SoundEvent,
+        schemas.SoundEventCreate,
+        schemas.SoundEventUpdate,
+    ]
 ):
-    """Create a sound event.
+    _model = models.SoundEvent
+    _schema = schemas.SoundEvent
 
-    Parameters
-    ----------
-    session
-        The database session.
-    data
-        The data of the sound event.
+    async def add_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.SoundEvent,
+        feature: schemas.Feature,
+    ) -> schemas.SoundEvent:
+        """Add features to a sound event.
 
-    Returns
-    -------
-    schemas.SoundEvent
-        The created sound event.
-    """
-    await common.get_object(
-        session=session,
-        model=models.Recording,
-        condition=models.Recording.id == data.recording_id,
-    )
-    sound_event = await common.create_object(
-        session=session,
-        model=models.SoundEvent,
-        data=data,
-    )
-    await _create_sound_event_features(session, [sound_event])
-    await session.refresh(sound_event)
-    return schemas.SoundEvent.model_validate(sound_event)
+        Parameters
+        ----------
+        session
+            The database session.
+        obj
+            The sound event to add features to.
+        feature
+            The feature to add to the sound event.
 
+        Returns
+        -------
+        schemas.SoundEvent
+            The updated sound event.
 
-async def create_many(
-    session: AsyncSession,
-    data: list[schemas.SoundEventCreate],
-) -> list[schemas.SoundEvent]:
-    """Create multiple sound events.
+        Raises
+        ------
+        exceptions.NotFoundError
+            If the sound event does not exist in the database.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                raise ValueError(
+                    f"Sound event already has feature {feature.feature_name}."
+                )
 
-    Parameters
-    ----------
-    session
-        The database session.
-    data
-        A list of sound event data to create.
-
-    Returns
-    -------
-    sound_events : list[schemas.SoundEvent]
-        The created sound events.
-    """
-    sound_events = await common.create_objects_without_duplicates(
-        session=session,
-        model=models.SoundEvent,
-        data=data,
-        key=lambda x: x.uuid,
-        key_column=models.SoundEvent.uuid,
-    )
-
-    await _create_sound_event_features(session, sound_events)
-
-    sound_event_ids = [s.id for s in sound_events]
-
-    sound_events, _ = await common.get_objects(
-        session=session,
-        model=models.SoundEvent,
-        limit=-1,
-        filters=[models.SoundEvent.id.in_(sound_event_ids)],
-    )
-    return [schemas.SoundEvent.model_validate(s) for s in sound_events]
-
-
-@sound_event_caches.with_update
-async def update(
-    session: AsyncSession,
-    sound_event_id: int,
-    data: schemas.SoundEventUpdate,
-):
-    """Update a sound event geometry.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event_id
-        The ID of the sound event.
-    data
-        The data to update the sound event with.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-    """
-    sound_event = await common.update_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        data=data,
-    )
-
-    if sound_event.geometry_type != data.geometry.type:
-        await session.rollback()
-        raise ValueError(
-            "The geometry type of the sound event and the new geometry do not "
-            "match."
+        db_feat = await common.create_object(
+            session,
+            models.SoundEventFeature,
+            data=schemas.SoundEventFeatureCreate(
+                sound_event_id=obj.id,
+                feature_name_id=feature.feature_name.id,
+                value=feature.value,
+            ),
         )
 
-    new_features = compute_geometric_features(data.geometry)
-    for feature in new_features:
-        feature_name = await features.get_or_create(
-            session, data=schemas.FeatureNameCreate(name=feature.name)
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    *obj.features,
+                    schemas.Feature.model_validate(db_feat),
+                ]
+            )
         )
-        await common.update_feature_on_object(
-            session=session,
-            model=models.SoundEvent,
-            condition=models.SoundEvent.id == sound_event_id,
-            feature_name_id=feature_name.id,
+        self._update_cache(obj)
+        return obj
+
+    async def update_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.SoundEvent,
+        feature: schemas.Feature,
+    ) -> schemas.SoundEvent:
+        """Update features of a sound event.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        obj
+            The sound event to update features for.
+        feature
+            The feature to update.
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The updated sound event.
+
+        Raises
+        ------
+        exceptions.NotFoundError
+            If the sound event does not exist in the database.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                break
+        else:
+            raise ValueError(
+                f"Sound event does not have feature {feature.feature_name}."
+            )
+
+        db_feat = await common.update_object(
+            session,
+            models.SoundEventFeature,
+            condition=and_(
+                models.SoundEventFeature.sound_event_id == obj.id,
+                models.SoundEventFeature.feature_name_id
+                == feature.feature_name.id,
+            ),
             value=feature.value,
         )
 
-    await session.refresh(sound_event)
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.with_clear
-async def delete(
-    session: AsyncSession,
-    sound_event_id: int,
-) -> schemas.SoundEvent:
-    """Delete a sound event.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event_id
-        The ID of the sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    obj = await common.delete_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-    )
-    return schemas.SoundEvent.model_validate(obj)
-
-
-@sound_event_caches.with_update
-async def add_feature(
-    session: AsyncSession,
-    sound_event_id: int,
-    feature_name_id: int,
-    value: float,
-) -> schemas.SoundEvent:
-    """Add features to a sound event.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event_id
-        The ID of the sound event.
-    feature_name_id
-        The ID of the feature name.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.add_feature_to_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        feature_name_id=feature_name_id,
-        value=value,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.with_update
-async def update_feature(
-    session: AsyncSession,
-    sound_event_id: int,
-    feature_name_id: int,
-    value: float,
-) -> schemas.SoundEvent:
-    """Update features of a sound event.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event_id
-        The ID of the sound event.
-    feature_name_id
-        The ID of the feature name.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.update_feature_on_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        feature_name_id=feature_name_id,
-        value=value,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-@sound_event_caches.with_update
-async def remove_feature(
-    session: AsyncSession,
-    sound_event_id: int,
-    features_name_id: int,
-) -> schemas.SoundEvent:
-    """Remove features from a sound event.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event_id
-        The ID of the sound event.
-    features_name_id
-        The ID of the feature name.
-
-    Returns
-    -------
-    schemas.SoundEvent
-        The updated sound event.
-
-    Raises
-    ------
-    exceptions.NotFoundError
-        If the sound event does not exist in the database.
-    """
-    sound_event = await common.remove_feature_from_object(
-        session=session,
-        model=models.SoundEvent,
-        condition=models.SoundEvent.id == sound_event_id,
-        feature_name_id=features_name_id,
-    )
-    return schemas.SoundEvent.model_validate(sound_event)
-
-
-async def _create_sound_event_features(
-    session: AsyncSession,
-    sound_events: Sequence[models.SoundEvent],
-) -> None:
-    """Create sound event features.
-
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_events
-        The sound events.
-    """
-    all_features = []
-    for sound_event in sound_events:
-        feats = compute_geometric_features(sound_event.geometry)
-        for feature in feats:
-            all_features.append((sound_event.id, feature.name, feature.value))
-
-    feature_names = {f[1] for f in all_features}
-    feature_mapping = {
-        name: await features.get_or_create(
-            session, data=schemas.FeatureNameCreate(name=name)
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    *obj.features,
+                    schemas.Feature.model_validate(db_feat),
+                ]
+            )
         )
-        for name in feature_names
-    }
+        self._update_cache(obj)
+        return obj
 
-    data = [
-        schemas.SoundEventFeatureCreate(
-            sound_event_id=sound_event_id,
-            feature_name_id=feature_mapping[feature_name].id,
-            value=value,
+    async def remove_feature(
+        self,
+        session: AsyncSession,
+        obj: schemas.SoundEvent,
+        feature: schemas.Feature,
+    ) -> schemas.SoundEvent:
+        """Remove features from a sound event.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        obj
+            The sound event to remove features from.
+        feature
+            The feature to remove from the sound event.
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The updated sound event.
+
+        Raises
+        ------
+        exceptions.NotFoundError
+            If the sound event does not exist in the database.
+        """
+        for f in obj.features:
+            if f.feature_name == feature.feature_name:
+                break
+        else:
+            raise ValueError(
+                f"Sound event does not have feature {feature.feature_name}."
+            )
+
+        await common.delete_object(
+            session,
+            models.SoundEventFeature,
+            and_(
+                models.SoundEventFeature.sound_event_id == obj.id,
+                models.SoundEventFeature.feature_name_id
+                == feature.feature_name.id,
+            ),
         )
-        for sound_event_id, feature_name, value in all_features
-    ]
 
-    await common.create_objects(
-        session,
-        models.SoundEventFeature,
-        data=data,
-    )
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    f
+                    for f in obj.features
+                    if f.feature_name != feature.feature_name
+                ]
+            )
+        )
+        self._update_cache(obj)
+        return obj
 
+    async def _create_sound_event_features(
+        self,
+        session: AsyncSession,
+        sound_events: Sequence[models.SoundEvent],
+    ) -> None:
+        """Create sound event features.
 
-async def from_soundevent(
-    session: AsyncSession,
-    sound_event: data.SoundEvent,
-    recording_id: int,
-) -> schemas.SoundEvent:
-    """Create a sound event from a soundevent SoundEvent object.
+        Parameters
+        ----------
+        session
+            The database session.
+        sound_events
+            The sound events.
+        """
+        all_features = []
+        for sound_event in sound_events:
+            feats = compute_geometric_features(sound_event.geometry)
+            for feature in feats:
+                all_features.append(
+                    (sound_event.id, feature.name, feature.value)
+                )
 
-    Parameters
-    ----------
-    session
-        The database session.
-    sound_event
-        The soundevent sound event object.
-    recording_id
-        The ID of the recording you want to add the sound event to.
+        feature_names = {f[1] for f in all_features}
+        feature_mapping = {
+            name: await features.get_or_create(
+                session, data=schemas.FeatureNameCreate(name=name)
+            )
+            for name in feature_names
+        }
 
-    Returns
-    -------
-    schemas.SoundEvent
-        The sound event.
-    """
-    try:
-        return await get_by_uuid(session, sound_event.uuid)
-    except exceptions.NotFoundError:
-        pass
+        data = [
+            schemas.SoundEventFeatureCreate(
+                sound_event_id=sound_event_id,
+                feature_name_id=feature_mapping[feature_name].id,
+                value=value,
+            )
+            for sound_event_id, feature_name, value in all_features
+        ]
 
-    if sound_event.geometry is None:
-        raise ValueError("The sound event does not have a geometry.")
+        await common.create_objects(
+            session,
+            models.SoundEventFeature,
+            data=data,
+        )
 
-    return await create(
-        session,
-        schemas.SoundEventCreate(
-            recording_id=recording_id,
+    async def from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.SoundEvent,
+        recording: schemas.Recording,
+    ) -> schemas.SoundEvent:
+        """Create a sound event from a soundevent SoundEvent object.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        data
+            The soundevent sound event object.
+        recording
+            The recording the sound event is from.
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The sound event.
+        """
+        try:
+            return await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            pass
+
+        if data.geometry is None:
+            raise ValueError("The sound event does not have a geometry.")
+
+        return await self.create(
+            session,
+            schemas.SoundEventCreate(
+                recording_id=recording.id,
+                uuid=data.uuid,
+                geometry=data.geometry,
+            ),
+        )
+
+    def to_soundevent(
+        self,
+        sound_event: schemas.SoundEvent,
+    ) -> data.SoundEvent:
+        """Create a soundevent SoundEvent object from a sound event.
+
+        Parameters
+        ----------
+        sound_event
+            The sound event.
+
+        Returns
+        -------
+        data.SoundEvent
+            The soundevent sound event object.
+        """
+        return data.SoundEvent(
             uuid=sound_event.uuid,
             geometry=sound_event.geometry,
-        ),
-    )
+            features=[features.to_soundevent(f) for f in sound_event.features],
+        )
 
 
-def to_soundevent(sound_event: schemas.SoundEvent) -> data.SoundEvent:
-    """Create a soundevent SoundEvent object from a sound event.
-
-    Parameters
-    ----------
-    sound_event
-        The sound event.
-
-    Returns
-    -------
-    data.SoundEvent
-        The soundevent sound event object.
-    """
-    return data.SoundEvent(
-        uuid=sound_event.uuid,
-        geometry=sound_event.geometry,
-        features=[features.to_soundevent(f) for f in sound_event.features],
-    )
+sound_events = SoundEventAPI()

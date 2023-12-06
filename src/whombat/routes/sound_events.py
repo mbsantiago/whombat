@@ -21,7 +21,7 @@ async def get_sound_events(
     session: Session,
     limit: Limit = 10,
     offset: Offset = 0,
-    sort_by: str = "-created_at",
+    sort_by: str = "-created_on",
     filter: SoundEventFilter = Depends(SoundEventFilter),  # type: ignore
 ):
     """Get a page of sound events."""

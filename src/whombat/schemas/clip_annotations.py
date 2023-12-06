@@ -102,3 +102,10 @@ class ClipAnnotation(ClipAnnotationCreate):
         default_factory=list,
         description="Sound events attached to this annotation.",
     )
+
+
+class ClipAnnotationUpdate(BaseSchema):
+    """Schema for data required to update an ClipAnnotation."""
+
+    uuid: UUID | None = None
+    """UUID of the annotation."""

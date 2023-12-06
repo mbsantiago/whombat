@@ -9,7 +9,6 @@ from typing import Generator
 from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-
 __all__ = [
     "load_plugins",
     "add_plugin_routes",
