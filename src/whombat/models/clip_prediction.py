@@ -25,8 +25,6 @@ class ClipPrediction(Base):
         The database id of the clip prediction.
     uuid
         The UUID of the clip prediction.
-    score
-        An overall confidence score of the prediction.
     clip
         The clip to which the prediction belongs.
     tags
@@ -40,8 +38,6 @@ class ClipPrediction(Base):
     ----------
     clip_id : int
         The database id of the clip to which the prediction belongs.
-    score : float
-        An overall confidence score of the prediction.
     uuid : UUID, optional
         The UUID of the clip prediction.
     """
@@ -57,10 +53,6 @@ class ClipPrediction(Base):
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
-    )
-    score: orm.Mapped[float] = orm.mapped_column(
-        nullable=False,
-        default=1.0,
     )
 
     # Relations

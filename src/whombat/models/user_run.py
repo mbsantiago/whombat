@@ -1,5 +1,6 @@
 """User Run User."""
 
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -9,6 +10,12 @@ from whombat.models.base import Base
 from whombat.models.clip_prediction import ClipPrediction
 from whombat.models.evaluation import Evaluation
 from whombat.models.user import User
+
+if TYPE_CHECKING:
+    from whombat.models.evaluation_set import (
+        EvaluationSet,
+        EvaluationSetUserRun,
+    )
 
 __all__ = [
     "UserRun",
@@ -91,6 +98,24 @@ class UserRun(Base):
         init=False,
         repr=False,
         cascade="all, delete-orphan",
+    )
+
+    # Backrefs
+    evaluation_sets: orm.Mapped[list["EvaluationSet"]] = orm.relationship(
+        secondary="evaluation_set_user_run",
+        back_populates="user_runs",
+        init=False,
+        repr=False,
+        default_factory=list,
+        viewonly=True,
+    )
+    evaluation_set_user_runs: orm.Mapped[
+        list["EvaluationSetUserRun"]
+    ] = orm.relationship(
+        back_populates="user_run",
+        init=False,
+        repr=False,
+        default_factory=list,
     )
 
 

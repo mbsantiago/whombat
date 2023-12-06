@@ -29,6 +29,8 @@ from whombat.models.evaluation_set import (
     EvaluationSet,
     EvaluationSetAnnotation,
     EvaluationSetTag,
+    EvaluationSetUserRun,
+    EvaluationSetModelRun,
 )
 from whombat.models.feature import FeatureName
 from whombat.models.model_run import (
@@ -89,7 +91,9 @@ __all__ = [
     "EvaluationMetric",
     "EvaluationSet",
     "EvaluationSetAnnotation",
+    "EvaluationSetModelRun",
     "EvaluationSetTag",
+    "EvaluationSetUserRun",
     "FeatureName",
     "ModelRun",
     "ModelRunEvaluation",

@@ -54,6 +54,8 @@ class Evaluation(Base):
         A list of clip evaluations associated with the evaluation.
     created_on
         The date and time the evaluation was created.
+    task
+        The evaluated task.
 
     Parameters
     ----------
@@ -72,6 +74,7 @@ class Evaluation(Base):
         unique=True,
         default_factory=uuid4,
     )
+    task: orm.Mapped[str] = orm.mapped_column(nullable=False)
     score: orm.Mapped[float] = orm.mapped_column(nullable=False, default=0)
 
     # Relationships

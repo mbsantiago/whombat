@@ -6,12 +6,16 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
 from whombat.models.clip_annotation import ClipAnnotation
+from whombat.models.model_run import ModelRun
 from whombat.models.tag import Tag
+from whombat.models.user_run import UserRun
 
 __all__ = [
     "EvaluationSet",
     "EvaluationSetTag",
     "EvaluationSetAnnotation",
+    "EvaluationSetModelRun",
+    "EvaluationSetUserRun",
 ]
 
 
@@ -92,8 +96,6 @@ class EvaluationSet(Base):
         The database id of the evaluation set.
     uuid
         The UUID of the evaluation set.
-    task
-        The task to evaluate. For example, sound event detection.
     name
         The name of the evaluation set.
     description
@@ -107,8 +109,6 @@ class EvaluationSet(Base):
 
     Parameters
     ----------
-    task : str
-        The task to evaluate. For example, sound event detection.
     name : str
         The name of the evaluation set.
     description : str
@@ -116,13 +116,6 @@ class EvaluationSet(Base):
         about the goal of the evaluation set.
     uuid : UUID, optional
         The UUID of the evaluation set.
-
-    Notes
-    -----
-    The task can be any string, but it is recommended to use the a common name
-    for the task, such as "sound_event_detection",
-    "sound_event_classification". There should be a clear and unique relation
-    between the task and the way the evaluation is computed.
     """
 
     __tablename__ = "evaluation_set"
@@ -132,9 +125,6 @@ class EvaluationSet(Base):
         default_factory=uuid4,
         kw_only=True,
         unique=True,
-    )
-    task: orm.Mapped[str] = orm.mapped_column(
-        nullable=False,
     )
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     description: orm.Mapped[str] = orm.mapped_column(nullable=False)
@@ -154,6 +144,20 @@ class EvaluationSet(Base):
         default_factory=list,
         viewonly=True,
     )
+    model_runs: orm.Mapped[list[ModelRun]] = orm.relationship(
+        secondary="evaluation_set_model_run",
+        cascade="all, delete-orphan",
+        viewonly=True,
+        default_factory=list,
+        repr=False,
+    )
+    user_runs: orm.Mapped[list[UserRun]] = orm.relationship(
+        secondary="evaluation_set_user_run",
+        cascade="all, delete-orphan",
+        viewonly=True,
+        default_factory=list,
+        repr=False,
+    )
 
     # Secondary relationships
     evaluation_set_annotations: orm.Mapped[
@@ -171,6 +175,20 @@ class EvaluationSet(Base):
         cascade="all, delete-orphan",
     )
     """Set of tags to focus on for this evaluation set."""
+    evaluation_set_model_runs: orm.Mapped[
+        list["EvaluationSetModelRun"]
+    ] = orm.relationship(
+        back_populates="evaluation_set",
+        default_factory=list,
+        cascade="all, delete-orphan",
+    )
+    evaluation_set_user_runs: orm.Mapped[
+        list["EvaluationSetUserRun"]
+    ] = orm.relationship(
+        back_populates="evaluation_set",
+        default_factory=list,
+        cascade="all, delete-orphan",
+    )
 
 
 class EvaluationSetAnnotation(Base):
@@ -265,4 +283,94 @@ class EvaluationSetTag(Base):
         back_populates="evaluation_set_tags",
         lazy="joined",
         init=False,
+    )
+
+
+class EvaluationSetModelRun(Base):
+    """Evaluation Set Model Run model.
+
+    Attributes
+    ----------
+    model_run
+        The model run to evaluate.
+    created_on
+        The date and time the evaluation set model run was created.
+
+    Parameters
+    ----------
+    evaluation_set_id : int
+        The database id of the evaluation set.
+    model_run_id : int
+        The database id of the model run.
+    """
+
+    __tablename__ = "evaluation_set_model_run"
+    __table_args__ = (UniqueConstraint("evaluation_set_id", "model_run_id"),)
+
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    model_run_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("model_run.id"),
+        nullable=False,
+        primary_key=True,
+    )
+
+    # Relationships
+    evaluation_set: orm.Mapped[EvaluationSet] = orm.relationship(
+        back_populates="evaluation_set_model_runs",
+        init=False,
+        repr=False,
+    )
+    model_run: orm.Mapped[ModelRun] = orm.relationship(
+        back_populates="evaluation_set_model_runs",
+        init=False,
+        repr=False,
+    )
+
+
+class EvaluationSetUserRun(Base):
+    """Evaluation Set User Run model.
+
+    Attributes
+    ----------
+    user_run
+        The user run to evaluate.
+    created_on
+        The date and time the evaluation set user run was created.
+
+    Parameters
+    ----------
+    evaluation_set_id : int
+        The database id of the evaluation set.
+    user_run_id : int
+        The database id of the user run.
+    """
+
+    __tablename__ = "evaluation_set_user_run"
+    __table_args__ = (UniqueConstraint("evaluation_set_id", "user_run_id"),)
+
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    user_run_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("user_run.id"),
+        nullable=False,
+        primary_key=True,
+    )
+
+    # Relationships
+    evaluation_set: orm.Mapped[EvaluationSet] = orm.relationship(
+        back_populates="evaluation_set_user_runs",
+        init=False,
+        repr=False,
+    )
+    user_run: orm.Mapped[UserRun] = orm.relationship(
+        back_populates="evaluation_set_user_runs",
+        init=False,
+        repr=False,
     )
