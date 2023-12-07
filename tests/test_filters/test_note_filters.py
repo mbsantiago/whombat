@@ -13,11 +13,9 @@ async def user1(session: AsyncSession):
     """Create a user for testing."""
     return await api.users.create(
         session,
-        data=schemas.UserCreate(
-            username="user1",
-            password="password",
-            email="user1@whombat.com",
-        ),
+        username="user1",
+        password="password",
+        email="user1@whombat.com",
     )
 
 
@@ -26,11 +24,9 @@ async def user2(session: AsyncSession):
     """Create a user for testing."""
     return await api.users.create(
         session,
-        data=schemas.UserCreate(
-            username="user2",
-            password="password",
-            email="user2@whombat.com",
-        ),
+        username="user2",
+        password="password",
+        email="user2@whombat.com",
     )
 
 
@@ -39,55 +35,45 @@ async def user3(session: AsyncSession):
     """Create a user for testing."""
     return await api.users.create(
         session,
-        data=schemas.UserCreate(
-            username="user3",
-            password="password",
-            email="user3@whombat.com",
-        ),
+        username="user3",
+        password="password",
+        email="user3@whombat.com",
     )
 
 
 @pytest.fixture(autouse=True)
 async def notes(
     session: AsyncSession,
-    user1: schemas.User,
-    user2: schemas.User,
-    user3: schemas.User,
+    user1: schemas.SimpleUser,
+    user2: schemas.SimpleUser,
+    user3: schemas.SimpleUser,
 ) -> list[schemas.Note]:
     """Create some notes for testing."""
     note1 = await api.notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="note1 - a",
-            created_by_id=user1.id,
-            is_issue=False,
-        ),
+        message="note1 - a",
+        created_by=user1,
+        is_issue=False,
     )
 
     note2 = await api.notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="note2 - a",
-            created_by_id=user1.id,
-            is_issue=True,
-            created_at=datetime.datetime(2021, 1, 1),
-        ),
+        message="note2 - a",
+        created_by=user1,
+        is_issue=True,
+        created_on=datetime.datetime(2021, 1, 1),
     )
 
     note3 = await api.notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="note3 - b",
-            created_by_id=user2.id,
-        ),
+        message="note3 - b",
+        created_by=user2,
     )
 
     note4 = await api.notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="note4 - b",
-            created_by_id=user3.id,
-        ),
+        message="note4 - b",
+        created_by=user3,
     )
 
     return [note1, note2, note3, note4]

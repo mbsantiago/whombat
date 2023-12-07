@@ -13,7 +13,7 @@ import soundevent
 from scipy.io import wavfile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, cache, dependencies, models, schemas
+from whombat import api, cache, dependencies, schemas
 from whombat.app import app
 from whombat.settings import Settings
 
@@ -21,6 +21,32 @@ from whombat.settings import Settings
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 logging.getLogger("asyncio").setLevel(logging.WARNING)
 logging.getLogger("passlib").setLevel(logging.WARNING)
+
+
+@pytest.fixture(autouse=True)
+def clear_api_cache() -> None:
+    """Clear the api cache before each test."""
+    api.users._cache.clear()
+    api.notes._cache.clear()
+    api.tags._cache.clear()
+    api.features._cache.clear()
+    api.recordings._cache.clear()
+    api.datasets._cache.clear()
+    api.sound_events._cache.clear()
+    api.clips._cache.clear()
+    api.sound_event_annotations._cache.clear()
+    api.clip_annotations._cache.clear()
+    api.annotation_tasks._cache.clear()
+    api.status_badges._cache.clear()
+    api.annotation_projects._cache.clear()
+    api.sound_event_predictions._cache.clear()
+    api.clip_predictions._cache.clear()
+    api.model_runs._cache.clear()
+    api.user_runs._cache.clear()
+    api.evaluations._cache.clear()
+    api.clip_evaluations._cache.clear()
+    api.sound_event_evaluations._cache.clear()
+    api.evaluation_sets._cache.clear()
 
 
 @pytest.fixture
@@ -37,10 +63,19 @@ def database_test(tmp_path: Path) -> Path:
     return tmp_path / "test.db"
 
 
+@pytest.fixture
+def database_url(database_test: Path) -> str:
+    """Fixture to return the database url."""
+    return f"sqlite+aiosqlite:///{database_test.absolute()}"
+
+
 @pytest.fixture(autouse=True)
-def settings(database_test: Path) -> Settings:
+def settings(
+    database_test: Path,
+    database_url: str,
+) -> Settings:
     """Fixture to return the settings."""
-    os.environ["db_url"] = f"sqlite+aiosqlite:///{database_test.absolute()}"
+    os.environ["db_url"] = database_url
     os.environ["audio_dir"] = "/"
     os.environ["app_name"] = "Whombat"
     os.environ["admin_username"] = "test_admin"
@@ -116,22 +151,58 @@ def random_wav_factory(audio_dir: Path):
 @pytest.fixture
 async def session() -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
-    async with api.sessions.create() as sess:
+    async with api.create_session() as sess:
         yield sess
 
 
 @pytest.fixture
-async def user(session: AsyncSession) -> schemas.User:
+async def user(session: AsyncSession) -> schemas.SimpleUser:
     """Create a user for tests."""
     user = await api.users.create(
         session,
-        data=schemas.UserCreate(
-            username="test",
-            password="test",
-            email="test@whombat.com",
-        ),
+        username="test",
+        password="test",
+        email="test@whombat.com",
     )
     return user
+
+
+@pytest.fixture
+async def tag(session: AsyncSession) -> schemas.Tag:
+    """Create a tag for testing."""
+    tag = await api.tags.create(
+        session,
+        key="test_key",
+        value="test_value",
+    )
+    return tag
+
+
+@pytest.fixture
+async def feature_name(session: AsyncSession) -> schemas.FeatureName:
+    """Create a feature for testing."""
+    feature_name = await api.features.create(session, name="test_feature")
+    return feature_name
+
+
+@pytest.fixture
+def feature(feature_name: schemas.FeatureName) -> schemas.Feature:
+    """Create a feature for testing."""
+    return schemas.Feature(name=feature_name.name, value=0.5)
+
+
+@pytest.fixture
+async def note(
+    session: AsyncSession,
+    user: schemas.SimpleUser,
+) -> schemas.Note:
+    """Create a note for testing."""
+    note = await api.notes.create(
+        session,
+        message="test_message",
+        created_by=user,
+    )
+    return note
 
 
 @pytest.fixture
@@ -141,44 +212,11 @@ async def recording(
     audio_dir: Path,
 ) -> schemas.Recording:
     """Create a recording for testing."""
-    recording = await api.recordings.create(
+    return await api.recordings.create(
         session,
-        data=schemas.RecordingCreate(path=random_wav_factory()),
+        path=random_wav_factory(),
         audio_dir=audio_dir,
     )
-    return recording
-
-
-@pytest.fixture
-async def tag(session: AsyncSession) -> schemas.Tag:
-    """Create a tag for testing."""
-    tag = await api.tags.create(
-        session,
-        data=schemas.TagCreate(key="test_key", value="test_value"),
-    )
-    return tag
-
-
-@pytest.fixture
-async def feature_name(session: AsyncSession) -> schemas.FeatureName:
-    """Create a feature for testing."""
-    feature_name = await api.features.create(
-        session, data=schemas.FeatureNameCreate(name="test_feature")
-    )
-    return feature_name
-
-
-@pytest.fixture
-async def note(session: AsyncSession, user: schemas.User) -> schemas.Note:
-    """Create a note for testing."""
-    note = await api.notes.create(
-        session,
-        data=schemas.NotePostCreate(
-            message="test_message",
-            created_by_id=user.id,
-        ),
-    )
-    return note
 
 
 @pytest.fixture
@@ -189,106 +227,10 @@ async def clip(
     """Create a clip for testing."""
     return await api.clips.create(
         session,
-        data=schemas.ClipCreate(
-            recording_id=recording.id,
-            start_time=0.1,
-            end_time=0.2,
-        ),
+        recording=recording,
+        start_time=0.1,
+        end_time=0.2,
     )
-
-
-@pytest.fixture
-async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
-    """Create a dataset for testing."""
-    dataset_dir = audio_dir / "test_dataset" / "audio"
-    dataset_dir.mkdir(parents=True)
-    dataset, _ = await api.datasets.create(
-        session,
-        data=schemas.DatasetCreate(
-            name="test_dataset",
-            description="test_description",
-            audio_dir=dataset_dir,
-        ),
-        audio_dir=audio_dir,
-    )
-    return dataset
-
-
-@pytest.fixture
-async def annotation_project(
-    session: AsyncSession,
-) -> schemas.AnnotationProject:
-    """Create an annotation project for testing."""
-    annotation_project = await api.annotation_projects.create(
-        session,
-        data=schemas.AnnotationProjectCreate(
-            name="test_annotation_project",
-            description="test_description",
-            annotation_instructions="test_instructions",
-        ),
-    )
-    return annotation_project
-
-
-@pytest.fixture
-async def task(
-    session: AsyncSession,
-    annotation_project: schemas.AnnotationProject,
-    clip: schemas.Clip,
-) -> schemas.Task:
-    """Create a task for testing."""
-    task = await api.tasks.create(
-        session,
-        data=schemas.TaskCreate(
-            project_id=annotation_project.id,
-            clip_id=clip.id,
-        ),
-    )
-    return task
-
-
-@pytest.fixture
-async def task_status_badge(
-    session: AsyncSession,
-    task: schemas.Task,
-    user: schemas.User,
-) -> schemas.TaskStatusBadge:
-    """Create a task status badge for testing."""
-    task = await api.tasks.add_status_badge(
-        session,
-        task_id=task.id,
-        user_id=user.id,
-        state=models.TaskState.assigned,
-    )
-    task_status_badge = next(
-        badge
-        for badge in task.status_badges
-        if badge.user_id == user.id
-        and badge.state == models.TaskState.assigned
-    )
-    return task_status_badge
-
-
-@pytest.fixture
-async def task_tag(
-    session: AsyncSession,
-    task: schemas.Task,
-    tag: schemas.Tag,
-    user: schemas.User,
-) -> schemas.TaskTag:
-    """Create a task tag for testing."""
-    task = await api.tasks.add_tag(
-        session,
-        task_id=task.id,
-        tag_id=tag.id,
-        created_by_id=user.id,
-    )
-    task_tag = next(
-        tag
-        for tag in task.tags
-        if tag.tag_id == tag.id and tag.created_by_id == user.id
-    )
-    return task_tag
 
 
 @pytest.fixture
@@ -307,31 +249,188 @@ async def sound_event(
             ]
         ]
     )
-
-    sound_event = await api.sound_events.create(
+    return await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
-    return sound_event
 
 
 @pytest.fixture
-async def annotation(
-    session: AsyncSession,
-    task: schemas.Task,
-    sound_event: schemas.SoundEvent,
-    user: schemas.User,
-) -> schemas.Annotation:
-    """Create an annotation for testing."""
-    annotation = await api.annotations.create(
+async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
+    """Create a dataset for testing."""
+    dataset_dir = audio_dir / "test_dataset" / "audio"
+    dataset_dir.mkdir(parents=True)
+    return await api.datasets.create(
         session,
-        data=schemas.AnnotationPostCreate(
-            created_by_id=user.id,
-            task_id=task.id,
-            sound_event_id=sound_event.id,
-        ),
+        name="test_dataset",
+        description="test_description",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
     )
-    return annotation
+
+
+@pytest.fixture
+async def clip_annotation(
+    session: AsyncSession,
+    clip: schemas.Clip,
+) -> schemas.ClipAnnotation:
+    """Create a clip annotation for testing."""
+    return await api.clip_annotations.create(
+        session,
+        clip=clip,
+    )
+
+
+@pytest.fixture
+async def sound_event_annotation(
+    session: AsyncSession,
+    clip_annotation: schemas.ClipAnnotation,
+    sound_event: schemas.SoundEvent,
+    user: schemas.SimpleUser,
+) -> schemas.SoundEventAnnotation:
+    """Create a sound event annotation for testing."""
+    return await api.sound_event_annotations.create(
+        session,
+        clip_annotation=clip_annotation,
+        sound_event=sound_event,
+        created_by=user,
+    )
+
+
+@pytest.fixture
+async def annotation_project(
+    session: AsyncSession,
+) -> schemas.AnnotationProject:
+    """Create an annotation project for testing."""
+    return await api.annotation_projects.create(
+        session,
+        name="test_annotation_project",
+        description="test_description",
+        annotation_instructions="test_instructions",
+    )
+
+
+@pytest.fixture
+async def annotation_task(
+    session: AsyncSession,
+    annotation_project: schemas.AnnotationProject,
+    clip: schemas.Clip,
+) -> schemas.AnnotationTask:
+    """Create a task for testing."""
+    return await api.annotation_tasks.create(
+        session,
+        annotation_project=annotation_project,
+        clip=clip,
+    )
+
+
+@pytest.fixture
+async def clip_prediction(
+    session: AsyncSession,
+    clip: schemas.Clip,
+) -> schemas.ClipPrediction:
+    """Create a clip prediction for testing."""
+    return await api.clip_predictions.create(
+        session,
+        clip=clip,
+    )
+
+
+@pytest.fixture
+async def sound_event_prediction(
+    session: AsyncSession,
+    sound_event: schemas.SoundEvent,
+    clip_prediction: schemas.ClipPrediction,
+) -> schemas.SoundEventPrediction:
+    """Create a sound event prediction for testing."""
+    return await api.sound_event_predictions.create(
+        session,
+        clip_prediction=clip_prediction,
+        sound_event=sound_event,
+        score=0.5,
+    )
+
+
+@pytest.fixture
+async def model_run(
+    session: AsyncSession,
+) -> schemas.ModelRun:
+    """Create a model run for testing."""
+    return await api.model_runs.create(
+        session,
+        name="test_model",
+        version="0.0.0",
+        description="test_description",
+    )
+
+
+@pytest.fixture
+async def user_run(
+    session: AsyncSession,
+    user: schemas.SimpleUser,
+) -> schemas.UserRun:
+    """Create a user run for testing."""
+    return await api.user_runs.create(
+        session,
+        user=user,
+    )
+
+
+@pytest.fixture
+async def evaluation(
+    session: AsyncSession,
+) -> schemas.Evaluation:
+    """Create an evaluation for testing."""
+    return await api.evaluations.create(
+        session,
+        score=0.5,
+        task="clip_classification",
+    )
+
+
+@pytest.fixture
+async def clip_evaluation(
+    session: AsyncSession,
+    evaluation: schemas.Evaluation,
+    clip_prediction: schemas.ClipPrediction,
+    clip_annotation: schemas.ClipAnnotation,
+) -> schemas.ClipEvaluation:
+    """Create a clip evaluation for testing."""
+    return await api.clip_evaluations.create(
+        session,
+        evaluation=evaluation,
+        clip_prediction=clip_prediction,
+        clip_annotation=clip_annotation,
+        score=0.7,
+    )
+
+
+@pytest.fixture
+async def sound_event_evaluation(
+    session: AsyncSession,
+    clip_evaluation: schemas.ClipEvaluation,
+    sound_event_prediction: schemas.SoundEventPrediction,
+    sound_event_annotation: schemas.SoundEventAnnotation,
+) -> schemas.SoundEventEvaluation:
+    """Create a sound event evaluation for testing."""
+    return await api.sound_event_evaluations.create(
+        session,
+        clip_evaluation=clip_evaluation,
+        source=sound_event_prediction,
+        target=sound_event_annotation,
+        affinity=1,
+        score=0.7,
+    )
+
+
+@pytest.fixture
+async def evaluation_set(
+    session: AsyncSession,
+) -> schemas.EvaluationSet:
+    """Create an evaluation set for testing."""
+    return await api.evaluation_sets.create(
+        session,
+        name="test_evaluation_set",
+        description="test_description",
+    )

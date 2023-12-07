@@ -28,8 +28,9 @@ async def create_test_recording(
             channels=channels,
         )
         return await api.recordings.create(
-            session=session,
-            data=schemas.RecordingCreate(path=path, **kwargs),
+            session,
+            path=path,
+            **kwargs,
         )
 
     return factory
@@ -307,19 +308,12 @@ async def test_tag_filter(
         await create_test_recording(),
         await create_test_recording(),
     ]
-    await api.recordings.add_tag(
-        session=session,
-        recording_id=recording_list[0].id,
-        tag_id=tag.id,
-    )
+    await api.recordings.add_tag(session, recording_list[0], tag)
 
     # Act
-    filters_: list[filters.Filter] = [
-        filters.recordings.TagFilter(tags=[tag.id])
-    ]
     results, _ = await api.recordings.get_many(
-        session=session,
-        filters=filters_,
+        session,
+        filters=[filters.recordings.TagFilter(eq=tag.id)],
     )
 
     # Assert
@@ -330,7 +324,7 @@ async def test_tag_filter(
 async def test_issues_filter(
     session: AsyncSession,
     create_test_recording,
-    user: schemas.User,
+    user: schemas.SimpleUser,
 ):
     """Test the issues filter."""
     # Arrange
@@ -341,17 +335,15 @@ async def test_issues_filter(
 
     note = await api.notes.create(
         session=session,
-        data=schemas.NotePostCreate(
-            message="Test",
-            created_by_id=user.id,
-            is_issue=True,
-        ),
+        message="Test",
+        created_by=user,
+        is_issue=True,
     )
 
     await api.recordings.add_note(
-        session=session,
-        recording_id=recording_list[1].id,
-        note_id=note.id,
+        session,
+        recording_list[1],
+        note,
     )
 
     # Act
