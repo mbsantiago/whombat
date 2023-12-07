@@ -89,7 +89,7 @@ class BaseAPI(
         limit: int | None = 1000,
         offset: int | None = 0,
         filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
-        sort_by: _ColumnExpressionArgument | str | None = None,
+        sort_by: _ColumnExpressionArgument | str | None = "-created_on",
     ) -> tuple[Sequence[WhombatSchema], int]:
         """Get many objects.
 
@@ -148,7 +148,7 @@ class BaseAPI(
         """
         db_obj = await create_object(session, self._model, data, **kwargs)
         obj = self._schema.model_validate(db_obj)
-        self._cache[self._get_pk_from_obj(obj)] = obj
+        self._update_cache(obj)
         return obj
 
     async def create_many(

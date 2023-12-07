@@ -99,18 +99,20 @@ class ClipAPI(
             If clip does not exist.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 raise ValueError(
                     f"Clip {obj.id} already has a feature with feature name "
-                    f"{feature.feature_name}."
+                    f"{feature.name}."
                 )
+
+        feature_name = await features.get_or_create(session, name=feature.name)
 
         await common.create_object(
             session,
             models.ClipFeature,
             schemas.ClipFeatureCreate(
                 clip_id=obj.id,
-                feature_name_id=feature.feature_name.id,
+                feature_name_id=feature_name.id,
                 value=feature.value,
             ),
         )
@@ -149,20 +151,22 @@ class ClipAPI(
             Raised if clip does not exist in the database.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 break
         else:
             raise ValueError(
                 f"Clip {obj} does not have a feature with feature "
-                f"name {feature.feature_name}."
+                f"name {feature.name}."
             )
+
+        feature_name = await features.get(session, feature.name)
 
         await common.update_object(
             session,
             models.ClipFeature,
             and_(
                 models.ClipFeature.clip_id == obj.id,
-                models.ClipFeature.feature_name_id == feature.feature_name.id,
+                models.ClipFeature.feature_name_id == feature_name.id,
             ),
             value=feature.value,
         )
@@ -170,7 +174,7 @@ class ClipAPI(
         obj = obj.model_copy(
             update=dict(
                 features=[
-                    f if f.feature_name != feature.feature_name else feature
+                    f if f.name != feature.name else feature
                     for f in obj.features
                 ]
             )
@@ -206,30 +210,28 @@ class ClipAPI(
             Raised if clip does not exist in the database.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 break
         else:
             raise ValueError(
                 f"Clip {obj} does not have a feature with feature "
-                f"name {feature.feature_name}."
+                f"name {feature.name}."
             )
+
+        feature_name = await features.get(session, feature.name)
 
         await common.delete_object(
             session,
             models.ClipFeature,
             and_(
                 models.ClipFeature.clip_id == obj.id,
-                models.ClipFeature.feature_name_id == feature.feature_name.id,
+                models.ClipFeature.feature_name_id == feature_name.id,
             ),
         )
 
         obj = obj.model_copy(
             update=dict(
-                features=[
-                    f
-                    for f in obj.features
-                    if f.feature_name != feature.feature_name
-                ]
+                features=[f for f in obj.features if f.name != feature.name]
             )
         )
         self._update_cache(obj)

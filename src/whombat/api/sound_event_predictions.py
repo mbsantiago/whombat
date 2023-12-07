@@ -175,7 +175,7 @@ class SoundEventPredictionAPI(
         self,
         session: AsyncSession,
         data: data.SoundEventPrediction,
-        clip_prediction_id: int,
+        clip_prediction: schemas.ClipPrediction,
     ) -> schemas.SoundEventPrediction:
         """Get the Whombat representation of a sound event prediction.
 
@@ -185,9 +185,8 @@ class SoundEventPredictionAPI(
             SQLAlchemy database session.
         data
             A sound event prediction in soundevent format.
-        clip_prediction_id
-            ID of the clip prediction that the sound event prediction belongs
-            to.
+        clip_prediction
+            The clip prediction that the sound event prediction belongs to.
 
         Returns
         -------
@@ -200,7 +199,7 @@ class SoundEventPredictionAPI(
             prediction = await self._create_from_soundevent(
                 session,
                 data,
-                clip_prediction_id,
+                clip_prediction,
             )
 
         existing_tags = {
@@ -259,7 +258,7 @@ class SoundEventPredictionAPI(
         self,
         session: AsyncSession,
         data: data.SoundEventPrediction,
-        clip_prediction_id: int,
+        clip_prediction: schemas.ClipPrediction,
     ) -> schemas.SoundEventPrediction:
         """Create a new Whombat sound event prediction from a sound event
         prediction in soundevent format.
@@ -270,9 +269,8 @@ class SoundEventPredictionAPI(
             SQLAlchemy database session.
         data
             A sound event prediction in soundevent format.
-        clip_prediction_id
-            ID of the clip prediction that the sound event prediction belongs
-            to.
+        clip_prediction
+            The clip prediction that the sound event prediction belongs to.
 
         Returns
         -------
@@ -282,7 +280,7 @@ class SoundEventPredictionAPI(
         db_clip_prediction = await common.get_object(
             session,
             models.ClipPrediction,
-            models.ClipPrediction.id == clip_prediction_id,
+            models.ClipPrediction.id == clip_prediction.id,
         )
         clip_prediction = schemas.ClipPrediction.model_validate(
             db_clip_prediction

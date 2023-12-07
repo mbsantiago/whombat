@@ -112,7 +112,7 @@ class FeatureNameAPI(
             name=name,
         )
         return schemas.Feature(
-            feature_name=feature_name,
+            name=feature_name.name,
             value=value,
         )
 
@@ -140,7 +140,7 @@ class FeatureNameAPI(
             name=data.name,
         )
         return schemas.Feature(
-            feature_name=feature_name,
+            name=feature_name.name,
             value=data.value,
         )
 
@@ -161,7 +161,7 @@ class FeatureNameAPI(
             The soundevent feature object.
         """
         return data.Feature(
-            name=feature.feature_name.name,
+            name=feature.name,
             value=feature.value,
         )
 
@@ -198,9 +198,7 @@ def find_feature(
     feature : schemas.Feature | None
         The feature, or the default value if the feature was not found.
     """
-    return next(
-        (f for f in features if f.feature_name.name == feature_name), default
-    )
+    return next((f for f in features if f.name == feature_name), default)
 
 
 def find_feature_value(

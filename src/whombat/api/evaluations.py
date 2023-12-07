@@ -88,22 +88,35 @@ class EvaluationAPI(
     ) -> schemas.Evaluation:
         """Add a metric to an evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 raise ValueError(
                     f"Evaluation {obj.id} already has a metric "
-                    f"with feature name {metric.feature_name}."
+                    f"with feature name {metric.name}."
                 )
+
+        feature_name = await features.get_or_create(
+            session,
+            metric.name,
+        )
 
         await create_object(
             session,
             models.EvaluationMetric,
             schemas.EvaluationMetricCreate(
                 evaluation_id=obj.id,
-                feature_name_id=metric.feature_name.id,
+                feature_name_id=feature_name.id,
                 value=metric.value,
             ),
         )
-        obj.metrics.append(metric)
+
+        obj = obj.model_copy(
+            update=dict(
+                metrics=[
+                    *obj.metrics,
+                    metric,
+                ]
+            )
+        )
         self._update_cache(obj)
         return obj
 
@@ -115,29 +128,29 @@ class EvaluationAPI(
     ) -> schemas.Evaluation:
         """Update a metric of an evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 break
         else:
             raise ValueError(
                 f"Clip evaluation {obj.id} does not have a metric "
-                f"with feature name {metric.feature_name}."
+                f"with feature name {metric.name}."
             )
+
+        feature_name = await features.get(session, metric.name)
 
         await update_object(
             session,
             models.ClipEvaluationMetric,
             and_(
                 models.ClipEvaluationMetric.clip_evaluation_id == obj.id,
-                models.ClipEvaluationMetric.feature_name_id
-                == metric.feature_name.id,
+                models.ClipEvaluationMetric.feature_name_id == feature_name.id,
             ),
             value=metric.value,
         )
         obj = obj.model_copy(
             update=dict(
                 metrics=[
-                    m if m.feature_name != metric.feature_name else metric
-                    for m in obj.metrics
+                    m if m.name != metric.name else metric for m in obj.metrics
                 ]
             )
         )
@@ -152,30 +165,27 @@ class EvaluationAPI(
     ) -> schemas.Evaluation:
         """Remove a metric from an evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 break
         else:
             raise ValueError(
                 f"Evaluation {obj.id} does not have a metric "
-                f"with feature name {metric.feature_name}."
+                f"with feature name {metric.name}."
             )
+
+        feature_name = await features.get(session, metric.name)
 
         await delete_object(
             session,
             models.EvaluationMetric,
             and_(
                 models.EvaluationMetric.evaluation_id == obj.id,
-                models.EvaluationMetric.feature_name_id
-                == metric.feature_name.id,
+                models.EvaluationMetric.feature_name_id == feature_name.id,
             ),
         )
         obj = obj.model_copy(
             update=dict(
-                metrics=[
-                    m
-                    for m in obj.metrics
-                    if m.feature_name != metric.feature_name
-                ]
+                metrics=[m for m in obj.metrics if m.name != metric.name]
             )
         )
         self._update_cache(obj)
@@ -226,7 +236,7 @@ class EvaluationAPI(
         data: data.Evaluation,
     ) -> schemas.Evaluation:
         """Update an evaluation from a sound event evaluation."""
-        _existing_metrics = {m.feature_name.name: m for m in obj.metrics}
+        _existing_metrics = {m.name: m for m in obj.metrics}
         for metric in data.metrics:
             if metric.name in _existing_metrics:
                 continue

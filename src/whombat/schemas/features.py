@@ -34,7 +34,7 @@ class FeatureNameUpdate(BaseSchema):
 class Feature(BaseSchema):
     """Schema for Feature objects returned to the user."""
 
-    feature_name: FeatureName
+    name: str
     """The name of the feature."""
 
     value: float

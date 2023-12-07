@@ -94,17 +94,19 @@ class SoundEventAPI(
             If the sound event does not exist in the database.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 raise ValueError(
-                    f"Sound event already has feature {feature.feature_name}."
+                    f"Sound event already has feature {feature.name}."
                 )
 
-        db_feat = await common.create_object(
+        feature_name = await features.get_or_create(session, name=feature.name)
+
+        await common.create_object(
             session,
             models.SoundEventFeature,
             data=schemas.SoundEventFeatureCreate(
                 sound_event_id=obj.id,
-                feature_name_id=feature.feature_name.id,
+                feature_name_id=feature_name.id,
                 value=feature.value,
             ),
         )
@@ -113,7 +115,7 @@ class SoundEventAPI(
             update=dict(
                 features=[
                     *obj.features,
-                    schemas.Feature.model_validate(db_feat),
+                    feature,
                 ]
             )
         )
@@ -148,20 +150,21 @@ class SoundEventAPI(
             If the sound event does not exist in the database.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 break
         else:
             raise ValueError(
-                f"Sound event does not have feature {feature.feature_name}."
+                f"Sound event does not have feature {feature.name}."
             )
 
-        db_feat = await common.update_object(
+        feature_name = await features.get(session, feature.name)
+
+        await common.update_object(
             session,
             models.SoundEventFeature,
             condition=and_(
                 models.SoundEventFeature.sound_event_id == obj.id,
-                models.SoundEventFeature.feature_name_id
-                == feature.feature_name.id,
+                models.SoundEventFeature.feature_name_id == feature_name.id,
             ),
             value=feature.value,
         )
@@ -169,8 +172,8 @@ class SoundEventAPI(
         obj = obj.model_copy(
             update=dict(
                 features=[
-                    *obj.features,
-                    schemas.Feature.model_validate(db_feat),
+                    f if f.name != feature.name else feature
+                    for f in obj.features
                 ]
             )
         )
@@ -205,30 +208,27 @@ class SoundEventAPI(
             If the sound event does not exist in the database.
         """
         for f in obj.features:
-            if f.feature_name == feature.feature_name:
+            if f.name == feature.name:
                 break
         else:
             raise ValueError(
-                f"Sound event does not have feature {feature.feature_name}."
+                f"Sound event does not have feature {feature.name}."
             )
+
+        feature_name = await features.get(session, feature.name)
 
         await common.delete_object(
             session,
             models.SoundEventFeature,
             and_(
                 models.SoundEventFeature.sound_event_id == obj.id,
-                models.SoundEventFeature.feature_name_id
-                == feature.feature_name.id,
+                models.SoundEventFeature.feature_name_id == feature_name.id,
             ),
         )
 
         obj = obj.model_copy(
             update=dict(
-                features=[
-                    f
-                    for f in obj.features
-                    if f.feature_name != feature.feature_name
-                ]
+                features=[f for f in obj.features if f.name != feature.name]
             )
         )
         self._update_cache(obj)

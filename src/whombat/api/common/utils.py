@@ -273,6 +273,7 @@ async def create_object(
     try:
         session.add(obj)
         await session.flush()
+        await session.refresh(obj)
     except IntegrityError as e:
         await session.rollback()
         raise exceptions.DuplicateObjectError(

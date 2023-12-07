@@ -92,18 +92,20 @@ class SoundEventEvaluationAPI(
     ) -> schemas.SoundEventEvaluation:
         """Add a metric to a sound event evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 raise ValueError(
                     f"Sound event evaluation {obj.id} already has a metric "
-                    f"with feature name {metric.feature_name}."
+                    f"with feature name {metric.name}."
                 )
+
+        feature_name = await features.get_or_create(session, name=metric.name)
 
         await create_object(
             session,
             models.SoundEventEvaluationMetric,
             schemas.SoundEventEvaluationMetricCreate(
                 sound_event_evaluation_id=obj.id,
-                feature_name_id=metric.feature_name.id,
+                feature_name_id=feature_name.id,
                 value=metric.value,
             ),
         )
@@ -119,13 +121,15 @@ class SoundEventEvaluationAPI(
     ) -> schemas.SoundEventEvaluation:
         """Update a metric of a sound event evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 break
         else:
             raise ValueError(
                 f"Sound event evaluation {obj.id} does not have a metric "
-                f"with feature name {metric.feature_name}."
+                f"with feature name {metric.name}."
             )
+
+        feature_name = await features.get(session, metric.name)
 
         await update_object(
             session,
@@ -134,15 +138,14 @@ class SoundEventEvaluationAPI(
                 models.SoundEventEvaluationMetric.sound_event_evaluation_id
                 == obj.id,
                 models.SoundEventEvaluationMetric.feature_name_id
-                == metric.feature_name.id,
+                == feature_name.id,
             ),
             value=metric.value,
         )
         obj = obj.model_copy(
             update=dict(
                 metrics=[
-                    m if m.feature_name != metric.feature_name else metric
-                    for m in obj.metrics
+                    m if m.name != metric.name else metric for m in obj.metrics
                 ]
             )
         )
@@ -157,13 +160,15 @@ class SoundEventEvaluationAPI(
     ) -> schemas.SoundEventEvaluation:
         """Remove a metric from a sound event evaluation."""
         for m in obj.metrics:
-            if m.feature_name == metric.feature_name:
+            if m.name == metric.name:
                 break
         else:
             raise ValueError(
                 f"Sound event evaluation {obj.id} does not have a metric "
-                f"with feature name {metric.feature_name}."
+                f"with feature name {metric.name}."
             )
+
+        feature_name = await features.get(session, metric.name)
 
         await delete_object(
             session,
@@ -172,17 +177,13 @@ class SoundEventEvaluationAPI(
                 models.SoundEventEvaluationMetric.sound_event_evaluation_id
                 == obj.id,
                 models.SoundEventEvaluationMetric.feature_name_id
-                == metric.feature_name.id,
+                == feature_name.id,
             ),
         )
 
         obj = obj.model_copy(
             update=dict(
-                metrics=[
-                    m
-                    for m in obj.metrics
-                    if m.feature_name != metric.feature_name
-                ]
+                metrics=[m for m in obj.metrics if m.name != metric.name]
             )
         )
         self._update_cache(obj)

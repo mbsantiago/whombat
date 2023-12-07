@@ -20,7 +20,7 @@ dataset_router = APIRouter()
 
 @dataset_router.get(
     "/detail/",
-    response_model=schemas.DatasetWithCounts,
+    response_model=schemas.Dataset,
 )
 async def get_dataset(
     session: Session,
@@ -33,7 +33,7 @@ async def get_dataset(
 
 @dataset_router.get(
     "/",
-    response_model=schemas.Page[schemas.DatasetWithCounts],
+    response_model=schemas.Page[schemas.Dataset],
 )
 async def get_datasets(
     session: Session,
@@ -56,7 +56,7 @@ async def get_datasets(
 
 @dataset_router.post(
     "/",
-    response_model=schemas.DatasetWithCounts,
+    response_model=schemas.Dataset,
 )
 async def create_dataset(
     session: Session,
@@ -70,7 +70,7 @@ async def create_dataset(
 
 @dataset_router.patch(
     "/detail/",
-    response_model=schemas.DatasetWithCounts,
+    response_model=schemas.Dataset,
 )
 async def update_dataset(
     session: Session,
@@ -85,7 +85,7 @@ async def update_dataset(
 
 @dataset_router.delete(
     "/detail/",
-    response_model=schemas.DatasetWithCounts,
+    response_model=schemas.Dataset,
 )
 async def delete_dataset(
     session: Session,
@@ -120,7 +120,7 @@ async def download_dataset(
 
 @dataset_router.post(
     "/import/",
-    response_model=schemas.DatasetWithCounts,
+    response_model=schemas.Dataset,
 )
 async def import_dataset(
     session: Session,

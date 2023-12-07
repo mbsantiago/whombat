@@ -9,6 +9,7 @@ from uuid import UUID
 
 from soundevent import data
 from soundevent.audio import compute_md5_checksum
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models, schemas
@@ -339,8 +340,8 @@ class RecordingAPI(
     async def add_note(
         self,
         session: AsyncSession,
-        recording_id: int,
-        note_id: int,
+        obj: schemas.Recording,
+        note: schemas.Note,
     ) -> schemas.Recording:
         """Add a note to a recording.
 
@@ -348,29 +349,38 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording.
-        note_id
-            The ID of the note.
+        obj
+            The recording to add the note to.
+        note
+            The note to add.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
         """
-        recording = await common.add_note_to_object(
+        for n in obj.notes:
+            if n.uuid == note.uuid:
+                raise ValueError(
+                    f"Recording already has a note with UUID {note.uuid}"
+                )
+
+        await common.create_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            note_id,
+            models.RecordingNote,
+            recording_id=obj.id,
+            note_id=note.id,
         )
-        return schemas.Recording.model_validate(recording)
+
+        obj = obj.model_copy(update=dict(notes=[*obj.notes, note]))
+        self._update_cache(obj)
+        return obj
 
     async def add_tag(
         self,
         session: AsyncSession,
-        recording_id: int,
-        tag_id: int,
+        obj: schemas.Recording,
+        tag: schemas.Tag,
     ) -> schemas.Recording:
         """Add a tag to a recording.
 
@@ -378,41 +388,37 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to add the tag to.
-        tag_id
-            The ID of the tag to add.
+        obj
+            The recording to add the tag to.
+        tag
+            The tag to add.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given hash exists.
-
-        Note
-        ----
-        The tag will only be added if it does not already exist.
-        Otherwise it will be ignored.
         """
-        recording = await common.add_tag_to_object(
+        if tag in obj.tags:
+            raise ValueError(f"Recording already has the tag {tag}")
+
+        await common.create_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            tag_id,
+            models.RecordingTag,
+            schemas.RecordingTagCreate(
+                recording_id=obj.id,
+                tag_id=tag.id,
+            ),
         )
 
-        return schemas.Recording.model_validate(recording)
+        obj = obj.model_copy(update=dict(tags=[*obj.tags, tag]))
+        self._update_cache(obj)
+        return obj
 
     async def add_feature(
         self,
         session: AsyncSession,
-        recording_id: int,
-        feature_name_id: int,
-        value: float,
+        obj: schemas.Recording,
+        feature: schemas.Feature,
     ) -> schemas.Recording:
         """Add a feature to a recording.
 
@@ -420,37 +426,46 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to add the feature to.
-        feature_name_id
-            The ID of the feature name.
-        value
-            The value of the feature.
+        obj
+            The recording to add the feature to.
+        feature
+            The feature to add.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given hash exists.
         """
-        recording = await common.add_feature_to_object(
+        for f in obj.features:
+            if f.name == feature.name:
+                raise ValueError(
+                    f"Recording already has a feature with name {feature.name}"
+                )
+
+        feature_name = await features.get_or_create(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            feature_name_id,
-            value,
+            feature.name,
         )
-        return schemas.Recording.model_validate(recording)
+
+        await common.create_object(
+            session,
+            models.RecordingFeature,
+            schemas.RecordingFeatureCreate(
+                recording_id=obj.id,
+                feature_name_id=feature_name.id,
+                value=feature.value,
+            ),
+        )
+
+        obj = obj.model_copy(update=dict(features=[*obj.features, feature]))
+        self._update_cache(obj)
+        return obj
 
     async def add_owner(
         self,
         session: AsyncSession,
-        recording_id: int,
-        owner_id: UUID,
+        obj: schemas.Recording,
+        owner: schemas.SimpleUser,
     ) -> schemas.Recording:
         """Add an owner to a recording.
 
@@ -458,52 +473,40 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to add the owner to.
-        owner_id
-            The ID of the owner to add.
+        obj
+            The recording to add the owner to.
+        owner
+            The owner to add.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given hash exists.
-
-        Note
-        ----
-        The owner will only be added if it does not already exist.
-        Otherwise it will be ignored.
         """
-        recording = await common.get_object(
+        for o in obj.owners:
+            if o.id == owner.id:
+                raise ValueError(
+                    f"Recording already has an owner with ID {owner.id}"
+                )
+
+        await common.create_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
+            models.RecordingOwner,
+            schemas.RecordingOwnerCreate(
+                recording_id=obj.id,
+                user_id=owner.id,
+            ),
         )
 
-        for owner in recording.owners:
-            if owner.id == owner_id:
-                return schemas.Recording.model_validate(recording)
-
-        user = await common.get_object(
-            session,
-            models.User,
-            models.User.id == owner_id,
-        )
-        recording.owners.append(user)
-        await session.flush()
-        await session.refresh(recording)
-        return schemas.Recording.model_validate(recording)
+        obj = obj.model_copy(update=dict(owners=[*obj.owners, owner]))
+        self._update_cache(obj)
+        return obj
 
     async def update_feature(
         self,
         session: AsyncSession,
-        recording_id: int,
-        feature_name_id: int,
-        value: float,
+        obj: schemas.Recording,
+        feature: schemas.Feature,
     ) -> schemas.Recording:
         """Update a feature of a recording.
 
@@ -511,40 +514,53 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to update the feature of.
-        feature_name_id
-            The ID of the feature name.
-        value
-            The new value of the feature.
+        obj
+            The recording to update the feature of.
+        feature
+            The feature to update.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
 
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given hash exists.
-
-        whombat.exceptions.NotFoundError
-            If the recording does not have the given feature.
         """
-        recording = await common.update_feature_on_object(
+        for f in obj.features:
+            if f.name == feature.name:
+                break
+        else:
+            raise ValueError(
+                f"Recording does not have a feature with name {feature.name}"
+            )
+
+        feature_name = await features.get(session, feature.name)
+
+        await common.update_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            feature_name_id,
-            value,
+            models.RecordingFeature,
+            and_(
+                models.RecordingFeature.recording_id == obj.id,
+                models.RecordingFeature.feature_name_id == feature_name.id,
+            ),
+            value=feature.value,
         )
-        return schemas.Recording.model_validate(recording)
+
+        obj = obj.model_copy(
+            update=dict(
+                features=[
+                    feature if feature.name == f.name else f
+                    for f in obj.features
+                ]
+            )
+        )
+        self._update_cache(obj)
+        return obj
 
     async def remove_note(
         self,
         session: AsyncSession,
-        recording_id: int,
-        note_id: int,
+        obj: schemas.Recording,
+        note: schemas.Note,
     ):
         """Remove a note from a recording.
 
@@ -552,39 +568,44 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to remove the note from.
-        note_id
-            The ID of the note to remove.
+        obj
+            The recording to remove the note from.
+        note
+            The note to remove.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given id exists.
-
-        Note
-        ----
-        The note will only be removed from the recording if it exists,
-        otherwise it will be ignored.
         """
-        recording = await common.remove_note_from_object(
+        for n in obj.notes:
+            if n.uuid == note.uuid:
+                break
+        else:
+            raise ValueError(
+                f"Recording does not have a note with UUID {note.uuid}"
+            )
+
+        await common.delete_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            note_id,
+            models.RecordingNote,
+            and_(
+                models.RecordingNote.recording_id == obj.id,
+                models.RecordingNote.note_id == note.id,
+            ),
         )
-        return schemas.Recording.model_validate(recording)
+
+        obj = obj.model_copy(
+            update=dict(notes=[n for n in obj.notes if n.uuid != note.uuid])
+        )
+        self._update_cache(obj)
+        return obj
 
     async def remove_tag(
         self,
         session: AsyncSession,
-        recording_id: int,
-        tag_id: int,
+        obj: schemas.Recording,
+        tag: schemas.Tag,
     ) -> schemas.Recording:
         """Remove a tag from a recording.
 
@@ -592,39 +613,39 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to remove the tag from.
-        tag_id
-            The ID of the tag to remove.
+        obj
+            The recording to remove the tag from.
+        tag
+            The tag to remove.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given id exists
-
-        Note
-        ----
-        The tag will only be removed from the recording if it exists,
-        otherwise it will be ignored.
         """
-        recording = await common.remove_tag_from_object(
+        if tag not in obj.tags:
+            raise ValueError(f"Recording does not have the tag {tag}")
+
+        await common.delete_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            tag_id,
+            models.RecordingTag,
+            and_(
+                models.RecordingTag.recording_id == obj.id,
+                models.RecordingTag.tag_id == tag.id,
+            ),
         )
-        return schemas.Recording.model_validate(recording)
+
+        obj = obj.model_copy(
+            update=dict(tags=[t for t in obj.tags if t != tag])
+        )
+        self._update_cache(obj)
+        return obj
 
     async def remove_owner(
         self,
         session: AsyncSession,
-        recording_id: int,
-        owner_id: UUID,
+        obj: schemas.Recording,
+        owner: schemas.SimpleUser,
     ) -> schemas.Recording:
         """Remove an owner from a recording.
 
@@ -632,47 +653,44 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to remove the owner from.
-        owner_id
-            The ID of the owner to remove.
+        obj
+            The recording to remove the owner from.
+        owner
+            The owner to remove.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given id exists.
-
-        Note
-        ----
-        The owner will only be removed from the recording if it exists,
-        otherwise it will be ignored.
         """
-        recording = await common.get_object(
-            session,
-            models.Recording,
-            models.Recording.id == recording_id,
-        )
-        for owner in recording.owners:
-            if owner.id == owner_id:
-                recording.owners.remove(owner)
+        for o in obj.owners:
+            if o.id == owner.id:
                 break
         else:
-            return schemas.Recording.model_validate(recording)
+            raise ValueError(
+                f"Recording does not have an owner with ID {owner.id}"
+            )
 
-        await session.flush()
-        await session.refresh(recording)
-        return schemas.Recording.model_validate(recording)
+        await common.delete_object(
+            session,
+            models.RecordingOwner,
+            and_(
+                models.RecordingOwner.recording_id == obj.id,
+                models.RecordingOwner.user_id == owner.id,
+            ),
+        )
+
+        obj = obj.model_copy(
+            update=dict(owners=[o for o in obj.owners if o != owner])
+        )
+        self._update_cache(obj)
+        return obj
 
     async def remove_feature(
         self,
         session: AsyncSession,
-        recording_id: int,
-        feature_name_id: int,
+        obj: schemas.Recording,
+        feature: schemas.Feature,
     ):
         """Remove a feature from a recording.
 
@@ -680,33 +698,42 @@ class RecordingAPI(
         ----------
         session
             The database session to use.
-        recording_id
-            The ID of the recording to remove the feature from.
-        feature_name_id
-            The ID of the feature to remove.
+        obj
+            The recording to remove the feature from.
+        feature
+            The feature to remove.
 
         Returns
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
-        Raises
-        ------
-        whombat.exceptions.NotFoundError
-            If no recording with the given id exists.
-
-        Note
-        ----
-        The feature will only be removed from the recording if it exists,
-        otherwise it will be ignored.
         """
-        recording = await common.remove_feature_from_object(
+        for f in obj.features:
+            if f.name == feature.name:
+                break
+        else:
+            raise ValueError(
+                f"Recording does not have a feature with name {feature.name}"
+            )
+
+        feature_name = await features.get(session, feature.name)
+
+        await common.delete_object(
             session,
-            models.Recording,
-            models.Recording.id == recording_id,
-            feature_name_id,
+            models.RecordingFeature,
+            and_(
+                models.RecordingFeature.recording_id == obj.id,
+                models.RecordingFeature.feature_name_id == feature_name.id,
+            ),
         )
-        return schemas.Recording.model_validate(recording)
+
+        obj = obj.model_copy(
+            update=dict(
+                features=[f for f in obj.features if f.name != feature.name]
+            )
+        )
+        self._update_cache(obj)
+        return obj
 
     async def from_soundevent(
         self,
@@ -751,19 +778,18 @@ class RecordingAPI(
 
         for se_tag in recording.tags:
             tag = await tags.from_soundevent(session, se_tag)
-            created = await self.add_tag(session, created.id, tag.id)
+            created = await self.add_tag(session, created, tag)
 
         for note in recording.notes:
             note = await notes.from_soundevent(session, note)
-            created = await self.add_note(session, created.id, note.id)
+            created = await self.add_note(session, created, note)
 
         for feature in recording.features:
             feature = await features.from_soundevent(session, feature)
             created = await self.add_feature(
                 session,
-                created.id,
-                feature.feature_name.id,
-                feature.value,
+                created,
+                feature,
             )
 
         return created

@@ -1,6 +1,6 @@
 """Function to initialize the database."""
 
-from whombat import api, exceptions, schemas
+from whombat import api, exceptions
 from whombat.database import utils
 from whombat.settings import Settings
 
@@ -19,10 +19,8 @@ async def init_database(settings: Settings) -> None:
         except exceptions.NotFoundError:
             await api.users.create(
                 session,
-                data=schemas.UserCreate(
-                    username=settings.admin_username,
-                    email=settings.admin_email,
-                    password=settings.admin_password,
-                    is_superuser=True,
-                ),
+                username=settings.admin_username,
+                email=settings.admin_email,
+                password=settings.admin_password,
+                is_superuser=True,
             )
