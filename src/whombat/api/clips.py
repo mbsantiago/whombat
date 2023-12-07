@@ -61,7 +61,7 @@ class ClipAPI(
         clip : schemas.Clip
             The created clip.
         """
-        return await self.create_from_data(
+        clip = await self.create_from_data(
             session,
             schemas.ClipCreate(
                 recording_id=recording.id,
@@ -70,6 +70,49 @@ class ClipAPI(
             ),
             **kwargs,
         )
+
+        features = await self._create_clip_features(session, [clip])
+        clip = clip.model_copy(update=dict(features=features[0]))
+        self._update_cache(clip)
+        return clip
+
+    async def create_many_without_duplicates(
+        self,
+        session: AsyncSession,
+        data: Sequence[schemas.ClipCreate],
+        return_all: bool = False,
+    ) -> Sequence[schemas.Clip]:
+        """Create clips without duplicates.
+
+        Parameters
+        ----------
+        session
+            Database session.
+        data
+            List of clips to create.
+        return_all
+            Whether to return all clips or only the created ones.
+            Since some clips may already exist, this may not be the same.
+
+        Returns
+        -------
+        list[schemas.Clip]
+            Created clips.
+        """
+        clips = await super().create_many_without_duplicates(
+            session,
+            data,
+            return_all=return_all,
+        )
+
+        if not clips:
+            return clips
+
+        clip_features = await self._create_clip_features(session, clips)
+        return [
+            clip.model_copy(update=dict(features=features))
+            for clip, features in zip(clips, clip_features)
+        ]
 
     async def add_feature(
         self,
@@ -100,7 +143,7 @@ class ClipAPI(
         """
         for f in obj.features:
             if f.name == feature.name:
-                raise ValueError(
+                raise exceptions.DuplicateObjectError(
                     f"Clip {obj.id} already has a feature with feature name "
                     f"{feature.name}."
                 )
@@ -240,8 +283,8 @@ class ClipAPI(
     async def _create_clip_features(
         self,
         session: AsyncSession,
-        clips: Sequence[models.Clip],
-    ) -> None:
+        clips: Sequence[schemas.Clip],
+    ) -> Sequence[list[schemas.Feature]]:
         """Create features for clips.
 
         Parameters
@@ -250,15 +293,29 @@ class ClipAPI(
             Database session.
         clips
             List of clips to create features for.
+
+        Returns
+        -------
+        list[list[schemas.Feature]]
+            List of features created for each clip.
         """
+
         clip_features = [
-            (clip.id, name, value)
+            [
+                schemas.Feature(name=name, value=value)
+                for name, value in compute_clip_features(clip).items()
+            ]
             for clip in clips
-            for name, value in compute_clip_features(clip).items()
+        ]
+
+        create_values = [
+            (clip.id, feature.name, feature.value)
+            for clip, features in zip(clips, clip_features)
+            for feature in features
         ]
 
         # Get feature names
-        names = {name for _, name, _ in clip_features}
+        names = {name for _, name, _ in create_values}
 
         feature_names: dict[str, schemas.FeatureName] = {
             name: await features.get_or_create(session, name=name)
@@ -271,10 +328,11 @@ class ClipAPI(
                 feature_name_id=feature_names[name].id,
                 value=value,
             )
-            for clip_id, name, value in clip_features
+            for clip_id, name, value in create_values
         ]
 
         await common.create_objects(session, models.ClipFeature, data)
+        return clip_features
 
     async def from_soundevent(
         self,
@@ -333,18 +391,16 @@ class ClipAPI(
             end_time=obj.end_time,
         )
 
-    @classmethod
     def _key_fn(
-        cls, obj: models.Clip | schemas.ClipCreate
+        self, obj: models.Clip | schemas.ClipCreate
     ) -> tuple[int, float, float]:
         return obj.recording_id, obj.start_time, obj.end_time
 
-    @classmethod
-    def _get_key_columns(cls):
+    def _get_key_column(self):
         return tuple_(
-            cls._model.recording_id,
-            cls._model.start_time,
-            cls._model.end_time,
+            self._model.recording_id,
+            self._model.start_time,
+            self._model.end_time,
         )
 
 

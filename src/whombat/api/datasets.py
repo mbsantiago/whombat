@@ -1,6 +1,7 @@
 """API functions for interacting with datasets."""
 import datetime
 import uuid
+import warnings
 from pathlib import Path
 from typing import Sequence
 
@@ -8,13 +9,14 @@ from soundevent import data
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.common import BaseAPI
 from whombat.api.recordings import recordings
 from whombat.core import files
 from whombat.dependencies import get_settings
 from whombat.filters.base import Filter
+from whombat.filters.recordings import DatasetFilter
 
 __all__ = [
     "DatasetAPI",
@@ -111,6 +113,36 @@ class DatasetAPI(
         )
         return schemas.Dataset.model_validate(dataset)
 
+    async def get_by_name(
+        self,
+        session: AsyncSession,
+        name: str,
+    ) -> schemas.Dataset:
+        """Get a dataset by name.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        name
+            The name of the dataset to get.
+
+        Returns
+        -------
+        dataset : schemas.Dataset
+
+        Raises
+        ------
+        whombat.exceptions.NotFoundError
+            If no dataset with the given name exists.
+        """
+        dataset = await common.get_object(
+            session,
+            models.Dataset,
+            models.Dataset.name == name,
+        )
+        return schemas.Dataset.model_validate(dataset)
+
     async def add_file(
         self,
         session: AsyncSession,
@@ -180,17 +212,23 @@ class DatasetAPI(
                 "The file is not part of the dataset audio directory."
             )
 
-        recording = await recordings.create(
-            session,
-            path=path,
-            date=date,
-            time=time,
-            latitude=latitude,
-            longitude=longitude,
-            time_expansion=time_expansion,
-            rights=rights,
-            audio_dir=audio_dir,
-        )
+        try:
+            recording = await recordings.get_by_path(
+                session,
+                path.relative_to(audio_dir),
+            )
+        except exceptions.NotFoundError:
+            recording = await recordings.create(
+                session,
+                path=path,
+                date=date,
+                time=time,
+                latitude=latitude,
+                longitude=longitude,
+                time_expansion=time_expansion,
+                rights=rights,
+                audio_dir=audio_dir,
+            )
 
         return await self.add_recording(
             session,
@@ -268,10 +306,11 @@ class DatasetAPI(
         data = []
         for recording in recordings:
             if not recording.path.is_relative_to(obj.audio_dir):
-                raise ValueError(
+                warnings.warn(
                     "The recording is not part of the dataset audio "
                     f"directory. \ndataset = {obj}\nrecording = {recording}"
                 )
+                continue
 
             data.append(
                 schemas.DatasetRecordingCreate(
@@ -311,7 +350,7 @@ class DatasetAPI(
         offset: int = 0,
         filters: Sequence[Filter] | None = None,
         sort_by: str | None = "-created_on",
-    ) -> tuple[list[schemas.DatasetRecording], int]:
+    ) -> tuple[list[schemas.Recording], int]:
         """Get all recordings of a dataset.
 
         Parameters
@@ -338,18 +377,17 @@ class DatasetAPI(
         """
         database_recordings, count = await common.get_objects(
             session,
-            models.DatasetRecording,
+            models.Recording,
             limit=limit,
             offset=offset,
             filters=[
-                models.DatasetRecording.dataset_id == obj.id,
+                DatasetFilter(eq=obj.id),
                 *(filters or []),
             ],
             sort_by=sort_by,
         )
         return [
-            schemas.DatasetRecording.model_validate(x)
-            for x in database_recordings
+            schemas.Recording.model_validate(x) for x in database_recordings
         ], count
 
     async def get_state(
@@ -515,7 +553,7 @@ class DatasetAPI(
         recs, _ = await self.get_recordings(session, obj, limit=-1)
 
         soundevent_recordings = [
-            recordings.to_soundevent(r.recording, audio_dir=audio_dir)
+            recordings.to_soundevent(r, audio_dir=audio_dir)
             for r in recs
         ]
 
@@ -581,12 +619,17 @@ class DatasetAPI(
                 f"\n\tAudio directory: {dataset_dir}"
             )
 
+        # Validate the creation data.
+        data = schemas.DatasetCreate(
+            name=name,
+            description=description,
+            audio_dir=dataset_dir,
+        )
+
         obj = await self.create_from_data(
             session,
-            schemas.DatasetCreate(
-                name=name,
-                description=description,
-                audio_dir=dataset_dir,
+            data.model_copy(
+                update=dict(audio_dir=data.audio_dir.relative_to(audio_dir))
             ),
             **kwargs,
         )

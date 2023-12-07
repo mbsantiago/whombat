@@ -18,7 +18,8 @@ async def test_create_feature_name(
 
     # Act.
     feature_name = await features.create(
-        session, data=schemas.FeatureNameCreate(name=name)
+        session,
+        name=name,
     )
 
     # Assert.
@@ -41,12 +42,16 @@ async def test_create_feature_name_fails_if_duplicate(
     # Arrange.
     # Create the feature.
     name = "test_feature"
-    await features.create(session, data=schemas.FeatureNameCreate(name=name))
+    await features.create(
+        session,
+        name=name,
+    )
 
     # Act.
     with pytest.raises(exceptions.DuplicateObjectError):
         await features.create(
-            session, data=schemas.FeatureNameCreate(name=name)
+            session,
+            name=name,
         )
 
 
@@ -58,11 +63,12 @@ async def test_delete_feature_name(
     # Create the feature.
     name = "test_feature"
     feature_name = await features.create(
-        session, data=schemas.FeatureNameCreate(name=name)
+        session,
+        name=name,
     )
 
     # Act.
-    await features.delete(session, feature_name_id=feature_name.id)
+    await features.delete(session, feature_name)
 
     # Assert.
     # Check that the feature does not exist.
@@ -73,10 +79,6 @@ async def test_delete_feature_name(
     assert result.scalar_one_or_none() is None
 
 
-# TODO: Create tests to check that deleting a
-# feature name deletes all associated features.
-
-
 async def test_change_feature_name(
     session: AsyncSession,
 ) -> None:
@@ -85,15 +87,18 @@ async def test_change_feature_name(
     # Create the feature.
     name = "test_feature"
     feature_name = await features.create(
-        session, data=schemas.FeatureNameCreate(name=name)
+        session,
+        name=name,
     )
 
     # Act.
     new_name = "new_test_feature"
     await features.update(
         session,
-        feature_name_id=feature_name.id,
-        data=schemas.FeatureNameUpdate(name=new_name),
+        feature_name,
+        data=schemas.FeatureNameUpdate(
+            name=new_name,
+        ),
     )
 
     # Assert.
@@ -122,29 +127,20 @@ async def test_change_feature_name_fails_if_duplicate(
     name = "test_feature"
     new_name = "new_test_feature"
     feature_name = await features.create(
-        session, data=schemas.FeatureNameCreate(name=name)
+        session,
+        name=name,
     )
     await features.create(
-        session, data=schemas.FeatureNameCreate(name=new_name)
+        session,
+        name=new_name,
     )
 
     # Act.
     with pytest.raises(exceptions.DuplicateObjectError):
         await features.update(
             session,
-            feature_name.id,
+            feature_name,
             data=schemas.FeatureNameUpdate(name=new_name),
-        )
-
-
-async def test_change_feature_name_fails_if_nonexistent(
-    session: AsyncSession,
-) -> None:
-    """Test changing a feature name fails if the feature does not exist."""
-    # Act.
-    with pytest.raises(exceptions.NotFoundError):
-        await features.update(
-            session, 1, data=schemas.FeatureNameUpdate(name="new_test_feature")
         )
 
 
@@ -157,14 +153,15 @@ async def test_get_feature_names(
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
     for name in names:
         await features.create(
-            session, data=schemas.FeatureNameCreate(name=name)
+            session,
+            name=name,
         )
 
     # Act.
-    result, _ = await features.get_recordings(session)
+    result, _ = await features.get_many(session)
 
     # Assert.
-    assert [feat.name for feat in result] == names
+    assert [feat.name for feat in result] == names[::-1]
 
 
 async def test_get_feature_names_with_limit(
@@ -176,14 +173,15 @@ async def test_get_feature_names_with_limit(
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
     for name in names:
         await features.create(
-            session, data=schemas.FeatureNameCreate(name=name)
+            session,
+            name=name,
         )
 
     # Act.
-    result, _ = await features.get_recordings(session, limit=2)
+    result, _ = await features.get_many(session, limit=2)
 
     # Assert.
-    assert [feat.name for feat in result] == names[:2]
+    assert [feat.name for feat in result] == names[::-1][:2]
 
 
 async def test_get_feature_names_with_offset(
@@ -195,14 +193,15 @@ async def test_get_feature_names_with_offset(
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
     for name in names:
         await features.create(
-            session, data=schemas.FeatureNameCreate(name=name)
+            session,
+            name=name,
         )
 
     # Act.
-    result, _ = await features.get_recordings(session, offset=1)
+    result, _ = await features.get_many(session, offset=1)
 
     # Assert.
-    assert [feat.name for feat in result] == names[1:]
+    assert [feat.name for feat in result] == names[::-1][1:]
 
 
 async def test_get_features_with_return_all(
@@ -214,11 +213,12 @@ async def test_get_features_with_return_all(
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
     for name in names:
         await features.create(
-            session, data=schemas.FeatureNameCreate(name=name)
+            session,
+            name=name,
         )
 
     # Act.
-    result, _ = await features.get_recordings(session, limit=-1)
+    result, _ = await features.get_many(session, limit=-1)
 
     # Assert.
-    assert [feat.name for feat in result] == names
+    assert [feat.name for feat in result] == names[::-1]

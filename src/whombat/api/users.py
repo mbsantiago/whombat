@@ -257,6 +257,12 @@ class UserAPI(
             name=obj.name,
         )
 
+    def _get_pk_condition(self, pk: UUID):
+        return models.User.id == pk
+
+    def _get_pk_from_obj(self, obj: schemas.SimpleUser):
+        return obj.id
+
 
 def _generate_random_password(length=32):
     return secrets.token_urlsafe(length)

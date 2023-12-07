@@ -282,7 +282,7 @@ class ClipPredictionAPI(
             await sound_event_predictions.from_soundevent(
                 session,
                 sound_event,
-                clip_prediction_id=clip_prediction.id,
+                clip_prediction=clip_prediction,
             )
 
         for predicted_tag in data.tags:

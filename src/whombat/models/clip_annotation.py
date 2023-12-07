@@ -173,15 +173,11 @@ class ClipAnnotationTag(Base):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("clip_annotation.id"),
-        primary_key=True,
+        ForeignKey("clip_annotation.id")
     )
-    tag_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("tag.id"),
-        primary_key=True,
-    )
+    tag_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("tag.id"))
     created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
-        ForeignKey("user.id"),
+        ForeignKey("user.id")
     )
 
     # Relations
@@ -229,14 +225,11 @@ class ClipAnnotationNote(Base):
         ),
     )
 
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("clip_annotation.id"),
-        primary_key=True,
+        ForeignKey("clip_annotation.id")
     )
-    note_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("note.id"),
-        primary_key=True,
-    )
+    note_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("note.id"))
 
     # Relations
     note: orm.Mapped[Note] = orm.relationship(

@@ -210,7 +210,9 @@ class SoundEventEvaluationAPI(
         if data.source:
             sound_event_prediction = (
                 await sound_event_predictions.from_soundevent(
-                    session, data.source, clip_evaluation.clip_prediction.id
+                    session,
+                    data.source,
+                    clip_evaluation.clip_prediction,
                 )
             )
 
@@ -254,9 +256,8 @@ class SoundEventEvaluationAPI(
             metrics=[features.to_soundevent(m) for m in obj.metrics],
         )
 
-    @classmethod
     def _key_fn(
-        cls,
+        self,
         obj: models.SoundEventEvaluation | schemas.SoundEventEvaluationCreate,
     ) -> tuple[int, int | None, int | None]:
         return (
@@ -265,8 +266,7 @@ class SoundEventEvaluationAPI(
             obj.target_id,
         )
 
-    @classmethod
-    def _get_key_column(cls) -> ColumnElement:
+    def _get_key_column(self) -> ColumnElement:
         return tuple_(
             models.SoundEventEvaluation.clip_evaluation_id,
             models.SoundEventEvaluation.source_id,

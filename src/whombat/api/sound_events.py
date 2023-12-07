@@ -336,5 +336,8 @@ class SoundEventAPI(
             features=[features.to_soundevent(f) for f in sound_event.features],
         )
 
+    def _get_pk_column(self):
+        return self._model.uuid
+
 
 sound_events = SoundEventAPI()

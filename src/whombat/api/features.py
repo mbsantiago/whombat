@@ -165,12 +165,10 @@ class FeatureNameAPI(
             value=feature.value,
         )
 
-    @classmethod
-    def _get_pk_from_object(cls, obj: models.FeatureName) -> str:
+    def _get_pk_from_obj(self, obj: schemas.FeatureName) -> str:
         return obj.name
 
-    @classmethod
-    def _get_pk_condition(cls, pk: str) -> Any:
+    def _get_pk_condition(self, pk: str) -> Any:
         return models.FeatureName.name == pk
 
 

@@ -300,9 +300,8 @@ class ClipEvaluationAPI(
             sort_by=sort_by,
         )
 
-    @classmethod
     def _key_fn(
-        cls, obj: models.ClipEvaluation | schemas.ClipEvaluationCreate
+        self, obj: models.ClipEvaluation | schemas.ClipEvaluationCreate
     ) -> tuple[int, int, int]:
         return (
             obj.evaluation_id,
@@ -310,8 +309,7 @@ class ClipEvaluationAPI(
             obj.clip_prediction_id,
         )
 
-    @classmethod
-    def _get_key_column(cls) -> ColumnElement:
+    def _get_key_column(self) -> ColumnElement:
         return tuple_(
             models.ClipEvaluation.evaluation_id,
             models.ClipEvaluation.clip_annotation_id,

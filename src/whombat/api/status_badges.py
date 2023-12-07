@@ -138,36 +138,32 @@ class StatusBadgeAPI(
             state=obj.state,
         )
 
-    @classmethod
-    def _get_pk_condition(cls, pk: PrimaryKey) -> _ColumnExpressionArgument:
+    def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
         task_id, user_id, state = pk
         return and_(
-            cls._model.annotation_task_id == task_id,
-            cls._model.user_id == user_id,
-            cls._model.state == state,
+            self._model.annotation_task_id == task_id,
+            self._model.user_id == user_id,
+            self._model.state == state,
         )
 
-    @classmethod
     def _get_pk_from_obj(
-        cls,
+        self,
         obj: schemas.AnnotationStatusBadge,
     ) -> PrimaryKey:
         return obj.annotation_task_id, obj.user_id, obj.state
 
-    @classmethod
     def _key_fn(
-        cls,
+        self,
         obj: models.AnnotationStatusBadge
         | schemas.AnnotationStatusBadgeCreate,
     ) -> PrimaryKey:
         return obj.annotation_task_id, obj.user_id, obj.state
 
-    @classmethod
-    def _get_key_column(cls):
+    def _get_key_column(self):
         return tuple_(
-            cls._model.annotation_task_id,
-            cls._model.user_id,
-            cls._model.state,
+            self._model.annotation_task_id,
+            self._model.user_id,
+            self._model.state,
         )
 
 

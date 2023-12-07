@@ -131,23 +131,19 @@ class TagAPI(
             value=tag.value,
         )
 
-    @classmethod
-    def _get_pk_from_obj(cls, obj: schemas.Tag) -> tuple[str, str]:
+    def _get_pk_from_obj(self, obj: schemas.Tag) -> tuple[str, str]:
         return obj.key, obj.value
 
-    @classmethod
-    def _get_pk_condition(cls, pk: tuple[str, str]):
-        return and_(cls._model.key == pk[0], cls._model.value == pk[1])
+    def _get_pk_condition(self, pk: tuple[str, str]):
+        return and_(self._model.key == pk[0], self._model.value == pk[1])
 
-    @classmethod
-    def _key_fn(cls, obj: models.Tag | schemas.TagCreate) -> tuple[str, str]:
+    def _key_fn(self, obj: models.Tag | schemas.TagCreate) -> tuple[str, str]:
         return obj.key, obj.value
 
-    @classmethod
-    def _get_key_column(cls):
+    def _get_key_column(self):
         return tuple_(
-            cls._model.key,
-            cls._model.value,
+            self._model.key,
+            self._model.value,
         )
 
 

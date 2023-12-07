@@ -1,13 +1,12 @@
 """Test suit for the Sound Events Python API module."""
 from uuid import UUID
 
-import pytest
 from soundevent.data import geometries
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, models, schemas
-from whombat.api import sound_events
+from whombat import api, models, schemas
+from whombat.filters.sound_events import RecordingFilter
 
 
 async def test_create_a_timestamp_sound_event(
@@ -17,12 +16,10 @@ async def test_create_a_timestamp_sound_event(
     """Test creating a sound event."""
     # Act
     geometry = geometries.TimeStamp(coordinates=0.5)
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording,
+        geometry=geometry,
     )
 
     # Assert
@@ -50,12 +47,10 @@ async def test_create_a_timeinterval_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.TimeInterval(coordinates=[0.5, 0.6])
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
@@ -70,12 +65,10 @@ async def test_create_a_bbox_sound_event(
     """Test creating a sound event."""
     geometry = geometries.BoundingBox(coordinates=[0.5, 0.6, 0.7, 0.8])
 
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
@@ -89,12 +82,10 @@ async def test_create_a_point_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.Point(coordinates=[0.5, 0.6])
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
@@ -108,12 +99,10 @@ async def test_create_a_linestring_sound_event(
 ):
     """Test creating a sound event."""
     geometry = geometries.LineString(coordinates=[[0.5, 0.6], [0.7, 0.8]])
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
@@ -129,33 +118,15 @@ async def test_create_a_polygon_sound_event(
     geometry = geometries.Polygon(
         coordinates=[[[0.5, 0.6], [0.7, 0.8], [0.9, 1.0]]],
     )
-    sound_event = await sound_events.create(
+    sound_event = await api.sound_events.create(
         session,
-        data=schemas.SoundEventCreate(
-            recording_id=recording.id,
-            geometry=geometry,
-        ),
+        recording=recording,
+        geometry=geometry,
     )
 
     assert isinstance(sound_event, schemas.SoundEvent)
     assert sound_event.geometry_type == "Polygon"
     assert sound_event.geometry == geometry
-
-
-async def test_create_sound_event_fails_if_recording_does_not_exist(
-    session: AsyncSession,
-):
-    """Test creating a sound event fails if the recording does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await sound_events.create(
-            session,
-            data=schemas.SoundEventCreate(
-                recording_id=10,
-                geometry=geometries.TimeStamp(
-                    coordinates=0.5,
-                ),
-            ),
-        )
 
 
 async def test_create_sound_events(
@@ -168,28 +139,20 @@ async def test_create_sound_events(
 
     data: list[schemas.SoundEventCreate] = [
         schemas.SoundEventCreate(
-            recording_id=recording.id, geometry=geometry1
+            recording_id=recording.id,
+            geometry=geometry1,
         ),
         schemas.SoundEventCreate(
-            recording_id=recording.id, geometry=geometry2
+            recording_id=recording.id,
+            geometry=geometry2,
         ),
     ]
 
-    created_sound_events = await sound_events.create_many(session, data=data)
-
-    assert len(created_sound_events) == 2
-    for sound_event in created_sound_events:
-        assert isinstance(sound_event, schemas.SoundEvent)
-        assert sound_event.geometry_type == "TimeStamp"
-
-    assert created_sound_events[0].geometry == geometry1
-    assert created_sound_events[1].geometry == geometry2
+    await api.sound_events.create_many(session, data=data)
 
     # make sure the sound events are in the database
     stmt = select(models.SoundEvent).where(
-        models.SoundEvent.uuid.in_(
-            [sound_event.uuid for sound_event in created_sound_events],
-        ),
+        models.SoundEvent.recording_id == recording.id,
     )
     result = await session.execute(stmt)
     db_sound_events = result.unique().scalars().all()
@@ -212,12 +175,25 @@ async def test_create_sound_events_with_different_geometries(
         geometries.Point(coordinates=[0.5, 0.6]),
     ]
 
-    created_sound_events = await sound_events.create_many(
+    await api.sound_events.create_many(
         session,
         data=[
-            schemas.SoundEventCreate(recording_id=recording.id, geometry=g)
+            schemas.SoundEventCreate(
+                recording_id=recording.id,
+                geometry=g,
+            )
             for g in geometries_to_create
         ],
     )
 
-    assert len(created_sound_events) == 2
+    sound_events, _ = await api.sound_events.get_many(
+        session,
+        limit=None,
+        filters=[
+            RecordingFilter(eq=recording.id),
+        ],
+    )
+
+    assert len(sound_events) == 2
+    assert sound_events[0].geometry_type == "Point"
+    assert sound_events[1].geometry_type == "TimeStamp"

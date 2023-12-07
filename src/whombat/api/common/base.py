@@ -165,7 +165,11 @@ class BaseAPI(
         data
             The data to use for creation of the objects.
         """
-        await create_objects(session, self._model, data)
+        return await create_objects(
+            session,
+            self._model,
+            data,
+        )
 
     async def create_many_without_duplicates(
         self,
@@ -225,7 +229,8 @@ class BaseAPI(
             self._model,
             self._get_pk_condition(pk),
         )
-        del self._cache[pk]
+        if pk in self._cache:
+            del self._cache[pk]
         return self._schema.model_validate(deleted)
 
     async def update(
@@ -272,18 +277,16 @@ class BaseAPI(
         pk = self._get_pk_from_obj(obj)
         self._cache[pk] = obj
 
-    @classmethod
-    def _get_pk_condition(cls, pk: PrimaryKey) -> _ColumnExpressionArgument:
-        column = getattr(cls._model, "uuid")
+    def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
+        column = getattr(self._model, "uuid")
         if not column:
             raise NotImplementedError(
-                f"The model {cls._model.__name__} does not have a column named"
+                f"The model {self._model.__name__} does not have a column named"
                 " uuid"
             )
         return column == pk
 
-    @classmethod
-    def _get_pk_from_obj(cls, obj: WhombatSchema) -> PrimaryKey:
+    def _get_pk_from_obj(self, obj: WhombatSchema) -> PrimaryKey:
         pk = getattr(obj, "uuid")
         if not pk:
             raise NotImplementedError(
@@ -292,8 +295,7 @@ class BaseAPI(
             )
         return pk
 
-    @classmethod
-    def _key_fn(cls, obj: WhombatModel | CreateSchema) -> Any:
+    def _key_fn(self, obj: WhombatModel | CreateSchema) -> Any:
         """Get a key from an object.
 
         This key is used to determine whether an object already exists in the
@@ -314,8 +316,7 @@ class BaseAPI(
         """
         raise NotImplementedError
 
-    @classmethod
-    def _get_key_column(cls) -> ColumnElement | InstrumentedAttribute:
+    def _get_key_column(self) -> ColumnElement | InstrumentedAttribute:
         """Get a key column.
 
         Returns

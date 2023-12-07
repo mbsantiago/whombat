@@ -120,7 +120,7 @@ class RecordingCreate(RecordingMetadata):
         return v
 
 
-class RecordingCreateFull(RecordingCreate, RecordingMediaInfo):
+class RecordingCreateFull(RecordingMetadata, RecordingMediaInfo):
     """Data for Recording creation.
 
     This contains all data required to create a recording.

@@ -24,7 +24,7 @@ __all__ = [
 class ClipAnnotationNoteCreate(BaseSchema):
     """Schema for data required to create an ClipAnnotationNote."""
 
-    annotation_id: int
+    clip_annotation_id: int
     """ID of the annotation this note is attached to."""
 
     note_id: int
@@ -44,7 +44,7 @@ class ClipAnnotationNote(ClipAnnotationNoteCreate):
 class ClipAnnotationTagCreate(BaseSchema):
     """Schema for data required to create an ClipAnnotationTag."""
 
-    annotation_id: int
+    clip_annotation_id: int
     """ID of the annotation this tag is attached to."""
 
     tag_id: int
@@ -100,7 +100,7 @@ class ClipAnnotation(ClipAnnotationCreate):
 
     sound_events: list[SoundEventAnnotation] = Field(
         default_factory=list,
-        description="Sound events attached to this annotation.",
+        description="Annotated sound events attached to this clip.",
     )
 
 

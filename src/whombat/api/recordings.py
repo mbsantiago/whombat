@@ -12,7 +12,7 @@ from soundevent.audio import compute_md5_checksum
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.common import BaseAPI
 from whombat.api.features import features
@@ -99,7 +99,7 @@ class RecordingAPI(
         recording = await common.get_object(
             session,
             models.Recording,
-            models.Recording.path == str(recording_path.absolute()),
+            models.Recording.path == recording_path,
         )
         return schemas.Recording.model_validate(recording)
 
@@ -177,7 +177,9 @@ class RecordingAPI(
             **kwargs,
         )
 
-        return schemas.Recording.model_validate(recording)
+        obj = schemas.Recording.model_validate(recording)
+        self._update_cache(obj)
+        return obj
 
     async def create_many(
         self,
@@ -291,6 +293,8 @@ class RecordingAPI(
                     f"\n\tRoot audio directory: {audio_dir}"
                 )
 
+            data.path = data.path.relative_to(audio_dir)
+
         if data.time_expansion is not None:
             if data.time_expansion != obj.time_expansion:
                 await self.adjust_time_expansion(
@@ -361,7 +365,7 @@ class RecordingAPI(
         """
         for n in obj.notes:
             if n.uuid == note.uuid:
-                raise ValueError(
+                raise exceptions.DuplicateObjectError(
                     f"Recording already has a note with UUID {note.uuid}"
                 )
 
@@ -399,7 +403,9 @@ class RecordingAPI(
             The updated recording.
         """
         if tag in obj.tags:
-            raise ValueError(f"Recording already has the tag {tag}")
+            raise exceptions.DuplicateObjectError(
+                f"Recording already has the tag {tag}"
+            )
 
         await common.create_object(
             session,
@@ -438,7 +444,7 @@ class RecordingAPI(
         """
         for f in obj.features:
             if f.name == feature.name:
-                raise ValueError(
+                raise exceptions.DuplicateObjectError(
                     f"Recording already has a feature with name {feature.name}"
                 )
 
@@ -485,7 +491,7 @@ class RecordingAPI(
         """
         for o in obj.owners:
             if o.id == owner.id:
-                raise ValueError(
+                raise exceptions.DuplicateObjectError(
                     f"Recording already has an owner with ID {owner.id}"
                 )
 
@@ -523,13 +529,12 @@ class RecordingAPI(
         -------
         recording : schemas.recordings.Recording
             The updated recording.
-
         """
         for f in obj.features:
             if f.name == feature.name:
                 break
         else:
-            raise ValueError(
+            raise exceptions.NotFoundError(
                 f"Recording does not have a feature with name {feature.name}"
             )
 
@@ -582,7 +587,7 @@ class RecordingAPI(
             if n.uuid == note.uuid:
                 break
         else:
-            raise ValueError(
+            raise exceptions.NotFoundError(
                 f"Recording does not have a note with UUID {note.uuid}"
             )
 
@@ -624,7 +629,9 @@ class RecordingAPI(
             The updated recording.
         """
         if tag not in obj.tags:
-            raise ValueError(f"Recording does not have the tag {tag}")
+            raise exceptions.NotFoundError(
+                f"Recording does not have the tag {tag}"
+            )
 
         await common.delete_object(
             session,
@@ -667,7 +674,7 @@ class RecordingAPI(
             if o.id == owner.id:
                 break
         else:
-            raise ValueError(
+            raise exceptions.NotFoundError(
                 f"Recording does not have an owner with ID {owner.id}"
             )
 
@@ -712,7 +719,7 @@ class RecordingAPI(
             if f.name == feature.name:
                 break
         else:
-            raise ValueError(
+            raise exceptions.NotFoundError(
                 f"Recording does not have a feature with name {feature.name}"
             )
 
@@ -929,12 +936,16 @@ def _assemble_recording_data(
     samplerate = int(info.media_info.samplerate_hz * data.time_expansion)
     channels = info.media_info.channels
     return schemas.RecordingCreateFull(
-        **dict(data),
-        duration=duration,
-        samplerate=samplerate,
-        channels=channels,
-        hash=info.hash,
-        path=data.path.relative_to(audio_dir),
+        **{
+            **dict(data),
+            **dict(
+                duration=duration,
+                samplerate=samplerate,
+                channels=channels,
+                hash=info.hash,
+                path=data.path.relative_to(audio_dir),
+            ),
+        },
     )
 
 

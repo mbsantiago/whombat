@@ -10,7 +10,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy.sql._typing import _ColumnExpressionArgument
+from sqlalchemy.sql._typing import (
+    _ColumnExpressionArgument,
+    _ColumnsClauseArgument,
+)
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import exceptions, models
@@ -288,7 +291,7 @@ async def create_objects(
     session: AsyncSession,
     model: type[A],
     data: Sequence[B] | Sequence[dict],
-) -> None:
+) -> Sequence[Any] | None:
     """Create multiple objects.
 
     This function should be used when creating multiple objects at once, as it
@@ -300,14 +303,14 @@ async def create_objects(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    model : type[A]
+    model
         The model to create.
-
-    data : Sequence[B]
+    data
         The data to use for creation of the objects.
+    returning
+        The columns to return, by default None.
     """
     stmt = insert(model).values([get_values(obj) for obj in data])
     await session.execute(stmt)

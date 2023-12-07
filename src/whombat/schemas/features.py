@@ -42,4 +42,4 @@ class Feature(BaseSchema):
 
     def __hash__(self):
         """Hash the Feature object."""
-        return hash((self.feature_name.name, self.value))
+        return hash((self.name, self.value))

@@ -22,6 +22,7 @@ from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 
 from whombat.models.base import Base
 from whombat.models.feature import FeatureName
@@ -145,6 +146,11 @@ class ClipFeature(Base):
         primary_key=True,
     )
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    name: AssociationProxy[str] = association_proxy(
+        "feature_name",
+        "name",
+        init=False,
+    )
 
     # Relations
     feature_name: orm.Mapped[FeatureName] = orm.relationship(

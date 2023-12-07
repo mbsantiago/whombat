@@ -9,16 +9,14 @@ from whombat import exceptions, models, schemas
 from whombat.api import notes
 
 
-async def test_create_note(session: AsyncSession, user: schemas.User):
+async def test_create_note(session: AsyncSession, user: schemas.SimpleUser):
     """Test creating a note."""
     # Act
     note = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test",
+        created_by=user,
+        is_issue=False,
     )
 
     # Assert
@@ -33,81 +31,31 @@ async def test_create_note(session: AsyncSession, user: schemas.User):
     )
     assert results.scalar_one_or_none() is not None
 
-    db_note = await notes.get_by_id(session, note_id=note.id)
+    db_note = await notes.get(session, note.uuid)
     assert db_note == note
-
-
-async def test_create_note_fails_if_username_does_not_exist(
-    session: AsyncSession,
-    user: schemas.User,
-):
-    """Test that creating a note fails if the username does not exist."""
-    # Arrange
-    user = schemas.User(
-        id=uuid4(),
-        email="test@whombat.com",  # type: ignore
-        username="test",
-    )
-
-    # Act / Assert
-    with pytest.raises(exceptions.NotFoundError):
-        await notes.create(
-            session,
-            data=schemas.NotePostCreate(
-                message="test",
-                created_by_id=user.id,
-                is_issue=False,
-            ),
-        )
-
-
-async def test_get_note_by_id(session: AsyncSession, user: schemas.User):
-    """Test getting a note by uuid."""
-    # Arrange
-    note = await notes.create(
-        session,
-        data=schemas.NotePostCreate(
-            message="test",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
-    )
-
-    # Act
-    db_note = await notes.get_by_id(session, note_id=note.id)
-
-    # Assert
-    assert isinstance(db_note, schemas.Note)
-    assert db_note.uuid == note.uuid
-    assert db_note.message == note.message
-    assert db_note.is_issue == note.is_issue
-    assert db_note.created_by.id == user.id
-    assert db_note.created_at == note.created_at
 
 
 async def test_get_note_by_uuid_fails_if_note_does_not_exist(
     session: AsyncSession,
 ):
-    """Test that getting a note by id fails if the note does not exist."""
+    """Test that getting a note fails if the note does not exist."""
     # Act / Assert
     with pytest.raises(exceptions.NotFoundError):
-        await notes.get_by_id(session, note_id=4)
+        await notes.get(session, pk=uuid4())
 
 
-async def test_delete_note(session: AsyncSession, user: schemas.User):
+async def test_delete_note(session: AsyncSession, user: schemas.SimpleUser):
     """Test deleting a note."""
     # Arrange
     note = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test",
+        created_by=user,
+        is_issue=False,
     )
 
     # Act
-    await notes.delete(session, note_id=note.id)
+    await notes.delete(session, note)
 
     # Assert
     results = await session.execute(
@@ -116,48 +64,21 @@ async def test_delete_note(session: AsyncSession, user: schemas.User):
     assert results.scalar_one_or_none() is None
 
 
-async def test_delete_note_fails_if_note_does_not_exist(
-    session: AsyncSession,
-    user: schemas.User,
-):
-    """Test that deleting a note does not fail if the note does not exist."""
-    note = schemas.Note(
-        id=1,
-        message="test",
-        created_by_id=user.id,
-        created_by=schemas.SimpleUser.model_validate(user),
-    )
-
-    # Arrange
-    with pytest.raises(exceptions.NotFoundError):
-        await notes.get_by_id(session, note_id=note.id)
-
-    with pytest.raises(exceptions.NotFoundError):
-        await notes.delete(
-            session,
-            note_id=note.id,
-        )
-
-
-async def test_get_notes(session: AsyncSession, user: schemas.User):
+async def test_get_notes(session: AsyncSession, user: schemas.SimpleUser):
     """Test getting all notes."""
     # Arrange
     note1 = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test1",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test1",
+        created_by=user,
+        is_issue=False,
     )
 
     note2 = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test2",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test2",
+        created_by=user,
+        is_issue=False,
     )
 
     # Act
@@ -170,25 +91,23 @@ async def test_get_notes(session: AsyncSession, user: schemas.User):
     assert db_notes[1].uuid == note1.uuid
 
 
-async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
+async def test_get_notes_with_limit(
+    session: AsyncSession, user: schemas.SimpleUser
+):
     """Test getting all notes with a limit."""
     # Arrange
     await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test1",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test1",
+        created_by=user,
+        is_issue=False,
     )
 
     note = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test2",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test2",
+        created_by=user,
+        is_issue=False,
     )
 
     # Act
@@ -202,26 +121,22 @@ async def test_get_notes_with_limit(session: AsyncSession, user: schemas.User):
 
 async def test_get_notes_with_offset(
     session: AsyncSession,
-    user: schemas.User,
+    user: schemas.SimpleUser,
 ):
     """Test getting all notes with an offset."""
     # Arrange
     note = await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test1",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test1",
+        created_by=user,
+        is_issue=False,
     )
 
     await notes.create(
         session,
-        data=schemas.NotePostCreate(
-            message="test2",
-            created_by_id=user.id,
-            is_issue=False,
-        ),
+        message="test2",
+        created_by=user,
+        is_issue=False,
     )
 
     # Act

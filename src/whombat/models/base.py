@@ -42,6 +42,8 @@ class GeometryType(types.TypeDecorator):
         return value.model_dump_json()
 
     def process_result_value(self, value: str, _) -> data.Geometry:  # type: ignore
+        if value is None:
+            return value
         return data.geometry_validate(value, mode="json")
 
 

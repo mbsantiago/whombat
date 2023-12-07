@@ -14,10 +14,8 @@ async def test_created_annotation_is_stored_in_the_database(
     """Test that an annotation project is stored in the database."""
     annotation_project = await api.annotation_projects.create(
         session,
-        schemas.AnnotationProjectCreate(
-            name="Test Annotation Project",
-            description="A test annotation project.",
-        ),
+        name="Test Annotation Project",
+        description="A test annotation project.",
     )
     assert annotation_project.id is not None
 
@@ -38,10 +36,8 @@ async def test_created_annotations_return_type_is_correct(
     """Test that the return type of create_annotation_project is correct."""
     annotation_project = await api.annotation_projects.create(
         session,
-        schemas.AnnotationProjectCreate(
-            name="Test Annotation Project",
-            description="A test annotation project.",
-        ),
+        name="Test Annotation Project",
+        description="A test annotation project.",
     )
     assert isinstance(annotation_project, schemas.AnnotationProject)
 
@@ -54,10 +50,8 @@ async def test_cannot_create_an_annotation_project_with_a_duplicate_name(
     with pytest.raises(exceptions.DuplicateObjectError):
         await api.annotation_projects.create(
             session,
-            schemas.AnnotationProjectCreate(
-                name=annotation_project.name,
-                description="foo",
-            ),
+            name=annotation_project.name,
+            description="foo",
         )
 
 
@@ -69,11 +63,9 @@ async def test_cannot_create_an_annotation_project_with_duplicate_uuid(
     with pytest.raises(exceptions.DuplicateObjectError):
         await api.annotation_projects.create(
             session,
-            schemas.AnnotationProjectCreate(
-                name="foo",
-                description="bar",
-                uuid=annotation_project.uuid,
-            ),
+            name="foo",
+            description="bar",
+            uuid=annotation_project.uuid,
         )
 
 
@@ -84,29 +76,15 @@ async def test_can_create_a_project_with_a_given_uuid(
     uuid = uuid4()
     data = await api.annotation_projects.create(
         session,
-        schemas.AnnotationProjectCreate(
-            name="Test Annotation Project",
-            description="A test annotation project.",
-            uuid=uuid,
-        ),
+        name="Test Annotation Project",
+        description="A test annotation project.",
+        uuid=uuid,
     )
-    annotation_project = await api.annotation_projects.get_by_id(
+    annotation_project = await api.annotation_projects.get(
         session,
-        data.id,
+        data.uuid,
     )
     assert annotation_project.uuid == uuid
-
-
-async def test_can_get_a_project_by_id(
-    session: AsyncSession,
-    annotation_project: schemas.AnnotationProject,
-):
-    """Test that an annotation project can be retrieved by its id."""
-    retrieved_annotation_project = await api.annotation_projects.get_by_id(
-        session,
-        annotation_project.id,
-    )
-    assert retrieved_annotation_project == annotation_project
 
 
 async def test_can_get_a_project_by_uuid(
@@ -114,56 +92,11 @@ async def test_can_get_a_project_by_uuid(
     annotation_project: schemas.AnnotationProject,
 ):
     """Test that an annotation project can be retrieved by its uuid."""
-    retrieved_annotation_project = await api.annotation_projects.get_by_uuid(
+    retrieved_annotation_project = await api.annotation_projects.get(
         session,
         annotation_project.uuid,
     )
     assert retrieved_annotation_project == annotation_project
-
-
-async def test_can_get_a_project_by_name(
-    session: AsyncSession,
-    annotation_project: schemas.AnnotationProject,
-):
-    """Test that an annotation project can be retrieved by its name."""
-    retrieved_annotation_project = await api.annotation_projects.get_by_name(
-        session,
-        annotation_project.name,
-    )
-    assert retrieved_annotation_project == annotation_project
-
-
-async def test_get_by_id_fails_if_nonexistent(
-    session: AsyncSession,
-):
-    """Test that get_by_id fails if the project does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.get_by_id(
-            session,
-            123,
-        )
-
-
-async def test_get_by_uuid_fails_if_nonexistent(
-    session: AsyncSession,
-):
-    """Test that get_by_uuid fails if the project does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.get_by_uuid(
-            session,
-            uuid4(),
-        )
-
-
-async def test_get_by_name_fails_if_nonexistent(
-    session: AsyncSession,
-):
-    """Test that get_by_name fails if the project does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.get_by_name(
-            session,
-            "foo",
-        )
 
 
 async def test_can_update_project_name(
@@ -174,7 +107,7 @@ async def test_can_update_project_name(
     new_name = "New Name"
     updated_annotation_project = await api.annotation_projects.update(
         session,
-        annotation_project.id,
+        annotation_project,
         schemas.AnnotationProjectUpdate(
             name=new_name,
         ),
@@ -190,7 +123,7 @@ async def test_can_update_project_description(
     new_description = "New Description"
     updated_annotation_project = await api.annotation_projects.update(
         session,
-        annotation_project.id,
+        annotation_project,
         schemas.AnnotationProjectUpdate(
             description=new_description,
         ),
@@ -206,7 +139,7 @@ async def test_can_update_project_annotation_instructions(
     new_annotation_instructions = "New Annotation Instructions"
     updated_annotation_project = await api.annotation_projects.update(
         session,
-        annotation_project.id,
+        annotation_project,
         schemas.AnnotationProjectUpdate(
             annotation_instructions=new_annotation_instructions,
         ),
@@ -227,7 +160,7 @@ async def test_update_modifies_database_values(
     new_annotation_instructions = "New Annotation Instructions"
     await api.annotation_projects.update(
         session,
-        annotation_project.id,
+        annotation_project,
         schemas.AnnotationProjectUpdate(
             name=new_name,
             description=new_description,
@@ -249,18 +182,6 @@ async def test_update_modifies_database_values(
     )
 
 
-async def test_update_fails_if_nonexistent(
-    session: AsyncSession,
-):
-    """Test that update fails if the project does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.update(
-            session,
-            123,
-            schemas.AnnotationProjectUpdate(name="foo"),
-        )
-
-
 async def test_delete_removes_project_from_database(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
@@ -268,7 +189,7 @@ async def test_delete_removes_project_from_database(
     """Test that an annotation project can be deleted."""
     await api.annotation_projects.delete(
         session,
-        annotation_project.id,
+        annotation_project,
     )
     stmt = select(models.AnnotationProject).where(
         models.AnnotationProject.id == annotation_project.id
@@ -276,17 +197,6 @@ async def test_delete_removes_project_from_database(
     result = await session.execute(stmt)
     db_annotation_project = result.scalars().first()
     assert db_annotation_project is None
-
-
-async def test_delete_fails_if_nonexistent(
-    session: AsyncSession,
-):
-    """Test that delete fails if the project does not exist."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.delete(
-            session,
-            123,
-        )
 
 
 async def test_add_tag_to_project(
@@ -297,8 +207,8 @@ async def test_add_tag_to_project(
     """Test that a tag can be added to an annotation project."""
     updated_annotation_project = await api.annotation_projects.add_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     assert tag in updated_annotation_project.tags
 
@@ -311,8 +221,8 @@ async def test_add_tag_to_project_modifies_database(
     """Test that a tag can be added to an annotation project."""
     await api.annotation_projects.add_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     stmt = select(models.AnnotationProjectTag).where(
         models.AnnotationProjectTag.annotation_project_id
@@ -329,32 +239,6 @@ async def test_add_tag_to_project_modifies_database(
     assert db_annotation_project_tag.tag_id == tag.id
 
 
-async def test_add_tag_to_project_fails_if_project_does_not_exist(
-    session: AsyncSession,
-    tag: schemas.Tag,
-):
-    """Test that a tag cannot be added to a nonexistent annotation project."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.add_tag(
-            session,
-            123,
-            tag.id,
-        )
-
-
-async def test_add_tag_to_project_fails_if_tag_does_not_exist(
-    session: AsyncSession,
-    annotation_project: schemas.AnnotationProject,
-):
-    """Test that a nonexistent tag cannot be added to an annotation project."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.add_tag(
-            session,
-            annotation_project.id,
-            123,
-        )
-
-
 async def test_add_tag_to_project_does_not_add_duplicate(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
@@ -363,15 +247,13 @@ async def test_add_tag_to_project_does_not_add_duplicate(
     """Test that a tag cannot be added to an annotation project twice."""
     await api.annotation_projects.add_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
-    annotation_project = await api.annotation_projects.add_tag(
-        session,
-        annotation_project.id,
-        tag.id,
-    )
-    assert len(annotation_project.tags) == 1
+    with pytest.raises(exceptions.DuplicateObjectError):
+        await api.annotation_projects.add_tag(
+            session, annotation_project, tag
+        )
 
 
 async def test_remove_tag_from_project(
@@ -380,15 +262,15 @@ async def test_remove_tag_from_project(
     tag: schemas.Tag,
 ):
     """Test that a tag can be removed from an annotation project."""
-    await api.annotation_projects.add_tag(
+    annotation_project = await api.annotation_projects.add_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     updated_annotation_project = await api.annotation_projects.remove_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     assert tag not in updated_annotation_project.tags
 
@@ -399,15 +281,15 @@ async def test_remove_tag_from_project_modifies_database(
     tag: schemas.Tag,
 ):
     """Test that a tag can be removed from an annotation project."""
-    await api.annotation_projects.add_tag(
+    annotation_project = await api.annotation_projects.add_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     await api.annotation_projects.remove_tag(
         session,
-        annotation_project.id,
-        tag.id,
+        annotation_project,
+        tag,
     )
     stmt = select(models.AnnotationProjectTag).where(
         models.AnnotationProjectTag.annotation_project_id
@@ -419,39 +301,11 @@ async def test_remove_tag_from_project_modifies_database(
     assert db_annotation_project_tag is None
 
 
-async def test_remove_tag_from_project_fails_if_project_does_not_exist(
-    session: AsyncSession,
-    tag: schemas.Tag,
-):
-    """Test that a tag cannot be removed from a nonexistent annotation project."""
-    with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.remove_tag(
-            session,
-            123,
-            tag.id,
-        )
-
-
-async def test_remove_tag_from_project_ignore_if_tag_does_not_exist(
-    session: AsyncSession,
-    annotation_project: schemas.AnnotationProject,
-):
-    """Test that a nonexistent tag can be removed from an annotation project."""
-    await api.annotation_projects.remove_tag(
-        session,
-        annotation_project.id,
-        123,
-    )
-
-
-async def test_remove_tag_from_project_ignore_if_tag_not_in_project(
+async def test_remove_tag_from_project_fails_if_tag_not_present(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
     tag: schemas.Tag,
 ):
     """Test that a tag can be removed from an annotation project."""
-    await api.annotation_projects.remove_tag(
-        session,
-        annotation_project.id,
-        tag.id,
-    )
+    with pytest.raises(exceptions.NotFoundError):
+        await api.annotation_projects.remove_tag(session, annotation_project, tag)

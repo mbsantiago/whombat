@@ -4,20 +4,17 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import exceptions, models, schemas
-from whombat.api import tags
+from whombat import api, exceptions, models, schemas
 
 
 async def test_create_tag(
     session: AsyncSession,
 ) -> None:
     """Test creating a tag."""
-    created_tag = await tags.create(
+    created_tag = await api.tags.create(
         session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+        key="test_key",
+        value="test_value",
     )
     assert isinstance(created_tag, schemas.Tag)
     assert created_tag.key == "test_key"
@@ -40,21 +37,17 @@ async def test_create_tag_duplicate_should_fail(
     session: AsyncSession,
 ) -> None:
     """Test creating a tag with a duplicate key."""
-    await tags.create(
+    await api.tags.create(
         session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+        key="test_key",
+        value="test_value",
     )
 
     with pytest.raises(exceptions.DuplicateObjectError):
-        await tags.create(
+        await api.tags.create(
             session=session,
-            data=schemas.TagCreate(
-                key="test_key",
-                value="test_value",
-            ),
+            key="test_key",
+            value="test_value",
         )
 
 
@@ -63,12 +56,10 @@ async def test_create_tag_with_long_key_should_fail(
 ) -> None:
     """Test creating a tag with a long key."""
     with pytest.raises(ValueError):
-        await tags.create(
+        await api.tags.create(
             session=session,
-            data=schemas.TagCreate(
-                key="a" * 256,
-                value="test_value",
-            ),
+            key="a" * 256,
+            value="test_value",
         )
 
 
@@ -77,12 +68,10 @@ async def test_create_tag_with_long_value_should_fail(
 ) -> None:
     """Test creating a tag with a long value."""
     with pytest.raises(ValueError):
-        await tags.create(
+        await api.tags.create(
             session=session,
-            data=schemas.TagCreate(
-                key="test_key",
-                value="a" * 256,
-            ),
+            key="test_key",
+            value="a" * 256,
         )
 
 
@@ -91,12 +80,10 @@ async def test_delete_tag(
 ) -> None:
     """Test deleting a tag."""
     # Arrange
-    created_tag = await tags.create(
+    created_tag = await api.tags.create(
         session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+        key="test_key",
+        value="test_value",
     )
     # Check if it is in the database initially
     stmt = select(models.Tag).where(
@@ -109,7 +96,7 @@ async def test_delete_tag(
     assert tag.key == "test_key"
 
     # Act
-    await tags.delete(session=session, tag_id=created_tag.id)
+    await api.tags.delete(session, created_tag)
 
     # Assert
     # Check it is not in the database anymore
@@ -138,25 +125,19 @@ async def test_delete_tag_nonexistent_should_fail(
     assert db_tag is None
 
     with pytest.raises(exceptions.NotFoundError):
-        await tags.delete(session, tag_id=tag.id)
+        await api.tags.delete(session, tag)
 
 
 async def test_get_tag_by_key_and_value(
     session: AsyncSession,
 ) -> None:
     """Test getting a tag by key and value."""
-    await tags.create(
+    await api.tags.create(
         session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
-    )
-    retrieved_tag = await tags.get_by_tag_and_value(
-        session,
         key="test_key",
         value="test_value",
     )
+    retrieved_tag = await api.tags.get(session, ("test_key", "test_value"))
     assert isinstance(retrieved_tag, schemas.Tag)
     assert retrieved_tag.key == "test_key"
     assert retrieved_tag.value == "test_value"
@@ -167,27 +148,21 @@ async def test_get_tag_by_key_and_value_nonexistent_should_fail(
 ) -> None:
     """Test getting a tag by key and value that does not exist."""
     with pytest.raises(exceptions.NotFoundError):
-        await tags.get_by_tag_and_value(
-            session,
-            key="test_key",
-            value="test_value",
-        )
+        await api.tags.get(session, ("ldsjfalkdsf", "sadkfjasd"))
 
 
 async def test_update_tag_key(
     session: AsyncSession,
 ) -> None:
     """Test updating a tag."""
-    created_tag = await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+    created_tag = await api.tags.create(
+        session,
+        key="test_key",
+        value="test_value",
     )
-    updated_tag = await tags.update(
-        session=session,
-        tag_id=created_tag.id,
+    updated_tag = await api.tags.update(
+        session,
+        created_tag,
         data=schemas.TagUpdate(
             key="new_key",
         ),
@@ -201,16 +176,14 @@ async def test_update_tag_value(
     session: AsyncSession,
 ) -> None:
     """Test updating a tag."""
-    created_tag = await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+    created_tag = await api.tags.create(
+        session,
+        key="test_key",
+        value="test_value",
     )
-    updated_tag = await tags.update(
-        session=session,
-        tag_id=created_tag.id,
+    updated_tag = await api.tags.update(
+        session,
+        created_tag,
         data=schemas.TagUpdate(value="new_value"),
     )
     assert isinstance(updated_tag, schemas.Tag)
@@ -224,9 +197,9 @@ async def test_update_tag_nonexistent_should_fail(
     """Test updating a tag that does not exist."""
     tag = schemas.Tag(id=3, key="test_key", value="test_value")
     with pytest.raises(exceptions.NotFoundError):
-        await tags.update(
-            session=session,
-            tag_id=tag.id,
+        await api.tags.update(
+            session,
+            tag,
             data=schemas.TagUpdate(key="new_key"),
         )
 
@@ -235,12 +208,10 @@ async def test_get_or_create_tag_nonexistent_should_create(
     session: AsyncSession,
 ) -> None:
     """Test getting or creating a tag that does not exist."""
-    created_tag = await tags.get_or_create(
+    created_tag = await api.tags.get_or_create(
         session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+        key="test_key",
+        value="test_value",
     )
     assert isinstance(created_tag, schemas.Tag)
     assert created_tag.key == "test_key"
@@ -251,78 +222,63 @@ async def test_get_or_create_tag_existing_should_get(
     session: AsyncSession,
 ) -> None:
     """Test getting or creating a tag that already exists."""
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
-    )
-    retrieved_tag = await tags.get_or_create(
+    created_tag = await api.tags.create(
         session,
-        data=schemas.TagCreate(
-            key="test_key",
-            value="test_value",
-        ),
+        key="test_key",
+        value="test_value",
     )
-    assert isinstance(retrieved_tag, schemas.Tag)
-    assert retrieved_tag.key == "test_key"
-    assert retrieved_tag.value == "test_value"
+    retrieved_tag = await api.tags.get_or_create(
+        session,
+        key="test_key",
+        value="test_value",
+    )
+
+    assert created_tag == retrieved_tag
 
 
 async def test_get_tags(
     session: AsyncSession,
 ):
     """Test getting tags."""
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key1",
-            value="test_value1",
-        ),
+    await api.tags.create(
+        session,
+        key="test_key1",
+        value="test_value1",
     )
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key2",
-            value="test_value2",
-        ),
+    await api.tags.create(
+        session,
+        key="test_key2",
+        value="test_value2",
     )
-    retrieved_tags, _ = await tags.get_many(session)
+    retrieved_tags, _ = await api.tags.get_many(session)
     assert isinstance(retrieved_tags, list)
     assert len(retrieved_tags) == 2
-    assert retrieved_tags[0].key == "test_key1"
-    assert retrieved_tags[0].value == "test_value1"
-    assert retrieved_tags[1].key == "test_key2"
-    assert retrieved_tags[1].value == "test_value2"
+    assert retrieved_tags[0].key == "test_key2"
+    assert retrieved_tags[0].value == "test_value2"
+    assert retrieved_tags[1].key == "test_key1"
+    assert retrieved_tags[1].value == "test_value1"
 
 
 async def test_get_tags_with_offset(
     session: AsyncSession,
 ):
     """Test getting tags with an offset."""
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key1",
-            value="test_value1",
-        ),
+    await api.tags.create(
+        session,
+        key="test_key1",
+        value="test_value1",
     )
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key2",
-            value="test_value2",
-        ),
+    await api.tags.create(
+        session,
+        key="test_key2",
+        value="test_value2",
     )
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(
-            key="test_key3",
-            value="test_value3",
-        ),
+    await api.tags.create(
+        session,
+        key="test_key3",
+        value="test_value3",
     )
-    retrieved_tags, _ = await tags.get_many(
+    retrieved_tags, _ = await api.tags.get_many(
         session=session,
         offset=1,
     )
@@ -330,34 +286,37 @@ async def test_get_tags_with_offset(
     assert len(retrieved_tags) == 2
     assert retrieved_tags[0].key == "test_key2"
     assert retrieved_tags[0].value == "test_value2"
-    assert retrieved_tags[1].key == "test_key3"
-    assert retrieved_tags[1].value == "test_value3"
+    assert retrieved_tags[1].key == "test_key1"
+    assert retrieved_tags[1].value == "test_value1"
 
 
 async def test_get_tags_with_limit(
     session: AsyncSession,
 ):
     """Test getting tags with a limit."""
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(key="test_key1", value="test_value1"),
+    await api.tags.create(
+        session,
+        key="test_key1",
+        value="test_value1",
     )
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(key="test_key2", value="test_value2"),
+    await api.tags.create(
+        session,
+        key="test_key2",
+        value="test_value2",
     )
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(key="test_key3", value="test_value3"),
+    await api.tags.create(
+        session,
+        key="test_key3",
+        value="test_value3",
     )
-    retrieved_tags, _ = await tags.get_many(
+    retrieved_tags, _ = await api.tags.get_many(
         session=session,
         limit=2,
     )
     assert isinstance(retrieved_tags, list)
     assert len(retrieved_tags) == 2
-    assert retrieved_tags[0].key == "test_key1"
-    assert retrieved_tags[0].value == "test_value1"
+    assert retrieved_tags[0].key == "test_key3"
+    assert retrieved_tags[0].value == "test_value3"
     assert retrieved_tags[1].key == "test_key2"
     assert retrieved_tags[1].value == "test_value2"
 
@@ -371,7 +330,7 @@ async def test_get_or_create_tags_with_nonexisting_tags(session: AsyncSession):
     ]
 
     # Act
-    created_tags = await tags.create_many(
+    created_tags = await api.tags.create_many_without_duplicates(
         session=session,
         data=tags_to_create,
     )
@@ -394,22 +353,25 @@ async def test_get_or_create_tags_with_existing_tags(session: AsyncSession):
         schemas.TagCreate(key="test_key1", value="test_value1"),
         schemas.TagCreate(key="test_key2", value="test_value2"),
     ]
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(key="test_key1", value="test_value1"),
+    await api.tags.create(
+        session,
+        key="test_key1",
+        value="test_value1",
     )
-    await tags.create(
+    await api.tags.create(
         session=session,
-        data=schemas.TagCreate(key="test_key2", value="test_value2"),
+        key="test_key2",
+        value="test_value2",
     )
 
     # Act
-    created_tags = await tags.create_many(
+    created_tags = await api.tags.create_many_without_duplicates(
         session=session,
         data=tags_to_create,
     )
 
     # Assert
+    assert created_tags is not None
     assert len(created_tags) == 0
 
 
@@ -422,18 +384,20 @@ async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
         schemas.TagCreate(key="test_key1", value="test_value1"),
         schemas.TagCreate(key="test_key2", value="test_value2"),
     ]
-    await tags.create(
-        session=session,
-        data=schemas.TagCreate(key="test_key1", value="test_value1"),
+    await api.tags.create(
+        session,
+        key="test_key1",
+        value="test_value1",
     )
 
     # Act
-    created_tags = await tags.create_many(
+    created_tags = await api.tags.create_many_without_duplicates(
         session=session,
         data=tags_to_create,
     )
 
     # Assert
+    assert created_tags is not None
     assert len(created_tags) == 1
     assert created_tags[0].key == "test_key2"
     assert created_tags[0].value == "test_value2"

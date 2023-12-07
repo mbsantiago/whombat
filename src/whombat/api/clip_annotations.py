@@ -105,7 +105,7 @@ class ClipAnnotationAPI(
             session=session,
             model=models.ClipAnnotationTag,
             data=schemas.ClipAnnotationTagCreate(
-                annotation_id=obj.id,
+                clip_annotation_id=obj.id,
                 tag_id=tag.id,
                 created_by_id=user_id,
             ),
@@ -159,7 +159,7 @@ class ClipAnnotationAPI(
             session=session,
             model=models.ClipAnnotationNote,
             data=schemas.ClipAnnotationNoteCreate(
-                annotation_id=obj.id,
+                clip_annotation_id=obj.id,
                 note_id=note.id,
             ),
         )
@@ -258,20 +258,20 @@ class ClipAnnotationAPI(
         """
         for n in obj.notes:
             if n.id == note.id:
-                await common.delete_object(
-                    session=session,
-                    model=models.ClipAnnotationNote,
-                    condition=and_(
-                        models.ClipAnnotationNote.clip_annotation_id == obj.id,
-                        models.ClipAnnotationNote.note_id == note.id,
-                    ),
-                )
                 break
         else:
             raise exceptions.NotFoundError(
                 f"Note {note.id} does not exist in clip annotation {obj.id}."
             )
 
+        await common.delete_object(
+            session=session,
+            model=models.ClipAnnotationNote,
+            condition=and_(
+                models.ClipAnnotationNote.clip_annotation_id == obj.id,
+                models.ClipAnnotationNote.note_id == note.id,
+            ),
+        )
         obj = obj.model_copy(
             update=dict(
                 notes=[n for n in obj.notes if n.id != note.id],
