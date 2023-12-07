@@ -5,7 +5,6 @@ from sqlalchemy import Select, and_
 from whombat import models
 from whombat.filters import base
 
-
 __all__ = [
     "ClipEvaluationFilter",
     "ScoreFilter",
@@ -186,4 +185,3 @@ SoundEventEvaluationFilter = base.combine(
     target_tag=TargetTagFilter,
     source_tag=SourceTagFilter,
 )
-

@@ -59,7 +59,7 @@ class UserManager(
     BaseUserManager class from the fastapi-users package.
     """
 
-    user_db: UserDatabase
+    user_db: UserDatabase  # type: ignore
 
     def __init__(
         self,

@@ -3,20 +3,18 @@ from pathlib import Path
 
 import numpy as np
 from soundevent import audio
-from sqlalchemy.ext.asyncio import AsyncSession
 
 import whombat.api.audio as audio_api
 from whombat import schemas
 from whombat.core import spectrograms as func
 
 __all__ = [
-    "compute",
+    "compute_spectrogram",
 ]
 
 
-async def compute(
-    session: AsyncSession,
-    recording_id: int,
+def compute_spectrogram(
+    recording: schemas.Recording,
     start_time: float,
     end_time: float,
     audio_parameters: schemas.AudioParameters,
@@ -27,10 +25,8 @@ async def compute(
 
     Parameters
     ----------
-    session
-        SQLAlchemy session.
-    recording_id
-        Recording ID.
+    recording
+        The recording to compute the spectrogram for.
     start_time
         Start time in seconds.
     end_time
@@ -46,9 +42,8 @@ async def compute(
         Spectrogram image.
 
     """
-    wav = await audio_api.load(
-        session,
-        recording_id,
+    wav = audio_api.load_audio(
+        recording,
         start_time,
         end_time,
         audio_parameters=audio_parameters,

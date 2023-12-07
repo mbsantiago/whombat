@@ -7,8 +7,8 @@ from sqlalchemy import and_, tuple_
 from sqlalchemy.sql._typing import _ColumnExpressionArgument
 
 from whombat import models, schemas
-from whombat.api import users
 from whombat.api.common import BaseAPI
+from whombat.api.users import users
 
 PrimaryKey = tuple[int, UUID | None, data.AnnotationState]
 
@@ -33,6 +33,50 @@ class StatusBadgeAPI(
     _model = models.AnnotationStatusBadge
     _schema = schemas.AnnotationStatusBadge
 
+    async def create(
+        self,
+        session,
+        annotation_task: schemas.AnnotationTask,
+        state: data.AnnotationState,
+        user: schemas.SimpleUser | None = None,
+        **kwargs,
+    ) -> schemas.AnnotationStatusBadge:
+        """Create a status badge.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        annotation_task
+            The annotation task that this status badge belongs to.
+        state
+            The state of the annotation task.
+        user
+            The user attached to the status badge. This can
+            have different meanings depending on the state of the annotation.
+            If the state is `data.AnnotationState.assigned`, then the user
+            is the user that the annotation task was assigned to. If the
+            state is `data.AnnotationState.completed`, then the user is the
+            user that completed the annotation task.
+        **kwargs
+            Additional keyword arguments to use when creating the status badge
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.AnnotationStatusBadge
+            Created status badge.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.AnnotationStatusBadgeCreate(
+                annotation_task_id=annotation_task.id,
+                user_id=user.id if user is not None else None,
+                state=state,
+            ),
+            **kwargs,
+        )
+
     async def from_soundevent(
         self,
         session,
@@ -53,19 +97,16 @@ class StatusBadgeAPI(
         schemas.AnnotationStatusBadge
             Status badge.
         """
-        user_id = None
+        user = None
         if data.owner is not None:
             user = await users.from_soundevent(session, data.owner)
-            user_id = user.id
 
         obj = await self.create(
             session,
-            schemas.AnnotationStatusBadgeCreate(
-                created_on=data.created_on,
-                annotation_task_id=annotation_task.id,
-                user_id=user_id,
-                state=data.state,
-            ),
+            annotation_task=annotation_task,
+            state=data.state,
+            user=user,
+            created_on=data.created_on,
         )
 
         self._update_cache(obj)
@@ -116,7 +157,8 @@ class StatusBadgeAPI(
     @classmethod
     def _key_fn(
         cls,
-        obj: models.AnnotationStatusBadge | schemas.AnnotationStatusBadge,
+        obj: models.AnnotationStatusBadge
+        | schemas.AnnotationStatusBadgeCreate,
     ) -> PrimaryKey:
         return obj.annotation_task_id, obj.user_id, obj.state
 

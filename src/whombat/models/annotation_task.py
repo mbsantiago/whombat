@@ -24,9 +24,9 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
+from soundevent import data
 from sqlalchemy import ForeignKey, UniqueConstraint
 
-from soundevent import data
 from whombat.models.base import Base
 from whombat.models.clip import Clip
 from whombat.models.clip_annotation import ClipAnnotation

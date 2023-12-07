@@ -6,6 +6,7 @@ and provides some helper functions for the filtersets.
 
 from whombat.filters import (
     annotation_projects,
+    annotation_tasks,
     clips,
     datasets,
     notes,
@@ -13,7 +14,6 @@ from whombat.filters import (
     recordings,
     sound_events,
     tags,
-    annotation_tasks,
 )
 from whombat.filters.base import Filter
 

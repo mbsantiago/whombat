@@ -52,25 +52,25 @@ SearchFilter = base.search_filter(
 class DatasetFilter(base.Filter):
     """Filter recordings by the dataset they are in."""
 
-    dataset: int | None = None
+    eq: int | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.dataset:
+        if not self.eq:
             return query
 
         return query.join(
             models.DatasetRecording,
             models.Recording.id == models.DatasetRecording.recording_id,
-        ).where(models.DatasetRecording.dataset_id == self.dataset)
+        ).where(models.DatasetRecording.dataset_id == self.eq)
 
 
 class IssuesFilter(base.Filter):
     """Filter recordings by their status.
 
-    A recording is considered to have issues if it has any notes that are
-    issues. This filter can be used to filter recordings that have issues or
-    that do not have issues.
+    A recording is considered to have issues if it has any notes that
+    are issues. This filter can be used to filter recordings that have
+    issues or that do not have issues.
     """
 
     has_issues: bool | None = None
@@ -95,30 +95,27 @@ class IssuesFilter(base.Filter):
 class TagFilter(base.Filter):
     """Filter recordings by tags.
 
-    This filter can be used to filter recordings that have a certain tag.
+    This filter can be used to filter recordings that have a certain
+    tag.
     """
 
-    tags: list[int] | None = None
+    eq: int | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.tags:
+        if not self.eq:
             return query
 
-        subquery = (
-            select(models.RecordingTag.recording_id)
-            .join(models.RecordingTag.tag)
-            .where(
-                models.RecordingTag.tag_id.in_(self.tags),
-            )
-        )
-        return query.where(models.Recording.id.in_(subquery))
+        return query.join(
+            models.RecordingTag,
+            models.Recording.id == models.RecordingTag.recording_id,
+        ).where(models.RecordingTag.tag_id == self.eq)
 
 
 RecordingFilter = base.combine(
     SearchFilter,
-    TagFilter,
-    DatasetFilter,
+    tag=TagFilter,
+    dataset=DatasetFilter,
     duration=DurationFilter,
     samplerate=SamplerateFilter,
     channels=ChannelsFilter,

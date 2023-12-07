@@ -6,265 +6,138 @@ from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, users
-from whombat.filters.base import Filter
+from whombat.api.common import BaseAPI
+from whombat.api.users import users
 
 __all__ = [
-    "create",
-    "delete",
-    "from_soundevent",
-    "get_by_id",
-    "get_by_uuid",
-    "get_many",
-    "to_soundevent",
-    "update",
+    "NoteAPI",
+    "notes",
 ]
 
 
-async def get_by_id(session: AsyncSession, note_id: int) -> schemas.Note:
-    """Get a note by its ID.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    note_id
-        The ID of the note.
-
-    Returns
-    -------
-    note : schemas.notes.Note
-        The note with the given id.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If the given note does not exist.
-    """
-    note = await common.get_object(
-        session, models.Note, models.Note.id == note_id
-    )
-    return schemas.Note.model_validate(note)
-
-
-async def get_by_uuid(session: AsyncSession, uuid: UUID) -> schemas.Note:
-    """Get a note by its UUID.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    uuid
-        The UUID of the note.
-
-    Returns
-    -------
-    note
-        The note with the given UUID.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If the given note does not exist.
-    """
-    note = await common.get_object(
-        session,
+class NoteAPI(
+    BaseAPI[
+        UUID,
         models.Note,
-        models.Note.uuid == uuid,
-    )
-    return schemas.Note.model_validate(note)
+        schemas.Note,
+        schemas.NoteCreate,
+        schemas.NoteUpdate,
+    ]
+):
+    _model = models.Note
+    _schema = schemas.Note
+
+    async def create(
+        self,
+        session: AsyncSession,
+        message: str,
+        is_issue: bool = False,
+        created_by: schemas.SimpleUser | None = None,
+        **kwargs,
+    ) -> schemas.Note:
+        """Create a note.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        message
+            The note message.
+        is_issue
+            Whether the note is an issue. Defaults to False. Used to indicate
+            that the note is an issue that needs to be resolved.
+        created_by
+            The user that created the note. Defaults to None.
+        **kwargs
+            Additional keyword arguments to use when creating the note,
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        note : schemas.Note
+            The created note.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.NoteCreate(
+                message=message,
+                is_issue=is_issue,
+                created_by_id=created_by.id
+                if created_by is not None
+                else None,
+            ),
+            **kwargs,
+        )
+
+    async def from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.Note,
+    ) -> schemas.Note:
+        """Create a note from a soundevent Note object.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        data
+            The soundevent Note object.
+
+        Returns
+        -------
+        note : schemas.Note
+            The created note.
+        """
+        try:
+            return await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            pass
+
+        user_id = None
+        if data.created_by is not None:
+            user = await users.from_soundevent(session, data.created_by)
+            user_id = user.id
+
+        return await self.create_from_data(
+            session,
+            schemas.NoteCreate(
+                created_on=data.created_on,
+                uuid=data.uuid,
+                message=data.message,
+                created_by_id=user_id,
+                is_issue=data.is_issue,
+            ),
+        )
+
+    def to_soundevent(
+        self,
+        obj: schemas.Note,
+    ) -> data.Note:
+        """Create a soundevent Note object from a note.
+
+        Parameters
+        ----------
+        obj
+            The note.
+
+        Returns
+        -------
+        note : data.Note
+            The soundevent Note object.
+        """
+        user = obj.created_by
+        return data.Note(
+            uuid=obj.uuid,
+            created_on=obj.created_on,
+            message=obj.message,
+            created_by=data.User(
+                uuid=user.id,
+                email=user.email,
+                username=user.username,
+                name=user.name,
+            ),
+            is_issue=obj.is_issue,
+        )
 
 
-async def get_many(
-    session: AsyncSession,
-    *,
-    limit: int = 100,
-    offset: int = 0,
-    filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.Note], int]:
-    """Get all notes.
-
-    If any of the optional parameters are given, they will be used to filter
-    the notes.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    limit
-        The maximum number of notes to return.
-    offset
-        The number of notes to skip.
-    filters
-        A list of filters to apply to the notes.
-    sort_by
-        The field to sort the notes by.
-
-    Returns
-    -------
-    notes : schemas.notes.Notes
-        The requested notes.
-    count : int
-        The total number of notes that match the given filters.
-    """
-    notes, count = await common.get_objects(
-        session,
-        models.Note,
-        limit=limit,
-        offset=offset,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [schemas.Note.model_validate(note) for note in notes], count
-
-
-async def create(
-    session: AsyncSession,
-    data: schemas.NotePostCreate,
-) -> schemas.Note:
-    """Create a note.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    data
-        The data to create the note with.
-
-    Returns
-    -------
-    note : schemas.notes.Note
-        The created note.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If the given user does not exist.
-    """
-    await users.get_by_id(session, user_id=data.created_by_id)
-    note = await common.create_object(session, models.Note, data)
-    await session.refresh(note)
-    return schemas.Note.model_validate(note)
-
-
-async def update(
-    session: AsyncSession,
-    note_id: int,
-    data: schemas.NoteUpdate,
-) -> schemas.Note:
-    """Update a note.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    note_id
-        The ID of the note to update.
-    data:
-        The data to update the note with.
-
-    Returns
-    -------
-    note : schemas.notes.Note
-        The updated note.
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-        If the given note does not exist.
-    """
-    note = await common.update_object(
-        session,
-        models.Note,
-        models.Note.id == note_id,
-        data,
-    )
-    return schemas.Note.model_validate(note)
-
-
-async def delete(
-    session: AsyncSession,
-    note_id: int,
-) -> None:
-    """Delete a note.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    note_id
-        The ID of the note to delete.
-
-    """
-    await common.delete_object(session, models.Note, models.Note.id == note_id)
-
-
-async def from_soundevent(
-    session: AsyncSession,
-    note: data.Note,
-) -> schemas.Note:
-    """Create a note from a soundevent Note object.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    note
-        The soundevent Note object.
-
-    Returns
-    -------
-    note : schemas.Note
-        The created note.
-    """
-    try:
-        return await get_by_uuid(session, note.uuid)
-    except exceptions.NotFoundError:
-        pass
-
-    if note.created_by is None:
-        user = await users.get_anonymous_user(session)
-    else:
-        user = await users.from_soundevent(session, note.created_by)
-
-    return await create(
-        session,
-        schemas.NotePostCreate(
-            created_on=note.created_on,
-            uuid=note.uuid,
-            message=note.message,
-            created_by_id=user.id,
-            is_issue=note.is_issue,
-        ),
-    )
-
-
-def to_soundevent(
-    note: schemas.Note,
-) -> data.Note:
-    """Create a soundevent Note object from a note.
-
-    Parameters
-    ----------
-    note
-        The note.
-
-    Returns
-    -------
-    note : data.Note
-        The soundevent Note object.
-    """
-    user = note.created_by
-    return data.Note(
-        uuid=note.uuid,
-        created_on=note.created_on,
-        message=note.message,
-        created_by=data.User(
-            uuid=user.id,
-            email=user.email,
-            username=user.username,
-            name=user.name,
-        ),
-        is_issue=note.is_issue,
-    )
+notes = NoteAPI()

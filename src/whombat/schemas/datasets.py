@@ -7,7 +7,7 @@ from uuid import UUID, uuid4
 from pydantic import DirectoryPath, Field
 
 from whombat.schemas.base import BaseSchema
-from whombat.schemas.recordings import RecordingWithoutPath
+from whombat.schemas.recordings import Recording
 
 __all__ = [
     "Dataset",
@@ -15,7 +15,6 @@ __all__ = [
     "DatasetCreate",
     "DatasetUpdate",
     "DatasetRecordingCreate",
-    "DatasetWithCounts",
     "FileState",
 ]
 
@@ -46,10 +45,6 @@ class Dataset(BaseDataset):
 
     id: int
     """The database id of the dataset."""
-
-
-class DatasetWithCounts(Dataset):
-    """Schema for Dataset objects returned to the user."""
 
     recording_count: int = 0
     """The number of recordings in the dataset."""
@@ -115,6 +110,6 @@ class DatasetRecordingCreate(BaseSchema):
 class DatasetRecording(DatasetRecordingCreate):
     """Schema for DatasetRecording objects returned to the user."""
 
-    recording: RecordingWithoutPath
+    recording: Recording
 
     state: FileState = Field(default=FileState.REGISTERED)

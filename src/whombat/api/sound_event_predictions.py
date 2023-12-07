@@ -7,9 +7,10 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, tags
+from whombat.api import common
 from whombat.api.common import BaseAPI
 from whombat.api.sound_events import sound_events
+from whombat.api.tags import tags
 
 __all__ = [
     "SoundEventPredictionAPI",
@@ -26,6 +27,48 @@ class SoundEventPredictionAPI(
         schemas.SoundEventPredictionUpdate,
     ]
 ):
+    _model = models.SoundEventPrediction
+    _schema = schemas.SoundEventPrediction
+
+    async def create(
+        self,
+        session: AsyncSession,
+        sound_event: schemas.SoundEvent,
+        clip_prediction: schemas.ClipPrediction,
+        score: float,
+        **kwargs,
+    ) -> schemas.SoundEventPrediction:
+        """Create a sound event prediction.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        sound_event
+            The sound event that was predicted.
+        clip_prediction
+            The clip prediction that this sound event prediction belongs to.
+        score
+            The confidence score of the prediction.
+        **kwargs
+            Additional keyword arguments to use when creating the sound event
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.SoundEventPrediction
+            Created sound event prediction.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.SoundEventPredictionCreate(
+                sound_event_id=sound_event.id,
+                clip_prediction_id=clip_prediction.id,
+                score=score,
+            ),
+            **kwargs,
+        )
+
     async def add_tag(
         self,
         session: AsyncSession,
@@ -251,17 +294,13 @@ class SoundEventPredictionAPI(
             recording=clip_prediction.clip.recording,
         )
 
-        prediction = await self.create(
+        return await self.create(
             session,
-            schemas.SoundEventPredictionCreate(
-                uuid=data.uuid,
-                clip_prediction_id=clip_prediction.id,
-                sound_event_id=sound_event.id,
-                score=data.score,
-            ),
+            clip_prediction=clip_prediction,
+            sound_event=sound_event,
+            score=data.score,
+            uuid=data.uuid,
         )
-
-        return prediction
 
 
 sound_event_predictions = SoundEventPredictionAPI()

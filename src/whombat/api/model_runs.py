@@ -24,6 +24,47 @@ class ModelRunAPI(
     _model = models.ModelRun
     _schema = schemas.ModelRun
 
+    async def create(
+        self,
+        session: AsyncSession,
+        name: str,
+        version: str,
+        description: str | None = None,
+        **kwargs,
+    ) -> schemas.ModelRun:
+        """Create a model run.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        name
+            The name of the model used to generate the predictions in this run.
+        version
+            The version of the model used to generate the predictions in this
+            run.
+        description
+            A description of the model used to generate the predictions in this
+            run.
+        **kwargs
+            Additional keyword arguments to use when creating the model run,
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.ModelRun
+            Created model run.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.ModelRunCreate(
+                name=name,
+                version=version,
+                description=description,
+            ),
+            **kwargs,
+        )
+
     async def get_clip_predictions(
         self,
         session: AsyncSession,
@@ -88,13 +129,11 @@ class ModelRunAPI(
         except exceptions.NotFoundError:
             model_run = await self.create(
                 session,
-                schemas.ModelRunCreate(
-                    uuid=data.uuid,
-                    created_on=data.created_on,
-                    name=data.name,
-                    version=data.version or "",
-                    description=data.description,
-                ),
+                created_on=data.created_on,
+                name=data.name,
+                version=data.version or "",
+                description=data.description,
+                uuid=data.uuid,
             )
         return await self.update_from_soundevent(session, model_run, data)
 

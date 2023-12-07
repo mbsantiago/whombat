@@ -63,7 +63,6 @@ from whombat.schemas.datasets import (
     DatasetRecording,
     DatasetRecordingCreate,
     DatasetUpdate,
-    DatasetWithCounts,
     FileState,
 )
 from whombat.schemas.evaluation_sets import (
@@ -89,20 +88,19 @@ from whombat.schemas.model_runs import (
     ModelRunPredictionCreate,
     ModelRunUpdate,
 )
-from whombat.schemas.notes import Note, NoteCreate, NotePostCreate, NoteUpdate
+from whombat.schemas.notes import Note, NoteCreate, NoteUpdate
 from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
+    RecordingCreateFull,
     RecordingFeatureCreate,
     RecordingNote,
     RecordingOwner,
     RecordingOwnerCreate,
-    RecordingPreCreate,
     RecordingTag,
     RecordingTagCreate,
     RecordingUpdate,
-    RecordingWithoutPath,
 )
 from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotation,
@@ -187,7 +185,6 @@ __all__ = [
     "DatasetRecording",
     "DatasetRecordingCreate",
     "DatasetUpdate",
-    "DatasetWithCounts",
     "Evaluation",
     "EvaluationCreate",
     "EvaluationMetricCreate",
@@ -206,22 +203,20 @@ __all__ = [
     "ModelRunUpdate",
     "Note",
     "NoteCreate",
-    "NotePostCreate",
     "NoteUpdate",
     "Page",
     "PluginInfo",
     "PredictedTag",
     "Recording",
     "RecordingCreate",
+    "RecordingCreateFull",
     "RecordingFeatureCreate",
     "RecordingNote",
     "RecordingOwner",
     "RecordingOwnerCreate",
-    "RecordingPreCreate",
     "RecordingTag",
     "RecordingTagCreate",
     "RecordingUpdate",
-    "RecordingWithoutPath",
     "STFTParameters",
     "Scale",
     "SimpleUser",

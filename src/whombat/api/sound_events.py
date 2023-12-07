@@ -9,8 +9,9 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, features
+from whombat.api import common
 from whombat.api.common import BaseAPI
+from whombat.api.features import features
 
 __all__ = [
     "SoundEventAPI",
@@ -29,6 +30,41 @@ class SoundEventAPI(
 ):
     _model = models.SoundEvent
     _schema = schemas.SoundEvent
+
+    async def create(
+        self,
+        session: AsyncSession,
+        recording: schemas.Recording,
+        geometry: data.Geometry,
+        **kwargs,
+    ) -> schemas.SoundEvent:
+        """Create a sound event.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        recording
+            The recording the sound event is from.
+        geometry
+            The geometry representing the ROI of the sound event.
+        **kwargs
+            Additional keyword arguments to use when creating the sound event
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The created sound event.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.SoundEventCreate(
+                recording_id=recording.id,
+                geometry=geometry,
+            ),
+            **kwargs,
+        )
 
     async def add_feature(
         self,
@@ -222,9 +258,7 @@ class SoundEventAPI(
 
         feature_names = {f[1] for f in all_features}
         feature_mapping = {
-            name: await features.get_or_create(
-                session, data=schemas.FeatureNameCreate(name=name)
-            )
+            name: await features.get_or_create(session, name=name)
             for name in feature_names
         }
 
@@ -275,11 +309,9 @@ class SoundEventAPI(
 
         return await self.create(
             session,
-            schemas.SoundEventCreate(
-                recording_id=recording.id,
-                uuid=data.uuid,
-                geometry=data.geometry,
-            ),
+            recording=recording,
+            geometry=data.geometry,
+            uuid=data.uuid,
         )
 
     def to_soundevent(

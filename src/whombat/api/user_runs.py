@@ -5,7 +5,6 @@ from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import users
 from whombat.api.clip_predictions import clip_predictions
 from whombat.api.common import BaseAPI, create_object
 from whombat.filters.base import Filter
@@ -23,6 +22,37 @@ class UserRunAPI(
 ):
     _model = models.UserRun
     _schema = schemas.UserRun
+
+    async def create(
+        self,
+        session: AsyncSession,
+        user: schemas.SimpleUser,
+        **kwargs,
+    ) -> schemas.UserRun:
+        """Create a user run.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        user
+            The user that created the run.
+        **kwargs
+            Additional keyword arguments to use when creating the user run,
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.UserRun
+            Created user run.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.UserRunCreate(
+                user_id=user.id,
+            ),
+            **kwargs,
+        )
 
     async def get_clip_predictions(
         self,
@@ -84,20 +114,16 @@ class UserRunAPI(
         self,
         session: AsyncSession,
         data: data.PredictionSet,
-        user: data.User,
+        user: schemas.SimpleUser,
     ) -> schemas.UserRun:
-        whombat_user = await users.from_soundevent(session, user)
-
         try:
             model_run = await self.get(session, data.uuid)
         except exceptions.NotFoundError:
             model_run = await self.create(
                 session,
-                schemas.UserRunCreate(
-                    uuid=data.uuid,
-                    created_on=data.created_on,
-                    user_id=whombat_user.id,
-                ),
+                user=user,
+                created_on=data.created_on,
+                uuid=data.uuid,
             )
         return await self.update_from_soundevent(session, model_run, data)
 

@@ -83,7 +83,7 @@ def _to_snake_case(name: str) -> str:
 
 
 def get_values(
-    data: BaseModel,
+    data: BaseModel | dict,
 ) -> dict[str, Any]:
     """Get the values of a model.
 
@@ -98,8 +98,11 @@ def get_values(
         The values.
     """
     values = dict(data)
-    for key in data.model_computed_fields:
-        values[key] = getattr(data, key)
+
+    if isinstance(data, BaseModel):
+        for key in data.model_computed_fields:
+            values[key] = getattr(data, key)
+
     return values
 
 
@@ -150,10 +153,9 @@ def get_sort_by_col_from_str(
 
     Parameters
     ----------
-    model : type[A]
+    model
         The model to get the column from.
-
-    sort_by : str
+    sort_by
         The name of the column. If a "-" is prepended, the column will be
         sorted in descending order.
 
@@ -194,29 +196,23 @@ async def get_objects(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    model : type[A]
+    model
         The model to query.
-
-    limit : int, optional
+    limit
         The maximum number of objects to return, by default 1000
-
-    offset : int, optional
+    offset
         The offset to use, by default 0
-
-    filters : list[Filter], optional
+    filters
         A list of filters to apply, by default None
-
-    sort_by : _ColumnExpressionArgument, optional
+    sort_by
         The column to sort by, by default None
 
     Returns
     -------
     list[A]
         The objects.
-
     count : int
         The total number of objects. This is the number of objects that would
         have been returned if no limit or offset was applied.
@@ -256,11 +252,11 @@ async def create_object(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-    model : type[A]
+    model
         The model to create.
-    data : dict[str, str]
+    data
         The data to use.
 
     Returns
@@ -290,7 +286,7 @@ async def create_object(
 async def create_objects(
     session: AsyncSession,
     model: type[A],
-    data: Sequence[B],
+    data: Sequence[B] | Sequence[dict],
 ) -> None:
     """Create multiple objects.
 
@@ -332,25 +328,20 @@ async def create_objects_without_duplicates(
 
     Parameters
     ----------
-    session : AsyncSession
+    session
         The database session to use.
-
-    model : type[A]
+    model
         The model to create.
-
-    data : Sequence[B]
+    data
         The data to use for creation of the objects.
-
-    key : Callable[[A | B], Any]
+    key
         A function that returns a key for each object. If two objects have the
         same key, only one will be created. Also this key value will be used to
         query the database for existing objects.
-
-    key_column : InstrumentedAttribute
+    key_column
         The column to use for querying existing objects. This is used in
         conjunction with `key` to query the database for existing objects.
-
-    return_all: bool
+    return_all
         Whether to return all objects, or only those created.
 
     Returns
@@ -517,9 +508,11 @@ async def update_object(
     update_with = {}
 
     if data is not None:
-        update_with.update({
-            **{key: getattr(data, key) for key in data.model_fields_set},
-        })
+        update_with.update(
+            {
+                **{key: getattr(data, key) for key in data.model_fields_set},
+            }
+        )
 
     update_with.update(kwargs)
 

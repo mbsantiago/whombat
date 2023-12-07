@@ -23,7 +23,7 @@ class SoundEventEvaluationCreate(BaseSchema):
     """ID of the clip evaluation to which the sound event evaluation
     belongs."""
 
-    source_id: int | None 
+    source_id: int | None
     """ID of the source sound event prediction."""
 
     target_id: int | None

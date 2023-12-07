@@ -1,32 +1,265 @@
 """Whombat Python API to interact with user objects in the database."""
 import secrets
-import uuid
+from uuid import UUID
 
-from cachetools import LRUCache
 from soundevent import data
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import cache, exceptions, models, schemas
+from whombat import exceptions, models, schemas
 from whombat.api import common
+from whombat.api.common import BaseAPI
 from whombat.dependencies.users import UserDatabase, UserManager
-from whombat.filters import Filter
 
-__all__ = [
-    "create",
-    "get_by_id",
-    "get_by_email",
-    "get_by_username",
-    "get_many",
-    "get_by_data",
-    "to_soundevent",
-    "from_soundevent",
-    "get_anonymous_user",
-    "update",
-    "delete",
-]
+__all__ = []
 
 
-users_cache = cache.CacheCollection(schemas.User)
+class UserAPI(
+    BaseAPI[
+        UUID,
+        models.User,
+        schemas.SimpleUser,
+        schemas.UserCreate,
+        schemas.UserUpdate,
+    ]
+):
+    """API to interact with user objects in the database."""
+
+    _model = models.User
+    _schema = schemas.SimpleUser
+
+    async def get_by_username(
+        self,
+        session: AsyncSession,
+        username: str,
+    ) -> schemas.SimpleUser:
+        """Get a user by username.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        username
+            The username to use.
+
+        Returns
+        -------
+        user : schemas.User
+
+        Raises
+        ------
+        whombat.exceptions.NotFoundError
+        """
+        obj = await common.get_object(
+            session, models.User, models.User.username == username
+        )
+        return schemas.SimpleUser.model_validate(obj)
+
+    async def get_by_email(
+        self,
+        session: AsyncSession,
+        email: str,
+    ) -> schemas.SimpleUser:
+        """Get a user by email.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        email
+            The email to use.
+
+        Returns
+        -------
+        user : schemas.User
+
+        Raises
+        ------
+        whombat.exceptions.NotFoundError
+        """
+        obj = await common.get_object(
+            session, models.User, models.User.email == email
+        )
+        return schemas.SimpleUser.model_validate(obj)
+
+    async def create(
+        self,
+        session: AsyncSession,
+        username: str,
+        password: str,
+        email: str,
+        name: str | None = None,
+        is_active: bool = True,
+        is_superuser: bool = False,
+    ) -> schemas.SimpleUser:
+        """Create a user.
+
+        This function creates a user in the database.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        username
+            The username of the user.
+        password
+            The password of the user.
+        email
+            The email of the user.
+        name
+            The users full name.
+        is_active
+            Whether the user is active. This means that the user can log in.
+            By default, this is set to True.
+        is_superuser
+            Whether the user is a superuser. This means that the user can
+            perform all actions.
+
+        Returns
+        -------
+        user : schemas.User
+
+        Raises
+        ------
+        UserAlreadyExists
+            If a user with the same username or email already exists.
+
+        Examples
+        --------
+        To create a user:
+
+
+        ```python
+            async with create_session() as session:
+                user = await create_user(
+                    session,
+                    username="username",
+                    password="password",
+                    email="email",
+                )
+        ```
+        """
+        user_manager = _get_user_manager(session)
+        db_user = await user_manager.create(
+            schemas.UserCreate(
+                username=username,
+                password=password,
+                email=email,
+                name=name,
+                is_active=is_active,
+                is_superuser=is_superuser,
+            )
+        )
+        session.add(db_user)
+        await session.flush()
+        return schemas.SimpleUser.model_validate(db_user)
+
+    async def update(
+        self,
+        session: AsyncSession,
+        obj: schemas.SimpleUser,
+        data: schemas.UserUpdate,
+    ) -> schemas.SimpleUser:
+        """Update a user.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        obj
+            The user to update.
+        data
+            The data to update the user with.
+
+        Returns
+        -------
+        user : schemas.User
+            The updated user.
+
+        Raises
+        ------
+        sqlalchemy.exc.NoResultFound
+            If no user with the given id exists.
+        """
+        user_manager = _get_user_manager(session)
+        db_user = await user_manager.get(obj.id)
+        db_user = await user_manager.update(data, db_user)
+        return schemas.SimpleUser.model_validate(db_user)
+
+    async def from_soundevent(
+        self,
+        session: AsyncSession,
+        data: data.User,
+    ) -> schemas.SimpleUser:
+        """Get or create a user from a soundevent user object.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        data
+            The soundevent user object to get or create.
+
+        Returns
+        -------
+        user : schemas.User
+            The user object.
+
+        Raises
+        ------
+        whombat.exceptions.DuplicateObjectError
+            If a user with the same username or email already exists.
+
+        Notes
+        -----
+        If no user with the same username, email or UUID exists, a new user
+        will be created with a random password and marked as inactive.
+        """
+        try:
+            return await self.get(session, data.uuid)
+        except exceptions.NotFoundError:
+            manager = _get_user_manager(session)
+            password = _generate_random_password()
+            hashed_password = manager.password_helper.hash(password)
+            created_user = await manager.user_db.create(
+                dict(
+                    id=data.uuid,
+                    username=data.username,
+                    email=data.email,
+                    name=data.name,
+                    hashed_password=hashed_password,
+                    is_active=False,
+                    is_superuser=False,
+                )
+            )
+            await session.flush()
+            return schemas.SimpleUser.model_validate(created_user)
+
+    def to_soundevent(
+        self,
+        obj: schemas.SimpleUser,
+    ) -> data.User:
+        """Convert a user instance to soundevent object.
+
+        Parameters
+        ----------
+        obj
+            The user to get the data from.
+
+        Returns
+        -------
+        user : data.User
+            The soundevent user object.
+        """
+        return data.User(
+            uuid=obj.id,
+            username=obj.username,
+            email=obj.email,
+            name=obj.name,
+        )
+
+
+def _generate_random_password(length=32):
+    return secrets.token_urlsafe(length)
 
 
 def _get_user_manager(session: AsyncSession) -> UserManager:
@@ -47,400 +280,4 @@ def _get_user_manager(session: AsyncSession) -> UserManager:
     )
 
 
-@users_cache.cached(
-    name="user_by_id",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, user_id: user_id,
-    data_key=lambda user: user.id,
-)
-async def get_by_id(
-    session: AsyncSession,
-    user_id: uuid.UUID,
-) -> schemas.SimpleUser:
-    """Get a user by id.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    user_id
-        The id to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-    """
-    obj = await common.get_object(
-        session, models.User, models.User.id == user_id
-    )
-    return schemas.SimpleUser.model_validate(obj)
-
-
-@users_cache.cached(
-    name="user_by_username",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, username: username,
-    data_key=lambda user: user.username,
-)
-async def get_by_username(
-    session: AsyncSession,
-    username: str,
-) -> schemas.SimpleUser:
-    """Get a user by username.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    username
-        The username to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-    """
-    obj = await common.get_object(
-        session, models.User, models.User.username == username
-    )
-    return schemas.SimpleUser.model_validate(obj)
-
-
-@users_cache.cached(
-    name="user_by_email",
-    cache=LRUCache(maxsize=100),
-    key=lambda _, email: email,
-    data_key=lambda user: user.email,
-)
-async def get_by_email(
-    session: AsyncSession,
-    email: str,
-) -> schemas.SimpleUser:
-    """Get a user by email.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    email
-        The email to use.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-    """
-    obj = await common.get_object(
-        session, models.User, models.User.email == email
-    )
-    return schemas.SimpleUser.model_validate(obj)
-
-
-async def get_many(
-    session: AsyncSession,
-    *,
-    offset: int = 0,
-    limit: int = 100,
-    filters: list[Filter] | None = None,
-    sort_by: str | None = "-created_on",
-) -> tuple[list[schemas.User], int]:
-    """Get all users.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    offset
-        The number of users to skip, by default 0.
-    limit
-        The number of users to get, by default 100.
-    filters
-        The filters to apply, by default None.
-    sort_by
-        The field to sort by, by default "-created_on".
-
-    Returns
-    -------
-    users : List[schemas.User]
-        The users that match the filters.
-
-    count : int
-        The total number of users that match the filters.
-    """
-    db_users, count = await common.get_objects(
-        session,
-        models.User,
-        offset=offset,
-        limit=limit,
-        filters=filters,
-        sort_by=sort_by,
-    )
-    return [
-        schemas.User.model_validate(db_user) for db_user in db_users
-    ], count
-
-
-@users_cache.with_update
-async def create(
-    session: AsyncSession,
-    data: schemas.UserCreate,
-) -> schemas.User:
-    """Create a user.
-
-    This function creates a user in the database.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    data
-        The data to use for the user creation.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Notes
-    -----
-    This function is asynchronous.
-
-    Raises
-    ------
-    UserAlreadyExists
-        If a user with the same username or email already exists.
-
-    Examples
-    --------
-    To create a user:
-
-    .. code-block:: python
-
-        async with create_session() as session:
-            user = await create_user(
-                session,
-                username="username",
-                password="password",
-                email="email",
-            )
-    """
-    user_manager = _get_user_manager(session)
-    db_user = await user_manager.create(data)
-    session.add(db_user)
-    await session.flush()
-    return schemas.User.model_validate(db_user)
-
-
-@users_cache.with_update
-async def update(
-    session: AsyncSession,
-    user_id: uuid.UUID,
-    data: schemas.UserUpdate,
-) -> schemas.User:
-    """Update a user.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    user_id
-        The id of the user to update.
-    data
-        The data to update the user with.
-
-    Returns
-    -------
-    user : schemas.User
-        The updated user.
-
-    Raises
-    ------
-    sqlalchemy.exc.NoResultFound
-        If no user with the given id exists.
-    """
-    user_manager = _get_user_manager(session)
-    db_user = await user_manager.get(user_id)
-    db_user = await user_manager.update(data, db_user)
-    return schemas.User.model_validate(db_user)
-
-
-@users_cache.with_clear
-async def delete(session: AsyncSession, user_id: uuid.UUID) -> schemas.User:
-    """Delete a user.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    user_id
-        The id of the user to delete.
-
-    Returns
-    -------
-    user : schemas.User
-        The deleted user.
-    """
-    user = await common.delete_object(
-        session,
-        models.User,
-        models.User.id == user_id,
-    )
-    return schemas.User.model_validate(user)
-
-
-@users_cache.cached(
-    name="anonymous_user",
-    cache=LRUCache(maxsize=1),
-    key=lambda _: 0,
-    data_key=lambda _: 0,
-)
-async def get_anonymous_user(session) -> schemas.User:
-    """Get the anonymous user.
-
-    This user is used for when no user is specified.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-
-    Returns
-    -------
-    user : schemas.User
-        The admin user.
-    """
-    try:
-        obj = await common.get_object(
-            session,
-            models.User,
-            (models.User.is_superuser) & (models.User.username == "whombat"),
-        )
-        return schemas.User.model_validate(obj)
-    except exceptions.NotFoundError:
-        return await create(
-            session,
-            schemas.UserCreate(
-                username="whombat",
-                password=_generate_random_password(),
-                email="whombat@admin.com",
-                is_superuser=True,
-            ),
-        )
-
-
-def _generate_random_password(length=32):
-    return secrets.token_urlsafe(length)
-
-
-async def get_by_data(
-    session: AsyncSession,
-    data: data.User,
-) -> schemas.SimpleUser:
-    """Get a user by data.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    data
-        The data to search for.
-
-    Returns
-    -------
-    user : schemas.User
-
-    Raises
-    ------
-    whombat.exceptions.NotFoundError
-    """
-    if data.email:
-        return await get_by_email(session, data.email)
-
-    if data.username:
-        return await get_by_username(session, data.username)
-
-    if data.uuid:
-        return await get_by_id(session, data.uuid)
-
-    raise exceptions.NotFoundError("No user data provided.")
-
-
-async def from_soundevent(
-    session: AsyncSession,
-    user: data.User,
-) -> schemas.SimpleUser:
-    """Get or create a user from a soundevent user object.
-
-    Parameters
-    ----------
-    session
-        The database session to use.
-    user
-        The soundevent user object to get or create.
-
-    Returns
-    -------
-    user : schemas.User
-        The user object.
-
-    Raises
-    ------
-    whombat.exceptions.DuplicateObjectError
-        If a user with the same username or email already exists.
-
-    Notes
-    -----
-    If no user with the same username, email or UUID exists, a new user will be
-    created with a random password and marked as inactive.
-    """
-    try:
-        return await get_by_data(session, user)
-    except exceptions.NotFoundError:
-        manager = _get_user_manager(session)
-        password = _generate_random_password()
-        hashed_password = manager.password_helper.hash(password)
-        created_user = await manager.user_db.create(
-            dict(
-                id=user.uuid,
-                username=user.username,
-                email=user.email,
-                name=user.name,
-                hashed_password=hashed_password,
-                is_active=False,
-                is_superuser=False,
-            )
-        )
-        await session.flush()
-        return schemas.SimpleUser.model_validate(created_user)
-
-
-def to_soundevent(
-    user: schemas.SimpleUser,
-) -> data.User:
-    """Convert a user instance to soundevent object.
-
-    Parameters
-    ----------
-    user
-        The user to get the data from.
-
-    Returns
-    -------
-    user : data.User
-        The soundevent user object.
-    """
-    return data.User(
-        uuid=user.id,
-        username=user.username,
-        email=user.email,
-        name=user.name,
-    )
+users = UserAPI()

@@ -7,9 +7,10 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import clip_annotations, tags
+from whombat.api.clip_annotations import clip_annotations
 from whombat.api.common import BaseAPI, create_object, delete_object
 from whombat.api.model_runs import model_runs
+from whombat.api.tags import tags
 from whombat.api.user_runs import user_runs
 from whombat.filters.base import Filter
 from whombat.filters.clip_annotations import (
@@ -36,6 +37,45 @@ class EvaluationSetAPI(
         schemas.EvaluationSetUpdate,
     ]
 ):
+    _model = models.EvaluationSet
+    _schema = schemas.EvaluationSet
+
+    async def create(
+        self,
+        session: AsyncSession,
+        name: str,
+        description: str | None = None,
+        **kwargs,
+    ) -> schemas.EvaluationSet:
+        """Create an evaluation set.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        name
+            Name of the evaluation set.
+        description
+            A description of the evaluation set. Include information about
+            how the evaluation set was created and what it is meant to be
+            used for.
+        **kwargs
+            Additional keyword arguments to pass to the create function.
+
+        Returns
+        -------
+        schemas.EvaluationSet
+            Created evaluation set.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.EvaluationSetCreate(
+                name=name,
+                description=description,
+            ),
+            **kwargs,
+        )
+
     async def add_clip_annotation(
         self,
         session: AsyncSession,
@@ -285,12 +325,10 @@ class EvaluationSetAPI(
         """Create an evaluation set from an object in `soundevent` format."""
         obj = await self.create(
             session,
-            schemas.EvaluationSetCreate(
-                uuid=data.uuid,
-                created_on=data.created_on,
-                name=data.name,
-                description=data.description,
-            ),
+            name=data.name,
+            description=data.description,
+            uuid=data.uuid,
+            created_on=data.created_on,
         )
         return obj
 

@@ -28,9 +28,9 @@ from whombat.models.evaluation import Evaluation, EvaluationMetric
 from whombat.models.evaluation_set import (
     EvaluationSet,
     EvaluationSetAnnotation,
+    EvaluationSetModelRun,
     EvaluationSetTag,
     EvaluationSetUserRun,
-    EvaluationSetModelRun,
 )
 from whombat.models.feature import FeatureName
 from whombat.models.model_run import (

@@ -2,15 +2,16 @@
 from pathlib import Path
 
 from soundevent import audio, data
-from sqlalchemy.ext.asyncio import AsyncSession
 
-import whombat.api.recordings as recordings
 from whombat import schemas
 
+__all__ = [
+    "load_audio",
+]
 
-async def load(
-    session: AsyncSession,
-    recording_id: int,
+
+def load_audio(
+    recording: schemas.Recording,
     start_time: float | None = None,
     end_time: float | None = None,
     audio_dir: Path = Path.cwd(),
@@ -20,10 +21,8 @@ async def load(
 
     Parameters
     ----------
-    session : Session
-        SQLAlchemy session.
-    recording_id
-        Recording ID.
+    recording
+        The recording to load audio from.
     start_time
         Start time in seconds.
     end_time
@@ -37,11 +36,7 @@ async def load(
     -------
     bytes
         Audio data.
-
     """
-    # Get recording.
-    recording = await recordings.get_by_id(session, recording_id)
-
     # Set start and end times.
     if start_time is None:
         start_time = 0.0

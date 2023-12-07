@@ -5,7 +5,6 @@ from sqlalchemy import Select, and_
 from whombat import models
 from whombat.filters import base
 
-
 __all__ = [
     "ClipEvaluationFilter",
     "ClipAnnotationFilter",

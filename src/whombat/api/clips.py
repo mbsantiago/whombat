@@ -8,8 +8,10 @@ from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, features, recordings
+from whombat.api import common
 from whombat.api.common import BaseAPI
+from whombat.api.features import features
+from whombat.api.recordings import recordings
 
 __all__ = [
     "ClipAPI",
@@ -30,6 +32,44 @@ class ClipAPI(
 ):
     _model = models.Clip
     _schema = schemas.Clip
+
+    async def create(
+        self,
+        session: AsyncSession,
+        recording: schemas.Recording,
+        start_time: float,
+        end_time: float,
+        **kwargs,
+    ) -> schemas.Clip:
+        """Create a clip.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        recording
+            The recording the clip belongs to.
+        start_time
+            The start time of the clip.
+        end_time
+            The end time of the clip.
+        **kwargs
+            Additional keyword arguments for creating the clip.
+
+        Returns
+        -------
+        clip : schemas.Clip
+            The created clip.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.ClipCreate(
+                recording_id=recording.id,
+                start_time=start_time,
+                end_time=end_time,
+            ),
+            **kwargs,
+        )
 
     async def add_feature(
         self,
@@ -219,9 +259,7 @@ class ClipAPI(
         names = {name for _, name, _ in clip_features}
 
         feature_names: dict[str, schemas.FeatureName] = {
-            name: await features.get_or_create(
-                session, data=schemas.FeatureNameCreate(name=name)
-            )
+            name: await features.get_or_create(session, name=name)
             for name in names
         }
 
@@ -264,12 +302,10 @@ class ClipAPI(
 
         return await self.create(
             session,
-            schemas.ClipCreate(
-                uuid=data.uuid,
-                recording_id=recording.id,
-                start_time=data.start_time,
-                end_time=data.end_time,
-            ),
+            recording=recording,
+            start_time=data.start_time,
+            end_time=data.end_time,
+            uuid=data.uuid,
         )
 
     def to_soundevent(
@@ -297,7 +333,7 @@ class ClipAPI(
 
     @classmethod
     def _key_fn(
-        cls, obj: schemas.Clip | models.Clip
+        cls, obj: models.Clip | schemas.ClipCreate
     ) -> tuple[int, float, float]:
         return obj.recording_id, obj.start_time, obj.end_time
 

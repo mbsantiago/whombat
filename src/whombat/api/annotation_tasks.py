@@ -7,10 +7,11 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, users
-from whombat.api.common import BaseAPI
+from whombat.api import common
 from whombat.api.clips import clips
+from whombat.api.common import BaseAPI
 from whombat.api.status_badges import status_badges
+from whombat.api.users import users
 
 __all__ = [
     "AnnotationTaskAPI",
@@ -31,6 +32,41 @@ class AnnotationTaskAPI(
 
     _model = models.AnnotationTask
     _schema = schemas.AnnotationTask
+
+    async def create(
+        self,
+        session: AsyncSession,
+        annotation_project: schemas.AnnotationProject,
+        clip: schemas.Clip,
+        **kwargs,
+    ) -> schemas.AnnotationTask:
+        """Create a task.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        annotation_project
+            Annotation project to which the task belongs.
+        clip
+            Clip to annotate.
+        **kwargs
+            Additional keyword arguments to pass to the creation
+            (e.g. `uuid`).
+
+        Returns
+        -------
+        schemas.AnnotationTask
+            Created task.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.AnnotationTaskCreate(
+                annotation_project_id=annotation_project.id,
+                clip_id=clip.id,
+            ),
+            **kwargs,
+        )
 
     async def add_status_badge(
         self,
@@ -257,12 +293,10 @@ class AnnotationTaskAPI(
         clip = await clips.from_soundevent(session, data.clip)
         return await self.create(
             session,
-            schemas.AnnotationTaskCreate(
-                clip_id=clip.id,
-                annotation_project_id=annotation_project.id,
-                uuid=data.uuid,
-                created_on=data.created_on,
-            ),
+            clip=clip,
+            annotation_project=annotation_project,
+            uuid=data.uuid,
+            created_on=data.created_on,
         )
 
 

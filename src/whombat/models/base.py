@@ -24,10 +24,10 @@ class PathType(types.TypeDecorator):
 
     cache_ok = True
 
-    def process_bind_param(self, value: Path, _) -> str:
+    def process_bind_param(self, value: Path, _) -> str:  # type: ignore
         return str(value)
 
-    def process_result_value(self, value: str, _) -> Path:
+    def process_result_value(self, value: str, _) -> Path:  # type: ignore
         return Path(value)
 
 
@@ -38,10 +38,10 @@ class GeometryType(types.TypeDecorator):
 
     cache_ok = True
 
-    def process_bind_param(self, value: data.Geometry, _) -> str:
+    def process_bind_param(self, value: data.Geometry, _) -> str:  # type: ignore
         return value.model_dump_json()
 
-    def process_result_value(self, value: str, _) -> data.Geometry:
+    def process_result_value(self, value: str, _) -> data.Geometry:  # type: ignore
         return data.geometry_validate(value, mode="json")
 
 

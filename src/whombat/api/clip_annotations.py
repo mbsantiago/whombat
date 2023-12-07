@@ -7,10 +7,12 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, notes, tags
+from whombat.api import common
 from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
+from whombat.api.notes import notes
 from whombat.api.sound_event_annotations import sound_event_annotations
+from whombat.api.tags import tags
 
 __all__ = [
     "ClipAnnotationAPI",
@@ -29,6 +31,37 @@ class ClipAnnotationAPI(
 ):
     _model = models.ClipAnnotation
     _schema = schemas.ClipAnnotation
+
+    async def create(
+        self,
+        session: AsyncSession,
+        clip: schemas.Clip,
+        **kwargs,
+    ) -> schemas.ClipAnnotation:
+        """Create a clip annotation.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        clip
+            The clip to annotate.
+        **kwargs
+            Additional keyword arguments to pass to the creation
+            (e.g. `uuid`).
+
+        Returns
+        -------
+        schemas.ClipAnnotation
+            The created clip annotation.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.ClipAnnotationCreate(
+                clip_id=clip.id,
+            ),
+            **kwargs,
+        )
 
     async def add_tag(
         self,
@@ -396,11 +429,9 @@ class ClipAnnotationAPI(
         clip = await clips.from_soundevent(session, data.clip)
         clip_annotation = await self.create(
             session,
-            schemas.ClipAnnotationCreate(
-                uuid=data.uuid,
-                clip_id=clip.id,
-                created_on=data.created_on,
-            ),
+            clip=clip,
+            uuid=data.uuid,
+            created_on=data.created_on,
         )
 
         for se_tag in data.tags:

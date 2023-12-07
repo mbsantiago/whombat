@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import models, schemas
-from whombat.api import features
 from whombat.api.common import (
     BaseAPI,
     create_object,
     delete_object,
     update_object,
 )
+from whombat.api.features import features
 from whombat.api.sound_event_annotations import sound_event_annotations
 from whombat.api.sound_event_predictions import sound_event_predictions
 
@@ -28,6 +28,61 @@ class SoundEventEvaluationAPI(
     ]
 ):
     """API for sound event evaluations."""
+
+    _model = models.SoundEventEvaluation
+    _schema = schemas.SoundEventEvaluation
+
+    async def create(
+        self,
+        session: AsyncSession,
+        clip_evaluation: schemas.ClipEvaluation,
+        affinity: float = 0,
+        score: float = 0,
+        source: schemas.SoundEventPrediction | None = None,
+        target: schemas.SoundEventAnnotation | None = None,
+        **kwargs,
+    ) -> schemas.SoundEventEvaluation:
+        """Create a sound event evaluation.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        clip_evaluation
+            The clip evaluation that this sound event evaluation belongs to.
+        affinity
+            The geometric affinity between the source and target sound events
+            regions of interest. Defaults to 0.
+        score
+            An overall score for the sound event evaluation. Defaults to 0.
+        source
+            The prediction being evaluated. Can be None if the target
+            is not None, in which case no prediction was matched to the target,
+            that is, this is a false negative.
+        target
+            The annotation being evaluated. Can be None if the source
+            is not None, in which case no annotation was matched to the source,
+            that is, this is a false positive.
+        **kwargs
+            Additional keyword arguments to use when creating the sound event
+            evaluation, (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.SoundEventEvaluation
+            Created sound event evaluation.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.SoundEventEvaluationCreate(
+                clip_evaluation_id=clip_evaluation.id,
+                affinity=affinity,
+                score=score,
+                source_id=source.id if source else None,
+                target_id=target.id if target else None,
+            ),
+            **kwargs,
+        )
 
     async def add_metric(
         self,
@@ -160,17 +215,11 @@ class SoundEventEvaluationAPI(
 
         obj = await self.create(
             session,
-            schemas.SoundEventEvaluationCreate(
-                clip_evaluation_id=clip_evaluation.id,
-                source_id=sound_event_prediction.id
-                if sound_event_prediction
-                else None,
-                target_id=sound_event_annotation.id
-                if sound_event_annotation
-                else None,
-                affinity=data.affinity,
-                score=data.score or 0,
-            ),
+            clip_evaluation=clip_evaluation,
+            source=sound_event_prediction,
+            target=sound_event_annotation,
+            affinity=data.affinity,
+            score=data.score or 0,
         )
 
         for feature in data.metrics:
@@ -206,7 +255,8 @@ class SoundEventEvaluationAPI(
 
     @classmethod
     def _key_fn(
-        cls, obj: schemas.SoundEventEvaluation | models.SoundEventEvaluation
+        cls,
+        obj: models.SoundEventEvaluation | schemas.SoundEventEvaluationCreate,
     ) -> tuple[int, int | None, int | None]:
         return (
             obj.clip_evaluation_id,

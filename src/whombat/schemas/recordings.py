@@ -17,12 +17,11 @@ __all__ = [
     "Recording",
     "RecordingCreate",
     "RecordingUpdate",
-    "RecordingPreCreate",
-    "RecordingWithoutPath",
     "RecordingNote",
     "RecordingTag",
     "RecordingTagCreate",
     "RecordingFeatureCreate",
+    "RecordingCreateFull",
 ]
 
 
@@ -121,29 +120,23 @@ class RecordingCreate(RecordingMetadata):
         return v
 
 
-class RecordingPreCreate(RecordingMediaInfo, RecordingMetadata):
+class RecordingCreateFull(RecordingCreate, RecordingMediaInfo):
     """Data for Recording creation.
 
-    This contains data that has also been extracted from the audio file.
+    This contains all data required to create a recording.
     """
 
-    # NOTE: We use a Path object as validation is not required after creation.
     path: Path
-    """The path to the audio file."""
 
 
-class Recording(RecordingObjects, RecordingPreCreate):
+class Recording(RecordingMetadata, RecordingMediaInfo, RecordingObjects):
     """Schema for Recording objects returned to the user."""
 
     id: int
     """The database id of the recording."""
 
-
-class RecordingWithoutPath(RecordingObjects, RecordingPreCreate):
-    """Schema for Recording objects returned to the user."""
-
-    id: int
-    """The database id of the recording."""
+    path: Path
+    """The path to the audio file, relative to the audio directory."""
 
 
 class RecordingUpdate(BaseModel):

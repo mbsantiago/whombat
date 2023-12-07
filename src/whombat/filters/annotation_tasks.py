@@ -1,9 +1,9 @@
 """Filters for Annotation Tasks."""
 from uuid import UUID
 
+from soundevent import data
 from sqlalchemy import Select, select
 
-from soundevent import data
 from whombat import models
 from whombat.filters import base
 

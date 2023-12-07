@@ -1,6 +1,7 @@
 """Base filter classes."""
 
 import datetime
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Type, TypeVar
 from uuid import UUID
@@ -108,7 +109,7 @@ def isin_filter(
     return query.where(field.in_(value))
 
 
-class Filter(BaseModel):
+class Filter(ABC, BaseModel):
     """A filter to use on a query."""
 
     _filter_mapping = {
@@ -126,9 +127,10 @@ class Filter(BaseModel):
         "isin": isin_filter,
     }
 
-    def filter(self, _: Select) -> Select:
+    @abstractmethod
+    def filter(self, query: Select) -> Select:
         """Filter a query."""
-        raise NotImplementedError
+        ...
 
 
 F = TypeVar("F", bound=Filter)

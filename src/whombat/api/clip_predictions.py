@@ -8,10 +8,11 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, tags
+from whombat.api import common
 from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
 from whombat.api.sound_event_predictions import sound_event_predictions
+from whombat.api.tags import tags
 
 __all__ = [
     "ClipPredictionAPI",
@@ -30,6 +31,36 @@ class ClipPredictionAPI(
 ):
     _model = models.ClipPrediction
     _schema = schemas.ClipPrediction
+
+    async def create(
+        self,
+        session: AsyncSession,
+        clip: schemas.Clip,
+        **kwargs,
+    ) -> schemas.ClipPrediction:
+        """Create a clip prediction.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        clip
+            Clip to create the clip prediction for.
+        **kwargs
+            Additional arguments to pass to the create method (e.g. uuid).
+
+        Returns
+        -------
+        schemas.ClipPrediction
+            Created clip prediction.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.ClipPredictionCreate(
+                clip_id=clip.id,
+            ),
+            **kwargs,
+        )
 
     async def add_tag(
         self,
@@ -219,15 +250,11 @@ class ClipPredictionAPI(
             data.clip,
         )
 
-        clip_prediction = await self.create(
+        return await self.create(
             session,
-            schemas.ClipPredictionCreate(
-                clip_id=clip.id,
-                uuid=data.uuid,
-            ),
+            clip=clip,
+            uuid=data.uuid,
         )
-
-        return clip_prediction
 
     async def _update_from_soundevent(
         self,

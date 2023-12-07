@@ -8,7 +8,6 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import features
 from whombat.api.clip_evaluations import clip_evaluations
 from whombat.api.common import (
     BaseAPI,
@@ -16,6 +15,7 @@ from whombat.api.common import (
     delete_object,
     update_object,
 )
+from whombat.api.features import features
 from whombat.filters.base import Filter
 from whombat.filters.clip_evaluations import EvaluationFilter
 
@@ -30,6 +30,55 @@ class EvaluationAPI(
     ]
 ):
     """API functions to interact with evaluations."""
+
+    _model = models.Evaluation
+    _schema = schemas.Evaluation
+
+    async def create(
+        self,
+        session: AsyncSession,
+        task: str,
+        score: float = 0,
+        **kwargs,
+    ) -> schemas.Evaluation:
+        """Create an evaluation.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        task
+            The evaluated task.
+
+        Returns
+        -------
+        schemas.Evaluation
+            Created evaluation.
+
+        Notes
+        -----
+        The `task` parameter is a string that plays a crucial role in defining
+        the machine learning context for the function evaluation. It represents
+        the specific name of the machine learning task being assessed. This
+        task name serves as a key identifier, indicating both the nature of the
+        expected predictions and the criteria for evaluating their performance.
+        Specifying the `task` is essential for providing clear and meaningful
+        evaluations. Different machine learning tasks have distinct objectives,
+        metrics, and criteria for success. Therefore, by explicitly defining
+        the `task`, the function ensures that predictions are evaluated in a
+        manner aligned with the specific requirements and expectations of that
+        task. For example, the `task` parameter might be set to
+        "clip classification," "sound event detection," or any other task
+        type relevant to the machine learning model or user predictions.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.EvaluationCreate(
+                task=task,
+                score=score,
+            ),
+            **kwargs,
+        )
 
     async def add_metric(
         self,
@@ -164,12 +213,10 @@ class EvaluationAPI(
         """Create an evaluation from a sound event evaluation."""
         return await self.create(
             session,
-            schemas.EvaluationCreate(
-                created_on=data.created_on,
-                uuid=data.uuid,
-                score=data.score or 0,
-                task=data.evaluation_task,
-            ),
+            score=data.score or 0,
+            task=data.evaluation_task,
+            created_on=data.created_on,
+            uuid=data.uuid,
         )
 
     async def _update_from_soundevent(

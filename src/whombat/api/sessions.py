@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat.database import utils
 
 __all__ = [
-    "create",
+    "create_session",
 ]
 
 
@@ -16,7 +16,7 @@ DEFAULT_DB_URL = "sqlite+aiosqlite://"
 
 
 @asynccontextmanager
-async def create(
+async def create_session(
     db_url: str = DEFAULT_DB_URL,
 ) -> AsyncGenerator[AsyncSession, None]:
     """Create a database session.

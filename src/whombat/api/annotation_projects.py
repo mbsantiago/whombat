@@ -32,6 +32,48 @@ class AnnotationProjectAPI(
     _model = models.AnnotationProject
     _schema = schemas.AnnotationProject
 
+    async def create(
+        self,
+        session: AsyncSession,
+        name: str,
+        description: str,
+        annotation_instructions: str | None = None,
+        **kwargs,
+    ) -> schemas.AnnotationProject:
+        """Create an annotation project.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        name
+            Name of the annotation project.
+        description
+            Description of the annotation project.
+        annotation_instructions
+            Intructions for annotators on how to successfully annotate
+            an annotation task. This is important for ensuring that
+            annotations are consistent across annotators, and provides
+            a unambiguous definition of what a completed annotation
+            task should look like.
+        **kwargs
+            Additional keyword arguments to pass to the creation.
+
+        Returns
+        -------
+        schemas.AnnotationProject
+            Created annotation project.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.AnnotationProjectCreate(
+                name=name,
+                description=description,
+                annotation_instructions=annotation_instructions,
+            ),
+            **kwargs,
+        )
+
     async def add_tag(
         self,
         session: AsyncSession,
@@ -198,13 +240,11 @@ class AnnotationProjectAPI(
         except exceptions.NotFoundError:
             annotation_project = await self.create(
                 session,
-                schemas.AnnotationProjectCreate(
-                    uuid=data.uuid,
-                    name=data.name,
-                    description=data.description or "",
-                    annotation_instructions=data.instructions or "",
-                    created_on=data.created_on,
-                ),
+                name=data.name,
+                description=data.description or "",
+                annotation_instructions=data.instructions or "",
+                uuid=data.uuid,
+                created_on=data.created_on,
             )
 
         for clip_annotation in data.clip_annotations:

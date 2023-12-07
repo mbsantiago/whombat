@@ -8,7 +8,7 @@ from pydantic import Field
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.users import SimpleUser
 
-__all__ = ["Note", "NoteUpdate", "NotePostCreate", "NoteCreate"]
+__all__ = ["Note", "NoteUpdate", "NoteCreate"]
 
 
 class NoteCreate(BaseSchema):
@@ -24,15 +24,10 @@ class NoteCreate(BaseSchema):
 
     is_issue: bool = False
 
-
-class NotePostCreate(NoteCreate):
-    """Schema for creating notes."""
-
-    created_by_id: UUID
-    """The id of the user who created the note."""
+    created_by_id: UUID | None = None
 
 
-class Note(NotePostCreate):
+class Note(NoteCreate):
     """Schema for Note objects returned to the user."""
 
     id: int

@@ -124,10 +124,11 @@ class BaseAPI(
         )
         return [self._schema.model_validate(obj) for obj in objs], count
 
-    async def create(
+    async def create_from_data(
         self,
         session: AsyncSession,
         data: CreateSchema,
+        **kwargs,
     ) -> WhombatSchema:
         """Create an object.
 
@@ -137,13 +138,15 @@ class BaseAPI(
             The SQLAlchemy AsyncSession of the database to use.
         data
             The data to use for creation of the object.
+        **kwargs
+            Additional keyword arguments to pass to the creation function.
 
         Returns
         -------
         WhombatSchema
             The created object.
         """
-        db_obj = await create_object(session, self._model, data)
+        db_obj = await create_object(session, self._model, data, **kwargs)
         obj = self._schema.model_validate(db_obj)
         self._cache[self._get_pk_from_obj(obj)] = obj
         return obj
@@ -152,7 +155,7 @@ class BaseAPI(
         self,
         session: AsyncSession,
         data: Sequence[CreateSchema],
-    ) -> None:
+    ) -> None | Sequence[WhombatSchema]:
         """Create many objects.
 
         Parameters

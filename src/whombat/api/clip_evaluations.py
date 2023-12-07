@@ -1,24 +1,25 @@
 """API functions to interact with clip evaluations."""
+from typing import Sequence
 from uuid import UUID
 
-from typing import Sequence
 from soundevent import data
 from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import models, schemas
-from whombat.api import clip_annotations, features
+from whombat.api.clip_annotations import clip_annotations
 from whombat.api.clip_predictions import clip_predictions
-from whombat.api.sound_event_evaluations import sound_event_evaluations
-from whombat.filters.base import Filter
-from whombat.filters.sound_event_evaluations import ClipEvaluationFilter
 from whombat.api.common import (
     BaseAPI,
     create_object,
     delete_object,
     update_object,
 )
+from whombat.api.features import features
+from whombat.api.sound_event_evaluations import sound_event_evaluations
+from whombat.filters.base import Filter
+from whombat.filters.sound_event_evaluations import ClipEvaluationFilter
 
 
 class ClipEvaluationAPI(
@@ -31,6 +32,51 @@ class ClipEvaluationAPI(
     ]
 ):
     """API for clip evaluations."""
+
+    _model = models.ClipEvaluation
+    _schema = schemas.ClipEvaluation
+
+    async def create(
+        self,
+        session: AsyncSession,
+        evaluation: schemas.Evaluation,
+        clip_annotation: schemas.ClipAnnotation,
+        clip_prediction: schemas.ClipPrediction,
+        score: float = 0,
+        **kwargs,
+    ) -> schemas.ClipEvaluation:
+        """Create a clip evaluation.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        evaluation
+            The evaluation to which the clip evaluation belongs.
+        clip_annotation
+            The annotations used as ground truth.
+        clip_prediction
+            The predictions to evaluate.
+        score
+            An overall score for the clip evaluation.
+        **kwargs
+            Additional keyword arguments to pass at creation (e.g. uuid).
+
+        Returns
+        -------
+        schemas.ClipEvaluation
+            Created clip evaluation.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.ClipEvaluationCreate(
+                evaluation_id=evaluation.id,
+                clip_annotation_id=clip_annotation.id,
+                clip_prediction_id=clip_prediction.id,
+                score=score,
+            ),
+            **kwargs,
+        )
 
     async def add_metric(
         self,
@@ -168,13 +214,11 @@ class ClipEvaluationAPI(
 
         obj = await self.create(
             session,
-            schemas.ClipEvaluationCreate(
-                uuid=data.uuid,
-                clip_annotation_id=clip_annotation.id,
-                clip_prediction_id=clip_prediction.id,
-                evaluation_id=evaluation.id,
-                score=data.score or 1,
-            ),
+            clip_annotation=clip_annotation,
+            clip_prediction=clip_prediction,
+            evaluation=evaluation,
+            score=data.score or 1,
+            uuid=data.uuid,
         )
 
         for feature in data.metrics:
@@ -224,10 +268,7 @@ class ClipEvaluationAPI(
             uuid=obj.uuid,
             annotations=annotations,
             predictions=predictions,
-            metrics=[
-                features.to_soundevent(feat)
-                for feat in obj.metrics
-            ],
+            metrics=[features.to_soundevent(feat) for feat in obj.metrics],
             matches=[
                 sound_event_evaluations.to_soundevent(se_eval)
                 for se_eval in se_evaluations
@@ -259,7 +300,7 @@ class ClipEvaluationAPI(
 
     @classmethod
     def _key_fn(
-        cls, obj: schemas.ClipEvaluation | models.ClipEvaluation
+        cls, obj: models.ClipEvaluation | schemas.ClipEvaluationCreate
     ) -> tuple[int, int, int]:
         return (
             obj.evaluation_id,

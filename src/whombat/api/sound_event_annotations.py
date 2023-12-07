@@ -7,9 +7,12 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api import common, notes, tags, users
+from whombat.api import common
 from whombat.api.common import BaseAPI
+from whombat.api.notes import notes
 from whombat.api.sound_events import sound_events
+from whombat.api.tags import tags
+from whombat.api.users import users
 
 __all__ = [
     "SoundEventAnnotationAPI",
@@ -28,6 +31,45 @@ class SoundEventAnnotationAPI(
 ):
     _model = models.SoundEventAnnotation
     _schema = schemas.SoundEventAnnotation
+
+    async def create(
+        self,
+        session: AsyncSession,
+        sound_event: schemas.SoundEvent,
+        clip_annotation: schemas.ClipAnnotation,
+        created_by: schemas.SimpleUser | None = None,
+        **kwargs,
+    ) -> schemas.SoundEventAnnotation:
+        """Create a sound event annotation.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        sound_event
+            The sound event to annotate.
+        clip_annotation
+            The clip annotation to add the annotation to.
+        created_by
+            The user that created the annotation. Defaults to None.
+        **kwargs
+            Additional keyword arguments to use when creating the annotation,
+            (e.g. `uuid` or `created_on`.)
+
+        Returns
+        -------
+        schemas.SoundEventAnnotation
+            The created sound event annotation.
+        """
+        return await self.create_from_data(
+            session,
+            schemas.SoundEventAnnotationPostCreate(
+                sound_event_id=sound_event.id,
+                clip_annotation_id=clip_annotation.id,
+                created_by_id=created_by.id if created_by else None,
+            ),
+            **kwargs,
+        )
 
     async def add_tag(
         self,
@@ -257,10 +299,9 @@ class SoundEventAnnotationAPI(
             The created annotation.
         """
 
-        user_id = None
+        user = None
         if data.created_by is not None:
             user = await users.from_soundevent(session, data.created_by)
-            user_id = user.id
 
         sound_event = await sound_events.from_soundevent(
             session,
@@ -270,13 +311,11 @@ class SoundEventAnnotationAPI(
 
         return await self.create(
             session,
-            schemas.SoundEventAnnotationPostCreate(
-                created_on=data.created_on,
-                uuid=data.uuid,
-                clip_annotation_id=clip_annotation.id,
-                created_by_id=user_id,
-                sound_event_id=sound_event.id,
-            ),
+            clip_annotation=clip_annotation,
+            created_by=user,
+            sound_event=sound_event,
+            uuid=data.uuid,
+            created_on=data.created_on,
         )
 
     async def _update_from_soundevent(

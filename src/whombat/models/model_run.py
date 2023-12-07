@@ -12,8 +12,8 @@ from whombat.models.evaluation import Evaluation
 
 if TYPE_CHECKING:
     from whombat.models.evaluation_set import (
-        EvaluationSetModelRun,
         EvaluationSet,
+        EvaluationSetModelRun,
     )
 
 __all__ = [
@@ -102,9 +102,7 @@ class ModelRun(Base):
     )
 
     # Backrefs
-    evaluation_sets: orm.Mapped[
-        list["EvaluationSet"]
-    ] = orm.relationship(
+    evaluation_sets: orm.Mapped[list["EvaluationSet"]] = orm.relationship(
         secondary="evaluation_set_model_run",
         back_populates="model_runs",
         init=False,
