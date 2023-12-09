@@ -1,9 +1,10 @@
 """Schemas for handling User Runs."""
 from uuid import UUID, uuid4
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from whombat.schemas.base import BaseSchema
+from whombat.schemas.users import SimpleUser
 
 __all__ = [
     "UserRunCreate",
@@ -12,38 +13,25 @@ __all__ = [
 ]
 
 
-class UserRunCreate(BaseSchema):
+class UserRunCreate(BaseModel):
     """Model Run creation schema."""
 
-    uuid: UUID = Field(default_factory=uuid4)
-    """Unique identifier of the user run."""
 
-    user_id: UUID
-    """ID of the user who created the user run."""
-
-
-class UserRun(UserRunCreate):
+class UserRun(BaseSchema):
     """Schema of a user run as returned to the user."""
 
-    id: int
+    uuid: UUID
+    """Unique identifier of the user run."""
+
+    id: int = Field(..., exclude=True)
     """The databset identifier of the model run."""
 
+    user: SimpleUser
+    """The user who created the user run."""
 
-class UserRunUpdate(BaseSchema):
+
+class UserRunUpdate(BaseModel):
     """Schema for updating a user run."""
 
     uuid: UUID = Field(default_factory=uuid4)
     """Unique identifier of the user run."""
-
-    user_id: UUID
-    """ID of the user who created the user run."""
-
-
-class UserRunPredictionCreate(BaseSchema):
-    """Schema for creating a user run prediction."""
-
-    user_run_id: int
-    """ID of the user run."""
-
-    clip_prediction_id: int
-    """ID of the clip prediction."""

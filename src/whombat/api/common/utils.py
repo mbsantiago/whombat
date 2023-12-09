@@ -2,6 +2,7 @@
 
 import logging
 import re
+from dataclasses import MISSING, fields
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
@@ -10,10 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy.sql._typing import (
-    _ColumnExpressionArgument,
-    _ColumnsClauseArgument,
-)
+from sqlalchemy.sql._typing import _ColumnExpressionArgument
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import exceptions, models
@@ -312,15 +310,21 @@ async def create_objects(
     returning
         The columns to return, by default None.
     """
-    stmt = insert(model).values([get_values(obj) for obj in data])
+    values = [get_values(obj) for obj in data]
+    default_values, default_factories = _get_defaults(model)
+    values = [
+        _add_defaults(value, default_values, default_factories)
+        for value in values
+    ]
+    stmt = insert(model).values(values)
     await session.execute(stmt)
 
 
 async def create_objects_without_duplicates(
     session: AsyncSession,
     model: type[A],
-    data: Sequence[B],
-    key: Callable[[A | B], Any],
+    data: Sequence[dict],
+    key: Callable[[dict], Any],
     key_column: ColumnElement | InstrumentedAttribute,
     return_all: bool = False,
 ) -> Sequence[A]:
@@ -337,9 +341,10 @@ async def create_objects_without_duplicates(
     model
         The model to create.
     data
-        The data to use for creation of the objects.
+        The data to use for creation of the objects. The data should be a list
+        of dictionaries with the data for each object.
     key
-        A function that returns a key for each object. If two objects have the
+        A function that returns a key for each dict. If two objects have the
         same key, only one will be created. Also this key value will be used to
         query the database for existing objects.
     key_column
@@ -364,35 +369,30 @@ async def create_objects_without_duplicates(
 
     # Get existing objects
     all_keys = [key(obj) for obj in data]
-
-    logger.debug("Getting existing objects")
-
     existing, _ = await get_objects(
         session,
         model,
         limit=-1,
         filters=[key_column.in_(all_keys)],
     )
-    existing_keys = {key(obj) for obj in existing}
+    existing_keys = {key(obj.__dict__) for obj in existing}
 
     # Create missing objects
     missing = [obj for obj in data if key(obj) not in existing_keys]
-
-    logger.debug("Number of missing objects: %s", len(missing))
-
     if not missing and not return_all:
         return []
 
     values = [get_values(obj) for obj in missing]
+    default_values, default_factories = _get_defaults(model)
+    values = [
+        _add_defaults(value, default_values, default_factories)
+        for value in values
+    ]
     keys = [key(obj) for obj in missing]
-
-    logger.debug("Inserting missing objects")
 
     stmt = insert(model).values(values)
     await session.execute(stmt)
     await session.flush()
-
-    logger.debug("Getting created objects")
 
     if return_all:
         created, _ = await get_objects(
@@ -952,3 +952,61 @@ async def remove_feature_from_object(
     await session.flush()
     await session.refresh(obj)
     return obj
+
+
+def _get_defaults(model: type[A]):
+    """Get the default values from a model.
+
+    Parameters
+    ----------
+    model : type[A]
+        The model to get the defaults from.
+
+    Returns
+    -------
+    dict
+        The defaults.
+    """
+    defaults = {}
+    default_factories = {}
+
+    for field in fields(model):
+        if field.default is not MISSING:
+            defaults[field.name] = field.default
+
+        elif (
+            field.default_factory is not MISSING
+            and field.default_factory != list
+        ):
+            default_factories[field.name] = field.default_factory
+
+    return defaults, default_factories
+
+
+def _add_defaults(
+    data: dict,
+    defaults: dict,
+    default_factories: dict,
+) -> dict:
+    """Add default values to a dict.
+
+    Parameters
+    ----------
+    data : dict
+        The dict to add the defaults to.
+    model : type[A]
+        The model to get the defaults from.
+
+    Returns
+    -------
+    dict
+        The dict with the defaults added.
+    """
+    for key, value in defaults.items():
+        if key not in data:
+            data[key] = value
+
+    for key, value in default_factories.items():
+        if key not in data:
+            data[key] = value()
+    return data

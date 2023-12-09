@@ -37,7 +37,6 @@ def clear_api_cache() -> None:
     api.sound_event_annotations._cache.clear()
     api.clip_annotations._cache.clear()
     api.annotation_tasks._cache.clear()
-    api.status_badges._cache.clear()
     api.annotation_projects._cache.clear()
     api.sound_event_predictions._cache.clear()
     api.clip_predictions._cache.clear()

@@ -325,8 +325,8 @@ async def test_get_or_create_tags_with_nonexisting_tags(session: AsyncSession):
     """Test getting or creating tags."""
     # Arrange
     tags_to_create = [
-        schemas.TagCreate(key="test_key1", value="test_value1"),
-        schemas.TagCreate(key="test_key2", value="test_value2"),
+        dict(key="test_key1", value="test_value1"),
+        dict(key="test_key2", value="test_value2"),
     ]
 
     # Act
@@ -350,8 +350,8 @@ async def test_get_or_create_tags_with_existing_tags(session: AsyncSession):
     """Test getting or creating tags."""
     # Arrange
     tags_to_create = [
-        schemas.TagCreate(key="test_key1", value="test_value1"),
-        schemas.TagCreate(key="test_key2", value="test_value2"),
+        dict(key="test_key1", value="test_value1"),
+        dict(key="test_key2", value="test_value2"),
     ]
     await api.tags.create(
         session,
@@ -381,8 +381,8 @@ async def test_get_or_create_tags_with_existing_and_nonexisting_tags(
     """Test getting or creating tags, when some exist and others dont."""
     # Arrange
     tags_to_create = [
-        schemas.TagCreate(key="test_key1", value="test_value1"),
-        schemas.TagCreate(key="test_key2", value="test_value2"),
+        dict(key="test_key1", value="test_value1"),
+        dict(key="test_key2", value="test_value2"),
     ]
     await api.tags.create(
         session,

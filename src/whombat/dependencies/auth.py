@@ -13,7 +13,7 @@ from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyAccessTokenDatabase,
 )
 
-from whombat import models
+from whombat import models, schemas
 from whombat.dependencies.session import Session
 from whombat.dependencies.users import get_user_manager
 
@@ -65,4 +65,11 @@ current_active_user = fastapi_users.current_user(active=True)
 """The current active user."""
 
 
-ActiveUser = Annotated[models.User, Depends(current_active_user)]
+def get_current_user(
+    current_active_user: models.User = Depends(current_active_user),
+) -> schemas.SimpleUser:
+    """Get the current user."""
+    return schemas.SimpleUser.model_validate(current_active_user)
+
+
+ActiveUser = Annotated[schemas.SimpleUser, Depends(get_current_user)]

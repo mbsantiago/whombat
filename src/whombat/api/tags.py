@@ -137,8 +137,8 @@ class TagAPI(
     def _get_pk_condition(self, pk: tuple[str, str]):
         return and_(self._model.key == pk[0], self._model.value == pk[1])
 
-    def _key_fn(self, obj: models.Tag | schemas.TagCreate) -> tuple[str, str]:
-        return obj.key, obj.value
+    def _key_fn(self, obj: dict):
+        return (obj.get("key"), obj.get("value"))
 
     def _get_key_column(self):
         return tuple_(

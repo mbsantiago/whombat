@@ -1,4 +1,6 @@
 """Filters for Notes."""
+from uuid import UUID
+
 from sqlalchemy import Select
 
 from whombat import models
@@ -9,7 +11,6 @@ __all__ = [
     "CreatedByFilter",
     "CreatedAtFilter",
     "IssueFilter",
-    "UUIDFilter",
     "NoteFilter",
 ]
 
@@ -25,21 +26,18 @@ CreatedAtFilter = base.date_filter(models.Note.created_on)
 IssueFilter = base.boolean_filter(models.Note.is_issue)
 """Filter notes by whether they are issues or not."""
 
-UUIDFilter = base.uuid_filter(models.Note.uuid)
-"""Filter notes by their UUID."""
 
-
-class ProjectFilter(base.Filter):
+class AnnotationProjectFilter(base.Filter):
     """Get notes created within a specific annotation project."""
 
-    eq: int | None = None
+    eq: UUID | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
         if not self.eq:
             return query
 
-        query = (
+        return (
             query.join(
                 models.SoundEventAnnotationNote,
                 models.SoundEventAnnotationNote.note_id == models.Note.id,
@@ -62,10 +60,96 @@ class ProjectFilter(base.Filter):
                 models.AnnotationTask,
                 models.AnnotationTask.clip_id == models.ClipAnnotation.clip_id,
             )
+            .join(
+                models.AnnotationProject,
+                models.AnnotationProject.id
+                == models.AnnotationTask.annotation_project_id,
+            )
+            .where(
+                models.AnnotationProject.uuid == self.eq,
+            )
         )
 
-        return query.where(
-            models.AnnotationTask.annotation_project_id == self.eq
+
+class RecordingFilter(base.Filter):
+    """Get notes created within a specific recording."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if not self.eq:
+            return query
+
+        return (
+            query.join(
+                models.RecordingNote,
+                models.RecordingNote.note_id == models.Note.id,
+            )
+            .join(
+                models.Recording,
+                models.Recording.id == models.RecordingNote.recording_id,
+            )
+            .where(
+                models.Recording.uuid == self.eq,
+            )
+        )
+
+
+class SoundEventAnnotationFilter(base.Filter):
+    """Get notes created within a specific sound event annotation."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if not self.eq:
+            return query
+
+        return (
+            query.join(
+                models.SoundEventAnnotationNote,
+                models.SoundEventAnnotationNote.note_id == models.Note.id,
+            )
+            .join(
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.id
+                == models.SoundEventAnnotationNote.sound_event_annotation_id,
+            )
+            .where(
+                models.SoundEventAnnotation.uuid == self.eq,
+            )
+        )
+
+
+class ClipAnnotationFilter(base.Filter):
+    """Get notes created within a specific clip annotation."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if not self.eq:
+            return query
+
+        return (
+            query.join(
+                models.SoundEventAnnotationNote,
+                models.SoundEventAnnotationNote.note_id == models.Note.id,
+            )
+            .join(
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.id
+                == models.SoundEventAnnotationNote.sound_event_annotation_id,
+            )
+            .join(
+                models.ClipAnnotation,
+                models.ClipAnnotation.id
+                == models.SoundEventAnnotation.clip_annotation_id,
+            )
+            .where(
+                models.ClipAnnotation.uuid == self.eq,
+            )
         )
 
 
@@ -74,6 +158,8 @@ NoteFilter = base.combine(
     created_by=CreatedByFilter,
     created_on=CreatedAtFilter,
     is_issue=IssueFilter,
-    uuid=UUIDFilter,
-    project=ProjectFilter,
+    annotation_project=AnnotationProjectFilter,
+    recording=RecordingFilter,
+    sound_event_annotation=SoundEventAnnotationFilter,
+    clip_annotation=ClipAnnotationFilter,
 )

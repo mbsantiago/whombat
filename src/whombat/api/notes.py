@@ -62,10 +62,8 @@ class NoteAPI(
             schemas.NoteCreate(
                 message=message,
                 is_issue=is_issue,
-                created_by_id=created_by.id
-                if created_by is not None
-                else None,
             ),
+            created_by_id=created_by.id if created_by is not None else None,
             **kwargs,
         )
 
@@ -101,12 +99,12 @@ class NoteAPI(
         return await self.create_from_data(
             session,
             schemas.NoteCreate(
-                created_on=data.created_on,
-                uuid=data.uuid,
                 message=data.message,
-                created_by_id=user_id,
                 is_issue=data.is_issue,
             ),
+            created_by_id=user_id,
+            uuid=data.uuid,
+            created_on=data.created_on,
         )
 
     def to_soundevent(

@@ -102,11 +102,9 @@ class EvaluationAPI(
         await create_object(
             session,
             models.EvaluationMetric,
-            schemas.EvaluationMetricCreate(
-                evaluation_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=metric.value,
-            ),
+            evaluation_id=obj.id,
+            feature_name_id=feature_name.id,
+            value=metric.value,
         )
 
         obj = obj.model_copy(

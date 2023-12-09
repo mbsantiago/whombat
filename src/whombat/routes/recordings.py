@@ -1,10 +1,10 @@
 """REST API routes for recordings."""
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
-from whombat.filters.recording_notes import RecordingNoteFilter
-from whombat.filters.recording_tags import RecordingTagFilter
 from whombat.filters.recordings import RecordingFilter
 from whombat.routes.types import Limit, Offset
 
@@ -48,13 +48,10 @@ async def get_recordings(
 )
 async def get_recording(
     session: Session,
-    recording_id: int,
+    recording_uuid: UUID,
 ):
     """Get a recording."""
-    return await api.recordings.get_by_id(
-        session,
-        recording_id,
-    )
+    return await api.recordings.get(session, recording_uuid)
 
 
 @recording_router.patch(
@@ -63,15 +60,12 @@ async def get_recording(
 )
 async def update_recording(
     session: Session,
-    recording_id: int,
-    recording: schemas.RecordingUpdate,
+    recording_uuid: UUID,
+    data: schemas.RecordingUpdate,
 ):
     """Update a recording."""
-    response = await api.recordings.update(
-        session,
-        recording_id,
-        recording,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    response = await api.recordings.update(session, recording, data)
     await session.commit()
     return response
 
@@ -82,15 +76,14 @@ async def update_recording(
 )
 async def add_recording_tag(
     session: Session,
-    recording_id: int,
-    tag_id: int,
+    recording_uuid: UUID,
+    key: str,
+    value: str,
 ):
     """Add a tag to a recording."""
-    response = await api.recordings.add_tag(
-        session,
-        recording_id,
-        tag_id,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    tag = await api.tags.get(session, (key, value))
+    response = await api.recordings.add_tag(session, recording, tag)
     await session.commit()
     return response
 
@@ -101,15 +94,14 @@ async def add_recording_tag(
 )
 async def remove_recording_tag(
     session: Session,
-    recording_id: int,
-    tag_id: int,
+    recording_uuid: UUID,
+    key: str,
+    value: str,
 ):
     """Remove a tag from a recording."""
-    response = await api.recordings.remove_tag(
-        session,
-        recording_id,
-        tag_id,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    tag = await api.tags.get(session, (key, value))
+    response = await api.recordings.remove_tag(session, recording, tag)
     await session.commit()
     return response
 
@@ -120,44 +112,19 @@ async def remove_recording_tag(
 )
 async def add_recording_note(
     session: Session,
-    recording_id: int,
+    recording_uuid: UUID,
     data: schemas.NoteCreate,
     user: ActiveUser,
 ):
     """Add a note to a recording."""
+    recording = await api.recordings.get(session, recording_uuid)
     note = await api.notes.create(
         session,
-        schemas.NotePostCreate(
-            created_by_id=user.id,
-            **dict(data),
-        ),
+        message=data.message,
+        is_issue=data.is_issue,
+        user=user,
     )
-    response = await api.recordings.add_note(
-        session,
-        recording_id,
-        note.id,
-    )
-    await session.commit()
-    return response
-
-
-@recording_router.patch(
-    "/detail/notes/",
-    response_model=schemas.Recording,
-)
-async def update_recording_note(
-    session: Session,
-    recording_id: int,
-    note_id: int,
-    data: schemas.NoteUpdate,
-):
-    """Update a note on a recording."""
-    response = await api.recordings.update_note(
-        session,
-        recording_id,
-        note_id,
-        data,
-    )
+    response = await api.recordings.add_note(session, recording, note)
     await session.commit()
     return response
 
@@ -168,15 +135,13 @@ async def update_recording_note(
 )
 async def remove_recording_note(
     session: Session,
-    recording_id: int,
-    note_id: int,
+    recording_uuid: UUID,
+    note_uuid: UUID,
 ):
     """Remove a note from a recording."""
-    response = await api.recordings.remove_note(
-        session,
-        recording_id,
-        note_id,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    note = await api.notes.get(session, note_uuid)
+    response = await api.recordings.remove_note(session, recording, note)
     await session.commit()
     return response
 
@@ -187,17 +152,14 @@ async def remove_recording_note(
 )
 async def add_recording_feature(
     session: Session,
-    recording_id: int,
-    feature_name_id: int,
+    recording_uuid: UUID,
+    name: str,
     value: float,
 ):
     """Add a feature to a recording."""
-    response = await api.recordings.add_feature(
-        session,
-        recording_id,
-        feature_name_id,
-        value,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
+    response = await api.recordings.add_feature(session, recording, feature)
     await session.commit()
     return response
 
@@ -208,15 +170,14 @@ async def add_recording_feature(
 )
 async def remove_recording_feature(
     session: Session,
-    recording_id: int,
-    feature_name_id: int,
+    recording_uuid: UUID,
+    name: str,
+    value: float,
 ):
     """Remove a feature from a recording."""
-    response = await api.recordings.remove_feature(
-        session,
-        recording_id,
-        feature_name_id,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
+    response = await api.recordings.remove_feature(session, recording, feature)
     await session.commit()
     return response
 
@@ -227,70 +188,17 @@ async def remove_recording_feature(
 )
 async def update_recording_feature(
     session: Session,
-    recording_id: int,
-    feature_name_id: int,
+    recording_uuid: UUID,
+    name: str,
     value: float,
 ):
     """Update a feature on a recording."""
+    recording = await api.recordings.get(session, recording_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
     response = await api.recordings.update_feature(
         session,
-        recording_id,
-        feature_name_id,
-        value,
+        recording,
+        feature,
     )
     await session.commit()
     return response
-
-
-@recording_router.get(
-    "/notes/",
-    response_model=schemas.Page[schemas.RecordingNote],
-)
-async def get_recording_notes(
-    session: Session,
-    limit: Limit = 10,
-    offset: Offset = 0,
-    sort_by: str = "-created_on",
-    filter: RecordingNoteFilter = Depends(RecordingNoteFilter),  # type: ignore
-):
-    """Get a page of notes for a recording."""
-    notes, total = await api.recordings.get_notes(
-        session,
-        limit=limit,
-        offset=offset,
-        filters=[filter],
-        sort_by=sort_by,
-    )
-    return schemas.Page(
-        items=notes,
-        total=total,
-        offset=offset,
-        limit=limit,
-    )
-
-
-@recording_router.get(
-    "/tags/",
-    response_model=schemas.Page[schemas.RecordingTag],
-)
-async def get_recording_tags(
-    session: Session,
-    limit: Limit = 10,
-    offset: Offset = 0,
-    sort_by: str = "-created_on",
-    filter: RecordingTagFilter = Depends(RecordingTagFilter),  # type: ignore
-):
-    """Get a page of tags for a recording."""
-    tags, total = await api.recordings.get_tags(
-        session,
-        limit=limit,
-        offset=offset,
-        filters=[filter],
-        sort_by=sort_by,
-    )
-    return schemas.Page(
-        items=tags,
-        total=total,
-        offset=offset,
-        limit=limit,
-    )

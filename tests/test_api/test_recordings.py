@@ -907,10 +907,7 @@ async def test_create_recordings(
     # Act
     recording_list = await api.recordings.create_many(
         session,
-        [
-            schemas.RecordingCreate(path=path1),
-            schemas.RecordingCreate(path=path2),
-        ],
+        [dict(path=path1), dict(path=path2)],
         audio_dir=audio_dir,
     )
 
@@ -941,10 +938,7 @@ async def test_create_recordings_ignores_files_already_in_the_dataset(
     # Act
     recording_list = await api.recordings.create_many(
         session,
-        [
-            schemas.RecordingCreate(path=path1),
-            schemas.RecordingCreate(path=path2),
-        ],
+        [dict(path=path1), dict(path=path2)],
         audio_dir=audio_dir,
     )
 
@@ -974,10 +968,7 @@ async def test_create_recordings_removes_hash_duplicates(
     # Act
     recording_list = await api.recordings.create_many(
         session,
-        [
-            schemas.RecordingCreate(path=path1),
-            schemas.RecordingCreate(path=path2),
-        ],
+        [dict(path=path1), dict(path=path2)],
         audio_dir=audio_dir,
     )
 
@@ -1015,10 +1006,7 @@ async def test_create_recording_avoids_hash_duplicates(
     # Act
     await api.recordings.create_many(
         session,
-        [
-            schemas.RecordingCreate(path=path1),
-            schemas.RecordingCreate(path=path2),
-        ],
+        [dict(path=path1), dict(path=path2)],
         audio_dir=audio_dir,
     )
 
@@ -1039,9 +1027,7 @@ async def test_create_recordings_with_time_expansion(
     # Act
     recording_list = await api.recordings.create_many(
         session,
-        [
-            schemas.RecordingCreate(path=path1, time_expansion=5),
-        ],
+        [dict(path=path1, time_expansion=5)],
         audio_dir=audio_dir,
     )
 

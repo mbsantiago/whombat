@@ -60,9 +60,9 @@ class SoundEventAPI(
         return await self.create_from_data(
             session,
             schemas.SoundEventCreate(
-                recording_id=recording.id,
                 geometry=geometry,
             ),
+            recording_id=recording.id,
             **kwargs,
         )
 
@@ -104,11 +104,9 @@ class SoundEventAPI(
         await common.create_object(
             session,
             models.SoundEventFeature,
-            data=schemas.SoundEventFeatureCreate(
-                sound_event_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=feature.value,
-            ),
+            value=feature.value,
+            sound_event_id=obj.id,
+            feature_name_id=feature_name.id,
         )
 
         obj = obj.model_copy(
@@ -263,7 +261,7 @@ class SoundEventAPI(
         }
 
         data = [
-            schemas.SoundEventFeatureCreate(
+            dict(
                 sound_event_id=sound_event_id,
                 feature_name_id=feature_mapping[feature_name].id,
                 value=value,

@@ -272,10 +272,10 @@ class DatasetAPI(
             session,
             models.DatasetRecording,
             data=schemas.DatasetRecordingCreate(
-                dataset_id=obj.id,
-                recording_id=recording.id,
                 path=recording.path.relative_to(obj.audio_dir),
             ),
+            dataset_id=obj.id,
+            recording_id=recording.id,
         )
 
         obj = obj.model_copy(
@@ -313,7 +313,7 @@ class DatasetAPI(
                 continue
 
             data.append(
-                schemas.DatasetRecordingCreate(
+                dict(
                     dataset_id=obj.id,
                     recording_id=recording.id,
                     path=recording.path.relative_to(obj.audio_dir),
@@ -324,7 +324,7 @@ class DatasetAPI(
             session,
             models.DatasetRecording,
             data,
-            key=lambda x: (x.dataset_id, x.recording_id),
+            key=lambda x: (x.get("dataset_id"), x.get("recording_id")),
             key_column=tuple_(
                 models.DatasetRecording.dataset_id,
                 models.DatasetRecording.recording_id,
@@ -553,8 +553,7 @@ class DatasetAPI(
         recs, _ = await self.get_recordings(session, obj, limit=-1)
 
         soundevent_recordings = [
-            recordings.to_soundevent(r, audio_dir=audio_dir)
-            for r in recs
+            recordings.to_soundevent(r, audio_dir=audio_dir) for r in recs
         ]
 
         return data.Dataset(
@@ -641,7 +640,7 @@ class DatasetAPI(
 
         recording_list = await recordings.create_many(
             session,
-            [schemas.RecordingCreate(path=file) for file in file_list],
+            [dict(path=file) for file in file_list],
             audio_dir=audio_dir,
         )
 

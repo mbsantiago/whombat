@@ -89,8 +89,8 @@ class EvaluationSetFilter(base.Filter):
 
 
 ModelRunFilter = base.combine(
-    model_name=NameFilter,
-    model_version=VersionFilter,
+    name=NameFilter,
+    version=VersionFilter,
     created_on=CreatedOnFilter,
     evaluated=HasEvaluationFilter,
     score=ScoreFilter,

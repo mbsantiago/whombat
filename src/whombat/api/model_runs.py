@@ -97,10 +97,8 @@ class ModelRunAPI(
             await create_object(
                 session,
                 models.ModelRunPrediction,
-                schemas.ModelRunPredictionCreate(
-                    model_run_id=obj.id,
-                    clip_prediction_id=clip_prediction.id,
-                ),
+                model_run_id=obj.id,
+                clip_prediction_id=clip_prediction.id,
             )
         except exceptions.DuplicateObjectError as err:
             if raise_if_exists:

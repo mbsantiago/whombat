@@ -1,5 +1,6 @@
 """REST API routes for audio."""
 from io import BytesIO
+from uuid import UUID
 
 import soundfile as sf
 from fastapi import APIRouter, Depends, Header, Response
@@ -19,7 +20,7 @@ CHUNK_SIZE = 1024 * 1024
 async def stream_recording_audio(
     session: Session,
     settings: WhombatSettings,
-    recording_id: int,
+    recording_uuid: UUID,
     speed: float = 1,
     # audio_parameters: schemas.AudioParameters = Depends(
     #     schemas.AudioParameters
@@ -30,11 +31,11 @@ async def stream_recording_audio(
 
     Parameters
     ----------
-    session : Session
+    session
         Database session.
-    settings : WhombatSettings
+    settings
         Whombat settings.
-    recording_id : int
+    recording_uuid
         The ID of the recording.
 
     Returns
@@ -42,7 +43,7 @@ async def stream_recording_audio(
     Response
         The audio file.
     """
-    recording = await api.recordings.get_by_id(session, recording_id)
+    recording = await api.recordings.get(session, recording_uuid)
     full_path = settings.audio_dir / recording.path
 
     start, end = range.replace("bytes=", "").split("-")
@@ -97,7 +98,7 @@ async def stream_recording_audio(
 async def download_recording_audio(
     session: Session,
     settings: WhombatSettings,
-    recording_id: int,
+    recording_uuid: UUID,
     start_time: float | None = None,
     end_time: float | None = None,
     audio_parameters: schemas.AudioParameters = Depends(
@@ -108,19 +109,19 @@ async def download_recording_audio(
 
     Parameters
     ----------
-    session : Session
+    session
         Database session.
-    settings : WhombatSettings
+    settings
         Whombat settings.
-    recording_id : int
-        The ID of the recording.
-    start_time : float, optional
+    recording_uuid
+        The UUID of the recording.
+    start_time
         The start time of the audio to return, by default None. If None, the
         audio will start at the beginning of the recording.
-    end_time : float, optional
+    end_time
         The end time of the audio to return, by default None. If None, the
         audio will end at the end of the recording.
-    audio_parameters : schemas.AudioParameters, optional
+    audio_parameters
         Audio parameters to use when processing the audio. Includes
         resampling and filtering parameters.
 
@@ -129,9 +130,10 @@ async def download_recording_audio(
     Response
         The audio file.
     """
-    audio = await api.audio.load(
-        session,
-        recording_id,
+    recording = await api.recordings.get(session, recording_uuid)
+
+    audio = api.load_audio(
+        recording,
         start_time=start_time,
         end_time=end_time,
         audio_parameters=audio_parameters,

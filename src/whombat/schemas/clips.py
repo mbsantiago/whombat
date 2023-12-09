@@ -1,8 +1,8 @@
 """Schemas for handling clips."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
@@ -11,19 +11,12 @@ from whombat.schemas.recordings import Recording
 __all__ = [
     "Clip",
     "ClipCreate",
-    "ClipFeatureCreate",
     "ClipUpdate",
 ]
 
 
-class ClipCreate(BaseSchema):
+class ClipCreate(BaseModel):
     """Schema for creating a clip."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """The unique identifier of the clip."""
-
-    recording_id: int
-    """The id of the recording to which the clip belongs."""
 
     start_time: float
     """The start time of the clip."""
@@ -39,11 +32,20 @@ class ClipCreate(BaseSchema):
         return values
 
 
-class Clip(ClipCreate):
+class Clip(BaseSchema):
     """Schema for Clip objects returned to the user."""
 
-    id: int
+    uuid: UUID
+    """The unique identifier of the clip."""
+
+    id: int = Field(..., exclude=True)
     """The database id of the clip."""
+
+    start_time: float
+    """The start time of the clip."""
+
+    end_time: float
+    """The end time of the clip."""
 
     recording: Recording
     """Recording information for the clip."""
@@ -52,21 +54,8 @@ class Clip(ClipCreate):
     """The features associated with the clip."""
 
 
-class ClipUpdate(BaseSchema):
+class ClipUpdate(BaseModel):
     """Schema for updating a clip."""
 
     uuid: UUID | None = None
     """The unique identifier of the clip."""
-
-
-class ClipFeatureCreate(BaseSchema):
-    """Schema for creating a clip feature."""
-
-    clip_id: int
-    """The id of the clip to which the feature belongs."""
-
-    feature_name_id: int
-    """The id of the feature name."""
-
-    value: float
-    """The value of the feature."""

@@ -1,5 +1,5 @@
 """Schemas for handling Tags."""
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from whombat.schemas.base import BaseSchema
 
@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class TagCreate(BaseSchema):
+class TagCreate(BaseModel):
     """Schema for creating Tag objects."""
 
     key: str = Field(min_length=1, max_length=255)
@@ -21,18 +21,27 @@ class TagCreate(BaseSchema):
     """Value of the tag."""
 
 
-class Tag(TagCreate):
+class Tag(BaseSchema):
     """Schema for Tag objects returned to the user."""
 
-    id: int
+    id: int = Field(..., exclude=True)
     """Database ID of the tag."""
 
+    key: str
+    """Key of the tag."""
 
-class TagUpdate(BaseSchema):
+    value: str
+    """Value of the tag."""
+
+
+class TagUpdate(BaseModel):
     """Schema for updating Tag objects."""
 
     key: str | None = Field(default=None, min_length=1, max_length=255)
+    """Key of the tag."""
+
     value: str | None = Field(default=None, min_length=1, max_length=255)
+    """Value of the tag."""
 
 
 class PredictedTag(BaseSchema):

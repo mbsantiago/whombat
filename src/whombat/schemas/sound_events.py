@@ -1,8 +1,8 @@
 """Schemas for sound events."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field, computed_field
+from pydantic import BaseModel, Field, computed_field
 from soundevent.data.geometries import Geometry, GeometryType
 
 from whombat.schemas.base import BaseSchema
@@ -12,18 +12,11 @@ __all__ = [
     "SoundEventCreate",
     "SoundEvent",
     "SoundEventUpdate",
-    "SoundEventFeatureCreate",
 ]
 
 
-class SoundEventCreate(BaseSchema):
+class SoundEventCreate(BaseModel):
     """Schema for SoundEvent objects created by the user."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """The UUID of the sound event."""
-
-    recording_id: int
-    """The id of the recording to which the sound event belongs."""
 
     geometry: Geometry = Field(..., discriminator="type")
     """The geometry of the sound event."""
@@ -35,11 +28,18 @@ class SoundEventCreate(BaseSchema):
         return self.geometry.type
 
 
-class SoundEvent(SoundEventCreate):
+class SoundEvent(BaseSchema):
     """Public schema for handling sound events."""
 
-    id: int
+    uuid: UUID
+    """The uuid of the sound event."""
+
+    id: int = Field(..., exclude=True)
     """The id of the sound event."""
+
+    geometry: Geometry = Field(..., discriminator="type")
+
+    geometry_type: GeometryType
 
     features: list[Feature] = Field(default_factory=list)
     """The features associated with the sound event."""
@@ -50,16 +50,3 @@ class SoundEventUpdate(BaseSchema):
 
     geometry: Geometry = Field(..., discriminator="type")
     """The geometry of the sound event."""
-
-
-class SoundEventFeatureCreate(BaseSchema):
-    """Schema for SoundEventFeature objects created by the user."""
-
-    sound_event_id: int
-    """The id of the sound event to be associated with the feature."""
-
-    feature_name_id: int
-    """The id of the feature name to be associated with the sound event."""
-
-    value: float
-    """The value of the feature."""

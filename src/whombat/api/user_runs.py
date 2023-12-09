@@ -48,9 +48,7 @@ class UserRunAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.UserRunCreate(
-                user_id=user.id,
-            ),
+            user_id=user.id,
             **kwargs,
         )
 
@@ -86,10 +84,8 @@ class UserRunAPI(
             await create_object(
                 session,
                 models.UserRunPrediction,
-                schemas.UserRunPredictionCreate(
-                    user_run_id=obj.id,
-                    clip_prediction_id=clip_prediction.id,
-                ),
+                user_run_id=obj.id,
+                clip_prediction_id=clip_prediction.id,
             )
         except exceptions.DuplicateObjectError as err:
             if raise_if_exists:

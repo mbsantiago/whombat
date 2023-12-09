@@ -1,8 +1,9 @@
 """Schemas for Sound Event Predictions related objects."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, Field
+from soundevent.data import Geometry
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.sound_events import SoundEvent
@@ -12,65 +13,56 @@ __all__ = [
     "SoundEventPrediction",
     "SoundEventPredictionCreate",
     "SoundEventPredictionTag",
-    "SoundEventPredictionTagCreate",
     "SoundEventPredictionUpdate",
 ]
 
 
-class SoundEventPredictionCreate(BaseSchema):
+class SoundEventPredictionCreate(BaseModel):
     """Schema for creating a new sound event prediction."""
 
-    clip_prediction_id: int
-    """ID of the clip prediction to which the sound event prediction
-    belongs."""
-
-    sound_event_id: int
-    """ID of the sound event to be predicted."""
+    geometry: Geometry = Field(..., discriminator="type")
+    """Geometry of this sound event prediction."""
 
     score: float
     """Overall score of the prediction."""
 
-    uuid: UUID = Field(default_factory=uuid4)
-    """UUID of the prediction."""
+    tags: list[Tag] = Field(default_factory=list)
+    """Tags attached to this prediction."""
 
 
-class SoundEventPredictionTagCreate(BaseSchema):
-    """Schema for creating a new sound event prediction tag."""
-
-    sound_event_prediction_id: int
-    """ID of the sound event prediction to which the tag belongs."""
-
-    tag_id: int
-    """ID of the tag."""
-
-    score: float
-    """The confidence score of the tag."""
-
-
-class SoundEventPredictionTag(SoundEventPredictionTagCreate):
+class SoundEventPredictionTag(BaseSchema):
     """Schema for a sound event prediction tag."""
 
     id: int
     """Database ID of the tag."""
 
+    score: float
+    """Score of the tag."""
+
     tag: Tag
     """Tag."""
 
 
-class SoundEventPrediction(SoundEventPredictionCreate):
+class SoundEventPrediction(BaseSchema):
     """Schema for a sound event prediction."""
 
-    id: int
+    uuid: UUID
+    """UUID of the prediction."""
+
+    id: int = Field(..., exclude=True)
     """Database ID of the prediction."""
 
     sound_event: SoundEvent
     """Sound event to be predicted."""
 
+    score: float
+    """Overall score of the prediction."""
+
     predicted_tags: list[SoundEventPredictionTag] = []
     """Tags of the prediction."""
 
 
-class SoundEventPredictionUpdate(BaseSchema):
+class SoundEventPredictionUpdate(BaseModel):
     """Schema for updating a sound event prediction."""
 
     uuid: UUID | None

@@ -2,7 +2,7 @@
 
 import datetime
 from pathlib import Path
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from pydantic import BaseModel, Field, FilePath, field_validator
 
@@ -17,19 +17,11 @@ __all__ = [
     "Recording",
     "RecordingCreate",
     "RecordingUpdate",
-    "RecordingNote",
-    "RecordingTag",
-    "RecordingTagCreate",
-    "RecordingFeatureCreate",
-    "RecordingCreateFull",
 ]
 
 
-class RecordingMetadata(BaseSchema):
-    """Metadata associated with a recording."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """The UUID of the recording."""
+class RecordingCreate(BaseModel):
+    """Data for Recording creation."""
 
     date: datetime.date | None = None
     """The date of the recording."""
@@ -49,9 +41,45 @@ class RecordingMetadata(BaseSchema):
     rights: str | None = None
     """A text describing the usage rights of the recording."""
 
+    # NOTE: We use a FilePath object as this will make sure that the path is a
+    # valid path and that the file exists.
+    path: FilePath
+    """The path to the audio file."""
 
-class RecordingMediaInfo(BaseSchema):
-    """Media information associated with a recording."""
+    @field_validator("path")
+    def is_an_audio_file(cls, v):
+        """Validate that the given path is an audio file."""
+        if not files.is_audio_file(v):
+            raise ValueError("Not an audio file.")
+        return v
+
+
+class Recording(BaseSchema):
+    """Schema for Recording objects returned to the user."""
+
+    uuid: UUID
+    """The UUID of the recording."""
+
+    id: int = Field(..., exclude=True)
+    """The database id of the recording."""
+
+    path: Path
+    """The path to the audio file, relative to the audio directory."""
+
+    date: datetime.date | None
+    """The date of the recording."""
+
+    time: datetime.time | None
+    """The time of the recording."""
+
+    latitude: float | None
+    """The latitude of the recording."""
+
+    longitude: float | None
+    """The longitude of the recording."""
+
+    time_expansion: float
+    """The time expansion factor of the recording."""
 
     hash: str
     """The md5 hash of the audio file."""
@@ -81,9 +109,8 @@ class RecordingMediaInfo(BaseSchema):
     recording is 88200 Hz, not 44100 Hz.
     """
 
-
-class RecordingObjects(BaseSchema):
-    """Objects associated with a recording."""
+    rights: str | None
+    """A text describing the usage rights of the recording."""
 
     tags: list[Tag] = Field(default_factory=list)
     """The tags associated with the recording."""
@@ -96,47 +123,6 @@ class RecordingObjects(BaseSchema):
 
     owners: list[SimpleUser] = Field(default_factory=list)
     """The users that own the recording."""
-
-
-class RecordingCreate(RecordingMetadata):
-    """Data for Recording creation.
-
-    This only contains data that is provided by the user.
-    """
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """The UUID of the recording."""
-
-    # NOTE: We use a FilePath object as this will make sure that the path is a
-    # valid path and that the file exists.
-    path: FilePath
-    """The path to the audio file."""
-
-    @field_validator("path")
-    def is_an_audio_file(cls, v):
-        """Validate that the given path is an audio file."""
-        if not files.is_audio_file(v):
-            raise ValueError("Not an audio file.")
-        return v
-
-
-class RecordingCreateFull(RecordingMetadata, RecordingMediaInfo):
-    """Data for Recording creation.
-
-    This contains all data required to create a recording.
-    """
-
-    path: Path
-
-
-class Recording(RecordingMetadata, RecordingMediaInfo, RecordingObjects):
-    """Schema for Recording objects returned to the user."""
-
-    id: int
-    """The database id of the recording."""
-
-    path: Path
-    """The path to the audio file, relative to the audio directory."""
 
 
 class RecordingUpdate(BaseModel):
@@ -162,85 +148,3 @@ class RecordingUpdate(BaseModel):
 
     rights: str | None = None
     """A text describing the usage rights of the recording."""
-
-
-class RecordingNote(BaseSchema):
-    """Schema for a Note attached to a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    note_id: int
-    """The database id of the Note."""
-
-    note: Note
-    """The Note attached to the Recording."""
-
-
-class RecordingTag(BaseSchema):
-    """Schema for a Tag attached to a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    tag_id: int
-    """The database id of the Tag."""
-
-    tag: Tag
-    """The Tag attached to the Recording."""
-
-
-class RecordingOwner(BaseSchema):
-    """Schema for the owner of a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    user_id: UUID
-    """The database id of the user that owns the recording."""
-
-    user: SimpleUser
-    """The user that owns the recording."""
-
-
-class RecordingTagCreate(BaseSchema):
-    """Schema for creating a Tag attached to a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    tag_id: int
-    """The database id of the Tag."""
-
-
-class RecordingFeatureCreate(BaseSchema):
-    """Schema for creating a Feature attached to a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    feature_name_id: int
-    """The database id of the Feature name."""
-
-    value: float
-    """The value of the Feature."""
-
-
-class RecordingNoteCreate(BaseSchema):
-    """Schema for creating a Note attached to a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    note_id: int
-    """The database id of the Note."""
-
-
-class RecordingOwnerCreate(BaseSchema):
-    """Schema for specifying the owner of a Recording."""
-
-    recording_id: int
-    """The database id of the recording."""
-
-    user_id: UUID
-    """The database id of the user that owns the recording."""

@@ -10,7 +10,7 @@ from whombat.filters import base
 __all__ = [
     "ProjectFilter",
     "DatasetFilter",
-    "TaskFilter",
+    "AnnotationTaskFilter",
 ]
 
 
@@ -179,7 +179,7 @@ class DatasetFilter(base.Filter):
         return query.where(models.AnnotationTask.clip_id.in_(subquery))
 
 
-TaskFilter = base.combine(
+AnnotationTaskFilter = base.combine(
     assigned_to=AssignedToFilter,
     pending=PendingFilter,
     verified=IsVerifiedFilter,

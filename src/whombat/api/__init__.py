@@ -19,7 +19,6 @@ from whombat.api.sound_event_evaluations import sound_event_evaluations
 from whombat.api.sound_event_predictions import sound_event_predictions
 from whombat.api.sound_events import sound_events
 from whombat.api.spectrograms import compute_spectrogram
-from whombat.api.status_badges import status_badges
 from whombat.api.tags import find_tag, find_tag_value, tags
 from whombat.api.user_runs import user_runs
 from whombat.api.users import users
@@ -45,7 +44,6 @@ __all__ = [
     "tags",
     "user_runs",
     "users",
-    "status_badges",
     "find_feature",
     "find_feature_value",
     "load_audio",

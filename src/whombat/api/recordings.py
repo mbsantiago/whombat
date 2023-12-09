@@ -173,7 +173,7 @@ class RecordingAPI(
         recording = await common.create_object(
             session,
             models.Recording,
-            recording_data,
+            **recording_data,
             **kwargs,
         )
 
@@ -184,7 +184,7 @@ class RecordingAPI(
     async def create_many(
         self,
         session: AsyncSession,
-        data: Sequence[schemas.RecordingCreate],
+        data: Sequence[dict],
         audio_dir: Path | None = None,
     ) -> None | Sequence[schemas.Recording]:
         """Create recordings.
@@ -220,29 +220,30 @@ class RecordingAPI(
         if audio_dir is None:
             audio_dir = get_settings().audio_dir
 
-        data = remove_duplicates(
-            [recording for recording in data],
+        validated_data = remove_duplicates(
+            [
+                schemas.RecordingCreate.model_validate(recording)
+                for recording in data
+            ],
             key=lambda x: x.path,
         )
 
         with Pool() as pool:
             results = pool.map_async(
                 partial(_assemble_recording_data, audio_dir=audio_dir),
-                data,
+                validated_data,
             )
             # Take at most 1 second per file on average
             # Some very large files may take longer, but this is a reasonable
             # estimate for most files.
             estimated_time = len(data)
-            all_data: list[schemas.RecordingCreateFull | None] = results.get(
-                timeout=estimated_time
-            )
+            all_data: list[dict | None] = results.get(timeout=estimated_time)
 
         recordings = await common.create_objects_without_duplicates(
             session,
             models.Recording,
             [rec for rec in all_data if rec is not None],
-            key=lambda recording: recording.hash,
+            key=lambda recording: recording.get("hash"),
             key_column=models.Recording.hash,
         )
 
@@ -410,10 +411,8 @@ class RecordingAPI(
         await common.create_object(
             session,
             models.RecordingTag,
-            schemas.RecordingTagCreate(
-                recording_id=obj.id,
-                tag_id=tag.id,
-            ),
+            recording_id=obj.id,
+            tag_id=tag.id,
         )
 
         obj = obj.model_copy(update=dict(tags=[*obj.tags, tag]))
@@ -456,11 +455,9 @@ class RecordingAPI(
         await common.create_object(
             session,
             models.RecordingFeature,
-            schemas.RecordingFeatureCreate(
-                recording_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=feature.value,
-            ),
+            recording_id=obj.id,
+            feature_name_id=feature_name.id,
+            value=feature.value,
         )
 
         obj = obj.model_copy(update=dict(features=[*obj.features, feature]))
@@ -498,10 +495,8 @@ class RecordingAPI(
         await common.create_object(
             session,
             models.RecordingOwner,
-            schemas.RecordingOwnerCreate(
-                recording_id=obj.id,
-                user_id=owner.id,
-            ),
+            recording_id=obj.id,
+            user_id=owner.id,
         )
 
         obj = obj.model_copy(update=dict(owners=[*obj.owners, owner]))
@@ -769,7 +764,6 @@ class RecordingAPI(
             audio_dir = get_settings().audio_dir
 
         data = schemas.RecordingCreate(
-            uuid=recording.uuid,
             path=recording.path,
             time_expansion=recording.time_expansion,
             date=recording.date,
@@ -781,6 +775,7 @@ class RecordingAPI(
         created = await self.create_from_data(
             session,
             data,
+            uuid=recording.uuid,
         )
 
         for se_tag in recording.tags:
@@ -898,7 +893,7 @@ def validate_path(
 def _assemble_recording_data(
     data: schemas.RecordingCreate,
     audio_dir: Path,
-) -> schemas.RecordingCreateFull | None:
+) -> dict | None:
     """Get missing recording data from file."""
     info = files.get_file_info(data.path)
 
@@ -935,18 +930,16 @@ def _assemble_recording_data(
     duration = info.media_info.duration_s / data.time_expansion
     samplerate = int(info.media_info.samplerate_hz * data.time_expansion)
     channels = info.media_info.channels
-    return schemas.RecordingCreateFull(
-        **{
-            **dict(data),
-            **dict(
-                duration=duration,
-                samplerate=samplerate,
-                channels=channels,
-                hash=info.hash,
-                path=data.path.relative_to(audio_dir),
-            ),
-        },
-    )
+    return {
+        **dict(data),
+        **dict(
+            duration=duration,
+            samplerate=samplerate,
+            channels=channels,
+            hash=info.hash,
+            path=data.path.relative_to(audio_dir),
+        ),
+    }
 
 
 recordings = RecordingAPI()

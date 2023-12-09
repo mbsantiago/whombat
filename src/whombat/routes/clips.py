@@ -1,9 +1,12 @@
 """REST API routes for clips."""
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
 from whombat.dependencies import Session
 from whombat.filters.clips import ClipFilter
+from whombat.filters.clips import UUIDFilter as ClipUUIDFilter
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -47,12 +50,27 @@ async def get_clips(
 )
 async def create_clips(
     session: Session,
-    data: list[schemas.ClipCreate],
+    data: list[tuple[UUID, schemas.ClipCreate]],
 ):
     """Create multiple clips."""
-    clips = await api.clips.create_many(
+    recordings, _ = await api.recordings.get_many(
         session,
-        data,
+        filters=[
+            ClipUUIDFilter(isin=[recording_uuid for recording_uuid, _ in data])
+        ],
+        limit=None,
+        sort_by=None,
+    )
+    clips = await api.clips.create_many_without_duplicates(
+        session,
+        [
+            dict(
+                recording_id=recording.id,
+                start_time=clip.start_time,
+                end_time=clip.end_time,
+            )
+            for (_, clip), recording in zip(data, recordings)
+        ],
     )
     await session.commit()
     return clips
@@ -64,9 +82,10 @@ async def create_clips(
 )
 async def delete_clip(
     session: Session,
-    clip_id: int,
+    clip_uuid: UUID,
 ):
     """Delete a clip."""
-    clip = await api.clips.delete(session, clip_id)
+    clip = await api.clips.get(session, clip_uuid)
+    clip = await api.clips.delete(session, clip)
     await session.commit()
     return clip

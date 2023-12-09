@@ -161,8 +161,8 @@ async def test_can_remove_tag_from_clip_annotation(
         (
             clip_annotation_tag
             for clip_annotation_tag in clip_annotation.tags
-            if clip_annotation_tag.tag_id == tag.id
-            and clip_annotation_tag.created_by_id == user.id
+            if clip_annotation_tag.tag.id == tag.id
+            and clip_annotation_tag.created_by == user
         ),
         None,
     )
@@ -187,8 +187,8 @@ async def test_removed_tag_is_deleted_in_the_database(
         (
             clip_annotation_tag
             for clip_annotation_tag in clip_annotation.tags
-            if clip_annotation_tag.tag_id == tag.id
-            and clip_annotation_tag.created_by_id == user.id
+            if clip_annotation_tag.tag.id == tag.id
+            and clip_annotation_tag.created_by == user
         ),
         None,
     )

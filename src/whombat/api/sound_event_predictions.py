@@ -61,11 +61,9 @@ class SoundEventPredictionAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.SoundEventPredictionCreate(
-                sound_event_id=sound_event.id,
-                clip_prediction_id=clip_prediction.id,
-                score=score,
-            ),
+            sound_event_id=sound_event.id,
+            clip_prediction_id=clip_prediction.id,
+            score=score,
             **kwargs,
         )
 
@@ -104,11 +102,9 @@ class SoundEventPredictionAPI(
         db_tag = await common.create_object(
             session,
             models.SoundEventPredictionTag,
-            schemas.SoundEventPredictionTagCreate(
-                sound_event_prediction_id=obj.id,
-                tag_id=tag.id,
-                score=score,
-            ),
+            sound_event_prediction_id=obj.id,
+            tag_id=tag.id,
+            score=score,
         )
 
         obj = obj.model_copy(

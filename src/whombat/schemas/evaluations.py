@@ -1,37 +1,20 @@
 """Schemas for Evaluations."""
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.features import Feature
 
 __all__ = [
-    "EvaluationMetricCreate",
     "EvaluationCreate",
     "Evaluation",
     "EvaluationUpdate",
 ]
 
 
-class EvaluationMetricCreate(BaseSchema):
-    """Evaluation metric creation schema."""
-
-    evaluation_id: int
-    """Evaluation ID."""
-
-    feature_name_id: int
-    """Feature name ID."""
-
-    value: float
-    """Value of the metric."""
-
-
-class EvaluationCreate(BaseSchema):
+class EvaluationCreate(BaseModel):
     """Evaluation creation schema."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """Unique identifier of the evaluation."""
 
     score: float = Field(default=0, ge=0, le=1)
     """Overall score of the evaluation."""
@@ -40,17 +23,25 @@ class EvaluationCreate(BaseSchema):
     """Task of the evaluation."""
 
 
-class Evaluation(EvaluationCreate):
+class Evaluation(BaseSchema):
     """Evaluation schema."""
 
-    id: int
+    uuid: UUID
+
+    id: int = Field(..., exclude=True)
     """Dataset identifier of the evaluation."""
+
+    score: float
+    """Overall score of the evaluation."""
+
+    task: str
+    """Task of the evaluation."""
 
     metrics: list[Feature] = Field(default_factory=list)
     """List of metrics of the evaluation."""
 
 
-class EvaluationUpdate(BaseSchema):
+class EvaluationUpdate(BaseModel):
     """Evaluation update schema."""
 
     uuid: UUID | None = None

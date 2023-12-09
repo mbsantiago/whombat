@@ -3,14 +3,13 @@
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import and_
+from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
-from whombat.api.status_badges import status_badges
 from whombat.api.users import users
 
 __all__ = [
@@ -61,10 +60,8 @@ class AnnotationTaskAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.AnnotationTaskCreate(
-                annotation_project_id=annotation_project.id,
-                clip_id=clip.id,
-            ),
+            annotation_project_id=annotation_project.id,
+            clip_id=clip.id,
             **kwargs,
         )
 
@@ -72,7 +69,8 @@ class AnnotationTaskAPI(
         self,
         session: AsyncSession,
         obj: schemas.AnnotationTask,
-        badge: schemas.AnnotationStatusBadge,
+        state: data.AnnotationState,
+        user: schemas.SimpleUser | None = None,
     ) -> schemas.AnnotationTask:
         """Add a status badge to a task.
 
@@ -82,8 +80,10 @@ class AnnotationTaskAPI(
             SQLAlchemy AsyncSession.
         obj
             Task to add the status badge to.
-        badge
-            Status badge to add.
+        state
+            State of the status badge.
+        user
+            User that owns the status badge.
 
         Returns
         -------
@@ -91,33 +91,36 @@ class AnnotationTaskAPI(
             Task with the new status badge.
         """
         for b in obj.status_badges:
-            if b.user == badge.user and b.state == badge.state:
+            if b.user == user and b.state == state:
                 raise exceptions.DuplicateObjectError(
-                    f"Status badge {badge} already exists in " f"task {obj.id}"
+                    f"Status badge {b} already exists in task {obj.id}"
                 )
 
-        await common.create_object(
+        badge = await common.create_object(
             session,
             models.AnnotationStatusBadge,
-            schemas.AnnotationStatusBadgeCreate(
-                user_id=badge.user.id if badge.user else None,
-                state=badge.state,
-                annotation_task_id=obj.id,
-            ),
+            state=state,
+            annotation_task_id=obj.id,
+            user_id=user.id if user else None,
         )
 
         obj = obj.model_copy(
             update=dict(
-                status_badges=[*obj.status_badges, badge],
+                status_badges=[
+                    *obj.status_badges,
+                    schemas.AnnotationStatusBadge.model_validate(badge),
+                ],
             )
         )
+        self._update_cache(obj)
         return obj
 
     async def remove_status_badge(
         self,
         session: AsyncSession,
         obj: schemas.AnnotationTask,
-        badge: schemas.AnnotationStatusBadge,
+        state: data.AnnotationState,
+        user: schemas.SimpleUser | None = None,
     ) -> schemas.AnnotationTask:
         """Remove a status badge from a task.
 
@@ -136,27 +139,33 @@ class AnnotationTaskAPI(
             Task with the status badge removed.
         """
         for b in obj.status_badges:
-            if b.user == badge.user and b.state == badge.state:
-                user_id = b.user.id if b.user else None
-                await common.delete_object(
-                    session,
-                    models.AnnotationStatusBadge,
-                    and_(
-                        models.AnnotationStatusBadge.annotation_task_id
-                        == obj.id,
-                        models.AnnotationStatusBadge.user_id == user_id,
-                        models.AnnotationStatusBadge.state == b.state,
-                    ),
-                )
+            if b.user == user and b.state == state:
                 break
         else:
             raise exceptions.NotFoundError(
-                f"Status badge {badge} does not exist in " f"task {obj.id}"
+                f"There are no status badges with state {state} "
+                f" and created by user {user} in this annotation"
+                f" {obj}"
             )
+
+        user_id = b.user.id if b.user else None
+        await common.delete_object(
+            session,
+            models.AnnotationStatusBadge,
+            and_(
+                models.AnnotationStatusBadge.annotation_task_id == obj.id,
+                models.AnnotationStatusBadge.user_id == user_id,
+                models.AnnotationStatusBadge.state == b.state,
+            ),
+        )
 
         obj = obj.model_copy(
             update=dict(
-                status_badges=[b for b in obj.status_badges if b != badge],
+                status_badges=[
+                    b
+                    for b in obj.status_badges
+                    if (b.state == state and b.user == user)
+                ],
             )
         )
         return obj
@@ -246,7 +255,7 @@ class AnnotationTaskAPI(
             The updated task.
         """
         current_status_badges = {
-            (b.user_id, b.state) for b in obj.status_badges
+            (b.user.id if b.user else None, b.state) for b in obj.status_badges
         }
         for status_badge in data.status_badges:
             if (
@@ -255,15 +264,15 @@ class AnnotationTaskAPI(
             ) in current_status_badges:
                 continue
 
-            badge = await status_badges.from_soundevent(
-                session,
-                status_badge,
-                obj,
-            )
+            user = None
+            if status_badge.owner:
+                user = await users.from_soundevent(session, status_badge.owner)
+
             obj = await self.add_status_badge(
                 session,
                 obj,
-                badge,
+                state=status_badge.state,
+                user=user,
             )
 
         return obj
@@ -297,6 +306,15 @@ class AnnotationTaskAPI(
             annotation_project=annotation_project,
             uuid=data.uuid,
             created_on=data.created_on,
+        )
+
+    def _key_fn(self, obj: dict):
+        return (obj.get("annotation_project_id"), obj.get("clip_id"))
+
+    def _get_key_column(self):
+        return tuple_(
+            models.AnnotationTask.annotation_project_id,
+            models.AnnotationTask.clip_id,
         )
 
 

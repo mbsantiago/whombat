@@ -1,8 +1,8 @@
 """Schemas for Annotation Projects."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
@@ -14,11 +14,8 @@ __all__ = [
 ]
 
 
-class AnnotationProjectCreate(BaseSchema):
+class AnnotationProjectCreate(BaseModel):
     """Schema for creating an annotation project."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """UUID of the annotation project."""
 
     name: str
     """Name of the annotation project."""
@@ -30,17 +27,29 @@ class AnnotationProjectCreate(BaseSchema):
     """Project instructions for annotating."""
 
 
-class AnnotationProject(AnnotationProjectCreate):
+class AnnotationProject(BaseSchema):
     """Schema for an annotation project."""
 
-    id: int
+    uuid: UUID
+    """UUID of the annotation project."""
+
+    id: int = Field(..., exclude=True)
     """Database ID of the annotation project."""
+
+    name: str
+    """Name of the annotation project."""
+
+    description: str
+    """A description of the annotation project."""
+
+    annotation_instructions: str | None = None
+    """Project instructions for annotating."""
 
     tags: list[Tag] = Field(default_factory=list)
     """Tags to be used throughout the annotation project."""
 
 
-class AnnotationProjectUpdate(BaseSchema):
+class AnnotationProjectUpdate(BaseModel):
     """Schema for updating an annotation project."""
 
     name: str | None = None
@@ -51,13 +60,3 @@ class AnnotationProjectUpdate(BaseSchema):
 
     annotation_instructions: str | None = None
     """Project instructions for annotating."""
-
-
-class AnnotationProjectTagCreate(BaseSchema):
-    """Schema for creating an annotation project tag."""
-
-    tag_id: int
-    """Database ID of the tag."""
-
-    annotation_project_id: int
-    """Database ID of the annotation project."""

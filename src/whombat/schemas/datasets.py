@@ -2,9 +2,9 @@
 
 from enum import Enum
 from pathlib import Path
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import DirectoryPath, Field
+from pydantic import BaseModel, DirectoryPath, Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.recordings import Recording
@@ -19,11 +19,10 @@ __all__ = [
 ]
 
 
-class BaseDataset(BaseSchema):
-    uuid: UUID = Field(default_factory=uuid4)
-    """The unique identifier of the dataset."""
+class DatasetCreate(BaseModel):
+    """Schema for Dataset objects created by the user."""
 
-    audio_dir: Path
+    audio_dir: DirectoryPath
     """The path to the directory containing the audio files."""
 
     name: str = Field(..., min_length=1)
@@ -33,29 +32,39 @@ class BaseDataset(BaseSchema):
     """The description of the dataset."""
 
 
-class DatasetCreate(BaseDataset):
-    """Schema for Dataset objects created by the user."""
-
-    audio_dir: DirectoryPath
-    """The path to the directory containing the audio files."""
-
-
-class Dataset(BaseDataset):
+class Dataset(BaseSchema):
     """Schema for Dataset objects returned to the user."""
 
-    id: int
+    uuid: UUID
+    """The uuid of the dataset."""
+
+    id: int = Field(..., exclude=True)
     """The database id of the dataset."""
+
+    audio_dir: Path
+    """The path to the directory containing the audio files."""
+
+    name: str
+    """The name of the dataset."""
+
+    description: str | None
+    """The description of the dataset."""
 
     recording_count: int = 0
     """The number of recordings in the dataset."""
 
 
-class DatasetUpdate(BaseSchema):
+class DatasetUpdate(BaseModel):
     """Schema for Dataset objects updated by the user."""
 
     audio_dir: DirectoryPath | None = None
+    """The path to the directory containing the audio files."""
+
     name: str | None = Field(default=None, min_length=1)
+    """The name of the dataset."""
+
     description: str | None = None
+    """The description of the dataset."""
 
 
 class FileState(Enum):
@@ -88,28 +97,31 @@ class FileState(Enum):
     """If the recording is not registered but the file is present."""
 
 
-class DatasetFile(BaseSchema):
+class DatasetFile(BaseModel):
+    """Schema for DatasetFile objects returned to the user."""
+
     path: Path
+    """The path to the file."""
 
     state: FileState
+    """The state of the file."""
 
 
-class DatasetRecordingCreate(BaseSchema):
+class DatasetRecordingCreate(BaseModel):
     """Schema for DatasetRecording objects created by the user."""
-
-    dataset_id: int
-    """The id of the dataset."""
-
-    recording_id: int
-    """The id of the recording."""
 
     path: Path
     """The path to the recording in the dataset directory."""
 
 
-class DatasetRecording(DatasetRecordingCreate):
+class DatasetRecording(BaseSchema):
     """Schema for DatasetRecording objects returned to the user."""
 
     recording: Recording
+    """The recording object."""
 
     state: FileState = Field(default=FileState.REGISTERED)
+    """The state of the file."""
+
+    path: Path
+    """The path to the recording in the dataset directory."""

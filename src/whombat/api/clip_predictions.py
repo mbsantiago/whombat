@@ -56,9 +56,7 @@ class ClipPredictionAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.ClipPredictionCreate(
-                clip_id=clip.id,
-            ),
+            clip_id=clip.id,
             **kwargs,
         )
 
@@ -96,11 +94,9 @@ class ClipPredictionAPI(
         db_tag = await common.create_object(
             session,
             models.ClipPredictionTag,
-            schemas.ClipPredictionTagCreate(
-                clip_prediction_id=obj.id,
-                tag_id=tag.id,
-                score=score,
-            ),
+            clip_prediction_id=obj.id,
+            tag_id=tag.id,
+            score=score,
         )
 
         obj = obj.model_copy(
@@ -156,7 +152,9 @@ class ClipPredictionAPI(
         obj = obj.model_copy(
             update=dict(
                 predicted_tags=[
-                    t for t in obj.predicted_tags if t.id != tag.id
+                    t
+                    for t in obj.predicted_tags
+                    if not (t.tag.key == tag.key and t.tag.value == tag.value)
                 ],
             )
         )

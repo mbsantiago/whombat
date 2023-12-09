@@ -1,5 +1,7 @@
 """Schemas for handling Features."""
 
+from pydantic import BaseModel, Field
+
 from whombat.schemas.base import BaseSchema
 
 __all__ = [
@@ -10,21 +12,24 @@ __all__ = [
 ]
 
 
-class FeatureNameCreate(BaseSchema):
+class FeatureNameCreate(BaseModel):
     """Schema for FeatureName objects created by the user."""
 
     name: str
     """The name of the feature."""
 
 
-class FeatureName(FeatureNameCreate):
+class FeatureName(BaseSchema):
     """Schema for FeatureName objects returned to the user."""
 
-    id: int
+    id: int = Field(..., exclude=True)
     """The database id of the feature name."""
 
+    name: str
+    """The name of the feature."""
 
-class FeatureNameUpdate(BaseSchema):
+
+class FeatureNameUpdate(BaseModel):
     """Schema for FeatureName objects updated by the user."""
 
     name: str

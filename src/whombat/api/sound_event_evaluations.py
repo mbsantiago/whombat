@@ -75,12 +75,12 @@ class SoundEventEvaluationAPI(
         return await self.create_from_data(
             session,
             schemas.SoundEventEvaluationCreate(
-                clip_evaluation_id=clip_evaluation.id,
                 affinity=affinity,
                 score=score,
-                source_id=source.id if source else None,
-                target_id=target.id if target else None,
             ),
+            clip_evaluation_id=clip_evaluation.id,
+            source_id=source.id if source else None,
+            target_id=target.id if target else None,
             **kwargs,
         )
 
@@ -103,11 +103,9 @@ class SoundEventEvaluationAPI(
         await create_object(
             session,
             models.SoundEventEvaluationMetric,
-            schemas.SoundEventEvaluationMetricCreate(
-                sound_event_evaluation_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=metric.value,
-            ),
+            sound_event_evaluation_id=obj.id,
+            feature_name_id=feature_name.id,
+            value=metric.value,
         )
         obj.metrics.append(metric)
         self._update_cache(obj)
@@ -256,14 +254,11 @@ class SoundEventEvaluationAPI(
             metrics=[features.to_soundevent(m) for m in obj.metrics],
         )
 
-    def _key_fn(
-        self,
-        obj: models.SoundEventEvaluation | schemas.SoundEventEvaluationCreate,
-    ) -> tuple[int, int | None, int | None]:
+    def _key_fn(self, obj: dict):
         return (
-            obj.clip_evaluation_id,
-            obj.source_id,
-            obj.target_id,
+            obj.get("clip_evaluation_id"),
+            obj.get("source_id"),
+            obj.get("target_id"),
         )
 
     def _get_key_column(self) -> ColumnElement:

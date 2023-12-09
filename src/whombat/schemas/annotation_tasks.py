@@ -1,8 +1,8 @@
 """Schemas for annotation tasks."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, BaseModel
 from soundevent.data import AnnotationState
 
 from whombat.schemas.base import BaseSchema
@@ -12,7 +12,6 @@ from whombat.schemas.users import SimpleUser
 
 __all__ = [
     "AnnotationStatusBadge",
-    "AnnotationStatusBadgeCreate",
     "AnnotationStatusBadgeUpdate",
     "AnnotationTask",
     "AnnotationTaskCreate",
@@ -20,50 +19,34 @@ __all__ = [
 ]
 
 
-class AnnotationTaskCreate(BaseSchema):
+class AnnotationTaskCreate(BaseModel):
     """Schema for creating a new task."""
 
-    annotation_project_id: int
-    """ID of the project to which the task belongs."""
 
-    clip_id: int
-    """ID of the clip to be annotated."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """UUID of the task."""
-
-
-class AnnotationStatusBadgeCreate(BaseSchema):
-    """Schema for creating a new task status badge."""
-
-    annotation_task_id: int
-    """ID of the task to which the status badge belongs."""
+class AnnotationStatusBadge(BaseSchema):
+    """Schema for a task status badge."""
 
     state: AnnotationState
     """State of the task."""
-
-    user_id: UUID | None
-    """ID of the user to whom the status badge refers."""
-
-
-class AnnotationStatusBadge(AnnotationStatusBadgeCreate):
-    """Schema for a task status badge."""
 
     user: SimpleUser | None
     """User to whom the status badge refers."""
 
 
-class AnnotationStatusBadgeUpdate(BaseSchema):
+class AnnotationStatusBadgeUpdate(BaseModel):
     """Schema for updating a task status badge."""
 
     state: AnnotationState | None = None
     """State of the task."""
 
 
-class AnnotationTask(AnnotationTaskCreate):
+class AnnotationTask(BaseSchema):
     """Schema for a task."""
 
-    id: int
+    uuid: UUID
+    """UUID of the task."""
+
+    id: int = Field(..., exclude=True)
     """Database ID of the task."""
 
     clip: Clip
@@ -75,7 +58,7 @@ class AnnotationTask(AnnotationTaskCreate):
     clip_annotation: ClipAnnotation
 
 
-class AnnotationTaskUpdate(BaseSchema):
+class AnnotationTaskUpdate(BaseModel):
     """Schema for updating a task."""
 
     uuid: UUID | None = None

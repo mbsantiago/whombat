@@ -1,8 +1,8 @@
 """Schemas for handling Evaluation Sets."""
 
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.tags import Tag
@@ -14,11 +14,8 @@ __all__ = [
 ]
 
 
-class EvaluationSetCreate(BaseSchema):
+class EvaluationSetCreate(BaseModel):
     """Schema for creating EvaluationSet objects."""
-
-    uuid: UUID = Field(default_factory=uuid4)
-    """The unique identifier of the evaluation set."""
 
     name: str = Field(..., min_length=1)
     """The name of the evaluation set."""
@@ -27,18 +24,30 @@ class EvaluationSetCreate(BaseSchema):
     """The description of the evaluation set."""
 
 
-class EvaluationSet(EvaluationSetCreate):
+class EvaluationSet(BaseSchema):
     """Schema for EvaluationSet objects returned to the user."""
 
-    id: int
+    uuid: UUID
+    """The uuid of the evaluation set."""
+
+    id: int = Field(..., exclude=True)
     """The id of the evaluation set."""
+
+    name: str
+    """The name of the evaluation set."""
+
+    description: str | None
+    """The description of the evaluation set."""
 
     tags: list[Tag] = Field(default_factory=list)
     """The tags to use for the evaluation set."""
 
 
-class EvaluationSetUpdate(BaseSchema):
+class EvaluationSetUpdate(BaseModel):
     """Schema for updating EvaluationSet objects."""
 
     name: str | None = Field(default=None, min_length=1)
+    """The name of the evaluation set."""
+
     description: str | None = None
+    """The description of the evaluation set."""

@@ -25,7 +25,7 @@ class SoundEventAnnotationAPI(
         UUID,
         models.SoundEventAnnotation,
         schemas.SoundEventAnnotation,
-        schemas.SoundEventAnnotationPostCreate,
+        schemas.SoundEventAnnotationCreate,
         schemas.SoundEventAnnotationUpdate,
     ]
 ):
@@ -63,11 +63,9 @@ class SoundEventAnnotationAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.SoundEventAnnotationPostCreate(
-                sound_event_id=sound_event.id,
-                clip_annotation_id=clip_annotation.id,
-                created_by_id=created_by.id if created_by else None,
-            ),
+            sound_event_id=sound_event.id,
+            clip_annotation_id=clip_annotation.id,
+            created_by_id=created_by.id if created_by else None,
             **kwargs,
         )
 
@@ -81,7 +79,12 @@ class SoundEventAnnotationAPI(
         """Add a tag to an annotation project."""
         user_id = user.id if user else None
         for t in obj.tags:
-            if t.id == tag.id and t.created_by_id == user_id:
+            created_by_id = t.created_by.id if t.created_by else None
+            if (
+                t.tag.key == tag.key
+                and t.tag.value == tag.value
+                and created_by_id == user_id
+            ):
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag} already exists in annotation {obj}."
                 )
@@ -89,11 +92,9 @@ class SoundEventAnnotationAPI(
         db_tag = await common.create_object(
             session,
             models.SoundEventAnnotationTag,
-            schemas.SoundEventAnnotationTagCreate(
-                annotation_id=obj.id,
-                tag_id=tag.id,
-                created_by_id=user_id,
-            ),
+            annotation_id=obj.id,
+            tag_id=tag.id,
+            created_by_id=user_id,
         )
 
         obj = obj.model_copy(
@@ -120,7 +121,7 @@ class SoundEventAnnotationAPI(
                     f"Note {note} already exists in annotation {obj}."
                 )
 
-        db_note = await common.create_object(
+        await common.create_object(
             session,
             models.SoundEventAnnotationNote,
             annotation_id=obj.id,
@@ -131,7 +132,7 @@ class SoundEventAnnotationAPI(
             update=dict(
                 notes=[
                     *obj.notes,
-                    schemas.SoundEventAnnotationNote.model_validate(db_note),
+                    note,
                 ],
             )
         )
@@ -148,7 +149,12 @@ class SoundEventAnnotationAPI(
         """Remove a tag from an annotation project."""
         user_id = user.id if user else None
         for t in obj.tags:
-            if t.id == tag.id and t.created_by_id == user_id:
+            created_by_id = t.created_by.id if t.created_by else None
+            if (
+                t.tag.key == tag.key
+                and t.tag.value == tag.value
+                and created_by_id == user_id
+            ):
                 break
         else:
             raise exceptions.NotFoundError(
@@ -168,7 +174,15 @@ class SoundEventAnnotationAPI(
 
         obj = obj.model_copy(
             update=dict(
-                tags=[t for t in obj.tags if t.id != tag.id],
+                tags=[
+                    t
+                    for t in obj.tags
+                    if not (
+                        t.tag.key == tag.key
+                        and t.tag.value == tag.value
+                        and created_by_id == user_id
+                    )
+                ],
             )
         )
         self._update_cache(obj)

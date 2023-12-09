@@ -64,10 +64,10 @@ class ClipAPI(
         clip = await self.create_from_data(
             session,
             schemas.ClipCreate(
-                recording_id=recording.id,
                 start_time=start_time,
                 end_time=end_time,
             ),
+            recording_id=recording.id,
             **kwargs,
         )
 
@@ -79,7 +79,7 @@ class ClipAPI(
     async def create_many_without_duplicates(
         self,
         session: AsyncSession,
-        data: Sequence[schemas.ClipCreate],
+        data: Sequence[dict],
         return_all: bool = False,
     ) -> Sequence[schemas.Clip]:
         """Create clips without duplicates.
@@ -153,11 +153,9 @@ class ClipAPI(
         await common.create_object(
             session,
             models.ClipFeature,
-            schemas.ClipFeatureCreate(
-                clip_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=feature.value,
-            ),
+            clip_id=obj.id,
+            feature_name_id=feature_name.id,
+            value=feature.value,
         )
 
         obj = obj.model_copy(update=dict(features=[*obj.features, feature]))
@@ -323,7 +321,7 @@ class ClipAPI(
         }
 
         data = [
-            schemas.ClipFeatureCreate(
+            dict(
                 clip_id=clip_id,
                 feature_name_id=feature_names[name].id,
                 value=value,
@@ -391,10 +389,12 @@ class ClipAPI(
             end_time=obj.end_time,
         )
 
-    def _key_fn(
-        self, obj: models.Clip | schemas.ClipCreate
-    ) -> tuple[int, float, float]:
-        return obj.recording_id, obj.start_time, obj.end_time
+    def _key_fn(self, obj: dict):
+        return (
+            obj.get("recording_id"),
+            obj.get("start_time"),
+            obj.get("end_time"),
+        )
 
     def _get_key_column(self):
         return tuple_(

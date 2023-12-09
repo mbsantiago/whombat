@@ -15,12 +15,10 @@ to validate data before it is inserted into the database.
 from whombat.schemas.annotation_projects import (
     AnnotationProject,
     AnnotationProjectCreate,
-    AnnotationProjectTagCreate,
     AnnotationProjectUpdate,
 )
 from whombat.schemas.annotation_tasks import (
     AnnotationStatusBadge,
-    AnnotationStatusBadgeCreate,
     AnnotationStatusBadgeUpdate,
     AnnotationTask,
     AnnotationTaskCreate,
@@ -31,31 +29,21 @@ from whombat.schemas.base import Page
 from whombat.schemas.clip_annotations import (
     ClipAnnotation,
     ClipAnnotationCreate,
-    ClipAnnotationNote,
-    ClipAnnotationNoteCreate,
     ClipAnnotationTag,
-    ClipAnnotationTagCreate,
     ClipAnnotationUpdate,
 )
 from whombat.schemas.clip_evaluations import (
     ClipEvaluation,
     ClipEvaluationCreate,
-    ClipEvaluationMetricCreate,
     ClipEvaluationUpdate,
 )
 from whombat.schemas.clip_predictions import (
     ClipPrediction,
     ClipPredictionCreate,
     ClipPredictionTag,
-    ClipPredictionTagCreate,
     ClipPredictionUpdate,
 )
-from whombat.schemas.clips import (
-    Clip,
-    ClipCreate,
-    ClipFeatureCreate,
-    ClipUpdate,
-)
+from whombat.schemas.clips import Clip, ClipCreate, ClipUpdate
 from whombat.schemas.datasets import (
     Dataset,
     DatasetCreate,
@@ -73,7 +61,6 @@ from whombat.schemas.evaluation_sets import (
 from whombat.schemas.evaluations import (
     Evaluation,
     EvaluationCreate,
-    EvaluationMetricCreate,
     EvaluationUpdate,
 )
 from whombat.schemas.features import (
@@ -82,52 +69,34 @@ from whombat.schemas.features import (
     FeatureNameCreate,
     FeatureNameUpdate,
 )
-from whombat.schemas.model_runs import (
-    ModelRun,
-    ModelRunCreate,
-    ModelRunPredictionCreate,
-    ModelRunUpdate,
-)
+from whombat.schemas.model_runs import ModelRun, ModelRunCreate, ModelRunUpdate
 from whombat.schemas.notes import Note, NoteCreate, NoteUpdate
 from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
-    RecordingCreateFull,
-    RecordingFeatureCreate,
-    RecordingNote,
-    RecordingOwner,
-    RecordingOwnerCreate,
-    RecordingTag,
-    RecordingTagCreate,
     RecordingUpdate,
 )
 from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotation,
     SoundEventAnnotationCreate,
-    SoundEventAnnotationNote,
-    SoundEventAnnotationPostCreate,
     SoundEventAnnotationTag,
-    SoundEventAnnotationTagCreate,
     SoundEventAnnotationUpdate,
 )
 from whombat.schemas.sound_event_evaluations import (
     SoundEventEvaluation,
     SoundEventEvaluationCreate,
-    SoundEventEvaluationMetricCreate,
     SoundEventEvaluationUpdate,
 )
 from whombat.schemas.sound_event_predictions import (
     SoundEventPrediction,
     SoundEventPredictionCreate,
     SoundEventPredictionTag,
-    SoundEventPredictionTagCreate,
     SoundEventPredictionUpdate,
 )
 from whombat.schemas.sound_events import (
     SoundEvent,
     SoundEventCreate,
-    SoundEventFeatureCreate,
     SoundEventUpdate,
 )
 from whombat.schemas.spectrograms import (
@@ -141,7 +110,6 @@ from whombat.schemas.tags import PredictedTag, Tag, TagCreate, TagUpdate
 from whombat.schemas.user_runs import (
     UserRun,
     UserRunCreate,
-    UserRunPredictionCreate,
     UserRunUpdate,
 )
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
@@ -150,10 +118,8 @@ __all__ = [
     "AmplitudeParameters",
     "AnnotationProject",
     "AnnotationProjectCreate",
-    "AnnotationProjectTagCreate",
     "AnnotationProjectUpdate",
     "AnnotationStatusBadge",
-    "AnnotationStatusBadgeCreate",
     "AnnotationStatusBadgeUpdate",
     "AnnotationTask",
     "AnnotationTaskCreate",
@@ -162,21 +128,15 @@ __all__ = [
     "Clip",
     "ClipAnnotation",
     "ClipAnnotationCreate",
-    "ClipAnnotationNote",
-    "ClipAnnotationNoteCreate",
     "ClipAnnotationTag",
-    "ClipAnnotationTagCreate",
     "ClipAnnotationUpdate",
     "ClipCreate",
     "ClipEvaluation",
     "ClipEvaluationCreate",
-    "ClipEvaluationMetricCreate",
     "ClipEvaluationUpdate",
-    "ClipFeatureCreate",
     "ClipPrediction",
     "ClipPredictionCreate",
     "ClipPredictionTag",
-    "ClipPredictionTagCreate",
     "ClipPredictionUpdate",
     "ClipUpdate",
     "Dataset",
@@ -187,7 +147,6 @@ __all__ = [
     "DatasetUpdate",
     "Evaluation",
     "EvaluationCreate",
-    "EvaluationMetricCreate",
     "EvaluationSet",
     "EvaluationSetCreate",
     "EvaluationSetUpdate",
@@ -199,7 +158,6 @@ __all__ = [
     "FileState",
     "ModelRun",
     "ModelRunCreate",
-    "ModelRunPredictionCreate",
     "ModelRunUpdate",
     "Note",
     "NoteCreate",
@@ -209,13 +167,6 @@ __all__ = [
     "PredictedTag",
     "Recording",
     "RecordingCreate",
-    "RecordingCreateFull",
-    "RecordingFeatureCreate",
-    "RecordingNote",
-    "RecordingOwner",
-    "RecordingOwnerCreate",
-    "RecordingTag",
-    "RecordingTagCreate",
     "RecordingUpdate",
     "STFTParameters",
     "Scale",
@@ -223,21 +174,15 @@ __all__ = [
     "SoundEvent",
     "SoundEventAnnotation",
     "SoundEventAnnotationCreate",
-    "SoundEventAnnotationNote",
-    "SoundEventAnnotationPostCreate",
     "SoundEventAnnotationTag",
-    "SoundEventAnnotationTagCreate",
     "SoundEventAnnotationUpdate",
     "SoundEventCreate",
     "SoundEventEvaluation",
     "SoundEventEvaluationCreate",
-    "SoundEventEvaluationMetricCreate",
     "SoundEventEvaluationUpdate",
-    "SoundEventFeatureCreate",
     "SoundEventPrediction",
     "SoundEventPredictionCreate",
     "SoundEventPredictionTag",
-    "SoundEventPredictionTagCreate",
     "SoundEventPredictionUpdate",
     "SoundEventUpdate",
     "SpectrogramParameters",
@@ -248,7 +193,6 @@ __all__ = [
     "UserCreate",
     "UserRun",
     "UserRunCreate",
-    "UserRunPredictionCreate",
     "UserRunUpdate",
     "UserUpdate",
     "Window",

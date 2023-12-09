@@ -1,5 +1,6 @@
 """REST API routes for spectrograms."""
 from fastapi import APIRouter, Depends, Response
+from uuid import UUID
 
 from whombat import api, schemas
 from whombat.core import images
@@ -16,7 +17,7 @@ spectrograms_router = APIRouter()
 async def get_spectrogram(
     session: Session,
     settings: WhombatSettings,
-    recording_id: int,
+    recording_uuid: UUID,
     start_time: float,
     end_time: float,
     audio_parameters: schemas.AudioParameters = Depends(
@@ -47,9 +48,10 @@ async def get_spectrogram(
         Spectrogram image.
 
     """
-    data = await api.spectrograms.compute(
-        session,
-        recording_id,
+    recording = await api.recordings.get(session, recording_uuid)
+
+    data = api.compute_spectrogram(
+        recording,
         start_time,
         end_time,
         audio_parameters,

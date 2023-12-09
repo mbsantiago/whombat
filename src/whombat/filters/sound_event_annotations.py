@@ -6,15 +6,15 @@ from whombat.filters import base
 
 __all__ = [
     "ProjectFilter",
-    "AnnotationFilter",
+    "SoundEventAnnotationFilter",
     "RecordingFilter",
     "SoundEventFilter",
     "CreatedByFilter",
-    "TaskFilter",
+    "ClipAnnotationFilter",
     "TagFilter",
 ]
 
-TaskFilter = base.integer_filter(
+ClipAnnotationFilter = base.integer_filter(
     models.SoundEventAnnotation.clip_annotation_id,
 )
 
@@ -75,6 +75,7 @@ class RecordingFilter(base.Filter):
 class TagFilter(base.Filter):
     """Filter for annotations by tag."""
 
+    # TODO: Need to update this to avoid IDs
     eq: int | None = None
 
     def filter(self, query: Select) -> Select:
@@ -87,11 +88,11 @@ class TagFilter(base.Filter):
         )
 
 
-AnnotationFilter = base.combine(
+SoundEventAnnotationFilter = base.combine(
     project=ProjectFilter,
     recording=RecordingFilter,
     sound_event=SoundEventFilter,
     created_by=CreatedByFilter,
-    task=TaskFilter,
+    task=ClipAnnotationFilter,
     tag=TagFilter,
 )

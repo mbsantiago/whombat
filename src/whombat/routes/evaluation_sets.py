@@ -1,4 +1,6 @@
 """REST API routes for evaluation sets."""
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -45,12 +47,16 @@ async def get_evaluation_sets(
 )
 async def create_evaluation_set(
     session: Session,
-    project: schemas.EvaluationSetCreate,
+    data: schemas.EvaluationSetCreate,
 ):
     """Create an evaluation set."""
-    project = await api.evaluation_sets.create(session, project)
+    evaluation_set = await api.evaluation_sets.create(
+        session,
+        name=data.name,
+        description=data.description,
+    )
     await session.commit()
-    return project
+    return evaluation_set
 
 
 @evaluation_sets_router.get(
@@ -59,11 +65,10 @@ async def create_evaluation_set(
 )
 async def get_evaluation_set(
     session: Session,
-    evaluation_set_id: int,
+    evaluation_set_uuid: UUID,
 ):
     """Get an evaluation set."""
-    project = await api.evaluation_sets.get_by_id(session, evaluation_set_id)
-    return project
+    return await api.evaluation_sets.get(session, evaluation_set_uuid)
 
 
 @evaluation_sets_router.patch(
@@ -72,15 +77,21 @@ async def get_evaluation_set(
 )
 async def update_evaluation_set(
     session: Session,
-    evaluation_set_id: int,
+    evaluation_set_uuid: UUID,
     data: schemas.EvaluationSetUpdate,
 ):
     """Update an evaluation set."""
-    project = await api.evaluation_sets.update(
-        session, evaluation_set_id, data
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    evaluation_set = await api.evaluation_sets.update(
+        session,
+        evaluation_set,
+        data,
     )
     await session.commit()
-    return project
+    return evaluation_set
 
 
 @evaluation_sets_router.delete(
@@ -89,12 +100,16 @@ async def update_evaluation_set(
 )
 async def delete_evaluation_set(
     session: Session,
-    evaluation_set_id: int,
+    evaluation_set_uuid: UUID,
 ):
     """Delete an evaluation set."""
-    project = await api.evaluation_sets.delete(session, evaluation_set_id)
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    evaluation_set = await api.evaluation_sets.delete(session, evaluation_set)
     await session.commit()
-    return project
+    return evaluation_set
 
 
 @evaluation_sets_router.post(
@@ -103,15 +118,23 @@ async def delete_evaluation_set(
 )
 async def add_tag_to_evaluation_set(
     session: Session,
-    evaluation_set_id: int,
-    tag_id: int,
+    evaluation_set_uuid: UUID,
+    key: str,
+    value: str,
 ):
     """Add a tag to an evaluation set."""
-    project = await api.evaluation_sets.add_tag(
-        session, evaluation_set_id, tag_id
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    tag = await api.tags.get(session, (key, value))
+    evaluation_set = await api.evaluation_sets.add_tag(
+        session,
+        evaluation_set,
+        tag,
     )
     await session.commit()
-    return project
+    return evaluation_set
 
 
 @evaluation_sets_router.delete(
@@ -120,12 +143,20 @@ async def add_tag_to_evaluation_set(
 )
 async def remove_tag_from_evaluation_set(
     session: Session,
-    evaluation_set_id: int,
-    tag_id: int,
+    evaluation_set_uuid: UUID,
+    key: str,
+    value: str,
 ):
     """Remove a tag from an evaluation set."""
-    project = await api.evaluation_sets.remove_tag(
-        session, evaluation_set_id, tag_id
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    tag = await api.tags.get(session, (key, value))
+    evaluation_set = await api.evaluation_sets.remove_tag(
+        session,
+        evaluation_set,
+        tag,
     )
     await session.commit()
-    return project
+    return evaluation_set

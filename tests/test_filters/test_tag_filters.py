@@ -3,25 +3,25 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, filters, schemas
+from whombat import api, filters
 
 
 @pytest.fixture(autouse=True)
 async def setup_test(session: AsyncSession):
     """Set up the test."""
     tags_to_create = [
-        schemas.TagCreate(key="a", value="b1"),
-        schemas.TagCreate(key="a", value="b2"),
-        schemas.TagCreate(key="b", value="c1"),
-        schemas.TagCreate(key="b", value="c2"),
-        schemas.TagCreate(key="c", value="a1"),
-        schemas.TagCreate(key="c", value="a2"),
-        schemas.TagCreate(key="ab", value="bc1"),
-        schemas.TagCreate(key="ab", value="bc2"),
-        schemas.TagCreate(key="bc", value="ca1"),
-        schemas.TagCreate(key="bc", value="ca2"),
-        schemas.TagCreate(key="ca", value="ab1"),
-        schemas.TagCreate(key="ca", value="ab2"),
+        dict(key="a", value="b1"),
+        dict(key="a", value="b2"),
+        dict(key="b", value="c1"),
+        dict(key="b", value="c2"),
+        dict(key="c", value="a1"),
+        dict(key="c", value="a2"),
+        dict(key="ab", value="bc1"),
+        dict(key="ab", value="bc2"),
+        dict(key="bc", value="ca1"),
+        dict(key="bc", value="ca2"),
+        dict(key="ca", value="ab1"),
+        dict(key="ca", value="ab2"),
     ]
 
     await api.tags.create_many(session, tags_to_create)

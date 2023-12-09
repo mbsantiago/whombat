@@ -127,7 +127,7 @@ class BaseAPI(
     async def create_from_data(
         self,
         session: AsyncSession,
-        data: CreateSchema,
+        data: CreateSchema | None = None,
         **kwargs,
     ) -> WhombatSchema:
         """Create an object.
@@ -154,7 +154,7 @@ class BaseAPI(
     async def create_many(
         self,
         session: AsyncSession,
-        data: Sequence[CreateSchema],
+        data: Sequence[dict],
     ) -> None | Sequence[WhombatSchema]:
         """Create many objects.
 
@@ -174,7 +174,7 @@ class BaseAPI(
     async def create_many_without_duplicates(
         self,
         session: AsyncSession,
-        data: Sequence[CreateSchema],
+        data: Sequence[dict],
         return_all: bool = False,
     ) -> Sequence[WhombatSchema]:
         """Create many objects.
@@ -295,7 +295,7 @@ class BaseAPI(
             )
         return pk
 
-    def _key_fn(self, obj: WhombatModel | CreateSchema) -> Any:
+    def _key_fn(self, obj: dict) -> Any:
         """Get a key from an object.
 
         This key is used to determine whether an object already exists in the

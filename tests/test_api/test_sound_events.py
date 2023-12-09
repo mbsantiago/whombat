@@ -137,14 +137,16 @@ async def test_create_sound_events(
     geometry1 = geometries.TimeStamp(coordinates=0.5)
     geometry2 = geometries.TimeStamp(coordinates=0.6)
 
-    data: list[schemas.SoundEventCreate] = [
-        schemas.SoundEventCreate(
+    data: list[dict] = [
+        dict(
             recording_id=recording.id,
             geometry=geometry1,
+            geometry_type="TimeStamp",
         ),
-        schemas.SoundEventCreate(
+        dict(
             recording_id=recording.id,
             geometry=geometry2,
+            geometry_type="TimeStamp",
         ),
     ]
 
@@ -178,9 +180,10 @@ async def test_create_sound_events_with_different_geometries(
     await api.sound_events.create_many(
         session,
         data=[
-            schemas.SoundEventCreate(
+            dict(
                 recording_id=recording.id,
                 geometry=g,
+                geometry_type=g.type,
             )
             for g in geometries_to_create
         ],

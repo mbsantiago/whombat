@@ -1,4 +1,6 @@
 """REST API routes for sound events."""
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -46,13 +48,10 @@ async def get_sound_events(
 )
 async def get_sound_event(
     session: Session,
-    sound_event_id: int,
+    sound_event_uuid: UUID,
 ):
     """Get a sound_event."""
-    return await api.sound_events.get_by_id(
-        session,
-        sound_event_id,
-    )
+    return await api.sound_events.get(session, sound_event_uuid)
 
 
 @sound_events_router.patch(
@@ -61,53 +60,12 @@ async def get_sound_event(
 )
 async def update_sound_event(
     session: Session,
-    sound_event_id: int,
-    sound_event: schemas.SoundEventUpdate,
+    sound_event_uuid: UUID,
+    data: schemas.SoundEventUpdate,
 ):
     """Update a sound_event."""
-    response = await api.sound_events.update(
-        session,
-        sound_event_id,
-        sound_event,
-    )
-    await session.commit()
-    return response
-
-
-@sound_events_router.post(
-    "/detail/tags/",
-    response_model=schemas.SoundEvent,
-)
-async def add_sound_event_tag(
-    session: Session,
-    sound_event_id: int,
-    tag_id: int,
-):
-    """Add a tag to a sound_event."""
-    response = await api.sound_events.add_tag(
-        session,
-        sound_event_id,
-        tag_id,
-    )
-    await session.commit()
-    return response
-
-
-@sound_events_router.delete(
-    "/detail/tags/",
-    response_model=schemas.SoundEvent,
-)
-async def remove_sound_event_tag(
-    session: Session,
-    sound_event_id: int,
-    tag_id: int,
-):
-    """Remove a tag from a sound_event."""
-    response = await api.sound_events.remove_tag(
-        session,
-        sound_event_id,
-        tag_id,
-    )
+    sound_event = await api.sound_events.get(session, sound_event_uuid)
+    response = await api.sound_events.update(session, sound_event, data)
     await session.commit()
     return response
 
@@ -118,16 +76,17 @@ async def remove_sound_event_tag(
 )
 async def add_sound_event_feature(
     session: Session,
-    sound_event_id: int,
-    feature_name_id: int,
+    sound_event_uuid: UUID,
+    name: str,
     value: float,
 ):
     """Add a feature to a sound_event."""
+    sound_event = await api.sound_events.get(session, sound_event_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
     response = await api.sound_events.add_feature(
         session,
-        sound_event_id,
-        feature_name_id,
-        value,
+        sound_event,
+        feature,
     )
     await session.commit()
     return response
@@ -139,14 +98,17 @@ async def add_sound_event_feature(
 )
 async def remove_sound_event_feature(
     session: Session,
-    sound_event_id: int,
-    feature_name_id: int,
+    sound_event_uuid: UUID,
+    name: str,
+    value: float,
 ):
     """Remove a feature from a sound_event."""
+    sound_event = await api.sound_events.get(session, sound_event_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
     response = await api.sound_events.remove_feature(
         session,
-        sound_event_id,
-        feature_name_id,
+        sound_event,
+        feature,
     )
     await session.commit()
     return response
@@ -158,16 +120,17 @@ async def remove_sound_event_feature(
 )
 async def update_sound_event_feature(
     session: Session,
-    sound_event_id: int,
-    feature_name_id: int,
+    sound_event_uuid: UUID,
+    name: str,
     value: float,
 ):
     """Update a feature on a sound_event."""
+    sound_event = await api.sound_events.get(session, sound_event_uuid)
+    feature = await api.features.get_feature(session, name=name, value=value)
     response = await api.sound_events.update_feature(
         session,
-        sound_event_id,
-        feature_name_id,
-        value,
+        sound_event,
+        feature,
     )
     await session.commit()
     return response

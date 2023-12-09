@@ -57,9 +57,7 @@ class ClipAnnotationAPI(
         """
         return await self.create_from_data(
             session,
-            schemas.ClipAnnotationCreate(
-                clip_id=clip.id,
-            ),
+            clip_id=clip.id,
             **kwargs,
         )
 
@@ -96,7 +94,12 @@ class ClipAnnotationAPI(
         user_id = user.id if user else None
 
         for t in obj.tags:
-            if (t.id == tag.id) and (t.created_by_id == user_id):
+            created_by_id = t.created_by.id if t.created_by else None
+            if (
+                t.tag.key == tag.key
+                and t.tag.value == tag.value
+                and created_by_id == user_id
+            ):
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag.id} already exists in clip annotation {obj.id}."
                 )
@@ -104,11 +107,9 @@ class ClipAnnotationAPI(
         db_tag = await common.create_object(
             session=session,
             model=models.ClipAnnotationTag,
-            data=schemas.ClipAnnotationTagCreate(
-                clip_annotation_id=obj.id,
-                tag_id=tag.id,
-                created_by_id=user_id,
-            ),
+            clip_annotation_id=obj.id,
+            tag_id=tag.id,
+            created_by_id=user_id,
         )
 
         obj = obj.model_copy(
@@ -155,20 +156,18 @@ class ClipAnnotationAPI(
                     f"Note {note} already exists in clip annotation {obj}."
                 )
 
-        db_note = await common.create_object(
+        await common.create_object(
             session=session,
             model=models.ClipAnnotationNote,
-            data=schemas.ClipAnnotationNoteCreate(
-                clip_annotation_id=obj.id,
-                note_id=note.id,
-            ),
+            clip_annotation_id=obj.id,
+            note_id=note.id,
         )
 
         obj = obj.model_copy(
             update=dict(
                 notes=[
                     *obj.notes,
-                    schemas.ClipAnnotationNote.model_validate(db_note),
+                    note,
                 ],
             )
         )
@@ -209,21 +208,39 @@ class ClipAnnotationAPI(
         user_id = user.id if user else None
 
         for t in obj.tags:
-            if (t.id == tag.id) and (t.created_by_id == user_id):
-                await common.delete_object(
-                    session=session,
-                    model=models.ClipAnnotationTag,
-                    condition=models.ClipAnnotationTag.id == t.id,
-                )
+            created_by_id = t.created_by.id if t.created_by else None
+            if (
+                t.tag.key == tag.key
+                and t.tag.value == tag.value
+                and created_by_id == user_id
+            ):
                 break
         else:
             raise exceptions.NotFoundError(
                 f"Tag {tag.id} does not exist in clip annotation {obj.id}."
             )
 
+        await common.delete_object(
+            session=session,
+            model=models.ClipAnnotationTag,
+            condition=and_(
+                models.ClipAnnotationTag.clip_annotation_id == obj.id,
+                models.ClipAnnotationTag.tag_id == tag.id,
+                models.ClipAnnotationTag.created_by_id == user_id,
+            ),
+        )
+
         obj = obj.model_copy(
             update=dict(
-                tags=[t for t in obj.tags if t.id != tag.id],
+                tags=[
+                    t
+                    for t in obj.tags
+                    if not (
+                        t.tag.key == tag.key
+                        and t.tag.value == tag.value
+                        and created_by_id == user_id
+                    )
+                ]
             )
         )
         self._update_cache(obj)

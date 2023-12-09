@@ -108,12 +108,12 @@ async def test_get_clips(
 
     # Assert
     assert len(db_clips) == 2
-    assert db_clips[1].recording == recording
-    assert db_clips[1].start_time == 0.0
-    assert db_clips[1].end_time == 0.5
     assert db_clips[0].recording == recording
     assert db_clips[0].start_time == 0.5
     assert db_clips[0].end_time == 1.0
+    assert db_clips[1].recording == recording
+    assert db_clips[1].start_time == 0.0
+    assert db_clips[1].end_time == 0.5
 
 
 async def test_create_clips(
@@ -125,12 +125,8 @@ async def test_create_clips(
     created_clips = await api.clips.create_many_without_duplicates(
         session,
         data=[
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
-            ),
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.5, end_time=1.0
-            ),
+            dict(recording_id=recording.id, start_time=0.0, end_time=0.5),
+            dict(recording_id=recording.id, start_time=0.5, end_time=1.0),
         ],
     )
 
@@ -167,10 +163,8 @@ async def create_clips_ignores_non_existing_recordings(
     created_clips = await api.clips.create_many_without_duplicates(
         session,
         data=[
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
-            ),
-            schemas.ClipCreate(recording_id=4, start_time=0.5, end_time=1.0),
+            dict(recording_id=recording.id, start_time=0.0, end_time=0.5),
+            dict(recording_id=4, start_time=0.5, end_time=1.0),
         ],
     )
 
@@ -191,15 +185,11 @@ async def test_get_clips_with_limit(
 ):
     """Test getting clips with a limit."""
     # Arrange
-    await api.clips.create_many(
+    await api.clips.create_many_without_duplicates(
         session,
         data=[
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
-            ),
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.5, end_time=1.0
-            ),
+            dict(recording_id=recording.id, start_time=0.0, end_time=0.5),
+            dict(recording_id=recording.id, start_time=0.5, end_time=1.0),
         ],
     )
 
@@ -213,7 +203,7 @@ async def test_get_clips_with_limit(
     assert len(db_clips) == 1
     assert db_clips[0].recording == recording
     assert db_clips[0].start_time == 0.5
-    assert db_clips[0].end_time == 1
+    assert db_clips[0].end_time == 1.0
 
 
 async def test_get_clips_with_offset(
@@ -221,14 +211,18 @@ async def test_get_clips_with_offset(
     recording: schemas.Recording,
 ):
     """Test getting clips with an offset."""
-    await api.clips.create_many(
+    await api.clips.create_many_without_duplicates(
         session,
         data=[
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
+            dict(
+                recording_id=recording.id,
+                start_time=0.0,
+                end_time=0.5,
             ),
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.5, end_time=1.0
+            dict(
+                recording_id=recording.id,
+                start_time=0.5,
+                end_time=1.0,
             ),
         ],
     )
@@ -255,11 +249,15 @@ async def test_create_clips_ignores_duplicate_clips(
     created_clips = await api.clips.create_many_without_duplicates(
         session,
         data=[
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
+            dict(
+                recording_id=recording.id,
+                start_time=0.0,
+                end_time=0.5,
             ),
-            schemas.ClipCreate(
-                recording_id=recording.id, start_time=0.0, end_time=0.5
+            dict(
+                recording_id=recording.id,
+                start_time=0.0,
+                end_time=0.5,
             ),
         ],
     )
@@ -289,7 +287,7 @@ async def test_create_clips_ignores_existing_clips(
     )
 
     # Act
-    data = schemas.ClipCreate(
+    data = dict(
         recording_id=recording.id,
         start_time=0.0,
         end_time=0.5,
@@ -312,7 +310,7 @@ async def test_create_clips_add_duration_feature(
 ):
     """Test creating clips adds duration feature."""
     # Arrange
-    data = schemas.ClipCreate(
+    data = dict(
         recording_id=recording.id,
         start_time=0.3,
         end_time=0.8,

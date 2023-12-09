@@ -70,11 +70,11 @@ class ClipEvaluationAPI(
         return await self.create_from_data(
             session,
             schemas.ClipEvaluationCreate(
-                evaluation_id=evaluation.id,
-                clip_annotation_id=clip_annotation.id,
-                clip_prediction_id=clip_prediction.id,
                 score=score,
             ),
+            evaluation_id=evaluation.id,
+            clip_annotation_id=clip_annotation.id,
+            clip_prediction_id=clip_prediction.id,
             **kwargs,
         )
 
@@ -100,11 +100,9 @@ class ClipEvaluationAPI(
         await create_object(
             session,
             models.ClipEvaluationMetric,
-            schemas.ClipEvaluationMetricCreate(
-                clip_evaluation_id=obj.id,
-                feature_name_id=feature_name.id,
-                value=metric.value,
-            ),
+            value=metric.value,
+            clip_evaluation_id=obj.id,
+            feature_name_id=feature_name.id,
         )
         obj.metrics.append(metric)
         self._update_cache(obj)
@@ -300,13 +298,11 @@ class ClipEvaluationAPI(
             sort_by=sort_by,
         )
 
-    def _key_fn(
-        self, obj: models.ClipEvaluation | schemas.ClipEvaluationCreate
-    ) -> tuple[int, int, int]:
+    def _key_fn(self, obj: dict):
         return (
-            obj.evaluation_id,
-            obj.clip_annotation_id,
-            obj.clip_prediction_id,
+            obj.get("evaluation_id"),
+            obj.get("clip_annotation_id"),
+            obj.get("clip_prediction_id"),
         )
 
     def _get_key_column(self) -> ColumnElement:

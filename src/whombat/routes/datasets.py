@@ -1,5 +1,6 @@
 """REST API routes for datasets."""
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, UploadFile
 from fastapi.responses import Response
@@ -24,11 +25,10 @@ dataset_router = APIRouter()
 )
 async def get_dataset(
     session: Session,
-    dataset_id: int,
+    dataset_uuid: UUID,
 ):
     """Get a dataset by UUID."""
-    dataset = await api.datasets.get_by_id(session, dataset_id)
-    return dataset
+    return await api.datasets.get(session, dataset_uuid)
 
 
 @dataset_router.get(
@@ -43,7 +43,10 @@ async def get_datasets(
 ):
     """Get a page of datasets."""
     datasets, total = await api.datasets.get_many(
-        session, limit=limit, offset=offset, filters=[filter]
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
     )
 
     return schemas.Page(
@@ -63,7 +66,12 @@ async def create_dataset(
     dataset: schemas.DatasetCreate,
 ):
     """Create a new dataset."""
-    created, _ = await api.datasets.create(session, dataset)
+    created = await api.datasets.create(
+        session,
+        name=dataset.name,
+        description=dataset.description,
+        dataset_dir=dataset.audio_dir,
+    )
     await session.commit()
     return created
 
@@ -74,11 +82,12 @@ async def create_dataset(
 )
 async def update_dataset(
     session: Session,
-    dataset_id: int,
-    dataset: schemas.DatasetUpdate,
+    dataset_uuid: UUID,
+    data: schemas.DatasetUpdate,
 ):
     """Update a dataset."""
-    updated = await api.datasets.update(session, dataset_id, dataset)
+    dataset = await api.datasets.get(session, dataset_uuid)
+    updated = await api.datasets.update(session, dataset, data)
     await session.commit()
     return updated
 
@@ -89,10 +98,11 @@ async def update_dataset(
 )
 async def delete_dataset(
     session: Session,
-    dataset_id: int,
+    dataset_uuid: UUID,
 ):
     """Delete a dataset."""
-    deleted = await api.datasets.delete(session, dataset_id)
+    dataset = await api.datasets.get(session, dataset_uuid)
+    deleted = await api.datasets.delete(session, dataset)
     await session.commit()
     return deleted
 
@@ -103,10 +113,10 @@ async def delete_dataset(
 )
 async def download_dataset(
     session: Session,
-    dataset_id: int,
+    dataset_uuid: UUID,
 ):
     """Export a dataset."""
-    whombat_dataset = await api.datasets.get_by_id(session, dataset_id)
+    whombat_dataset = await api.datasets.get(session, dataset_uuid)
     dataset = await api.datasets.to_soundevent(session, whombat_dataset)
     obj = aoef.to_aeof(dataset)
     filename = f"{dataset.name}_{obj.created_on.isoformat()}.json"
@@ -133,7 +143,7 @@ async def import_dataset(
 
     obj = aoef.AOEFObject.model_validate_json(dataset.file.read())
     data = aoef.to_soundevent(obj)
-    imported = await api.datasets.import_dataset(
+    imported = await api.datasets.from_soundevent(
         session,
         data,  # type: ignore
         dataset_audio_dir=audio_dir,

@@ -312,6 +312,8 @@ class UUIDFilter(Filter):
 
     eq: UUID | None = None
 
+    isin: list[UUID] | None = None
+
 
 def uuid_filter(
     field: MappedColumn | InstrumentedAttribute,
