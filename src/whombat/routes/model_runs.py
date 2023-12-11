@@ -1,6 +1,8 @@
 """REST API routes for model runs."""
+from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
+from soundevent.io import aoef
 
 from whombat import api, schemas
 from whombat.dependencies import Session
@@ -43,9 +45,65 @@ async def create_model_run(
     model_run: schemas.ModelRunCreate,
 ) -> schemas.ModelRun:
     """Create model run."""
-    return await api.model_runs.create(
+    model_run = await api.model_runs.create(
         session,
         name=model_run.name,
         description=model_run.description,
         version=model_run.version,
     )
+    await session.commit()
+    return model_run
+
+
+@model_runs_router.get("/detail/", response_model=schemas.ModelRun)
+async def get_model_run(
+    session: Session,
+    model_run_uuid: UUID,
+) -> schemas.ModelRun:
+    """Get model run."""
+    return await api.model_runs.get(session, model_run_uuid)
+
+
+@model_runs_router.put("/detail/", response_model=schemas.ModelRun)
+async def update_model_run(
+    session: Session,
+    model_run_uuid: UUID,
+    data: schemas.ModelRunUpdate,
+) -> schemas.ModelRun:
+    """Update model run."""
+    model_run = await api.model_runs.get(session, model_run_uuid)
+    model_run = await api.model_runs.update(
+        session,
+        model_run,
+        data,
+    )
+    await session.commit()
+    return model_run
+
+
+@model_runs_router.delete("/detail/", response_model=schemas.ModelRun)
+async def delete_model_run(
+    session: Session,
+    model_run_uuid: UUID,
+) -> schemas.ModelRun:
+    """Delete model run."""
+    model_run = await api.model_runs.get(session, model_run_uuid)
+    await api.model_runs.delete(session, model_run)
+    await session.commit()
+    return model_run
+
+
+@model_runs_router.get("/import//", response_model=schemas.ModelRun)
+async def import_model_run(
+    session: Session,
+    upload_file: UploadFile,
+) -> schemas.ModelRun:
+    """Import model run."""
+    obj = aoef.AOEFObject.model_validate_json(upload_file.file.read())
+    data = aoef.to_soundevent(obj)
+    model_run = await api.model_runs.from_soundevent(
+        session,
+        data,  # type: ignore
+    )
+    await session.commit()
+    return model_run
