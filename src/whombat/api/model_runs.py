@@ -80,7 +80,7 @@ class ModelRunAPI(
             limit=limit,
             offset=offset,
             filters=[
-                ModelRunFilter(eq=obj.id),
+                ModelRunFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

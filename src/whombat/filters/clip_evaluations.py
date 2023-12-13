@@ -1,5 +1,7 @@
 """Filters for Clip Evaluations."""
 
+from uuid import UUID
+
 from sqlalchemy import Select, and_
 
 from whombat import models
@@ -19,19 +21,46 @@ __all__ = [
 
 UUIDFilter = base.uuid_filter(models.ClipEvaluation.uuid)
 
-ClipAnnotationFilter = base.integer_filter(
-    models.ClipEvaluation.clip_annotation_id
-)
-
-ClipPredictionFilter = base.integer_filter(
-    models.ClipEvaluation.clip_prediction_id
-)
 
 ScoreFilter = base.float_filter(models.ClipEvaluation.score)
 
 CreatedOnFilter = base.date_filter(models.ClipEvaluation.created_on)
 
 EvaluationFilter = base.integer_filter(models.ClipEvaluation.evaluation_id)
+
+
+class ClipAnnotationFilter(base.Filter):
+    """Filter for clip evaluations with a specific clip annotation."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by clip annotation."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.ClipAnnotation,
+            models.ClipAnnotation.id
+            == models.ClipEvaluation.clip_annotation_id,
+        ).filter(models.ClipAnnotation.uuid == self.eq)
+
+
+class ClipPredictionFilter(base.Filter):
+    """Filter for clip evaluations with a specific clip prediction."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by clip prediction."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.ClipPrediction,
+            models.ClipPrediction.id
+            == models.ClipEvaluation.clip_prediction_id,
+        ).filter(models.ClipPrediction.uuid == self.eq)
 
 
 class MetricFilter(base.Filter):
@@ -78,55 +107,62 @@ class MetricFilter(base.Filter):
 class PredictionTagFilter(base.Filter):
     """Filter for clip evaluations with a specific prediction tag."""
 
-    eq: int | None = None
+    key: str | None = None
+    value: str | None = None
     gt: int | None = None
     lt: int | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter query by prediction tag."""
-        if self.eq is None:
+        if self.key is None and self.value is None:
             return query
 
-        query = query.join(
-            models.ClipPrediction,
-            models.ClipPrediction.id
-            == models.ClipEvaluation.clip_prediction_id,
-        ).join(
-            models.ClipPredictionTag,
-            models.ClipPredictionTag.clip_prediction_id
-            == models.ClipPrediction.id,
+        query = (
+            query.join(
+                models.ClipPrediction,
+                models.ClipPrediction.id
+                == models.ClipEvaluation.clip_prediction_id,
+            )
+            .join(
+                models.ClipPredictionTag,
+                models.ClipPredictionTag.clip_prediction_id
+                == models.ClipPrediction.id,
+            )
+            .join(
+                models.Tag,
+                models.Tag.id == models.ClipPredictionTag.tag_id,
+            )
         )
 
-        if self.gt is None and self.lt is None:
-            return query.filter(models.ClipPredictionTag.tag_id == self.eq)
+        conditions = []
+
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
 
         if self.gt is not None:
-            return query.filter(
-                and_(
-                    models.ClipPredictionTag.tag_id == self.eq,
-                    models.ClipPredictionTag.score > self.gt,
-                )
-            )
+            conditions.append(models.ClipPredictionTag.score > self.gt)
 
-        return query.filter(
-            and_(
-                models.ClipPredictionTag.tag_id == self.eq,
-                models.ClipPredictionTag.score < self.lt,
-            )
-        )
+        if self.lt is not None:
+            conditions.append(models.ClipPredictionTag.score < self.lt)
+
+        return query.filter(*conditions)
 
 
 class AnnotationTagFilter(base.Filter):
     """Filter for clip evaluations with a specific annotation tag."""
 
-    eq: int | None = None
+    key: str | None = None
+    value: str | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter query by annotation tag."""
-        if self.eq is None:
+        if self.key is None and self.value is None:
             return query
 
-        return (
+        query = (
             query.join(
                 models.ClipAnnotation,
                 models.ClipAnnotation.id
@@ -137,8 +173,20 @@ class AnnotationTagFilter(base.Filter):
                 models.ClipAnnotationTag.clip_annotation_id
                 == models.ClipAnnotation.id,
             )
-            .filter(models.ClipAnnotationTag.tag_id == self.eq)
+            .join(
+                models.Tag,
+                models.Tag.id == models.ClipAnnotationTag.tag_id,
+            )
         )
+
+        conditions = []
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
+
+        return query.filter(*conditions)
 
 
 ClipEvaluationFilter = base.combine(

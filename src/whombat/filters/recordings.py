@@ -1,5 +1,7 @@
 """Filters for Recordings."""
 
+from uuid import UUID
+
 from sqlalchemy import Select, select
 
 from whombat import models
@@ -52,17 +54,24 @@ SearchFilter = base.search_filter(
 class DatasetFilter(base.Filter):
     """Filter recordings by the dataset they are in."""
 
-    eq: int | None = None
+    eq: UUID | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
         if not self.eq:
             return query
 
-        return query.join(
-            models.DatasetRecording,
-            models.Recording.id == models.DatasetRecording.recording_id,
-        ).where(models.DatasetRecording.dataset_id == self.eq)
+        return (
+            query.join(
+                models.DatasetRecording,
+                models.Recording.id == models.DatasetRecording.recording_id,
+            )
+            .join(
+                models.Dataset,
+                models.DatasetRecording.dataset_id == models.Dataset.id,
+            )
+            .where(models.Dataset.uuid == self.eq)
+        )
 
 
 class IssuesFilter(base.Filter):
@@ -99,17 +108,26 @@ class TagFilter(base.Filter):
     tag.
     """
 
-    eq: int | None = None
+    key: str | None = None
+    value: str | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if not self.eq:
+        if self.key is None and self.value is None:
             return query
 
-        return query.join(
+        query = query.join(
             models.RecordingTag,
             models.Recording.id == models.RecordingTag.recording_id,
-        ).where(models.RecordingTag.tag_id == self.eq)
+        ).join(models.Tag, models.RecordingTag.tag_id == models.Tag.id)
+
+        conditions = []
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
+
+        return query.where(*conditions)
 
 
 RecordingFilter = base.combine(

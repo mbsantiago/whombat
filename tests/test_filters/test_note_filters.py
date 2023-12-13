@@ -5,7 +5,8 @@ import datetime
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, filters, schemas
+from whombat import api, schemas
+from whombat.filters import notes as note_filters
 
 
 @pytest.fixture
@@ -87,7 +88,7 @@ async def test_get_notes_that_are_issues(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.IssueFilter(is_true=True),
+            note_filters.IssueFilter(is_true=True),
         ],
     )
 
@@ -106,7 +107,7 @@ async def test_get_notes_that_are_not_issues(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.IssueFilter(is_true=False),
+            note_filters.IssueFilter(is_true=False),
         ],
     )
 
@@ -126,7 +127,7 @@ async def test_get_notes_from_user(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.CreatedByFilter(eq=user1.id),
+            note_filters.CreatedByFilter(eq=user1.id),
         ],
     )
 
@@ -146,9 +147,7 @@ async def test_get_notes_before_date(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.CreatedAtFilter(
-                before=datetime.datetime(2021, 5, 1)
-            ),
+            note_filters.CreatedAtFilter(before=datetime.datetime(2021, 5, 1)),
         ],
     )
 
@@ -167,7 +166,7 @@ async def test_get_notes_created_after(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.CreatedAtFilter(after=datetime.datetime(2021, 5, 1)),
+            note_filters.CreatedAtFilter(after=datetime.datetime(2021, 5, 1)),
         ],
     )
 
@@ -188,7 +187,7 @@ async def test_get_notes_by_message(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            filters.notes.MessageFilter(has="b"),
+            note_filters.MessageFilter(has="b"),
         ],
     )
 

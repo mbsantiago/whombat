@@ -16,7 +16,9 @@ SearchFilter = base.search_filter(
     ]
 )
 
+CreatedOnFilter = base.date_filter(models.AnnotationProject.created_on)
 
 AnnotationProjectFilter = base.combine(
     SearchFilter,
+    created_on=CreatedOnFilter,
 )

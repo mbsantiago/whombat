@@ -3,7 +3,8 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, filters
+from whombat import api
+from whombat.filters import tags as tag_filters
 
 
 @pytest.fixture(autouse=True)
@@ -31,7 +32,7 @@ async def test_filter_by_exact_key(session: AsyncSession):
     """Test filtering by exact key."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.KeyFilter(eq="a")]
+        session, filters=[tag_filters.KeyFilter(eq="a")]
     )
 
     # Assert.
@@ -43,7 +44,7 @@ async def test_filter_by_has_key(session: AsyncSession):
     """Test filtering by has key."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.KeyFilter(has="a")]
+        session, filters=[tag_filters.KeyFilter(has="a")]
     )
 
     # Assert.
@@ -55,7 +56,7 @@ async def test_filter_by_exact_value(session: AsyncSession):
     """Test filtering by exact value."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.ValueFilter(eq="a1")]
+        session, filters=[tag_filters.ValueFilter(eq="a1")]
     )
 
     # Assert.
@@ -67,7 +68,7 @@ async def test_filter_by_has_value(session: AsyncSession):
     """Test filtering by has value."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.ValueFilter(has="a")]
+        session, filters=[tag_filters.ValueFilter(has="a")]
     )
 
     # Assert.
@@ -79,7 +80,7 @@ async def test_filter_by_search(session: AsyncSession):
     """Test filtering by search."""
     # Act
     tags, _ = await api.tags.get_many(
-        session, filters=[filters.tags.SearchFilter(search="a")]
+        session, filters=[tag_filters.SearchFilter(search="a")]
     )
 
     # Assert.

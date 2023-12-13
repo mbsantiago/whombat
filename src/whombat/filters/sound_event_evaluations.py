@@ -1,5 +1,7 @@
 """Filters for Sound Event Evaluations."""
 
+from uuid import UUID
+
 from sqlalchemy import Select, and_
 
 from whombat import models
@@ -19,18 +21,58 @@ __all__ = [
 ]
 
 
-ClipEvaluationFilter = base.integer_filter(
-    models.SoundEventEvaluation.clip_evaluation_id
-)
-
-
 ScoreFilter = base.float_filter(models.SoundEventEvaluation.score)
 
 
-TargetFilter = base.integer_filter(models.SoundEventEvaluation.target_id)
+class ClipEvaluationFilter(base.Filter):
+    """Filter for clip evaluations of sound event evaluations."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by clip evaluation."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.ClipEvaluation,
+            models.ClipEvaluation.id
+            == models.SoundEventEvaluation.clip_evaluation_id,
+        ).filter(models.ClipEvaluation.uuid == self.eq)
 
 
-SourceFilter = base.integer_filter(models.SoundEventEvaluation.source_id)
+class TargetFilter(base.Filter):
+    """Filter for targets of sound event evaluations."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by target."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.SoundEventAnnotation,
+            models.SoundEventAnnotation.id
+            == models.SoundEventEvaluation.target_id,
+        ).filter(models.SoundEventAnnotation.uuid == self.eq)
+
+
+class SourceFilter(base.Filter):
+    """Filter for sources of sound event evaluations."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by source."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.SoundEventPrediction,
+            models.SoundEventPrediction.id
+            == models.SoundEventEvaluation.source_id,
+        ).filter(models.SoundEventPrediction.uuid == self.eq)
 
 
 class MetricFilter(base.Filter):
@@ -107,14 +149,15 @@ class HasTargetFilter(base.Filter):
 class TargetTagFilter(base.Filter):
     """Filter for evaluations whose target has a specific tag."""
 
-    eq: int | None = None
+    key: str | None = None
+    value: str | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter query by target tag."""
-        if self.eq is None:
+        if self.key is None and self.value is None:
             return query
 
-        return (
+        query = (
             query.join(
                 models.SoundEventAnnotation,
                 models.SoundEventAnnotation.id
@@ -125,14 +168,27 @@ class TargetTagFilter(base.Filter):
                 models.SoundEventAnnotationTag.sound_event_annotation_id
                 == models.SoundEventAnnotation.id,
             )
-            .filter(models.SoundEventAnnotationTag.tag_id == self.eq)
+            .join(
+                models.Tag,
+                models.Tag.id == models.SoundEventAnnotationTag.tag_id,
+            )
         )
+
+        conditions = []
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
+
+        return query.filter(*conditions)
 
 
 class SourceTagFilter(base.Filter):
     """Filter for evaluations whose source has a specific tag."""
 
-    eq: int | None = None
+    key: str | None = None
+    value: str | None = None
 
     gt: float | None = None
 
@@ -140,38 +196,41 @@ class SourceTagFilter(base.Filter):
 
     def filter(self, query: Select) -> Select:
         """Filter query by source tag."""
-        if self.eq is None:
+        if self.key is None and self.value is None:
             return query
 
-        query = query.join(
-            models.SoundEventPrediction,
-            models.SoundEventPrediction.id
-            == models.SoundEventEvaluation.source_id,
-        ).join(
-            models.SoundEventPredictionTag,
-            models.SoundEventPredictionTag.sound_event_prediction_id
-            == models.SoundEventPrediction.id,
+        query = (
+            query.join(
+                models.SoundEventPrediction,
+                models.SoundEventPrediction.id
+                == models.SoundEventEvaluation.source_id,
+            )
+            .join(
+                models.SoundEventPredictionTag,
+                models.SoundEventPredictionTag.sound_event_prediction_id
+                == models.SoundEventPrediction.id,
+            )
+            .join(
+                models.Tag,
+                models.Tag.id == models.SoundEventPredictionTag.tag_id,
+            )
         )
 
-        if self.gt is None and self.lt is None:
-            return query.filter(
-                models.SoundEventPredictionTag.tag_id == self.eq
-            )
-
+        conditions = []
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
         if self.gt is not None:
-            return query.filter(
-                and_(
-                    models.SoundEventPredictionTag.tag_id == self.eq,
-                    models.SoundEventPredictionTag.score > self.gt,
-                )
+            conditions.append(
+                models.SoundEventPredictionTag.score > self.gt,
             )
-
-        return query.filter(
-            and_(
-                models.SoundEventPredictionTag.tag_id == self.eq,
+        if self.lt is not None:
+            conditions.append(
                 models.SoundEventPredictionTag.score < self.lt,
             )
-        )
+
+        return query.filter(*conditions)
 
 
 SoundEventEvaluationFilter = base.combine(

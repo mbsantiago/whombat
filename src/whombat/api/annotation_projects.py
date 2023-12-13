@@ -209,7 +209,7 @@ class AnnotationProjectAPI(
             limit=limit,
             offset=offset,
             filters=[
-                AnnotationProjectFilter(eq=obj.id),
+                AnnotationProjectFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

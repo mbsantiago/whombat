@@ -292,7 +292,7 @@ class ClipEvaluationAPI(
             limit=limit,
             offset=offset,
             filters=[
-                ClipEvaluationFilter(eq=obj.id),
+                ClipEvaluationFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

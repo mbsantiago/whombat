@@ -175,7 +175,7 @@ class EvaluationSetAPI(
             limit=limit,
             offset=offset,
             filters=[
-                ModelRunEvaluationSetFilter(eq=obj.id),
+                ModelRunEvaluationSetFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,
@@ -230,7 +230,7 @@ class EvaluationSetAPI(
             session,
             limit=limit,
             offset=offset,
-            filters=[UserRunEvaluationSetFilter(eq=obj.id), *(filters or [])],
+            filters=[UserRunEvaluationSetFilter(eq=obj.uuid), *(filters or [])],
             sort_by=sort_by,
         )
 
@@ -284,7 +284,7 @@ class EvaluationSetAPI(
             limit=limit,
             offset=offset,
             filters=[
-                ClipAnnotationEvaluationSetFilter(eq=obj.id),
+                ClipAnnotationEvaluationSetFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

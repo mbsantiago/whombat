@@ -193,7 +193,7 @@ async def test_create_sound_events_with_different_geometries(
         session,
         limit=None,
         filters=[
-            RecordingFilter(eq=recording.id),
+            RecordingFilter(eq=recording.uuid),
         ],
     )
 

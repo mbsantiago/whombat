@@ -381,7 +381,7 @@ class DatasetAPI(
             limit=limit,
             offset=offset,
             filters=[
-                DatasetFilter(eq=obj.id),
+                DatasetFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

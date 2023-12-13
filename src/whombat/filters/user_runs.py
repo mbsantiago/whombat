@@ -1,5 +1,7 @@
 """Filters for User Runs."""
 
+from uuid import UUID
+
 from sqlalchemy import Select
 
 from whombat import models
@@ -37,17 +39,25 @@ class HasEvaluationFilter(base.Filter):
 class EvaluationSetFilter(base.Filter):
     """Filter for user runs that are in an evaluation set."""
 
-    eq: int | None = None
+    eq: UUID | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter for user runs that are in an evaluation set."""
         if self.eq is None:
             return query
 
-        return query.join(
-            models.EvaluationSetUserRun,
-            models.EvaluationSetUserRun.user_run_id == models.UserRun.id,
-        ).filter(models.EvaluationSetUserRun.evaluation_set_id == self.eq)
+        return (
+            query.join(
+                models.EvaluationSetUserRun,
+                models.EvaluationSetUserRun.user_run_id == models.UserRun.id,
+            )
+            .join(
+                models.EvaluationSet,
+                models.EvaluationSet.id
+                == models.EvaluationSetUserRun.evaluation_set_id,
+            )
+            .filter(models.EvaluationSet.uuid == self.eq)
+        )
 
 
 UserRunFilter = base.combine(

@@ -67,7 +67,7 @@ class UserRunAPI(
             limit=limit,
             offset=offset,
             filters=[
-                UserRunFilter(eq=obj.id),
+                UserRunFilter(eq=obj.uuid),
                 *(filters or []),
             ],
             sort_by=sort_by,

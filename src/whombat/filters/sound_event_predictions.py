@@ -45,7 +45,7 @@ class SoundEventFilter(base.Filter):
 class RecordingFilter(base.Filter):
     """Filter for predictions by dataset."""
 
-    eq: int | None = None
+    eq: UUID | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
