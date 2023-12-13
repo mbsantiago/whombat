@@ -673,6 +673,7 @@ async def test_remove_non_existing_feature_fails(
 async def test_get_recordings(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting all recordings."""
     # Arrange
@@ -684,6 +685,7 @@ async def test_get_recordings(
     recording1 = await api.recordings.create(
         session,
         path=path1,
+        audio_dir=audio_dir,
     )
 
     path2 = random_wav_factory(
@@ -694,6 +696,7 @@ async def test_get_recordings(
     recording2 = await api.recordings.create(
         session,
         path=path2,
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -711,6 +714,7 @@ async def test_get_recordings(
 async def test_get_recordings_with_limit(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting all recordings with a limit."""
     # Arrange
@@ -722,6 +726,7 @@ async def test_get_recordings_with_limit(
     recording1 = await api.recordings.create(
         session,
         path=path1,
+        audio_dir=audio_dir,
     )
 
     path2 = random_wav_factory(
@@ -732,6 +737,7 @@ async def test_get_recordings_with_limit(
     recording2 = await api.recordings.create(
         session,
         path=path2,
+        audio_dir=audio_dir,
     )
 
     # Act
@@ -758,6 +764,7 @@ async def test_get_recordings_with_limit(
 async def test_get_recordings_with_offset(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Test getting all recordings with an offset."""
     # Arrange
@@ -769,6 +776,7 @@ async def test_get_recordings_with_offset(
     recording1 = await api.recordings.create(
         session,
         path=path1,
+        audio_dir=audio_dir,
     )
 
     path2 = random_wav_factory(
@@ -779,6 +787,7 @@ async def test_get_recordings_with_offset(
     await api.recordings.create(
         session,
         path=path2,
+        audio_dir=audio_dir,
     )
 
     # Act

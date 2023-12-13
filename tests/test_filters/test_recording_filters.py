@@ -13,6 +13,7 @@ from whombat import api, filters, schemas
 async def create_test_recording(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
 ):
     """Create a recording for testing."""
 
@@ -30,6 +31,7 @@ async def create_test_recording(
         return await api.recordings.create(
             session,
             path=path,
+            audio_dir=audio_dir,
             **kwargs,
         )
 

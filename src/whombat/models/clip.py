@@ -17,7 +17,7 @@ parts of the recording, and identify relevant sound events with greater
 ease.
 """
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -89,6 +89,7 @@ class Clip(Base):
     )
     start_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
     end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    score: orm.Mapped[Optional[float]] = orm.mapped_column(default=None)
 
     # Relations
     recording: orm.Mapped[Recording] = orm.relationship(

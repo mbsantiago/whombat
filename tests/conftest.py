@@ -11,10 +11,12 @@ import numpy as np
 import pytest
 import soundevent
 from scipy.io import wavfile
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, cache, dependencies, schemas
 from whombat.app import app
+from whombat.database.utils import get_database_url
 from whombat.settings import Settings
 
 # Avoid noisy logging during tests.
@@ -62,34 +64,29 @@ def database_test(tmp_path: Path) -> Path:
     return tmp_path / "test.db"
 
 
-@pytest.fixture
-def database_url(database_test: Path) -> str:
-    """Fixture to return the database url."""
-    return f"sqlite+aiosqlite:///{database_test.absolute()}"
-
-
 @pytest.fixture(autouse=True)
 def settings(
+    audio_dir: Path,
     database_test: Path,
-    database_url: str,
 ) -> Settings:
     """Fixture to return the settings."""
-    os.environ["db_url"] = database_url
-    os.environ["audio_dir"] = "/"
-    os.environ["app_name"] = "Whombat"
-    os.environ["admin_username"] = "test_admin"
-    os.environ["admin_password"] = "test_password"
-    os.environ["admin_email"] = "test@whombat.com"
     settings = Settings(
-        db_url=f"sqlite+aiosqlite:///{database_test.absolute()}",
+        db_dialect="sqlite",
+        db_name=str(database_test.absolute().resolve()),
         app_name="Whombat",
-        audio_dir=Path("/"),
+        audio_dir=audio_dir,
         admin_username="test_admin",
         admin_password="test_password",
         admin_email="test@whombat.com",
     )
     app.dependency_overrides[dependencies.get_settings] = lambda: settings
     return settings
+
+
+@pytest.fixture
+def database_url(settings: Settings) -> URL:
+    """Fixture to return the database url."""
+    return get_database_url(settings)
 
 
 @pytest.fixture(autouse=True)
@@ -148,9 +145,9 @@ def random_wav_factory(audio_dir: Path):
 
 
 @pytest.fixture
-async def session() -> AsyncGenerator[AsyncSession, None]:
+async def session(database_url: URL) -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
-    async with api.create_session() as sess:
+    async with api.create_session(db_url=database_url) as sess:
         yield sess
 
 

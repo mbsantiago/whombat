@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat.database import utils
@@ -17,7 +18,7 @@ DEFAULT_DB_URL = "sqlite+aiosqlite://"
 
 @asynccontextmanager
 async def create_session(
-    db_url: str = DEFAULT_DB_URL,
+    db_url: str | URL = DEFAULT_DB_URL,
 ) -> AsyncGenerator[AsyncSession, None]:
     """Create a database session.
 
@@ -60,7 +61,11 @@ async def create_session(
     This function is asynchronous, so it must be called with the ``await``
     keyword.
     """
-    engine = utils.create_db_engine(db_url)
-    await utils.create_db_and_tables(engine)
+    engine = utils.create_async_db_engine(db_url)
+    cfg = utils.create_alembic_config(db_url, is_async=False)
+    async with engine.begin() as conn:
+        await conn.run_sync(utils.create_or_update_db, cfg)
+
+    engine = utils.create_async_db_engine(db_url)
     async with utils.get_async_session(engine) as session:
         yield session

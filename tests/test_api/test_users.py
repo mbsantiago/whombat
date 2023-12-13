@@ -2,7 +2,6 @@
 import uuid
 
 import pytest
-from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -14,14 +13,6 @@ async def test_create_session():
     async with api.create_session() as session:
         assert isinstance(session, AsyncSession)
         assert session.is_active
-
-
-async def test_session_was_created_with_default_db_url(session: AsyncSession):
-    """Test that the session was created with the default database URL."""
-    engine = session.get_bind()
-    if not isinstance(engine, Engine):
-        raise TypeError("engine is not an instance of Engine")
-    assert str(engine.url) == "sqlite+aiosqlite://"
 
 
 async def test_tables_are_setup_correctly_when_creating_session(

@@ -109,7 +109,6 @@ class AnnotationProject(Base):
         list["AnnotationProjectTag"]
     ] = orm.relationship(
         "AnnotationProjectTag",
-        lazy="joined",
         default_factory=list,
         cascade="all, delete-orphan",
     )

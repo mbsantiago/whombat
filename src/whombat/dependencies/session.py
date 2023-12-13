@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from whombat.database.utils import get_database_url
 from whombat.dependencies.settings import WhombatSettings
 
 __all__ = [
@@ -19,7 +20,8 @@ __all__ = [
 
 def create_engine(settings: WhombatSettings):
     """Create an async engine for the database."""
-    return create_async_engine(settings.db_url)
+    db_url = get_database_url(settings)
+    return create_async_engine(db_url)
 
 
 def create_session_maker(engine: AsyncEngine):

@@ -7,6 +7,7 @@ import datetime
 import uuid
 from pathlib import Path
 
+from sqlalchemy import MetaData
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
 from fastapi_users_db_sqlalchemy.generics import GUID
@@ -49,6 +50,16 @@ class GeometryType(types.TypeDecorator):
 
 class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
     """Base class for SqlAlchemy Models."""
+
+    metadata = MetaData(
+        naming_convention={
+            "ix": "ix_%(column_0_label)s",
+            "uq": "uq_%(table_name)s_%(column_0_name)s",
+            "ck": "ck_%(table_name)s_%(constraint_name)s",
+            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+            "pk": "pk_%(table_name)s",
+        }
+    )
 
     created_on: orm.Mapped[datetime.datetime] = orm.mapped_column(
         name="created_on",

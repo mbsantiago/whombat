@@ -1,9 +1,11 @@
 """Module for defining the AccessToken Model."""
 from uuid import UUID
+import datetime
 
 import sqlalchemy.orm as orm
 from fastapi_users_db_sqlalchemy.generics import GUID
 from sqlalchemy import ForeignKey, String
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from whombat.models.base import Base
 
@@ -43,3 +45,16 @@ class AccessToken(Base):
         ForeignKey("user.id", ondelete="cascade"),
         nullable=False,
     )
+
+    # NOTE: The hybrid_property decorator is used to make the created_at
+    # attribute available to the AccessToken model. This attribute is not
+    # stored in the database, but is instead calculated from the created_on
+    # attribute.
+    @hybrid_property
+    def created_at(self) -> datetime.datetime:
+        return self.created_on
+
+    @created_at.expression 
+    @classmethod
+    def _created_at_expression(cls):
+        return cls.created_on
