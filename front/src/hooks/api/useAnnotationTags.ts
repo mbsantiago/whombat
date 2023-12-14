@@ -17,7 +17,7 @@ export default function useAnnotationTags({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "annotation_tags",
-    func: api.annotations.getTags,
+    func: api.sound_event_annotations.getTags,
     pageSize: pageSize,
     filter: filter.filter,
   });

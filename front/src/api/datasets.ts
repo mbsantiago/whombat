@@ -2,34 +2,13 @@ import { z } from "zod";
 import { AxiosInstance } from "axios";
 
 import { GetManySchema, Page } from "./common";
-
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/datasets/",
-  create: "/api/v1/datasets/",
-  get: "/api/v1/datasets/detail/",
-  update: "/api/v1/datasets/detail/",
-  delete: "/api/v1/datasets/detail/",
-  download: "/api/v1/datasets/detail/download/",
-  import: "/api/v1/datasets/import/",
-};
+import { DatasetSchema, type Dataset } from "./schemas";
 
 export const DatasetFilterSchema = z.object({
   search: z.string().optional(),
 });
 
-export type DatasetFilter = z.infer<typeof DatasetFilterSchema>;
-
-export const DatasetSchema = z.object({
-  id: z.number().int(),
-  uuid: z.string().uuid(),
-  name: z.string(),
-  description: z.string(),
-  audio_dir: z.string(),
-  recording_count: z.number().int(),
-  created_on: z.coerce.date(),
-});
-
-export type Dataset = z.infer<typeof DatasetSchema>;
+export type DatasetFilter = z.input<typeof DatasetFilterSchema>;
 
 export const DatasetCreateSchema = z.object({
   uuid: z.string().uuid().optional(),
@@ -38,7 +17,7 @@ export const DatasetCreateSchema = z.object({
   description: z.string().optional(),
 });
 
-export type DatasetCreate = z.infer<typeof DatasetCreateSchema>;
+export type DatasetCreate = z.input<typeof DatasetCreateSchema>;
 
 export const DatasetUpdateSchema = z.object({
   name: z.string().min(1).optional(),
@@ -56,6 +35,18 @@ export const GetDatasetsQuerySchema = z.intersection(
   DatasetFilterSchema,
 );
 
+export type GetDatasetsQuery = z.infer<typeof GetDatasetsQuerySchema>;
+
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/datasets/",
+  create: "/api/v1/datasets/",
+  get: "/api/v1/datasets/detail/",
+  update: "/api/v1/datasets/detail/",
+  delete: "/api/v1/datasets/detail/",
+  download: "/api/v1/datasets/detail/download/",
+  import: "/api/v1/datasets/import/",
+};
+
 export function registerDatasetAPI({
   instance,
   endpoints = DEFAULT_ENDPOINTS,
@@ -65,9 +56,7 @@ export function registerDatasetAPI({
   endpoints?: typeof DEFAULT_ENDPOINTS;
   baseUrl?: string;
 }) {
-  async function getMany(
-    query: z.infer<typeof GetDatasetsQuerySchema> = {},
-  ): Promise<DatasetPage> {
+  async function getMany(query: GetDatasetsQuery): Promise<DatasetPage> {
     const params = GetDatasetsQuerySchema.parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
     return DatasetPageSchema.parse(data);
@@ -79,25 +68,25 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(res);
   }
 
-  async function get(dataset_id: number): Promise<Dataset> {
+  async function get(dataset_uuid: string): Promise<Dataset> {
     const { data } = await instance.get(endpoints.get, {
-      params: { dataset_id },
+      params: { dataset_uuid },
     });
     return DatasetSchema.parse(data);
   }
 
-  async function update(
-    dataset_id: number,
+  async function updateDataset(
+    dataset: Dataset,
     data: DatasetUpdate,
   ): Promise<Dataset> {
     const body = DatasetUpdateSchema.parse(data);
     const { data: res } = await instance.patch(endpoints.update, body, {
-      params: { dataset_id },
+      params: { dataset_uuid: dataset.uuid },
     });
     return DatasetSchema.parse(res);
   }
 
-  async function delete_(dataset_id: number): Promise<Dataset> {
+  async function deleteDataset(dataset_id: number): Promise<Dataset> {
     const { data } = await instance.delete(endpoints.delete, {
       params: { dataset_id },
     });
@@ -117,8 +106,8 @@ export function registerDatasetAPI({
     getMany,
     create,
     get,
-    update,
-    delete: delete_,
+    update: updateDataset,
+    delete: deleteDataset,
     getDownloadUrl,
     import: importDataset,
   };

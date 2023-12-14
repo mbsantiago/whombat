@@ -53,7 +53,7 @@ const DEFAULT_AUDIO_PARAMETERS: AudioParameters = {
   resample: false,
 };
 
-export function registerAudioApi({
+export function registerAudioAPI({
   endpoints = DEFAULT_ENDPOINTS,
   baseUrl = "",
 }: {

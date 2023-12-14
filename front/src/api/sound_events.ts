@@ -1,38 +1,20 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-import { FeatureSchema } from "@/api/features";
-import { TagSchema } from "@/api/tags";
-
-import { GetManySchema, Page } from "./common";
-
-export const GeometrySchema = z.object({
-  type: z.string(),
-  coordinates: z.union([
-    z.number(),
-    z.array(z.number()),
-    z.array(z.array(z.number())),
-    z.array(z.array(z.array(z.number()))),
-  ]),
-});
-
-export type Geometry = z.infer<typeof GeometrySchema>;
+import {
+  GeometrySchema,
+  SoundEventSchema,
+  type Recording,
+  type SoundEvent,
+  type Feature,
+} from "@/api/schemas";
+import { GetManySchema, Page } from "@/api/common";
 
 export const SoundEventCreateSchema = z.object({
-  recording_id: z.number(),
   geometry: GeometrySchema,
 });
 
 export type SoundEventCreate = z.infer<typeof SoundEventCreateSchema>;
-
-export const SoundEventSchema = SoundEventCreateSchema.extend({
-  id: z.number(),
-  tags: z.array(TagSchema),
-  features: z.array(FeatureSchema),
-  created_on: z.coerce.date(),
-});
-
-export type SoundEvent = z.infer<typeof SoundEventSchema>;
 
 export const SoundEventUpdateSchema = z.object({
   geometry: GeometrySchema,
@@ -45,16 +27,13 @@ export const SoundEventPageSchema = Page(SoundEventSchema);
 export type SoundEventPage = z.infer<typeof SoundEventPageSchema>;
 
 export const SoundEventFilterSchema = z.object({
-  tag__eq: z.number().optional(),
-  tag__isin: z.array(z.number()).optional(),
   geometry_type__eq: z.string().optional(),
-  geometry_type__isin: z.array(z.string()).optional(),
   created_on__before: z.date().optional(),
   created_on__after: z.date().optional(),
-  recording__eq: z.number().optional(),
-  recording__isin: z.array(z.number()).optional(),
-  recording_tag__eq: z.number().optional(),
-  recording_tag__isin: z.array(z.number()).optional(),
+  recording__eq: z.string().uuid().optional(),
+  feature__name: z.string().optional(),
+  feature__lt: z.number().optional(),
+  feature__gt: z.number().optional(),
 });
 
 export type SoundEventFilter = z.infer<typeof SoundEventFilterSchema>;
@@ -72,82 +51,108 @@ const DEFAULT_ENDPOINTS = {
   update: "/api/v1/sound_events/detail/",
   delete: "/api/v1/sound_events/detail/",
   create: "/api/v1/sound_events/",
-  addTag: "/api/v1/sound_events/detail/tags/",
-  removeTag: "/api/v1/sound_events/detail/tags/",
   addFeature: "/api/v1/sound_events/detail/features/",
   updateFeature: "/api/v1/sound_events/detail/features/",
   removeFeature: "/api/v1/sound_events/detail/features/",
 };
 
-export function registerSoundEventApi(
+export function registerSoundEventAPI(
   axios: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function get(sound_event_id: number) {
+  async function get(sound_event_uuid: string): Promise<SoundEvent> {
     const { data } = await axios.get(endpoints.get, {
-      params: { sound_event_id },
+      params: { sound_event_uuid },
     });
     return SoundEventSchema.parse(data);
   }
 
-  async function getMany(query: SoundEventGetMany) {
+  async function getMany(query: SoundEventGetMany): Promise<SoundEventPage> {
     const params = SoundEventGetManySchema.parse(query);
     const { data } = await axios.get(endpoints.getMany, { params });
     return SoundEventPageSchema.parse(data);
   }
 
-  async function create(data: SoundEventCreate) {
+  async function createSoundEvent(
+    recording: Recording,
+    data: SoundEventCreate,
+  ): Promise<SoundEvent> {
     const body = SoundEventCreateSchema.parse(data);
-    const { data: responseData } = await axios.post(endpoints.create, body);
+    const { data: responseData } = await axios.post(endpoints.create, body, {
+      params: { recording_uuid: recording.uuid },
+    });
     return SoundEventSchema.parse(responseData);
   }
 
-  async function update(sound_event_id: number, data: SoundEventUpdate) {
+  async function updateSoundEvent(
+    soundEvent: SoundEvent,
+    data: SoundEventUpdate,
+  ): Promise<SoundEvent> {
     const body = SoundEventUpdateSchema.parse(data);
     const { data: responseData } = await axios.patch(endpoints.update, body, {
-      params: { sound_event_id },
+      params: { sound_event_uuid: soundEvent.uuid },
     });
     return SoundEventSchema.parse(responseData);
   }
 
-  async function delete_(sound_event_id: number) {
+  async function deleteSoundEvent(soundEvent: SoundEvent): Promise<SoundEvent> {
     const { data } = await axios.delete(endpoints.delete, {
-      params: { sound_event_id },
+      params: {
+        sound_event_uuid: soundEvent.uuid,
+      },
     });
     return SoundEventSchema.parse(data);
   }
 
-  async function addTag(sound_event_id: number, tag_id: number) {
-    const { data } = await axios.post(endpoints.addTag, null, {
-      params: { sound_event_id, tag_id },
-    });
+  async function addFeature(soundEvent: SoundEvent, feature: Feature) {
+    const { data } = await axios.post(
+      endpoints.addFeature,
+      {},
+      {
+        params: {
+          sound_event_uuid: soundEvent.uuid,
+          name: feature.name,
+          value: feature.value,
+        },
+      },
+    );
     return SoundEventSchema.parse(data);
   }
 
-  async function removeTag(sound_event_id: number, tag_id: number) {
-    const { data } = await axios.delete(endpoints.removeTag, {
-      params: { sound_event_id, tag_id },
-    });
+  async function updateFeature(soundEvent: SoundEvent, feature: Feature) {
+    const { data } = await axios.patch(
+      endpoints.updateFeature,
+      {},
+      {
+        params: {
+          sound_event_uuid: soundEvent.uuid,
+          name: feature.name,
+          value: feature.value,
+        },
+      },
+    );
     return SoundEventSchema.parse(data);
   }
 
-  async function addFeature(sound_event_id: number, feature_name_id: number, value: number) {
-    const { data } = await axios.post(endpoints.addFeature, { feature_name_id, value }, {
-      params: { sound_event_id },
+  async function removeFeature(soundEvent: SoundEvent, feature: Feature) {
+    const { data } = await axios.delete(endpoints.removeFeature, {
+      params: {
+        sound_event_uuid: soundEvent.uuid,
+        name: feature.name,
+        value: feature.value,
+      },
     });
     return SoundEventSchema.parse(data);
   }
-
-  // TODO: Seguir
 
   return {
     get,
     getMany,
-    create,
-    update,
-    delete: delete_,
-    addTag,
-    removeTag,
+    create: createSoundEvent,
+    update: updateSoundEvent,
+    delete: deleteSoundEvent,
     addFeature,
+    updateFeature,
+    removeFeature,
   };
 }

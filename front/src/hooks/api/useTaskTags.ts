@@ -16,7 +16,7 @@ export default function useTaskTags({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "task_tags",
-    func: api.tasks.getTags,
+    func: api.annotation_tasks.getTags,
     pageSize: pageSize,
     filter: filter.filter,
   });

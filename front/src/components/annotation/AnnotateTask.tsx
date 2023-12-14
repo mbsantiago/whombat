@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import { type State, type Task } from "@/api/tasks";
 import { type Annotation, type AnnotationTag } from "@/api/annotations";
 import { type Geometry } from "@/api/sound_events";

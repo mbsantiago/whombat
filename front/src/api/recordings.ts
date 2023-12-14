@@ -1,33 +1,39 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-import { TagSchema } from "@/api/tags";
-import { NoteSchema, type NoteUpdate, NoteUpdateSchema } from "@/api/notes";
-import { FeatureSchema } from "@/api/features";
+import {
+  RecordingSchema,
+  type Recording,
+  type Tag,
+  type Note,
+  type Feature,
+} from "@/api/schemas";
+import { type NoteCreate } from "@/api/notes";
 
 import { GetManySchema, Page } from "./common";
 
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/recordings/",
-  get: "/api/v1/recordings/detail/",
-  update: "/api/v1/recordings/detail/",
-  delete: "/api/v1/recordings/detail/",
-  addTag: "/api/v1/recordings/detail/tags/",
-  removeTag: "/api/v1/recordings/detail/tags/",
-  addNote: "/api/v1/recordings/detail/notes/",
-  removeNote: "/api/v1/recordings/detail/notes/",
-  updateNote: "/api/v1/recordings/detail/notes/",
-  addFeature: "/api/v1/recordings/detail/features/",
-  removeFeature: "/api/v1/recordings/detail/features/",
-  updateFeature: "/api/v1/recordings/detail/features/",
-  getNotes: "/api/v1/recordings/notes/",
-  getTags: "/api/v1/recordings/tags/",
-};
+export const RecordingPageSchema = Page(RecordingSchema);
 
-// TODO: Add more filters
+export type RecordingPage = z.infer<typeof RecordingPageSchema>;
+
+export const RecordingUpdateSchema = z.object({
+  date: z.coerce.date().nullable().optional(),
+  time: z
+    .string()
+    .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
+    .nullable()
+    .optional(),
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
+  rights: z.string().nullable().optional(),
+  time_expansion: z.coerce.number().optional(),
+});
+
+export type RecordingUpdate = z.infer<typeof RecordingUpdateSchema>;
+
 export const RecordingFilterSchema = z.object({
   search: z.string().optional(),
-  dataset: z.number().int().optional(),
+  dataset: z.string().uuid().optional(),
   duration__gt: z.number().optional(),
   duration__lt: z.number().optional(),
   duration__ge: z.number().optional(),
@@ -42,295 +48,166 @@ export const RecordingFilterSchema = z.object({
   longitude__ge: z.number().optional(),
   longitude__le: z.number().optional(),
   longitude__is_null: z.boolean().optional(),
+  tag__key: z.string().optional(),
+  tag__value: z.string().optional(),
+  dataset__eq: z.string().uuid().optional(),
+  has_issues__eq: z.boolean().optional(),
 });
 
 export type RecordingFilter = z.infer<typeof RecordingFilterSchema>;
-
-export const RecordingSchema = z.object({
-  id: z.number().int(),
-  uuid: z.string().uuid(),
-  path: z.string(),
-  hash: z.string(),
-  duration: z.number(),
-  samplerate: z.number(),
-  channels: z.number(),
-  time_expansion: z.number().default(1),
-  date: z.coerce.date().nullable(),
-  time: z
-    .string()
-    .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
-    .nullable(),
-  latitude: z.number().nullable(),
-  longitude: z.number().nullable(),
-  created_on: z.coerce.date(),
-  tags: z.array(TagSchema),
-  notes: z.array(NoteSchema),
-  features: z.array(FeatureSchema),
-});
-
-export type Recording = z.infer<typeof RecordingSchema>;
-
-export const RecordingPageSchema = Page(RecordingSchema);
-
-export const RecordingUpdateSchema = z.object({
-  date: z.coerce.date().nullable().optional(),
-  time: z
-    .string()
-    .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
-    .nullable()
-    .optional(),
-  latitude: z.number().nullable().optional(),
-  longitude: z.number().nullable().optional(),
-  time_expansion: z.coerce.number().optional(),
-});
-
-export type RecordingUpdate = z.infer<typeof RecordingUpdateSchema>;
 
 export const GetRecordingsQuerySchema = z.intersection(
   GetManySchema,
   RecordingFilterSchema,
 );
 
-export const RecordingNoteSchema = z.object({
-  recording_id: z.number().int(),
-  note_id: z.number().int(),
-  note: NoteSchema,
-});
+export type GetRecordingsQuery = z.input<typeof GetRecordingsQuerySchema>;
 
-export type RecordingNote = z.infer<typeof RecordingNoteSchema>;
-
-export const RecordingNoteFilter = z.object({
-  recording__eq: z.number().int().optional(),
-  note__eq: z.number().int().optional(),
-  created_by__eq: z.string().uuid().optional(),
-  dataset__eq: z.number().int().optional(),
-  is_issue__eq: z.boolean().optional(),
-  message__eq: z.string().optional(),
-  message__has: z.string().optional(),
-  created_on__before: z.coerce.date().optional(),
-  created_on__after: z.coerce.date().optional(),
-});
-
-export type RecordingNoteFilter = z.infer<typeof RecordingNoteFilter>;
-
-export const RecordingNotePageSchema = Page(RecordingNoteSchema);
-
-export type RecordingNotePage = z.infer<typeof RecordingNotePageSchema>;
-
-export const GetRecordingNotesQuerySchema = z.intersection(
-  GetManySchema,
-  RecordingNoteFilter,
-);
-
-export type GetRecordingNotesQuery = z.infer<
-  typeof GetRecordingNotesQuerySchema
->;
-
-export const RecordingTagSchema = z.object({
-  recording_id: z.number().int(),
-  tag_id: z.number().int(),
-  tag: TagSchema,
-});
-
-export type RecordingTag = z.infer<typeof RecordingTagSchema>;
-
-export const RecordingTagFilter = z.object({
-  recording__eq: z.number().int().optional(),
-  tag__eq: z.number().int().optional(),
-  created_on__before: z.coerce.date().optional(),
-  created_on__after: z.coerce.date().optional(),
-  dataset__eq: z.number().int().optional(),
-  search: z.string().optional(),
-  key__eq: z.string().optional(),
-  key__has: z.string().optional(),
-  value__eq: z.string().optional(),
-  value__has: z.string().optional(),
-});
-
-export type RecordingTagFilter = z.infer<typeof RecordingTagFilter>;
-
-export const RecordingTagPageSchema = Page(RecordingTagSchema);
-
-export type RecordingTagPage = z.infer<typeof RecordingTagPageSchema>;
-
-export const GetRecordingTagsQuerySchema = z.intersection(
-  GetManySchema,
-  RecordingTagFilter,
-);
-
-export type GetRecordingTagsQuery = z.infer<typeof GetRecordingTagsQuerySchema>;
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/recordings/",
+  get: "/api/v1/recordings/detail/",
+  update: "/api/v1/recordings/detail/",
+  delete: "/api/v1/recordings/detail/",
+  addTag: "/api/v1/recordings/detail/tags/",
+  removeTag: "/api/v1/recordings/detail/tags/",
+  addNote: "/api/v1/recordings/detail/notes/",
+  removeNote: "/api/v1/recordings/detail/notes/",
+  addFeature: "/api/v1/recordings/detail/features/",
+  removeFeature: "/api/v1/recordings/detail/features/",
+  updateFeature: "/api/v1/recordings/detail/features/",
+};
 
 export function registerRecordingAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getMany(
-    query: z.infer<typeof GetRecordingsQuerySchema> = {},
-  ): Promise<z.infer<typeof RecordingPageSchema>> {
+  async function getMany(query: GetRecordingsQuery): Promise<RecordingPage> {
     const params = GetRecordingsQuerySchema.parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
     return RecordingPageSchema.parse(data);
   }
 
-  async function get(
-    recording_id: number,
-  ): Promise<z.infer<typeof RecordingSchema>> {
+  async function get(recording_uuid: string): Promise<Recording> {
     const { data } = await instance.get(endpoints.get, {
-      params: { recording_id },
+      params: { recording_uuid },
     });
     return RecordingSchema.parse(data);
   }
 
   async function update(
-    recording_id: number,
-    data: z.infer<typeof RecordingUpdateSchema>,
-  ): Promise<z.infer<typeof RecordingSchema>> {
+    recording: Recording,
+    data: RecordingUpdate,
+  ): Promise<Recording> {
     const body = RecordingUpdateSchema.parse(data);
     const { data: res } = await instance.patch(endpoints.update, body, {
-      params: { recording_id },
+      params: { recording_uuid: recording.uuid },
     });
     return RecordingSchema.parse(res);
   }
 
-  async function deleteRecording(recording_id: number): Promise<void> {
-    await instance.delete(endpoints.delete, { params: { recording_id } });
+  async function deleteRecording(recording: Recording): Promise<Recording> {
+    return await instance.delete(endpoints.delete, {
+      params: { recording_uuid: recording.uuid },
+    });
   }
 
-  async function addTag({
-    recording_id,
-    tag_id,
-  }: {
-    recording_id: number;
-    tag_id: number;
-  }): Promise<Recording> {
+  async function addTag(recording: Recording, tag: Tag): Promise<Recording> {
     const { data } = await instance.post(
       endpoints.addTag,
       {},
       {
-        params: { tag_id, recording_id },
+        params: {
+          recording_uuid: recording.uuid,
+          key: tag.key,
+          value: tag.value,
+        },
       },
     );
     return RecordingSchema.parse(data);
   }
 
-  async function removeTag({
-    recording_id,
-    tag_id,
-  }: {
-    recording_id: number;
-    tag_id: number;
-  }): Promise<Recording> {
+  async function removeTag(recording: Recording, tag: Tag): Promise<Recording> {
     const { data } = await instance.delete(endpoints.removeTag, {
-      params: { recording_id, tag_id },
+      params: {
+        recording_uuid: recording.uuid,
+        key: tag.key,
+        value: tag.value,
+      },
     });
     return RecordingSchema.parse(data);
   }
 
-  async function addNote({
-    recording_id,
-    message,
-    is_issue,
-  }: {
-    recording_id: number;
-    message: string;
-    is_issue: boolean;
-  }): Promise<Recording> {
-    const { data } = await instance.post(
-      endpoints.addNote,
-      { message, is_issue },
-      { params: { recording_id } },
-    );
-    return RecordingSchema.parse(data);
+  async function addNote(
+    recording: Recording,
+    data: NoteCreate,
+  ): Promise<Recording> {
+    const { data: updated } = await instance.post(endpoints.addNote, data, {
+      params: { recording_uuid: recording.uuid },
+    });
+    return RecordingSchema.parse(updated);
   }
 
-  async function updateNote({
-    recording_id,
-    note_id,
-    data,
-  }: {
-    recording_id: number;
-    note_id: number;
-    data: NoteUpdate;
-  }): Promise<Recording> {
-    const body = NoteUpdateSchema.parse(data);
-    const { data: res } = await instance.patch(
-      endpoints.updateNote,
-      body,
-      { params: { recording_id, note_id } },
-    );
-    return RecordingSchema.parse(res);
-  }
-
-  async function removeNote({
-    recording_id,
-    note_id,
-  }: {
-    recording_id: number;
-    note_id: number;
-  }): Promise<Recording> {
+  async function removeNote(
+    recording: Recording,
+    note: Note,
+  ): Promise<Recording> {
     const { data } = await instance.delete(endpoints.removeNote, {
-      params: { recording_id, note_id },
+      params: {
+        recording_uuid: recording.uuid,
+        note_uuid: note.uuid,
+      },
     });
     return RecordingSchema.parse(data);
   }
 
-  async function addFeature({
-    recording_id,
-    feature_name_id,
-    value,
-  }: {
-    recording_id: number;
-    feature_name_id: number;
-    value: number;
-  }): Promise<Recording> {
+  async function addFeature(
+    recording: Recording,
+    feature: Feature,
+  ): Promise<Recording> {
     const { data } = await instance.post(
       endpoints.addFeature,
-      { feature_name_id, value },
-      { params: { recording_id } },
+      {},
+      {
+        params: {
+          recording_uuid: recording.uuid,
+          name: feature.name,
+          value: feature.value,
+        },
+      },
     );
     return RecordingSchema.parse(data);
   }
 
-  async function removeFeature({
-    recording_id,
-    feature_name_id,
-  }: {
-    recording_id: number;
-    feature_name_id: number;
-  }): Promise<Recording> {
+  async function removeFeature(
+    recording: Recording,
+    feature: Feature,
+  ): Promise<Recording> {
     const { data } = await instance.delete(endpoints.removeFeature, {
-      params: { recording_id, feature_name_id },
+      params: {
+        recording_uuid: recording.uuid,
+        name: feature.name,
+        value: feature.value,
+      },
     });
     return RecordingSchema.parse(data);
   }
 
-  async function updateFeature({
-    recording_id,
-    feature_name_id,
-    value,
-  }: {
-    recording_id: number;
-    feature_name_id: number;
-    value: number;
-  }): Promise<Recording> {
+  async function updateFeature(
+    recording: Recording,
+    feature: Feature,
+  ): Promise<Recording> {
     const { data } = await instance.patch(
       endpoints.updateFeature,
-      { value },
-      { params: { recording_id, feature_name_id } },
+      {},
+      {
+        params: {
+          recording_uuid: recording.uuid,
+          name: feature.name,
+          value: feature.value,
+        },
+      },
     );
     return RecordingSchema.parse(data);
-  }
-
-  async function getNotes(query: GetRecordingNotesQuery) {
-    const params = GetRecordingNotesQuerySchema.parse(query);
-    const { data } = await instance.get(endpoints.getNotes, { params });
-    return RecordingNotePageSchema.parse(data);
-  }
-
-  async function getTags(query: GetRecordingTagsQuery) {
-    const params = GetRecordingTagsQuerySchema.parse(query);
-    const { data } = await instance.get(endpoints.getTags, { params });
-    return RecordingTagPageSchema.parse(data);
   }
 
   return {
@@ -342,11 +219,8 @@ export function registerRecordingAPI(
     removeTag,
     addNote,
     removeNote,
-    updateNote,
     addFeature,
     removeFeature,
     updateFeature,
-    getNotes,
-    getTags,
   };
 }

@@ -29,13 +29,13 @@ export default function useTask({
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["task", task_id], () => api.tasks.get(task_id), {
+  const query = useQuery(["task", task_id], () => api.annotation_tasks.get(task_id), {
     refetchOnWindowFocus: false,
   });
 
   const addTag = useMutation({
     mutationFn: async (tag: Tag) => {
-      return await api.tasks.addTag({ task_id, tag_id: tag.id });
+      return await api.annotation_tasks.addTag({ task_id, tag_id: tag.id });
     },
     onSuccess: (data, tag) => {
       client.setQueryData(["task", task_id], data);
@@ -45,7 +45,7 @@ export default function useTask({
 
   const removeTag = useMutation({
     mutationFn: async (tag: TaskTag) => {
-      return await api.tasks.removeTag({ task_id, tag_id: tag.id });
+      return await api.annotation_tasks.removeTag({ task_id, tag_id: tag.id });
     },
     onSuccess: (data, tag) => {
       client.setQueryData(["task", task_id], data);
@@ -55,7 +55,7 @@ export default function useTask({
 
   const addNote = useMutation({
     mutationFn: async (note: NoteCreate) => {
-      return await api.tasks.addNote({ task_id, ...note });
+      return await api.annotation_tasks.addNote({ task_id, ...note });
     },
     onSuccess: (data, note) => {
       client.setQueryData(["task", task_id], data);
@@ -74,7 +74,7 @@ export default function useTask({
       note_id: number;
       data: NoteUpdate;
     }) => {
-      return await api.tasks.updateNote({ task_id, note_id, data });
+      return await api.annotation_tasks.updateNote({ task_id, note_id, data });
     },
     onSuccess: (data) => {
       client.setQueryData(["task", task_id], data);
@@ -83,7 +83,7 @@ export default function useTask({
 
   const removeNote = useMutation({
     mutationFn: async (note_id: number) => {
-      return await api.tasks.removeNote({
+      return await api.annotation_tasks.removeNote({
         task_id,
         note_id,
       });
@@ -95,7 +95,7 @@ export default function useTask({
 
   const deleteTask = useMutation({
     mutationFn: async () => {
-      return await api.tasks.delete(task_id);
+      return await api.annotation_tasks.delete(task_id);
     },
     onSuccess: () => {
       // Update the local cache
@@ -105,7 +105,7 @@ export default function useTask({
   });
 
   const addBadge = useMutation({
-    mutationFn: (state: State) => api.tasks.addBadge({ task_id, state }),
+    mutationFn: (state: State) => api.annotation_tasks.addBadge({ task_id, state }),
     onSuccess: (data, state) => {
       client.setQueryData(["task", task_id], data);
       onAddBadge?.(state);
@@ -114,7 +114,7 @@ export default function useTask({
 
   const removeBadge = useMutation({
     mutationFn: (badge: StatusBadge) =>
-      api.tasks.removeBadge(task_id, badge.id),
+      api.annotation_tasks.removeBadge(task_id, badge.id),
     onSuccess: (data, badge) => {
       client.setQueryData(["task", task_id], data);
       onRemoveBadge?.(badge);

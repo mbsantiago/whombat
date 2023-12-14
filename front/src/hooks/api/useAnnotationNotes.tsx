@@ -16,7 +16,7 @@ export default function useAnnotationNotes({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "annotation_notes",
-    func: api.annotations.getNotes,
+    func: api.sound_event_annotations.getNotes,
     pageSize: pageSize,
     filter: filter.filter,
   });

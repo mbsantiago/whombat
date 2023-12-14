@@ -87,7 +87,7 @@ export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
   min_dB: -80,
 };
 
-export function registerSpectrogramApi({
+export function registerSpectrogramAPI({
   endpoints = DEFAULT_ENDPOINTS,
   baseUrl = "",
 }: {

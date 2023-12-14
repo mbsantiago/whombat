@@ -20,7 +20,7 @@ export default function useTasks({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "tasks",
-    func: api.tasks.getMany,
+    func: api.annotation_tasks.getMany,
     pageSize,
     filter: filter.filter,
     enabled,

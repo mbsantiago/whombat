@@ -12,7 +12,7 @@ import Search from "@/components/Search";
 import Table from "@/components/Table";
 import FilterPopover from "@/components/FilterMenu";
 import FilterBar from "@/components/FilterBar";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import { DatasetContext } from "@/app/contexts";
 
 import { RecordingsNav, SelectedMenu } from "./components";

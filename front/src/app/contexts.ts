@@ -3,7 +3,7 @@ import { createContext } from "react";
 import { type AnnotationProject } from "@/api/annotation_projects";
 import { type User, type UserUpdate } from "@/api/user";
 import { type Dataset, type DatasetUpdate } from "@/api/datasets";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import {
   EvaluationMode,
   type EvaluationSet,

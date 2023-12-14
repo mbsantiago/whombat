@@ -10,7 +10,7 @@ import Loading from "@/app/loading";
 import AnnotateTask from "@/components/annotation/AnnotateTask";
 import { AnnotationProjectContext } from "@/app/contexts";
 import { CompleteIcon } from "@/components/icons";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import api from "@/app/api";
 
 export default function Page() {

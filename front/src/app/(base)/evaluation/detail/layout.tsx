@@ -8,7 +8,7 @@ import Loading from "@/app/loading";
 import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
 import { EvaluationSetContext } from "@/app/contexts";
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();

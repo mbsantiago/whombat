@@ -36,14 +36,14 @@ export default function useAnnotations({
 
   const { items, total, pagination, query, queryKey } = usePagedQuery({
     name: "annotations",
-    func: api.annotations.getMany,
+    func: api.sound_event_annotations.getMany,
     pageSize: pageSize,
     filter: filter.filter,
   });
 
   const create = useMutation({
     mutationFn: (data: AnnotationCreate) => {
-      return api.annotations.create(data);
+      return api.sound_event_annotations.create(data);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -66,7 +66,7 @@ export default function useAnnotations({
       annotation_id: number;
       data: AnnotationUpdate;
     }) => {
-      return api.annotations.update(annotation_id, data);
+      return api.sound_event_annotations.update(annotation_id, data);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -87,7 +87,7 @@ export default function useAnnotations({
 
   const delete_ = useMutation({
     mutationFn: (annotation_id: number) => {
-      return api.annotations.delete(annotation_id);
+      return api.sound_event_annotations.delete(annotation_id);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -111,7 +111,7 @@ export default function useAnnotations({
       annotation_id: number;
       tag_id: number;
     }) => {
-      return api.annotations.addTag(annotation_id, tag_id);
+      return api.sound_event_annotations.addTag(annotation_id, tag_id);
     },
     onSuccess: (data) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -138,7 +138,7 @@ export default function useAnnotations({
       annotation_id: number;
       tag_id: number;
     }) => {
-      return api.annotations.removeTag(annotation_id, tag_id);
+      return api.sound_event_annotations.removeTag(annotation_id, tag_id);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -167,7 +167,7 @@ export default function useAnnotations({
       message: string;
       is_issue: boolean;
     }) => {
-      return api.annotations.addNote(annotation_id, message, is_issue);
+      return api.sound_event_annotations.addNote(annotation_id, message, is_issue);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -194,7 +194,7 @@ export default function useAnnotations({
       annotation_id: number;
       note_id: number;
     }) => {
-      return api.annotations.removeNote(annotation_id, note_id);
+      return api.sound_event_annotations.removeNote(annotation_id, note_id);
     },
     onSuccess: (data, _) => {
       client.setQueryData(queryKey, (old?: AnnotationPage) => {
@@ -225,7 +225,7 @@ export default function useAnnotations({
       message: string;
       is_issue: boolean;
     }) => {
-      return api.annotations.updateNote(
+      return api.sound_event_annotations.updateNote(
         annotation_id,
         note_id,
         message,

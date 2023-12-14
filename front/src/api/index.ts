@@ -7,22 +7,23 @@
 import axios from "axios";
 
 import { registerAnnotationProjectAPI } from "./annotation_projects";
-import { registerAnnotationsApi } from "./annotations";
-import { registerAudioApi } from "./audio";
+import { registerSoundEventAnnotationsAPI } from "./sound_event_annotations";
+import { registerClipAnnotationsAPI } from "./clip_annotations";
+import { registerAudioAPI } from "./audio";
 import { registerAuthAPI } from "./auth";
-import { registerClipApi } from "./clips";
+import { registerClipAPI } from "./clips";
 import { registerDatasetAPI } from "./datasets";
 import { registerEvaluationSetAPI } from "./evaluation_sets";
-import { registerEvaluationTaskAPI } from "./evaluation_tasks";
 import { registerNotesAPI } from "./notes";
-import { registerPredictionRunAPI } from "./prediction_runs";
 import { registerRecordingAPI } from "./recordings";
-import { registerSoundEventApi } from "./sound_events";
-import { registerSpectrogramApi } from "./spectrograms";
+import { registerSoundEventAPI } from "./sound_events";
+import { registerSpectrogramAPI } from "./spectrograms";
 import { registerTagAPI } from "./tags";
-import { registerTasksApi } from "./tasks";
+import { registerAnnotationTasksAPI } from "./annotation_tasks";
 import { registerUserAPI } from "./user";
 import { registerPluginsAPI } from "./plugins";
+import { registerSoundEventPredictionsAPI } from "./sound_event_predictions";
+import { registerClipPredictionsAPI } from "./clip_predictions";
 
 type APIConfig = {
   baseURL: string;
@@ -30,7 +31,7 @@ type APIConfig = {
 };
 
 const DEFAULT_CONFIG: APIConfig = {
-  baseURL: "http://0.0.0.0:5000",
+  baseURL: "http://localhost:5000",
   withCredentials: true,
 };
 
@@ -41,21 +42,22 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
   let instance = axios.create(config);
   return {
     annotation_projects: registerAnnotationProjectAPI(instance),
-    annotations: registerAnnotationsApi(instance),
-    audio: registerAudioApi({ baseUrl: config.baseURL }),
+    sound_event_annotations: registerSoundEventAnnotationsAPI(instance),
+    clip_annotations: registerClipAnnotationsAPI(instance),
+    audio: registerAudioAPI({ baseUrl: config.baseURL }),
     auth: registerAuthAPI(instance),
-    clips: registerClipApi(instance),
+    clips: registerClipAPI(instance),
     datasets: registerDatasetAPI({ instance, baseUrl: config.baseURL }),
     evaluation_sets: registerEvaluationSetAPI(instance),
-    evaluation_tasks: registerEvaluationTaskAPI(instance),
     notes: registerNotesAPI(instance),
-    prediction_runs: registerPredictionRunAPI(instance),
     recordings: registerRecordingAPI(instance),
-    sound_events: registerSoundEventApi(instance),
-    spectrograms: registerSpectrogramApi({ baseUrl: config.baseURL }),
+    sound_events: registerSoundEventAPI(instance),
+    spectrograms: registerSpectrogramAPI({ baseUrl: config.baseURL }),
     tags: registerTagAPI(instance),
-    tasks: registerTasksApi(instance),
+    annotation_tasks: registerAnnotationTasksAPI(instance),
     user: registerUserAPI(instance),
     plugins: registerPluginsAPI(instance),
-  };
+    sound_event_predictions: registerSoundEventPredictionsAPI(instance),
+    clip_predictions: registerClipPredictionsAPI(instance),
+  } as const;
 }

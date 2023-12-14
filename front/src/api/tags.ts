@@ -2,44 +2,48 @@ import { z } from "zod";
 import { AxiosInstance } from "axios";
 
 import { GetManySchema, Page } from "./common";
+import { TagSchema, type Tag } from "./schemas";
 
-const TagCreateSchema = z.object({
+export const TagCreateSchema = z.object({
   key: z.string(),
   value: z.string(),
 });
 
-type TagCreate = z.infer<typeof TagCreateSchema>;
+export type TagCreate = z.input<typeof TagCreateSchema>;
 
-const TagSchema = TagCreateSchema.extend({
-  id: z.number(),
-});
+export const TagPageSchema = Page(TagSchema);
 
-type Tag = z.infer<typeof TagSchema>;
+export type TagPage = z.infer<typeof TagPageSchema>;
 
-const TagPageSchema = Page(TagSchema);
-
-type TagPage = z.infer<typeof TagPageSchema>;
-
-const TagFilterSchema = z.object({
+export const TagFilterSchema = z.object({
   search: z.string().optional(),
   key__eq: z.string().optional(),
   value__eq: z.string().optional(),
   value__has: z.string().optional(),
-  project__eq: z.number().int().optional(),
+  annotation_project__eq: z.string().uuid().optional(),
+  recording__eq: z.string().uuid().optional(),
+  sound_event_annotation__eq: z.string().uuid().optional(),
+  clip_annotation__eq: z.string().uuid().optional(),
+  sound_event_prediction__eq: z.string().uuid().optional(),
+  clip_prediction__eq: z.string().uuid().optional(),
+  evaluation_set__eq: z.string().uuid().optional(),
 });
 
-type TagFilter = z.infer<typeof TagFilterSchema>;
+export type TagFilter = z.input<typeof TagFilterSchema>;
+
+export const GetTagsQuerySchema = z.intersection(
+  GetManySchema,
+  TagFilterSchema,
+);
+
+export type GetTagsQuery = z.infer<typeof GetTagsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/tags/",
   create: "/api/v1/tags/",
 };
 
-const GetTagsQuerySchema = z.intersection(GetManySchema, TagFilterSchema);
-
-type GetTagsQuery = z.infer<typeof GetTagsQuerySchema>;
-
-function registerTagAPI(
+export function registerTagAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
@@ -50,25 +54,10 @@ function registerTagAPI(
     return response.data;
   }
 
-  async function createTag({ key, value }: TagCreate): Promise<Tag> {
-    const response = await instance.post(endpoints.create, {
-      key,
-      value,
-    });
+  async function createTag(data: TagCreate): Promise<Tag> {
+    const response = await instance.post(endpoints.create, data);
     return TagSchema.parse(response.data);
   }
 
-  return { get: getTags, create: createTag };
+  return { get: getTags, create: createTag } as const;
 }
-
-export {
-  registerTagAPI,
-  TagCreateSchema,
-  TagSchema,
-  type Tag,
-  type TagCreate,
-  TagFilterSchema,
-  type TagFilter,
-  TagPageSchema,
-  type TagPage,
-};

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { AxiosInstance } from "axios";
 
 import { GetManySchema, Page } from "@/api/common";
-import { TagSchema } from "@/api/tags";
+import { TagSchema } from "@/api/schemas";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/evaluation_sets/",

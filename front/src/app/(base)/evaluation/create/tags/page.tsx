@@ -8,7 +8,7 @@ import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 import Loading from "@/app/loading";
 import Link from "@/components/Link";
 import Button from "@/components/Button";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import { CloseIcon, BackIcon, NextIcon } from "@/components/icons";
 import { type EvaluationSet } from "@/api/evaluation_sets";
 

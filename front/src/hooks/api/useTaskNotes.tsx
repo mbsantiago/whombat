@@ -16,7 +16,7 @@ export default function useTaskNotes({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "task_notes",
-    func: api.tasks.getNotes,
+    func: api.annotation_tasks.getNotes,
     pageSize: pageSize,
     filter: filter.filter,
   });

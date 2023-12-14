@@ -1,22 +1,7 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-export const UserSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string(),
-  email: z.string().nullable(),
-  name: z.string().nullable(),
-  is_active: z.boolean(),
-  is_superuser: z.boolean(),
-});
-
-export type User = z.infer<typeof UserSchema>;
-
-export const SimpleUserSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string(),
-  name: z.string().nullable(),
-});
+import { UserSchema, type User } from "./schemas";
 
 export const UserUpdateSchema = z.object({
   username: z.string().optional(),
@@ -24,16 +9,18 @@ export const UserUpdateSchema = z.object({
   name: z.string().optional(),
 });
 
-export type UserUpdate = z.infer<typeof UserUpdateSchema>;
+export type UserUpdate = z.input<typeof UserUpdateSchema>;
 
-export const PasswordUpdateSchema = z.object({
-  old_password: z.string(),
-  new_password: z.string(),
-});
+export const PasswordUpdateSchema = z
+  .object({
+    old_password: z.string(),
+    new_password: z.string(),
+  })
+  .refine((data) => data.old_password !== data.new_password, {
+    message: "New password must be different from old password",
+  });
 
-export type PasswordUpdate = z.infer<typeof PasswordUpdateSchema>;
-
-export type SimpleUser = z.infer<typeof SimpleUserSchema>;
+export type PasswordUpdate = z.input<typeof PasswordUpdateSchema>;
 
 const DEFAULT_ENDPOINTS = {
   me: "/api/v1/users/me",
@@ -58,5 +45,5 @@ export function registerUserAPI(
   return {
     me: getActiveUser,
     update: updateActiveUser,
-  };
+  } as const;
 }

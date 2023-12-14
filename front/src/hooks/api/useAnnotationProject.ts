@@ -75,7 +75,7 @@ export default function useAnnotationProject({
   const addClips = useMutation({
     mutationFn: async (clips: ClipCreate[]) => {
       const created_clips = await api.clips.createMany(clips);
-      return await api.tasks.createMany(created_clips.map((clip) => ({
+      return await api.annotation_tasks.createMany(created_clips.map((clip) => ({
         project_id: annotation_project_id,
         clip_id: clip.id,
       })));

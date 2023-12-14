@@ -7,8 +7,9 @@ import classNames from "classnames";
 
 import useStore from "@/store";
 import TagSearchBar from "@/components/TagSearchBar";
-import { type Tag as TagType, type TagFilter } from "@/api/tags";
+import { type TagFilter } from "@/api/tags";
 import { TagIcon, CloseIcon } from "@/components/icons";
+import { type Tag as TagType } from "@/api/schemas";
 import {
   type TagGroup,
   type TagElement,

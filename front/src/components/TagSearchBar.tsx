@@ -17,11 +17,8 @@ import {
 import { Combobox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
-import {
-  type TagCreate,
-  type TagFilter,
-  type Tag as TagType,
-} from "@/api/tags";
+import { type TagCreate, type TagFilter } from "@/api/tags";
+import { type Tag as TagType } from "@/api/schemas";
 import { Input } from "@/components/inputs";
 import Tag from "@/components/Tag";
 import Key from "@/components/Key";
@@ -40,7 +37,7 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
   if (key == null || value == null) {
     return (
       <ComboBoxSection>
-        <div className="relative cursor-default select-none py-2 px-4">
+        <div className="relative py-2 px-4 cursor-default select-none">
           To create a new tag, type the tag in the format{" "}
           <code className="text-emerald-500">key:value</code> and press{" "}
           <Key code="Shift" />+<Key code="Enter" />
@@ -51,7 +48,7 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
 
   return (
     <ComboBoxSection>
-      <div className="relative cursor-default select-none py-2 px-4">
+      <div className="relative py-2 px-4 cursor-default select-none">
         Create the tag{" "}
         <Tag disabled tag={{ id: 0, key, value }} color="blue" level={3} /> by
         pressing <Key code="Shift" />+<Key code="Enter" />
@@ -63,7 +60,7 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
 function NoTagsFound() {
   return (
     <ComboBoxSection>
-      <div className="relative cursor-default select-none py-2 px-4">
+      <div className="relative py-2 px-4 cursor-default select-none">
         No tags found.{" "}
       </div>
     </ComboBoxSection>
@@ -140,7 +137,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
           autoPlacement
           portal={true}
         >
-          <div className="relative w-full cursor-default text-left">
+          <div className="relative w-full text-left cursor-default">
             <Combobox.Input
               as={Input}
               ref={ref}
@@ -164,11 +161,11 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               }}
               {...props}
             />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
+            <Combobox.Button className="flex absolute inset-y-0 right-0 items-center pr-2">
+              <ChevronUpDownIcon className="w-5 h-5" aria-hidden="true" />
             </Combobox.Button>
           </div>
-          <Combobox.Options className="max-w-sm divide-y divide-stone-200 bg-stone-50 dark:divide-stone-600 dark:bg-stone-700 ring-stone-300 dark:ring-stone-600 rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm overflow-y-scroll">
+          <Combobox.Options className="overflow-y-scroll py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600">
             {tags.items.length === 0 ? (
               <NoTagsFound />
             ) : (
@@ -177,8 +174,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                   <Combobox.Option
                     key={tag.id}
                     className={({ active }) =>
-                      `cursor-default py-2 pl-4 pr-2 ${
-                        active ? "bg-stone-200 dark:bg-stone-600" : ""
+                      `cursor-default py-2 pl-4 pr-2 ${active ? "bg-stone-200 dark:bg-stone-600" : ""
                       }`
                     }
                     value={tag}

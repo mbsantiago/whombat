@@ -1,29 +1,26 @@
 import { z } from "zod";
 import { AxiosInstance } from "axios";
 
-import { SimpleUserSchema } from "@/api/user";
+import { GetManySchema, Page } from "@/api/common";
+import { NoteSchema, type Note } from "@/api/schemas";
+
+export const NotePageSchema = Page(NoteSchema);
+
+export type NotePage = z.infer<typeof NotePageSchema>;
 
 export const NoteCreateSchema = z.object({
   message: z.string(),
   is_issue: z.boolean(),
 });
 
-export type NoteCreate = z.infer<typeof NoteCreateSchema>;
-
-export const NoteSchema = NoteCreateSchema.extend({
-  id: z.number().int(),
-  created_on: z.coerce.date(),
-  created_by: SimpleUserSchema,
-});
-
-export type Note = z.infer<typeof NoteSchema>;
+export type NoteCreate = z.input<typeof NoteCreateSchema>;
 
 export const NoteUpdateSchema = z.object({
   message: z.string().optional(),
   is_issue: z.boolean().optional(),
 });
 
-export type NoteUpdate = z.infer<typeof NoteUpdateSchema>;
+export type NoteUpdate = z.input<typeof NoteUpdateSchema>;
 
 export const NoteFilterSchema = z.object({
   is_issue__eq: z.boolean().optional(),
@@ -36,7 +33,15 @@ export const NoteFilterSchema = z.object({
 
 export type NoteFilter = z.infer<typeof NoteFilterSchema>;
 
+export const GetNotesQuerySchema = z.intersection(
+  GetManySchema,
+  NoteFilterSchema,
+);
+
+export type GetNotesQuery = z.infer<typeof GetNotesQuerySchema>;
+
 const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/notes/",
   update: "/api/v1/notes/detail/",
 };
 
@@ -44,15 +49,22 @@ export function registerNotesAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function update(note_id: number, data: NoteUpdate) {
+  async function getManyNotes(query: GetNotesQuery): Promise<NotePage> {
+    let params = GetNotesQuerySchema.parse(query);
+    let response = await instance.get(endpoints.getMany, { params });
+    return NoteSchema.parse(response.data);
+  }
+
+  async function updateNote(note: Note, data: NoteUpdate): Promise<Note> {
     let body = NoteUpdateSchema.parse(data);
-    let response = await instance.patch<Note>(`${endpoints.update}`, body, {
-      params: { note_id },
+    let response = await instance.patch(endpoints.update, body, {
+      params: { note_uuid: note.uuid },
     });
     return NoteSchema.parse(response.data);
   }
 
   return {
-    update,
+    update: updateNote,
+    getMany: getManyNotes,
   };
 }
