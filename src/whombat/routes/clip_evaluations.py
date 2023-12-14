@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
 from whombat.dependencies import Session
-from whombat.filters.sound_event_predictions import SoundEventPredictionFilter
+from whombat.filters.clip_evaluations import ClipEvaluationFilter
 from whombat.routes.types import Limit, Offset
 
 clip_evaluations_router = APIRouter()
@@ -17,26 +17,26 @@ __all__ = [
 
 @clip_evaluations_router.get(
     "/",
-    response_model=schemas.Page[schemas.SoundEventEvaluation],
+    response_model=schemas.Page[schemas.ClipEvaluation],
 )
-async def get_sound_event_evaluations(
+async def get_clip_evaluations(
     session: Session,
     offset: Offset = 0,
     limit: Limit = 100,
-    filter: SoundEventPredictionFilter = Depends(SoundEventPredictionFilter),  # type: ignore
-) -> schemas.Page[schemas.SoundEventEvaluation]:
-    """Get a page of sound event evaluations."""
+    filter: ClipEvaluationFilter = Depends(ClipEvaluationFilter),  # type: ignore
+) -> schemas.Page[schemas.ClipEvaluation]:
+    """Get a page of clip evaluations."""
     (
-        sound_event_evaluations,
+        clip_evaluations,
         total,
-    ) = await api.sound_event_evaluations.get_many(
+    ) = await api.clip_evaluations.get_many(
         session=session,
         offset=offset,
         limit=limit,
         filters=[filter],
     )
     return schemas.Page(
-        items=sound_event_evaluations,
+        items=clip_evaluations,
         offset=offset,
         limit=limit,
         total=total,
@@ -45,14 +45,14 @@ async def get_sound_event_evaluations(
 
 @clip_evaluations_router.get(
     "/detail/",
-    response_model=schemas.SoundEventEvaluation,
+    response_model=schemas.ClipEvaluation,
 )
-async def get_sound_event_evaluation(
+async def get_clip_evaluation(
     session: Session,
-    sound_event_evaluation_uuid: UUID,
-) -> schemas.SoundEventEvaluation:
-    """Get a sound event evaluation."""
-    return await api.sound_event_evaluations.get(
+    clip_evaluation_uuid: UUID,
+) -> schemas.ClipEvaluation:
+    """Get a single clip evaluation."""
+    return await api.clip_evaluations.get(
         session,
-        sound_event_evaluation_uuid,
+        clip_evaluation_uuid,
     )

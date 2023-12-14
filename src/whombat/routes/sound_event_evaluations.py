@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
 from whombat.dependencies import Session
-from whombat.filters.sound_event_predictions import SoundEventPredictionFilter
+from whombat.filters.sound_event_evaluations import SoundEventEvaluationFilter
 from whombat.routes.types import Limit, Offset
 
 sound_event_evaluations_router = APIRouter()
@@ -21,7 +21,7 @@ async def get_sound_event_evaluations(
     session: Session,
     offset: Offset = 0,
     limit: Limit = 100,
-    filter: SoundEventPredictionFilter = Depends(SoundEventPredictionFilter),  # type: ignore
+    filter: SoundEventEvaluationFilter = Depends(SoundEventEvaluationFilter),  # type: ignore
 ) -> schemas.Page[schemas.SoundEventEvaluation]:
     """Get a page of sound event evaluations."""
     (

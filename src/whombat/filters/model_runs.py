@@ -105,4 +105,6 @@ ModelRunFilter = base.combine(
     created_on=CreatedOnFilter,
     evaluated=HasEvaluationFilter,
     score=ScoreFilter,
+    evaluation_set=EvaluationSetFilter,
+    has_evaluation=HasEvaluationFilter,
 )

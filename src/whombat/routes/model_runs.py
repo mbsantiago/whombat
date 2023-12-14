@@ -39,22 +39,6 @@ async def get_model_runs(
     )
 
 
-@model_runs_router.post("/", response_model=schemas.ModelRun)
-async def create_model_run(
-    session: Session,
-    model_run: schemas.ModelRunCreate,
-) -> schemas.ModelRun:
-    """Create model run."""
-    model_run = await api.model_runs.create(
-        session,
-        name=model_run.name,
-        description=model_run.description,
-        version=model_run.version,
-    )
-    await session.commit()
-    return model_run
-
-
 @model_runs_router.get("/detail/", response_model=schemas.ModelRun)
 async def get_model_run(
     session: Session,
@@ -93,7 +77,7 @@ async def delete_model_run(
     return model_run
 
 
-@model_runs_router.get("/import//", response_model=schemas.ModelRun)
+@model_runs_router.get("/import/", response_model=schemas.ModelRun)
 async def import_model_run(
     session: Session,
     upload_file: UploadFile,

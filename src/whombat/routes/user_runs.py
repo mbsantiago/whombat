@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, UploadFile
 from soundevent.io import aoef
 
 from whombat import api, schemas
-from whombat.dependencies import Session, ActiveUser
+from whombat.dependencies import ActiveUser, Session
 from whombat.filters.user_runs import UserRunFilter
 from whombat.routes.types import Limit, Offset
 
@@ -62,23 +62,6 @@ async def get_user_run(
     return await api.user_runs.get(session, user_run_uuid)
 
 
-@user_runs_router.put("/detail/", response_model=schemas.UserRun)
-async def update_user_run(
-    session: Session,
-    user_run_uuid: UUID,
-    data: schemas.UserRunUpdate,
-) -> schemas.UserRun:
-    """Update model run."""
-    user_run = await api.user_runs.get(session, user_run_uuid)
-    user_run = await api.user_runs.update(
-        session,
-        user_run,
-        data,
-    )
-    await session.commit()
-    return user_run
-
-
 @user_runs_router.delete("/detail/", response_model=schemas.UserRun)
 async def delete_user_run(
     session: Session,
@@ -87,21 +70,5 @@ async def delete_user_run(
     """Delete model run."""
     user_run = await api.user_runs.get(session, user_run_uuid)
     await api.user_runs.delete(session, user_run)
-    await session.commit()
-    return user_run
-
-
-@user_runs_router.get("/import//", response_model=schemas.UserRun)
-async def import_user_run(
-    session: Session,
-    upload_file: UploadFile,
-) -> schemas.UserRun:
-    """Import model run."""
-    obj = aoef.AOEFObject.model_validate_json(upload_file.file.read())
-    data = aoef.to_soundevent(obj)
-    user_run = await api.user_runs.from_soundevent(
-        session,
-        data,  # type: ignore
-    )
     await session.commit()
     return user_run

@@ -69,3 +69,19 @@ async def create_evaluation(
         task=data.task,
         score=data.score,
     )
+
+
+@evaluations_router.delete(
+    "/detail/",
+    response_model=schemas.Evaluation,
+)
+async def delete_evaluation(
+    session: Session,
+    evaluation_uuid: UUID,
+) -> schemas.Evaluation:
+    """Delete an evaluation."""
+    evaluation = await api.evaluations.get(session, evaluation_uuid)
+    return await api.evaluations.delete(
+        session,
+        evaluation,
+    )
