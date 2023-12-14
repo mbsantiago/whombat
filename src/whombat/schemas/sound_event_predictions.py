@@ -26,9 +26,6 @@ class SoundEventPredictionCreate(BaseModel):
     score: float
     """Overall score of the prediction."""
 
-    tags: list[Tag] = Field(default_factory=list)
-    """Tags attached to this prediction."""
-
 
 class SoundEventPredictionTag(BaseSchema):
     """Schema for a sound event prediction tag."""
@@ -58,7 +55,7 @@ class SoundEventPrediction(BaseSchema):
     score: float
     """Overall score of the prediction."""
 
-    predicted_tags: list[SoundEventPredictionTag] = []
+    predicted_tags: list[SoundEventPredictionTag] = Field(default_factory=list)
     """Tags of the prediction."""
 
 

@@ -3,11 +3,12 @@
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import and_, tuple_
+from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
+from whombat.api.clip_annotations import clip_annotations
 from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
 from whombat.api.users import users
@@ -31,6 +32,43 @@ class AnnotationTaskAPI(
 
     _model = models.AnnotationTask
     _schema = schemas.AnnotationTask
+
+    async def get_clip_annotation(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+    ) -> schemas.ClipAnnotation:
+        """Get clip annotations for a task.
+
+        Parameters
+        ----------
+        session
+            SQLAlchemy AsyncSession.
+        obj
+            Task for which to get the annotations.
+
+        Returns
+        -------
+        list[schemas.Annotation]
+            Annotations for the task.
+        """
+        stmt = (
+            select(models.ClipAnnotation.uuid)
+            .select_from(models.ClipAnnotation)
+            .join(
+                models.AnnotationTask,
+                models.ClipAnnotation.id
+                == models.AnnotationTask.clip_annotation_id,
+            )
+            .filter(models.AnnotationTask.id == obj.id)
+        )
+        results = await session.execute(stmt)
+        uuid = results.scalars().first()
+        if not uuid:
+            raise exceptions.NotFoundError(
+                "No clip annotation found for task {obj}"
+            )
+        return await clip_annotations.get(session, uuid)
 
     async def create(
         self,

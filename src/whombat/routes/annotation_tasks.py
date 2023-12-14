@@ -42,15 +42,25 @@ async def create_tasks(
             ),
         ],
     )
+    # Create empty clip annotations
+    clip_annotations = (
+        await api.clip_annotations.create_many_without_duplicates(
+            session,
+            data=[dict(clip_id=clip.id) for clip in clips],
+            return_all=True,
+        )
+    )
     tasks = await api.annotation_tasks.create_many_without_duplicates(
         session,
         data=[
             dict(
                 annotation_project_id=annotation_project.id,
-                clip_id=clip.id,
+                clip_annotation_id=clip_annotation.id,
+                clip_id=clip_annotation.clip.id,
             )
-            for clip in clips
+            for clip_annotation in clip_annotations
         ],
+        return_all=True,
     )
     await session.commit()
     return tasks
@@ -116,6 +126,22 @@ async def get_task(
     return await api.annotation_tasks.get(session, annotation_task_uuid)
 
 
+@annotation_tasks_router.get(
+    "/detail/clip_annotation/",
+    response_model=schemas.ClipAnnotation,
+)
+async def get_task_annotations(
+    session: Session,
+    annotation_task_uuid: UUID,
+) -> schemas.ClipAnnotation:
+    """Get an annotation task."""
+    annotation_task = await api.annotation_tasks.get(
+        session,
+        annotation_task_uuid,
+    )
+    return await api.annotation_tasks.get_clip_annotation(session, annotation_task)
+
+
 @annotation_tasks_router.post(
     "/detail/badges/",
     response_model=schemas.AnnotationTask,
@@ -123,7 +149,7 @@ async def get_task(
 async def add_annotation_status_badge(
     session: Session,
     annotation_task_uuid: UUID,
-    state: Annotated[AnnotationState, Body(embed=True)],
+    state: AnnotationState,
     user: ActiveUser,
 ):
     """Add a badge to an annotation task."""
@@ -148,7 +174,7 @@ async def add_annotation_status_badge(
 async def remove_annotation_status_badge(
     session: Session,
     annotation_task_uuid: UUID,
-    state: Annotated[AnnotationState, Body(embed=True)],
+    state: AnnotationState,
     user: ActiveUser,
 ):
     """Remove a badge from an annotation task."""

@@ -352,7 +352,7 @@ async def test_issues_filter(
     # Act
     results, _ = await api.recordings.get_many(
         session=session,
-        filters=[recording_filters.IssuesFilter(has_issues=True)],
+        filters=[recording_filters.IssuesFilter(eq=True)],
     )
 
     # Assert

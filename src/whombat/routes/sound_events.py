@@ -42,6 +42,26 @@ async def get_sound_events(
     )
 
 
+@sound_events_router.post(
+    "/",
+    response_model=schemas.SoundEvent,
+)
+async def create_sound_event(
+    session: Session,
+    recording_uuid: UUID,
+    data: schemas.SoundEventCreate,
+):
+    """Create a sound_event."""
+    recording = await api.recordings.get(session, recording_uuid)
+    sound_event = await api.sound_events.create(
+        session,
+        recording,
+        data.geometry,
+    )
+    await session.commit()
+    return sound_event
+
+
 @sound_events_router.get(
     "/detail/",
     response_model=schemas.SoundEvent,

@@ -22,8 +22,8 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 target_metadata = models.Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
+
+# Check if we should run migrations asynchronously
 should_run_async = config.attributes.get("should_run_async", False)
 
 

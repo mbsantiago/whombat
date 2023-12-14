@@ -82,11 +82,11 @@ class IssuesFilter(base.Filter):
     issues or that do not have issues.
     """
 
-    has_issues: bool | None = None
+    eq: bool | None = None
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-        if self.has_issues is None:
+        if self.eq is None:
             return query
 
         subquery = (
@@ -95,7 +95,7 @@ class IssuesFilter(base.Filter):
             .where(models.Note.is_issue == True)  # noqa: E712
         )
 
-        if self.has_issues:
+        if self.eq:
             return query.where(models.Recording.id.in_(subquery))
 
         return query.where(models.Recording.id.notin_(subquery))
@@ -141,5 +141,5 @@ RecordingFilter = base.combine(
     longitude=LongitudeFilter,
     date=DateFilter,
     time=TimeFilter,
-    issues=IssuesFilter,
+    has_issues=IssuesFilter,
 )

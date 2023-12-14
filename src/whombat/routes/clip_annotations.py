@@ -64,26 +64,19 @@ async def get_clip_annotations(
     )
 
 
-@clip_annotations_router.patch(
+@clip_annotations_router.get(
     "/detail/",
     response_model=schemas.ClipAnnotation,
 )
-async def update_annotation(
+async def get_annotation(
     session: Session,
     clip_annotation_uuid: UUID,
-    data: schemas.ClipUpdate,
 ):
-    """Update an annotation."""
+    """Get an annotation annotation."""
     clip_annotation = await api.clip_annotations.get(
         session,
         clip_annotation_uuid,
     )
-    clip_annotation.clip = await api.clips.update(
-        session,
-        clip_annotation.clip,
-        data,
-    )
-    await session.commit()
     return clip_annotation
 
 
