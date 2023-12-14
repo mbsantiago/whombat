@@ -29,7 +29,7 @@ export const RecordingUpdateSchema = z.object({
   time_expansion: z.coerce.number().optional(),
 });
 
-export type RecordingUpdate = z.infer<typeof RecordingUpdateSchema>;
+export type RecordingUpdate = z.input<typeof RecordingUpdateSchema>;
 
 export const RecordingFilterSchema = z.object({
   search: z.string().optional(),
@@ -54,7 +54,7 @@ export const RecordingFilterSchema = z.object({
   has_issues__eq: z.boolean().optional(),
 });
 
-export type RecordingFilter = z.infer<typeof RecordingFilterSchema>;
+export type RecordingFilter = z.input<typeof RecordingFilterSchema>;
 
 export const GetRecordingsQuerySchema = z.intersection(
   GetManySchema,
@@ -87,9 +87,9 @@ export function registerRecordingAPI(
     return RecordingPageSchema.parse(data);
   }
 
-  async function get(recording_uuid: string): Promise<Recording> {
+  async function get(uuid: string): Promise<Recording> {
     const { data } = await instance.get(endpoints.get, {
-      params: { recording_uuid },
+      params: { recording_uuid: uuid },
     });
     return RecordingSchema.parse(data);
   }
@@ -222,5 +222,5 @@ export function registerRecordingAPI(
     addFeature,
     removeFeature,
     updateFeature,
-  };
+  } as const;
 }

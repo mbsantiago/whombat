@@ -66,9 +66,9 @@ export function registerClipAnnotationsAPI(
     return ClipAnnotationPageSchema.parse(response.data);
   }
 
-  async function get(clip_annotation_uuid: string): Promise<ClipAnnotation> {
+  async function get(uuid: string): Promise<ClipAnnotation> {
     const response = await instance.get(endpoints.get, {
-      params: { clip_annotation_uuid },
+      params: { clip_annotation_uuid: uuid },
     });
     return ClipAnnotationSchema.parse(response.data);
   }
@@ -148,5 +148,5 @@ export function registerClipAnnotationsAPI(
     removeTag,
     addNote,
     removeNote,
-  };
+  } as const;
 }

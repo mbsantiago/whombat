@@ -36,7 +36,7 @@ export const GetTagsQuerySchema = z.intersection(
   TagFilterSchema,
 );
 
-export type GetTagsQuery = z.infer<typeof GetTagsQuerySchema>;
+export type GetTagsQuery = z.input<typeof GetTagsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/tags/",

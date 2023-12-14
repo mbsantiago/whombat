@@ -5,6 +5,8 @@ const DEFAULT_ENDPOINTS = {
   stream: "/api/v1/audio/stream/",
 };
 
+import { type Recording } from "@/api/schemas";
+
 export const IntervalSchema = z
   .object({
     min: z.number(),
@@ -15,7 +17,7 @@ export const IntervalSchema = z
     path: ["min"],
   });
 
-export type Interval = z.infer<typeof IntervalSchema>;
+export type Interval = z.input<typeof IntervalSchema>;
 
 export const ResamplingParametersSchema = z.object({
   resample: z.boolean().default(false),
@@ -61,22 +63,22 @@ export function registerAudioAPI({
   baseUrl?: string;
 }) {
   function getStreamUrl({
-    recording_id,
+    recording,
     speed = 1,
   }: {
-    recording_id: number;
+    recording: Recording;
     speed?: number;
   }) {
     // Get url
-    return `${baseUrl}${endpoints.stream}?recording_id=${recording_id}&speed=${speed}`;
+    return `${baseUrl}${endpoints.stream}?recording_uuid=${recording.uuid}&speed=${speed}`;
   }
 
   function getDownloadUrl({
-    recording_id,
+    recording,
     segment,
     parameters = DEFAULT_AUDIO_PARAMETERS,
   }: {
-    recording_id: number;
+    recording: Recording;
     segment: Interval;
     parameters?: AudioParameters;
   }) {
@@ -86,7 +88,7 @@ export function registerAudioAPI({
 
     // Construct query
     const query = {
-      recording_id: recording_id,
+      recording_uuid: recording.uuid,
       start_time: parsed_segment.min,
       end_time: parsed_segment.max,
       ...parsed_params,
@@ -105,5 +107,5 @@ export function registerAudioAPI({
   return {
     getDownloadUrl,
     getStreamUrl,
-  };
+  } as const;
 }

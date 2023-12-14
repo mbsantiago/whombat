@@ -14,13 +14,13 @@ export const SoundEventCreateSchema = z.object({
   geometry: GeometrySchema,
 });
 
-export type SoundEventCreate = z.infer<typeof SoundEventCreateSchema>;
+export type SoundEventCreate = z.input<typeof SoundEventCreateSchema>;
 
 export const SoundEventUpdateSchema = z.object({
   geometry: GeometrySchema,
 });
 
-export type SoundEventUpdate = z.infer<typeof SoundEventUpdateSchema>;
+export type SoundEventUpdate = z.input<typeof SoundEventUpdateSchema>;
 
 export const SoundEventPageSchema = Page(SoundEventSchema);
 
@@ -36,14 +36,14 @@ export const SoundEventFilterSchema = z.object({
   feature__gt: z.number().optional(),
 });
 
-export type SoundEventFilter = z.infer<typeof SoundEventFilterSchema>;
+export type SoundEventFilter = z.input<typeof SoundEventFilterSchema>;
 
-export const SoundEventGetManySchema = z.intersection(
+export const GetSoundEventQuerySchema = z.intersection(
   GetManySchema,
   SoundEventFilterSchema,
 );
 
-export type SoundEventGetMany = z.infer<typeof SoundEventGetManySchema>;
+export type SoundEventQuery = z.input<typeof GetSoundEventQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/sound_events/",
@@ -60,15 +60,15 @@ export function registerSoundEventAPI(
   axios: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function get(sound_event_uuid: string): Promise<SoundEvent> {
+  async function get(uuid: string): Promise<SoundEvent> {
     const { data } = await axios.get(endpoints.get, {
-      params: { sound_event_uuid },
+      params: { sound_event_uuid: uuid },
     });
     return SoundEventSchema.parse(data);
   }
 
-  async function getMany(query: SoundEventGetMany): Promise<SoundEventPage> {
-    const params = SoundEventGetManySchema.parse(query);
+  async function getMany(query: SoundEventQuery): Promise<SoundEventPage> {
+    const params = GetSoundEventQuerySchema.parse(query);
     const { data } = await axios.get(endpoints.getMany, { params });
     return SoundEventPageSchema.parse(data);
   }
@@ -154,5 +154,5 @@ export function registerSoundEventAPI(
     addFeature,
     updateFeature,
     removeFeature,
-  };
+  } as const;
 }

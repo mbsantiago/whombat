@@ -23,7 +23,7 @@ export const AnnotationProjectFilterSchema = z.object({
   search: z.string().optional(),
 });
 
-export type AnnotationProjectFilter = z.infer<
+export type AnnotationProjectFilter = z.input<
   typeof AnnotationProjectFilterSchema
 >;
 
@@ -33,7 +33,7 @@ export const AnnotationProjectCreateSchema = z.object({
   annotation_instructions: z.string().nullable().optional(),
 });
 
-export type AnnotationProjectCreate = z.infer<
+export type AnnotationProjectCreate = z.input<
   typeof AnnotationProjectCreateSchema
 >;
 
@@ -43,7 +43,7 @@ export const AnnotationProjectUpdateSchema = z.object({
   annotation_instructions: z.string().optional(),
 });
 
-export type AnnotationProjectUpdate = z.infer<
+export type AnnotationProjectUpdate = z.input<
   typeof AnnotationProjectUpdateSchema
 >;
 
@@ -56,7 +56,7 @@ export const GetAnnotationProjectsQuerySchema = z.intersection(
   AnnotationProjectFilterSchema,
 );
 
-export type GetAnnotationProjectsQuery = z.infer<
+export type GetAnnotationProjectsQuery = z.input<
   typeof GetAnnotationProjectsQuerySchema
 >;
 
@@ -72,11 +72,9 @@ export function registerAnnotationProjectAPI(
     return AnnotationProjectPageSchema.parse(data);
   }
 
-  async function get(
-    annotation_project_uuid: string,
-  ): Promise<AnnotationProject> {
+  async function get(uuid: string): Promise<AnnotationProject> {
     const { data } = await instance.get(endpoints.get, {
-      params: { annotation_project_uuid },
+      params: { annotation_project_uuid: uuid },
     });
     return AnnotationProjectSchema.parse(data);
   }
@@ -159,5 +157,5 @@ export function registerAnnotationProjectAPI(
     addTag,
     removeTag,
     import: importProject,
-  };
+  } as const;
 }

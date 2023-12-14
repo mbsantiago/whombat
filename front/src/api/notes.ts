@@ -31,14 +31,14 @@ export const NoteFilterSchema = z.object({
   sound_event__eq: z.number().int().optional(),
 });
 
-export type NoteFilter = z.infer<typeof NoteFilterSchema>;
+export type NoteFilter = z.input<typeof NoteFilterSchema>;
 
 export const GetNotesQuerySchema = z.intersection(
   GetManySchema,
   NoteFilterSchema,
 );
 
-export type GetNotesQuery = z.infer<typeof GetNotesQuerySchema>;
+export type GetNotesQuery = z.input<typeof GetNotesQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/notes/",
@@ -52,7 +52,7 @@ export function registerNotesAPI(
   async function getManyNotes(query: GetNotesQuery): Promise<NotePage> {
     let params = GetNotesQuerySchema.parse(query);
     let response = await instance.get(endpoints.getMany, { params });
-    return NoteSchema.parse(response.data);
+    return NotePageSchema.parse(response.data);
   }
 
   async function updateNote(note: Note, data: NoteUpdate): Promise<Note> {

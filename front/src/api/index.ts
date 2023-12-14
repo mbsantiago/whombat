@@ -24,6 +24,11 @@ import { registerUserAPI } from "./user";
 import { registerPluginsAPI } from "./plugins";
 import { registerSoundEventPredictionsAPI } from "./sound_event_predictions";
 import { registerClipPredictionsAPI } from "./clip_predictions";
+import { registerModelRunAPI } from "./model_runs";
+import { registerUserRunAPI } from "./user_runs";
+import { registerSoundEventEvaluationAPI } from "./sound_event_evaluations";
+import { registerClipEvaluationAPI } from "./clip_evaluations";
+import { registerEvaluationAPI } from "./evaluations";
 
 type APIConfig = {
   baseURL: string;
@@ -59,5 +64,10 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     plugins: registerPluginsAPI(instance),
     sound_event_predictions: registerSoundEventPredictionsAPI(instance),
     clip_predictions: registerClipPredictionsAPI(instance),
+    model_runs: registerModelRunAPI(instance),
+    user_runs: registerUserRunAPI(instance),
+    clip_evaluations: registerClipEvaluationAPI(instance),
+    sound_event_evaluations: registerSoundEventEvaluationAPI(instance),
+    evaluations: registerEvaluationAPI(instance),
   } as const;
 }

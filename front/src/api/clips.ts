@@ -30,9 +30,12 @@ export const ClipFilterSchema = z.object({
 
 export type ClipFilter = z.input<typeof ClipFilterSchema>;
 
-export const GetClipsSchema = z.intersection(GetManySchema, ClipFilterSchema);
+export const GetClipsQuerySchema = z.intersection(
+  GetManySchema,
+  ClipFilterSchema,
+);
 
-export type GetClips = z.infer<typeof GetClipsSchema>;
+export type GetClipsQuery = z.input<typeof GetClipsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   createMany: "/api/v1/clips/",
@@ -44,8 +47,8 @@ export function registerClipAPI(
   api: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getMany(query: GetClips): Promise<ClipPage> {
-    const params = GetClipsSchema.parse(query);
+  async function getMany(query: GetClipsQuery): Promise<ClipPage> {
+    const params = GetClipsQuerySchema.parse(query);
     const response = await api.get(endpoints.getMany, { params });
     return response.data;
   }

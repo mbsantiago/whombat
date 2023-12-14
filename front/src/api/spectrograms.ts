@@ -5,6 +5,7 @@ import {
   type Interval,
   IntervalSchema,
 } from "@/api/audio";
+import { type Recording } from "@/api/schemas";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",
@@ -95,11 +96,11 @@ export function registerSpectrogramAPI({
   baseUrl?: string;
 }) {
   function getUrl({
-    recording_id,
+    recording,
     segment,
     parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   }: {
-    recording_id: number;
+    recording: Recording;
     segment: Interval;
     parameters?: SpectrogramParameters;
   }) {
@@ -109,7 +110,7 @@ export function registerSpectrogramAPI({
 
     // Construct query
     const query = {
-      recording_id: recording_id,
+      recording_uuid: recording.uuid,
       start_time: parsed_segment.min,
       end_time: parsed_segment.max,
       ...parsed_params,

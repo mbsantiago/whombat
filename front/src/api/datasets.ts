@@ -24,7 +24,7 @@ export const DatasetUpdateSchema = z.object({
   description: z.string().optional(),
 });
 
-export type DatasetUpdate = z.infer<typeof DatasetUpdateSchema>;
+export type DatasetUpdate = z.input<typeof DatasetUpdateSchema>;
 
 export const DatasetPageSchema = Page(DatasetSchema);
 
@@ -35,7 +35,7 @@ export const GetDatasetsQuerySchema = z.intersection(
   DatasetFilterSchema,
 );
 
-export type GetDatasetsQuery = z.infer<typeof GetDatasetsQuerySchema>;
+export type GetDatasetsQuery = z.input<typeof GetDatasetsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/datasets/",
@@ -68,9 +68,9 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(res);
   }
 
-  async function get(dataset_uuid: string): Promise<Dataset> {
+  async function get(uuid: string): Promise<Dataset> {
     const { data } = await instance.get(endpoints.get, {
-      params: { dataset_uuid },
+      params: { dataset_uuid: uuid },
     });
     return DatasetSchema.parse(data);
   }
@@ -86,18 +86,18 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(res);
   }
 
-  async function deleteDataset(dataset_id: number): Promise<Dataset> {
+  async function deleteDataset(dataset: Dataset): Promise<Dataset> {
     const { data } = await instance.delete(endpoints.delete, {
-      params: { dataset_id },
+      params: { dataset_uuid: dataset.uuid },
     });
     return DatasetSchema.parse(data);
   }
 
-  function getDownloadUrl(dataset_id: number): string {
-    return `${baseUrl}${endpoints.download}?dataset_id=${dataset_id}`;
+  function getDownloadUrl(dataset: Dataset): string {
+    return `${baseUrl}${endpoints.download}?dataset_uuid=${dataset.uuid}`;
   }
 
-  async function importDataset(data: FormData) {
+  async function importDataset(data: FormData): Promise<Dataset> {
     const { data: res } = await instance.post(endpoints.import, data);
     return DatasetSchema.parse(res);
   }
@@ -110,5 +110,5 @@ export function registerDatasetAPI({
     delete: deleteDataset,
     getDownloadUrl,
     import: importDataset,
-  };
+  } as const;
 }

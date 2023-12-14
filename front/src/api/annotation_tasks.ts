@@ -16,7 +16,7 @@ export const AnnotationTaskCreateSchema = z.object({
   project_id: z.number(),
 });
 
-export type AnnotationTaskCreate = z.infer<typeof AnnotationTaskCreateSchema>;
+export type AnnotationTaskCreate = z.input<typeof AnnotationTaskCreateSchema>;
 
 export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
 
@@ -34,14 +34,14 @@ export const AnnotationTaskFilterSchema = z.object({
   assigned_to__eq: z.string().uuid().optional(),
 });
 
-export type AnnotationTaskFilter = z.infer<typeof AnnotationTaskFilterSchema>;
+export type AnnotationTaskFilter = z.input<typeof AnnotationTaskFilterSchema>;
 
 export const GetAnnotationTasksQuerySchema = z.intersection(
   GetManySchema,
   AnnotationTaskFilterSchema,
 );
 
-export type GetAnnotationTasksQuery = z.infer<
+export type GetAnnotationTasksQuery = z.input<
   typeof GetAnnotationTasksQuerySchema
 >;
 
@@ -75,11 +75,9 @@ export function registerAnnotationTasksAPI(
     return AnnotationTaskPageSchema.parse(response.data);
   }
 
-  async function getAnnotationTask(
-    annotation_task_uuid: number,
-  ): Promise<AnnotationTask> {
+  async function getAnnotationTask(uuid: number): Promise<AnnotationTask> {
     const response = await instance.get(endpoints.get, {
-      params: { annotation_task_uuid },
+      params: { annotation_task_uuid: uuid },
     });
     return AnnotationTaskSchema.parse(response.data);
   }
@@ -144,5 +142,5 @@ export function registerAnnotationTasksAPI(
     delete: deleteAnnotationTask,
     addBadge,
     removeBadge,
-  };
+  } as const;
 }
