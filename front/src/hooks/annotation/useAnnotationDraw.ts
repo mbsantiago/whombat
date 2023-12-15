@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 import drawGeometry from "@/draw/geometry";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { SECONDARY } from "@/draw/styles";
 
 const IDLE_STYLE = {
@@ -18,7 +18,7 @@ export default function useAnnotationDraw({
   annotations,
 }: {
   window: SpectrogramWindow;
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
 }) {
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {

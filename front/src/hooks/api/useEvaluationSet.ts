@@ -1,99 +1,81 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  type EvaluationSet,
-  type EvaluationSetUpdate,
-} from "@/api/evaluation_sets";
 import api from "@/app/api";
-import {
-  type EvaluationTaskCreate,
-  type EvaluationTask,
-} from "@/api/evaluation_tasks";
+import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
+import { type EvaluationSet, type Tag } from "@/api/schemas";
 
 export default function useEvaluationSet({
-  evaluation_set_id,
+  evaluationSet,
   enabled = true,
   onUpdate,
   onDelete,
   onAddTag,
   onRemoveTag,
-  onAddTasks,
 }: {
-  evaluation_set_id: number;
+  evaluationSet: EvaluationSet;
   enabled?: boolean;
   onUpdate?: (evaluation_set: EvaluationSet) => void;
   onDelete?: (evaluation_set: EvaluationSet) => void;
   onAddTag?: (evaluation_set: EvaluationSet) => void;
   onRemoveTag?: (evaluation_set: EvaluationSet) => void;
-  onAddTasks?: (tasks: EvaluationTask[]) => void;
 }) {
   const client = useQueryClient();
 
   const query = useQuery(
-    ["evaluation_set", evaluation_set_id],
-    () => api.evaluation_sets.get(evaluation_set_id),
+    ["evaluation_set", evaluationSet.uuid],
+    () => api.evaluationSets.get(evaluationSet.uuid),
     {
       enabled,
+      initialData: evaluationSet,
+      staleTime: 1000 * 60 * 5,
     },
   );
 
   const update = useMutation({
     mutationFn: async (data: EvaluationSetUpdate) => {
-      return await api.evaluation_sets.update({ evaluation_set_id, data });
+      return await api.evaluationSets.update(evaluationSet, data);
     },
     onSuccess: (data) => {
       onUpdate?.(data);
-      query.refetch();
+      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
     },
   });
 
   const addTag = useMutation({
-    mutationFn: async (tag_id: number) => {
-      return await api.evaluation_sets.addTag(evaluation_set_id, tag_id);
+    mutationFn: async (tag: Tag) => {
+      return await api.evaluationSets.addTag(evaluationSet, tag);
     },
     onSuccess: (data) => {
       onAddTag?.(data);
-      query.refetch();
+      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
     },
   });
 
   const removeTag = useMutation({
-    mutationFn: async (tag_id: number) => {
-      return await api.evaluation_sets.removeTag(evaluation_set_id, tag_id);
+    mutationFn: async (tag: Tag) => {
+      return await api.evaluationSets.removeTag(evaluationSet, tag);
     },
     onSuccess: (data) => {
       onRemoveTag?.(data);
-      query.refetch();
+      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
     },
   });
 
   const delete_ = useMutation({
     mutationFn: async () => {
-      return await api.evaluation_sets.delete(evaluation_set_id);
-    },
-    onSuccess: (data) => onDelete?.(data),
-  });
-
-  const addTasks = useMutation({
-    mutationFn: async (task_ids: number[]) => {
-      const tasks: EvaluationTaskCreate[] = task_ids.map((task_id) => ({
-        evaluation_set_id,
-        task_id,
-      }));
-      return await api.evaluation_tasks.createMany(tasks);
+      return await api.evaluationSets.delete(evaluationSet);
     },
     onSuccess: (data) => {
-      onAddTasks?.(data);
-      client.invalidateQueries(["tasks"]);
+      onDelete?.(data);
+      query.remove();
     },
   });
 
   return {
-    query,
+    ...query,
     update,
     addTag,
-    addTasks,
     removeTag,
     delete: delete_,
-  };
+  } as const;
 }

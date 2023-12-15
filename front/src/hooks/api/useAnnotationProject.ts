@@ -1,97 +1,107 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { type AnnotationProjectUpdate } from "@/api/annotation_projects";
 import {
   type AnnotationProject,
-  type AnnotationProjectUpdate,
-} from "@/api/annotation_projects";
+  type Tag,
+  type AnnotationTask,
+} from "@/api/schemas";
 import api from "@/app/api";
 import { type ClipCreate } from "@/api/clips";
-import { type Task } from "@/api/tasks";
 
 export default function useAnnotationProject({
-  annotation_project_id,
+  annotationProject,
   onUpdate,
   onDelete,
   onAddTag,
   onRemoveTag,
-  onAddClips,
+  onAddAnnotationTask: onAddAnnotationTasks,
+  enabled = true,
 }: {
-  annotation_project_id: number;
-  onUpdate?: (annotation_project: AnnotationProject) => void;
-  onDelete?: (annotation_project: AnnotationProject) => void;
-  onAddTag?: (annotation_project: AnnotationProject) => void;
-  onRemoveTag?: (annotation_project: AnnotationProject) => void;
-  onAddClips?: (tasks: Task[]) => void;
+  annotationProject: AnnotationProject;
+  onUpdate?: (annotationProject: AnnotationProject) => void;
+  onDelete?: (annotationProject: AnnotationProject) => void;
+  onAddTag?: (annotationProject: AnnotationProject) => void;
+  onRemoveTag?: (annotationProject: AnnotationProject) => void;
+  onAddAnnotationTask?: (tasks: AnnotationTask[]) => void;
+  enabled?: boolean;
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(["annotation_project", annotation_project_id], () =>
-    api.annotation_projects.get(annotation_project_id),
+  const query = useQuery(
+    ["annotationProject", annotationProject.uuid],
+    () => api.annotationProjects.get(annotationProject.uuid),
+    {
+      enabled,
+      initialData: annotationProject,
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchOnMount: false,
+    },
   );
 
   const update = useMutation({
     mutationFn: async (data: AnnotationProjectUpdate) => {
-      return await api.annotation_projects.update(annotation_project_id, data);
+      return await api.annotationProjects.update(annotationProject, data);
     },
     onSuccess: (data) => {
       onUpdate?.(data);
-      query.refetch();
+      client.setQueryData(["annotationProject", data.uuid], data);
     },
   });
 
   const addTag = useMutation({
-    mutationFn: async (tag_id: number) => {
-      return await api.annotation_projects.addTag(
-        annotation_project_id,
-        tag_id,
-      );
+    mutationFn: async (tag: Tag) => {
+      return await api.annotationProjects.addTag(annotationProject, tag);
     },
     onSuccess: (data) => {
       onAddTag?.(data);
-      query.refetch();
+      client.setQueryData(["annotationProject", data.uuid], data);
     },
   });
 
   const removeTag = useMutation({
-    mutationFn: async (tag_id: number) => {
-      return await api.annotation_projects.removeTag(
-        annotation_project_id,
-        tag_id,
-      );
+    mutationFn: async (tag: Tag) => {
+      return await api.annotationProjects.removeTag(annotationProject, tag);
     },
     onSuccess: (data) => {
       onRemoveTag?.(data);
-      query.refetch();
+      client.setQueryData(["annotationProject", data.uuid], data);
     },
   });
 
   const delete_ = useMutation({
     mutationFn: async () => {
-      return await api.annotation_projects.delete(annotation_project_id);
-    },
-    onSuccess: (data) => onDelete?.(data),
-  });
-
-  const addClips = useMutation({
-    mutationFn: async (clips: ClipCreate[]) => {
-      const created_clips = await api.clips.createMany(clips);
-      return await api.annotation_tasks.createMany(created_clips.map((clip) => ({
-        project_id: annotation_project_id,
-        clip_id: clip.id,
-      })));
+      return await api.annotationProjects.delete(annotationProject);
     },
     onSuccess: (data) => {
-      onAddClips?.(data);
-      client.invalidateQueries(["tasks"]);
-    }
+      onDelete?.(data);
+      client.removeQueries(["annotationProject", data.uuid]);
+      client.invalidateQueries(["annotationProjects"]);
+    },
+  });
+
+  const addAnnotationTasks = useMutation({
+    mutationFn: async (clips: ClipCreate[]) => {
+      const created_clips = await api.clips.createMany(clips);
+      return await api.annotationTasks.createMany(
+        annotationProject,
+        created_clips,
+      );
+    },
+    onSuccess: (data) => {
+      onAddAnnotationTasks?.(data);
+      client.invalidateQueries(["annotationTasks"]);
+    },
   });
 
   return {
-    query,
+    ...query,
     update,
     addTag,
-    addClips,
+    addAnnotationTasks,
     removeTag,
     delete: delete_,
-  };
+  } as const;
 }

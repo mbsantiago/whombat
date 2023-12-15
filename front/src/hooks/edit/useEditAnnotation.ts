@@ -10,13 +10,13 @@ import { type DragState } from "@/hooks/motions/useDrag";
 import { type Geometry } from "@/utils/types";
 import { type Style } from "@/draw/styles";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 
 interface UseEditAnnotationProps {
   drag: DragState;
   mouse: MouseState;
   window: SpectrogramWindow;
-  annotation?: Annotation | null;
+  soundEventAnnotation?: SoundEventAnnotation | null;
   active: boolean;
   style: Style;
   onChange: (geometry: Geometry) => void;
@@ -27,13 +27,13 @@ export default function useEditAnnotationGeometry({
   mouse,
   drag,
   window,
-  annotation,
+  soundEventAnnotation,
   active,
   onChange,
   onEmptyClick,
   style,
 }: UseEditAnnotationProps) {
-  const { geometry } = annotation?.sound_event ?? {};
+  const { geometry } = soundEventAnnotation?.sound_event ?? {};
   const { elW, elH } = mouse;
 
   // Scale geometry to viewport

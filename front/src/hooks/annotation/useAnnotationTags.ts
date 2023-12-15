@@ -6,13 +6,13 @@ import {
   computeGeometryBBox,
   bboxIntersection,
 } from "@/utils/geometry";
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 import { type BBox, type Dimensions } from "@/utils/types";
-import { type Annotation, type AnnotationTag } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export type TagElement = {
-  tag: AnnotationTag;
+  tag: Tag;
   onClick: () => void;
 };
 
@@ -24,7 +24,7 @@ export type Position = {
 };
 
 export type TagGroup = {
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
   tags: TagElement[];
   onAdd: (tag: Tag) => void;
   position: Position;
@@ -32,7 +32,7 @@ export type TagGroup = {
 };
 
 function getLabelPosition(
-  annotation: Annotation,
+  annotation: SoundEventAnnotation,
   window: SpectrogramWindow,
   dimensions: Dimensions,
 ): Position {
@@ -76,13 +76,12 @@ export default function useAnnotationTags({
   send,
   active = true,
 }: {
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
   window: SpectrogramWindow;
   dimensions: Dimensions;
   send: (event: any) => void;
   active?: boolean;
 }) {
-  // Remove annotations that are not in the window
   const annotationsInWindow = useMemo(() => {
     return annotations.filter((annotation) => {
       // @ts-ignore
@@ -92,16 +91,14 @@ export default function useAnnotationTags({
 
   const groups: TagGroup[] = useMemo(() => {
     return annotationsInWindow.map((annotation) => {
-      // Compute the best position for attaching the tags to the annotation
       const position = getLabelPosition(annotation, window, dimensions);
 
-      const group: TagElement[] = annotation.tags.map((tag) => {
-        // On click, remove the tag from the annotation
-        const onClick = () => send({ type: "REMOVE_TAG", annotation, tag });
-        return { tag, onClick };
-      });
+      const group: TagElement[] =
+        annotation.tags?.map((tag) => {
+          const onClick = () => send({ type: "REMOVE_TAG", annotation, tag });
+          return { tag: tag.tag, onClick };
+        }) || [];
 
-      // When clicking on the add button, add a new tag to the annotation
       const onAdd = (tag: Tag) => send({ type: "ADD_TAG", annotation, tag });
       return { tags: group, onAdd, position, annotation, active };
     });

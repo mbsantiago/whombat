@@ -1,20 +1,21 @@
-import { useMutation } from "@tanstack/react-query";
-
-import { type RecordingFilter, type RecordingUpdate } from "@/api/recordings";
+import { type RecordingFilter } from "@/api/recordings";
 import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
 import api from "@/app/api";
 
-const emptyFilter = {};
+const emptyFilter: RecordingFilter = {};
+const _fixed: (keyof RecordingFilter)[] = [];
 
 export default function useRecordings({
   filter: initialFilter = emptyFilter,
+  fixed = _fixed,
   pageSize = 20,
 }: {
   filter?: RecordingFilter;
+  fixed?: (keyof RecordingFilter)[];
   pageSize?: number;
 } = {}) {
-  const filter = useFilter<RecordingFilter>({ fixed: initialFilter });
+  const filter = useFilter<RecordingFilter>({ defaults: initialFilter, fixed });
 
   const { items, total, pagination, query } = usePagedQuery({
     name: "dataset-recordings",
@@ -23,59 +24,11 @@ export default function useRecordings({
     filter: filter.filter,
   });
 
-  const update = useMutation({
-    mutationFn: ({
-      recording_id,
-      data,
-    }: {
-      recording_id: number;
-      data: RecordingUpdate;
-    }) => {
-      return api.recordings.update(recording_id, data);
-    },
-    onSuccess: () => {
-      query.refetch();
-    },
-  });
-
-  const addTag = useMutation({
-    mutationFn: ({
-      recording_id,
-      tag_id,
-    }: {
-      recording_id: number;
-      tag_id: number;
-    }) => {
-      return api.recordings.addTag({ recording_id, tag_id });
-    },
-    onSuccess: () => {
-      query.refetch();
-    },
-  });
-
-  const removeTag = useMutation({
-    mutationFn: ({
-      recording_id,
-      tag_id,
-    }: {
-      recording_id: number;
-      tag_id: number;
-    }) => {
-      return api.recordings.removeTag({ recording_id, tag_id });
-    },
-    onSuccess: () => {
-      query.refetch();
-    },
-  });
-
   return {
     items,
     total,
     pagination,
     query,
     filter,
-    update,
-    addTag,
-    removeTag,
-  }
+  };
 }

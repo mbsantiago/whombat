@@ -20,47 +20,55 @@ import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
 import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type MouseState } from "@/hooks/motions/useMouse";
-import { type Task } from "@/api/tasks";
-import { type Geometry } from "@/api/sound_events";
 import { type SpectrogramParameters } from "@/api/spectrograms";
-import { type Annotation, type AnnotationTag } from "@/api/annotations";
-import { type Tag } from "@/api/tags";
+import {
+  type SoundEventAnnotation,
+  type Tag,
+  type Geometry,
+  type ClipAnnotation,
+} from "@/api/schemas";
 
 export default function useAnnotateSpectrogram({
-  task,
-  annotations,
+  soundEventAnnotations: soundEventAnnotations,
   parameters,
   mouseState,
   scratchState,
   ref,
-  onAddTag,
+  onAddAnnotationTag: onAddTag,
   onRemoveTag,
   onCreateAnnotation,
   onUpdateAnnotationGeometry,
   onDeleteAnnotation,
 }: {
-  task: Task;
-  annotations: Annotation[];
+  clipAnnotation: ClipAnnotation;
+  soundEventAnnotations: SoundEventAnnotation[];
   parameters: SpectrogramParameters;
   mouseState: MouseState;
   scratchState: ScratchState;
   ref: RefObject<HTMLCanvasElement>;
-  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<Annotation>;
-  onRemoveTag?: (annotation: Annotation, tag: AnnotationTag) => Promise<Annotation>;
+  onAddAnnotationTag?: (
+    annotation: SoundEventAnnotation,
+    tag: Tag,
+  ) => Promise<SoundEventAnnotation>;
+  onRemoveTag?: (
+    annotation: SoundEventAnnotation,
+    tag: Tag,
+  ) => Promise<SoundEventAnnotation>;
   onCreateAnnotation?: (
-    task: Task,
     geometry: Geometry,
-    tag_ids?: number[],
-  ) => Promise<Annotation>;
+    tags?: Tag[],
+  ) => Promise<SoundEventAnnotation>;
   onUpdateAnnotationGeometry?: (
-    annotation: Annotation,
+    annotation: SoundEventAnnotation,
     geometry: Geometry,
-  ) => Promise<Annotation>;
-  onDeleteAnnotation?: (annotation: Annotation) => Promise<Annotation>;
+  ) => Promise<SoundEventAnnotation>;
+  onDeleteAnnotation?: (
+    annotation: SoundEventAnnotation,
+  ) => Promise<SoundEventAnnotation>;
 }) {
   const [state, send] = useMachine(annotateMachine, {
     context: {
-      task,
+      clipAnnotation,
       parameters,
       selectedAnnotation: null,
       geometryType: "BoundingBox",
@@ -78,13 +86,13 @@ export default function useAnnotateSpectrogram({
     services: {
       // @ts-ignore
       createAnnotation: async (context, event: CreateAnnotationEvent) => {
-        let { geometry, tag_ids } = event;
+        let { geometry, tags } = event;
         let { task } = context;
 
         if (geometry == null) {
           throw new Error("No geometry to create");
         }
-        return await onCreateAnnotation?.(task, geometry, tag_ids);
+        return await onCreateAnnotation?.(task, geometry, tags);
       },
       // @ts-ignore
       updateAnnotationGeometry: async (ctx, event: EditAnnotationEvent) => {
@@ -107,8 +115,8 @@ export default function useAnnotateSpectrogram({
 
   // Make sure the task is updated when the task prop changes
   useEffect(() => {
-    send({ type: "CHANGE_TASK", task })
-  }, [task, send])
+    send({ type: "CHANGE_TASK", task });
+  }, [task, send]);
 
   const [specState, specSend] = useActor(state.context.spectrogram);
 
@@ -146,7 +154,7 @@ export default function useAnnotateSpectrogram({
   const drawAnnotationDelete = useAnnotationDelete({
     ref,
     mouse: mouseState,
-    annotations,
+    annotations: soundEventAnnotations,
     window: specState.context.window,
     active: state.matches("delete.selecting"),
     send,
@@ -155,7 +163,7 @@ export default function useAnnotateSpectrogram({
   const drawAnnotationSelect = useAnnotationSelect({
     ref,
     mouse: mouseState,
-    annotations,
+    annotations: soundEventAnnotations,
     window: specState.context.window,
     active: state.matches("edit.selecting"),
     send,
@@ -163,11 +171,11 @@ export default function useAnnotateSpectrogram({
 
   const drawAnnotations = useAnnotationDraw({
     window: specState.context.window,
-    annotations,
+    annotations: soundEventAnnotations,
   });
 
   const tags = useAnnotationTags({
-    annotations,
+    annotations: soundEventAnnotations,
     window: specState.context.window,
     active: state.matches("idle"),
     dimensions: {

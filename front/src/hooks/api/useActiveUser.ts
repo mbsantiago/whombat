@@ -2,26 +2,33 @@ import { type AxiosError, isAxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
-import { type User } from "@/api/user";
+import { type User } from "@/api/schemas";
 
 export default function useActiveUser({
+  user,
   onUpdate,
   onLogout,
   onUnauthorized,
+  enabled = true,
 }: {
+  user?: User;
   onUpdate?: (user: User) => void;
   onLogout?: () => void;
   onUnauthorized?: (error: AxiosError) => void;
+  enabled?: boolean;
 } = {}) {
   const client = useQueryClient();
 
-  const user = useQuery(
+  const query = useQuery(
     ["me"],
     async () => {
       return await api.user.me();
     },
     {
+      initialData: user,
+      staleTime: 1000 * 60 * 5,
       retry: 2,
+      enabled,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
       refetchOnMount: true,
@@ -41,7 +48,7 @@ export default function useActiveUser({
   const update = useMutation({
     mutationFn: api.user.update,
     onSuccess: (data) => {
-      user.refetch();
+      query.refetch();
       onUpdate?.(data);
     },
   });
@@ -55,8 +62,8 @@ export default function useActiveUser({
   });
 
   return {
-    ...user,
+    ...query,
     update,
     logout,
-  };
+  } as const;
 }

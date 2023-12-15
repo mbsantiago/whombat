@@ -1,75 +1,68 @@
-import { useCallback, useMemo } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { type Dataset, type DatasetUpdate } from "@/api/datasets";
+import { type Dataset } from "@/api/schemas";
+import { type DatasetUpdate } from "@/api/datasets";
 import api from "@/app/api";
 
 export default function useDataset({
-  dataset_id,
+  dataset,
   onUpdate,
   onDelete,
   onError,
+  enabled = true,
 }: {
-  dataset_id?: number;
+  dataset: Dataset;
   onUpdate?: (updated: Dataset) => void;
   onDelete?: (deleted: Dataset) => void;
   onError?: (error: string) => void;
+  enabled?: boolean;
 }) {
-  const queryFn = useCallback(async () => {
-    if (dataset_id == null) return;
-    return await api.datasets.get(dataset_id);
-  }, [dataset_id]);
+  const client = useQueryClient();
 
-  const updateFn = useCallback(
-    async (data: DatasetUpdate) => {
-      if (dataset_id == null) return;
-      return await api.datasets.update(dataset_id, data);
+  const query = useQuery(
+    ["dataset", dataset.uuid],
+    async () => await api.datasets.get(dataset.uuid),
+    {
+      initialData: dataset,
+      staleTime: 1000 * 60 * 5,
+      enabled,
     },
-    [dataset_id],
   );
 
-  const deleteFn = useCallback(async () => {
-    if (dataset_id == null) return;
-    return await api.datasets.delete(dataset_id);
-  }, [dataset_id]);
-
-  const query = useQuery(["dataset", dataset_id], queryFn, {
-    enabled: dataset_id != null,
-  });
-
   const update = useMutation({
-    mutationFn: updateFn,
+    mutationFn: async (data: DatasetUpdate) => {
+      return await api.datasets.update(dataset, data);
+    },
     onSuccess: (data) => {
-      query.refetch();
-      if (data != null) {
-        onUpdate?.(data);
-      }
+      onUpdate?.(data);
+      client.setQueryData(["dataset", data.uuid], data);
     },
     onError: () => {
       onError?.("Failed to update dataset");
-    }
+    },
   });
 
   const delete_ = useMutation({
-    mutationFn: deleteFn,
+    mutationFn: async () => {
+      return await api.datasets.delete(dataset);
+    },
     onSuccess: (data) => {
+      client.invalidateQueries(["datasets"]);
       query.remove();
-      if (data != null) {
-        onDelete?.(data);
-      }
+      onDelete?.(data);
     },
     onError: () => {
       onError?.("Failed to delete dataset");
-    }
+    },
   });
 
   const downloadLink = useMemo(() => {
-    if (dataset_id == null) return;
-    return api.datasets.getDownloadUrl(dataset_id);
-  }, [dataset_id]);
+    return api.datasets.getDownloadUrl(dataset);
+  }, [dataset]);
 
   return {
-    query,
+    ...query,
     update,
     delete: delete_,
     downloadLink,

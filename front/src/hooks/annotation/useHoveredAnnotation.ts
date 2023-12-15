@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { isCloseToGeometry, scaleGeometryToViewport } from "@/utils/geometry";
 import { type MouseState } from "@/hooks/motions/useMouse";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export default function useHoveredAnnotations({
@@ -12,7 +12,7 @@ export default function useHoveredAnnotations({
   active = true,
 }: {
   mouse: MouseState;
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
   window: SpectrogramWindow;
   active?: boolean;
 }) {

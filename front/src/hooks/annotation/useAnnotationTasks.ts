@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { type AnnotationProject } from "@/api/annotation_projects";
-import useTasks from "@/hooks/api/useTasks";
+import { type AnnotationProject } from "@/api/schemas";
+import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 
-export default function useAnnotationTasks({
+export default function useTaskAnnotations({
   project,
 }: {
   project: AnnotationProject;
@@ -12,23 +12,18 @@ export default function useAnnotationTasks({
 
   const totalFilter = useMemo(() => {
     return {
-      project__eq: project.id,
+      annotation_project__eq: project.uuid,
     };
-  }, [project.id]);
+  }, [project.uuid]);
 
   const initialFilter = useMemo(() => {
     return {
-      project__eq: project.id,
+      annotation_project__eq: project.uuid,
       pending__eq: true,
     };
-  }, [project.id]);
+  }, [project.uuid]);
 
-  const {
-    items,
-    filter,
-    pagination,
-    query: { refetch, isLoading },
-  } = useTasks({
+  const { items, filter, pagination, refetch, isLoading } = useAnnotationTasks({
     pageSize: 10,
     filter: initialFilter,
   });
@@ -48,26 +43,17 @@ export default function useAnnotationTasks({
     };
   }, [filter.filter]);
 
-  const {
-    total,
-    query: { refetch: refetchTotal },
-  } = useTasks({
+  const { total, refetch: refetchTotal } = useAnnotationTasks({
     pageSize: 0,
     filter: totalFilter,
   });
 
-  const {
-    total: pending,
-    query: { refetch: refetchPending },
-  } = useTasks({
+  const { total: pending, refetch: refetchPending } = useAnnotationTasks({
     pageSize: 0,
     filter: pendingFilter,
   });
 
-  const {
-    total: complete,
-    query: { refetch: refetchComplete },
-  } = useTasks({
+  const { total: complete, refetch: refetchComplete } = useAnnotationTasks({
     pageSize: 0,
     filter: completeFilter,
   });
@@ -79,7 +65,7 @@ export default function useAnnotationTasks({
     refetchTotal();
   }, [refetch, refetchPending, refetchComplete, refetchTotal]);
 
-  const { nextPage, prevPage } = pagination
+  const { nextPage, prevPage } = pagination;
   const next = useCallback(() => {
     setCurrent((prev) => {
       if (prev + 1 >= items.length) {

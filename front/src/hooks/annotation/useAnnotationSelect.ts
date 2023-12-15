@@ -7,7 +7,7 @@ import useClick from "@/hooks/motions/useClick";
 import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
 import { type SelectAnnotationEvent } from "@/machines/annotate";
 import { type MouseState } from "@/hooks/motions/useMouse";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { WARNING } from "@/draw/styles";
 
@@ -28,7 +28,7 @@ export default function useAnnotationSelect({
 }: {
   ref: RefObject<HTMLCanvasElement>;
   mouse: MouseState;
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
   window: SpectrogramWindow;
   send: (event: SelectAnnotationEvent | { type: "IDLE" }) => void;
   active: boolean;

@@ -9,7 +9,7 @@ import {
   type CreateAnnotationEvent,
 } from "@/machines/annotate";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { type MouseState } from "@/hooks/motions/useMouse";
 import { type Geometry } from "@/utils/types";
 
@@ -37,7 +37,7 @@ export default function useAnnotationEdit({
     event: EditAnnotationEvent | CreateAnnotationEvent | { type: "IDLE" },
   ) => void;
   window: SpectrogramWindow;
-  annotation: Annotation | null;
+  annotation: SoundEventAnnotation | null;
   ref: RefObject<HTMLCanvasElement>;
 }) {
   const [control] = useKeyPress("Control");
@@ -63,9 +63,7 @@ export default function useAnnotationEdit({
         ? {
             type: "CREATE",
             geometry,
-            tag_ids: annotation?.tags.map(
-              (annotationTag) => annotationTag.tag.id,
-            ),
+            tags: annotation?.tags,
           }
         : {
             type: "EDIT",
@@ -85,7 +83,7 @@ export default function useAnnotationEdit({
     drag: editState,
     mouse,
     window,
-    annotation,
+    soundEventAnnotation: annotation,
     active,
     onChange: handleEditAnnotation,
     onEmptyClick: handleClickAway,

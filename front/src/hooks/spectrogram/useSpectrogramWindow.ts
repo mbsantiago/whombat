@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 import drawImage from "@/draw/image";
 import useImage from "@/hooks/spectrogram/useImage";
 import api from "@/app/api";
+import { type Recording } from "@/api/schemas";
 import { type Interval } from "@/api/audio";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import {
@@ -11,11 +12,11 @@ import {
 } from "@/api/spectrograms";
 
 type GetUrlFn = ({
-  recording_id,
+  recording,
   segment,
   parameters,
 }: {
-  recording_id: number;
+  recording: Recording;
   segment: Interval;
   parameters: SpectrogramParameters;
 }) => string;
@@ -25,12 +26,12 @@ type GetUrlFn = ({
  * the given window (time and freq bounds) and parameters.
  */
 export default function useSpectrogramWindow({
-  recording_id,
+  recording,
   window: spectrogramWindow,
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   getSpectrogramImageUrl = api.spectrograms.getUrl,
 }: {
-  recording_id: number;
+  recording: Recording;
   window: SpectrogramWindow;
   parameters?: SpectrogramParameters;
   getSpectrogramImageUrl?: GetUrlFn;
@@ -38,12 +39,12 @@ export default function useSpectrogramWindow({
   // Get the url of the image to load
   const url = useMemo(() => {
     return getSpectrogramImageUrl({
-      recording_id,
+      recording,
       segment: spectrogramWindow.time,
       parameters,
     });
   }, [
-    recording_id,
+    recording,
     spectrogramWindow.time,
     parameters,
     getSpectrogramImageUrl,

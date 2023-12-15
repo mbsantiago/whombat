@@ -5,17 +5,23 @@ import usePagedQuery from "@/hooks/api/usePagedQuery";
 import useFilter from "@/hooks/api/useFilter";
 import { type TagFilter } from "@/api/tags";
 
-const emptyFilter = {};
+const emptyFilter: TagFilter = {};
+const _fixed: (keyof TagFilter)[] = [];
 
 export default function useTags({
   initialFilter = emptyFilter,
+  fixed = _fixed,
   pageSize = 10,
+  enabled = true,
 }: {
   initialFilter?: TagFilter;
+  fixed?: (keyof TagFilter)[];
   pageSize?: number;
+  enabled?: boolean;
 } = {}) {
   const filter = useFilter<TagFilter>({
-    fixed: initialFilter,
+    defaults: initialFilter,
+    fixed: fixed,
     debounce: 50, // Lower debounce time for faster response
   });
 
@@ -24,6 +30,7 @@ export default function useTags({
     func: api.tags.get,
     pageSize: pageSize,
     filter: filter.filter,
+    enabled: enabled,
   });
 
   const create = useMutation({
@@ -34,9 +41,9 @@ export default function useTags({
   });
 
   return {
+    ...query,
     items,
     total,
-    query,
     pagination,
     filter,
     create,

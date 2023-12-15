@@ -13,7 +13,7 @@ import useSpectrogramScrollZoom from "@/hooks/spectrogram/useSpectrogramScrollZo
 import useSpectrogramDrag from "@/hooks/spectrogram/useSpectrogramDrag";
 import { spectrogramMachine } from "@/machines/spectrogram";
 import { audioMachine } from "@/machines/audio";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 

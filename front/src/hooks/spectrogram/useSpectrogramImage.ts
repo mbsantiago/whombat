@@ -4,7 +4,7 @@ import {
   type SpectrogramWindow,
   type SpectrogramParameters,
 } from "@/api/spectrograms";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 
 export default function useSpectrogramImage({
   recording,
@@ -23,19 +23,19 @@ export default function useSpectrogramImage({
 
   // Load the spectrogram segment
   const { draw } = useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: selected,
     parameters: parameters,
   });
 
   // Load the previous and next spectrogram segments in the background
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: prev,
     parameters: parameters,
   });
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: next,
     parameters: parameters,
   });

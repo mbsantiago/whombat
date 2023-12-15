@@ -2,12 +2,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import { type RecordingUpdate } from "@/api/recordings";
-import { type Tag } from "@/api/tags";
-import { type Note, type NoteCreate, type NoteUpdate } from "@/api/notes";
-import { type Feature } from "@/api/features";
+import {
+  type Tag,
+  type Note,
+  type Feature,
+  type Recording,
+} from "@/api/schemas";
+import { type NoteCreate } from "@/api/notes";
 
 export default function useRecording({
-  recording_id,
+  recording,
   onUpdate,
   onDelete,
   onAddTag,
@@ -18,7 +22,7 @@ export default function useRecording({
   onUpdateFeature,
   enabled = true,
 }: {
-  recording_id: number;
+  recording: Recording;
   onUpdate?: (dataset: RecordingUpdate) => void;
   onDelete?: () => void;
   onAddTag?: (tag: Tag) => void;
@@ -32,146 +36,107 @@ export default function useRecording({
   const client = useQueryClient();
 
   const query = useQuery(
-    ["recording", recording_id],
-    () => api.recordings.get(recording_id),
+    ["recording", recording.uuid],
+    () => api.recordings.get(recording.uuid),
     {
       enabled,
+      initialData: recording,
+      staleTime: 1000 * 60 * 5,
     },
   );
 
   const update = useMutation({
     mutationFn: async (data: RecordingUpdate) => {
-      return await api.recordings.update(recording_id, data);
+      return await api.recordings.update(recording, data);
     },
     onSuccess: (data) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onUpdate?.(data);
     },
   });
 
   const addTag = useMutation({
     mutationFn: async (tag: Tag) => {
-      return await api.recordings.addTag({ recording_id, tag_id: tag.id });
+      return await api.recordings.addTag(recording, tag);
     },
     onSuccess: (data, tag) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onAddTag?.(tag);
     },
   });
 
   const removeTag = useMutation({
     mutationFn: async (tag: Tag) => {
-      return await api.recordings.removeTag({ recording_id, tag_id: tag.id });
+      return await api.recordings.removeTag(recording, tag);
     },
     onSuccess: (data, tag) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onRemoveTag?.(tag);
     },
   });
 
   const addNote = useMutation({
-    mutationFn: async (note: NoteCreate) => {
-      return await api.recordings.addNote({ recording_id, ...note });
+    mutationFn: async (data: NoteCreate) => {
+      return await api.recordings.addNote(recording, data);
     },
     onSuccess: (data, note) => {
-      client.setQueryData(["recording", recording_id], data);
-      const createdNote = data.notes.find((n) => n.message === note.message);
+      client.setQueryData(["recording", recording.uuid], data);
+      const createdNote = data.notes?.find((n) => n.message === note.message);
       if (createdNote != null) {
         onAddNote?.(createdNote);
       }
     },
   });
 
-  const updateNote = useMutation({
-    mutationFn: async ({
-      note_id,
-      data,
-    }: {
-      note_id: number;
-      data: NoteUpdate;
-    }) => {
-      return await api.recordings.updateNote({ recording_id, note_id, data });
-    },
-    onSuccess: (data) => {
-      client.setQueryData(["recording", recording_id], data);
-    },
-  });
-
-  const removeNote = useMutation({
-    mutationFn: async (note_id: number) => {
-      return await api.recordings.removeNote({
-        recording_id,
-        note_id,
-      });
-    },
-    onSuccess: (data) => {
-      return client.setQueryData(["recording", recording_id], data);
-    },
-  });
-
   const addFeature = useMutation({
     mutationFn: async (feature: Feature) => {
-      return await api.recordings.addFeature({
-        recording_id,
-        feature_name_id: feature.feature_name.id,
-        value: feature.value,
-      });
+      return await api.recordings.addFeature(recording, feature);
     },
     onSuccess: (data, feature) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onAddFeature?.(feature);
     },
   });
 
   const removeFeature = useMutation({
     mutationFn: async (feature: Feature) => {
-      return await api.recordings.removeFeature({
-        recording_id,
-        feature_name_id: feature.feature_name.id,
-      });
+      return await api.recordings.removeFeature(recording, feature);
     },
     onSuccess: (data, feature) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onRemoveFeature?.(feature);
     },
   });
 
   const updateFeature = useMutation({
     mutationFn: async (feature: Feature) => {
-      return await api.recordings.updateFeature({
-        recording_id,
-        feature_name_id: feature.feature_name.id,
-        value: feature.value,
-      });
+      return await api.recordings.updateFeature(recording, feature);
     },
     onSuccess: (data, feature) => {
-      client.setQueryData(["recording", recording_id], data);
+      client.setQueryData(["recording", recording.uuid], data);
       onUpdateFeature?.(feature);
     },
   });
 
   const deleteRecording = useMutation({
     mutationFn: async () => {
-      return await api.recordings.delete(recording_id);
+      return await api.recordings.delete(recording);
     },
     onSuccess: () => {
-      // Update the local cache
-      client.invalidateQueries(["recording", recording_id]);
+      query.remove();
       onDelete?.();
     },
   });
 
   return {
-    query,
+    ...query,
     update,
     addTag,
     removeTag,
     addNote,
-    removeNote,
     addFeature,
-    updateNote,
     removeFeature,
     updateFeature,
     delete: deleteRecording,
-  };
+  } as const;
 }
