@@ -1,12 +1,12 @@
 import { assign, createMachine } from "xstate";
 
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 
 export type GetAudioUrlFn = ({
-  recording_id,
+  recording,
   speed,
 }: {
-  recording_id: number;
+  recording: Recording;
   speed?: number;
 }) => string;
 
@@ -192,7 +192,7 @@ export const audioActions = {
   setSpeed: assign({
     speed: (context: AudioContext, event: SetSpeedEvent) => {
       const url = context.getAudioURL({
-        recording_id: context.recording.id,
+        recording: context.recording,
         speed: event.speed,
       });
       context.audio.src = url;
@@ -202,7 +202,7 @@ export const audioActions = {
   changeRecording: assign({
     recording: (context: AudioContext, event: ChangeRecordingEvent) => {
       const url = context.getAudioURL({
-        recording_id: event.recording.id,
+        recording: event.recording,
         speed: context.speed,
       });
       context.audio.src = url;
@@ -290,7 +290,7 @@ export const audioServices = {
 
     // Set the audio element URL
     const url = context.getAudioURL({
-      recording_id: context.recording.id,
+      recording: context.recording,
       speed: context.speed,
     });
     audio.src = url;

@@ -1,16 +1,18 @@
-import { type Task } from "@/api/tasks";
+import { type AnnotationTask } from "@/api/schemas";
 
-export function computeTaskProgress(tasks: Task[]) {
+export function computeAnnotationProjectProgress(
+  annotationTasks: AnnotationTask[],
+) {
   let missing = 0;
   let needReview = 0;
   let completed = 0;
   let verified = 0;
-  for (const task of tasks) {
+  for (const task of annotationTasks) {
     let isVerified = false;
     let isCompleted = false;
     let needsReview = false;
 
-    task.status_badges.forEach(({ state }) => {
+    task.status_badges?.forEach(({ state }) => {
       switch (state) {
         case "verified":
           isVerified = true;

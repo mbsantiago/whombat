@@ -3,11 +3,14 @@ const { stop } = actions;
 
 import { spectrogramMachine } from "@/machines/spectrogram";
 import { getInitialDuration } from "@/utils/windows";
-import { type Tag } from "@/api/tags";
-import { type Annotation, type AnnotationTag } from "@/api/annotations";
-import { type Geometry } from "@/api/sound_events";
-import { type Task } from "@/api/tasks";
-import { type Recording } from "@/api/recordings";
+import {
+  type SoundEventAnnotation,
+  type AnnotationTag,
+  type Tag,
+  type Geometry,
+  type ClipAnnotation,
+  type Recording,
+} from "@/api/schemas";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 
 export type AnnotateContext = {
@@ -16,21 +19,21 @@ export type AnnotateContext = {
   geometryType: "TimeStamp" | "TimeInterval" | "BoundingBox";
 
   // Data for current task
-  task: Task;
+  task: ClipAnnotation;
   recording: Recording;
 
   // Spectrogram Machine
   spectrogram: ActorRefFrom<typeof spectrogramMachine>;
 
   // Annotation state
-  selectedAnnotation: Annotation | null;
+  selectedAnnotation: SoundEventAnnotation | null;
   geometryToCreate: Geometry | null;
 };
 
 export type AnnotateContextWithData = AnnotateContext & {
-  task: Task;
+  task: ClipAnnotation;
   recording: Recording;
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
 };
 
 export type CreateAnnotationEvent = {
@@ -46,12 +49,12 @@ export type EditAnnotationEvent = {
 
 export type SelectAnnotationEvent = {
   type: "SELECT_ANNOTATION";
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
 };
 
 export type DeleteAnnotationEvent = {
   type: "DELETE_ANNOTATION";
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
 };
 
 export type SelecteGeometryTypeEvent = {
@@ -61,19 +64,19 @@ export type SelecteGeometryTypeEvent = {
 
 export type AddTagEvent = {
   type: "ADD_TAG";
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
   tag: Tag;
 };
 
 export type RemoveTagEvent = {
   type: "REMOVE_TAG";
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
   tag: AnnotationTag;
 };
 
 export type ChangeTask = {
   type: "CHANGE_TASK";
-  task: Task;
+  task: ClipAnnotation;
 };
 
 export type AnnotateEvent =

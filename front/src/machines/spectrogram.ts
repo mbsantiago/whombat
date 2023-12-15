@@ -10,7 +10,7 @@ import {
   type SpectrogramParameters,
   type SpectrogramWindow,
 } from "@/api/spectrograms";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import { audioMachine } from "@/machines/audio";
 import api from "@/app/api";
 
