@@ -22,10 +22,15 @@ export const ClipPageSchema = Page(ClipSchema);
 export type ClipPage = z.infer<typeof ClipPageSchema>;
 
 export const ClipFilterSchema = z.object({
-  recording__eq: z.number().optional(),
-  recording__isin: z.array(z.number()).optional(),
-  tag__eq: z.number().optional(),
-  tag__isin: z.array(z.number()).optional(),
+  recording__eq: z.string().uuid().optional(),
+  dataset__eq: z.string().uuid().optional(),
+  start_time__gt: z.number().optional(),
+  start_time__lt: z.number().optional(),
+  end_time__gt: z.number().optional(),
+  end_time__lt: z.number().optional(),
+  feature__name: z.string().optional(),
+  feature__gt: z.number().optional(),
+  feature__lt: z.number().optional(),
 });
 
 export type ClipFilter = z.input<typeof ClipFilterSchema>;

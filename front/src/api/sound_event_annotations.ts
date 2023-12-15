@@ -59,6 +59,7 @@ export type GetAnnotationsQuerySchema = z.input<
 const DEFAULT_ENDPOINTS = {
   create: "/api/v1/sound_event_annotations/",
   getMany: "/api/v1/sound_event_annotations/",
+  get: "/api/v1/sound_event_annotations/detail/",
   update: "/api/v1/sound_event_annotations/detail/",
   delete: "/api/v1/sound_event_annotations/detail/",
   addTag: "/api/v1/sound_event_annotations/detail/tags/",
@@ -88,6 +89,15 @@ export function registerSoundEventAnnotationsAPI(
     const params = GetAnnotationsQuerySchema.parse(query);
     const response = await instance.get(endpoints.getMany, { params });
     return SoundEventAnnotationPageSchema.parse(response.data);
+  }
+
+  async function getSoundEventAnnotation(
+    uuid: string,
+  ): Promise<SoundEventAnnotation> {
+    const response = await instance.get(endpoints.get, {
+      params: { sound_event_annotation_uuid: uuid },
+    });
+    return SoundEventAnnotationSchema.parse(response.data);
   }
 
   async function updateSoundEventAnnotation(
@@ -175,6 +185,7 @@ export function registerSoundEventAnnotationsAPI(
   return {
     create,
     getMany,
+    get: getSoundEventAnnotation,
     update: updateSoundEventAnnotation,
     addTag,
     removeTag,

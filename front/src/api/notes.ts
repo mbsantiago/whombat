@@ -43,12 +43,19 @@ export type GetNotesQuery = z.input<typeof GetNotesQuerySchema>;
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/notes/",
   update: "/api/v1/notes/detail/",
+  get: "/api/v1/notes/detail/",
+  delete: "/api/v1/notes/detail/",
 };
 
 export function registerNotesAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
+  async function getNote(uuid: string): Promise<Note> {
+    let response = await instance.get(endpoints.get, { params: { uuid } });
+    return NoteSchema.parse(response.data);
+  }
+
   async function getManyNotes(query: GetNotesQuery): Promise<NotePage> {
     let params = GetNotesQuerySchema.parse(query);
     let response = await instance.get(endpoints.getMany, { params });
@@ -63,8 +70,17 @@ export function registerNotesAPI(
     return NoteSchema.parse(response.data);
   }
 
+  async function deleteNote(note: Note): Promise<Note> {
+    let response = await instance.delete(endpoints.delete, {
+      params: { note_uuid: note.uuid },
+    });
+    return NoteSchema.parse(response.data);
+  }
+
   return {
+    get: getNote,
     update: updateNote,
     getMany: getManyNotes,
+    delete: deleteNote,
   };
 }

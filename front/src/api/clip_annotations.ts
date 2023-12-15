@@ -23,6 +23,8 @@ export const ClipAnnotationFilterSchema = z.object({
   evaluation_set__eq: z.string().uuid().optional(),
 });
 
+export type ClipAnnotationFilter = z.input<typeof ClipAnnotationFilterSchema>;
+
 export const GetClipAnnotationsQuerySchema = z.intersection(
   GetManySchema,
   ClipAnnotationFilterSchema,
@@ -75,10 +77,11 @@ export function registerClipAnnotationsAPI(
 
   async function deleteClipAnnotation(
     clipAnnotation: ClipAnnotation,
-  ): Promise<void> {
-    await instance.delete(endpoints.delete, {
+  ): Promise<ClipAnnotation> {
+    const response = await instance.delete(endpoints.delete, {
       params: { clip_annotation_uuid: clipAnnotation.uuid },
     });
+    return ClipAnnotationSchema.parse(response.data);
   }
 
   async function addTag(

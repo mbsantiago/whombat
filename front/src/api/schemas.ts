@@ -222,7 +222,12 @@ export const ClipAnnotationSchema = z.object({
 
 export type ClipAnnotation = z.infer<typeof ClipAnnotationSchema>;
 
-export const AnnotationStatusSchema = z.enum(["todo", "in_progress", "done"]);
+export const AnnotationStatusSchema = z.enum([
+  "assigned",
+  "verified",
+  "rejected",
+  "completed",
+]);
 
 export type AnnotationStatus = z.infer<typeof AnnotationStatusSchema>;
 

@@ -3,6 +3,8 @@ import { AxiosInstance } from "axios";
 
 import {
   type AnnotationTask,
+  type AnnotationProject,
+  type Clip,
   AnnotationTaskSchema,
   AnnotationStatus,
   ClipAnnotation,
@@ -10,13 +12,6 @@ import {
 } from "@/api/schemas";
 
 import { GetManySchema, Page } from "./common";
-
-export const AnnotationTaskCreateSchema = z.object({
-  clip_id: z.number(),
-  project_id: z.number(),
-});
-
-export type AnnotationTaskCreate = z.input<typeof AnnotationTaskCreateSchema>;
 
 export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
 
@@ -60,10 +55,20 @@ export function registerAnnotationTasksAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function createMany(
-    data: AnnotationTaskCreate[],
+    annotationProject: AnnotationProject,
+    clips: Clip[],
   ): Promise<AnnotationTask[]> {
-    const body = z.array(AnnotationTaskCreateSchema).parse(data);
-    const response = await instance.post(endpoints.createMany, body);
+    const response = await instance.post(
+      endpoints.createMany,
+      {
+        clip_uuids: clips.map((clip) => clip.uuid),
+      },
+      {
+        params: {
+          annotation_project_uuid: annotationProject.uuid,
+        },
+      },
+    );
     return z.array(AnnotationTaskSchema).parse(response.data);
   }
 
@@ -75,7 +80,7 @@ export function registerAnnotationTasksAPI(
     return AnnotationTaskPageSchema.parse(response.data);
   }
 
-  async function getAnnotationTask(uuid: number): Promise<AnnotationTask> {
+  async function getAnnotationTask(uuid: string): Promise<AnnotationTask> {
     const response = await instance.get(endpoints.get, {
       params: { annotation_task_uuid: uuid },
     });
