@@ -78,7 +78,7 @@ format:
 	black src tests
 
 test:
-	pytest -x
+	pytest -n auto
 
 coverage:
 	coverage run --source whombat -m pytest

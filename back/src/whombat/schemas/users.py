@@ -1,6 +1,8 @@
 """Schemas for User objects."""
 
+import datetime
 import uuid
+from typing import Optional
 
 from fastapi_users import schemas
 from pydantic import EmailStr
@@ -21,7 +23,8 @@ class User(schemas.BaseUser[uuid.UUID]):
     """Schema for User objects returned to the user."""
 
     username: str
-    name: str | None = None
+    name: Optional[str] = None
+    created_on: datetime.datetime
 
 
 class UserCreate(schemas.BaseUserCreate):

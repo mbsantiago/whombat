@@ -66,10 +66,35 @@ class FeatureFilter(base.Filter):
         return query.filter(*conditions)
 
 
+class DatasetFilter(base.Filter):
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        if self.eq is None:
+            return query
+
+        return (
+            query.join(
+                models.Recording,
+                models.Recording.id == models.Clip.recording_id,
+            )
+            .join(
+                models.DatasetRecording,
+                models.DatasetRecording.recording_id == models.Recording.id,
+            )
+            .join(
+                models.Dataset,
+                models.Dataset.id == models.DatasetRecording.dataset_id,
+            )
+            .filter(models.Dataset.uuid == self.eq)
+        )
+
+
 ClipFilter = base.combine(
     uuid=UUIDFilter,
     recording=RecordingFilter,
     start_time=StartTimeFilter,
     end_time=EndTimeFilter,
     feature=FeatureFilter,
+    dataset=DatasetFilter,
 )

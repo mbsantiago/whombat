@@ -192,6 +192,37 @@ class EvaluationSetFilter(base.Filter):
         )
 
 
+class DatasetFilter(base.Filter):
+    """Get tags of recordings in a dataset."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter tags by dataset."""
+        if self.eq is None:
+            return query
+
+        return (
+            query.join(
+                models.RecordingTag,
+                models.RecordingTag.tag_id == models.Tag.id,
+            )
+            .join(
+                models.Recording,
+                models.Recording.id == models.RecordingTag.recording_id,
+            )
+            .join(
+                models.DatasetRecording,
+                models.DatasetRecording.recording_id == models.Recording.id,
+            )
+            .join(
+                models.Dataset,
+                models.Dataset.id == models.DatasetRecording.dataset_id,
+            )
+            .where(models.Dataset.uuid == self.eq)
+        )
+
+
 TagFilter = base.combine(
     SearchFilter,
     key=KeyFilter,
@@ -203,4 +234,5 @@ TagFilter = base.combine(
     sound_event_prediction=SoundEventPredictionFilter,
     clip_prediction=ClipPredictionFilter,
     evaluation_set=EvaluationSetFilter,
+    dataset=DatasetFilter,
 )

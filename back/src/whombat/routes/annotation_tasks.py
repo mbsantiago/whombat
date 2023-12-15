@@ -1,8 +1,7 @@
 """REST API routes for annotation tasks."""
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Depends
 from soundevent.data import AnnotationState
 
 from whombat import api, schemas
@@ -139,7 +138,9 @@ async def get_task_annotations(
         session,
         annotation_task_uuid,
     )
-    return await api.annotation_tasks.get_clip_annotation(session, annotation_task)
+    return await api.annotation_tasks.get_clip_annotation(
+        session, annotation_task
+    )
 
 
 @annotation_tasks_router.post(

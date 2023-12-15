@@ -153,6 +153,41 @@ class ClipAnnotationFilter(base.Filter):
         )
 
 
+class DatasetFilter(base.Filter):
+    """Get notes of recordings within a specific dataset."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Apply the filter.
+
+        Will filter the query to only include notes of recordings within the
+        specified dataset.
+        """
+        if self.eq is None:
+            return query
+
+        return (
+            query.join(
+                models.RecordingNote,
+                models.RecordingNote.note_id == models.Note.id,
+            )
+            .join(
+                models.Recording,
+                models.Recording.id == models.RecordingTag.recording_id,
+            )
+            .join(
+                models.DatasetRecording,
+                models.DatasetRecording.recording_id == models.Recording.id,
+            )
+            .join(
+                models.Dataset,
+                models.Dataset.id == models.DatasetRecording.dataset_id,
+            )
+            .where(models.Dataset.uuid == self.eq)
+        )
+
+
 NoteFilter = base.combine(
     message=MessageFilter,
     created_by=CreatedByFilter,
@@ -162,4 +197,5 @@ NoteFilter = base.combine(
     recording=RecordingFilter,
     sound_event_annotation=SoundEventAnnotationFilter,
     clip_annotation=ClipAnnotationFilter,
+    dataset=DatasetFilter,
 )

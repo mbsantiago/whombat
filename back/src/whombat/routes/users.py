@@ -8,7 +8,6 @@ __all__ = [
     "users_router",
 ]
 
+
 users_router = APIRouter()
-users_router.include_router(
-    fastapi_users.get_users_router(User, UserUpdate),
-)
+users_router.include_router(fastapi_users.get_users_router(User, UserUpdate))

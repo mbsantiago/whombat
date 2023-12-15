@@ -12,7 +12,7 @@ information is a username, which is used to identify the user.
 Additional information can be added, such as a full name, email, and
 affiliation. This information is not required.
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -71,7 +71,7 @@ class User(Base):
     id: orm.Mapped[UUID] = orm.mapped_column(
         primary_key=True, default_factory=uuid4, kw_only=False
     )
-    name: orm.Mapped[str | None] = orm.mapped_column(default=None)
+    name: orm.Mapped[Optional[str]] = orm.mapped_column(default=None)
     is_active: orm.Mapped[bool] = orm.mapped_column(default=True)
     is_superuser: orm.Mapped[bool] = orm.mapped_column(default=False)
     is_verified: orm.Mapped[bool] = orm.mapped_column(default=False)

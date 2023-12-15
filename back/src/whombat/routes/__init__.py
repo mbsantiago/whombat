@@ -6,6 +6,7 @@ from whombat.routes.annotation_tasks import annotation_tasks_router
 from whombat.routes.audio import audio_router
 from whombat.routes.auth import auth_router
 from whombat.routes.clip_annotations import clip_annotations_router
+from whombat.routes.clip_evaluations import clip_evaluations_router
 from whombat.routes.clip_predictions import clip_predictions_router
 from whombat.routes.clips import clips_router
 from whombat.routes.datasets import dataset_router
@@ -18,7 +19,6 @@ from whombat.routes.recordings import recording_router
 from whombat.routes.sound_event_annotations import (
     sound_event_annotations_router,
 )
-from whombat.routes.clip_evaluations import clip_evaluations_router
 from whombat.routes.sound_event_evaluations import (
     sound_event_evaluations_router,
 )
@@ -35,9 +35,8 @@ __all__ = [
     "main_router",
 ]
 
-main_router = APIRouter(
-    prefix="/api/v1",
-)
+
+main_router = APIRouter(prefix="/api/v1")
 
 # Admin
 main_router.include_router(
