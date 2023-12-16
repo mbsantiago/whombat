@@ -114,11 +114,11 @@ class DatasetRecordingCreate(BaseModel):
     """The path to the recording in the dataset directory."""
 
 
-class DatasetRecording(BaseSchema):
+class DatasetRecording(BaseModel):
     """Schema for DatasetRecording objects returned to the user."""
 
     recording: Recording
-    """The recording object."""
+    """The uuid of the recording."""
 
     state: FileState = Field(default=FileState.REGISTERED)
     """The state of the file."""

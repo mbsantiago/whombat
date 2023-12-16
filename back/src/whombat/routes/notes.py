@@ -23,7 +23,7 @@ async def get_notes(
     session: Session,
     limit: Limit = 100,
     offset: Offset = 0,
-    sort_by: str | None = "value",
+    sort_by: str | None = "-created_on",
     filter: NoteFilter = Depends(NoteFilter),  # type: ignore
 ):
     """Get all tags."""

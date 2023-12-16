@@ -92,6 +92,19 @@ async def update_dataset(
     return updated
 
 
+@dataset_router.get(
+    "/detail/state/",
+    response_model=list[schemas.DatasetFile],
+)
+async def get_file_state(
+    session: Session,
+    dataset_uuid: UUID,
+):
+    """Get the status of the files in a dataset."""
+    dataset = await api.datasets.get(session, dataset_uuid)
+    return await api.datasets.get_state(session, dataset)
+
+
 @dataset_router.delete(
     "/detail/",
     response_model=schemas.Dataset,

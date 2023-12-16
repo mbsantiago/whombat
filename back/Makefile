@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
-WHOMBAT_BACKEND_DEV_PORT ?= 8000
+WHOMBAT_BACKEND_DEV_PORT ?= 5000
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys

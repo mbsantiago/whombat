@@ -174,7 +174,7 @@ class DatasetFilter(base.Filter):
             )
             .join(
                 models.Recording,
-                models.Recording.id == models.RecordingTag.recording_id,
+                models.Recording.id == models.RecordingNote.recording_id,
             )
             .join(
                 models.DatasetRecording,
