@@ -1,77 +1,38 @@
+/**
+ * Page module for creating a new dataset.
+ *
+ * This page includes a hero section with the title "Create Dataset" and a form for creating a dataset
+ * using the `DatasetCreate` component. Upon successful creation, it navigates to the details page of the
+ * newly created dataset.
+ *
+ * @module pages/datasets/create
+ * @see components/datasets/DatasetCreate
+ */
 "use client";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import DatasetCreate from "@/components/datasets/DatasetCreate";
 
 import Hero from "@/components/Hero";
-import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
-import api from "@/app/api";
-import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
+import { Center } from "@/components/layouts";
+import { type Dataset } from "@/api/schemas";
 
 export default function CreateDataset() {
   const router = useRouter();
 
-  const mutation = useMutation({
-    mutationFn: api.datasets.create,
-    onSuccess: (data) => {
-      router.push(`/datasets/detail/?dataset_id=${data.id}/`);
+  const onCreate = useCallback(
+    (dataset: Dataset) => {
+      router.push(`/datasets/detail/?dataset_uuid=${dataset.uuid}`);
     },
-  });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<DatasetCreate>({
-    resolver: zodResolver(DatasetCreateSchema),
-    mode: "onChange",
-  });
-
-  const onSubmit = async (data: DatasetCreate) => {
-    toast.promise(mutation.mutateAsync(data), {
-      loading:
-        "Creating dataset. Please wait while the folder is scanned for recordings.",
-      success: "Dataset created successfully.",
-      error: "Failed to create dataset.",
-    });
-  };
+    [router],
+  );
 
   return (
     <>
       <Hero text="Create Dataset" />
-      <div className="flex w-1/2 flex-col items-start p-8">
-        <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-          <InputGroup
-            name="name"
-            label="Name"
-            help="Please provide a name for the dataset."
-            error={errors.name?.message}
-          >
-            <Input {...register("name")} />
-          </InputGroup>
-          <InputGroup
-            name="description"
-            label="Description"
-            help="Describe the dataset."
-            error={errors.description?.message}
-          >
-            <TextArea {...register("description")} />
-          </InputGroup>
-          <InputGroup
-            name="audio_dir"
-            label="Audio Directory"
-            help="Provide the path to the folder where the dataset recordings reside."
-            error={errors.name?.message}
-          >
-            <Input {...register("audio_dir")} />
-          </InputGroup>
-          <div className="mb-3">
-            <Submit>Create Dataset</Submit>
-          </div>
-        </form>
-      </div>
+      <Center>
+        <DatasetCreate onCreate={onCreate} />
+      </Center>
     </>
   );
 }
