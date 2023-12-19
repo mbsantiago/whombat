@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs", "postgre"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:50bbcc618aeffde2953a17b4f8f01622d5d53a3dee8f1eadf76ae19b3ae96731"
+content_hash = "sha256:e5f3be5c33a62a3b13bc59a2833fce1fc2b92868a9250b9f8fd358bf08716e06"
 
 [[package]]
 name = "aiosqlite"
@@ -1741,7 +1741,7 @@ files = [
 
 [[package]]
 name = "soundevent"
-version = "1.1.2"
+version = "1.2.0"
 requires_python = ">=3.8"
 summary = "soundevent is an open-source Python package for the computational biocoustic community, providing standardized tools for sound event analysis and data management."
 dependencies = [
@@ -1749,13 +1749,13 @@ dependencies = [
     "pydantic>=2.0",
 ]
 files = [
-    {file = "soundevent-1.1.2-py3-none-any.whl", hash = "sha256:e5a5628ac3474dcaacb6b56b0681064d218deb670cf429b1700aa4eb6ba8c0ae"},
-    {file = "soundevent-1.1.2.tar.gz", hash = "sha256:cc4ca79e0b55cd7e9341881cf1cd10509c035196a4eb163ef0f9e0dd378abbcf"},
+    {file = "soundevent-1.2.0-py3-none-any.whl", hash = "sha256:a37bed2dc7a1068ed4bae1b23051008186e068dfa7e48d4c793d948c704de153"},
+    {file = "soundevent-1.2.0.tar.gz", hash = "sha256:a4b36f679255e0978b2d93ee964affacc3b16d0423160045bc3500f9b48c7ece"},
 ]
 
 [[package]]
 name = "soundevent"
-version = "1.1.2"
+version = "1.2.0"
 extras = ["audio", "evaluation", "geometry", "plot"]
 requires_python = ">=3.8"
 summary = "soundevent is an open-source Python package for the computational biocoustic community, providing standardized tools for sound event analysis and data management."
@@ -1767,12 +1767,12 @@ dependencies = [
     "scikit-learn>=1.3.1",
     "scipy>=1.6.1",
     "shapely>=2.0.1",
-    "soundevent==1.1.2",
+    "soundevent==1.2.0",
     "xarray>=0.20.2",
 ]
 files = [
-    {file = "soundevent-1.1.2-py3-none-any.whl", hash = "sha256:e5a5628ac3474dcaacb6b56b0681064d218deb670cf429b1700aa4eb6ba8c0ae"},
-    {file = "soundevent-1.1.2.tar.gz", hash = "sha256:cc4ca79e0b55cd7e9341881cf1cd10509c035196a4eb163ef0f9e0dd378abbcf"},
+    {file = "soundevent-1.2.0-py3-none-any.whl", hash = "sha256:a37bed2dc7a1068ed4bae1b23051008186e068dfa7e48d4c793d948c704de153"},
+    {file = "soundevent-1.2.0.tar.gz", hash = "sha256:a4b36f679255e0978b2d93ee964affacc3b16d0423160045bc3500f9b48c7ece"},
 ]
 
 [[package]]
