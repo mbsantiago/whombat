@@ -2,7 +2,7 @@
 import { useContext, useState, useCallback } from "react";
 
 import useStore from "@/store";
-import useAnnotationTasks from "@/hooks/annotation/useAnnotationTasks";
+import useTaskAnnotations from "@/hooks/annotation/useAnnotationTasks";
 import useStateParams from "@/hooks/useStateParams";
 import AnnotationProgress from "@/components/annotation/AnnotationProgress";
 import Empty from "@/components/Empty";
@@ -33,7 +33,7 @@ export default function Page() {
     current,
     next,
     previous,
-  } = useAnnotationTasks({
+  } = useTaskAnnotations({
     project,
   });
 
@@ -48,7 +48,7 @@ export default function Page() {
   const onAddTag = useCallback(
     (tag: Tag) => {
       if (!project.tags.includes(tag)) {
-        api.annotation_projects.addTag(project.id, tag.id);
+        api.annotationProjects.addTag(project.id, tag.id);
       }
 
       setTags((tags) => {

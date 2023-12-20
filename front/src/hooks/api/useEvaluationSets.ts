@@ -1,7 +1,7 @@
 import { type EvaluationSetFilter } from "@/api/evaluation_sets";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/api/usePagedQuery";
-import useFilter from "@/hooks/api/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useFilter from "@/hooks/utils/useFilter";
 
 const emptyFilter: EvaluationSetFilter = {};
 const _fixed: (keyof EvaluationSetFilter)[] = [];
@@ -22,7 +22,7 @@ export default function useEvaluationSets({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "evaluation_sets",
-    func: api.evaluationSets.getMany,
+    queryFn: api.evaluationSets.getMany,
     pageSize,
     filter: filter.filter,
   });

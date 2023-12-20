@@ -2,7 +2,12 @@ import { z } from "zod";
 import { AxiosInstance } from "axios";
 
 import { GetManySchema, Page } from "./common";
-import { DatasetSchema, type Dataset } from "./schemas";
+import {
+  DatasetSchema,
+  type Dataset,
+  RecordingStateSchema,
+  type RecordingState,
+} from "./schemas";
 
 export const DatasetFilterSchema = z.object({
   search: z.string().optional(),
@@ -40,6 +45,7 @@ export type GetDatasetsQuery = z.input<typeof GetDatasetsQuerySchema>;
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/datasets/",
   create: "/api/v1/datasets/",
+  state: "/api/v1/datasets/detail/state/",
   get: "/api/v1/datasets/detail/",
   update: "/api/v1/datasets/detail/",
   delete: "/api/v1/datasets/detail/",
@@ -75,6 +81,13 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(data);
   }
 
+  async function getDatasetState(uuid: string): Promise<RecordingState[]> {
+    const { data } = await instance.get(endpoints.state, {
+      params: { dataset_uuid: uuid },
+    });
+    return z.array(RecordingStateSchema).parse(data);
+  }
+
   async function updateDataset(
     dataset: Dataset,
     data: DatasetUpdate,
@@ -106,6 +119,7 @@ export function registerDatasetAPI({
     getMany,
     create,
     get,
+    getState: getDatasetState,
     update: updateDataset,
     delete: deleteDataset,
     getDownloadUrl,

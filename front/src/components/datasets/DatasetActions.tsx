@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/app/api";
 import Button from "@/components/Button";
 import Alert from "@/components/Alert";
-import { type Dataset } from "@/api/datasets";
+import { type Dataset } from "@/api/schemas";
 import {
   CloseIcon,
   DeleteIcon,
@@ -25,7 +25,7 @@ function DeleteDataset({ dataset }: { dataset: Dataset }) {
 
   const handleDelete = async () => {
     if (dataset == null) return;
-    toast.promise(mutation.mutateAsync(dataset.id), {
+    toast.promise(mutation.mutateAsync(dataset), {
       loading: "Deleting dataset... please wait",
       success: "Dataset deleted",
       error: "Failed to delete dataset",

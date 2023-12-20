@@ -24,11 +24,12 @@ export type NoteUpdate = z.input<typeof NoteUpdateSchema>;
 
 export const NoteFilterSchema = z.object({
   is_issue__eq: z.boolean().optional(),
-  created_by__eq: z.number().int().optional(),
   search: z.string().optional(),
-  recording__eq: z.number().int().optional(),
-  task__eq: z.number().int().optional(),
-  sound_event__eq: z.number().int().optional(),
+  created_by__eq: z.string().uuid().optional(),
+  recording__eq: z.string().uuid().optional(),
+  annotation_task__eq: z.string().uuid().optional(),
+  sound_event__eq: z.string().uuid().optional(),
+  dataset__eq: z.string().uuid().optional(),
 });
 
 export type NoteFilter = z.input<typeof NoteFilterSchema>;

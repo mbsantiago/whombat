@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import Button from "@/components/Button";
-import TagSearchBar from "@/components/TagSearchBar";
-import Checkbox from "@/components/TableCheckbox";
+import TagSearchBar from "@/components/tags/TagSearchBar";
+import Checkbox from "@/components/tables/TableCheckbox";
 import { CheckIcon, CloseIcon } from "@/components/icons";
 
 export type SetFilter = ({
@@ -32,17 +32,17 @@ function FloatField({
     <div>
       <label
         htmlFor={name}
-        className="block text-sm font-medium leading-6 text-gray-700 dark:text-stone-300 mb-2"
+        className="block mb-2 text-sm font-medium leading-6 text-gray-700 dark:text-stone-300"
       >
         {name}
       </label>
       <div className="relative rounded-md">
-        <div className="absolute inset-y-0 left-0 flex items-center">
+        <div className="flex absolute inset-y-0 left-0 items-center">
           <label htmlFor={`${name}-operation`} className="sr-only">
             Operation
           </label>
           <select
-            className="h-full rounded-l-md border-0 bg-transparent pl-2 pr-3 text-stone-500 focus:ring-2 focus:ring-inset focus:ring-emerald-600"
+            className="pr-3 pl-2 h-full bg-transparent rounded-l-md border-0 focus:ring-2 focus:ring-inset focus:ring-emerald-600 text-stone-500"
             id={`${name}-operation`}
             name={`${name}-operation`}
             value={operation}
@@ -58,7 +58,7 @@ function FloatField({
           type="number"
           id={name}
           name={name}
-          className="block w-full bg-stone-50 dark:bg-stone-900 rounded-md outline-none border-0 pl-14 pr-14 py-1 text-stone-900 dark:text-stone-300 ring-1 ring-inset ring-stone-300 dark:ring-stone-800 placeholder:text-stone-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
+          className="block py-1 pr-14 pl-14 w-full rounded-md border-0 ring-1 ring-inset outline-none sm:text-sm sm:leading-6 focus:ring-2 focus:ring-inset focus:ring-emerald-600 bg-stone-50 text-stone-900 ring-stone-300 placeholder:text-stone-400 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-800"
           value={value}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -69,7 +69,7 @@ function FloatField({
         />
         <button
           onClick={onSubmit}
-          className="absolute inline-block px-2 inset-y-0 right-0 rounded-r-md bg-emerald-300 text-emerald-700 dark:text-emerald-300 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:hover:text-emerald-400"
+          className="inline-block absolute inset-y-0 right-0 px-2 text-emerald-700 bg-emerald-300 rounded-r-md dark:text-emerald-300 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:hover:text-emerald-400"
         >
           set
         </button>
@@ -99,7 +99,7 @@ function IsNullField({
       </label>
       <Checkbox
         id={`${name}-isnull`}
-        className="form-checkbox rounded text-emerald-500 dark:text-emerald-500 shadow-sm focus:ring focus:ring-offset-0 focus:ring-emerald-300 focus:ring-opacity-50"
+        className="text-emerald-500 rounded shadow-sm dark:text-emerald-500 focus:ring focus:ring-emerald-300 focus:ring-opacity-50 focus:ring-offset-0 form-checkbox"
         checked={value === true}
         indeterminate={value === false}
         onChange={() => {
@@ -118,7 +118,7 @@ function IsNullField({
       <button
         onClick={onSubmit}
         disabled={value === null}
-        className="absolute px-2 py-1 right-0 rounded-md bg-emerald-300 text-emerald-700 dark:text-emerald-300 dark:bg-emerald-700 dark:hover:bg-emerald-800 dark:hover:text-emerald-400 disabled:bg-emerald-300 dark:disabled:bg-emerald-900 dark:disabled:text-emerald-600 disabled:text-emerald-600"
+        className="absolute right-0 py-1 px-2 text-emerald-700 bg-emerald-300 rounded-md dark:text-emerald-300 dark:bg-emerald-700 disabled:text-emerald-600 disabled:bg-emerald-300 dark:hover:bg-emerald-800 dark:hover:text-emerald-400 dark:disabled:bg-emerald-900 dark:disabled:text-emerald-600"
       >
         set
       </button>
@@ -143,7 +143,7 @@ export function FloatFilter({
   };
 
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex flex-col gap-2 w-full">
       <FloatField
         name={name}
         value={value}
@@ -170,7 +170,7 @@ export function NullableFloatFilter({
   const [isNull, setIsNull] = useState<boolean | null>(null);
 
   return (
-    <div className="relative flex flex-col w-full gap-4">
+    <div className="flex relative flex-col gap-4 w-full">
       <FloatField
         name={name}
         value={value}
@@ -201,7 +201,7 @@ export function BooleanFilter({
   prefix?: string;
 }) {
   return (
-    <div className="flex flex-row justify-center w-full gap-2">
+    <div className="flex flex-row gap-2 justify-center w-full">
       <Button
         mode="text"
         variant="primary"
@@ -209,7 +209,7 @@ export function BooleanFilter({
           setFilter({ name: `${prefix}__eq`, value: true });
         }}
       >
-        <CheckIcon className="w-5 h-5 mr-1 group-hover:stroke-3" />
+        <CheckIcon className="mr-1 w-5 h-5 group-hover:stroke-3" />
         Yes
       </Button>
       <Button
@@ -219,13 +219,12 @@ export function BooleanFilter({
           setFilter({ name: `${prefix}__eq`, value: false });
         }}
       >
-        <CloseIcon className="w-5 h-5 mr-1 group-hover:stroke-3" />
+        <CloseIcon className="mr-1 w-5 h-5 group-hover:stroke-3" />
         No
       </Button>
     </div>
   );
 }
-
 
 export function TagFilter({
   setFilter,
@@ -235,10 +234,11 @@ export function TagFilter({
   prefix?: string;
 }) {
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex flex-col gap-2 w-full">
       <TagSearchBar
         onSelect={(tag) => {
-          setFilter({ name: `${prefix}__eq`, value: tag.id });
+          setFilter({ name: `${prefix}__key`, value: tag.key });
+          setFilter({ name: `${prefix}__value`, value: tag.value });
         }}
       />
     </div>

@@ -1,17 +1,16 @@
-import { type AxiosError, isAxiosError } from "axios";
+import { type AxiosError } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import { type User } from "@/api/schemas";
+import { type UserUpdate } from "@/api/user";
 
 export default function useActiveUser({
-  user,
   onUpdate,
   onLogout,
   onUnauthorized,
   enabled = true,
 }: {
-  user?: User;
   onUpdate?: (user: User) => void;
   onLogout?: () => void;
   onUnauthorized?: (error: AxiosError) => void;
@@ -19,33 +18,20 @@ export default function useActiveUser({
 } = {}) {
   const client = useQueryClient();
 
-  const query = useQuery(
-    ["me"],
-    async () => {
+  const query = useQuery<User, AxiosError>({
+    queryKey: ["me"],
+    queryFn: async () => {
       return await api.user.me();
     },
-    {
-      initialData: user,
-      staleTime: 1000 * 60 * 5,
-      retry: 2,
-      enabled,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchOnMount: true,
-      refetchIntervalInBackground: false,
-      onError: (error: Error | AxiosError) => {
-        if (!isAxiosError(error)) {
-          return;
-        }
+    retry: 2,
+    enabled,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
+    refetchIntervalInBackground: false,
+  });
 
-        if (error?.response?.status === 401) {
-          onUnauthorized?.(error);
-        }
-      },
-    },
-  );
-
-  const update = useMutation({
+  const update = useMutation<User, AxiosError, UserUpdate>({
     mutationFn: api.user.update,
     onSuccess: (data) => {
       query.refetch();
@@ -53,17 +39,24 @@ export default function useActiveUser({
     },
   });
 
-  const logout = useMutation({
+  const logout = useMutation<unknown, AxiosError>({
     mutationFn: api.auth.logout,
     onSuccess: () => {
-      client.invalidateQueries(["me"]);
+      client.removeQueries({ queryKey: ["me"] });
       onLogout?.();
     },
   });
+
+  const { error } = query;
+  if (error != null) {
+    if (error?.response?.status === 401) {
+      onUnauthorized?.(error);
+    }
+  }
 
   return {
     ...query,
     update,
     logout,
-  } as const;
+  };
 }

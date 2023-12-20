@@ -2,46 +2,55 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ColumnDef,
-  RowData,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
 import * as icons from "@/components/icons";
-import Checkbox from "@/components/TableCheckbox";
-import TableInput from "@/components/TableInput";
-import TableCell from "@/components/TableCell";
-import TableMap, { parsePosition } from "@/components/TableMap";
-import TableTags from "@/components/TableTags";
-import TableHeader from "@/components/TableHeader";
-import { type Tag } from "@/api/tags";
-import { type Recording, type RecordingUpdate } from "@/api/recordings";
+import Checkbox from "@/components/tables/TableCheckbox";
+import TableInput from "@/components/tables/TableInput";
+import TableCell from "@/components/tables/TableCell";
+import TableMap, { parsePosition } from "@/components/tables/TableMap";
+import TableTags from "@/components/tables/TableTags";
+import TableHeader from "@/components/tables/TableHeader";
+import { type RecordingUpdate } from "@/api/recordings";
+import { type Recording, type Tag } from "@/api/schemas";
 
-
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
-    addTag: (rowIndex: number, tag: Tag) => void;
-    removeTag: (rowIndex: number, tag: Tag) => void;
-  }
-
-  interface ColumnMeta<TData extends RowData, TValue> {
-    editable?: boolean;
-  }
-}
-
-function useRecordingTable({
+export default function useRecordingTable({
   data,
-  updateData,
-  addTag,
-  removeTag,
+  onUpdate,
+  onAddTag,
+  onRemoveTag,
 }: {
   data: Recording[];
-  updateData?: (recording_id: number, data: RecordingUpdate) => void;
-  addTag?: (recording_id: number, tag: Tag) => void;
-  removeTag?: (recording_id: number, tag: Tag) => void;
+  onUpdate: ({
+    recording,
+    data,
+    index,
+  }: {
+    recording: Recording;
+    data: RecordingUpdate;
+    index: number;
+  }) => void;
+  onAddTag: ({
+    recording,
+    tag,
+    index,
+  }: {
+    recording: Recording;
+    tag: Tag;
+    index: number;
+  }) => void;
+  onRemoveTag: ({
+    recording,
+    tag,
+    index,
+  }: {
+    recording: Recording;
+    tag: Tag;
+    index: number;
+  }) => void;
 }) {
-  // State for selected rows
   const [rowSelection, setRowSelection] = useState({});
 
   // Column definitions
@@ -85,11 +94,11 @@ function useRecordingTable({
           return (
             <TableCell>
               <Link
-                className="hover:text-emerald-500 focus:outline-none hover:font-bold focus:ring focus:ring-emerald-500"
+                className="hover:font-bold hover:text-emerald-500 focus:ring focus:ring-emerald-500 focus:outline-none"
                 href={{
                   pathname: "/recordings/",
                   query: {
-                    recording_id: row.original.id,
+                    recording_uuid: row.original.uuid,
                   },
                 }}
               >
@@ -129,20 +138,22 @@ function useRecordingTable({
         enableResizing: true,
         size: 120,
         footer: (props) => props.column.id,
-        cell: ({ row, table, column }) => {
+        cell: ({ row }) => {
           const value = row.getValue("time_expansion") as string;
           return (
             <TableInput
-              onChange={(value) =>
-                table.options.meta?.updateData(row.index, column.id, value)
-              }
+              onChange={(value) => {
+                if (value === null) return;
+                onUpdate({
+                  recording: row.original,
+                  data: { time_expansion: parseFloat(value) },
+                  index: row.index,
+                });
+              }}
               type="number"
               value={value}
             />
           );
-        },
-        meta: {
-          editable: true,
         },
       },
       {
@@ -152,27 +163,29 @@ function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.DateIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
+              <icons.DateIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Date
             </TableHeader>
           );
         },
-        cell: ({ row, table, column }) => {
+        cell: ({ row }) => {
           const date = row.getValue("date") as string;
           return (
             <TableInput
-              onChange={(value) =>
-                table.options.meta?.updateData(row.index, column.id, value)
-              }
+              onChange={(value) => {
+                if (value === null) return;
+                onUpdate({
+                  recording: row.original,
+                  data: { date: new Date(value) },
+                  index: row.index,
+                });
+              }}
               type="date"
               value={date}
             />
           );
         },
         accessorFn: (row) => row.date?.toLocaleDateString("en-CA"),
-        meta: {
-          editable: true,
-        },
       },
       {
         id: "time",
@@ -181,18 +194,23 @@ function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.TimeIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
+              <icons.TimeIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Time
             </TableHeader>
           );
         },
-        cell: ({ row, table, column }) => {
+        cell: ({ row }) => {
           const time = row.getValue("time") as string;
           return (
             <TableInput
-              onChange={(value) =>
-                table.options.meta?.updateData(row.index, column.id, value)
-              }
+              onChange={(value) => {
+                if (value === null) return;
+                onUpdate({
+                  recording: row.original,
+                  data: { time: value },
+                  index: row.index,
+                });
+              }}
               type="time"
               value={time}
               step="1"
@@ -200,9 +218,6 @@ function useRecordingTable({
           );
         },
         accessorFn: (row) => row.time,
-        meta: {
-          editable: true,
-        },
       },
       {
         id: "location",
@@ -210,26 +225,31 @@ function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.LocationIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
+              <icons.LocationIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Location
             </TableHeader>
           );
         },
         accessorFn: (row) => {
-          if (row.latitude === null || row.longitude === null) return null;
+          if (row.latitude == null || row.longitude == null) return null;
           return `${row.latitude}, ${row.longitude}`;
         },
-        meta: {
-          editable: true,
-        },
-        cell: ({ row, table, column }) => {
+        cell: ({ row }) => {
           const location = row.getValue("location") as string;
           return (
             <TableMap
               pattern="^[\-+]?([1-8]?\d(\.\d+)?|90(.0+)?),\s*[\-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
-              onChange={(value) =>
-                table.options.meta?.updateData(row.index, column.id, value)
-              }
+              onChange={(value) => {
+                if (value === null) return;
+                const { position, isComplete } = parsePosition(value);
+                if (!isComplete) return;
+                const { lat: latitude, lng: longitude } = position;
+                onUpdate({
+                  recording: row.original,
+                  data: { latitude, longitude },
+                  index: row.index,
+                });
+              }}
               type="text"
               value={location}
             />
@@ -242,26 +262,33 @@ function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.TagIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
+              <icons.TagIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Tags
             </TableHeader>
           );
         },
         accessorFn: (row) => row.tags,
-        cell: ({ row, table }) => {
+        cell: ({ row }) => {
           const tags = row.getValue("tags") as Tag[];
           return (
             <TableTags
               tags={tags}
-              onAdd={(tag) => {
-                table.options.meta?.addTag(row.index, tag);
-              }}
-              onRemove={(tag) => table.options.meta?.removeTag(row.index, tag)}
+              onAdd={(tag) =>
+                onAddTag({
+                  recording: row.original,
+                  tag,
+                  index: row.index,
+                })
+              }
+              onRemove={(tag) =>
+                onRemoveTag({
+                  recording: row.original,
+                  tag,
+                  index: row.index,
+                })
+              }
             />
           );
-        },
-        meta: {
-          editable: true,
         },
       },
       {
@@ -270,7 +297,7 @@ function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.NotesIcon className="mr-2 inline-block h-5 w-5 align-middle text-stone-500" />
+              <icons.NotesIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Notes
             </TableHeader>
           );
@@ -278,7 +305,7 @@ function useRecordingTable({
         accessorFn: (row) => row.notes,
       },
     ],
-    [],
+    [onAddTag, onRemoveTag, onUpdate],
   );
 
   const table = useReactTable<Recording>({
@@ -289,33 +316,7 @@ function useRecordingTable({
     onRowSelectionChange: setRowSelection,
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        const recording_id = data[rowIndex].id;
-
-        if (columnId === "location") {
-          const { position, isComplete } = parsePosition(value as string);
-          const { lat: latitude, lng: longitude } = position;
-          if (isComplete) {
-            updateData?.(recording_id, { latitude, longitude });
-          }
-          return;
-        }
-
-        updateData?.(recording_id, { [columnId]: value });
-      },
-      addTag: (rowIndex, tag) => {
-        const recording_id = data[rowIndex].id;
-        addTag?.(recording_id, tag);
-      },
-      removeTag: (rowIndex, tag) => {
-        const recording_id = data[rowIndex].id;
-        removeTag?.(recording_id, tag);
-      },
-    },
   });
 
   return table;
 }
-
-export default useRecordingTable;

@@ -6,7 +6,7 @@ import { Float } from "@headlessui-float/react";
 import classNames from "classnames";
 
 import useStore from "@/store";
-import TagSearchBar from "@/components/TagSearchBar";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 import { type TagFilter } from "@/api/tags";
 import { TagIcon, CloseIcon } from "@/components/icons";
 import { type Tag as TagType } from "@/api/schemas";
@@ -48,30 +48,30 @@ function TagBarPopover({
   );
 }
 
-export function SpectrogramTag({ tag: annotationTag, onClick }: TagElement) {
+export function SpectrogramTag({ tag, onClick }: TagElement) {
   const getTagColor = useStore((state) => state.getTagColor);
-  const color = getTagColor(annotationTag.tag);
+  const color = getTagColor(tag);
   const className = useMemo(() => {
     return `bg-${color.color}-500`;
   }, [color]);
 
   return (
-    <span className="transition-all group flex flex-row items-center gap-1 rounded-full bg-stone-200/0 dark:bg-stone-800/0 px-2 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 items-center px-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
       <span
         className={`inline-block my-2 w-2 h-2 rounded-full ${className} ring-1 ring-stone-900 opacity-100`}
       ></span>
       <button
         type="button"
-        className="transition-all text-stone-800 dark:text-stone-400 flex-row items-center gap-1 hidden opacity-0 group-hover:flex group-hover:opacity-100 hover:text-red-500"
+        className="hidden flex-row gap-1 items-center opacity-0 transition-all group-hover:flex group-hover:opacity-100 hover:text-red-500 text-stone-800 dark:text-stone-400"
         onClick={onClick}
       >
-        <span className="transition-all whitespace-nowrap text-xs font-thin hidden opacity-0 group-hover:inline-block group-hover:opacity-100">
-          {annotationTag.tag.key}
+        <span className="hidden text-xs font-thin whitespace-nowrap opacity-0 transition-all group-hover:inline-block group-hover:opacity-100">
+          {tag.key}
         </span>
-        <span className="transition-all whitespace-nowrap text-sm font-medium hidden opacity-0 group-hover:inline-block group-hover:opacity-100">
-          {annotationTag.tag.value}
+        <span className="hidden text-sm font-medium whitespace-nowrap opacity-0 transition-all group-hover:inline-block group-hover:opacity-100">
+          {tag.value}
         </span>
-        <CloseIcon className="w-3 h-3 stroke-2 inline-block" />
+        <CloseIcon className="inline-block w-3 h-3 stroke-2" />
       </button>
     </span>
   );
@@ -100,9 +100,9 @@ export function AddTagButton({
         leaveTo="scale-95 opacity-0"
         portal={true}
       >
-        <Popover.Button className="group focus:outline-none rounded focus:ring-4 focus:ring-emerald-500/50 hover:text-emerald-500">
-          +<TagIcon className="w-4 h-4 inline-block ml-1 stroke-2" />
-          <span className="absolute whitespace-nowrap hidden transition-all duration-200 ml-1 opacity-0 group-hover:inline-block group-hover:opacity-100">
+        <Popover.Button className="rounded hover:text-emerald-500 focus:ring-4 focus:outline-none group focus:ring-emerald-500/50">
+          +<TagIcon className="inline-block ml-1 w-4 h-4 stroke-2" />
+          <span className="hidden absolute ml-1 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:inline-block group-hover:opacity-100">
             Add tag
           </span>
         </Popover.Button>
@@ -152,7 +152,10 @@ export function TagGroup({
     >
       <div className="relative right-0">
         {group.tags.map((tagElement) => (
-          <SpectrogramTag key={tagElement.tag.id} {...tagElement} />
+          <SpectrogramTag
+            key={`${tagElement.tag.key}:${tagElement.tag.value}`}
+            {...tagElement}
+          />
         ))}
       </div>
       <AddTagButton
@@ -181,11 +184,11 @@ export default function SpectrogramTags({
   onCreate?: (tag: TagType) => void;
 }) {
   return (
-    <div className="rounded w-full h-full relative overflow-hidden">
+    <div className="overflow-hidden relative w-full h-full rounded">
       {children}
       {tags.map((group) => (
         <TagGroup
-          key={group.annotation.id}
+          key={group.annotation.uuid}
           group={group}
           filter={filter}
           onCreate={onCreate}

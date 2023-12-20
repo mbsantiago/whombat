@@ -8,14 +8,14 @@ import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogr
 import Empty from "@/components/Empty";
 import useRecording from "@/hooks/api/useRecording";
 import useStore from "@/store";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 
 function ScatterPlot({
   annotations,
   onSelect,
 }: {
-  annotations: Annotation[];
-  onSelect: (annotation: Annotation) => void;
+  annotations: SoundEventAnnotation[];
+  onSelect: (annotation: SoundEventAnnotation) => void;
 }) {
   useMount(() => {
     window.dispatchEvent(new Event("resize"));
@@ -27,7 +27,7 @@ function ScatterPlot({
   });
   return (
     <Plot
-      className="h-96 w-full rounded-lg overflow-hidden"
+      className="overflow-hidden w-full h-96 rounded-lg"
       data={data}
       layout={layout}
       onClick={onClick}
@@ -39,10 +39,14 @@ function ScatterPlot({
   );
 }
 
-function Spectrogram({ annotation }: { annotation: Annotation | null }) {
+function Spectrogram({
+  annotation,
+}: {
+  annotation: SoundEventAnnotation | null;
+}) {
   const parameters = useStore((state) => state.spectrogramSettings);
   const recording = useRecording({
-    recording_id: annotation?.sound_event.recording_id ?? -1,
+    recording: annotation?.sound_event.recording,
     enabled: annotation != null,
   });
 
@@ -72,10 +76,10 @@ function Spectrogram({ annotation }: { annotation: Annotation | null }) {
 export default function AnnotationsScatterPlot({
   annotations,
 }: {
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
 }) {
   const [selectedAnnotation, setSelectedAnnotation] =
-    useState<Annotation | null>(null);
+    useState<SoundEventAnnotation | null>(null);
 
   return (
     <div className="grid grid-cols-2 gap-8">

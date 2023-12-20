@@ -4,7 +4,7 @@ import FilterBar from "@/components/FilterBar";
 import Button from "@/components/Button";
 import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
 import { type Filter } from "@/hooks/api/useFilter";
-import { type TaskFilter } from "@/api/tasks";
+import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
 import Toggle from "@/components/Toggle";
 import Tooltip from "@/components/Tooltip";
 import { getButtonClassName } from "@/components/Button";
@@ -19,7 +19,7 @@ export default function AnnotationProgress({
 }: {
   pending: number;
   complete: number;
-  filter: Filter<TaskFilter>;
+  filter: Filter<AnnotationTaskFilter>;
   next: () => void;
   previous: () => void;
 }) {

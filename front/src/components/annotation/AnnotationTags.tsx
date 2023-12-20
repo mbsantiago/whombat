@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 
 import useStore from "@/store";
-import { type Tag as TagType } from "@/api/tags";
+import { type Tag as TagType } from "@/api/schemas";
 import { DeleteIcon } from "@/components/icons";
-import { type AnnotationProject } from "@/api/annotation_projects";
+import { type AnnotationProject } from "@/api/schemas";
 import Tooltip from "@/components/Tooltip";
-import Tag from "@/components/Tag";
+import Tag from "@/components/tags/Tag";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import { H3 } from "@/components/Headings";
-import TagSearchBar from "@/components/TagSearchBar";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 
 export default function AnnotationTags({
   tags,
@@ -44,10 +44,10 @@ export default function AnnotationTags({
           <span className="cursor-help">Current Tags</span>
         </Tooltip>
       </H3>
-      <div className="flex flex-row w-full gap-1">
+      <div className="flex flex-row gap-1 w-full">
         <Tooltip tooltip="Clear tags" placement="top">
           <Button onClick={onClearTags} mode="text" variant="danger">
-            <DeleteIcon className="h-5 w-5" />
+            <DeleteIcon className="w-5 h-5" />
           </Button>
         </Tooltip>
         <div className="grow">

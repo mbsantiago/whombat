@@ -1,5 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { type UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  type UseQueryResult,
+  useQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 import { type GetManyQuery, type Paginated } from "@/api/common";
 
@@ -56,13 +60,13 @@ export type PagedList<T> = {
  */
 export default function usePagedQuery<T, S extends Object>({
   name,
-  func,
+  queryFn,
   pageSize,
   filter,
   enabled = true,
 }: {
   name: string;
-  func: (query: GetManyQuery) => Promise<Paginated<T>>;
+  queryFn: (query: GetManyQuery) => Promise<Paginated<T>>;
   pageSize: number;
   filter: S;
   enabled?: boolean;
@@ -71,15 +75,13 @@ export default function usePagedQuery<T, S extends Object>({
   const [size, setPageSize] = useState(pageSize);
   const queryKey = [name, page, size, filter];
 
-  const query = useQuery<Paginated<T>, Error>(
+  const query = useQuery<Paginated<T>, Error>({
     queryKey,
-    () => func({ limit: size, offset: page * size, ...filter }),
-    {
-      keepPreviousData: true,
-      enabled,
-      refetchOnWindowFocus: false,
-    },
-  );
+    queryFn: () => queryFn({ limit: size, offset: page * size, ...filter }),
+    enabled,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
 
   const numPages = Math.ceil((query.data?.total ?? 0) / size);
 

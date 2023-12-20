@@ -8,8 +8,8 @@ import { type HTMLProps } from "react";
 import { Popover } from "@headlessui/react";
 
 import { type Tag as TagType } from "@/api/schemas";
-import Tag from "@/components/Tag";
-import TagSearchBar from "@/components/TagSearchBar";
+import Tag from "@/components/tags/Tag";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 import { AddIcon } from "@/components/icons";
 import useStore from "@/store";
 import Button from "@/components/Button";
@@ -98,7 +98,7 @@ export default function TableTags({
       {/* list by clicking on it*/}
       {tags.map((tag) => (
         <Tag
-          key={tag.id}
+          key={`${tag.key}:${tag.value}`}
           tag={tag}
           className="hover:bg-red-300 hover:border-red-500 hover:text-red-700"
           {...getTagColor(tag)}

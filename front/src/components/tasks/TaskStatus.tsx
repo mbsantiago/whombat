@@ -5,8 +5,8 @@ import StatusBadge from "@/components/StatusBadge";
 import Loading from "@/app/loading";
 import { CheckIcon, CloseIcon, VerifiedIcon } from "@/components/icons";
 import { H3 } from "@/components/Headings";
-import { type Task } from "@/api/tasks";
-import { type StatusBadge as BadgeType } from "@/api/tasks";
+import { type AnnotationTask } from "@/api/schemas";
+import { type AnnotationStatusBadge as BadgeType } from "@/api/schemas";
 
 export default function TaskStatus({
   task,
@@ -15,7 +15,7 @@ export default function TaskStatus({
   verify,
   removeBadge,
 }: {
-  task?: Task;
+  task?: AnnotationTask;
   done?: () => void;
   review?: () => void;
   verify?: () => void;
@@ -28,16 +28,16 @@ export default function TaskStatus({
         {task == null ? (
           <Loading />
         ) : (
-          task.status_badges.map((badge) => (
+          task.status_badges?.map((badge) => (
             <StatusBadge
-              key={badge.id}
+              key={`${badge.state}-${badge.user?.id}`}
               badge={badge}
               onRemove={() => removeBadge?.(badge)}
             />
           ))
         )}
       </div>
-      <div className="flex flex-row justify-center gap-2">
+      <div className="flex flex-row gap-2 justify-center">
         <Tooltip tooltip="Task Done!" placement="bottom">
           <Button mode="text" variant="primary" onClick={done}>
             <CheckIcon className="w-6 h-6" />

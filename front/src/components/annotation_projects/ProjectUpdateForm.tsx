@@ -1,7 +1,4 @@
-import {
-  type AnnotationProject,
-  type AnnotationProjectUpdate,
-} from "@/api/annotation_projects";
+import { type AnnotationProjectUpdate } from "@/api/annotation_projects";
 import {
   DescriptionData,
   DescriptionTerm,
@@ -9,6 +6,7 @@ import {
 } from "@/components/Description";
 import { H3 } from "@/components/Headings";
 import { Input, TextArea } from "@/components/inputs";
+import { type AnnotationProject } from "@/api/schemas";
 
 export default function ProjectUpdateForm({
   project,
@@ -20,13 +18,11 @@ export default function ProjectUpdateForm({
   return (
     <>
       <div className="px-4 sm:px-0">
-        <H3>
-          Details
-        </H3>
+        <H3>Details</H3>
       </div>
       <div className="mt-6 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Name</DescriptionTerm>
             <EditableDescriptionData
               value={project.name}
@@ -37,7 +33,7 @@ export default function ProjectUpdateForm({
               {project.name}
             </EditableDescriptionData>
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Description</DescriptionTerm>
             <EditableDescriptionData
               value={project.description}
@@ -49,7 +45,7 @@ export default function ProjectUpdateForm({
               {project.description}
             </EditableDescriptionData>
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Annotation Instructions</DescriptionTerm>
             <EditableDescriptionData
               value={project.annotation_instructions}
@@ -63,7 +59,7 @@ export default function ProjectUpdateForm({
               {project.annotation_instructions}
             </EditableDescriptionData>
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Created On</DescriptionTerm>
             <DescriptionData>
               {project.created_on.toLocaleString()}

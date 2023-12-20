@@ -71,7 +71,7 @@ export default function CreateAnotationProject() {
     useState<AnnotationProject | null>(null);
 
   const delete_ = useMutation({
-    mutationFn: api.annotation_projects.delete,
+    mutationFn: api.annotationProjects.delete,
   });
 
   return (

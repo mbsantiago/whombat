@@ -1,3 +1,4 @@
+import { type KeyboardEvent } from "react";
 import { flexRender } from "@tanstack/react-table";
 import { useTableNav } from "@table-nav/react";
 import { type Table } from "@tanstack/react-table";
@@ -12,25 +13,20 @@ import { type Table } from "@tanstack/react-table";
  */
 export default function Table<S>({
   table,
-  onCopy,
-  onPaste,
-  onDelete,
+  onCellKeyDown,
 }: {
   table: Table<S>;
-  onCopy?: (column_id: string, value: string) => void;
-  onDelete?: ({
-    row_id,
-    column_id,
+  onCellKeyDown?: ({
+    data,
+    row,
+    column,
+    event,
   }: {
-    row_id: number;
-    column_id: string;
-  }) => void;
-  onPaste?: ({
-    row_id,
-    column_id,
-  }: {
-    row_id: number;
-    column_id: string;
+    data: S;
+    row: number;
+    column: string;
+    value: any;
+    event: KeyboardEvent;
   }) => void;
 }) {
   const {
@@ -39,7 +35,7 @@ export default function Table<S>({
 
   return (
     <table
-      className="min-w-full table-fixed border-collapse rounded-lg border border-stone-300 text-stone-700 dark:border-stone-700 dark:text-stone-300"
+      className="min-w-full rounded-lg border border-collapse table-fixed border-stone-300 text-stone-700 dark:border-stone-700 dark:text-stone-300"
       onKeyUp={(event) => {
         if (event.target instanceof HTMLInputElement) return;
         onKeyUp();
@@ -62,7 +58,7 @@ export default function Table<S>({
           >
             {headerGroup.headers.map((header) => (
               <th
-                className="relative whitespace-nowrap overflow-x-scroll border border-stone-400 px-2 py-1 dark:border-stone-500"
+                className="overflow-x-scroll relative py-1 px-2 whitespace-nowrap border border-stone-400 dark:border-stone-500"
                 key={header.id}
                 colSpan={header.colSpan}
                 style={{
@@ -87,44 +83,28 @@ export default function Table<S>({
           </tr>
         ))}
       </thead>
-      <tbody className="text-stone-800 dark:text-stone-300 text-sm">
+      <tbody className="text-sm text-stone-800 dark:text-stone-300">
         {table.getRowModel().rows.map((row) => {
           return (
-            <tr key={row.id} className="hover:dark:bg-stone-800 hover:bg-stone-200">
+            <tr
+              key={row.id}
+              className="hover:dark:bg-stone-800 hover:bg-stone-200"
+            >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
                     role="gridcell"
-                    className="border border-stone-300 outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent dark:border-stone-600"
+                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {
-                      // Copy value on ctrl+c
-                      if (event.key === "c" && event.ctrlKey) {
-                        const value = row.getValue(cell.column.id) as string;
-                        onCopy?.(cell.column.id, value);
-                        // Copy to clipboard
-                        navigator.clipboard.writeText(value);
-                      }
-
-                      // Paste value on ctrl+v
-                      if (
-                        event.key === "v" &&
-                        event.ctrlKey &&
-                        (cell.column.columnDef.meta?.editable ?? false)
-                      ) {
-                        onPaste?.({
-                          row_id: row.index,
-                          column_id: cell.column.id,
-                        });
-                      }
-
-                      if (event.key === "Delete" || event.key === "Backspace") {
-                        onDelete?.({
-                          row_id: row.index,
-                          column_id: cell.column.id,
-                        });
-                      }
+                      onCellKeyDown?.({
+                        data: row.original,
+                        row: row.index,
+                        column: cell.column.id,
+                        value: row.getValue(cell.column.id),
+                        event,
+                      });
                     }}
                     style={{
                       width: cell.column.getSize(),

@@ -1,6 +1,6 @@
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/api/usePagedQuery";
-import useFilter from "@/hooks/api/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useFilter from "@/hooks/utils/useFilter";
 import { type SoundEventAnnotationFilter } from "@/api/sound_event_annotations";
 
 const _empty: SoundEventAnnotationFilter = {};
@@ -22,7 +22,7 @@ export default function useSoundEventAnnotations({
 
   const { items, total, pagination, query } = usePagedQuery({
     name: "sound_event_annotations",
-    func: api.soundEventAnnotations.getMany,
+    queryFn: api.soundEventAnnotations.getMany,
     pageSize: pageSize,
     filter: filter.filter,
   });

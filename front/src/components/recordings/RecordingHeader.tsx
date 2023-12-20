@@ -7,7 +7,7 @@ import {
   TimeIcon,
 } from "@/components/icons";
 import { H3 } from "@/components/Headings";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import Tooltip from "@/components/Tooltip";
 
 /** Get the basename of a path
@@ -23,7 +23,7 @@ function removeExtension(path: string) {
 
 function Section({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-row iterms-center tracking-tighter">
+    <div className="flex flex-row tracking-tighter iterms-center">
       {children}
     </div>
   );
@@ -33,18 +33,18 @@ function RecordingLocation({
   latitude,
   longitude,
 }: {
-  latitude: number | null;
-  longitude: number | null;
+  latitude?: number;
+  longitude?: number;
 }) {
   const hasLocation = latitude != null && longitude != null;
 
   return (
     <Section>
-      <LocationIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+      <LocationIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
       {hasLocation ? (
         `${latitude}, ${longitude}`
       ) : (
-        <span className="dark:text-stone-600 text-stone-400 text-sm">
+        <span className="text-sm text-stone-400 dark:text-stone-600">
           No location
         </span>
       )}
@@ -55,11 +55,11 @@ function RecordingLocation({
 function RecordingTime({ time }: { time: string | null }) {
   return (
     <Section>
-      <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+      <TimeIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
       {time != null ? (
         time
       ) : (
-        <span className="dark:text-stone-600 text-stone-400 text-sm">
+        <span className="text-sm text-stone-400 dark:text-stone-600">
           No time
         </span>
       )}
@@ -67,14 +67,14 @@ function RecordingTime({ time }: { time: string | null }) {
   );
 }
 
-function RecordingDate({ date }: { date: Date | null }) {
+function RecordingDate({ date }: { date?: Date }) {
   return (
     <Section>
-      <DateIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+      <DateIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
       {date != null ? (
         date.toLocaleDateString()
       ) : (
-        <span className="dark:text-stone-600 text-stone-400 text-sm">
+        <span className="text-sm text-stone-400 dark:text-stone-600">
           No date
         </span>
       )}
@@ -91,14 +91,14 @@ export default function RecordingHeader({
   const baseName = removeExtension(getBaseName(path) ?? "");
 
   return (
-    <div className="flex w-full flex-row items-center gap-x-6 overflow-x-scroll">
+    <div className="flex overflow-x-scroll flex-row gap-x-6 items-center w-full">
       <div className="inline-flex items-center">
-        <RecordingIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+        <RecordingIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <H3 className="max-w-xl whitespace-nowrap">
           <Tooltip
             tooltip={
-              <div className="text-sm dark:bg-stone-700 dark:border-stone-800 w-96 whitespace-normal tracking-tighter break-all font-thin">
-                <span className="text-blue-500 font-normal">Full path:</span>{" "}
+              <div className="w-96 text-sm font-thin tracking-tighter whitespace-normal break-all dark:bg-stone-700 dark:border-stone-800">
+                <span className="font-normal text-blue-500">Full path:</span>{" "}
                 {path}
               </div>
             }
@@ -106,14 +106,14 @@ export default function RecordingHeader({
           >
             <button
               type="button"
-              className="text-ellipsis overflow-hidden w-full"
+              className="overflow-hidden w-full text-ellipsis"
               onClick={() => {
                 navigator.clipboard.writeText(path);
                 toast.success("Copied full path to clipboard");
               }}
             >
               {baseName}
-              <span className="text-stone-500 text-sm">.WAV</span>
+              <span className="text-sm text-stone-500">.WAV</span>
             </button>
           </Tooltip>
         </H3>

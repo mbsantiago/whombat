@@ -3,10 +3,8 @@ import { useDebounce } from "react-use";
 
 import SearchMenu from "@/components/SearchMenu";
 import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
-import {
-  type AnnotationProjectFilter,
-  type AnnotationProject,
-} from "@/api/annotation_projects";
+import { type AnnotationProjectFilter } from "@/api/annotation_projects";
+import { type AnnotationProject } from "@/api/schemas";
 
 export default function SearchAnnotationProjects({
   filter,
@@ -45,7 +43,7 @@ export default function SearchAnnotationProjects({
       static={false}
       displayValue={(project) => project.name}
       renderOption={(option) => option.name}
-      getOptionKey={(option) => option.id}
+      getOptionKey={(option) => option.uuid}
     />
   );
 }

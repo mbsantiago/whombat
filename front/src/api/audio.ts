@@ -65,12 +65,31 @@ export function registerAudioAPI({
   function getStreamUrl({
     recording,
     speed = 1,
+    startTime,
+    endTime,
   }: {
     recording: Recording;
     speed?: number;
+    startTime?: number;
+    endTime?: number;
   }) {
     // Get url
-    return `${baseUrl}${endpoints.stream}?recording_uuid=${recording.uuid}&speed=${speed}`;
+    const params: Record<string, string> = {
+      recording_uuid: recording.uuid,
+    };
+
+    if (speed != null) {
+      params["speed"] = speed.toString();
+    }
+    if (startTime != null) {
+      params["start_time"] = startTime.toString();
+    }
+    if (endTime != null) {
+      params["end_time"] = endTime.toString();
+    }
+
+    const urlparams = new URLSearchParams(params);
+    return `${baseUrl}${endpoints.stream}?${urlparams}`;
   }
 
   function getDownloadUrl({

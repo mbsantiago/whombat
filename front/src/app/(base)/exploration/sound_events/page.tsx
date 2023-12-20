@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import useAnnotations from "@/hooks/api/useAnnotations";
+import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
 import Tabs from "@/components/Tabs";
 import { ListIcon, GalleryIcon, PlotIcon } from "@/components/icons";
 import AnnotationGallery from "@/components/annotations/AnnotationsGallery";
@@ -16,7 +16,7 @@ const AnnotationsScatterPlot = dynamic(
 export default function Page() {
   const [view, setView] = useState("list");
 
-  const annotations = useAnnotations({
+  const annotations = useSoundEventAnnotations({
     pageSize: 1000,
   });
 

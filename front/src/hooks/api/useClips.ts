@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { type ClipFilter } from "@/api/clips";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/api/usePagedQuery";
-import useFilter from "@/hooks/api/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useFilter from "@/hooks/util/useFilter";
 
 const _empty: ClipFilter = {};
 const _fixed: (keyof ClipFilter)[] = [];
@@ -23,7 +23,7 @@ export default function useClips({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "clips",
-    func: api.clips.getMany,
+    queryFn: api.clips.getMany,
     pageSize: pageSize,
     filter: filter.filter,
     enabled,

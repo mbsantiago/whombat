@@ -2,14 +2,14 @@ import { useState } from "react";
 
 import useStore from "@/store";
 import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogram";
-import { type Annotation } from "@/api/annotations";
+import { type SoundEventAnnotation } from "@/api/schemas";
 
 // TODO: Finish this
 
 export default function AnnotationsGallery({
   annotations,
 }: {
-  annotations: Annotation[];
+  annotations: SoundEventAnnotation[];
 }) {
   const parameters = useStore((state) => state.spectrogramSettings);
   const [showMax, setShowMax] = useState(20);

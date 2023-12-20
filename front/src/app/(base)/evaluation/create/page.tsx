@@ -9,7 +9,7 @@ import api from "@/app/api";
 
 export default function Page() {
   const router = useRouter();
-  const { mutateAsync: create } = useMutation(api.evaluation_sets.create);
+  const { mutateAsync: create } = useMutation(api.evaluationSets.create);
   const onCreate = useMemo(() => {
     return async (evaluationSet: EvaluationSetCreateType) => {
       const created = await create(evaluationSet);

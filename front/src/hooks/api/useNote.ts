@@ -1,47 +1,41 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useObject from "@/hooks/utils/useObject";
 
-import { type NoteUpdate } from "@/api/notes";
 import { type Note } from "@/api/schemas";
 import api from "@/app/api";
 
 export default function useNote({
+  uuid,
   note,
   onUpdate,
   onDelete,
   enabled = true,
 }: {
-  note: Note;
+  uuid: string;
+  note?: Note;
   onUpdate?: (note: Note) => void;
   onDelete?: (note: Note) => void;
   enabled?: boolean;
 }) {
-  const client = useQueryClient();
+  if (note !== undefined && note.uuid !== uuid) {
+    throw new Error("Note uuid does not match");
+  }
 
-  const query = useQuery(
-    ["note", note.uuid],
-    async () => await api.notes.get(note.uuid),
-    {
-      initialData: note,
-      staleTime: 1000 * 60 * 5,
-      enabled,
-    },
-  );
+  const { query, useMutation } = useObject({
+    uuid,
+    initial: note,
+    name: "note",
+    enabled,
+    getFn: api.notes.get,
+  });
 
-  const update = useMutation(
-    async (data: NoteUpdate) => await api.notes.update(note, data),
-    {
-      onSuccess: (note) => {
-        client.setQueryData(["note", note.uuid], note);
-        onUpdate?.(note);
-      },
-    },
-  );
+  const update = useMutation({
+    mutationFn: api.notes.update,
+    onSuccess: onUpdate,
+  });
 
-  const delete_ = useMutation(async () => await api.notes.delete(note), {
-    onSuccess: () => {
-      query.remove();
-      onDelete?.(note);
-    },
+  const delete_ = useMutation({
+    mutationFn: api.notes.delete,
+    onSuccess: onDelete,
   });
 
   return {

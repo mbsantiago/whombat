@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 import Card from "@/components/Card";
 import { MapIcon } from "@/components/icons";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it
@@ -30,8 +30,8 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
           <Map
             className="h-64"
             center={{
-              lat: recording.latitude,
-              lng: recording.longitude,
+              lat: recording.latitude ?? 0,
+              lng: recording.longitude ?? 0,
             }}
             scrollWheelZoom={true}
             zoom={14}
@@ -39,8 +39,8 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
             <Marker
               draggable={false}
               center={{
-                lat: recording.latitude,
-                lng: recording.longitude,
+                lat: recording.latitude ?? 0,
+                lng: recording.longitude ?? 0,
               }}
             />
           </Map>

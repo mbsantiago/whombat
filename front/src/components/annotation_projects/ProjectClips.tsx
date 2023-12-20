@@ -5,9 +5,9 @@ import useDatasets from "@/hooks/api/useDatasets";
 import useRecordings from "@/hooks/api/useRecordings";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import SearchMenu from "@/components/SearchMenu";
-import { type AnnotationProject } from "@/api/annotation_projects";
-import { type Recording } from "@/api/recordings";
-import { type Dataset } from "@/api/datasets";
+import { type AnnotationProject } from "@/api/schemas";
+import { type Recording } from "@/api/schemas";
+import { type Dataset } from "@/api/schemas";
 import { type ClipCreate } from "@/api/clips";
 import { Input, InputGroup } from "@/components/inputs";
 import { FilterIcon } from "@/components/icons";
@@ -406,7 +406,7 @@ export default function ProjectClips({
 
   const onAdd = () => {
     toast.promise(
-      project.addClips.mutateAsync(selectedClips, {
+      project.addAnnotationTasks.mutateAsync(selectedClips, {
         onSuccess: () => {
           setSelectedClips([]);
           setSelectedRecordings([]);

@@ -27,6 +27,7 @@ export const TagFilterSchema = z.object({
   sound_event_prediction__eq: z.string().uuid().optional(),
   clip_prediction__eq: z.string().uuid().optional(),
   evaluation_set__eq: z.string().uuid().optional(),
+  dataset__eq: z.string().uuid().optional(),
 });
 
 export type TagFilter = z.input<typeof TagFilterSchema>;

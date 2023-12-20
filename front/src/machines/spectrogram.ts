@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createMachine, spawn } from "xstate";
+import { ActorRefFrom, assign, createMachine } from "xstate";
 
 import {
   adjustWindowToBounds,
@@ -113,13 +113,13 @@ export const spectrogramStates = {
   },
   on: {
     // Actions that change state and can be performed in any state
-    DISABLE: "idle",
-    PAN: "panning",
-    ZOOM: "zooming",
-    PLAY: "playing",
+    DISABLE: ".idle",
+    PAN: ".panning",
+    ZOOM: ".zooming",
+    PLAY: ".playing",
     RESET: {
       actions: ["reset"],
-      target: "panning",
+      target: ".panning",
     },
     // Actions that can be performed in any state
     UPDATE: {
@@ -216,7 +216,10 @@ export const spectrogramActions = {
         type: "SET_START_TIME",
         time: event.bounds.time.min,
       });
-      context.audio?.send({ type: "SET_END_TIME", time: event.bounds.time.max });
+      context.audio?.send({
+        type: "SET_END_TIME",
+        time: event.bounds.time.max,
+      });
       return event.bounds;
     },
     initial: (_, event: UpdateEvent) => event.initial,
@@ -235,7 +238,7 @@ export const spectrogramActions = {
   }),
   initAudio: assign({
     // @ts-ignore
-    audio: (context: SpectrogramContext) => {
+    audio: ({ context, spawn }: { context: SpectrogramContext }) => {
       if (context.audio != null) {
         return context.audio;
       }
@@ -259,8 +262,8 @@ export const spectrogramActions = {
 
 export const spectrogramMachine = createMachine(
   {
-    predictableActionArguments: true,
-    schema: {
+    context: () => ({}),
+    types: {
       context: {} as SpectrogramContext,
       events: {} as SpectrogramEvent,
     },

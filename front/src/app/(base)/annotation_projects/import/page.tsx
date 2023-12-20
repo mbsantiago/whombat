@@ -23,7 +23,7 @@ export default function Page() {
   });
 
   const { mutateAsync: importAnnotationProject } = useMutation({
-    mutationFn: api.annotation_projects.import,
+    mutationFn: api.annotationProjects.import,
     onError: (error: AxiosError) => {
       if (error.response?.status === 422) {
         // @ts-ignore

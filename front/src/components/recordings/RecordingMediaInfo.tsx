@@ -1,5 +1,5 @@
 import Card from "@/components/Card";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import {
   ChannelsIcon,
   SampleRateIcon,

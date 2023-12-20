@@ -1,9 +1,9 @@
-import { type Tag as TagType } from "@/api/tags";
-import { type TaskTag } from "@/api/tasks";
+import { type Tag as TagType } from "@/api/schemas";
+import { type AnnotationTag } from "@/api/schemas";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import useStore from "@/store";
-import Tag from "@/components/Tag";
+import Tag from "@/components/tags/Tag";
 import Button from "@/components/Button";
 import { AddTagButton } from "@/components/SpectrogramTags";
 import { DeleteIcon } from "@/components/icons";
@@ -14,8 +14,8 @@ export default function TaskTags({
   onAddTag,
   onClearTags,
 }: {
-  tags: TaskTag[];
-  onRemoveTag?: (tag: TaskTag) => void;
+  tags: AnnotationTag[];
+  onRemoveTag?: (tag: AnnotationTag) => void;
   onAddTag?: (tag: TagType) => void;
   onClearTags?: () => void;
 }) {
@@ -24,13 +24,13 @@ export default function TaskTags({
   return (
     <Card>
       <H3 className="text-center">Clip Tags</H3>
-      <div className="flex flex-row flex-wrap items-center gap-2 text-stone-500">
+      <div className="flex flex-row flex-wrap gap-2 items-center text-stone-500">
         {tags.length === 0 && (
           <span className="inline-block text-sm">No tags...</span>
         )}
         {tags.map((taskTag) => (
           <Tag
-            key={taskTag.id}
+            key={`${taskTag.tag.key}-${taskTag.tag.value}-${taskTag.created_by?.id}`}
             tag={taskTag.tag}
             {...getTagColor(taskTag.tag)}
             onClose={() => onRemoveTag?.(taskTag)}
@@ -45,8 +45,13 @@ export default function TaskTags({
           />
         </div>
         {tags.length > 0 && (
-          <Button mode="text" variant="danger" padding="p-1" onClick={onClearTags}>
-            <DeleteIcon className="h-5 w-5" />
+          <Button
+            mode="text"
+            variant="danger"
+            padding="p-1"
+            onClick={onClearTags}
+          >
+            <DeleteIcon className="w-5 h-5" />
           </Button>
         )}
       </div>

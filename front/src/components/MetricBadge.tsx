@@ -23,7 +23,7 @@ export default function MetricBadge({
       <div className="flex-grow-0">
         <div className="inline-flex items-baseline gap-2">
           {isLoading ? (
-            <Spinner className="h-5 w-5" variant="info" />
+            <Spinner className="h-5 w-5" variant="primary" />
           ) : (
             <span className="text-xl font-bold">{value.toLocaleString()}</span>
           )}

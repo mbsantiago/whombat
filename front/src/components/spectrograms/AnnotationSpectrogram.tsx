@@ -12,14 +12,14 @@ import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
 import Player from "@/components/Player";
 import SpectrogramSettings from "@/components/SpectrogramSettings";
 import SpectrogramControls from "@/components/SpectrogramControls";
-import { type Recording } from "@/api/recordings";
-import { type Annotation } from "@/api/annotations";
+import { type Recording } from "@/api/schemas";
+import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 
 const SPEC_WIDTH = 512;
 
 function getBounds(
-  annotation: Annotation,
+  annotation: SoundEventAnnotation,
   samplerate: number,
   duration: number,
   hop_size: number,
@@ -78,7 +78,7 @@ export default function AnnotationSpectrogram({
   className,
 }: {
   recording: Recording;
-  annotation: Annotation;
+  annotation: SoundEventAnnotation;
   parameters: SpectrogramParameters;
   controls?: boolean;
   player?: boolean;

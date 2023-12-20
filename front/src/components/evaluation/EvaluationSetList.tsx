@@ -11,12 +11,12 @@ import { AddIcon, TasksIcon, WarningIcon } from "@/components/icons";
 function NoEvaluationSets() {
   return (
     <Empty>
-      <WarningIcon className="h-8 w-8 text-stone-500" />
+      <WarningIcon className="w-8 h-8 text-stone-500" />
       <p>No evaluation sets found.</p>
       <p>
         To create an evaluation set, click on the
         <span className="text-emerald-500">
-          <AddIcon className="h-4 w-4 inline-block ml-2 mr-1" />
+          <AddIcon className="inline-block mr-1 ml-2 w-4 h-4" />
           Create{" "}
         </span>{" "}
         button above.
@@ -26,10 +26,10 @@ function NoEvaluationSets() {
 }
 
 export default function EvaluationSets() {
-  const { items, pagination, query, filter } = useEvaluationSets();
+  const { items, pagination, filter, isLoading } = useEvaluationSets();
 
   return (
-    <div className="flex w-full flex-col space-y-2 p-8">
+    <div className="flex flex-col p-8 space-y-2 w-full">
       <div className="flex flex-row space-x-4">
         <div className="flex-grow">
           <Search
@@ -43,18 +43,18 @@ export default function EvaluationSets() {
         </div>
         <div className="h-full">
           <Link mode="text" href="/evaluation/create/">
-            <AddIcon className="inline-block h-4 w-4 align-middle" /> Create
+            <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
           </Link>
         </div>
       </div>
-      {query.isLoading ? (
+      {isLoading ? (
         <Loading />
       ) : (
         <>
           {items.length === 0 && <NoEvaluationSets />}
           <StackedList
             items={items.map((item) => (
-              <EvaluationSet key={item.id} {...item} />
+              <EvaluationSet key={item.uuid} evaluationSet={item} />
             ))}
           />
           {items.length > 0 && <Pagination {...pagination} />}

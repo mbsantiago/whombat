@@ -12,7 +12,7 @@ import Player from "@/components/Player";
 import ScrollBar from "@/components/ScrollBar";
 import SpectrogramSettings from "@/components/SpectrogramSettings";
 import SpectrogramControls from "@/components/SpectrogramControls";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export default function RecordingSpectrogram({

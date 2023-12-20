@@ -1,81 +1,83 @@
 import { useMemo } from "react";
-import Link from "next/link";
 
 import Card from "@/components/Card";
 import Note from "@/components/Note";
 import { H3 } from "@/components/Headings";
-import { type RecordingNote } from "@/api/recordings";
-import { CheckIcon, GoToIcon, NotesIcon } from "@/components/icons";
+import { type Note as NoteType, type Dataset } from "@/api/schemas";
+import { CheckIcon, NotesIcon } from "@/components/icons";
 import Loading from "@/app/loading";
+import useNotes from "@/hooks/api/useNotes";
 
+/**
+ * Component to display a message when there are no issues in the dataset.
+ *
+ * @returns JSX element displaying a success message.
+ */
 function NoIssues() {
   return (
     <div>
-      <CheckIcon className="h-6 w-6 inline-block text-emerald-500 mr-2" />
+      <CheckIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
       There are no issues
     </div>
   );
 }
 
+/**
+ * Component to display a list of the latest issues in the dataset.
+ *
+ * @param notes - An array of note instances representing issues.
+ * @param maxIssues - The maximum number of issues to display (default is 5).
+ * @returns JSX element displaying a list of issues.
+ */
 function LatestIssues({
   notes,
   maxIssues = 5,
 }: {
-  notes: RecordingNote[];
+  notes: NoteType[];
   maxIssues?: number;
 }) {
   const issues = useMemo(
-    () =>
-      notes
-        .filter((recordingNote) => recordingNote.note.is_issue)
-        .slice(0, maxIssues),
+    () => notes.filter((note) => note.is_issue).slice(0, maxIssues),
     [notes, maxIssues],
   );
   return (
-    <ul className="flex flex-col p-2 pl-4 border rounded-md dark:border-stone-800 divide-y divide-dashed divide-stone-300 dark:divide-stone-800 gap-2">
+    <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
       {issues.map((issue) => (
-        <Note
-          key={issue.note.id}
-          note={issue.note}
-          actions={
-            <Link
-              className="group text-sm text-stone-500 hover:underline hover:decoration-2 decoration-emerald-500/0 hover:decoration-emerald-500/100 hover:underline-offset-2 transition"
-              href={{
-                pathname: "/recordings/",
-                query: { recording_id: issue.recording_id },
-              }}
-            >
-              <GoToIcon className="h-4 w-4 ml-1 opacity-0 group-hover:opacity-100 inline-block transition" />
-              View
-            </Link>
-          }
-        />
+        <Note key={issue.uuid} note={issue} />
       ))}
     </ul>
   );
 }
 
-export default function DatasetNotesSumary({
-  notes,
-  isLoading = false,
-}: {
-  notes: RecordingNote[];
-  isLoading?: boolean;
-}) {
+/**
+ * Component to display a summary of notes and issues for a dataset.
+ *
+ * @param dataset - The dataset for which to display the notes summary.
+ * @returns JSX element displaying the notes and issues summary.
+ */
+export default function DatasetNotesSumary({ dataset }: { dataset: Dataset }) {
+  const filter = useMemo(
+    () => ({
+      dataset__eq: dataset.uuid,
+    }),
+    [dataset.uuid],
+  );
+  const notes = useNotes({ pageSize: -1, filter });
+
   return (
     <Card>
       <H3>
-        <NotesIcon className="h-6 w-6 inline-block text-emerald-500 mr-2" />
+        <NotesIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
         Notes and Issues
       </H3>
-      {isLoading ? (
+      {notes.isLoading ? (
         <Loading />
-      ) : notes.length === 0 ? (
+      ) : notes.total === 0 ? (
         <NoIssues />
       ) : (
         <>
           Latest Issues
-          <LatestIssues notes={notes} />
+          <LatestIssues notes={notes.items} />
         </>
       )}
     </Card>

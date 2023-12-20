@@ -1,324 +1,250 @@
-import { assign, createMachine } from "xstate";
+import { assign, setup, fromCallback, sendTo } from "xstate";
 
-import { type Recording } from "@/api/schemas";
-
-export type GetAudioUrlFn = ({
-  recording,
-  speed,
-}: {
-  recording: Recording;
-  speed?: number;
-}) => string;
+export type AudioInput = {
+  url: string;
+  loop?: boolean;
+  currentTime?: number;
+  volume?: number;
+};
 
 export type AudioContext = {
-  audio: HTMLAudioElement;
-  recording: Recording;
-  startTime: number;
-  endTime: number;
+  url: string;
   currentTime: number;
   muted: boolean;
   volume: number;
   loop: boolean;
-  speed: number;
-  getAudioURL: GetAudioUrlFn;
 };
 
-export type SeekEvent = { type: "SEEK"; time: number };
-export type SetVolumeEvent = { type: "SET_VOLUME"; volume: number };
-export type SetSpeedEvent = { type: "SET_SPEED"; speed: number };
-export type ChangeRecordingEvent = {
-  type: "CHANGE_RECORDING";
-  recording: Recording;
+export type SeekEvent = { type: "audio.seek"; time: number };
+export type SetVolumeEvent = { type: "audio.set_volume"; volume: number };
+export type ChangeURLEvent = {
+  type: "audio.change_url";
+  url: string;
+  time?: number;
+  play?: boolean;
 };
-export type SetTimeEvent = { type: "SET_TIME"; time: number };
-export type SetStartTimeEvent = { type: "SET_START_TIME"; time: number };
-export type SetEndTimeEvent = { type: "SET_END_TIME"; time: number };
-
+export type SetTimeEvent = { type: "audio.set_time"; currentTime: number };
 export type AudioEvent =
-  | { type: "PLAY" }
-  | { type: "PAUSE" }
-  | { type: "STOP" }
-  | { type: "MUTE" }
-  | { type: "UNMUTE" }
-  | { type: "TOGGLE_LOOP" }
+  | { type: "audio.ready" }
+  | { type: "audio.play" }
+  | { type: "audio.pause" }
+  | { type: "audio.stop" }
+  | { type: "audio.mute" }
+  | { type: "audio.unmute" }
+  | { type: "audio.toggle_loop" }
   | SeekEvent
   | SetVolumeEvent
-  | SetSpeedEvent
-  | ChangeRecordingEvent
-  | SetTimeEvent
-  | SetStartTimeEvent
-  | SetEndTimeEvent;
+  | ChangeURLEvent
+  | SetTimeEvent;
 
-export const audioStates = {
-  initial: "setup",
-  states: {
-    setup: {
-      invoke: {
-        src: "setupAudio",
+export const audioMachine = setup({
+  types: {} as {
+    context: AudioContext;
+    events: AudioEvent;
+    input: AudioInput;
+  },
+  actors: {
+    audio: fromCallback<AudioEvent, AudioInput>(
+      ({ sendBack, receive, input }) => {
+        const audio = new Audio();
+        audio.src = input.url;
+        audio.loop = input.loop || false;
+        audio.currentTime = input.currentTime || 0;
+
+        const onLoadStart = () => sendBack({ type: "audio.ready" });
+        audio.addEventListener("canplay", onLoadStart);
+
+        receive((event: AudioEvent) => {
+          switch (event.type) {
+            case "audio.play":
+              audio.play();
+              break;
+            case "audio.pause":
+              audio.pause();
+              break;
+            case "audio.stop":
+              audio.pause();
+              audio.currentTime = 0;
+              break;
+            case "audio.seek":
+              audio.currentTime = event.time;
+              audio.play();
+              break;
+            case "audio.mute":
+              audio.muted = true;
+              break;
+            case "audio.unmute":
+              audio.muted = false;
+              break;
+            case "audio.set_volume":
+              audio.volume = event.volume;
+              break;
+            case "audio.toggle_loop":
+              audio.loop = !audio.loop;
+              break;
+            case "audio.change_url":
+              audio.src = event.url;
+              if (event.time) {
+                audio.currentTime = event.time;
+              }
+              if (event.play) {
+                audio.play();
+              }
+              break;
+          }
+        });
+
+        // Update the current time of the audio element
+        let request: number;
+        const updateTime = () => {
+          sendBack({ type: "audio.set_time", currentTime: audio.currentTime });
+          if (!audio.paused) {
+            request = requestAnimationFrame(updateTime);
+          }
+        };
+
+        const onPlay = () => {
+          request = requestAnimationFrame(updateTime);
+          sendBack({ type: "audio.play" });
+        };
+        audio.addEventListener("play", onPlay);
+
+        const onPause = () => {
+          cancelAnimationFrame(request);
+          sendBack({ type: "audio.pause" });
+        };
+        audio.addEventListener("pause", onPause);
+
+        return () => {
+          audio.removeEventListener("canplay", onLoadStart);
+          audio.removeEventListener("play", onPlay);
+          audio.removeEventListener("pause", onPause);
+          cancelAnimationFrame(request);
+        };
       },
-      always: {
-        target: "stopped",
-      },
-    },
-    stopped: {
-      on: {
-        PLAY: {
-          target: "playing",
-          actions: ["play"],
-        },
-      },
-    },
-    playing: {
-      invoke: {
-        src: "playing",
-      },
-      on: {
-        PAUSE: {
-          target: "paused",
-          actions: ["pause"],
-        },
-        STOP: {
-          target: "stopped",
-          actions: ["stop"],
-        },
-        // NOTE: When these actions are called in the playing state, they
-        // should force an external transition to the playing state so
-        // that the playing service is restarted with the correct
-        // context.
-        TOGGLE_LOOP: {
-          actions: ["toggleLoop"],
-          target: "playing",
-        },
-        CHANGE_RECORDING: {
-          actions: ["changeRecording"],
-          target: "playing",
-        },
-        SET_START_TIME: {
-          actions: ["setStartTime"],
-          target: "playing",
-        },
-        SET_END_TIME: {
-          actions: ["setEndTime"],
-          target: "playing",
-        },
-      },
-    },
-    paused: {
-      on: {
-        PLAY: {
-          target: "playing",
-          actions: ["play"],
-        },
-      },
-    },
+    ),
   },
-  on: {
-    SEEK: {
-      actions: ["seek"],
-    },
-    MUTE: {
-      actions: ["mute"],
-    },
-    UNMUTE: {
-      actions: ["unmute"],
-    },
-    SET_VOLUME: {
-      actions: ["setVolume"],
-    },
-    TOGGLE_LOOP: {
-      actions: ["toggleLoop"],
-    },
-    SET_SPEED: {
-      target: "setup",
-      actions: ["setSpeed", "stop"],
-    },
-    CHANGE_RECORDING: {
-      actions: ["changeRecording"],
-    },
-    SET_START_TIME: {
-      actions: ["setStartTime"],
-    },
-    SET_END_TIME: {
-      actions: ["setEndTime"],
-    },
-    SET_TIME: {
-      actions: ["setTime"],
-    },
-  },
-};
-
-export const audioActions = {
-  play: (context: AudioContext) => {
-    context.audio.play();
-  },
-  pause: (context: AudioContext) => {
-    context.audio.pause();
-  },
-  stop: (context: AudioContext) => {
-    context.audio.pause();
-    context.currentTime = context.startTime;
-    context.audio.currentTime = context.startTime / context.speed;
-  },
-  seek: assign({
-    currentTime: (context: AudioContext, event: SeekEvent) => {
-      context.audio.currentTime = event.time / context.speed;
-      return event.time;
-    },
-  }),
-  mute: assign({
-    muted: (context: AudioContext) => {
-      context.audio.muted = true;
-      return true;
-    },
-  }),
-  unmute: assign({
-    muted: (context: AudioContext) => {
-      context.audio.muted = false;
-      return false;
-    },
-  }),
-  setVolume: assign({
-    volume: (context: AudioContext, event: SetVolumeEvent) => {
-      context.audio.volume = event.volume;
-      return event.volume;
-    },
-  }),
-  toggleLoop: assign({
-    loop: (context: AudioContext) => {
-      context.audio.loop = !context.audio.loop;
-      return context.audio.loop;
-    },
-  }),
-  setSpeed: assign({
-    speed: (context: AudioContext, event: SetSpeedEvent) => {
-      const url = context.getAudioURL({
-        recording: context.recording,
-        speed: event.speed,
-      });
-      context.audio.src = url;
-      return event.speed;
-    },
-  }),
-  changeRecording: assign({
-    recording: (context: AudioContext, event: ChangeRecordingEvent) => {
-      const url = context.getAudioURL({
-        recording: event.recording,
-        speed: context.speed,
-      });
-      context.audio.src = url;
-      return event.recording;
-    },
-  }),
-  setStartTime: assign({
-    startTime: (_: AudioContext, event: SetStartTimeEvent) => {
-      return event.time;
-    },
-    currentTime: (context: AudioContext, event: SetStartTimeEvent) => {
-      context.audio.currentTime = Math.max(
-        event.time * context.speed,
-        context.audio.currentTime,
-      );
-      return context.audio.currentTime / context.speed;
-    },
-  }),
-  setEndTime: assign({
-    endTime: (_: AudioContext, event: SetEndTimeEvent) => {
-      return event.time;
-    },
-    currentTime: (context: AudioContext, event: SetEndTimeEvent) => {
-      context.audio.currentTime = Math.min(
-        event.time * context.speed,
-        context.audio.currentTime,
-      );
-      return context.audio.currentTime / context.speed;
-    },
-  }),
-  setTime: assign({
-    currentTime: (_: AudioContext, event: SetTimeEvent) => event.time,
-  }),
-};
-
-export const audioServices = {
-  playing: (context: AudioContext) => (send: any) => {
-    let requestId: number;
-
-    const onTimeUpdate = () => {
-      // Get the current time of the audio element, adjusted for the speed
-      const currentTime = context.audio.currentTime * context.speed;
-
-      // If the current time is past the end time, stop the audio
-      if (currentTime >= context.endTime && !context.loop) {
-        send("STOP");
-        return;
-      }
-
-      // If the current time is past the end time, loop back to the start
-      // time
-      if (currentTime >= context.endTime && context.loop) {
-        send({ type: "SEEK", time: context.startTime });
-      }
-
-      // If the current time is before the start time, seek to the start
-      // time
-      if (currentTime < context.startTime) {
-        send({ type: "SEEK", time: context.startTime });
-      }
-
-      // Otherwise update the current time
-      send({
-        type: "SET_TIME",
-        time: currentTime,
-      });
-
-      // Request the next animation frame
-      requestId = requestAnimationFrame(onTimeUpdate);
-    };
-
-    // Create a request animation frame loop to update the current time
-    requestId = requestAnimationFrame(onTimeUpdate);
-
-    return () => {
-      // Cancel the request animation frame loop when the service is
-      // stopped
-      cancelAnimationFrame(requestId);
-    };
-  },
-  setupAudio: (context: AudioContext) => () => {
-    // Create an audio element
-    const audio = new Audio();
-    context.audio = audio;
-
-    // Set the audio element URL
-    const url = context.getAudioURL({
-      recording: context.recording,
-      speed: context.speed,
-    });
-    audio.src = url;
-
-    // Create a listener to update the current time when the audio
-    // has loaded the metadata
-    const onLoadedMetadata = () => {
-      audio.currentTime = context.startTime / context.speed;
-    };
-
-    // Attach the listener to the audio element
-    audio.addEventListener("loadedmetadata", onLoadedMetadata);
-  },
-};
-
-export const audioMachine = createMachine<AudioContext, AudioEvent>(
-  {
-    predictableActionArguments: true,
-    schema: {
-      context: {} as AudioContext,
-      events: {} as AudioEvent,
-    },
+})
+  .createMachine({
+    context: ({ input }) => ({
+      currentTime: input.currentTime || 0,
+      muted: false,
+      volume: input.volume || 1,
+      loop: input.loop || false,
+      url: input.url,
+    }),
     id: "audio",
-    ...audioStates,
-  },
-  {
-    // @ts-ignore
-    actions: audioActions,
-    services: audioServices,
-  },
-);
+    initial: "setup",
+    invoke: {
+      id: "audio",
+      src: "audio",
+      input: ({ context }) => ({
+        url: context.url,
+        loop: context.loop,
+        currentTime: context.currentTime,
+        volume: context.volume,
+      }),
+    },
+    states: {
+      setup: {
+        on: {
+          "audio.ready": {
+            target: "stopped",
+          },
+        },
+      },
+      stopped: {
+        on: {
+          "audio.play": {
+            target: "playing",
+            actions: [{ type: "play" }],
+          },
+        },
+      },
+      playing: {
+        on: {
+          "audio.pause": {
+            target: "paused",
+            actions: [{ type: "pause" }],
+          },
+          "audio.stop": {
+            target: "stopped",
+            actions: [{ type: "stop" }],
+          },
+          "audio.toggle_loop": {
+            actions: [{ type: "toggleLoop" }],
+            target: "playing",
+          },
+          "audio.change_url": {
+            actions: [{ type: "changeURL" }],
+            target: "setup",
+          },
+        },
+      },
+      paused: {
+        on: {
+          "audio.play": {
+            target: "playing",
+            actions: [{ type: "play" }],
+          },
+        },
+      },
+    },
+    on: {
+      "audio.seek": {
+        actions: [{ type: "seek" }],
+      },
+      "audio.mute": {
+        actions: [{ type: "mute" }],
+      },
+      "audio.unmute": {
+        actions: [{ type: "unmute" }],
+      },
+      "audio.set_volume": {
+        actions: [{ type: "setVolume" }],
+      },
+      "audio.toggle_loop": {
+        actions: [{ type: "toggleStateLoop" }, { type: "toggleAudioLoop" }],
+      },
+      "audio.change_url": {
+        actions: [{ type: "changeURL" }],
+      },
+      "audio.set_time": {
+        actions: [{ type: "setTime" }],
+      },
+    },
+  })
+  .provide({
+    actions: {
+      seek: sendTo("audio", ({ event }) => {
+        if (event.type === "audio.seek") {
+          return { type: "audio.seek", time: event.time };
+        }
+      }),
+      mute: sendTo("audio", { type: "audio.mute" }),
+      unmute: sendTo("audio", { type: "audio.unmute" }),
+      play: sendTo("audio", { type: "audio.play" }),
+      pause: sendTo("audio", { type: "audio.pause" }),
+      stop: sendTo("audio", { type: "audio.stop" }),
+      setVolume: sendTo("audio", ({ event }) => {
+        if (event.type === "audio.set_volume") {
+          return { type: "audio.set_volume", volume: event.volume };
+        }
+      }),
+      toggleAudioLoop: sendTo("audio", { type: "audio.toggle_loop" }),
+      toggleStateLoop: assign({ loop: ({ context }) => !context.loop }),
+      changeURL: sendTo("audio", ({ event }) => {
+        if (event.type === "audio.change_url") {
+          return { type: "audio.change_url", url: event.url };
+        }
+      }),
+      setTime: assign({
+        currentTime: ({ context, event }) => {
+          if (event.type === "audio.set_time") {
+            return event.currentTime;
+          }
+          return context.currentTime;
+        },
+      }),
+    },
+  });

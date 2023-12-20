@@ -4,10 +4,8 @@ import Card from "@/components/Card";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { CheckIcon, IssuesIcon } from "@/components/icons";
-import { AnnotationProject } from "@/api/annotation_projects";
+import { type AnnotationProject } from "@/api/schemas";
 import WithLoading from "@/components/WithLoading";
-import useTaskNotes from "@/hooks/api/useTaskNotes";
-import useAnnotationNotes from "@/hooks/api/useAnnotationNotes";
 
 function NoNotes() {
   return (

@@ -1,20 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/api/usePagedQuery";
-import useFilter from "@/hooks/api/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useFilter from "@/hooks/utils/useFilter";
 import { type TagFilter } from "@/api/tags";
 
-const emptyFilter: TagFilter = {};
+const _empty: TagFilter = {};
 const _fixed: (keyof TagFilter)[] = [];
 
 export default function useTags({
-  initialFilter = emptyFilter,
+  filter: initialFilter = _empty,
   fixed = _fixed,
   pageSize = 10,
   enabled = true,
 }: {
-  initialFilter?: TagFilter;
+  filter?: TagFilter;
   fixed?: (keyof TagFilter)[];
   pageSize?: number;
   enabled?: boolean;
@@ -27,7 +27,7 @@ export default function useTags({
 
   const { items, total, query, pagination } = usePagedQuery({
     name: "tags",
-    func: api.tags.get,
+    queryFn: api.tags.get,
     pageSize: pageSize,
     filter: filter.filter,
     enabled: enabled,

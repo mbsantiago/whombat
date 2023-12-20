@@ -1,70 +1,89 @@
 import { useMemo } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useQuery } from "@tanstack/react-query";
 import { type Dataset } from "@/api/schemas";
 import { type DatasetUpdate } from "@/api/datasets";
+import useObject from "@/hooks/utils/useObject";
 import api from "@/app/api";
 
+/**
+ * Custom hook for managing dataset-related state, fetching, and mutations.
+ *
+ * This hook encapsulates the logic for querying, updating, and deleting
+ * dataset information using React Query. It can also fetch and provide
+ * additional dataset state if enabled.
+ *
+ * @param {Object} props - The hook parameters.
+ * @param {string} props.uuid - The UUID of the dataset to be managed.
+ * @param {Dataset} [props.dataset] - Optional initial dataset data to provide
+ * or override.
+ * @param {(updated: Dataset) => void} [props.onUpdate] - Callback function
+ * invoked on successful dataset update.
+ * @param {(deleted: Dataset) => void} [props.onDelete] - Callback function
+ * invoked on successful dataset deletion.
+ * @param {boolean} [props.enabled=true] - Whether the dataset-related queries
+ * and mutations are enabled.
+ * @param {boolean} [props.withState=false] - Whether to fetch and provide
+ * additional dataset state.
+ */
 export default function useDataset({
+  uuid,
   dataset,
   onUpdate,
   onDelete,
-  onError,
   enabled = true,
+  withState = false,
 }: {
-  dataset: Dataset;
+  uuid: string;
+  dataset?: Dataset;
   onUpdate?: (updated: Dataset) => void;
   onDelete?: (deleted: Dataset) => void;
-  onError?: (error: string) => void;
   enabled?: boolean;
+  withState?: boolean;
 }) {
-  const client = useQueryClient();
+  if (dataset !== undefined && dataset.uuid !== uuid) {
+    throw new Error("Dataset uuid does not match");
+  }
 
-  const query = useQuery(
-    ["dataset", dataset.uuid],
-    async () => await api.datasets.get(dataset.uuid),
-    {
-      initialData: dataset,
-      staleTime: 1000 * 60 * 5,
-      enabled,
-    },
-  );
+  const { query, useMutation } = useObject<Dataset>({
+    uuid,
+    initial: dataset,
+    name: "dataset",
+    enabled,
+    getFn: api.datasets.get,
+  });
 
-  const update = useMutation({
-    mutationFn: async (data: DatasetUpdate) => {
-      return await api.datasets.update(dataset, data);
-    },
-    onSuccess: (data) => {
-      onUpdate?.(data);
-      client.setQueryData(["dataset", data.uuid], data);
-    },
-    onError: () => {
-      onError?.("Failed to update dataset");
-    },
+  const update = useMutation<DatasetUpdate>({
+    mutationFn: api.datasets.update,
+    onSuccess: onUpdate,
   });
 
   const delete_ = useMutation({
-    mutationFn: async () => {
-      return await api.datasets.delete(dataset);
-    },
-    onSuccess: (data) => {
-      client.invalidateQueries(["datasets"]);
-      query.remove();
-      onDelete?.(data);
-    },
-    onError: () => {
-      onError?.("Failed to delete dataset");
-    },
+    mutationFn: api.datasets.delete,
+    onSuccess: onDelete,
   });
 
+  const state = useQuery({
+    queryKey: ["dataset", uuid, "state"],
+    queryFn: async () => await api.datasets.getState(uuid),
+    enabled: withState,
+  });
+
+  const { data } = query;
   const downloadLink = useMemo(() => {
-    return api.datasets.getDownloadUrl(dataset);
-  }, [dataset]);
+    if (data == null) {
+      return undefined;
+    }
+    return api.datasets.getDownloadUrl(data);
+  }, [data]);
 
   return {
     ...query,
     update,
     delete: delete_,
+    state,
     downloadLink,
   };
 }
+
+export type DatasetContextType = ReturnType<typeof useDataset>;

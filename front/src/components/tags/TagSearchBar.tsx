@@ -20,7 +20,7 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { type TagCreate, type TagFilter } from "@/api/tags";
 import { type Tag as TagType } from "@/api/schemas";
 import { Input } from "@/components/inputs";
-import Tag from "@/components/Tag";
+import Tag from "@/components/tags/Tag";
 import Key from "@/components/Key";
 import useStore from "@/store";
 import useTags from "@/hooks/api/useTags";
@@ -50,8 +50,8 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
     <ComboBoxSection>
       <div className="relative py-2 px-4 cursor-default select-none">
         Create the tag{" "}
-        <Tag disabled tag={{ id: 0, key, value }} color="blue" level={3} /> by
-        pressing <Key code="Shift" />+<Key code="Enter" />
+        <Tag disabled tag={{ key, value }} color="blue" level={3} /> by pressing{" "}
+        <Key code="Shift" />+<Key code="Enter" />
       </div>
     </ComboBoxSection>
   );
@@ -97,7 +97,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
   ) {
     const [query, setQuery] = useState("");
 
-    const tags = useTags({ initialFilter });
+    const tags = useTags({ filter: initialFilter });
     const getTagColor = useStore((state) => state.getTagColor);
 
     const key = query.split(":")[0];
@@ -172,7 +172,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               <ComboBoxSection>
                 {tags.items.map((tag) => (
                   <Combobox.Option
-                    key={tag.id}
+                    key={`${tag.key}:${tag.value}`}
                     className={({ active }) =>
                       `cursor-default py-2 pl-4 pr-2 ${active ? "bg-stone-200 dark:bg-stone-600" : ""
                       }`

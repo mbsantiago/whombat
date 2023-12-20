@@ -1,7 +1,7 @@
 import { type ClipAnnotationFilter } from "@/api/clip_annotations";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/api/usePagedQuery";
-import useFilter from "@/hooks/api/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useFilter from "@/hooks/utils/useFilter";
 
 const _empty: ClipAnnotationFilter = {};
 const _fixed: (keyof ClipAnnotationFilter)[] = [];
@@ -24,7 +24,7 @@ export default function useClipAnnotations({
 
   const { query, pagination, items, total } = usePagedQuery({
     name: "clip_annotations",
-    func: api.clipAnnotations.getMany,
+    queryFn: api.clipAnnotations.getMany,
     pageSize: pageSize,
     filter: filter.filter,
     enabled,

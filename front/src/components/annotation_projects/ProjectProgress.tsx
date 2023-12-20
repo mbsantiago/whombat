@@ -12,18 +12,18 @@ import {
 import Card from "@/components/Card";
 import ProgressBar from "@/components/ProgressBar";
 import { H3 } from "@/components/Headings";
-import { type Task } from "@/api/tasks";
-import { computeTaskProgress } from "@/utils/annotation_projects";
+import { type AnnotationTask } from "@/api/schemas";
+import { computeAnnotationProjectProgress } from "@/utils/annotation_projects";
 
 export default function ProjectProgress({
   tasks,
   isLoading = false,
 }: {
-  tasks: Task[];
+  tasks: AnnotationTask[];
   isLoading?: boolean;
 }) {
   const { missing, needReview, completed, verified } = useMemo(
-    () => computeTaskProgress(tasks),
+    () => computeAnnotationProjectProgress(tasks),
     [tasks],
   );
 
@@ -32,19 +32,19 @@ export default function ProjectProgress({
       <div className="flex flex-row justify-between items-center">
         <H3>Task Progress</H3>
         <Button mode="text" variant="primary">
-          <AddIcon className="h-5 w-5 inline-block mr-2" /> Add tasks
+          <AddIcon className="inline-block mr-2 w-5 h-5" /> Add tasks
         </Button>
       </div>
       <div className="flex flex-row gap-2 justify-around">
         <MetricBadge
-          icon={<EditIcon className="h-8 w-8 inline-block text-blue-500" />}
+          icon={<EditIcon className="inline-block w-8 h-8 text-blue-500" />}
           title="Remaining"
           value={missing}
           isLoading={isLoading}
         />
         <MetricBadge
           icon={
-            <NeedsReviewIcon className="h-8 w-8 inline-block text-red-500" />
+            <NeedsReviewIcon className="inline-block w-8 h-8 text-red-500" />
           }
           title="Need Review"
           value={needReview}
@@ -52,7 +52,7 @@ export default function ProjectProgress({
         />
         <MetricBadge
           icon={
-            <CompleteIcon className="h-8 w-8 inline-block text-emerald-500" />
+            <CompleteIcon className="inline-block w-8 h-8 text-emerald-500" />
           }
           title="Completed"
           value={completed}
@@ -60,7 +60,7 @@ export default function ProjectProgress({
         />
         <MetricBadge
           icon={
-            <VerifiedIcon className="h-8 w-8 inline-block text-amber-500" />
+            <VerifiedIcon className="inline-block w-8 h-8 text-amber-500" />
           }
           title="Verified"
           value={verified}
@@ -68,7 +68,7 @@ export default function ProjectProgress({
         />
       </div>
       <div className="mt-4">
-        <div className="text-stone-500 mb-2">Total tasks: {tasks.length}</div>
+        <div className="mb-2 text-stone-500">Total tasks: {tasks.length}</div>
         <ProgressBar
           total={tasks.length}
           complete={completed}

@@ -1,80 +1,131 @@
-import { Fragment, useCallback, useMemo, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
-import { useSlider } from "react-use";
+import { useSliderState, type SliderState } from "react-stately";
+import {
+  mergeProps,
+  useFocusRing,
+  useNumberFormatter,
+  useSlider,
+  useSliderThumb,
+  VisuallyHidden,
+  type AriaSliderProps,
+  type AriaSliderThumbOptions,
+} from "react-aria";
 
+import {
+  type PlayerState,
+  type PlayerControls,
+  type SpeedOption,
+} from "@/hooks/audio/useAudio";
 import { ExpandIcon } from "@/components/icons";
 import { LoopIcon, PauseIcon, PlayIcon, SpeedIcon } from "@/components/icons";
-
-const SPEED_OPTIONS = [
-  { id: "0.1", label: "0.1x", value: 0.1 },
-  { id: "0.2", label: "0.2x", value: 0.2 },
-  { id: "0.5", label: "0.5x", value: 0.5 },
-  { id: "0.8", label: "0.8x", value: 0.8 },
-  { id: "1", label: "1x", value: 1.0 },
-  { id: "1.25", label: "1.25x", value: 1.25 },
-  { id: "1.5", label: "1.5x", value: 1.5 },
-  { id: "2", label: "2x", value: 2 },
-  { id: "5", label: "5x", value: 5 },
-  { id: "10", label: "10x", value: 10 },
-];
 
 const COMMON_BUTTON_CLASSES =
   "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
 
-export default function Player({
-  samplerate,
-  currentTime,
-  startTime,
-  endTime,
-  speed,
-  playing,
-  loop,
-  play,
-  pause,
-  seek,
-  setSpeed,
-  toggleLoop,
+function PlayerThumb({
+  state,
+  ...props
 }: {
-  samplerate: number;
-  currentTime: number;
-  startTime: number;
-  endTime: number;
-  speed: number;
-  playing: boolean;
-  loop: boolean;
-  play: () => void;
-  pause: () => void;
-  seek: (time: number) => void;
-  setSpeed: (speed: number) => void;
-  toggleLoop: () => void;
-}) {
-  const sliderRef = useRef<HTMLDivElement>(null);
-
-  const onScrub = useCallback(
-    (value: number) => {
-      const length = endTime - startTime;
-      const goTo = startTime + value * length;
-      seek(goTo);
+  state: SliderState;
+} & Omit<AriaSliderThumbOptions, "inputRef">) {
+  let { index, name, trackRef } = props;
+  let inputRef = useRef(null);
+  let { thumbProps, inputProps, isDragging } = useSliderThumb(
+    {
+      index,
+      trackRef,
+      inputRef,
+      name,
     },
-    [startTime, endTime, seek],
+    state,
   );
 
-  useSlider(sliderRef, { onScrub });
-
-  const barPosition = useMemo(() => {
-    const length = endTime - startTime;
-    const value = (currentTime - startTime) / length;
-    return value * 100;
-  }, [currentTime, startTime, endTime]);
-
-  const speedOptions = useMemo(() => {
-    return SPEED_OPTIONS.filter((option) => option.value * samplerate <= 48000);
-  }, [samplerate]);
-
+  let { focusProps, isFocusVisible } = useFocusRing();
   return (
-    <div className="flex flex-row items-center gap-2 border rounded-md border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700 px-2">
+    <div
+      {...thumbProps}
+      className={classNames("w-3 h-3 rounded-full shadow cursor-pointer", {
+        "focus:ring-4 focus:outline-none focus:ring-emerald-500/50":
+          isFocusVisible,
+        "bg-emerald-700 dark:bg-emerald-300": isDragging,
+        "bg-emerald-500": !isDragging,
+      })}
+    >
+      <VisuallyHidden>
+        <input ref={inputRef} {...mergeProps(inputProps, focusProps)} />
+      </VisuallyHidden>
+    </div>
+  );
+}
+
+function PlayerSlider(props: AriaSliderProps) {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  let numberFormatter = useNumberFormatter({ style: "decimal" });
+  const state = useSliderState({ ...props, numberFormatter });
+  const { groupProps, trackProps, labelProps, outputProps } = useSlider(
+    props,
+    state,
+    trackRef,
+  );
+  return (
+    <div {...groupProps} className="ml-2 w-36">
+      {props.label && (
+        <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
+          <VisuallyHidden>
+            <label {...labelProps}>{props.label}</label>
+          </VisuallyHidden>
+          <output {...outputProps}>
+            {secondsToTimeStr(state.getThumbValue(0))}
+          </output>
+          <output>{secondsToTimeStr(props.maxValue)}</output>
+        </div>
+      )}
+      <div
+        className="py-1 w-full cursor-pointer"
+        {...trackProps}
+        ref={trackRef}
+      >
+        <div className="w-full h-1 rounded-full bg-stone-900">
+          <span
+            className="relative h-1 bg-emerald-600 rounded-full dark:bg-emerald-200"
+            style={{
+              width: `${Math.min(state.getThumbPercent(0), 100)}%`,
+            }}
+          />
+          <PlayerThumb
+            index={0}
+            state={state}
+            trackRef={trackRef}
+            name={"currentTime"}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Player({
+  state,
+  controls,
+}: {
+  state: PlayerState;
+  controls: PlayerControls;
+}) {
+  const {
+    currentTime,
+    startTime,
+    endTime,
+    playing,
+    loop,
+    speed,
+    speedOptions,
+  } = state;
+  const { play, pause, seek, toggleLoop, setSpeed } = controls;
+  return (
+    <div className="flex flex-row gap-2 items-center px-2 max-w-max rounded-md border border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700">
       <button
         type="button"
         className={classNames(
@@ -87,9 +138,9 @@ export default function Player({
         }}
       >
         {playing ? (
-          <PauseIcon className="h-5 w-5" />
+          <PauseIcon className="w-5 h-5" />
         ) : (
-          <PlayIcon className="h-5 w-5" />
+          <PlayIcon className="w-5 h-5" />
         )}
       </button>
       <button
@@ -102,29 +153,15 @@ export default function Player({
         })}
         onClick={() => toggleLoop()}
       >
-        <LoopIcon className="h-5 w-5" />
+        <LoopIcon className="w-5 h-5" />
       </button>
-      <div className="w-36 ml-2">
-        <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
-          <p>{secondsToTimeStr(currentTime)}</p>
-          <p>{secondsToTimeStr(endTime)}</p>
-        </div>
-        <div ref={sliderRef} className="py-1 w-full cursor-pointer">
-          <div className="relative h-1 bg-stone-900 rounded-full w-full">
-            <div
-              className="h-1 bg-emerald-600 dark:bg-emerald-200 rounded-full relative"
-              style={{
-                width: `${Math.min(barPosition, 100)}%`,
-              }}
-            >
-              <span
-                tabIndex={0}
-                className="w-3 h-3 bg-emerald-500 absolute right-0 -mt-1 rounded-full shadow cursor-pointer focus:outline-none focus:ring-4 focus:ring-emerald-500/50"
-              ></span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PlayerSlider
+        label="audio track"
+        value={currentTime}
+        minValue={startTime}
+        maxValue={endTime}
+        onChange={(value) => seek(value as number)}
+      />
       <SelectSpeed
         speed={speed}
         onChange={(value) => setSpeed(value)}
@@ -150,7 +187,7 @@ function SelectSpeed({
 }: {
   speed: number;
   onChange: (value: number) => void;
-  options: { id: string | number; label: string; value: number }[];
+  options: SpeedOption[];
 }) {
   return (
     <Listbox value={speed} onChange={onChange}>
@@ -172,30 +209,28 @@ function SelectSpeed({
             "flex flex-row items-center w-full pr-7",
           )}
         >
-          <SpeedIcon className="h-5 w-5" />
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1">
-            <ExpandIcon className="h-5 w-5" aria-hidden="true" />
+          <SpeedIcon className="w-5 h-5" />
+          <span className="flex absolute inset-y-0 right-0 items-center pr-1 pointer-events-none">
+            <ExpandIcon className="w-5 h-5" aria-hidden="true" />
           </span>
         </Listbox.Button>
-        <Listbox.Options className="max-h-60 w-full overflow-auto rounded-md bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm">
+        <Listbox.Options className="overflow-auto py-1 w-full max-h-60 text-base rounded-md ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none bg-stone-50 ring-stone-900 dark:bg-stone-700 dark:ring-stone-600">
           {options.map((option) => (
             <Listbox.Option
-              key={option.id}
+              key={option.value.toString()}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${
-                  active
-                    ? "bg-emerald-100 text-emerald-900"
-                    : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${active
+                  ? "bg-emerald-100 text-emerald-900"
+                  : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${
-                      selected ? "text-emerald-500 font-medium" : "font-normal"
-                    }`}
+                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
+                      }`}
                   >
                     {option.label}
                   </span>

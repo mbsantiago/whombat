@@ -4,8 +4,7 @@ export const UserSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
   email: z.string().email().optional(),
-  name: z.string().optional(),
-  created_on: z.coerce.date(),
+  name: z.string().nullable().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
@@ -46,7 +45,7 @@ export const RecordingSchema = z.object({
   time: z
     .string()
     .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
-    .nullable(),
+    .optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   rights: z.string().optional(),
@@ -58,6 +57,21 @@ export const RecordingSchema = z.object({
 });
 
 export type Recording = z.infer<typeof RecordingSchema>;
+
+export const FileStateSchema = z.enum([
+  "missing",
+  "registered",
+  "unregistered",
+]);
+
+export type FileState = z.infer<typeof FileStateSchema>;
+
+export const RecordingStateSchema = z.object({
+  path: z.string(),
+  state: FileStateSchema,
+});
+
+export type RecordingState = z.infer<typeof RecordingStateSchema>;
 
 export const DatasetSchema = z.object({
   uuid: z.string().uuid(),

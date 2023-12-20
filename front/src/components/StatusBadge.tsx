@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-import { type StatusBadge } from "@/api/tasks";
+import { type AnnotationStatusBadge } from "@/api/schemas";
 import {
   CheckIcon,
   CloseIcon,
@@ -28,7 +28,7 @@ export default function StatusBadge({
   onClick,
   onRemove,
 }: {
-  badge: StatusBadge;
+  badge: AnnotationStatusBadge;
   onClick?: () => void;
   onRemove?: () => void;
 }) {
@@ -60,7 +60,7 @@ export default function StatusBadge({
             onClick != null && "group-hover:font-medium",
           )}
         >
-          {badge.user.username}
+          {badge.user?.username}
         </span>
       </button>
       {onRemove != null && (

@@ -6,10 +6,10 @@ import { useMutation } from "@tanstack/react-query";
 import api from "@/app/api";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
 import {
-  type AnnotationProject,
   type AnnotationProjectCreate,
   AnnotationProjectCreateSchema,
 } from "@/api/annotation_projects";
+import { type AnnotationProject } from "@/api/schemas";
 
 export default function CreateProject({
   onCreate,
@@ -24,7 +24,7 @@ export default function CreateProject({
   const { errors } = form.formState;
 
   const create = useMutation({
-    mutationFn: api.annotation_projects.create,
+    mutationFn: api.annotationProjects.create,
     onSuccess: (data) => {
       onCreate(data);
     },

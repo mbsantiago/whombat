@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
 import { H4 } from "@/components/Headings";
-import { type EvaluationSet } from "@/api/evaluation_sets";
+import { type EvaluationSet } from "@/api/schemas";
 import { UserIcon, TrainIcon } from "@/components/icons";
 import Link from "@/components/Link";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
-import usePredictionRuns from "@/hooks/api/usePredictionRuns";
+import useModelRuns from "@/hooks/api/useModelRuns";
 
 export default function UserEvaluationSummary({
   evaluationSet,
@@ -17,35 +17,35 @@ export default function UserEvaluationSummary({
 }) {
   const filter = useMemo(
     () => ({
-      evaluation_set__eq: evaluationSet.id,
+      evaluation_set__eq: evaluationSet.uuid,
       is_model__eq: false,
     }),
-    [evaluationSet.id],
+    [evaluationSet.uuid],
   );
-  const predictionRuns = usePredictionRuns({ filter, pageSize: showMax });
+  const predictionRuns = useModelRuns({ filter, pageSize: showMax });
 
   return (
     <div>
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row justify-between items-center">
         <H4 className="whitespace-nowrap">
-          <UserIcon className="h-5 w-5 inline-block mr-2" />
+          <UserIcon className="inline-block mr-2 w-5 h-5" />
           User Training Sessions
         </H4>
         <Link
-          href={`/evaluation/detail/train/new/?evaluation_set_id=${evaluationSet.id}`}
+          href={`/evaluation/detail/train/new/?evaluation_set_uuid=${evaluationSet.uuid}`}
           mode="text"
           variant="primary"
         >
-          <TrainIcon className="h-5 w-5 inline-block mr-2" /> Start New
+          <TrainIcon className="inline-block mr-2 w-5 h-5" /> Start New
         </Link>
       </div>
-      {predictionRuns.query.isLoading ? (
+      {predictionRuns.isLoading ? (
         <Loading />
       ) : predictionRuns.items.length > 0 ? (
         <div className="flex flex-col gap-2">
-          {predictionRuns.items.map((predictionRun) => (
-            <div key={predictionRun.id}>
-              {predictionRun.model_name} - {predictionRun.model_version}
+          {predictionRuns.items.map((modelRun) => (
+            <div key={modelRun.uuid}>
+              {modelRun.name} - {modelRun.version}
             </div>
           ))}
         </div>

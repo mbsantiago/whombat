@@ -5,7 +5,7 @@ import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
 import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
-import { type Recording } from "@/api/recordings";
+import { type Recording } from "@/api/schemas";
 import {
   type SpectrogramParameters,
   type SpectrogramWindow,
@@ -33,19 +33,19 @@ export default function SpectrogramCanvas({
 
   // Load the spectrogram segment
   const { draw: drawSpecWindow } = useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: selected,
     parameters,
   });
 
   // Load the previous and next spectrogram segments in the background
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: prev,
     parameters,
   });
   useSpectrogramWindow({
-    recording_id: recording.id,
+    recording,
     window: next,
     parameters,
   });

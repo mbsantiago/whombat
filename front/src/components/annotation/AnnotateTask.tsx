@@ -2,20 +2,19 @@ import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
 import { type Tag } from "@/api/schemas";
-import { type State, type Task } from "@/api/tasks";
-import { type Annotation, type AnnotationTag } from "@/api/annotations";
-import { type Geometry } from "@/api/sound_events";
-import { type AnnotationProject } from "@/api/annotation_projects";
+import { type AnnotationStatus, type AnnotationTask } from "@/api/schemas";
+import { type SoundEventAnnotation, type AnnotationTag } from "@/api/schemas";
+import { type Geometry } from "@/api/schemas";
+import { type AnnotationProject } from "@/api/schemas";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 import Loading from "@/app/loading";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
 import TaskSpectrogram from "@/components/spectrograms/TaskSpectrogram";
 import AnnotationTags from "@/components/annotation/AnnotationTags";
-import TaskStatus from "@/components/tasks/TaskStatus";
-import TaskTags from "@/components/tasks/TaskTags";
-import useTask from "@/hooks/api/useTask";
-import useAnnotations from "@/hooks/api/useAnnotations";
+// import TaskStatus from "@/components/tasks/TaskStatus";
+// import useTask from "@/hooks/api/useTask";
+// import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
 
 export default function AnnotateTask({
   task_id,
@@ -64,12 +63,12 @@ export default function AnnotateTask({
 
   // Get info about the task annotations
   const filter = useMemo(() => ({ task__eq: task_id }), [task_id]);
-  const annotations = useAnnotations({ filter });
+  const annotations = useSoundEventAnnotations({ filter });
 
 
   const { mutateAsync: addTagAsync } = annotations.addTag;
   const onAddAnnotationTag = useCallback(
-    async (annotation: Annotation, tag: Tag) => {
+    async (annotation: SoundEventAnnotation, tag: Tag) => {
       return await toast.promise(
         addTagAsync({
           annotation_id: annotation.id,
@@ -87,7 +86,7 @@ export default function AnnotateTask({
 
   const { mutateAsync: removeTagAsync } = annotations.removeTag;
   const onRemoveAnnotationTag = useCallback(
-    async (annotation: Annotation, tag: AnnotationTag) => {
+    async (annotation: SoundEventAnnotation, tag: AnnotationTag) => {
       return await toast.promise(
         removeTagAsync({
           annotation_id: annotation.id,
@@ -128,7 +127,7 @@ export default function AnnotateTask({
 
   const { mutateAsync: updateAnnotationAsync } = annotations.update;
   const onUpdateAnnotationGeometry = useCallback(
-    async (annotation: Annotation, geometry: Geometry) => {
+    async (annotation: SoundEventAnnotation, geometry: Geometry) => {
       return await toast.promise(
         updateAnnotationAsync({
           annotation_id: annotation.id,
@@ -146,7 +145,7 @@ export default function AnnotateTask({
 
   const { mutateAsync: deleteAnnotationAsync } = annotations.delete;
   const onDeleteAnnotation = useCallback(
-    async (annotation: Annotation) => {
+    async (annotation: SoundEventAnnotation) => {
       return await toast.promise(deleteAnnotationAsync(annotation.id), {
         loading: "Deleting annotation...",
         success: "Annotation deleted!",

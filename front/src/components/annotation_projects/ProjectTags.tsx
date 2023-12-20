@@ -1,10 +1,10 @@
 import useStore from "@/store";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import Info from "@/components/Info";
-import Tag from "@/components/Tag";
-import TagSearchBar from "@/components/TagSearchBar";
+import Tag from "@/components/tags/Tag";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 import SearchMenu from "@/components/SearchMenu";
-import { type AnnotationProject } from "@/api/annotation_projects";
+import { type AnnotationProject } from "@/api/schemas";
 
 export default function AnnotationTags({
   project: projectData,

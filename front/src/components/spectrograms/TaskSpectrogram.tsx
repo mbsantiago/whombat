@@ -2,15 +2,19 @@ import { useActor } from "@xstate/react";
 import { useCallback, useRef } from "react";
 
 import useSpectrogramParameters from "@/hooks/spectrogram/useSpectrogramParameters";
-import { type Annotation, type AnnotationTag } from "@/api/annotations";
-import { type Recording } from "@/api/recordings";
-import { type Geometry } from "@/api/sound_events";
-import { type Tag } from "@/api/tags";
+import {
+  type AnnotationTask,
+  type ClipAnnotation,
+  type Recording,
+  type Geometry,
+  type Tag,
+  type SoundEventAnnotation,
+  type AnnotationTag,
+} from "@/api/schemas";
 import {
   type SpectrogramWindow,
   type SpectrogramParameters,
 } from "@/api/spectrograms";
-import { type Task } from "@/api/tasks";
 import Card from "@/components/Card";
 import Player from "@/components/Player";
 import ScrollBar from "@/components/ScrollBar";
@@ -35,25 +39,30 @@ export default function TaskSpectrogram({
   onUpdateAnnotationGeometry,
   onDeleteAnnotation,
 }: {
-  task: Task;
-  annotations: Annotation[];
+  task: AnnotationTask;
+  annotations: SoundEventAnnotation[];
   recording: Recording;
   parameters: SpectrogramParameters;
-  onAddTag?: (annotation: Annotation, tag: Tag) => Promise<Annotation>;
+  onAddTag?: (
+    annotation: SoundEventAnnotation,
+    tag: Tag,
+  ) => Promise<SoundEventAnnotation>;
   onRemoveTag?: (
-    annotation: Annotation,
-    tag: AnnotationTag,
-  ) => Promise<Annotation>;
+    annotation: SoundEventAnnotation,
+    tag: Tag,
+  ) => Promise<SoundEventAnnotation>;
   onCreateAnnotation?: (
-    task: Task,
+    task: AnnotationTask,
     geometry: Geometry,
-    tag_ids?: number[],
-  ) => Promise<Annotation>;
+    tags?: Tag[],
+  ) => Promise<SoundEventAnnotation>;
   onUpdateAnnotationGeometry?: (
-    annotation: Annotation,
+    annotation: SoundEventAnnotation,
     geometry: Geometry,
-  ) => Promise<Annotation>;
-  onDeleteAnnotation?: (annotation: Annotation) => Promise<Annotation>;
+  ) => Promise<SoundEventAnnotation>;
+  onDeleteAnnotation?: (
+    annotation: SoundEventAnnotation,
+  ) => Promise<SoundEventAnnotation>;
 }) {
   // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,13 +74,13 @@ export default function TaskSpectrogram({
   const mouseState = useMouse(canvasRef);
 
   const { state, send, draw, tags } = useAnnotateSpectrogram({
-    task,
-    annotations,
+    clipAnnotation: task,
+    soundEventAnnotations: annotations,
     parameters,
     scratchState: dragState,
     mouseState,
     ref: canvasRef,
-    onAddTag,
+    onAddAnnotationTag: onAddTag,
     onRemoveTag,
     onCreateAnnotation,
     onUpdateAnnotationGeometry,
@@ -85,7 +94,7 @@ export default function TaskSpectrogram({
 
   useSpectrogramParameters({
     parameters: specState.context.parameters,
-  })
+  });
 
   const [audioState, audioSend] = useActor(specState.context.audio);
 
@@ -176,7 +185,7 @@ export default function TaskSpectrogram({
             project__eq: task.project_id,
           }}
           onCreate={(tag) => {
-            api.annotation_projects.addTag(task.project_id, tag.id);
+            api.annotationProjects.addTag(task.project_id, tag.id);
           }}
         >
           <canvas ref={canvasRef} className="w-full h-full" />

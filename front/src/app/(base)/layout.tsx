@@ -1,5 +1,6 @@
 "use client";
 import { type ReactNode, useContext } from "react";
+import { notFound } from "next/navigation";
 import toast from "react-hot-toast";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -11,7 +12,8 @@ import Loading from "@/app/loading";
 import { WhombatIcon } from "@/components/icons";
 import { NavBar } from "@/components/navigation/NavBar";
 import { SideMenu } from "@/components/navigation/SideMenu";
-import { UserContext } from "@/app/contexts";
+
+import UserContext from "./context";
 
 function WithLogIn({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,9 +26,6 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
     data: user,
     isLoading,
     isError,
-    update,
-    logout,
-    remove,
   } = useActiveUser({
     onLogout: () => {
       toast.success("You have been logged out");
@@ -39,10 +38,10 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="flex justify-center items-center w-screen h-screen">
         <div className="flex flex-col items-center">
           <div>
-            <WhombatIcon width={128} height={128} className="h-32 w-32" />
+            <WhombatIcon width={128} height={128} className="w-32 h-32" />
           </div>
           <div>
             <Loading />
@@ -53,30 +52,26 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
   }
 
   if (user == null || isError) {
-    remove();
     router.push(`/login?back=${encodeURIComponent(currentPath)}`);
-    return
+    return;
   }
 
-  return (
-    <UserContext.Provider
-      value={{
-        user,
-        update: update.mutate,
-        logout: logout.mutate,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
 function Contents({ children }: { children: ReactNode }) {
-  const { user, logout } = useContext(UserContext);
+  const user = useContext(UserContext);
+
+  if (user == null) {
+    notFound();
+  }
+
+  const { logout } = useActiveUser({ enabled: false });
+
   return (
-    <div className="flex flex-row w-full h-full max-w-full">
-      <SideMenu logout={logout} />
-      <main className="w-full h-full max-w-full overflow-x-clip">
+    <div className="flex flex-row w-full max-w-full h-full">
+      <SideMenu logout={logout.mutate} />
+      <main className="w-full max-w-full h-full overflow-x-clip">
         <NavBar user={user} />
         {children}
       </main>

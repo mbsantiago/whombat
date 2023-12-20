@@ -3,7 +3,7 @@ import { type ReactNode } from "react";
 export default function Empty({ children }: { children: ReactNode }) {
   return (
     <div className="p-8 w-full">
-      <div className="w-full border border-dashed rounded-md border-stone-500 p-4 flex flex-col items-center justify-center text-stone-500 text-center">
+      <div className="flex flex-col justify-center items-center p-4 w-full text-center rounded-md border border-dashed border-stone-500 text-stone-500">
         {children}
       </div>
     </div>
