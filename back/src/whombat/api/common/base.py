@@ -70,8 +70,8 @@ class BaseAPI(
         NotFoundError
             If the object could not be found.
         """
-        if pk in self._cache:
-            return self._cache[pk]
+        if self._is_in_cache(pk):
+            return self._get_from_cache(pk)
 
         obj = await get_object(
             session,
@@ -79,7 +79,7 @@ class BaseAPI(
             self._get_pk_condition(pk),
         )
         data = self._schema.model_validate(obj)
-        self._cache[pk] = data
+        self._update_cache(data)
         return data
 
     async def get_many(
@@ -229,9 +229,9 @@ class BaseAPI(
             self._model,
             self._get_pk_condition(pk),
         )
-        if pk in self._cache:
-            del self._cache[pk]
-        return self._schema.model_validate(deleted)
+        obj = self._schema.model_validate(deleted)
+        self._clear_from_cache(obj)
+        return obj
 
     async def update(
         self,
@@ -263,8 +263,41 @@ class BaseAPI(
             data,
         )
         obj = self._schema.model_validate(updated)
-        self._cache[pk] = obj
+        self._update_cache(obj)
         return obj
+
+    def _is_in_cache(self, pk: PrimaryKey) -> bool:
+        """Check if an object is in the cache.
+
+        Parameters
+        ----------
+        pk
+            The primary key.
+
+        Returns
+        -------
+        bool
+            Whether the object is in the cache.
+        """
+        # TODO: Disabled cache for now, as it is not working properly
+        # with related objects
+        return False
+        # return pk in self._cache
+
+    def _get_from_cache(self, pk: PrimaryKey) -> WhombatSchema:
+        """Get an object from the cache.
+
+        Parameters
+        ----------
+        pk
+            The primary key.
+
+        Returns
+        -------
+        WhombatSchema
+            The object.
+        """
+        return self._cache[pk]
 
     def _update_cache(self, obj: WhombatSchema) -> None:
         """Update the cache.
@@ -274,8 +307,25 @@ class BaseAPI(
         obj
             The object to update the cache with.
         """
+        # TODO: Disabled cache for now, as it is not working properly
+        # with related objects
+        return
+        # pk = self._get_pk_from_obj(obj)
+        # self._cache[pk] = obj
+
+    def _clear_from_cache(self, obj: WhombatSchema) -> None:
+        """Clear an object from the cache.
+
+        Parameters
+        ----------
+        obj
+            The object to clear from the cache.
+        """
+        # TODO: Disabled cache for now, as it is not working properly
+        # with related objects
+        return
         pk = self._get_pk_from_obj(obj)
-        self._cache[pk] = obj
+        self._cache.pop(pk, None)
 
     def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
         column = getattr(self._model, "uuid")

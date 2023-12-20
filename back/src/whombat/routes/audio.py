@@ -21,10 +21,9 @@ async def stream_recording_audio(
     session: Session,
     settings: WhombatSettings,
     recording_uuid: UUID,
+    start_time: float | None = None,
+    end_time: float | None = None,
     speed: float = 1,
-    # audio_parameters: schemas.AudioParameters = Depends(
-    #     schemas.AudioParameters
-    # ),
     range: str = Header(None),
 ) -> Response:
     """Stream the audio of a recording.
@@ -43,55 +42,39 @@ async def stream_recording_audio(
     Response
         The audio file.
     """
-    recording = await api.recordings.get(session, recording_uuid)
-    full_path = settings.audio_dir / recording.path
+    media_info = await api.recordings.get_media_info(
+        session,
+        recording_uuid,
+        audio_dir=settings.audio_dir,
+    )
 
     start, end = range.replace("bytes=", "").split("-")
     start = int(start)
     end = int(end) if end else start + CHUNK_SIZE
 
-    with open(full_path, "rb") as fp:
-        fp.seek(start)
-        data = fp.read(end - start)
+    data, start, end, filesize = api.load_clip_bytes(
+        path=media_info.path,
+        samplerate=media_info.samplerate,
+        channels=media_info.channels,
+        duration=media_info.duration,
+        start=start,
+        end=end,
+        bit_depth=media_info.bit_depth,
+        speed=speed,
+        start_time=start_time,
+        end_time=end_time,
+    )
 
-        # We want to adjust the samplerate of the audio if the user has
-        # requested a different playback speed or if the recording has been
-        # time expanded.
-        if start < 32 and (speed != 1 or recording.time_expansion != 1):
-            # Surgically replace the samplerate in the WAV header.
-            # The samplerate should be stored in bytes 24-34 of the header.
-            # as a little-endian unsigned 32-bit integer.
-            samplerate = int(recording.samplerate * speed)
-
-            # We also need to adjust the number of bytes per second.
-            # This is stored in bytes 28-32 of the header. The
-            # ByteRate is the SampleRate * NumChannels * BitsPerSample / 8.
-            # and the BitsPerSample is stored in bytes 34-36 of the header.
-            bits_per_sample = int.from_bytes(
-                data[34 - start : 36 - start], "little"
-            )
-            bytes_per_second = int(
-                samplerate * recording.channels * bits_per_sample / 8
-            )
-
-            data = (
-                data[: 24 - start]
-                + samplerate.to_bytes(4, "little")
-                + bytes_per_second.to_bytes(4, "little")
-                + data[32 - start :]
-            )
-
-        filesize = str(full_path.stat().st_size)
-        headers = {
-            "Content-Range": f"bytes {start}-{end}/{filesize}",
-            "Accept-Ranges": "bytes",
-        }
-        return Response(
-            content=data,
-            status_code=206,
-            media_type="audio/wav",
-            headers=headers,
-        )
+    headers = {
+        "Content-Range": f"bytes {start}-{end}/{filesize}",
+        "Accept-Ranges": "bytes",
+    }
+    return Response(
+        content=data,
+        status_code=206,
+        media_type="audio/wav",
+        headers=headers,
+    )
 
 
 @audio_router.get("/download/")
@@ -104,7 +87,7 @@ async def download_recording_audio(
     audio_parameters: schemas.AudioParameters = Depends(
         schemas.AudioParameters
     ),
-) -> Response:
+) -> StreamingResponse:
     """Get audio for a recording.
 
     Parameters

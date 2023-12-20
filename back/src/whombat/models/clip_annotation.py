@@ -86,11 +86,13 @@ class ClipAnnotation(Base):
     )
     notes: orm.Mapped[list[Note]] = orm.relationship(
         secondary="clip_annotation_note",
+        back_populates="clip_annotation",
         lazy="joined",
         default_factory=list,
         viewonly=True,
         repr=False,
         init=False,
+        order_by=Note.created_on.desc(),
     )
 
     # Secondary relations
@@ -134,6 +136,7 @@ class ClipAnnotation(Base):
         init=False,
         repr=False,
         default_factory=list,
+        cascade="all, delete-orphan",
     )
 
 
@@ -232,13 +235,14 @@ class ClipAnnotationNote(Base):
     note_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("note.id"))
 
     # Relations
-    note: orm.Mapped[Note] = orm.relationship(
-        init=False,
-        repr=False,
-        lazy="joined",
-    )
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="clip_annotation_notes",
         init=False,
         repr=False,
+    )
+    note: orm.Mapped[Note] = orm.relationship(
+        back_populates="clip_annotation_note",
+        init=False,
+        repr=False,
+        lazy="joined",
     )

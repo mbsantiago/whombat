@@ -159,7 +159,6 @@ class DatasetRecording(Base):
         init=False,
         repr=False,
         back_populates="dataset_recordings",
-        cascade="all",
     )
     recording: orm.Mapped[Recording] = orm.relationship(
         Recording,

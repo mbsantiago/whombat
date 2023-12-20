@@ -4,11 +4,12 @@ import warnings
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Sequence
+from typing import NamedTuple, Sequence
 from uuid import UUID
 
+import cachetools
 from soundevent import data
-from soundevent.audio import compute_md5_checksum
+from soundevent.audio import compute_md5_checksum, get_media_info
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,6 +30,15 @@ __all__ = [
 ]
 
 
+class MediaInfo(NamedTuple):
+    path: Path
+    samplerate: int
+    duration: float
+    channels: int
+    bit_depth: int
+    bytes_per_sample: int
+
+
 class RecordingAPI(
     BaseAPI[
         UUID,
@@ -40,6 +50,37 @@ class RecordingAPI(
 ):
     _model = models.Recording
     _schema = schemas.Recording
+
+    def __init__(self):
+        super().__init__()
+        self._media_info_cache = cachetools.LRUCache(maxsize=1000)
+
+    async def get_media_info(
+        self,
+        session: AsyncSession,
+        recording_uuid: UUID,
+        audio_dir: Path | None = None,
+    ) -> MediaInfo:
+        if audio_dir is None:
+            audio_dir = get_settings().audio_dir
+
+        if recording_uuid in self._media_info_cache:
+            return self._media_info_cache[recording_uuid]
+
+        recording = await self.get(session, recording_uuid)
+        full_path = audio_dir / recording.path
+
+        media_info = get_media_info(full_path)
+        obj = MediaInfo(
+            path=full_path,
+            samplerate=recording.samplerate,
+            duration=recording.duration,
+            bit_depth=media_info.bit_depth,
+            channels=media_info.channels,
+            bytes_per_sample=(media_info.bit_depth // 8) * media_info.channels,
+        )
+        self._media_info_cache[recording_uuid] = obj
+        return obj
 
     async def get_by_hash(
         self,

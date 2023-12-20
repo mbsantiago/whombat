@@ -1,7 +1,7 @@
 """Python API for Whombat."""
 from whombat.api.annotation_projects import annotation_projects
 from whombat.api.annotation_tasks import annotation_tasks
-from whombat.api.audio import load_audio
+from whombat.api.audio import load_audio, load_clip_bytes
 from whombat.api.clip_annotations import clip_annotations
 from whombat.api.clip_evaluations import clip_evaluations
 from whombat.api.clip_predictions import clip_predictions
@@ -30,10 +30,18 @@ __all__ = [
     "clip_evaluations",
     "clip_predictions",
     "clips",
+    "compute_spectrogram",
+    "create_session",
     "datasets",
     "evaluation_sets",
     "evaluations",
     "features",
+    "find_feature",
+    "find_feature_value",
+    "find_tag",
+    "find_tag_value",
+    "load_audio",
+    "load_clip_bytes",
     "model_runs",
     "notes",
     "recordings",
@@ -44,11 +52,4 @@ __all__ = [
     "tags",
     "user_runs",
     "users",
-    "find_feature",
-    "find_feature_value",
-    "load_audio",
-    "compute_spectrogram",
-    "create_session",
-    "find_tag",
-    "find_tag_value",
 ]

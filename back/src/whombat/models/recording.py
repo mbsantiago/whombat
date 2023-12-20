@@ -151,7 +151,7 @@ class Recording(Base):
         secondary="recording_note",
         lazy="joined",
         viewonly=True,
-        back_populates="recordings",
+        back_populates="recording",
         default_factory=list,
         order_by=Note.created_on.desc(),
     )
@@ -179,29 +179,29 @@ class Recording(Base):
     # Secondary relationships
     recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
         lazy="joined",
+        cascade="all, delete-orphan",
         back_populates="recording",
         default_factory=list,
-        cascade="all, delete-orphan",
     )
     recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
         lazy="joined",
+        cascade="all, delete-orphan",
         back_populates="recording",
         default_factory=list,
-        cascade="all, delete-orphan",
     )
     recording_owners: orm.Mapped[list["RecordingOwner"]] = orm.relationship(
         lazy="joined",
+        cascade="all, delete-orphan",
         back_populates="recording",
         default_factory=list,
-        cascade="all, delete-orphan",
     )
 
     # Backrefs
     clips: orm.Mapped[list["Clip"]] = orm.relationship(
         back_populates="recording",
         default_factory=list,
-        cascade="all, delete-orphan",
         init=False,
+        cascade="all, delete-orphan",
         repr=False,
     )
     recording_datasets: orm.Mapped[
@@ -250,10 +250,9 @@ class RecordingNote(Base):
         back_populates="recording_notes",
         init=False,
         repr=False,
-        cascade="all",
     )
     note: orm.Mapped[Note] = orm.relationship(
-        back_populates="recording_notes",
+        back_populates="recording_note",
         init=False,
         repr=False,
         lazy="joined",
@@ -295,7 +294,6 @@ class RecordingTag(Base):
         back_populates="recording_tags",
         init=False,
         repr=False,
-        cascade="all",
     )
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="recording_tags",

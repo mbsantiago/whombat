@@ -99,7 +99,7 @@ class SoundEventAnnotation(Base):
         default_factory=list,
     )
     notes: orm.Mapped[list[Note]] = orm.relationship(
-        back_populates="sound_event_annotations",
+        back_populates="sound_event_annotation",
         secondary="sound_event_annotation_note",
         lazy="joined",
         init=False,
@@ -162,7 +162,7 @@ class SoundEventAnnotationNote(Base):
         repr=False,
     )
     note: orm.Mapped[Note] = orm.relationship(
-        back_populates="sound_event_annotation_notes",
+        back_populates="sound_event_annotation_note",
         lazy="joined",
         init=False,
         repr=False,

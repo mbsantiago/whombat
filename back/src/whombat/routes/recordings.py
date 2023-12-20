@@ -18,6 +18,7 @@ recording_router = APIRouter()
 @recording_router.get(
     "/",
     response_model=schemas.Page[schemas.Recording],
+    response_model_exclude_none=True,
 )
 async def get_recordings(
     session: Session,
@@ -45,6 +46,7 @@ async def get_recordings(
 @recording_router.get(
     "/detail/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def get_recording(
     session: Session,
@@ -57,6 +59,7 @@ async def get_recording(
 @recording_router.patch(
     "/detail/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def update_recording(
     session: Session,
@@ -73,6 +76,7 @@ async def update_recording(
 @recording_router.post(
     "/detail/tags/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def add_recording_tag(
     session: Session,
@@ -91,6 +95,7 @@ async def add_recording_tag(
 @recording_router.delete(
     "/detail/tags/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def remove_recording_tag(
     session: Session,
@@ -109,6 +114,7 @@ async def remove_recording_tag(
 @recording_router.post(
     "/detail/notes/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def add_recording_note(
     session: Session,
@@ -122,7 +128,7 @@ async def add_recording_note(
         session,
         message=data.message,
         is_issue=data.is_issue,
-        user=user,
+        created_by=user,
     )
     response = await api.recordings.add_note(session, recording, note)
     await session.commit()
@@ -132,6 +138,7 @@ async def add_recording_note(
 @recording_router.delete(
     "/detail/notes/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def remove_recording_note(
     session: Session,
@@ -149,6 +156,7 @@ async def remove_recording_note(
 @recording_router.post(
     "/detail/features/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def add_recording_feature(
     session: Session,
@@ -167,6 +175,7 @@ async def add_recording_feature(
 @recording_router.delete(
     "/detail/features/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def remove_recording_feature(
     session: Session,
@@ -185,6 +194,7 @@ async def remove_recording_feature(
 @recording_router.patch(
     "/detail/features/",
     response_model=schemas.Recording,
+    response_model_exclude_none=True,
 )
 async def update_recording_feature(
     session: Session,

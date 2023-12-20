@@ -10,6 +10,7 @@ from typing import AsyncGenerator, Optional
 import numpy as np
 import pytest
 import soundevent
+import soundfile as sf
 from scipy.io import wavfile
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -107,12 +108,26 @@ def write_random_wav(
     samplerate: int = 22100,
     duration: float = 0.1,
     channels: int = 1,
+    bit_depth: int = 16,
 ) -> None:
     """Write a random wav file to disk."""
     frames = int(samplerate * duration)
     shape = (frames, channels)
     wav = np.random.random(size=shape).astype(np.float32)
-    wavfile.write(path, samplerate, wav)
+
+    sub_type = "PCM_16"
+    if bit_depth == 16:
+        sub_type = "PCM_16"
+    elif bit_depth == 32:
+        sub_type = "PCM_32"
+    elif bit_depth == 24:
+        sub_type = "PCM_24"
+    elif bit_depth == 8:
+        sub_type = "PCM_S8"
+    else:
+        raise ValueError("Unsupported bit depth.")
+
+    sf.write(path, wav, samplerate, subtype=sub_type)
 
 
 @pytest.fixture
@@ -124,6 +139,7 @@ def random_wav_factory(audio_dir: Path):
         samplerate: int = 22100,
         duration: float = 0.1,
         channels: int = 1,
+        bit_depth: int = 16,
     ) -> Path:
         if path is None:
             path = audio_dir / (random_string() + ".wav")
@@ -137,6 +153,7 @@ def random_wav_factory(audio_dir: Path):
             samplerate=samplerate,
             duration=duration,
             channels=channels,
+            bit_depth=bit_depth,
         )
 
         return path

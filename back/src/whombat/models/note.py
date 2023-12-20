@@ -19,7 +19,7 @@ to provide feedback to other users or to ask for clarification about
 specific annotations.
 """
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -96,27 +96,31 @@ class Note(Base):
             SoundEventAnnotation,
             SoundEventAnnotationNote,
         )
+        from whombat.models.clip_annotation import (
+            ClipAnnotation,
+            ClipAnnotationNote,
+        )
 
-    recordings: orm.Mapped[list["Recording"]] = orm.relationship(
+    recording: orm.Mapped[Optional["Recording"]] = orm.relationship(
         "Recording",
         secondary="recording_note",
         init=False,
         repr=False,
         viewonly=True,
         back_populates="notes",
-        default_factory=list,
     )
 
-    recording_notes: orm.Mapped[list["RecordingNote"]] = orm.relationship(
+    recording_note: orm.Mapped[Optional["RecordingNote"]] = orm.relationship(
         "RecordingNote",
         init=False,
         repr=False,
         back_populates="note",
-        default_factory=list,
+        single_parent=True,
+        cascade="all, delete-orphan",
     )
 
-    sound_event_annotations: orm.Mapped[
-        list["SoundEventAnnotation"]
+    sound_event_annotation: orm.Mapped[
+        Optional["SoundEventAnnotation"]
     ] = orm.relationship(
         "SoundEventAnnotation",
         secondary="sound_event_annotation_note",
@@ -124,15 +128,35 @@ class Note(Base):
         repr=False,
         viewonly=True,
         back_populates="notes",
-        default_factory=list,
     )
 
-    sound_event_annotation_notes: orm.Mapped[
-        list["SoundEventAnnotationNote"]
+    sound_event_annotation_note: orm.Mapped[
+        Optional["SoundEventAnnotationNote"]
     ] = orm.relationship(
         "SoundEventAnnotationNote",
         init=False,
         repr=False,
         back_populates="note",
-        default_factory=list,
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
+
+    clip_annotation: orm.Mapped[Optional["ClipAnnotation"]] = orm.relationship(
+        "ClipAnnotation",
+        secondary="clip_annotation_note",
+        init=False,
+        repr=False,
+        viewonly=True,
+        back_populates="notes",
+    )
+
+    clip_annotation_note: orm.Mapped[
+        Optional["ClipAnnotationNote"]
+    ] = orm.relationship(
+        "ClipAnnotationNote",
+        init=False,
+        repr=False,
+        back_populates="note",
+        single_parent=True,
+        cascade="all, delete-orphan",
     )

@@ -114,7 +114,7 @@ class DatasetRecordingCreate(BaseModel):
     """The path to the recording in the dataset directory."""
 
 
-class DatasetRecording(BaseModel):
+class DatasetRecording(BaseSchema):
     """Schema for DatasetRecording objects returned to the user."""
 
     recording: Recording
