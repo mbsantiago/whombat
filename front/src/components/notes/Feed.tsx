@@ -1,7 +1,7 @@
 import React from "react";
 
 import { type User, type Note } from "@/api/schemas";
-import NoteComponent from "@/components/Note";
+import NoteComponent from "@/components/notes/Note";
 
 export default function Feed({
   notes,

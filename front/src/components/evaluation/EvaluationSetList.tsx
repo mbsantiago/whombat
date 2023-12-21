@@ -1,5 +1,5 @@
 import useEvaluationSets from "@/hooks/api/useEvaluationSets";
-import EvaluationSet from "@/components/EvaluationSet";
+import EvaluationSet from "@/components/evaluation_sets/EvaluationSet";
 import StackedList from "@/components/StackedList";
 import Link from "@/components/Link";
 import Search from "@/components/Search";

@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 
 import { type User, type Note } from "@/api/schemas";
-import { DeleteIcon, EditIcon, IssueIcon, NoteIcon } from "@/components/icons";
+import { DeleteIcon, IssueIcon, NoteIcon } from "@/components/icons";
 import Button from "@/components/Button";
 import Loading from "@/components/Loading";
 import useNote from "@/hooks/api/useNote";
@@ -65,6 +65,7 @@ export default function Note({
                 mode="text"
                 variant="danger"
                 className="text-xs"
+                // @ts-ignore
                 onClick={() => note.delete.mutate()}
               >
                 <DeleteIcon className="inline-block mr-1 w-4 h-4" />

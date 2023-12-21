@@ -1,3 +1,11 @@
+/**
+ * The `Player` module contains components related to the audio player,
+ * including the main player controls, the slider, and the speed selection
+ * dropdown.
+ *
+ * @module
+ * @exports Player
+ */
 import { Fragment, useRef } from "react";
 import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
@@ -25,88 +33,14 @@ import { LoopIcon, PauseIcon, PlayIcon, SpeedIcon } from "@/components/icons";
 const COMMON_BUTTON_CLASSES =
   "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
 
-function PlayerThumb({
-  state,
-  ...props
-}: {
-  state: SliderState;
-} & Omit<AriaSliderThumbOptions, "inputRef">) {
-  let { index, name, trackRef } = props;
-  let inputRef = useRef(null);
-  let { thumbProps, inputProps, isDragging } = useSliderThumb(
-    {
-      index,
-      trackRef,
-      inputRef,
-      name,
-    },
-    state,
-  );
-
-  let { focusProps, isFocusVisible } = useFocusRing();
-  return (
-    <div
-      {...thumbProps}
-      className={classNames("w-3 h-3 rounded-full shadow cursor-pointer", {
-        "focus:ring-4 focus:outline-none focus:ring-emerald-500/50":
-          isFocusVisible,
-        "bg-emerald-700 dark:bg-emerald-300": isDragging,
-        "bg-emerald-500": !isDragging,
-      })}
-    >
-      <VisuallyHidden>
-        <input ref={inputRef} {...mergeProps(inputProps, focusProps)} />
-      </VisuallyHidden>
-    </div>
-  );
-}
-
-function PlayerSlider(props: AriaSliderProps) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  let numberFormatter = useNumberFormatter({ style: "decimal" });
-  const state = useSliderState({ ...props, numberFormatter });
-  const { groupProps, trackProps, labelProps, outputProps } = useSlider(
-    props,
-    state,
-    trackRef,
-  );
-  return (
-    <div {...groupProps} className="ml-2 w-36">
-      {props.label && (
-        <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
-          <VisuallyHidden>
-            <label {...labelProps}>{props.label}</label>
-          </VisuallyHidden>
-          <output {...outputProps}>
-            {secondsToTimeStr(state.getThumbValue(0))}
-          </output>
-          <output>{secondsToTimeStr(props.maxValue)}</output>
-        </div>
-      )}
-      <div
-        className="py-1 w-full cursor-pointer"
-        {...trackProps}
-        ref={trackRef}
-      >
-        <div className="w-full h-1 rounded-full bg-stone-900">
-          <span
-            className="relative h-1 bg-emerald-600 rounded-full dark:bg-emerald-200"
-            style={{
-              width: `${Math.min(state.getThumbPercent(0), 100)}%`,
-            }}
-          />
-          <PlayerThumb
-            index={0}
-            state={state}
-            trackRef={trackRef}
-            name={"currentTime"}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
+/**
+ * Player component represents the audio player.
+ *
+ * @component
+ * @param {object} props - Component properties.
+ * @param {PlayerState} props.state - The state of the audio player.
+ * @param {PlayerControls} props.controls - The controls for the audio player.
+ */
 export default function Player({
   state,
   controls,
@@ -180,6 +114,17 @@ function secondsToTimeStr(seconds?: number): string {
     .replace(/^00:/, "");
 }
 
+/**
+ * SelectSpeed component represents the speed selection dropdown in the audio
+ * player.
+ *
+ * @component
+ * @param {object} props - Component properties.
+ * @param {number} props.speed - The selected playback speed.
+ * @param {(value: number) => void} props.onChange - Callback function for
+ * speed change.
+ * @param {SpeedOption[]} props.options - The available speed options.
+ */
 function SelectSpeed({
   speed,
   onChange,
@@ -220,17 +165,19 @@ function SelectSpeed({
               key={option.value.toString()}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${active
-                  ? "bg-emerald-100 text-emerald-900"
-                  : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${
+                  active
+                    ? "bg-emerald-100 text-emerald-900"
+                    : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
-                      }`}
+                    className={`block truncate ${
+                      selected ? "text-emerald-500 font-medium" : "font-normal"
+                    }`}
                   >
                     {option.label}
                   </span>
@@ -241,5 +188,102 @@ function SelectSpeed({
         </Listbox.Options>
       </Float>
     </Listbox>
+  );
+}
+
+/**
+ * PlayerThumb component represents the slider thumb used in the audio player.
+ *
+ * @component
+ * @param {object} props - Component properties.
+ * @param {SliderState} props.state - The state of the slider.
+ * @param {AriaSliderThumbOptions} props.props - Additional ARIA slider thumb
+ * options.
+ */
+function PlayerThumb({
+  state,
+  ...props
+}: {
+  state: SliderState;
+} & Omit<AriaSliderThumbOptions, "inputRef">) {
+  let { index, name, trackRef } = props;
+  let inputRef = useRef(null);
+  let { thumbProps, inputProps, isDragging } = useSliderThumb(
+    {
+      index,
+      trackRef,
+      inputRef,
+      name,
+    },
+    state,
+  );
+
+  let { focusProps, isFocusVisible } = useFocusRing();
+  return (
+    <div
+      {...thumbProps}
+      className={classNames("w-3 h-3 rounded-full shadow cursor-pointer", {
+        "focus:ring-4 focus:outline-none focus:ring-emerald-500/50":
+          isFocusVisible,
+        "bg-emerald-700 dark:bg-emerald-300": isDragging,
+        "bg-emerald-500": !isDragging,
+      })}
+    >
+      <VisuallyHidden>
+        <input ref={inputRef} {...mergeProps(inputProps, focusProps)} />
+      </VisuallyHidden>
+    </div>
+  );
+}
+
+/**
+ * PlayerSlider component represents the slider used in the audio player.
+ *
+ * @component
+ * @param {AriaSliderProps} props - Component properties.
+ */
+function PlayerSlider(props: AriaSliderProps) {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  let numberFormatter = useNumberFormatter({ style: "decimal" });
+  const state = useSliderState({ ...props, numberFormatter });
+  const { groupProps, trackProps, labelProps, outputProps } = useSlider(
+    props,
+    state,
+    trackRef,
+  );
+  return (
+    <div {...groupProps} className="ml-2 w-36">
+      {props.label && (
+        <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
+          <VisuallyHidden>
+            <label {...labelProps}>{props.label}</label>
+          </VisuallyHidden>
+          <output {...outputProps}>
+            {secondsToTimeStr(state.getThumbValue(0))}
+          </output>
+          <output>{secondsToTimeStr(props.maxValue)}</output>
+        </div>
+      )}
+      <div
+        className="py-1 w-full cursor-pointer"
+        {...trackProps}
+        ref={trackRef}
+      >
+        <div className="w-full h-1 rounded-full bg-stone-900">
+          <span
+            className="relative h-1 bg-emerald-600 rounded-full dark:bg-emerald-200"
+            style={{
+              width: `${Math.min(state.getThumbPercent(0), 100)}%`,
+            }}
+          />
+          <PlayerThumb
+            index={0}
+            state={state}
+            trackRef={trackRef}
+            name={"currentTime"}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -22,7 +22,7 @@ export default function useSpectrogramImage({
   });
 
   // Load the spectrogram segment
-  const { draw } = useSpectrogramWindow({
+  const image = useSpectrogramWindow({
     recording,
     window: selected,
     parameters: parameters,
@@ -40,5 +40,5 @@ export default function useSpectrogramImage({
     parameters: parameters,
   });
 
-  return draw;
+  return image;
 }

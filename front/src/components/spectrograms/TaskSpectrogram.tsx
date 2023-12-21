@@ -16,11 +16,11 @@ import {
   type SpectrogramParameters,
 } from "@/api/spectrograms";
 import Card from "@/components/Card";
-import Player from "@/components/Player";
-import ScrollBar from "@/components/ScrollBar";
-import SpectrogramControls from "@/components/SpectrogramControls";
-import SpectrogramSettings from "@/components/SpectrogramSettings";
-import SpectrogramTags from "@/components/SpectrogramTags";
+import Player from "@/components/audio/Player";
+import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
+import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
+import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
+import SpectrogramTags from "@/components/spectrograms/SpectrogramTags";
 import AnnotationControls from "@/components/annotation/AnnotationControls";
 import useAnnotateSpectrogram from "@/hooks/annotation/useAnnotateSpectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
@@ -191,7 +191,7 @@ export default function TaskSpectrogram({
           <canvas ref={canvasRef} className="w-full h-full" />
         </SpectrogramTags>
       </div>
-      <ScrollBar
+      <SpectrogramBar
         window={specState.context.window}
         bounds={specState.context.bounds}
         setWindow={handleOnBarDrag}

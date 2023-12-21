@@ -1,5 +1,5 @@
 import useDatasets from "@/hooks/api/useDatasets";
-import Dataset from "@/components/Dataset";
+import Dataset from "@/components/datasets/Dataset";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";
 import Pagination from "@/components/Pagination";

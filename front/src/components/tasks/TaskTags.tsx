@@ -5,7 +5,7 @@ import { H3 } from "@/components/Headings";
 import useStore from "@/store";
 import Tag from "@/components/tags/Tag";
 import Button from "@/components/Button";
-import { AddTagButton } from "@/components/SpectrogramTags";
+import { AddTagButton } from "@/components/spectrograms/SpectrogramTags";
 import { DeleteIcon } from "@/components/icons";
 
 export default function TaskTags({

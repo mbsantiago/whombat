@@ -1,4 +1,4 @@
-import type { Geometry } from "@/utils/types";
+import type { Geometry } from "@/api/schemas";
 import type { BorderStyle, FillStyle } from "@/draw/styles";
 import { drawLineString, drawMultiLineString } from "@/draw/linestring";
 import { drawPoint, drawMultiPoint } from "@/draw/point";
@@ -25,6 +25,7 @@ export default function drawGeometry(
       drawInterval(ctx, { min, max }, style);
       break;
     case "BoundingBox":
+      // @ts-ignore
       drawBBox(ctx, geometry.coordinates, style);
       break;
     case "Point":

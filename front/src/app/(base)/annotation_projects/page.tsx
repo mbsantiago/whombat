@@ -1,7 +1,7 @@
 "use client";
 import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
 import Hero from "@/components/Hero";
-import AnnotationProject from "@/components/AnnotationProject";
+import AnnotationProject from "@/components/annotation_projects/AnnotationProject";
 import Link from "@/components/Link";
 import StackedList from "@/components/StackedList";
 import Search from "@/components/Search";

@@ -5,7 +5,7 @@ import { H3 } from "@/components/Headings";
 import { IssueIcon, NotesIcon } from "@/components/icons";
 import { InputGroup, TextArea } from "@/components/inputs";
 import Button from "@/components/Button";
-import Feed from "@/components/Feed";
+import Feed from "@/components/notes/Feed";
 import { type NoteCreate, type NoteUpdate } from "@/api/notes";
 import { type User, type Note, type Recording } from "@/api/schemas";
 

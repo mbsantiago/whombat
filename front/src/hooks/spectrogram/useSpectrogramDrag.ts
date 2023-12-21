@@ -1,31 +1,65 @@
-import { useCallback } from "react";
-
-import useWindowDrag from "@/hooks/window/useWindowDrag";
+import { useState, useCallback } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type PanToEvent } from "@/machines/spectrogram";
+import { type Shift } from "@/hooks/window/useDrag";
+import useDrag from "@/hooks/window/useDrag";
 
 export default function useSpectrogramDrag({
-  drag,
-  window,
-  active,
-  send,
+  viewport,
+  dimensions,
+  enabled = true,
+  onDragStart,
+  onDrag,
+  onDragEnd,
 }: {
-  window: SpectrogramWindow;
-  active: boolean;
-  drag: ScratchState;
-  send: (event: PanToEvent) => void;
+  viewport: SpectrogramWindow;
+  dimensions: { width: number; height: number };
+  onDragStart?: () => void;
+  onDrag?: (window: SpectrogramWindow) => void;
+  onDragEnd?: () => void;
+  enabled?: boolean;
 }) {
-  const handleOnDrag = useCallback(
-    (newWindow: SpectrogramWindow) => {
-      send({ type: "PAN_TO", window: newWindow });
+  const [initialWindow, setInitialWindow] = useState(viewport);
+
+  const onMoveStart = useCallback(() => {
+    if (!enabled) return;
+    setInitialWindow(viewport);
+    onDragStart?.();
+  }, [onDragStart, viewport, enabled]);
+
+  const onMove = useCallback(
+    (pos: Shift) => {
+      if (!enabled) return;
+      const window = {
+        time: {
+          min: initialWindow.time.min - pos.time,
+          max: initialWindow.time.max - pos.time,
+        },
+        freq: {
+          min: initialWindow.freq.min - pos.freq,
+          max: initialWindow.freq.max - pos.freq,
+        },
+      };
+      onDrag?.(window);
     },
-    [send],
+    [onDrag, initialWindow, enabled],
   );
-  useWindowDrag({
-    window: window,
-    setWindow: handleOnDrag,
-    active,
-    dragState: drag,
+
+  const onMoveEnd = useCallback(() => {
+    if (!enabled) return;
+    setInitialWindow(viewport);
+    onDragEnd?.();
+  }, [onDragEnd, viewport, enabled]);
+
+  const { moveProps, isDragging } = useDrag({
+    viewport,
+    dimensions,
+    onMoveStart,
+    onMove,
+    onMoveEnd,
   });
+
+  return {
+    dragProps: moveProps,
+    isDragging,
+  } as const;
 }

@@ -1,32 +1,34 @@
-import { useCallback, useRef } from "react";
+import { useRef, useCallback } from "react";
 import { useMemo } from "react";
-import { useActor, useMachine } from "@xstate/react";
 
-import { spectrogramMachine } from "@/machines/spectrogram";
 import useCanvas from "@/hooks/draw/useCanvas";
+import useAudio from "@/hooks/audio/useAudio";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
-import useScratch from "@/hooks/motions/useScratch";
-import useStore from "@/store";
+import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
+import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 import Card from "@/components/Card";
-import Player from "@/components/Player";
-import ScrollBar from "@/components/ScrollBar";
-import SpectrogramSettings from "@/components/SpectrogramSettings";
-import SpectrogramControls from "@/components/SpectrogramControls";
+import Player from "@/components/audio/Player";
+import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
+import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
+import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import { type Recording } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
+import {
+  type SpectrogramParameters,
+  DEFAULT_SPECTROGRAM_PARAMETERS,
+} from "@/api/spectrograms";
 
 export default function RecordingSpectrogram({
   recording,
+  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
 }: {
   recording: Recording;
+  parameters?: SpectrogramParameters;
 }) {
-  // Reference to the canvas element
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const dragState = useScratch({ ref: canvasRef });
-
-  // Get initial spectrogram parameters from global state
-  const parameters = useStore((state) => state.spectrogramSettings);
+  const dimensions = canvasRef.current?.getBoundingClientRect() ?? {
+    width: 0,
+    height: 0,
+  };
 
   // These are the absolute bounds of the spectrogram
   const bounds = useMemo(
@@ -46,46 +48,46 @@ export default function RecordingSpectrogram({
     [recording.samplerate, recording.duration],
   );
 
-  // This hook holds the state for the spectrogram settings
-  // State machine for the spectrogram
-  const [state, send] = useMachine(spectrogramMachine, {
-    context: {
-      recording,
-      bounds,
-      initial,
-      window: initial,
-      parameters,
-    },
-  });
-
-  const { draw } = useSpectrogram({
+  const spectrogram = useSpectrogram({
     recording,
     bounds,
     initial,
-    state,
-    send,
-    dragState,
-    ref: canvasRef,
+    parameters,
   });
 
-  if (state.context.audio == null) {
-    throw new Error("Audio is not initialized");
-  }
+  const audio = useAudio({
+    recording,
+    endTime: bounds.time.max,
+    startTime: bounds.time.min,
+  });
 
-  const [audioState, audioSend] = useActor(state.context.audio);
+  const { draw: drawTrackAudio } = useSpectrogramTrackAudio({
+    viewport: spectrogram.state.viewport,
+    currentTime: audio.state.currentTime,
+    isPlaying: audio.state.playing,
+    onTimeChange: (time) => spectrogram.controls.centerOn({ time }),
+  });
 
-  const handleOnBarDrag = useCallback(
-    (newWindow: SpectrogramWindow) => {
-      send({ type: "PAN_TO", window: newWindow });
+  const {
+    draw: drawSpectrogram,
+    state: { isLoading: spectrogramIsLoading },
+  } = spectrogram;
+
+  const { motionProps, draw: drawMotions } = useSpectrogramMotions({
+    viewport: spectrogram.state.viewport,
+    onDrag: (viewport) => spectrogram.controls.zoom(viewport),
+    onZoom: (_, viewport) => spectrogram.controls.zoom(viewport),
+    dimensions,
+  });
+
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      if (spectrogramIsLoading) return;
+      drawSpectrogram(ctx);
+      drawTrackAudio(ctx);
+      drawMotions(ctx);
     },
-    [send],
-  );
-
-  const handleOnBarScroll = useCallback(
-    (shiftBy: { time: number; freq: number }, relative: boolean) => {
-      send({ type: "SHIFT_WINDOW", shiftBy, relative });
-    },
-    [send],
+    [drawSpectrogram, drawTrackAudio, spectrogramIsLoading, drawMotions],
   );
 
   useCanvas({ ref: canvasRef, draw });
@@ -94,40 +96,24 @@ export default function RecordingSpectrogram({
     <Card>
       <div className="flex flex-row gap-2">
         <SpectrogramControls
-          isDragging={state.matches("panning")}
-          isZooming={state.matches("zooming")}
-          onDrag={() => send("PAN")}
-          onZoom={() => send("ZOOM")}
-          onReset={() => send("RESET")}
+          state={spectrogram.state}
+          controls={spectrogram.controls}
         />
         <SpectrogramSettings
-          settings={state.context.parameters}
-          onChange={(key, value) => send({ type: "SET_PARAMETER", key, value })}
-          onClear={(key) => send({ type: "CLEAR_PARAMETER", key })}
+          settings={spectrogram.state.parameters}
+          onChange={(key, value) =>
+            spectrogram.controls.setParameter(key, value)
+          }
+          onClear={(key) => spectrogram.controls.clearParameter(key)}
         />
-        <Player
-          samplerate={recording.samplerate}
-          currentTime={audioState.context.currentTime}
-          startTime={audioState.context.startTime}
-          endTime={audioState.context.endTime}
-          speed={audioState.context.speed}
-          loop={audioState.context.loop}
-          playing={state.matches("playing")}
-          play={() => send("PLAY")}
-          pause={() => send("PAUSE")}
-          seek={(time: number) => audioSend({ type: "SEEK", time })}
-          setSpeed={(speed: number) => audioSend({ type: "SET_SPEED", speed })}
-          toggleLoop={() => audioSend({ type: "TOGGLE_LOOP" })}
-        />
+        <Player state={audio.state} controls={audio.controls} />
       </div>
-      <div className="h-96">
-        <canvas ref={canvasRef} className="w-full h-full" />
+      <div className="overflow-hidden h-96 rounded-md">
+        <canvas ref={canvasRef} {...motionProps} className="w-full h-full" />
       </div>
-      <ScrollBar
-        window={state.context.window}
-        bounds={state.context.bounds}
-        setWindow={handleOnBarDrag}
-        shiftWindow={handleOnBarScroll}
+      <SpectrogramBar
+        state={spectrogram.state}
+        controls={spectrogram.controls}
       />
     </Card>
   );

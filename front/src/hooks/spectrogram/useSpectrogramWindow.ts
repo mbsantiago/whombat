@@ -43,12 +43,7 @@ export default function useSpectrogramWindow({
       segment: spectrogramWindow.time,
       parameters,
     });
-  }, [
-    recording,
-    spectrogramWindow.time,
-    parameters,
-    getSpectrogramImageUrl,
-  ]);
+  }, [recording, spectrogramWindow.time, parameters, getSpectrogramImageUrl]);
 
   // Start loading the image
   const { isLoading, isError, image } = useImage({ url });
@@ -58,24 +53,23 @@ export default function useSpectrogramWindow({
   // on the canvas, adjusting the position and size relative to the viewport.
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, view: SpectrogramWindow) => {
-      if (isError) return null;
-      if (isLoading) {
-        ctx.canvas.classList.add("animate-pluse");
-      } else {
-        drawImage({
-          ctx,
-          image,
-          window: view,
-          bounds: spectrogramWindow,
-        });
-      }
+      if (isLoading || isError) return;
+
+      drawImage({
+        ctx,
+        image,
+        window: view,
+        bounds: spectrogramWindow,
+      });
     },
-    [image, isLoading, isError, spectrogramWindow],
+    [image, spectrogramWindow, isLoading, isError],
   );
 
   return {
     image,
-    window: spectrogramWindow,
+    viewport: spectrogramWindow,
+    isLoading,
+    isError,
     draw,
-  };
+  } as const;
 }

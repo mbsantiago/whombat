@@ -7,7 +7,6 @@ import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingMap from "./RecordingMap";
 import RecordingTagBar from "./RecordingTagBar";
 import RecordingHeader from "./RecordingHeader";
-import RecordingPlayer from "./RecordingPlayer";
 
 export default function RecordingDetail({
   recording,
@@ -25,10 +24,9 @@ export default function RecordingDetail({
             <div className="col-span-2">
               <RecordingTagBar recording={recording} />
             </div>
-            <RecordingPlayer recording={recording} />
-            {/* <div className="col-span-2"> */}
-            {/*   <RecordingSpectrogram recording={recording} /> */}
-            {/* </div> */}
+            <div className="col-span-2">
+              <RecordingSpectrogram recording={recording} />
+            </div>
             <div className="col-span-2">
               <RecordingNotes recording={recording} currentUser={currentUser} />
             </div>

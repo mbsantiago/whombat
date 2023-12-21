@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import Card from "@/components/Card";
-import Note from "@/components/Note";
+import Note from "@/components/notes/Note";
 import { H3 } from "@/components/Headings";
 import { type Note as NoteType, type Dataset } from "@/api/schemas";
 import { CheckIcon, NotesIcon } from "@/components/icons";

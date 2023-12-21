@@ -3,27 +3,24 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 // @ts-ignore
 import bbox from "@turf/bbox";
 
-// import { type Annotation } from '@/api/annotations'
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import type { BBox, Interval, Onset } from "@/utils/types";
 import type {
   TimeStamp,
   TimeInterval,
   BoundingBox,
-  BBox,
   Geometry,
-  Interval,
   LineString,
   MultiLineString,
   MultiPoint,
   MultiPolygon,
-  Onset,
   Point,
   Polygon,
-  Position,
-} from "@/utils/types";
+} from "@/api/schemas";
 
 const MAX_FREQ = 5_000_000;
 
+type Position = number[];
 type Dims = { width: number; height: number };
 
 export function bboxIntersection(bbox1: BBox, bbox2: BBox): BBox | null {
@@ -52,9 +49,13 @@ export function scaleXToWindow(
   value: number,
   window: SpectrogramWindow,
   width: number,
+  relative: boolean = false,
 ): number {
   const { time } = window;
   const duration = time.max - time.min;
+  if (relative) {
+    return (duration * value) / width;
+  }
   return time.min + (duration * value) / width;
 }
 
@@ -73,10 +74,27 @@ export function scaleYToWindow(
   value: number,
   window: SpectrogramWindow,
   height: number,
+  relative: boolean = false,
 ): number {
   const { freq } = window;
   const bandwidth = freq.max - freq.min;
+  if (relative) {
+    return (bandwidth * value) / height;
+  }
   return freq.max - (bandwidth * value) / height;
+}
+
+export function scalePixelsToWindow(
+  position: { x: number; y: number },
+  window: SpectrogramWindow,
+  dims: Dims,
+  relative: boolean = false,
+): { time: number; freq: number } {
+  const { width, height } = dims;
+  const { x, y } = position;
+  const time = scaleXToWindow(x, window, width, relative);
+  const freq = scaleYToWindow(y, window, height, relative);
+  return { time, freq };
 }
 
 export function scaleOnsetToViewport(
@@ -225,6 +243,7 @@ export function scaleGeometryToViewport<T extends Geometry>(
         ...geometry,
         coordinates: scaleIntervalToViewport(
           dims,
+          // @ts-ignore
           geometry.coordinates,
           window,
         ),
@@ -241,6 +260,7 @@ export function scaleGeometryToViewport<T extends Geometry>(
     case "BoundingBox":
       return {
         ...geometry,
+        // @ts-ignore
         coordinates: scaleBBoxToViewport(dims, geometry.coordinates, window),
       };
     case "MultiPoint":
@@ -302,11 +322,13 @@ export function scaleGeometryToWindow<T extends Geometry>(
     case "TimeInterval":
       return {
         ...geometry,
+        // @ts-ignore
         coordinates: scaleIntervalToWindow(dims, geometry.coordinates, window),
       };
     case "BoundingBox":
       return {
         ...geometry,
+        // @ts-ignore
         coordinates: scaleBBoxToWindow(dims, geometry.coordinates, window),
       };
     case "Point":
@@ -498,8 +520,10 @@ export function isCloseToGeometry(
     case "TimeStamp":
       return isCloseToOnset(position, geometry.coordinates, threshold);
     case "TimeInterval":
+      // @ts-ignore
       return isCloseToInterval(position, geometry.coordinates, threshold);
     case "BoundingBox":
+      // @ts-ignore
       return isCloseToBBox(position, geometry.coordinates, threshold);
     case "Point":
       return isCloseToPoint(position, geometry, threshold);
@@ -828,6 +852,7 @@ export function computeTimeIntervalBBox(geometry: TimeInterval): BBox {
 }
 
 export function computeBoundingBoxBBox(geometry: BoundingBox): BBox {
+  // @ts-ignore
   return geometry.coordinates;
 }
 

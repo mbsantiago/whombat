@@ -1,41 +1,39 @@
 import { useEffect, useCallback } from "react";
 
+import { scaleTimeToViewport } from "@/utils/geometry";
 import drawOnset from "@/draw/onset";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type CenterOnEvent } from "@/machines/spectrogram";
 
 export default function useSpectrogramTrackAudio({
-  active,
-  time,
-  window,
-  send,
+  viewport,
+  currentTime,
+  isPlaying,
+  onTimeChange,
+  enabled = true,
 }: {
-  active: boolean;
-  time?: number;
-  window: SpectrogramWindow;
-  send: (event: CenterOnEvent) => void;
+  viewport: SpectrogramWindow;
+  currentTime: number;
+  isPlaying: boolean;
+  onTimeChange?: (time: number) => void;
+  enabled?: boolean;
 }) {
   useEffect(() => {
-    if (active && time != null) {
-      send({ type: "CENTER_ON", time });
-    }
-  }, [active, send, time]);
-
-  const { min: start, max: end } = window.time;
+    if (!enabled) return;
+    if (isPlaying) onTimeChange?.(currentTime);
+  }, [currentTime, isPlaying, onTimeChange, enabled]);
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!active || time == null) return;
-
-      if (time < start || time > end) {
-        return;
-      }
-
-      const x = Math.ceil((ctx.canvas.width * (time - start)) / (end - start));
+      if (!isPlaying || !enabled) return;
+      const { width } = ctx.canvas;
+      const x = scaleTimeToViewport(currentTime, viewport, width);
       drawOnset(ctx, x);
     },
-    [active, time, start, end],
+    [currentTime, isPlaying, viewport, enabled],
   );
 
-  return draw;
+  return {
+    tracking: isPlaying && enabled,
+    draw,
+  };
 }

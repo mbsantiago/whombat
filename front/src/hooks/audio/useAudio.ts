@@ -34,11 +34,11 @@ const LOWEST_SAMPLE_RATE = 8000;
 const HIGHTEST_SAMPLE_RATE = 96000;
 
 const ALL_SPEED_OPTIONS: SpeedOption[] = [
-  // { label: "0.1x", value: 0.1 },
-  // { label: "0.25x", value: 0.25 },
+  { label: "1x", value: 1 },
+  { label: "0.1x", value: 0.1 },
+  { label: "0.25x", value: 0.25 },
   { label: "0.5x", value: 0.5 },
   { label: "0.75x", value: 0.75 },
-  { label: "1x", value: 1 },
   { label: "1.2x", value: 1.2 },
   { label: "1.5x", value: 1.5 },
   { label: "1.75x", value: 1.75 },
@@ -58,6 +58,10 @@ function getSpeedOptions(recording: Recording): SpeedOption[] {
   });
 }
 
+function getDefaultSpeedOption(options: SpeedOption[]): SpeedOption {
+  return options.find((option) => option.value === 1) || options[0];
+}
+
 export default function useAudio({
   recording,
   endTime,
@@ -65,10 +69,14 @@ export default function useAudio({
   speed: initialSpeed,
 }: { recording: Recording } & Partial<PlayerState>) {
   const speedOptions = useMemo(() => getSpeedOptions(recording), [recording]);
+  const defaultSpeedOption = useMemo(
+    () => getDefaultSpeedOption(speedOptions),
+    [speedOptions],
+  );
 
   // Store internal player state
   const [speed, setSpeed] = useState<number>(
-    initialSpeed || speedOptions[0].value,
+    initialSpeed || defaultSpeedOption.value,
   );
 
   const initialUrl = useMemo(() => {
@@ -95,7 +103,7 @@ export default function useAudio({
       startTime,
       endTime: endTime || recording.duration,
       volume,
-      currentTime: currentTime / speed + startTime,
+      currentTime: currentTime * speed + startTime,
       speed: speed,
       loop,
       playing: isPlaying,
@@ -122,7 +130,7 @@ export default function useAudio({
       setVolume: (volume) => send({ type: "audio.set_volume", volume }),
       toggleLoop: () => send({ type: "audio.toggle_loop" }),
       seek: (time) =>
-        send({ type: "audio.seek", time: (time - startTime) * speed }),
+        send({ type: "audio.seek", time: (time - startTime) / speed }),
       setSpeed: (newSpeed) => {
         setSpeed(newSpeed);
         const url = api.audio.getStreamUrl({

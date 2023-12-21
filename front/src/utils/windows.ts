@@ -5,7 +5,6 @@ import {
   DEFAULT_HOP_SIZE,
 } from "@/api/spectrograms";
 
-
 // Size of the target initial spectrogram in pixels.
 const TARGET_INITIAL_SIZE = 512 * 1024;
 
@@ -197,5 +196,45 @@ export function scaleWindow(
       min: freqCenter - height / 2,
       max: freqCenter + height / 2,
     },
+  };
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(Math.round(value), min), max);
+}
+
+export function getViewportPosition({
+  width,
+  height,
+  viewport,
+  bounds,
+}: {
+  width?: number;
+  height?: number;
+  viewport: SpectrogramWindow;
+  bounds: SpectrogramWindow;
+}): {
+  left: number;
+  width: number;
+  top: number;
+  height: number;
+} {
+  if (width == null || height == null) {
+    return { left: 0, width: 0, top: 0, height: 0 };
+  }
+
+  const bottom =
+    (bounds.freq.max - viewport.freq.min) / (bounds.freq.max - bounds.freq.min);
+  const top =
+    (bounds.freq.max - viewport.freq.max) / (bounds.freq.max - bounds.freq.min);
+  const left =
+    (viewport.time.min - bounds.time.min) / (bounds.time.max - bounds.time.min);
+  const right =
+    (viewport.time.max - bounds.time.min) / (bounds.time.max - bounds.time.min);
+  return {
+    top: clamp(top * height, 0, height),
+    left: clamp(left * width, 0, width),
+    height: clamp((bottom - top) * height, 0, height),
+    width: clamp((right - left) * width, 0, width),
   };
 }

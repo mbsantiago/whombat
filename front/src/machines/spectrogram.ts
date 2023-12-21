@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createMachine } from "xstate";
+import { assign, createMachine } from "xstate";
 
 import {
   adjustWindowToBounds,
@@ -11,8 +11,6 @@ import {
   type SpectrogramWindow,
 } from "@/api/spectrograms";
 import { type Recording } from "@/api/schemas";
-import { audioMachine } from "@/machines/audio";
-import api from "@/app/api";
 
 export type SpectrogramContext = {
   recording: Recording;
@@ -20,40 +18,40 @@ export type SpectrogramContext = {
   window: SpectrogramWindow;
   bounds: SpectrogramWindow;
   parameters: SpectrogramParameters;
-  audio?: ActorRefFrom<typeof audioMachine>;
-};
-
-export type ChangeRecordingEvent = {
-  type: "CHANGE_RECORDING";
-  recording: Recording;
 };
 
 export type SetWindowEvent = {
-  type: "SET_WINDOW";
+  type: "spectrogram.set_window";
   window: SpectrogramWindow;
 };
 
-export type SetParameterEvent = {
-  type: "SET_PARAMETER";
-  key: keyof SpectrogramParameters;
-  value: any;
+export type SetParameterEvent<T extends keyof SpectrogramParameters> = {
+  type: "spectrogram.set_parameter";
+  key: T;
+  value: SpectrogramParameters[T];
 };
 
 export type ClearParameterEvent = {
-  type: "CLEAR_PARAMETER";
+  type: "spectrogram.clear_parameter";
   key: keyof SpectrogramParameters;
 };
 
-export type ZoomToEvent = { type: "ZOOM_TO"; window: SpectrogramWindow };
-export type PanToEvent = { type: "PAN_TO"; window: SpectrogramWindow };
-export type CenterOnEvent = { type: "CENTER_ON"; time: number };
+export type ZoomToEvent = {
+  type: "spectrogram.zoom_to";
+  window: SpectrogramWindow;
+};
+export type PanToEvent = {
+  type: "spectrogram.pan_to";
+  window: SpectrogramWindow;
+};
+export type CenterOnEvent = { type: "spectrogram.center_on"; time: number };
 export type ShiftWindowEvent = {
-  type: "SHIFT_WINDOW";
+  type: "spectrogram.shift_window";
   shiftBy: { time: number; freq: number };
   relative?: boolean;
 };
 export type ScaleWindowEvent = {
-  type: "SCALE_WINDOW";
+  type: "spectrogram.scale_window";
   scaleBy: { time?: number; freq?: number };
 };
 
@@ -70,9 +68,7 @@ export type SpectrogramEvent =
   | { type: "PAUSE" }
   | { type: "RESET" }
   | { type: "DISABLE" }
-  | ChangeRecordingEvent
   | SetWindowEvent
-  | SetParameterEvent
   | ClearParameterEvent
   | UpdateEvent
   | PanToEvent
@@ -99,16 +95,6 @@ export const spectrogramStates = {
           target: "panning",
         },
       },
-    },
-    playing: {
-      on: {
-        CENTER_ON: {
-          actions: ["centerOn"],
-        },
-        PAUSE: "panning",
-      },
-      entry: ["play"],
-      exit: ["pause"],
     },
   },
   on: {
@@ -141,16 +127,9 @@ export const spectrogramStates = {
       actions: ["scaleWindow"],
     },
   },
-  entry: ["initAudio"],
 };
 
 export const spectrogramActions = {
-  play: (context: SpectrogramContext) => {
-    context.audio?.send("PLAY");
-  },
-  pause: (context: SpectrogramContext) => {
-    context.audio?.send("PAUSE");
-  },
   setParameter: assign({
     parameters: (
       context: SpectrogramContext,
@@ -212,14 +191,6 @@ export const spectrogramActions = {
   }),
   update: assign({
     bounds: (context, event: UpdateEvent) => {
-      context.audio?.send({
-        type: "SET_START_TIME",
-        time: event.bounds.time.min,
-      });
-      context.audio?.send({
-        type: "SET_END_TIME",
-        time: event.bounds.time.max,
-      });
       return event.bounds;
     },
     initial: (_, event: UpdateEvent) => event.initial,
@@ -229,33 +200,7 @@ export const spectrogramActions = {
   }),
   changeRecording: assign({
     recording: (context: SpectrogramContext, event: ChangeRecordingEvent) => {
-      context.audio?.send({
-        type: "CHANGE_RECORDING",
-        recording: event.recording,
-      });
       return event.recording;
-    },
-  }),
-  initAudio: assign({
-    // @ts-ignore
-    audio: ({ context, spawn }: { context: SpectrogramContext }) => {
-      if (context.audio != null) {
-        return context.audio;
-      }
-      return spawn(
-        audioMachine.withContext({
-          audio: new Audio(),
-          recording: context.recording,
-          startTime: context.bounds.time.min,
-          endTime: context.bounds.time.max,
-          currentTime: context.bounds.time.min,
-          muted: false,
-          volume: 1,
-          speed: 1,
-          loop: false,
-          getAudioURL: api.audio.getStreamUrl,
-        }),
-      );
     },
   }),
 };

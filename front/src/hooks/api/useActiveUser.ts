@@ -23,7 +23,7 @@ export default function useActiveUser({
     queryFn: async () => {
       return await api.user.me();
     },
-    retry: 2,
+    retry: false,
     enabled,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
