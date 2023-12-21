@@ -77,5 +77,20 @@ export default function useCanvas({
     }
   }, [ctx, draw, onDraw, onClear]);
 
+  // Prevent scrolling when the mouse is over the canvas
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement;
+      if (!ref.current?.contains(target)) return;
+      if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [ref]);
+
   return ref;
 }

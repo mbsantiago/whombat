@@ -1,8 +1,4 @@
 import { useState, useCallback, useMemo, type MouseEvent } from "react";
-import {
-  type SpectrogramState,
-  type SpectrogramControls,
-} from "./useSpectrogram";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Shift } from "@/hooks/window/useDrag";
 import useDrag from "@/hooks/window/useDrag";

@@ -118,7 +118,9 @@ export function registerSpectrogramAPI({
 
     const params = new URLSearchParams(
       Object.fromEntries(
-        Object.entries(query).map(([key, value]) => [key, value.toString()]),
+        Object.entries(query)
+          .filter(([_, value]) => value != null)
+          .map(([key, value]) => [key, value.toString()]),
       ),
     );
 

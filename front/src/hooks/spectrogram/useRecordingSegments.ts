@@ -7,6 +7,24 @@ import { type Recording } from "@/api/schemas";
 const DURATIONS = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];
 const OVERLAP = 0.4;
 
+/**
+ * The `useRecordingSegments` hook provides functionality to compute and manage
+ * segments of a spectrogram window for a given recording.
+ *
+ * @description
+  * This function is designed to determine an optimal spectrogram segment to
+  * load for displaying a requested spectrogram window to the user. The
+  * selected segment is chosen to be as small as possible, minimizing data
+  * loading time. However, it must be large enough to cover the entire
+  * spectrogram window. Once a suitable segment size is chosen, the entire
+  * spectrogram is divided into segments of the specified size with a fixed
+  * stride. The function returns the segment that best covers the given window.
+  * This design facilitates the browser's ability to reuse cached images of
+  * previously loaded segments, optimizing performance. Additionally,
+  * contiguous next and previous segments are returned, allowing the client to
+  * preload these segments for smoother transitions, eliminating loading times
+  * during navigation of the spectrogram.
+ */
 export default function useRecordingSegments({
   recording,
   window,
@@ -82,8 +100,8 @@ function getSegments(
       {
         time: window.time,
         freq: window.freq,
-      }
-    ]
+      },
+    ];
   }
 
   const hop = duration * (1 - overlap);

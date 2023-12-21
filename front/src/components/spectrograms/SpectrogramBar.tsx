@@ -1,19 +1,17 @@
 import { useMemo, useRef, useState } from "react";
 
-import {
-  type SpectrogramControls,
-  type SpectrogramState,
-} from "@/hooks/spectrogram/useSpectrogram";
 import { getViewportPosition } from "@/utils/windows";
 import useDrag from "@/hooks/window/useDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export default function SpectrogramBar({
-  state,
-  controls,
+  bounds,
+  viewport,
+  onMove,
 }: {
-  state: SpectrogramState;
-  controls: SpectrogramControls;
+  bounds: SpectrogramWindow;
+  viewport: SpectrogramWindow;
+  onMove?: (viewport: SpectrogramWindow) => void;
 }) {
   const barRef = useRef<HTMLDivElement>(null);
   const { width, height } = barRef.current?.getBoundingClientRect() ?? {
@@ -21,14 +19,12 @@ export default function SpectrogramBar({
     height: 0,
   };
 
-  const { bounds, viewport } = state;
-
   const barPosition = useMemo(
     () =>
       getViewportPosition({
         width,
         height,
-        viewport: viewport,
+        viewport,
         bounds,
       }),
     [viewport, bounds, width, height],
@@ -38,10 +34,10 @@ export default function SpectrogramBar({
 
   const { moveProps } = useDrag({
     dimensions: { width, height },
-    viewport: state.bounds,
-    onMoveStart: () => setInitialViewport(state.viewport),
+    viewport: bounds,
+    onMoveStart: () => setInitialViewport(viewport),
     onMove: ({ time, freq }) => {
-      controls.zoom({
+      onMove?.({
         time: {
           min: intialViewport.time.min + time,
           max: intialViewport.time.max + time,
@@ -52,7 +48,7 @@ export default function SpectrogramBar({
         },
       });
     },
-    onMoveEnd: () => setInitialViewport(state.viewport),
+    onMoveEnd: () => setInitialViewport(viewport),
   });
 
   return (

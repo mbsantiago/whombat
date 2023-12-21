@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useAudio from "@/hooks/audio/useAudio";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
-import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
 import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 import Card from "@/components/Card";
 import Player from "@/components/audio/Player";
@@ -49,6 +48,7 @@ export default function RecordingSpectrogram({
   );
 
   const spectrogram = useSpectrogram({
+    dimensions,
     recording,
     bounds,
     initial,
@@ -69,25 +69,18 @@ export default function RecordingSpectrogram({
   });
 
   const {
+    props,
     draw: drawSpectrogram,
     state: { isLoading: spectrogramIsLoading },
   } = spectrogram;
-
-  const { motionProps, draw: drawMotions } = useSpectrogramMotions({
-    viewport: spectrogram.state.viewport,
-    onDrag: (viewport) => spectrogram.controls.zoom(viewport),
-    onZoom: (_, viewport) => spectrogram.controls.zoom(viewport),
-    dimensions,
-  });
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (spectrogramIsLoading) return;
       drawSpectrogram(ctx);
       drawTrackAudio(ctx);
-      drawMotions(ctx);
     },
-    [drawSpectrogram, drawTrackAudio, spectrogramIsLoading, drawMotions],
+    [drawSpectrogram, drawTrackAudio, spectrogramIsLoading],
   );
 
   useCanvas({ ref: canvasRef, draw });
@@ -96,8 +89,11 @@ export default function RecordingSpectrogram({
     <Card>
       <div className="flex flex-row gap-2">
         <SpectrogramControls
-          state={spectrogram.state}
-          controls={spectrogram.controls}
+          canDrag={spectrogram.state.canDrag}
+          canZoom={spectrogram.state.canZoom}
+          onReset={() => spectrogram.controls.reset()}
+          onDrag={() => spectrogram.controls.enableDrag()}
+          onZoom={() => spectrogram.controls.enableZoom()}
         />
         <SpectrogramSettings
           settings={spectrogram.state.parameters}
@@ -109,11 +105,12 @@ export default function RecordingSpectrogram({
         <Player state={audio.state} controls={audio.controls} />
       </div>
       <div className="overflow-hidden h-96 rounded-md">
-        <canvas ref={canvasRef} {...motionProps} className="w-full h-full" />
+        <canvas ref={canvasRef} {...props} className="w-full h-full" />
       </div>
       <SpectrogramBar
-        state={spectrogram.state}
-        controls={spectrogram.controls}
+        bounds={spectrogram.state.bounds}
+        viewport={spectrogram.state.viewport}
+        onMove={spectrogram.controls.zoom}
       />
     </Card>
   );

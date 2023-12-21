@@ -11,6 +11,7 @@ import {
   type SpectrogramParameters,
   DEFAULT_SPECTROGRAM_PARAMETERS,
 } from "@/api/spectrograms";
+import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
 import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFrequencyAxis from "@/draw/freqAxis";
@@ -30,6 +31,8 @@ export type SpectrogramState = {
   viewport: SpectrogramWindow;
   isLoading: boolean;
   isError: boolean;
+  canDrag: boolean;
+  canZoom: boolean;
 };
 
 /**
@@ -46,6 +49,9 @@ export type SpectrogramControls = {
     value: SpectrogramParameters[T],
   ) => void;
   clearParameter: <T extends keyof SpectrogramParameters>(key: T) => void;
+  enableDrag: () => void;
+  enableZoom: () => void;
+  disable: () => void;
 };
 
 /**
@@ -56,18 +62,25 @@ export default function useSpectrogram({
   recording,
   bounds,
   initial,
+  dimensions,
   parameters: initialParameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   onParameterChange,
+  onModeChange,
+  enabled = true,
 }: {
   recording: Recording;
+  dimensions: { width: number; height: number };
   bounds?: SpectrogramWindow;
   initial?: SpectrogramWindow;
   parameters?: SpectrogramParameters;
   onParameterChange?: (parameters: SpectrogramParameters) => void;
+  onModeChange?: (mode: "drag" | "zoom" | "idle") => void;
+  enabled?: boolean;
 }): {
   state: SpectrogramState;
   controls: SpectrogramControls;
   draw: DrawFn;
+  props: React.HTMLAttributes<HTMLCanvasElement>;
 } {
   const initialBounds = useMemo<SpectrogramWindow>(() => {
     return (
@@ -85,28 +98,98 @@ export default function useSpectrogram({
     initial ?? initialBounds,
   );
 
+  const zoom = useCallback(
+    (window: SpectrogramWindow) => {
+      setViewport(adjustWindowToBounds(window, initialBounds));
+    },
+    [initialBounds],
+  );
+
+  const scale = useCallback(
+    ({ time = 1, freq = 1 }: { time?: number; freq?: number }) => {
+      setViewport((prev) =>
+        adjustWindowToBounds(scaleWindow(prev, { time, freq }), initialBounds),
+      );
+    },
+    [initialBounds],
+  );
+
+  const shift = useCallback(
+    ({ time = 0, freq = 0 }: { time?: number; freq?: number }) => {
+      setViewport((prev) =>
+        adjustWindowToBounds(shiftWindow(prev, { time, freq }, false), initialBounds),
+      );
+    },
+    [initialBounds],
+  );
+
+  // Drawing functions
+  const {
+    draw: drawImage,
+    isLoading,
+    isError,
+  } = useSpectrogramImage({
+    recording,
+    window: viewport,
+    parameters,
+  });
+
+  const {
+    props,
+    draw: drawMotions,
+    state: { canDrag, canZoom },
+    controls: { enableDrag, enableZoom, disable },
+  } = useSpectrogramMotions({
+    viewport,
+    onDrag: (viewport) => zoom(viewport),
+    onZoom: (_, viewport) => zoom(viewport),
+    onScrollMoveTime: (time) => shift({ time }),
+    onScrollMoveFreq: (freq) => shift({ freq }),
+    onScrollZoomTime: (time) => scale({ time }),
+    onScrollZoomFreq: (freq) => scale({ freq }),
+    onModeChange,
+    dimensions,
+    enabled,
+  });
+
+  // Compute exported state
+  const state = useMemo(() => {
+    return {
+      bounds: initialBounds,
+      parameters,
+      viewport,
+      isLoading,
+      isError,
+      canDrag,
+      canZoom,
+    };
+  }, [
+    parameters,
+    viewport,
+    initialBounds,
+    isLoading,
+    isError,
+    canDrag,
+    canZoom,
+  ]);
+
+  // Create the drawing function
+  const draw = useCallback<DrawFn>(
+    (ctx) => {
+      drawImage(ctx, viewport);
+      drawTimeAxis(ctx, viewport.time);
+      drawFrequencyAxis(ctx, viewport.freq);
+      drawMotions(ctx);
+    },
+    [drawImage, drawMotions, viewport],
+  );
+
   const controls = useMemo(() => {
     return {
       reset: () => setViewport(initialBounds),
-      zoom: (window: SpectrogramWindow) => {
-        setViewport(adjustWindowToBounds(window, initialBounds));
-      },
-      scale: ({ time = 1, freq = 1 }: { time?: number; freq?: number }) => {
-        setViewport((prev) =>
-          adjustWindowToBounds(
-            scaleWindow(prev, { time, freq }),
-            initialBounds,
-          ),
-        );
-      },
-      shift: ({ time = 0, freq = 0 }: { time?: number; freq?: number }) => {
-        setViewport((prev) =>
-          adjustWindowToBounds(
-            shiftWindow(prev, { time, freq }),
-            initialBounds,
-          ),
-        );
-      },
+      zoom,
+      scale,
+      shift,
       centerOn: ({ time, freq }: { time?: number; freq?: number }) => {
         setViewport((prev) =>
           adjustWindowToBounds(
@@ -138,46 +221,29 @@ export default function useSpectrogram({
           return validated;
         });
       },
+      enableDrag,
+      enableZoom,
+      disable,
     };
-  }, [recording, initialBounds, setParameters, onParameterChange]);
-
-  // Drawing functions
-  const {
-    draw: drawImage,
-    isLoading,
-    isError,
-  } = useSpectrogramImage({
+  }, [
     recording,
-    window: viewport,
-    parameters,
-  });
-
-  // Compute exported state
-  const state = useMemo(() => {
-    return {
-      bounds: initialBounds,
-      parameters,
-      viewport,
-      isLoading,
-      isError,
-    };
-  }, [parameters, viewport, initialBounds, isLoading, isError]);
-
-  // Create the drawing function
-  const draw = useCallback<DrawFn>(
-    (ctx) => {
-      drawImage(ctx, viewport);
-      drawTimeAxis(ctx, viewport.time);
-      drawFrequencyAxis(ctx, viewport.freq);
-    },
-    [drawImage, viewport],
-  );
+    initialBounds,
+    setParameters,
+    onParameterChange,
+    zoom,
+    scale,
+    shift,
+    enableDrag,
+    enableZoom,
+    disable,
+  ]);
 
   return {
     state,
     controls,
     draw,
-  };
+    props,
+  }
 }
 
 function validateParameters(

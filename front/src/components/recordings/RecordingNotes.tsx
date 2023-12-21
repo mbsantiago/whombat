@@ -6,10 +6,9 @@ import { IssueIcon, NotesIcon } from "@/components/icons";
 import { InputGroup, TextArea } from "@/components/inputs";
 import Button from "@/components/Button";
 import Feed from "@/components/notes/Feed";
-import { type NoteCreate, type NoteUpdate } from "@/api/notes";
+import { type NoteCreate } from "@/api/notes";
 import { type User, type Note, type Recording } from "@/api/schemas";
 
-import useNotes from "@/hooks/api/useNotes";
 import useRecording from "@/hooks/api/useRecording";
 
 function NoNotes() {
@@ -136,7 +135,6 @@ export default function RecordingNotes({
         <NotesIcon className="inline-block mr-1 w-5 h-5" />
         Notes
       </H3>
-      <CreateNoteForm onCreate={addNote.mutate} />
       {notes.length === 0 ? (
         <NoNotes />
       ) : (
@@ -147,6 +145,7 @@ export default function RecordingNotes({
           onDelete={onDelete}
         />
       )}
+      <CreateNoteForm onCreate={addNote.mutate} />
     </Card>
   );
 }

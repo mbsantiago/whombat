@@ -35,8 +35,8 @@ export default function useSpectrogramDrag({
           max: initialWindow.time.max - pos.time,
         },
         freq: {
-          min: initialWindow.freq.min - pos.freq,
-          max: initialWindow.freq.max - pos.freq,
+          min: initialWindow.freq.min + pos.freq,
+          max: initialWindow.freq.max + pos.freq,
         },
       };
       onDrag?.(window);

@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import useSpectrogramDrag from "./useSpectrogramDrag";
 import useSpectrogramZoom from "./useSpectrogramZoom";
+import useSpectrogramScrollMove from "./useSpectrogramScrollMove";
+import useSpectrogramScrollZoom from "./useSpectrogramScrollZoom";
 import { mergeProps } from "react-aria";
 
 /**
@@ -10,7 +12,6 @@ import { mergeProps } from "react-aria";
  * @description Either "drag", "zoom", or "idle".
  */
 type MotionMode = "drag" | "zoom" | "idle";
-
 
 /**
  * The state of the spectrogram motions.
@@ -25,7 +26,6 @@ export type MotionState = {
   enabled: boolean;
 };
 
-
 /**
  * The controls for managing spectrogram motions.
  *
@@ -39,7 +39,6 @@ export type MotionControls = {
   disable: () => void;
 };
 
-
 /**
  * The `useSpectrogramMotions` hook manages different motion modes (drag, zoom)
  * for a spectrogram.
@@ -52,6 +51,10 @@ export default function useSpectrogramMotions({
   onDrag,
   onZoom,
   onModeChange,
+  onScrollMoveTime,
+  onScrollMoveFreq,
+  onScrollZoomTime,
+  onScrollZoomFreq,
   enabled = true,
 }: {
   viewport: SpectrogramWindow;
@@ -61,6 +64,10 @@ export default function useSpectrogramMotions({
   onDragEnd?: () => void;
   onZoom?: (prev: SpectrogramWindow, next: SpectrogramWindow) => void;
   onModeChange?: (mode: MotionMode) => void;
+  onScrollMoveTime?: (time: number) => void;
+  onScrollMoveFreq?: (freq: number) => void;
+  onScrollZoomTime?: (time: number) => void;
+  onScrollZoomFreq?: (time: number) => void;
   enabled?: boolean;
 }) {
   const [motionMode, setMotionMode] = useState<MotionMode>(
@@ -76,14 +83,61 @@ export default function useSpectrogramMotions({
     enabled: enabled && motionMode === "drag",
   });
 
+  const handleOnZoom = useCallback(
+    (prev: SpectrogramWindow, next: SpectrogramWindow) => {
+      onZoom?.(prev, next);
+      setMotionMode("drag");
+    },
+    [onZoom],
+  );
+
   const { zoomProps, draw } = useSpectrogramZoom({
     viewport,
     dimensions,
-    onZoom,
+    onZoom: handleOnZoom,
     enabled: enabled && motionMode === "zoom",
   });
 
-  const motionProps = mergeProps(dragProps, zoomProps);
+  const { scrollProps: scrollMoveTimeProps } = useSpectrogramScrollMove({
+    viewport,
+    dimensions,
+    onScroll: onScrollMoveTime,
+    shift: true,
+    enabled,
+  });
+
+  const { scrollProps: scrollZoomTimeProps } = useSpectrogramScrollZoom({
+    dimensions,
+    onScroll: onScrollZoomTime,
+    shift: true,
+    alt: true,
+    enabled,
+  });
+
+  const { scrollProps: scrollMoveFreqProps } = useSpectrogramScrollMove({
+    viewport,
+    dimensions,
+    onScroll: onScrollMoveFreq,
+    ctrl: true,
+    enabled,
+  });
+
+  const { scrollProps: scrollZoomFreqProps } = useSpectrogramScrollZoom({
+    dimensions,
+    onScroll: onScrollZoomFreq,
+    ctrl: true,
+    alt: true,
+    enabled,
+  });
+
+  const props = mergeProps(
+    dragProps,
+    zoomProps,
+    scrollMoveTimeProps,
+    scrollZoomTimeProps,
+    scrollZoomFreqProps,
+    scrollMoveFreqProps,
+  );
 
   const motionState = useMemo<MotionState>(() => {
     return {
@@ -111,7 +165,7 @@ export default function useSpectrogramMotions({
   }, [onModeChange]);
 
   return {
-    motionProps,
+    props,
     draw,
     state: motionState,
     controls: motionControls,
