@@ -132,7 +132,7 @@ def load_clip_bytes(
         end = end - start
         start = 0
         header = generate_wav_header(
-            int(samplerate / speed),
+            int(samplerate * speed),
             channels,
             total_samples,
             bit_depth,
