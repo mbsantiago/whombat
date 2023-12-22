@@ -6,7 +6,7 @@ from soundevent import audio
 
 import whombat.api.audio as audio_api
 from whombat import schemas
-from whombat.core import spectrograms as func
+from whombat.core.spectrograms import normalize_spectrogram
 
 __all__ = [
     "compute_spectrogram",
@@ -40,7 +40,6 @@ def compute_spectrogram(
     -------
     DataArray
         Spectrogram image.
-
     """
     wav = audio_api.load_audio(
         recording,
@@ -64,25 +63,31 @@ def compute_spectrogram(
     if spectrogram_parameters.pcen:
         # NOTE: PCEN expects a spectrogram in amplitude scale so it should be
         # applied before scaling.
-        spectrogram = func.pcen(spectrogram)
+        spectrogram = audio.pcen(spectrogram)
+
+    # Scale spectrogram.
+    spectrogram = audio.scale_amplitude(
+        spectrogram,
+        spectrogram_parameters.scale,
+    )
+
+    # Clamp amplitude.
+    spectrogram = audio.clamp_amplitude(
+        spectrogram,
+        spectrogram_parameters.min_dB,
+        spectrogram_parameters.max_dB,
+    )
+
+    # Scale to [0, 1]. If normalization is relative, the minimum and maximum
+    # values are computed from the spectrogram, otherwise they are taken from
+    # the provided min_dB and max_dB.
+    spectrogram = normalize_spectrogram(
+        spectrogram,
+        relative=spectrogram_parameters.normalize,
+    )
 
     # Get the underlying numpy array.
     array = spectrogram.data
-
-    if spectrogram_parameters.normalize:
-        array = func.normalize_array(array)
-
-    # Scale spectrogram.
-    array = func.scale_spectrogram(array, spectrogram_parameters.scale)
-
-    # Clamp amplitude.
-    if spectrogram_parameters.clamp:
-        array = func.clamp_amplitude(
-            array,
-            spectrogram_parameters.min_dB,
-            spectrogram_parameters.max_dB,
-            spectrogram_parameters.scale,
-        )
 
     # Remove unncecessary dimensions.
     return array.squeeze()

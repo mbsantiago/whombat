@@ -60,11 +60,13 @@ async def get_spectrogram(
     )
 
     # Normalize.
-    data_min = data.min()
-    data_max = data.max()
-    data_range = data_max - data_min
-    if data_range > 0:
-        data = (data - data.min()) / data_range
+    if spectrogram_parameters.normalize:
+        data = data / data.max()
+        data_min = data.min()
+        data_max = data.max()
+        data_range = data_max - data_min
+        if data_range > 0:
+            data = (data - data.min()) / data_range
 
     image = images.array_to_image(
         data,
