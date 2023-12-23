@@ -45,6 +45,8 @@ export default function useCanvas({
       return;
     }
 
+    context.imageSmoothingEnabled = false;
+
     setCtx(context);
     onMount?.(context);
   });

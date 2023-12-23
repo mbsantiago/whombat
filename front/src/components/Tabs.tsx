@@ -19,24 +19,23 @@ type TabType = {
 const BASE_CLASS =
   "whitespace-nowrap rounded-lg bg-stone-50 p-2 text-center text-sm font-medium dark:bg-stone-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/50";
 
-const DISABLED_CLASS = "text-emerald-500";
+const ACTIVE_CLASS = "text-emerald-500";
 
-const ENABLED_CLASS =
+const INACTIVE_CLASS =
   "text-stone-700 hover:bg-stone-200 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-700 dark:hover:text-stone-300";
 
 function TabButton({
   children,
-  disabled,
+  active = false,
   className,
   ...props
-}: { children: ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>) {
+}: { children: ReactNode, active?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      disabled={disabled}
       className={classnames(
         BASE_CLASS,
-        disabled ? DISABLED_CLASS : ENABLED_CLASS,
+        active ? ACTIVE_CLASS : INACTIVE_CLASS,
         className,
       )}
     >
@@ -47,16 +46,16 @@ function TabButton({
 
 function TabLink({
   children,
-  disabled,
+  active = false,
   className,
   ...props
-}: { children: ReactNode; disabled: boolean } & ComponentProps<typeof Link>) {
+}: { children: ReactNode; active: boolean } & ComponentProps<typeof Link>) {
   return (
     <Link
       {...props}
       className={classnames(
         BASE_CLASS,
-        disabled ? DISABLED_CLASS : ENABLED_CLASS,
+        active ? ACTIVE_CLASS : INACTIVE_CLASS,
         className,
         "p-2 inline-block",
       )}
@@ -72,7 +71,7 @@ export default function Tabs({ tabs }: { tabs: TabType[] }) {
       {tabs.map((tab) => (
         <li key={tab.id}>
           {tab.href != null ? (
-            <TabLink href={tab.href} disabled={tab.isActive}>
+            <TabLink href={tab.href} active={tab.isActive}>
               {tab.icon ? (
                 <span className="mr-1 inline-block align-middle">
                   {tab.icon}
@@ -81,7 +80,7 @@ export default function Tabs({ tabs }: { tabs: TabType[] }) {
               {tab.title}
             </TabLink>
           ) : (
-            <TabButton onClick={tab.onClick} disabled={tab.isActive}>
+            <TabButton onClick={tab.onClick} active={tab.isActive}>
               {tab.icon ? (
                 <span className="mr-1 inline-block align-middle">
                   {tab.icon}

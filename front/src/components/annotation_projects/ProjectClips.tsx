@@ -4,17 +4,17 @@ import toast from "react-hot-toast";
 import useDatasets from "@/hooks/api/useDatasets";
 import useRecordings from "@/hooks/api/useRecordings";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
-import SearchMenu from "@/components/SearchMenu";
+import SearchMenu from "@/components/search/SearchMenu";
 import { type AnnotationProject } from "@/api/schemas";
 import { type Recording } from "@/api/schemas";
 import { type Dataset } from "@/api/schemas";
 import { type ClipCreate } from "@/api/clips";
-import { Input, InputGroup } from "@/components/inputs";
+import { Input, InputGroup } from "@/components/inputs/index";
 import { FilterIcon } from "@/components/icons";
-import FilterMenu from "@/components/FilterMenu";
-import FilterBar from "@/components/FilterBar";
+import FilterMenu from "@/components/filters/FilterMenu";
+import FilterBar from "@/components/filters/FilterBar";
 import Card from "@/components/Card";
-import Toggle from "@/components/Toggle";
+import Toggle from "@/components/inputs/Toggle";
 import Button from "@/components/Button";
 import recordingFilterDefs from "@/components/filters/recordings";
 
@@ -203,7 +203,7 @@ function SelectRecordings({
         >
           <div className="inline-flex items-center w-full gap-3">
             <Toggle
-              checked={selection.subsample}
+              isSelected={selection.subsample}
               onChange={(subsample) =>
                 setSelection((selection: RecordingSelection) => ({
                   ...selection,
@@ -275,7 +275,7 @@ function ExtractClips({
         help="If checked, smaller clips will be extracted from the recordings. If unchecked, the whole recording will be added as a clip."
       >
         <Toggle
-          checked={extraction.clip}
+          isSelected={extraction.clip}
           onChange={(clip) =>
             setExtraction((extraction: ClipExtraction) => ({
               ...extraction,
@@ -327,7 +327,7 @@ function ExtractClips({
           >
             <div className="inline-flex items-center w-full gap-3">
               <Toggle
-                checked={extraction.subsample}
+                isSelected={extraction.subsample}
                 onChange={(subsample) =>
                   setExtraction((extraction: ClipExtraction) => ({
                     ...extraction,

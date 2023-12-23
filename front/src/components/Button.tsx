@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from "react";
 import classnames from "classnames";
 
 import type { Variant } from "@/components/common";
@@ -68,23 +68,28 @@ export function getButtonClassName({
   );
 }
 
-export default function Button({
-  children,
-  variant = "primary",
-  mode = "filled",
-  padding = "p-2.5",
-  className,
-  ...props
-}: {
-  children: ReactNode;
-  variant?: Variant;
-  padding?: string;
-  mode?: Mode;
-} & ButtonHTMLAttributes<HTMLButtonElement>) {
+const Button = forwardRef(function Button(
+  {
+    children,
+    variant = "primary",
+    mode = "filled",
+    padding = "p-2.5",
+    className,
+    ...props
+  }: {
+    children: ReactNode;
+    variant?: Variant;
+    padding?: string;
+    mode?: Mode;
+  } & ButtonHTMLAttributes<HTMLButtonElement>,
+  ref,
+) {
   const baseClass = getButtonClassName({ variant, mode, padding });
   return (
-    <button className={classnames(baseClass, className)} {...props}>
+    <button className={classnames(baseClass, className)} {...props} ref={ref}>
       {children}
     </button>
   );
-}
+});
+
+export default Button;

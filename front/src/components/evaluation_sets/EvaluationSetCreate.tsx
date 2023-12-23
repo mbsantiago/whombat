@@ -11,7 +11,7 @@ import {
   type EvaluationSetCreate,
   EvaluationSetCreateSchema,
 } from "@/api/evaluation_sets";
-import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
+import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
 
 function RadioOption({
   checked,

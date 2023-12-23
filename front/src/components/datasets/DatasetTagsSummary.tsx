@@ -9,6 +9,53 @@ import useStore from "@/store";
 import { TagsIcon } from "@/components/icons";
 import useTags from "@/hooks/api/useTags";
 
+/**
+ * Component to display a summary of tags for a dataset.
+ *
+ * @param dataset - The dataset for which to display tag summary.
+ * @param topK - The number of top tags to display (default is 5).
+ * @returns JSX element displaying the tag summary.
+ */
+export default function DatasetTagsSummary({
+  dataset,
+  topK = 5,
+}: {
+  dataset: Dataset;
+  topK?: number;
+}) {
+  const filter = useMemo(
+    () => ({
+      dataset__eq: dataset.uuid,
+    }),
+    [dataset.uuid],
+  );
+  const tags = useTags({ pageSize: -1, filter });
+
+  const tagCount: [TagType, number][] = useMemo(() => {
+    if (tags.isLoading || tags.data == null) {
+      return [];
+    }
+    return getTagCount(tags.items);
+  }, [tags]);
+
+  const popularTags = tagCount.slice(0, topK);
+  return (
+    <Card>
+      <H3>
+        <TagsIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
+        Tags
+      </H3>
+      {tags.isLoading ? (
+        <Loading />
+      ) : popularTags.length === 0 ? (
+        <NoTagsRecorded />
+      ) : (
+        <PopularTags popularTags={popularTags} />
+      )}
+    </Card>
+  );
+}
+
 function getTagKey(tag: TagType): string {
   return `${tag.key}-${tag.value}`;
 }
@@ -93,52 +140,5 @@ function PopularTags({ popularTags }: { popularTags: [TagType, number][] }) {
         </div>
       </div>
     </>
-  );
-}
-
-/**
- * Component to display a summary of tags for a dataset.
- *
- * @param dataset - The dataset for which to display tag summary.
- * @param topK - The number of top tags to display (default is 5).
- * @returns JSX element displaying the tag summary.
- */
-export default function DatasetTagsSummary({
-  dataset,
-  topK = 5,
-}: {
-  dataset: Dataset;
-  topK?: number;
-}) {
-  const filter = useMemo(
-    () => ({
-      dataset__eq: dataset.uuid,
-    }),
-    [dataset.uuid],
-  );
-  const tags = useTags({ pageSize: -1, filter });
-
-  const tagCount: [TagType, number][] = useMemo(() => {
-    if (tags.isLoading || tags.data == null) {
-      return [];
-    }
-    return getTagCount(tags.items);
-  }, [tags]);
-
-  const popularTags = tagCount.slice(0, topK);
-  return (
-    <Card>
-      <H3>
-        <TagsIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
-        Tags
-      </H3>
-      {tags.isLoading ? (
-        <Loading />
-      ) : popularTags.length === 0 ? (
-        <NoTagsRecorded />
-      ) : (
-        <PopularTags popularTags={popularTags} />
-      )}
-    </Card>
   );
 }

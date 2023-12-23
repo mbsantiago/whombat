@@ -1,14 +1,15 @@
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-import {
-  DateIcon,
-  LocationIcon,
-  RecordingIcon,
-  TimeIcon,
-} from "@/components/icons";
+import { RecordingIcon } from "@/components/icons";
 import { H3 } from "@/components/Headings";
 import { type Recording } from "@/api/schemas";
 import Tooltip from "@/components/Tooltip";
+
+import RecordingDate from "./RecordingDate";
+import RecordingTime from "./RecordingTime";
+import RecordingLocation from "./RecordingLocation";
+import useRecording from "@/hooks/api/useRecording";
 
 /** Get the basename of a path
  * Taken from https://stackoverflow.com/a/25221100
@@ -21,67 +22,6 @@ function removeExtension(path: string) {
   return path.split(".").slice(0, -1).join(".");
 }
 
-function Section({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex flex-row tracking-tighter iterms-center">
-      {children}
-    </div>
-  );
-}
-
-function RecordingLocation({
-  latitude,
-  longitude,
-}: {
-  latitude?: number;
-  longitude?: number;
-}) {
-  const hasLocation = latitude != null && longitude != null;
-
-  return (
-    <Section>
-      <LocationIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
-      {hasLocation ? (
-        `${latitude}, ${longitude}`
-      ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-600">
-          No location
-        </span>
-      )}
-    </Section>
-  );
-}
-
-function RecordingTime({ time }: { time: string | null }) {
-  return (
-    <Section>
-      <TimeIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
-      {time != null ? (
-        time
-      ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-600">
-          No time
-        </span>
-      )}
-    </Section>
-  );
-}
-
-function RecordingDate({ date }: { date?: Date }) {
-  return (
-    <Section>
-      <DateIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
-      {date != null ? (
-        date.toLocaleDateString()
-      ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-600">
-          No date
-        </span>
-      )}
-    </Section>
-  );
-}
-
 export default function RecordingHeader({
   recording,
 }: {
@@ -89,6 +29,11 @@ export default function RecordingHeader({
 }) {
   const { path } = recording;
   const baseName = removeExtension(getBaseName(path) ?? "");
+  const { data, update: updateRecording } = useRecording({
+    uuid: recording.uuid,
+    recording,
+    enabled: true,
+  });
 
   return (
     <div className="flex overflow-x-scroll flex-row gap-x-6 items-center w-full">
@@ -119,11 +64,12 @@ export default function RecordingHeader({
         </H3>
       </div>
       <RecordingLocation
-        latitude={recording.latitude}
-        longitude={recording.longitude}
+        latitude={data?.latitude}
+        longitude={data?.longitude}
+        onChange={updateRecording.mutate}
       />
-      <RecordingTime time={recording.time} />
-      <RecordingDate date={recording.date} />
+      <RecordingTime time={data?.time} onChange={updateRecording.mutate} />
+      <RecordingDate date={data?.date} onChange={updateRecording.mutate} />
     </div>
   );
 }

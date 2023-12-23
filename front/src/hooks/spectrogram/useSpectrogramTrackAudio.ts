@@ -25,6 +25,7 @@ export default function useSpectrogramTrackAudio({
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!isPlaying || !enabled) return;
+      ctx.canvas.style.cursor = "not-allowed";
       const { width } = ctx.canvas;
       const x = scaleTimeToViewport(currentTime, viewport, width);
       drawOnset(ctx, x);

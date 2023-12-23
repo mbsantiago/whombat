@@ -212,3 +212,19 @@ async def update_recording_feature(
     )
     await session.commit()
     return response
+
+
+@recording_router.delete(
+    "/detail/",
+    response_model=schemas.Recording,
+    response_model_exclude_none=True,
+)
+async def delete_recording(
+    session: Session,
+    recording_uuid: UUID,
+):
+    """Delete a recording."""
+    recording = await api.recordings.get(session, recording_uuid)
+    await api.recordings.delete(session, recording)
+    await session.commit()
+    return recording

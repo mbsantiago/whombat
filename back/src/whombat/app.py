@@ -6,9 +6,11 @@ import functools
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from whombat import exceptions
 from whombat.database.init import init_database
 from whombat.dependencies import get_settings
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
@@ -50,6 +52,13 @@ def create_app(settings: Settings) -> FastAPI:
         StaticFiles(packages=["whombat"], html=True),
         name="static",
     )
+
+    @app.exception_handler(exceptions.NotFoundError)
+    async def not_found_error_handler(_, exc: exceptions.NotFoundError):
+        return JSONResponse(
+            status_code=404,
+            content={"message": str(exc)},
+        )
 
     return app
 

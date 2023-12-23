@@ -3,7 +3,7 @@ import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
 
 import { CheckIcon, ExpandIcon } from "@/components/icons";
-import { Submit } from "@/components/inputs";
+import { Submit } from "@/components/inputs/index";
 
 type Option<T> = {
   id: string | number;

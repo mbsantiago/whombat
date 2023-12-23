@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
+import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
 import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
 import { type Dataset } from "@/api/schemas";
 

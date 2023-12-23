@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { WhombatIcon } from "@/components/icons";
-import { Input, InputGroup } from "@/components/inputs";
+import { Input, InputGroup } from "@/components/inputs/index";
 import api from "@/app/api";
 
 const schema = z.object({

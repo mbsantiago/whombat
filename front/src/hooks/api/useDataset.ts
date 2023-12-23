@@ -1,3 +1,4 @@
+import { type AxiosError } from "axios";
 import { useMemo } from "react";
 
 import { useQuery } from "@tanstack/react-query";
@@ -29,17 +30,19 @@ import api from "@/app/api";
 export default function useDataset({
   uuid,
   dataset,
-  onUpdate,
-  onDelete,
   enabled = true,
   withState = false,
+  onUpdate,
+  onDelete,
+  onError,
 }: {
   uuid: string;
   dataset?: Dataset;
-  onUpdate?: (updated: Dataset) => void;
-  onDelete?: (deleted: Dataset) => void;
   enabled?: boolean;
   withState?: boolean;
+  onUpdate?: (updated: Dataset) => void;
+  onDelete?: (deleted: Dataset) => void;
+  onError?: (error: AxiosError) => void;
 }) {
   if (dataset !== undefined && dataset.uuid !== uuid) {
     throw new Error("Dataset uuid does not match");
@@ -51,6 +54,7 @@ export default function useDataset({
     name: "dataset",
     enabled,
     getFn: api.datasets.get,
+    onError,
   });
 
   const update = useMutation<DatasetUpdate>({

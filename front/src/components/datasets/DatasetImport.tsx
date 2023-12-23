@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-import { Input, InputGroup, Submit } from "@/components/inputs";
+import { Input, InputGroup, Submit } from "@/components/inputs/index";
 import { UploadIcon } from "@/components/icons";
 import { type Dataset } from "@/api/schemas";
 import api from "@/app/api";

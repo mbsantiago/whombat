@@ -19,9 +19,11 @@ import {
 export default function RecordingSpectrogram({
   recording,
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  onParameterSave,
 }: {
   recording: Recording;
   parameters?: SpectrogramParameters;
+  onParameterSave?: (params: SpectrogramParameters) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dimensions = canvasRef.current?.getBoundingClientRect() ?? {
@@ -47,25 +49,34 @@ export default function RecordingSpectrogram({
     [recording.samplerate, recording.duration],
   );
 
-  const spectrogram = useSpectrogram({
-    dimensions,
-    recording,
-    bounds,
-    initial,
-    parameters,
-  });
-
   const audio = useAudio({
     recording,
     endTime: bounds.time.max,
     startTime: bounds.time.min,
   });
 
+  const spectrogram = useSpectrogram({
+    dimensions,
+    recording,
+    bounds,
+    initial,
+    parameters,
+    enabled: !audio.state.playing,
+  });
+
+  const {
+    controls: { centerOn },
+  } = spectrogram;
+  const handleTimeChange = useCallback(
+    (time: number) => centerOn({ time }),
+    [centerOn],
+  );
+
   const { draw: drawTrackAudio } = useSpectrogramTrackAudio({
     viewport: spectrogram.state.viewport,
     currentTime: audio.state.currentTime,
     isPlaying: audio.state.playing,
-    onTimeChange: (time) => spectrogram.controls.centerOn({ time }),
+    onTimeChange: handleTimeChange,
   });
 
   const {
@@ -76,6 +87,7 @@ export default function RecordingSpectrogram({
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
+      ctx.canvas.style.cursor = "wait";
       if (spectrogramIsLoading) return;
       drawSpectrogram(ctx);
       drawTrackAudio(ctx);
@@ -96,11 +108,13 @@ export default function RecordingSpectrogram({
           onZoom={() => spectrogram.controls.enableZoom()}
         />
         <SpectrogramSettings
+          samplerate={recording.samplerate}
           settings={spectrogram.state.parameters}
-          onChange={(key, value) =>
-            spectrogram.controls.setParameter(key, value)
+          onChange={(parameters) =>
+            spectrogram.controls.setParameters(parameters)
           }
-          onClear={(key) => spectrogram.controls.clearParameter(key)}
+          onReset={() => spectrogram.controls.resetParameters()}
+          onSave={() => onParameterSave?.(spectrogram.state.parameters)}
         />
         <Player state={audio.state} controls={audio.controls} />
       </div>

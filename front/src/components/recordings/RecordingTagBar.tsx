@@ -2,13 +2,19 @@ import useStore from "@/store";
 import { type Tag as TagType, type Recording } from "@/api/schemas";
 import { TagIcon } from "@/components/icons";
 import Tag from "@/components/tags/Tag";
+import AddTagButton from "@/components/tags/AddTagButton";
+import useRecording from "@/hooks/api/useRecording";
 
 export default function RecordingTagBar({
-  recording,
+  recording: data,
 }: {
   recording: Recording;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
+  const recording = useRecording({
+    uuid: data.uuid,
+    recording: data,
+  });
 
   return (
     <div className="flex flex-row gap-2 items-center">
@@ -19,15 +25,14 @@ export default function RecordingTagBar({
         </span>
       </div>
       <div className="flex flex-row flex-wrap gap-2">
-        {recording.tags?.map((tag: TagType) => (
+        {data.tags?.map((tag: TagType) => (
           <Tag
             key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}
-            // TODO: onClick
-            // onClick={() => onClick?.(tag)}
           />
         ))}
+        <AddTagButton variant="primary" onAdd={recording.addTag.mutate} />
       </div>
     </div>
   );

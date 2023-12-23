@@ -20,7 +20,7 @@ export const RecordingUpdateSchema = z.object({
   date: z.coerce.date().nullable().optional(),
   time: z
     .string()
-    .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
+    .regex(/^\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/)
     .nullable()
     .optional(),
   latitude: z.number().nullable().optional(),
@@ -106,9 +106,10 @@ export function registerRecordingAPI(
   }
 
   async function deleteRecording(recording: Recording): Promise<Recording> {
-    return await instance.delete(endpoints.delete, {
+    const { data: res } = await instance.delete(endpoints.delete, {
       params: { recording_uuid: recording.uuid },
     });
+    return RecordingSchema.parse(res);
   }
 
   async function addTag(recording: Recording, tag: Tag): Promise<Recording> {

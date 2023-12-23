@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 
-import { type Tag } from "@/api/tags";
+import { type Tag } from "@/api/schemas";
 
 const COLOR_NAMES = [
   "slate",
@@ -36,11 +36,15 @@ type Color = {
 
 export type ColorsSlice = {
   colors: {
-    tags: { [key: number]: Color };
+    tags: { [key: string]: Color };
   };
   setTagColor: (tag: Tag, color: Color) => void;
   getTagColor: (tag: Tag) => Color;
   clearTagColors: () => void;
+};
+
+function getTagKey(tag: Tag): string {
+  return `${tag.key}-${tag.value}`;
 }
 
 export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
@@ -52,15 +56,16 @@ export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
       colors: {
         tags: {
           ...state.colors.tags,
-          [tag.id]: color,
+          [getTagKey(tag)]: color,
         },
       },
     }));
   },
   getTagColor: (tag: Tag) => {
     const { tags } = get().colors;
-    if (tags[tag.id]) {
-      return tags[tag.id];
+    const key = getTagKey(tag);
+    if (tags[key]) {
+      return tags[key];
     } else {
       const name = COLOR_NAMES[Math.floor(Math.random() * COLOR_NAMES.length)];
       const level = LEVELS[Math.floor(Math.random() * LEVELS.length)];
@@ -69,7 +74,7 @@ export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
         colors: {
           tags: {
             ...state.colors.tags,
-            [tag.id]: color,
+            [key]: color,
           },
         },
       }));
@@ -82,5 +87,5 @@ export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
         tags: {},
       },
     }));
-  }
+  },
 });

@@ -6,8 +6,8 @@ import {
   EditIcon,
   DatasetIcon,
 } from "@/components/icons";
-import { FloatFilter, BooleanFilter, TagFilter } from "@/components/Filters";
-import { type FilterDef } from "@/components/FilterMenu";
+import { FloatFilter, BooleanFilter, TagFilter } from "@/components/filters/Filters";
+import { type FilterDef } from "@/components/filters/FilterMenu";
 
 
 const tasksFilterDefs : FilterDef[] = [

@@ -3,7 +3,7 @@ import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import Info from "@/components/Info";
 import Tag from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
-import SearchMenu from "@/components/SearchMenu";
+import SearchMenu from "@/components/search/SearchMenu";
 import { type AnnotationProject } from "@/api/schemas";
 
 export default function AnnotationTags({

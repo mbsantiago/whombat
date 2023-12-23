@@ -19,15 +19,10 @@ export const IntervalSchema = z
 
 export type Interval = z.input<typeof IntervalSchema>;
 
-export const ResamplingParametersSchema = z.object({
-  resample: z.boolean().default(false),
-  samplerate: z.number().positive().int().optional(),
-});
-
-export type ResamplingParameters = z.input<typeof ResamplingParametersSchema>;
-
-export const FilteringParametersSchema = z
+export const AudioParametersSchema = z
   .object({
+    resample: z.boolean().default(false),
+    samplerate: z.number().positive().int().optional(),
     low_freq: z.number().positive().optional(),
     high_freq: z.number().positive().optional(),
     filter_order: z.number().positive().int().default(5),
@@ -42,12 +37,6 @@ export const FilteringParametersSchema = z
       path: ["low_freq"],
     },
   );
-
-export type FilteringParameters = z.input<typeof FilteringParametersSchema>;
-
-export const AudioParametersSchema = ResamplingParametersSchema.and(
-  FilteringParametersSchema,
-);
 
 export type AudioParameters = z.input<typeof AudioParametersSchema>;
 
@@ -98,24 +87,29 @@ export function registerAudioAPI({
     parameters = DEFAULT_AUDIO_PARAMETERS,
   }: {
     recording: Recording;
-    segment: Interval;
+    segment?: Interval;
     parameters?: AudioParameters;
   }) {
     // Validate parameters
     const parsed_params = AudioParametersSchema.parse(parameters);
-    const parsed_segment = IntervalSchema.parse(segment);
+
+    if (segment != null) {
+      segment = IntervalSchema.parse(segment);
+    }
 
     // Construct query
     const query = {
       recording_uuid: recording.uuid,
-      start_time: parsed_segment.min,
-      end_time: parsed_segment.max,
+      start_time: segment?.min,
+      end_time: segment?.max,
       ...parsed_params,
     };
 
     const params = new URLSearchParams(
       Object.fromEntries(
-        Object.entries(query).map(([key, value]) => [key, value.toString()]),
+        Object.entries(query)
+          .filter(([_, value]) => value != null)
+          .map(([key, value]) => [key, value.toString()]),
       ),
     );
 

@@ -3,7 +3,7 @@ import { useState, useMemo, useCallback } from "react";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { IssueIcon, NotesIcon } from "@/components/icons";
-import { InputGroup, TextArea } from "@/components/inputs";
+import { InputGroup, TextArea } from "@/components/inputs/index";
 import Button from "@/components/Button";
 import Feed from "@/components/notes/Feed";
 import { type NoteCreate } from "@/api/notes";

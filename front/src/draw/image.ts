@@ -9,9 +9,6 @@ const COLORS = {
 };
 
 /* Break a text into multiple lines of a given maximum width
- * @param {CanvasRenderingContext2D} ctx: Canvas rendering context
- * @param {string} text: text to break into multiple lines
- * @param {number} maxWidth: maximum width of each line
  */
 export function getLines(
   ctx: CanvasRenderingContext2D,
@@ -120,13 +117,13 @@ export function drawImageOnCanvas(
   const startTimeRel = (window.time.min - interval.min) / totalDuration;
   const highFreqRel = window.freq.max / maxFreq;
 
-  const sx = Math.floor(startTimeRel * image.width);
-  const sy = Math.floor((1 - highFreqRel) * image.height);
-  const sWidth = Math.floor(
-    ((window.time.max - window.time.min) * image.width) / totalDuration,
+  const sx = (startTimeRel * image.width);
+  const sy = ((1 - highFreqRel) * image.height);
+  const sWidth = (
+    ((window.time.max - window.time.min) * image.width) / totalDuration
   );
-  const sHeight = Math.floor(
-    ((window.freq.max - window.freq.min) * image.height) / maxFreq,
+  const sHeight = (
+    ((window.freq.max - window.freq.min) * image.height) / maxFreq
   );
   const dx = 0;
   const dy = 0;

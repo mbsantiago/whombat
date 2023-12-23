@@ -6,6 +6,9 @@ import {
   DownloadIcon,
   WarningIcon,
 } from "@/components/icons";
+import Link from "@/components/Link";
+import { type Recording } from "@/api/schemas";
+import useRecording from '@/hooks/api/useRecording';
 
 function DeleteRecording({ onDelete }: { onDelete?: () => void }) {
   return (
@@ -59,18 +62,27 @@ function DeleteRecording({ onDelete }: { onDelete?: () => void }) {
 }
 
 export default function RecordingActions({
+  recording,
   onDelete,
-  onDownload,
 }: {
+  recording: Recording;
   onDelete?: () => void;
-  onDownload?: () => void;
 }) {
+  const { downloadURL, delete: deleteRecording } = useRecording({
+    uuid: recording.uuid,
+    recording,
+    onDelete,
+  });
+
   return (
     <div className="flex flex-row gap-2 justify-center">
-      <Button mode="text" variant="primary" onClick={onDownload}>
+      <Link mode="text" variant="primary" href={downloadURL || ""} aria-disabled={downloadURL == null} download>
         <DownloadIcon className="h-5 w-5 inline-block mr-2" /> Download
-      </Button>
-      <DeleteRecording onDelete={onDelete} />
+      </Link>
+      <DeleteRecording
+        // @ts-ignore
+        onDelete={() => deleteRecording.mutate()}
+      />
     </div>
   );
 }

@@ -29,6 +29,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       toast.success("Dataset deleted");
       router.push("/datasets/");
     },
+    onError: (error) => {
+      if (error.response?.status === 404) {
+        notFound();
+      }
+    },
   });
 
   if (dataset.isLoading) {
@@ -42,7 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <DatasetContext.Provider value={dataset.data}>
       <DatasetNavHeader dataset={dataset.data} />
-      <div className="p-4">{children}</div>
+      <div className="py-4 px-8">{children}</div>
     </DatasetContext.Provider>
   );
 }

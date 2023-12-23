@@ -1,9 +1,9 @@
 import useEvaluationSets from "@/hooks/api/useEvaluationSets";
 import EvaluationSet from "@/components/evaluation_sets/EvaluationSet";
-import StackedList from "@/components/StackedList";
+import StackedList from "@/components/lists/StackedList";
 import Link from "@/components/Link";
-import Search from "@/components/Search";
-import Pagination from "@/components/Pagination";
+import Search from "@/components/search/Search";
+import Pagination from "@/components/lists/Pagination";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
 import { AddIcon, TasksIcon, WarningIcon } from "@/components/icons";

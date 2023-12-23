@@ -119,6 +119,7 @@ export const audioMachine = setup({
           audio.removeEventListener("canplay", onLoadStart);
           audio.removeEventListener("play", onPlay);
           audio.removeEventListener("pause", onPause);
+          audio.src = ""
           cancelAnimationFrame(request);
         };
       },

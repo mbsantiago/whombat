@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 __all__ = [
     "SpectrogramParameters",
@@ -11,7 +11,6 @@ __all__ = [
     "Scale",
     "Window",
 ]
-
 
 Window = Literal[
     "boxcar",
@@ -36,8 +35,8 @@ class STFTParameters(BaseModel):
     window_size: float = 0.025
     """Size of FFT window in seconds."""
 
-    hop_size: float = 0.010
-    """Hop size in seconds."""
+    hop_size: float = Field(default=0.5, gt=0.0, le=1.0)
+    """Hop size as a fraction of window size."""
 
     window: Window = "hann"
     """Window function."""
@@ -49,13 +48,6 @@ class STFTParameters(BaseModel):
         if value <= 0:
             raise ValueError("Window size and hop size must be positive.")
         return value
-
-    @model_validator(mode="after")
-    def check_window_size_and_hop_size(self):
-        """Check that window size is greater than hop size."""
-        if self.window_size <= self.hop_size:
-            raise ValueError("Window size must be greater than hop size.")
-        return self
 
 
 Scale = Literal["amplitude", "power", "dB"]

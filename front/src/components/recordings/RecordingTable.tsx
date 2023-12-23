@@ -9,11 +9,11 @@ import useStore from "@/store";
 import { parsePosition } from "@/components/tables/TableMap";
 import api from "@/app/api";
 import SelectedMenu from "@/components/tables/SelectedMenu";
-import Pagination from "@/components/Pagination";
+import Pagination from "@/components/lists/Pagination";
 import Loading from "@/app/loading";
-import Search from "@/components/Search";
-import FilterPopover from "@/components/FilterMenu";
-import FilterBar from "@/components/FilterBar";
+import Search from "@/components/search/Search";
+import FilterPopover from "@/components/filters/FilterMenu";
+import FilterBar from "@/components/filters/FilterBar";
 import Table from "@/components/tables/Table";
 import {
   type RecordingUpdate,
@@ -24,7 +24,7 @@ import { type Recording, type Tag } from "@/api/schemas";
 
 const EDITABLE_COLUMNS = ["date", "time", "location", "tags"];
 
-function useRecordinTableKeyShortcuts({
+function useRecordingTableKeyShortcuts({
   onUpdate,
   onAddTag,
   onRemoveTag,
@@ -169,9 +169,11 @@ function useRecordinTableKeyShortcuts({
 export default function RecordingTable({
   filter,
   fixed,
+  getRecordingLink,
 }: {
   filter: RecordingFilter;
   fixed?: (keyof RecordingFilter)[];
+  getRecordingLink?: (recording: Recording) => string;
 }) {
   const client = useQueryClient();
   const recordings = useRecordings({ filter, fixed });
@@ -236,12 +238,13 @@ export default function RecordingTable({
 
   const table = useRecordingTable({
     data: recordings.items,
+    getRecordingLink,
     onUpdate: updateRecording.mutate,
     onAddTag: addTag.mutate,
     onRemoveTag: removeTag.mutate,
   });
 
-  const handleKeyDown = useRecordinTableKeyShortcuts({
+  const handleKeyDown = useRecordingTableKeyShortcuts({
     onUpdate: updateRecording.mutate,
     onAddTag: addTag.mutate,
     onRemoveTag: removeTag.mutate,

@@ -14,8 +14,8 @@ import { EditIcon } from "@/components/icons";
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it
 // uses the `window` object which is not available on the server.
-const Map = dynamic(() => import("@/components/Map"), { ssr: false });
-const DraggableMarker = dynamic(() => import("@/components/DraggableMarker"), {
+const Map = dynamic(() => import("@/components/maps/Map"), { ssr: false });
+const DraggableMarker = dynamic(() => import("@/components/maps/DraggableMarker"), {
   ssr: false,
 });
 

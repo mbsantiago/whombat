@@ -4,7 +4,7 @@ import { Float } from "@headlessui-float/react";
 import Fuse from "fuse.js";
 
 import Button from "@/components/Button";
-import Search from "@/components/Search";
+import Search from "@/components/search/Search";
 
 /** A search menu.
  * @component

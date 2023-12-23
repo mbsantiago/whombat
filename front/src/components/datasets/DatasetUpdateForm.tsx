@@ -5,7 +5,7 @@ import {
   DescriptionTerm,
   EditableDescriptionData,
 } from "@/components/Description";
-import { Input, TextArea } from "@/components/inputs";
+import { Input, TextArea } from "@/components/inputs/index";
 import useDataset from "@/hooks/api/useDataset";
 import DatasetActions from "@/components/datasets/DatasetActions";
 

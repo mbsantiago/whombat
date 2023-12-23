@@ -1,7 +1,7 @@
 import useStore from "@/store";
 import Tag from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
-import SearchMenu from "@/components/SearchMenu";
+import SearchMenu from "@/components/search/SearchMenu";
 import Info from "@/components/Info";
 import { type EvaluationSet } from "@/api/evaluation_sets";
 import { type Tag as TagType } from "@/api/tags";

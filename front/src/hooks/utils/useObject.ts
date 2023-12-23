@@ -1,5 +1,5 @@
 import { type AxiosError } from "axios";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useObjectMutation<T, K>({
@@ -26,7 +26,7 @@ export function useObjectMutation<T, K>({
       if (status === "pending") {
         throw new Error(
           `No data for object of type ${name} (uuid=${uuid}). ` +
-            "Either the query is not enabled or the query is still loading.",
+          "Either the query is not enabled or the query is still loading.",
         );
       }
 
@@ -55,24 +55,46 @@ export function useObjectMutation<T, K>({
   return mutation;
 }
 
+export type UseObjectProps<T> = {
+  uuid: string;
+  name: string;
+  enabled?: boolean;
+  getFn: (uuid: string) => Promise<T>;
+  onError?: (error: AxiosError) => void;
+};
+
 export default function useObject<T>({
   uuid,
   initial,
   name,
   enabled = true,
   getFn,
+  onError,
 }: {
-  uuid: string;
   initial?: T;
-  name: string;
-  enabled: boolean;
-  getFn: (uuid: string) => Promise<T>;
-}) {
+} & UseObjectProps<T>) {
   const client = useQueryClient();
 
   const query = useQuery<T, AxiosError>({
     queryKey: [name, uuid],
     queryFn: async () => await getFn(uuid),
+    retry: (failureCount, error) => {
+      if (error == null) {
+        return failureCount < 3;
+      }
+
+      const status = error?.response?.status;
+      if (status == null) {
+        return failureCount < 3;
+      }
+
+      // Should not retry on any of the 4xx errors
+      if (status >= 400 && status < 500) {
+        return false;
+      }
+
+      return failureCount < 3;
+    },
     initialData: initial,
     staleTime: 1000 * 60 * 5,
     enabled,
@@ -84,6 +106,13 @@ export default function useObject<T>({
     },
     [client, uuid, name],
   );
+
+  const { error, isError } = query;
+  useEffect(() => {
+    if (isError) {
+      onError?.(error);
+    }
+  }, [error, isError, onError]);
 
   return {
     query,

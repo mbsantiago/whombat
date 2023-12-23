@@ -7,8 +7,8 @@ import { type Recording } from "@/api/schemas";
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it
 // uses the `window` object which is not available on the server.
-const Map = dynamic(() => import("@/components/Map"), { ssr: false });
-const Marker = dynamic(() => import("@/components/DraggableMarker"), {
+const Map = dynamic(() => import("@/components/maps/Map"), { ssr: false });
+const Marker = dynamic(() => import("@/components/maps/DraggableMarker"), {
   ssr: false,
 });
 
@@ -34,10 +34,12 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
               lng: recording.longitude ?? 0,
             }}
             scrollWheelZoom={true}
+              
             zoom={14}
           >
             <Marker
               draggable={false}
+              updateOnChange
               center={{
                 lat: recording.latitude ?? 0,
                 lng: recording.longitude ?? 0,

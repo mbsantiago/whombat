@@ -113,7 +113,11 @@ export default function useSpectrogramZoom({
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!enabled || currentWindow == null) return;
+      if (!enabled) return;
+
+      if (currentWindow == null) return;
+      ctx.canvas.style.cursor = "nwse-resize";
+
       const dimensions = ctx.canvas.getBoundingClientRect();
       const bbox = scaleBBoxToViewport(
         dimensions,

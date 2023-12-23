@@ -52,10 +52,15 @@ def compute_spectrogram(
     # Select channel. Do this early to avoid unnecessary computation.
     wav = wav[dict(channel=[spectrogram_parameters.channel])]
 
+    # The hop size is expressed as a fraction of the window size.
+    hop_size = (
+        spectrogram_parameters.hop_size * spectrogram_parameters.window_size
+    )
+
     spectrogram = audio.compute_spectrogram(
         wav,
         window_size=spectrogram_parameters.window_size,
-        hop_size=spectrogram_parameters.hop_size,
+        hop_size=hop_size,
         window_type=spectrogram_parameters.window,
     )
 

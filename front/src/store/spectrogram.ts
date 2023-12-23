@@ -2,11 +2,14 @@
 
 import { StateCreator } from "zustand";
 
-import { DEFAULT_SPECTROGRAM_PARAMETERS, type SpectrogramParameters } from "@/api/spectrograms";
+import {
+  DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
+} from "@/api/spectrograms";
 
 export type SpectrogramSlice = {
   spectrogramSettings: SpectrogramParameters;
-  setSpectrogramSettings: (settings: Partial<SpectrogramParameters>) => void;
+  setSpectrogramSettings: (settings: SpectrogramParameters) => void;
 };
 
 export const createSpectrogramSlice: StateCreator<SpectrogramSlice> = (
@@ -15,13 +18,9 @@ export const createSpectrogramSlice: StateCreator<SpectrogramSlice> = (
   spectrogramSettings: DEFAULT_SPECTROGRAM_PARAMETERS,
   setSpectrogramSettings: (settings) => {
     set((state) => {
-      const { spectrogramSettings: currentSettings } = state;
       return {
         ...state,
-        spectrogramSettings: {
-          ...currentSettings,
-          ...settings,
-        },
+        spectrogramSettings: settings,
       };
     });
   },

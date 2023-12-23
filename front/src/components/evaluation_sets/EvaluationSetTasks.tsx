@@ -4,8 +4,8 @@ import useTasks from "@/hooks/api/useTasks";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
 import SearchAnnotationProjects from "@/components/search/AnnotationProjects";
-import Toggle from "@/components/Toggle";
-import { InputGroup } from "@/components/inputs";
+import Toggle from "@/components/inputs/Toggle";
+import { InputGroup } from "@/components/inputs/index";
 import { H3 } from "@/components/Headings";
 import { AddIcon } from "@/components/icons";
 import { type AnnotationProject } from "@/api/annotation_projects";
@@ -77,7 +77,7 @@ function FilterTasks({
           help="Only include tasks that have been completed."
         >
           <Toggle
-            checked={tasks.filter.get("pending__eq") == false}
+            isSelected={tasks.filter.get("pending__eq") == false}
             onChange={(checked) => {
               if (checked) {
                 tasks.filter.set("pending__eq", false);
@@ -93,7 +93,7 @@ function FilterTasks({
           help="Only include tasks that have been verified."
         >
           <Toggle
-            checked={tasks.filter.get("verified__eq") == true}
+            isSelected={tasks.filter.get("verified__eq") == true}
             onChange={(checked) => {
               if (checked) {
                 tasks.filter.set("verified__eq", true);

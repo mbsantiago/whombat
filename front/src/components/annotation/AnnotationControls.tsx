@@ -1,6 +1,6 @@
 import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
-import Select from "@/components/Select";
+import Select from "@/components/inputs/Select";
 import {
   AnnotationProjectIcon,
   DeleteIcon,

@@ -19,9 +19,9 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 import { type TagCreate, type TagFilter } from "@/api/tags";
 import { type Tag as TagType } from "@/api/schemas";
-import { Input } from "@/components/inputs";
+import { Input } from "@/components/inputs/index";
 import Tag from "@/components/tags/Tag";
-import Key from "@/components/Key";
+import KeyboardKey from "@/components/KeyboardKey";
 import useStore from "@/store";
 import useTags from "@/hooks/api/useTags";
 
@@ -40,7 +40,7 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
         <div className="relative py-2 px-4 cursor-default select-none">
           To create a new tag, type the tag in the format{" "}
           <code className="text-emerald-500">key:value</code> and press{" "}
-          <Key code="Shift" />+<Key code="Enter" />
+          <KeyboardKey code="Shift" />+<KeyboardKey code="Enter" />
         </div>
       </ComboBoxSection>
     );
@@ -51,7 +51,7 @@ function CreateNewTag({ tag: { key, value } }: { tag: TagCreate }) {
       <div className="relative py-2 px-4 cursor-default select-none">
         Create the tag{" "}
         <Tag disabled tag={{ key, value }} color="blue" level={3} /> by pressing{" "}
-        <Key code="Shift" />+<Key code="Enter" />
+        <KeyboardKey code="Shift" />+<KeyboardKey code="Enter" />
       </div>
     </ComboBoxSection>
   );

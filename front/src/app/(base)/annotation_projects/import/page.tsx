@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 import Hero from "@/components/Hero";
-import { Input, InputGroup, Submit } from "@/components/inputs";
+import { Input, InputGroup, Submit } from "@/components/inputs/index";
 import { UploadIcon } from "@/components/icons";
 import api from "@/app/api";
 

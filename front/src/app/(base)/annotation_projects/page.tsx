@@ -3,9 +3,9 @@ import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
 import Hero from "@/components/Hero";
 import AnnotationProject from "@/components/annotation_projects/AnnotationProject";
 import Link from "@/components/Link";
-import StackedList from "@/components/StackedList";
-import Search from "@/components/Search";
-import Pagination from "@/components/Pagination";
+import StackedList from "@/components/lists/StackedList";
+import Search from "@/components/search/Search";
+import Pagination from "@/components/lists/Pagination";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
 import {

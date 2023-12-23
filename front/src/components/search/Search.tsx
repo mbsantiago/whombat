@@ -2,7 +2,7 @@ import { type InputHTMLAttributes } from "react";
 
 import { SearchIcon } from "@/components/icons";
 import Button from "@/components/Button";
-import { Input } from "@/components/inputs";
+import { Input } from "@/components/inputs/index";
 
 export default function Search({
   label = "Search",

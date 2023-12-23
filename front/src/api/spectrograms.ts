@@ -1,21 +1,21 @@
 import { z } from "zod";
 
-import {
-  AudioParametersSchema,
-  type Interval,
-  IntervalSchema,
-} from "@/api/audio";
+import { type Interval, IntervalSchema } from "@/api/audio";
 import { type Recording } from "@/api/schemas";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",
 };
 
+export const MAX_SAMPLERATE = 500_000;
+export const MIN_SAMPLERATE = 4000;
 export const MIN_DB = -140;
-
 export const DEFAULT_WINDOW_SIZE = 0.025;
-
-export const DEFAULT_HOP_SIZE = 0.01;
+export const DEFAULT_HOP_SIZE = 0.5;
+export const DEFAULT_WINDOW = "hann";
+export const DEFAULT_SCALE = "dB";
+export const DEFAULT_FILTER_ORDER = 5;
+export const DEFAULT_CMAP = "inferno";
 
 export const SpectrogramWindowSchema = z.object({
   time: IntervalSchema,
@@ -24,32 +24,50 @@ export const SpectrogramWindowSchema = z.object({
 
 export type SpectrogramWindow = z.infer<typeof SpectrogramWindowSchema>;
 
-export const STFTParametersSchema = z
+export const SpectrogramParametersSchema = z
   .object({
-    window_size: z.number().positive().default(DEFAULT_WINDOW_SIZE),
-    hop_size: z.number().positive().default(DEFAULT_HOP_SIZE),
-    window: z.string().default("hann"),
+    resample: z.boolean().default(false),
+    samplerate: z.coerce
+      .number()
+      .positive()
+      .int()
+      .gte(MIN_SAMPLERATE)
+      .lte(MAX_SAMPLERATE)
+      .optional(),
+    low_freq: z.coerce.number().positive().optional(),
+    high_freq: z.coerce.number().positive().optional(),
+    filter_order: z.coerce
+      .number()
+      .positive()
+      .int()
+      .default(DEFAULT_FILTER_ORDER),
+    window_size: z.coerce.number().positive().default(DEFAULT_WINDOW_SIZE),
+    hop_size: z.coerce
+      .number()
+      .positive()
+      .gt(0)
+      .lte(1)
+      .default(DEFAULT_HOP_SIZE),
+    window: z.string().default(DEFAULT_WINDOW),
+    scale: z.enum(["amplitude", "power", "dB"]).default(DEFAULT_SCALE),
+    clamp: z.boolean().default(true),
+    min_dB: z.coerce.number().nonpositive().gte(MIN_DB).default(-80),
+    max_dB: z.coerce.number().nonpositive().gte(MIN_DB).default(0),
+    normalize: z.boolean().default(false),
+    channel: z.coerce.number().nonnegative().int().default(0),
+    pcen: z.boolean().default(false),
+    cmap: z.string().default("grays"),
   })
   .refine(
     (data) => {
-      return data.window_size > data.hop_size;
+      if (data.low_freq == null || data.high_freq == null) return true;
+      return data.low_freq < data.high_freq;
     },
     {
-      message: "window_size must be greater than hop_size",
-      path: ["window_size"],
+      message: "low_freq must be less than high_freq",
+      path: ["low_freq"],
     },
-  );
-
-export type STFTParameters = z.input<typeof STFTParametersSchema>;
-
-export const AmplitudeParametersSchema = z
-  .object({
-    scale: z.enum(["amplitude", "power", "dB"]).default("dB"),
-    clamp: z.boolean().default(true),
-    min_dB: z.number().nonpositive().gte(MIN_DB).default(-80),
-    max_dB: z.number().nonpositive().gte(MIN_DB).default(0),
-    normalize: z.boolean().default(false),
-  })
+  )
   .refine(
     (data) => {
       return data.min_dB < data.max_dB;
@@ -58,34 +76,24 @@ export const AmplitudeParametersSchema = z
       message: "min_dB must be less than max_dB",
       path: ["min_dB"],
     },
-  );
+  )
 
-export type AmplitudeParameters = z.input<typeof AmplitudeParametersSchema>;
-
-export const SpectrogramParametersSchema = AudioParametersSchema.and(
-  STFTParametersSchema,
-)
-  .and(AmplitudeParametersSchema)
-  .and(
-    z.object({
-      channel: z.number().nonnegative().int().default(0),
-      pcen: z.boolean().default(false),
-      cmap: z.string().default("grays"),
-    }),
-  );
-
-export type SpectrogramParameters = z.input<typeof SpectrogramParametersSchema>;
-
-const DEFAULT_CMAP: string = "gray";
+export type SpectrogramParameters = z.infer<typeof SpectrogramParametersSchema>;
 
 export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
   resample: false,
   scale: "dB",
   pcen: false,
+  window_size: DEFAULT_WINDOW_SIZE,
+  hop_size: DEFAULT_HOP_SIZE,
   cmap: DEFAULT_CMAP,
+  window: DEFAULT_WINDOW,
+  filter_order: DEFAULT_FILTER_ORDER,
   normalize: false,
   clamp: true,
-  min_dB: -80,
+  min_dB: MIN_DB,
+  max_dB: 0,
+  channel: 0,
 };
 
 export function registerSpectrogramAPI({

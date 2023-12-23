@@ -1,3 +1,5 @@
+import { type AxiosError } from "axios";
+import { useMemo } from "react";
 import useObject from "@/hooks/utils/useObject";
 import api from "@/app/api";
 import { type Recording } from "@/api/schemas";
@@ -5,6 +7,7 @@ import { type Recording } from "@/api/schemas";
 export default function useRecording({
   uuid,
   recording,
+  enabled = true,
   onUpdate,
   onDelete,
   onAddTag,
@@ -13,10 +16,11 @@ export default function useRecording({
   onAddFeature,
   onRemoveFeature,
   onUpdateFeature,
-  enabled = true,
+  onError,
 }: {
   uuid: string;
   recording?: Recording;
+  enabled?: boolean;
   onUpdate?: (recording: Recording) => void;
   onDelete?: (recording: Recording) => void;
   onAddTag?: (recording: Recording) => void;
@@ -25,7 +29,7 @@ export default function useRecording({
   onAddFeature?: (recording: Recording) => void;
   onRemoveFeature?: (recording: Recording) => void;
   onUpdateFeature?: (recording: Recording) => void;
-  enabled?: boolean;
+  onError?: (error: AxiosError) => void;
 }) {
   if (recording !== undefined && recording.uuid !== uuid) {
     throw new Error("Recording uuid does not match");
@@ -37,6 +41,7 @@ export default function useRecording({
     name: "dataset",
     enabled,
     getFn: api.recordings.get,
+    onError,
   });
 
   const update = useMutation({
@@ -79,6 +84,11 @@ export default function useRecording({
     onSuccess: onDelete,
   });
 
+  const downloadURL = useMemo(() => {
+    if (query.data == null) return null;
+    return api.audio.getDownloadUrl({ recording: query.data });
+  }, [query.data]);
+
   return {
     ...query,
     update,
@@ -90,5 +100,6 @@ export default function useRecording({
     updateFeature,
     delete: deleteRecording,
     set,
+    downloadURL,
   } as const;
 }

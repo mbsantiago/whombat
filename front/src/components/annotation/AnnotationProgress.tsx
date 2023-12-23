@@ -1,11 +1,11 @@
 import ProgressBar from "@/components/ProgressBar";
-import FilterMenu from "@/components/FilterMenu";
-import FilterBar from "@/components/FilterBar";
+import FilterMenu from "@/components/filters/FilterMenu";
+import FilterBar from "@/components/filters/FilterBar";
 import Button from "@/components/Button";
 import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
 import { type Filter } from "@/hooks/api/useFilter";
 import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
-import Toggle from "@/components/Toggle";
+import Toggle from "@/components/inputs/Toggle";
 import Tooltip from "@/components/Tooltip";
 import { getButtonClassName } from "@/components/Button";
 import taskFilterDefs from "@/components/filters/tasks";
@@ -48,7 +48,7 @@ export default function AnnotationProgress({
           <span className="text-stone-500 text-sm">Pending:</span>
           <Toggle
             label="Only Pending"
-            checked={filter.get("pending__eq") ?? false}
+            isSelected={filter.get("pending__eq") ?? false}
             onChange={(checked) => {
               if (checked) {
                 filter.set("pending__eq", checked, true);

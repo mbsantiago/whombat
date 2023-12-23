@@ -1,6 +1,7 @@
 import { type ComponentProps, type HTMLProps } from "react";
 import Image from "next/image";
 import {
+  SunIcon,
   NoSymbolIcon,
   PuzzlePieceIcon,
   UserGroupIcon,
@@ -286,4 +287,5 @@ export {
   UserGroupIcon as UsersIcon,
   PuzzlePieceIcon as PluginIcon,
   NoSymbolIcon as NoIcon,
+  SunIcon,
 };

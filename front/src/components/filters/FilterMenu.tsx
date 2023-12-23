@@ -3,9 +3,9 @@ import { Float } from "@headlessui-float/react";
 import { Popover } from "@headlessui/react";
 
 import { BackIcon, FilterIcon } from "@/components/icons";
-import { type SetFilter } from "@/components/Filters";
-import { type Filter } from "@/hooks/api/useFilter";
-import SearchMenu from "@/components/SearchMenu";
+import { type SetFilter } from "@/components/filters/Filters";
+import { type Filter } from "@/hooks/utils/useFilter";
+import SearchMenu from "@/components/search/SearchMenu";
 import Button, { getButtonClassName } from "@/components/Button";
 
 export type FilterDef = {

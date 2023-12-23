@@ -9,8 +9,8 @@ import {
   TimeExpansionIcon,
   TimeIcon,
 } from "@/components/icons";
-import { FloatFilter, NullableFloatFilter } from "@/components/Filters";
-import { type FilterDef } from "@/components/FilterMenu";
+import { FloatFilter, NullableFloatFilter } from "@/components/filters/Filters";
+import { type FilterDef } from "@/components/filters/FilterMenu";
 
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values

@@ -8,7 +8,7 @@ import {
   EditableDescriptionData,
 } from "@/components/Description";
 import { H3 } from "@/components/Headings";
-import { Input, TextArea } from "@/components/inputs";
+import { Input, TextArea } from "@/components/inputs/index";
 
 export default function EvaluationSetUpdateForm({
   evaluationSet,

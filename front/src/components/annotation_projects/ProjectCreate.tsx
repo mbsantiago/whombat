@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 
 import api from "@/app/api";
-import { Input, InputGroup, Submit, TextArea } from "@/components/inputs";
+import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
 import {
   type AnnotationProjectCreate,
   AnnotationProjectCreateSchema,

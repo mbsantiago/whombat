@@ -6,7 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import * as icons from "@/components/icons";
+import { SunIcon, DateIcon, TimeIcon, LocationIcon, TagIcon, NotesIcon } from "@/components/icons";
 import Checkbox from "@/components/tables/TableCheckbox";
 import TableInput from "@/components/tables/TableInput";
 import TableCell from "@/components/tables/TableCell";
@@ -14,15 +14,17 @@ import TableMap, { parsePosition } from "@/components/tables/TableMap";
 import TableTags from "@/components/tables/TableTags";
 import TableHeader from "@/components/tables/TableHeader";
 import { type RecordingUpdate } from "@/api/recordings";
-import { type Recording, type Tag } from "@/api/schemas";
+import { type Recording, type Tag, type Note } from "@/api/schemas";
 
 export default function useRecordingTable({
   data,
+  getRecordingLink,
   onUpdate,
   onAddTag,
   onRemoveTag,
 }: {
   data: Recording[];
+  getRecordingLink?: (recording: Recording) => string;
   onUpdate: ({
     recording,
     data,
@@ -95,12 +97,7 @@ export default function useRecordingTable({
             <TableCell>
               <Link
                 className="hover:font-bold hover:text-emerald-500 focus:ring focus:ring-emerald-500 focus:outline-none"
-                href={{
-                  pathname: "/recordings/",
-                  query: {
-                    recording_uuid: row.original.uuid,
-                  },
-                }}
+                href={getRecordingLink?.(row.original) || "#"}
               >
                 {path}
               </Link>
@@ -163,7 +160,7 @@ export default function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.DateIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+              <DateIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Date
             </TableHeader>
           );
@@ -194,7 +191,7 @@ export default function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.TimeIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+              <TimeIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Time
             </TableHeader>
           );
@@ -225,7 +222,7 @@ export default function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.LocationIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+              <LocationIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Location
             </TableHeader>
           );
@@ -262,7 +259,7 @@ export default function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.TagIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+              <TagIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Tags
             </TableHeader>
           );
@@ -297,15 +294,23 @@ export default function useRecordingTable({
         header: () => {
           return (
             <TableHeader>
-              <icons.NotesIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+              <NotesIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               Notes
             </TableHeader>
           );
         },
         accessorFn: (row) => row.notes,
+        cell: ({ row }) => {
+          const notes = row.getValue("notes") as Note[];
+          if ((notes || []).length == 0) return null
+
+          return <span className="ms-2">
+              <SunIcon className="inline-block mr-2 w-5 h-5 align-middle text-blue-500" />
+             {notes.length} notes</span>
+        }
       },
     ],
-    [onAddTag, onRemoveTag, onUpdate],
+    [onAddTag, onRemoveTag, onUpdate, getRecordingLink],
   );
 
   const table = useReactTable<Recording>({

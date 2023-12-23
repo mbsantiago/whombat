@@ -44,11 +44,8 @@ export type SpectrogramControls = {
   scale: ({ time = 1, freq = 1 }: { time?: number; freq?: number }) => void;
   shift({ time = 0, freq = 0 }: { time?: number; freq?: number }): void;
   centerOn: ({ time, freq }: { time?: number; freq?: number }) => void;
-  setParameter: <T extends keyof SpectrogramParameters>(
-    key: T,
-    value: SpectrogramParameters[T],
-  ) => void;
-  clearParameter: <T extends keyof SpectrogramParameters>(key: T) => void;
+  setParameters: (parameters: SpectrogramParameters) => void;
+  resetParameters: () => void;
   enableDrag: () => void;
   enableZoom: () => void;
   disable: () => void;
@@ -117,7 +114,10 @@ export default function useSpectrogram({
   const shift = useCallback(
     ({ time = 0, freq = 0 }: { time?: number; freq?: number }) => {
       setViewport((prev) =>
-        adjustWindowToBounds(shiftWindow(prev, { time, freq }, false), initialBounds),
+        adjustWindowToBounds(
+          shiftWindow(prev, { time, freq }, false),
+          initialBounds,
+        ),
       );
     },
     [initialBounds],
@@ -152,6 +152,48 @@ export default function useSpectrogram({
     enabled,
   });
 
+  const controls = useMemo(() => {
+    return {
+      reset: () => setViewport(initialBounds),
+      zoom,
+      scale,
+      shift,
+      centerOn: ({ time, freq }: { time?: number; freq?: number }) => {
+        setViewport((prev) =>
+          adjustWindowToBounds(
+            centerWindowOn(prev, { time, freq }),
+            initialBounds,
+          ),
+        );
+      },
+      setParameters: (
+        parameters: SpectrogramParameters
+      ) => {
+        const validated = validateParameters(parameters, recording);
+        onParameterChange?.(validated);
+        setParameters(validated);
+      },
+      resetParameters: () => {
+        setParameters(validateParameters(initialParameters, recording))
+      },
+      enableDrag,
+      enableZoom,
+      disable,
+    };
+  }, [
+    recording,
+    initialBounds,
+    initialParameters,
+    setParameters,
+    onParameterChange,
+    zoom,
+    scale,
+    shift,
+    enableDrag,
+    enableZoom,
+    disable,
+  ]);
+
   // Compute exported state
   const state = useMemo(() => {
     return {
@@ -176,74 +218,27 @@ export default function useSpectrogram({
   // Create the drawing function
   const draw = useCallback<DrawFn>(
     (ctx) => {
+      if (canDrag) {
+        ctx.canvas.style.cursor = "grab";
+      } else if (canZoom) {
+        ctx.canvas.style.cursor = "zoom-in";
+      } else {
+        ctx.canvas.style.cursor = "default";
+      }
       drawImage(ctx, viewport);
       drawTimeAxis(ctx, viewport.time);
       drawFrequencyAxis(ctx, viewport.freq);
       drawMotions(ctx);
     },
-    [drawImage, drawMotions, viewport],
+    [drawImage, drawMotions, viewport, canDrag, canZoom],
   );
-
-  const controls = useMemo(() => {
-    return {
-      reset: () => setViewport(initialBounds),
-      zoom,
-      scale,
-      shift,
-      centerOn: ({ time, freq }: { time?: number; freq?: number }) => {
-        setViewport((prev) =>
-          adjustWindowToBounds(
-            centerWindowOn(prev, { time, freq }),
-            initialBounds,
-          ),
-        );
-      },
-      setParameter: <T extends keyof SpectrogramParameters>(
-        key: T,
-        value: SpectrogramParameters[T],
-      ) => {
-        setParameters((prev: SpectrogramParameters) => {
-          const validated = validateParameters(
-            { ...prev, [key]: value },
-            recording,
-          );
-          onParameterChange?.(validated);
-          return validated;
-        });
-      },
-      clearParameter: <T extends keyof SpectrogramParameters>(key: T) => {
-        setParameters((prev: SpectrogramParameters) => {
-          const validated = validateParameters(
-            { ...prev, [key]: undefined },
-            recording,
-          );
-          onParameterChange?.(validated);
-          return validated;
-        });
-      },
-      enableDrag,
-      enableZoom,
-      disable,
-    };
-  }, [
-    recording,
-    initialBounds,
-    setParameters,
-    onParameterChange,
-    zoom,
-    scale,
-    shift,
-    enableDrag,
-    enableZoom,
-    disable,
-  ]);
 
   return {
     state,
     controls,
     draw,
     props,
-  }
+  };
 }
 
 function validateParameters(
