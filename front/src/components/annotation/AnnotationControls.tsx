@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 
-import { type GeometryType } from "@/api/schemas";
 import Button from "@/components/Button";
 import {
   AnnotationProjectIcon,
@@ -13,6 +12,8 @@ import {
 } from "@/components/icons";
 import Select from "@/components/inputs/Select";
 import Tooltip from "@/components/Tooltip";
+
+import type { GeometryType } from "@/types";
 
 type Node = {
   id: string;

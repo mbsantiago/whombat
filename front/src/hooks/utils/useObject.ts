@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { type AxiosError } from "axios";
 import { useCallback, useEffect } from "react";
+
+import type { AxiosError } from "axios";
+import type { SetStateAction } from "react";
 
 export function useObjectDestruction<T>({
   uuid,
@@ -184,8 +186,8 @@ export default function useObject<T>({
     enabled,
   });
 
-  const set = useCallback(
-    (data: T) => {
+  const setData = useCallback(
+    (data: SetStateAction<T>) => {
       client.setQueryData([name, uuid], data);
     },
     [client, uuid, name],
@@ -201,7 +203,7 @@ export default function useObject<T>({
   return {
     query,
     client,
-    set,
+    setData,
     useQuery: ({
       queryFn,
       name: secondaryName,

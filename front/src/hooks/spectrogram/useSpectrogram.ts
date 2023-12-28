@@ -1,11 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { type Recording } from "@/api/schemas";
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-  type SpectrogramWindow,
-} from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import drawFrequencyAxis from "@/draw/freqAxis";
 import drawTimeAxis from "@/draw/timeAxis";
 import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
@@ -16,6 +11,12 @@ import {
   scaleWindow,
   shiftWindow,
 } from "@/utils/windows";
+
+import type {
+  Recording,
+  SpectrogramParameters,
+  SpectrogramWindow,
+} from "@/types";
 
 /**
  * A function type representing the drawing function for a spectrogram.

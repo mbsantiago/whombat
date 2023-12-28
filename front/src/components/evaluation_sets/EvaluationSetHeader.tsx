@@ -1,6 +1,5 @@
 import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 
-import { type EvaluationSet } from "@/api/evaluation_sets";
 import Header from "@/components/Header";
 import { H1 } from "@/components/Headings";
 import {
@@ -10,6 +9,8 @@ import {
   UserIcon,
 } from "@/components/icons";
 import Tabs from "@/components/Tabs";
+
+import type { EvaluationSet } from "@/types";
 
 export default function EvaluationSetHeader({
   evaluationSet,

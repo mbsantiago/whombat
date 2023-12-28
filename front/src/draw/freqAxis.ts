@@ -1,4 +1,3 @@
-import { type Interval } from "@/api/audio";
 import {
   type AxisStyle,
   DEFAULT_AXIS_STYLE,
@@ -9,6 +8,8 @@ import {
   setFontStyle,
 } from "@/draw/styles";
 import { getTicks, parseNum, selectResolution } from "@/draw/timeAxis";
+
+import type { Interval } from "@/types";
 
 function drawFreqTick(
   ctx: CanvasRenderingContext2D,

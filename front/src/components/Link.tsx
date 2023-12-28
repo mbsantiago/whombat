@@ -1,9 +1,10 @@
 import classnames from "classnames";
 import NextLink from "next/link";
-import { type ComponentProps, type ReactNode } from "react";
 
-import { type Mode, getButtonClassName } from "@/components/Button";
-import { type Variant } from "@/components/common";
+import { getButtonClassName } from "@/components/Button";
+
+import type { Mode, Variant } from "@/components/common";
+import type { ComponentProps, ReactNode } from "react";
 
 export default function Link({
   children,

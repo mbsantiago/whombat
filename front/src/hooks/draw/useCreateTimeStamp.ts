@@ -1,82 +1,72 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
-import drawTimeStamp, { DEFAULT_ONSET_STYLE } from "@/draw/onset";
+import drawGeometry from "@/draw/geometry";
+import { DEFAULT_ONSET_STYLE } from "@/draw/onset";
 import { type Style } from "@/draw/styles";
-import useDrag from "@/hooks/motions/useDrag";
-import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type Dimensions } from "@/utils/types";
+import useWindowMotions from "@/hooks/window/useWindowMotions";
 
-export interface UseCreateTimeStampProps {
-  drag: ScratchState;
-  active: boolean;
-  onCreate: ({
-    timeStamp,
-    dims,
-  }: {
-    timeStamp: number;
-    dims: Dimensions;
-  }) => void;
-  style?: Style;
-}
+import type {
+  Dimensions,
+  Position,
+  SpectrogramWindow,
+  TimeStamp,
+} from "@/types";
 
 export default function useCreateTimeStamp({
-  drag,
-  active,
-  onCreate,
+  viewport,
+  dimensions,
+  enabled = true,
   style = DEFAULT_ONSET_STYLE,
-}: UseCreateTimeStampProps) {
-  const [dims, setDims] = useState<Dimensions>({ width: 0, height: 0 });
-  const [timeStamp, setTimeStamp] = useState<number | null>(null);
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  onCreate,
+}: {
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
+  enabled?: boolean;
+  style?: Style;
+  onCreate?: (timeStamp: TimeStamp) => void;
+}) {
+  const [timeStamp, settimeStamp] = useState<TimeStamp | null>(null);
 
-  const { elW, elH } = drag;
+  const handleMoveStart = useCallback(() => {
+    settimeStamp(null);
+  }, []);
 
-  // Keep track of the dimensions of the element
-  useEffect(() => {
-    if (elW != null && elH != null) setDims({ width: elW, height: elH });
-  }, [elW, elH]);
+  const handleMove = useCallback(
+    ({ initial, shift }: { initial: Position; shift: Position }) => {
+      const timeStamp: TimeStamp = {
+        type: "TimeStamp",
+        coordinates: initial.time + shift.time,
+      };
+      settimeStamp(timeStamp);
+    },
+    [],
+  );
 
-  const { isDragging, current } = useDrag({
-    dragState: drag,
-    active,
+  const handleMoveEnd = useCallback(() => {
+    if (timeStamp == null) return;
+    onCreate?.(timeStamp);
+  }, [timeStamp, onCreate]);
+
+  const { props, isDragging } = useWindowMotions({
+    enabled,
+    viewport,
+    dimensions,
+    onMoveStart: handleMoveStart,
+    onMove: handleMove,
+    onMoveEnd: handleMoveEnd,
   });
-
-  useEffect(() => {
-    if (active) {
-      if (isDragging) {
-        setIsDrawing(true);
-      } else {
-        setIsDrawing(false);
-
-        if (timeStamp != null) {
-          onCreate({
-            timeStamp,
-            dims,
-          });
-        }
-      }
-    }
-  }, [active, isDragging, timeStamp, onCreate, dims]);
-
-  useEffect(() => {
-    if (active) {
-      setTimeStamp(current?.[0] ?? null);
-    }
-  }, [active, current]);
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!active) return;
-      if (!isDrawing) return;
-      if (timeStamp == null) return;
-      drawTimeStamp(ctx, timeStamp, style);
+      if (!enabled || timeStamp == null) return;
+      drawGeometry(ctx, timeStamp, style);
     },
-    [active, timeStamp, style, isDrawing],
+    [enabled, timeStamp, style],
   );
 
   return {
+    props,
     draw,
-    timeStamp,
-    isDrawing,
+    isDragging,
   };
 }

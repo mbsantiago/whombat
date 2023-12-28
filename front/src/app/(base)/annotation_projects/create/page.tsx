@@ -3,10 +3,11 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-import { type AnnotationProject } from "@/api/schemas";
 import AnnotationProjectCreate from "@/components/annotation_projects/AnnotationProjectCreate";
 import Hero from "@/components/Hero";
 import Center from "@/components/layouts/Center";
+
+import type { AnnotationProject } from "@/types";
 
 export default function Page() {
   const router = useRouter();

@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 
-import { type Dataset, type Note as NoteType } from "@/api/schemas";
 import Loading from "@/app/loading";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { CheckIcon, NotesIcon } from "@/components/icons";
-import Note from "@/components/notes/Note";
+import NoteComponent from "@/components/notes/Note";
 import useNotes from "@/hooks/api/useNotes";
+
+import type { Dataset, Note } from "@/types";
 
 /**
  * Component to display a message when there are no issues in the dataset.
@@ -33,7 +34,7 @@ function IssuesSummary({
   notes,
   maxIssues = 5,
 }: {
-  notes: NoteType[];
+  notes: Note[];
   maxIssues?: number;
 }) {
   const issues = useMemo(
@@ -47,7 +48,7 @@ function IssuesSummary({
       Latest Issues
       <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
         {issues.map((issue) => (
-          <Note key={issue.uuid} note={issue} />
+          <NoteComponent key={issue.uuid} note={issue} />
         ))}
       </ul>
     </>

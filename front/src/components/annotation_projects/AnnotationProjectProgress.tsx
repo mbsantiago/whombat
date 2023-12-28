@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { type AnnotationProject } from "@/api/schemas";
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
 import { H3 } from "@/components/Headings";
@@ -17,6 +16,8 @@ import MetricBadge from "@/components/MetricBadge";
 import ProgressBar from "@/components/ProgressBar";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
+
+import type { AnnotationProject } from "@/types";
 
 export default function ProjectProgress({
   annotationProject,

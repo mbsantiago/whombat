@@ -4,11 +4,12 @@ import {
   useSelectedLayoutSegment,
 } from "next/navigation";
 
-import { type AnnotationProject } from "@/api/schemas";
 import Header from "@/components/Header";
 import { H1 } from "@/components/Headings";
 import { DatasetIcon, EditIcon, TagsIcon, TasksIcon } from "@/components/icons";
 import Tabs from "@/components/Tabs";
+
+import type { AnnotationProject } from "@/types";
 
 export default function AnnotationProjectHeader({
   annotationProject,

@@ -1,10 +1,11 @@
-import { type AnnotationProject } from "@/api/schemas";
 import { H2, H3 } from "@/components/Headings";
 import { TagsIcon } from "@/components/icons";
 import Info from "@/components/Info";
 import TagList from "@/components/tags/TagList";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
+
+import type { AnnotationProject } from "@/types";
 
 export default function AnnotationProjectTags({
   project: data,

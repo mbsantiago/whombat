@@ -1,17 +1,16 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import {
-  type AnnotationProject,
-  AnnotationStatus,
-  type AnnotationTask,
-  AnnotationTaskSchema,
-  type Clip,
-  ClipAnnotation,
-  ClipAnnotationSchema,
-} from "@/api/schemas";
+import { GetManySchema, Page } from "@/api/common";
+import { AnnotationTaskSchema, ClipAnnotationSchema } from "@/schemas";
 
-import { GetManySchema, Page } from "./common";
+import type {
+  AnnotationProject,
+  AnnotationStatus,
+  AnnotationTask,
+  Clip,
+  ClipAnnotation,
+} from "@/types";
 
 export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
 

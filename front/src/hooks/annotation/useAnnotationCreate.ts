@@ -1,14 +1,13 @@
-import { useCallback } from "react";
-
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import useCreateBBox from "@/hooks/draw/useCreateBBox";
 import useCreateInterval from "@/hooks/draw/useCreateInterval";
 import useCreateTimeStamp from "@/hooks/draw/useCreateTimeStamp";
-import { type ScratchState } from "@/hooks/motions/useDrag";
-import { scaleGeometryToWindow } from "@/utils/geometry";
-import { type Dimensions } from "@/utils/types";
 
-import { type CreateAnnotationEvent } from "@/machines/annotate";
+import type {
+  Dimensions,
+  Geometry,
+  GeometryType,
+  SpectrogramWindow,
+} from "@/types";
 
 const PRIMARY = "rgb(16 185 129)";
 const CREATE_STYLE = {
@@ -20,116 +19,50 @@ const CREATE_STYLE = {
 };
 
 export default function useAnnotationCreate({
-  window,
-  active,
+  viewport,
+  dimensions,
+  enabled = true,
   geometryType = "TimeStamp",
+  onCreate,
 }: {
-  window: SpectrogramWindow;
-  active: boolean;
-  geometryType: "BoundingBox" | "TimeStamp" | "TimeInterval";
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
+  enabled?: boolean;
+  geometryType: GeometryType;
+  onCreate: (geometry: Geometry) => void;
 }) {
-  const handleBBoxCreate = useCallback(
-    ({
-      bbox,
-      dims,
-    }: {
-      bbox: [number, number, number, number];
-      dims: Dimensions;
-    }) => {
-      const geometry = scaleGeometryToWindow(
-        dims,
-        {
-          type: "BoundingBox",
-          coordinates: bbox,
-        },
-        window,
-      );
-      send({
-        type: "CREATE",
-        geometry,
-      });
-    },
-    [send, window],
-  );
-
-  const handleTimeIntevalCreate = useCallback(
-    ({ interval, dims }: { interval: [number, number]; dims: Dimensions }) => {
-      const geometry = scaleGeometryToWindow(
-        dims,
-        {
-          type: "TimeInterval",
-          coordinates: interval,
-        },
-        window,
-      );
-      send({
-        type: "CREATE",
-        geometry,
-      });
-    },
-    [send, window],
-  );
-
-  const handleTimeStampCreate = useCallback(
-    ({ timeStamp, dims }: { timeStamp: number; dims: Dimensions }) => {
-      const geometry = scaleGeometryToWindow(
-        dims,
-        {
-          type: "TimeStamp",
-          coordinates: timeStamp,
-        },
-        window,
-      );
-      send({
-        type: "CREATE",
-        geometry,
-      });
-    },
-    [send, window],
-  );
-
-  const { draw: drawBBox } = useCreateBBox({
-    drag,
-    active: active && geometryType === "BoundingBox",
-    onCreate: handleBBoxCreate,
+  const { props: propsBBox, draw: drawBBox } = useCreateBBox({
+    viewport,
+    dimensions,
+    onCreate,
     style: CREATE_STYLE,
+    enabled: enabled && geometryType === "BoundingBox",
   });
 
-  const { draw: drawInterval } = useCreateInterval({
-    drag,
-    active: active && geometryType === "TimeInterval",
-    onCreate: handleTimeIntevalCreate,
+  const { props: propsInterval, draw: drawInterval } = useCreateInterval({
+    viewport,
+    dimensions,
+    onCreate,
     style: CREATE_STYLE,
+    enabled: enabled && geometryType === "TimeInterval",
   });
 
-  const { draw: drawTimeStamp } = useCreateTimeStamp({
-    drag,
-    active: active && geometryType === "TimeStamp",
-    onCreate: handleTimeStampCreate,
+  const { props: propsTimeStamp, draw: drawTimeStamp } = useCreateTimeStamp({
+    viewport,
+    dimensions,
+    onCreate,
     style: CREATE_STYLE,
+    enabled: enabled && geometryType === "TimeStamp",
   });
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      if (!active) return;
-
-      ctx.canvas.style.cursor = "crosshair";
-
-      if (geometryType === "BoundingBox") {
-        drawBBox(ctx);
-        return;
-      }
-      if (geometryType === "TimeInterval") {
-        drawInterval(ctx);
-        return;
-      }
-      if (geometryType === "TimeStamp") {
-        drawTimeStamp(ctx);
-        return;
-      }
-    },
-    [active, geometryType, drawBBox, drawInterval, drawTimeStamp],
-  );
-
-  return draw;
+  switch (geometryType) {
+    case "BoundingBox":
+      return { props: propsBBox, draw: drawBBox };
+    case "TimeInterval":
+      return { props: propsInterval, draw: drawInterval };
+    case "TimeStamp":
+      return { props: propsTimeStamp, draw: drawTimeStamp };
+    default:
+      throw new Error(`Invalid geometry type: ${geometryType}`);
+  }
 }

@@ -79,20 +79,15 @@ class SoundEventAnnotationAPI(
         """Add a tag to an annotation project."""
         user_id = user.id if user else None
         for t in obj.tags:
-            created_by_id = t.created_by.id if t.created_by else None
-            if (
-                t.tag.key == tag.key
-                and t.tag.value == tag.value
-                and created_by_id == user_id
-            ):
+            if t.key == tag.key and t.value == tag.value:
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag} already exists in annotation {obj}."
                 )
 
-        db_tag = await common.create_object(
+        await common.create_object(
             session,
             models.SoundEventAnnotationTag,
-            annotation_id=obj.id,
+            sound_event_annotation_id=obj.id,
             tag_id=tag.id,
             created_by_id=user_id,
         )
@@ -100,8 +95,8 @@ class SoundEventAnnotationAPI(
         obj = obj.model_copy(
             update=dict(
                 tags=[
+                    tag,
                     *obj.tags,
-                    schemas.SoundEventAnnotationTag.model_validate(db_tag),
                 ],
             )
         )
@@ -144,17 +139,10 @@ class SoundEventAnnotationAPI(
         session: AsyncSession,
         obj: schemas.SoundEventAnnotation,
         tag: schemas.Tag,
-        user: schemas.SimpleUser | None = None,
     ) -> schemas.SoundEventAnnotation:
         """Remove a tag from an annotation project."""
-        user_id = user.id if user else None
         for t in obj.tags:
-            created_by_id = t.created_by.id if t.created_by else None
-            if (
-                t.tag.key == tag.key
-                and t.tag.value == tag.value
-                and created_by_id == user_id
-            ):
+            if t.key == tag.key and t.value == tag.value:
                 break
         else:
             raise exceptions.NotFoundError(
@@ -168,7 +156,6 @@ class SoundEventAnnotationAPI(
                 models.SoundEventAnnotationTag.sound_event_annotation_id
                 == obj.id,
                 models.SoundEventAnnotationTag.tag_id == tag.id,
-                models.SoundEventAnnotationTag.created_by_id == user_id,
             ),
         )
 
@@ -177,11 +164,7 @@ class SoundEventAnnotationAPI(
                 tags=[
                     t
                     for t in obj.tags
-                    if not (
-                        t.tag.key == tag.key
-                        and t.tag.value == tag.value
-                        and created_by_id == user_id
-                    )
+                    if not (t.key == tag.key and t.value == tag.value)
                 ],
             )
         )
@@ -286,7 +269,7 @@ class SoundEventAnnotationAPI(
             if annotation.created_by
             else None,
             sound_event=sound_events.to_soundevent(annotation.sound_event),
-            tags=[tags.to_soundevent(t.tag) for t in annotation.tags],
+            tags=[tags.to_soundevent(t) for t in annotation.tags],
             notes=[notes.to_soundevent(n) for n in annotation.notes],
         )
 
@@ -369,9 +352,7 @@ class SoundEventAnnotationAPI(
                 "Annotation UUID does not match SoundEventAnnotation UUID"
             )
 
-        tag_keys = {
-            (t.tag.key, t.tag.value) for t in sound_event_annotation.tags
-        }
+        tag_keys = {(t.key, t.value) for t in sound_event_annotation.tags}
         for se_tag in data.tags:
             if (se_tag.key, se_tag.value) in tag_keys:
                 continue

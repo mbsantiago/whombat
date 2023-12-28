@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { type AnnotationProject } from "@/api/annotation_projects";
-import { type EvaluationSet } from "@/api/evaluation_sets";
 import AnnotationProjectSearch from "@/components/annotation_projects/AnnotationProjectSearch";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
@@ -10,12 +8,17 @@ import { AddIcon } from "@/components/icons";
 import { InputGroup } from "@/components/inputs/index";
 import Toggle from "@/components/inputs/Toggle";
 
-import {
-  type EvaluationTask,
-  type EvaluationTaskCreate,
-} from "@/api/evaluation_tasks";
-import { type Task } from "@/api/tasks";
 import useTasks from "@/hooks/api/useTasks";
+
+import type {
+  EvaluationTask,
+  EvaluationTaskCreate,
+} from "@/api/evaluation_tasks";
+import type {
+  AnnotationProject,
+  EvaluationSet,
+  AnnotationTask as Task,
+} from "@/types";
 
 function SelectAnnotationProject({
   selected,

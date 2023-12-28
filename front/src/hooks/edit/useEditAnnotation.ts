@@ -1,92 +1,65 @@
 import { useCallback, useMemo } from "react";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type Style } from "@/draw/styles";
 import useEditGeometry from "@/hooks/edit/useEditGeometry";
-import { type DragState } from "@/hooks/motions/useDrag";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import {
   scaleGeometryToViewport,
   scaleGeometryToWindow,
 } from "@/utils/geometry";
-import { type Geometry } from "@/utils/types";
 
-interface UseEditAnnotationProps {
-  drag: DragState;
-  mouse: MouseState;
-  window: SpectrogramWindow;
-  soundEventAnnotation?: SoundEventAnnotation | null;
-  active: boolean;
-  style: Style;
-  onChange: (geometry: Geometry) => void;
-  onEmptyClick?: () => void;
-}
+import type {
+  Dimensions,
+  Geometry,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+} from "@/types";
 
 export default function useEditAnnotationGeometry({
-  mouse,
-  drag,
-  window,
+  viewport,
+  dimensions,
   soundEventAnnotation,
-  active,
+  enabled = true,
   onChange,
-  onEmptyClick,
+  onDeselect,
   style,
-}: UseEditAnnotationProps) {
+}: {
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
+  soundEventAnnotation: SoundEventAnnotation | null;
+  enabled?: boolean;
+  onChange?: (geometry: Geometry) => void;
+  onDeselect?: () => void;
+  style?: Style;
+}) {
   const { geometry } = soundEventAnnotation?.sound_event ?? {};
-  const { elW, elH } = mouse;
 
-  // Scale geometry to viewport
   const scaledGeometry = useMemo(() => {
     if (geometry == null) return null;
-    return scaleGeometryToViewport(
-      {
-        width: elW,
-        height: elH,
-      },
-      // @ts-ignore
-      geometry,
-      window,
-    );
-  }, [geometry, window, elW, elH]);
+    return scaleGeometryToViewport(dimensions, geometry, viewport);
+  }, [geometry, viewport, dimensions]);
 
   const handleOnChange = useCallback(
     (geometry?: Geometry) => {
       if (geometry == null) return;
-      const rescaled = scaleGeometryToWindow(
-        {
-          width: elW,
-          height: elH,
-        },
-        geometry,
-        window,
-      );
-      onChange(rescaled);
+      const rescaled = scaleGeometryToWindow(dimensions, geometry, viewport);
+      onChange?.(rescaled);
     },
-    [onChange, window, elW, elH],
+    [onChange, viewport, dimensions],
   );
 
   const ret = useEditGeometry({
-    mouse,
-    drag,
+    dimensions,
     object: scaledGeometry,
-    active,
+    active: enabled,
     style,
     onChange: handleOnChange,
-    onClickAway: onEmptyClick,
+    onDeselect: onDeselect,
   });
 
   const reconstructed = useMemo(() => {
     if (ret.object === null) return null;
-    return scaleGeometryToWindow(
-      {
-        width: elW,
-        height: elH,
-      },
-      ret.object,
-      window,
-    );
-  }, [elW, elH, window, ret.object]);
+    return scaleGeometryToWindow(dimensions, ret.object, viewport);
+  }, [dimensions, viewport, ret.object]);
 
   return {
     ...ret,

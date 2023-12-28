@@ -1,11 +1,11 @@
 import { z } from "zod";
 
+import type { Recording } from "@/types";
+
 const DEFAULT_ENDPOINTS = {
   download: "/api/v1/audio/download/",
   stream: "/api/v1/audio/stream/",
 };
-
-import { type Recording } from "@/api/schemas";
 
 export const IntervalSchema = z
   .object({

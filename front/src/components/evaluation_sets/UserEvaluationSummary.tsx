@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
-import { type EvaluationSet } from "@/api/schemas";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { TrainIcon, UserIcon } from "@/components/icons";
 import Link from "@/components/Link";
 import useModelRuns from "@/hooks/api/useModelRuns";
+import { type EvaluationSet } from "@/schemas";
 
 export default function UserEvaluationSummary({
   evaluationSet,

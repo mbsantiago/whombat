@@ -3,12 +3,12 @@
  * table cell.
  */
 
-import { type HTMLProps } from "react";
-
-import { type Tag as TagType } from "@/api/schemas";
 import AddTagButton from "@/components/tags/AddTagButton";
 import Tag from "@/components/tags/Tag";
 import useStore from "@/store";
+
+import type { Tag as TagType } from "@/types";
+import type { HTMLProps } from "react";
 
 /** A table cell that displays a list of tags.
  *

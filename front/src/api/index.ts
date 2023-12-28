@@ -16,19 +16,19 @@ import { registerClipPredictionsAPI } from "./clip_predictions";
 import { registerClipAPI } from "./clips";
 import { registerDatasetAPI } from "./datasets";
 import { registerEvaluationSetAPI } from "./evaluation_sets";
+import { registerEvaluationAPI } from "./evaluations";
+import { registerModelRunAPI } from "./model_runs";
 import { registerNotesAPI } from "./notes";
-import { registerSoundEventAnnotationsAPI } from "./sound_event_annotations";
+import { registerPluginsAPI } from "./plugins";
 import { registerRecordingAPI } from "./recordings";
+import { registerSoundEventAnnotationsAPI } from "./sound_event_annotations";
 import { registerSoundEventEvaluationAPI } from "./sound_event_evaluations";
 import { registerSoundEventPredictionsAPI } from "./sound_event_predictions";
 import { registerSoundEventAPI } from "./sound_events";
 import { registerSpectrogramAPI } from "./spectrograms";
 import { registerTagAPI } from "./tags";
 import { registerUserAPI } from "./user";
-import { registerPluginsAPI } from "./plugins";
-import { registerModelRunAPI } from "./model_runs";
 import { registerUserRunAPI } from "./user_runs";
-import { registerEvaluationAPI } from "./evaluations";
 
 type APIConfig = {
   baseURL: string;

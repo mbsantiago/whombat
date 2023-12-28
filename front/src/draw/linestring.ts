@@ -1,5 +1,5 @@
 import { BorderStyle, setBorderStyle } from "@/draw/styles";
-import { type LineString, type MultiLineString } from "@/utils/types";
+import { type LineString, type MultiLineString } from "@/types";
 
 const DEFAULT_BORDER_ALPHA = 1;
 const DEFAULT_BORDER_WIDTH = 2;

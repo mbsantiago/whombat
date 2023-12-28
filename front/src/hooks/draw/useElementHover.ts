@@ -1,34 +1,37 @@
-import { useEffect, useState } from "react";
-import { useMouse } from "react-use";
+import { useCallback, useState } from "react";
 
 import { type EditableElement, convertElementToGeometry } from "@/draw/edit";
+import useHover from "@/hooks/utils/useHover";
 import { isCloseToGeometry } from "@/utils/geometry";
 
 export default function useElementHover<J>({
   elements,
-  mouse,
-  active = true,
+  enabled = true,
 }: {
   elements: EditableElement<J>[];
-  mouse: ReturnType<typeof useMouse>;
-  active?: boolean;
+  enabled?: boolean;
 }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-  const { elX, elY } = mouse;
+  const [hovered, setHovered] = useState<EditableElement<J> | null>(null);
 
-  useEffect(() => {
-    if (active) {
-      setHovered(null);
-      elements.some((element, index) => {
+  const onHover = useCallback(
+    ({ position }: { position: { x: number; y: number } }) => {
+      const hovered = elements.find((element) => {
         const geom = convertElementToGeometry(element);
-        if (isCloseToGeometry([elX, elY], geom)) {
-          setHovered(index);
-          return true;
-        }
-        return false;
+        return isCloseToGeometry([position.x, position.y], geom);
       });
-    }
-  }, [elements, elX, elY, active]);
+      if (!hovered) {
+        setHovered(null);
+        return;
+      }
+      setHovered(hovered);
+    },
+    [elements],
+  );
 
-  return hovered;
+  const hoverProps = useHover({ onHover, enabled });
+
+  return {
+    hovered,
+    hoverProps,
+  };
 }

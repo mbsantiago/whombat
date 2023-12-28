@@ -1,5 +1,5 @@
-import { type BorderStyle, type FillStyle } from "@/draw/styles";
-import { type MultiPolygon, type Polygon, type Position } from "@/utils/types";
+import type { BorderStyle, FillStyle } from "@/draw/styles";
+import type { Coordinates, MultiPolygon, Polygon } from "@/types";
 
 export type PolygonStyle = BorderStyle & FillStyle;
 
@@ -17,7 +17,7 @@ export const DEFAULT_POLYGON_STYLE: PolygonStyle = {
   fillColor: DEFAULT_FILL_COLOR,
 };
 
-function traceLinering(ctx: CanvasRenderingContext2D, linering: Position[]) {
+function traceLinering(ctx: CanvasRenderingContext2D, linering: Coordinates[]) {
   if (linering.length < 2) {
     // eslint-disable-next-line no-console
     console.error("Invalid linering. Needs at least two points");

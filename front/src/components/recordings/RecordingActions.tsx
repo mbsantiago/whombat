@@ -1,4 +1,3 @@
-import { type Recording } from "@/api/schemas";
 import Alert from "@/components/Alert";
 import Button from "@/components/Button";
 import {
@@ -9,6 +8,8 @@ import {
 } from "@/components/icons";
 import Link from "@/components/Link";
 import useRecording from "@/hooks/api/useRecording";
+
+import type { Recording } from "@/types";
 
 function DeleteRecording({ onDelete }: { onDelete?: () => void }) {
   return (

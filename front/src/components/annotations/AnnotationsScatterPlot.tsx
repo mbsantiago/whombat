@@ -2,7 +2,6 @@ import { useState } from "react";
 import Plot from "react-plotly.js";
 import { useMount } from "react-use";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
 import useRecording from "@/hooks/api/useRecording";
@@ -10,6 +9,8 @@ import useScatterPlot from "@/hooks/useScatterPlot";
 import useStore from "@/store";
 
 import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogram";
+
+import type { SoundEventAnnotation } from "@/types";
 
 function ScatterPlot({
   annotations,

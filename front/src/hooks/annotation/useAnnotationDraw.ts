@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import drawGeometry from "@/draw/geometry";
 import { SECONDARY } from "@/draw/styles";
 import { scaleGeometryToViewport } from "@/utils/geometry";
+
+import type { SoundEventAnnotation, SpectrogramWindow } from "@/types";
 
 const IDLE_STYLE = {
   borderColor: SECONDARY,
@@ -14,10 +14,10 @@ const IDLE_STYLE = {
 };
 
 export default function useAnnotationDraw({
-  window,
+  viewport,
   annotations,
 }: {
-  window: SpectrogramWindow;
+  viewport: SpectrogramWindow;
   annotations: SoundEventAnnotation[];
 }) {
   const draw = useCallback(
@@ -27,12 +27,12 @@ export default function useAnnotationDraw({
           { width: ctx.canvas.width, height: ctx.canvas.height },
           // @ts-ignore
           item.sound_event.geometry,
-          window,
+          viewport,
         );
         drawGeometry(ctx, geometry, IDLE_STYLE);
       }
     },
-    [window, annotations],
+    [viewport, annotations],
   );
 
   return draw;

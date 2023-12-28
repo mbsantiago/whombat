@@ -1,6 +1,7 @@
 import "./globals.css";
-import type { Metadata } from "next";
 import { Mulish } from "next/font/google";
+
+import type { Metadata } from "next";
 
 const mulish = Mulish({ subsets: ["latin"] });
 

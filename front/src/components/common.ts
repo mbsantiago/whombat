@@ -5,3 +5,5 @@ export type Variant =
   | "success"
   | "warning"
   | "info";
+
+export type Mode = "filled" | "outline" | "text";

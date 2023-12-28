@@ -2,7 +2,8 @@ import drawHandle from "@/draw/handle";
 import { drawLineString } from "@/draw/linestring";
 import { drawPolygon } from "@/draw/polygon";
 import { PRIMARY, type Style } from "@/draw/styles";
-import { type Geometry, type Position } from "@/utils/types";
+
+import type { Coordinates, Geometry, Pixel } from "@/types";
 
 const HANDLE_SIZE = 5;
 const HANDLE_SIZE_HOVER = 10;
@@ -14,21 +15,24 @@ const EDGE_WIDTH_HOVER = 3;
 const AREA_FILL_HOVER = 0.3;
 
 export type Keypoint<T> = {
+  id: string;
   type: "Keypoint";
-  coords: Position;
-  drag: (current: T, start: Position, end: Position) => T;
+  coords: Coordinates;
+  drag: (current: T, start: Pixel, end: Pixel) => T;
 };
 
 export type Edge<T> = {
+  id: string;
   type: "Edge";
-  coords: [Position, Position];
-  drag: (current: T, start: Position, end: Position) => T;
+  coords: [Coordinates, Coordinates];
+  drag: (current: T, start: Pixel, end: Pixel) => T;
 };
 
 export type Area<T> = {
+  id: string;
   type: "Area";
-  coords: Position[][];
-  drag: (current: T, start: Position, end: Position) => T;
+  coords: Coordinates[][];
+  drag: (current: T, start: Pixel, end: Pixel) => T;
 };
 
 export type EditableElement<T> = Keypoint<T> | Edge<T> | Area<T>;
@@ -52,7 +56,7 @@ export function drawEdge<T>(
   isHovering = false,
 ) {
   const [start, end] = edge.coords;
-  const middleHandle: Position = [
+  const middleHandle: Coordinates = [
     (start[0] + end[0]) / 2,
     (start[1] + end[1]) / 2,
   ];

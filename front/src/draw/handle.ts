@@ -1,5 +1,6 @@
 import { BorderStyle, SECONDARY, setBorderStyle } from "@/draw/styles";
-import type { Position } from "@/utils/types";
+
+import type { Coordinates } from "@/types";
 
 const DEFAULT_HANDLE_SIZE = 6;
 
@@ -15,7 +16,7 @@ export const DEFAULT_HANDLE_STYLE = {
 
 export default function drawHandle(
   ctx: CanvasRenderingContext2D,
-  position: Position,
+  position: Coordinates,
   { size = DEFAULT_HANDLE_SIZE, ...style }: HandleStlye = DEFAULT_HANDLE_STYLE,
 ) {
   const [x, y] = position;

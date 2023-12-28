@@ -1,10 +1,15 @@
 // @ts-ignore
 import bbox from "@turf/bbox";
-import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 // @ts-ignore
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+
+import { MAX_FREQ } from "@/constants";
 
 import type {
   BoundingBox,
+  Box,
+  Coordinates,
+  Dimensions,
   Geometry,
   LineString,
   MultiLineString,
@@ -12,18 +17,12 @@ import type {
   MultiPolygon,
   Point,
   Polygon,
+  SpectrogramWindow,
   TimeInterval,
   TimeStamp,
-} from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import type { BBox, Interval, Onset } from "@/utils/types";
+} from "@/types";
 
-const MAX_FREQ = 5_000_000;
-
-type Position = number[];
-type Dims = { width: number; height: number };
-
-export function bboxIntersection(bbox1: BBox, bbox2: BBox): BBox | null {
+export function bboxIntersection(bbox1: Box, bbox2: Box): Box | null {
   const [left1, top1, right1, bottom1] = bbox1;
   const [left2, top2, right2, bottom2] = bbox2;
   const left = Math.max(left1, left2);
@@ -87,7 +86,7 @@ export function scaleYToWindow(
 export function scalePixelsToWindow(
   position: { x: number; y: number },
   window: SpectrogramWindow,
-  dims: Dims,
+  dims: Dimensions,
   relative: boolean = false,
 ): { time: number; freq: number } {
   const { width, height } = dims;
@@ -98,28 +97,28 @@ export function scalePixelsToWindow(
 }
 
 export function scaleOnsetToViewport(
-  dims: Dims,
-  onset: Onset,
+  dims: Dimensions,
+  onset: number,
   window: SpectrogramWindow,
-): Onset {
+): number {
   const { width } = dims;
   return scaleTimeToViewport(onset, window, width);
 }
 
 export function scaleOnsetToWindow(
-  dims: Dims,
-  onset: Onset,
+  dims: Dimensions,
+  onset: number,
   window: SpectrogramWindow,
-): Onset {
+): number {
   const { width } = dims;
   return scaleXToWindow(onset, window, width);
 }
 
 export function scaleIntervalToViewport(
-  dims: Dims,
-  interval: Interval,
+  dims: Dimensions,
+  interval: Coordinates,
   window: SpectrogramWindow,
-): Interval {
+): Coordinates {
   const { width } = dims;
   let [start, end] = interval;
   start = scaleTimeToViewport(start, window, width);
@@ -128,10 +127,10 @@ export function scaleIntervalToViewport(
 }
 
 export function scaleIntervalToWindow(
-  dims: Dims,
-  interval: Interval,
+  dims: Dimensions,
+  interval: Coordinates,
   window: SpectrogramWindow,
-): Interval {
+): Coordinates {
   const { width } = dims;
   let [start, end] = interval;
   start = scaleXToWindow(start, window, width);
@@ -140,38 +139,48 @@ export function scaleIntervalToWindow(
 }
 
 export function scaleBBoxToViewport(
-  dims: Dims,
-  bbox: BBox,
+  dims: Dimensions,
+  bbox: Box,
   window: SpectrogramWindow,
-): BBox {
+): Box {
   const { width, height } = dims;
   const [startTime, lowFreq, endTime, highFreq] = bbox;
   const start = scaleTimeToViewport(startTime, window, width);
   const end = scaleTimeToViewport(endTime, window, width);
   const top = scaleFreqToViewport(highFreq, window, height);
   const bottom = scaleFreqToViewport(lowFreq, window, height);
-  return [start, top, end, bottom];
+  return [
+    Math.min(start, end),
+    Math.min(top, bottom),
+    Math.max(start, end),
+    Math.max(top, bottom),
+  ];
 }
 
 export function scaleBBoxToWindow(
-  dims: Dims,
-  bbox: BBox,
+  dims: Dimensions,
+  bbox: Box,
   window: SpectrogramWindow,
-): BBox {
+): Box {
   const { width, height } = dims;
   let [start, top, end, bottom] = bbox;
   const startTime = scaleXToWindow(start, window, width);
   const endTime = scaleXToWindow(end, window, width);
   const lowFreq = scaleYToWindow(top, window, height);
   const highFreq = scaleYToWindow(bottom, window, height);
-  return [startTime, lowFreq, endTime, highFreq];
+  return [
+    Math.min(startTime, endTime),
+    Math.min(lowFreq, highFreq),
+    Math.max(startTime, endTime),
+    Math.max(lowFreq, highFreq),
+  ];
 }
 
-function scalePositionToViewport(
-  { width, height }: Dims,
-  position: Position,
+export function scalePositionToViewport(
+  { width, height }: Dimensions,
+  position: Coordinates,
   window: SpectrogramWindow,
-): Position {
+): Coordinates {
   let [x, y] = position;
   x = scaleTimeToViewport(x, window, width);
   y = scaleFreqToViewport(y, window, height);
@@ -179,10 +188,10 @@ function scalePositionToViewport(
 }
 
 function scalePositionToWindow(
-  { width, height }: Dims,
-  position: Position,
+  { width, height }: Dimensions,
+  position: Coordinates,
   window: SpectrogramWindow,
-): Position {
+): Coordinates {
   let [x, y] = position;
   x = scaleXToWindow(x, window, width);
   y = scaleYToWindow(y, window, height);
@@ -190,39 +199,39 @@ function scalePositionToWindow(
 }
 
 function scalePathToViewport(
-  dims: Dims,
-  path: Position[],
+  dims: Dimensions,
+  path: Coordinates[],
   window: SpectrogramWindow,
-): Position[] {
+): Coordinates[] {
   return path.map((pos) => scalePositionToViewport(dims, pos, window));
 }
 
 function scalePathToWindow(
-  dims: Dims,
-  path: Position[],
+  dims: Dimensions,
+  path: Coordinates[],
   window: SpectrogramWindow,
-): Position[] {
+): Coordinates[] {
   return path.map((pos) => scalePositionToWindow(dims, pos, window));
 }
 
 function scalePathArrayToViewport(
-  dims: Dims,
-  pathArray: Position[][],
+  dims: Dimensions,
+  pathArray: Coordinates[][],
   window: SpectrogramWindow,
-): Position[][] {
+): Coordinates[][] {
   return pathArray.map((path) => scalePathToViewport(dims, path, window));
 }
 
 function scalePathArrayToWindow(
-  dims: Dims,
-  pathArray: Position[][],
+  dims: Dimensions,
+  pathArray: Coordinates[][],
   window: SpectrogramWindow,
-): Position[][] {
+): Coordinates[][] {
   return pathArray.map((path) => scalePathToWindow(dims, path, window));
 }
 
 export function scaleGeometryToViewport<T extends Geometry>(
-  dims: Dims,
+  dims: Dimensions,
   geometry: T,
   window: SpectrogramWindow,
 ): T {
@@ -307,7 +316,7 @@ export function scaleGeometryToViewport<T extends Geometry>(
 }
 
 export function scaleGeometryToWindow<T extends Geometry>(
-  dims: Dims,
+  dims: Dimensions,
   geometry: T,
   window: SpectrogramWindow,
 ): T {
@@ -373,9 +382,9 @@ export function scaleGeometryToWindow<T extends Geometry>(
 
 const IS_CLOSE_THRESHOLD = 5;
 
-export function isCloseToOnset(
-  position: Position,
-  onset: Onset,
+export function isCloseTonumber(
+  position: Coordinates,
+  onset: number,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
   const [x] = position;
@@ -383,8 +392,8 @@ export function isCloseToOnset(
 }
 
 export function isCloseToInterval(
-  position: Position,
-  interval: Interval,
+  position: Coordinates,
+  interval: Coordinates,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
   const [x] = position;
@@ -393,8 +402,8 @@ export function isCloseToInterval(
 }
 
 export function isCloseToBBox(
-  position: Position,
-  bbox: BBox,
+  position: Coordinates,
+  bbox: Box,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
   const [x, y] = position;
@@ -407,14 +416,14 @@ export function isCloseToBBox(
   );
 }
 
-function distance(point1: Position, point2: Position): number {
+function distance(point1: Coordinates, point2: Coordinates): number {
   const [x1, y1] = point1;
   const [x2, y2] = point2;
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
 export function isCloseToPoint(
-  position: Position,
+  position: Coordinates,
   geometry: Point,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
@@ -422,7 +431,7 @@ export function isCloseToPoint(
 }
 
 export function isCloseToMultiPoint(
-  position: Position,
+  position: Coordinates,
   geometry: MultiPoint,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
@@ -433,8 +442,8 @@ export function isCloseToMultiPoint(
 }
 
 function pointToEdgeDistance(
-  point: Position,
-  edge: [Position, Position],
+  point: Coordinates,
+  edge: [Coordinates, Coordinates],
 ): number {
   const [start, end] = edge;
   const l2 = distance(start, end) ** 2;
@@ -447,7 +456,7 @@ function pointToEdgeDistance(
 
   t = Math.max(0, Math.min(1, t));
 
-  const closest: Position = [
+  const closest: Coordinates = [
     start[0] + t * (end[0] - start[0]),
     start[1] + t * (end[1] - start[1]),
   ];
@@ -455,7 +464,10 @@ function pointToEdgeDistance(
   return distance(point, closest);
 }
 
-function pointToLineDistance(point: Position, linestring: LineString): number {
+function pointToLineDistance(
+  point: Coordinates,
+  linestring: LineString,
+): number {
   const distances = linestring.coordinates.slice(1).map((end, index) => {
     const start = linestring.coordinates[index];
     return pointToEdgeDistance(point, [start, end]);
@@ -464,7 +476,7 @@ function pointToLineDistance(point: Position, linestring: LineString): number {
 }
 
 export function isCloseToLineString(
-  position: Position,
+  position: Coordinates,
   geometry: LineString,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
@@ -476,7 +488,7 @@ export function isCloseToLineString(
 }
 
 export function isCloseToMultiLineString(
-  position: Position,
+  position: Coordinates,
   geometry: MultiLineString,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
@@ -493,14 +505,14 @@ export function isCloseToMultiLineString(
 }
 
 export function isCloseToPolygon(
-  position: Position,
+  position: Coordinates,
   geometry: Polygon,
 ): boolean {
   return booleanPointInPolygon(position, geometry);
 }
 
 export function isCloseToMultiPolygon(
-  position: Position,
+  position: Coordinates,
   geometry: MultiPolygon,
 ): boolean {
   return geometry.coordinates.some((polygon) =>
@@ -512,13 +524,13 @@ export function isCloseToMultiPolygon(
 }
 
 export function isCloseToGeometry(
-  position: Position,
+  position: Coordinates,
   geometry: Geometry,
   threshold = IS_CLOSE_THRESHOLD,
 ): boolean {
   switch (geometry.type) {
     case "TimeStamp":
-      return isCloseToOnset(position, geometry.coordinates, threshold);
+      return isCloseTonumber(position, geometry.coordinates, threshold);
     case "TimeInterval":
       // @ts-ignore
       return isCloseToInterval(position, geometry.coordinates, threshold);
@@ -542,7 +554,11 @@ export function isCloseToGeometry(
   }
 }
 
-export function shiftPoint(geom: Point, start: Position, end: Position): Point {
+export function shiftPoint(
+  geom: Point,
+  start: Coordinates,
+  end: Coordinates,
+): Point {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
   const [x, y] = geom.coordinates;
@@ -554,8 +570,8 @@ export function shiftPoint(geom: Point, start: Position, end: Position): Point {
 
 export function shiftMultiPoint(
   geom: MultiPoint,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): MultiPoint {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -567,8 +583,8 @@ export function shiftMultiPoint(
 
 export function shiftLineString(
   geom: LineString,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): LineString {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -583,8 +599,8 @@ export function shiftLineString(
 
 export function shiftMultiLineString(
   geom: MultiLineString,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): MultiLineString {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -598,8 +614,8 @@ export function shiftMultiLineString(
 
 export function shiftPolygon(
   geom: Polygon,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): Polygon {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -613,8 +629,8 @@ export function shiftPolygon(
 
 export function shiftMultiPolygon(
   geom: MultiPolygon,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): MultiPolygon {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -628,8 +644,8 @@ export function shiftMultiPolygon(
 
 export function shiftTimeStamp(
   geom: TimeStamp,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): TimeStamp {
   const dx = end[0] - start[0];
   return {
@@ -640,8 +656,8 @@ export function shiftTimeStamp(
 
 export function shiftTimeInterval(
   geom: TimeInterval,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): TimeInterval {
   const dx = end[0] - start[0];
   return {
@@ -650,10 +666,10 @@ export function shiftTimeInterval(
   };
 }
 
-export function shiftBoundingBox(
+export function shiftBoundingBBox(
   geom: BoundingBox,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): BoundingBox {
   const dx = end[0] - start[0];
   const dy = end[1] - start[1];
@@ -670,8 +686,8 @@ export function shiftBoundingBox(
 
 export function shiftGeometry(
   geom: Geometry,
-  start: Position,
-  end: Position,
+  start: Coordinates,
+  end: Coordinates,
 ): Geometry {
   const { type } = geom;
   switch (type) {
@@ -682,7 +698,7 @@ export function shiftGeometry(
       return shiftTimeInterval(geom, start, end);
 
     case "BoundingBox":
-      return shiftBoundingBox(geom, start, end);
+      return shiftBoundingBBox(geom, start, end);
 
     case "Point":
       return shiftPoint(geom, start, end);
@@ -748,7 +764,7 @@ export function isLineStringInWindow(
   geom: LineString,
   window: SpectrogramWindow,
 ) {
-  const bbox = computeGeometryBBox(geom);
+  const bbox = computeGeometryBox(geom);
   return isBoundingBoxInWindow(
     { type: "BoundingBox", coordinates: bbox },
     window,
@@ -756,7 +772,7 @@ export function isLineStringInWindow(
 }
 
 export function isPolygonInWindow(geom: Polygon, window: SpectrogramWindow) {
-  const bbox = computeGeometryBBox(geom);
+  const bbox = computeGeometryBox(geom);
   return isBoundingBoxInWindow(
     { type: "BoundingBox", coordinates: bbox },
     window,
@@ -843,20 +859,20 @@ export function isGeometryInWindow(
   }
 }
 
-export function computeTimeStampBBox(geometry: TimeStamp): BBox {
+export function computeTimeStampBBox(geometry: TimeStamp): Box {
   return [geometry.coordinates, 0, geometry.coordinates, MAX_FREQ];
 }
 
-export function computeTimeIntervalBBox(geometry: TimeInterval): BBox {
+export function computeTimeIntervalBBox(geometry: TimeInterval): Box {
   return [geometry.coordinates[0], 0, geometry.coordinates[1], MAX_FREQ];
 }
 
-export function computeBoundingBoxBBox(geometry: BoundingBox): BBox {
+export function computeBoundingBoxBBox(geometry: BoundingBox): Box {
   // @ts-ignore
   return geometry.coordinates;
 }
 
-export function computeGeometryBBox(geometry: Geometry): BBox {
+export function computeGeometryBBox(geometry: Geometry): Box {
   const { type } = geometry;
   switch (type) {
     case "TimeStamp":

@@ -1,16 +1,14 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { mergeProps } from "react-aria";
 
-import type { ClipAnnotation } from "@/api/schemas";
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-} from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import AnnotationControls from "@/components/annotation/AnnotationControls";
 import Player from "@/components/audio/Player";
 import Card from "@/components/Card";
 import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
 import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
+import SpectrogramTags from "@/components/spectrograms/SpectrogramTags";
 import useAnnotateClip from "@/hooks/annotation/useAnnotateClip";
 import useAudio from "@/hooks/audio/useAudio";
 import useCanvas from "@/hooks/draw/useCanvas";
@@ -18,14 +16,19 @@ import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 import { getInitialViewingWindow } from "@/utils/windows";
 
+import type { TagFilter } from "@/api/tags";
+import type { ClipAnnotation, SpectrogramParameters } from "@/types";
+
 export default function ClipAnnotationSpectrogram({
   clipAnnotation,
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   onParameterSave,
+  tagFilter,
 }: {
   clipAnnotation: ClipAnnotation;
   parameters?: SpectrogramParameters;
   onParameterSave?: (params: SpectrogramParameters) => void;
+  tagFilter?: TagFilter;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dimensions = canvasRef.current?.getBoundingClientRect() ?? {
@@ -57,6 +60,8 @@ export default function ClipAnnotationSpectrogram({
     [recording.samplerate, clip.start_time, clip.end_time, parameters],
   );
 
+  const [isAnnotating, setIsAnnotating] = useState(false);
+
   const audio = useAudio({
     recording,
     endTime: bounds.time.max,
@@ -69,12 +74,17 @@ export default function ClipAnnotationSpectrogram({
     bounds,
     initial,
     parameters,
-    enabled: !audio.state.playing,
+    onModeChange: (mode) => setIsAnnotating(mode === "idle"),
+    enabled: !isAnnotating,
   });
 
   const annotate = useAnnotateClip({
     clipAnnotation,
+    viewport: spectrogram.state.viewport,
     dimensions,
+    onModeChange: (mode) => setIsAnnotating(mode !== "idle"),
+    onDeselect: () => setIsAnnotating(false),
+    enabled: isAnnotating,
   });
 
   const {
@@ -93,10 +103,11 @@ export default function ClipAnnotationSpectrogram({
   });
 
   const {
-    props,
+    props: spectrogramProps,
     draw: drawSpectrogram,
     state: { isLoading: spectrogramIsLoading },
   } = spectrogram;
+  const { props: annotateProps, draw: drawAnnotations } = annotate;
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -104,9 +115,12 @@ export default function ClipAnnotationSpectrogram({
       if (spectrogramIsLoading) return;
       drawSpectrogram(ctx);
       drawTrackAudio(ctx);
+      drawAnnotations(ctx);
     },
-    [drawSpectrogram, drawTrackAudio, spectrogramIsLoading],
+    [drawSpectrogram, drawTrackAudio, drawAnnotations, spectrogramIsLoading],
   );
+
+  const props = mergeProps(spectrogramProps, annotateProps);
 
   useCanvas({ ref: canvasRef, draw });
 
@@ -129,8 +143,7 @@ export default function ClipAnnotationSpectrogram({
           onDraw={annotate.enableDraw}
           onDelete={annotate.enableDelete}
           onSelect={annotate.enableSelect}
-          onEdit={annotate.enableEdit}
-          onGeometryTypeChange={annotate.setGeometryType}
+          onSelectGeometryType={annotate.setGeometryType}
         />
         <SpectrogramSettings
           samplerate={recording.samplerate}
@@ -144,7 +157,13 @@ export default function ClipAnnotationSpectrogram({
         <Player state={audio.state} controls={audio.controls} />
       </div>
       <div className="relative overflow-hidden h-96 rounded-md">
-        <canvas ref={canvasRef} {...props} className="absolute w-full h-full" />
+        <SpectrogramTags tags={annotate.tags} filter={tagFilter}>
+          <canvas
+            ref={canvasRef}
+            {...props}
+            className="absolute w-full h-full"
+          />
+        </SpectrogramTags>
       </div>
       <SpectrogramBar
         bounds={spectrogram.state.bounds}

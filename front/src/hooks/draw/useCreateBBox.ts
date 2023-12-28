@@ -1,113 +1,80 @@
 import { useCallback, useEffect, useState } from "react";
 
-import drawBBox, { BBoxStyle, DEFAULT_BBOX_STYLE } from "@/draw/bbox";
-import useDrag from "@/hooks/motions/useDrag";
-import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type BBox } from "@/utils/types";
+import { BBoxStyle, DEFAULT_BBOX_STYLE } from "@/draw/bbox";
+import drawGeometry from "@/draw/geometry";
+import useWindowMotions from "@/hooks/window/useWindowMotions";
+import { scaleGeometryToViewport } from "@/utils/geometry";
 
-export interface UseCreateBBoxProps {
-  drag: ScratchState;
-  active: boolean;
-  style?: BBoxStyle;
-  onCreate?: ({
-    bbox,
-    dims,
-  }: {
-    bbox: BBox;
-    dims: {
-      width: number;
-      height: number;
-    };
-  }) => void;
-}
-
-interface CreateBBox {
-  bbox: BBox | null;
-  isDrawing: boolean;
-  draw: (ctx: CanvasRenderingContext2D) => void;
-}
+import type {
+  BoundingBox,
+  Dimensions,
+  Position,
+  SpectrogramWindow,
+} from "@/types";
 
 export default function useCreateBBox({
-  drag,
-  active,
+  viewport,
+  dimensions,
+  enabled,
   style = DEFAULT_BBOX_STYLE,
   onCreate,
-}: UseCreateBBoxProps): CreateBBox {
-  // State of the bbox creation
-  const [dims, setDims] = useState<{ width: number; height: number }>({
-    width: 0,
-    height: 0,
+}: {
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
+  enabled: boolean;
+  style?: BBoxStyle;
+  onCreate?: (bbox: BoundingBox) => void;
+}) {
+  const [bbox, setBBox] = useState<BoundingBox | null>(null);
+
+  const handleMoveStart = useCallback(() => {
+    setBBox(null);
+  }, []);
+
+  const handleMove = useCallback(
+    ({ initial, shift }: { initial: Position; shift: Position }) => {
+      const currentBBox: BoundingBox = {
+        type: "BoundingBox",
+        coordinates: [
+          Math.min(initial.time, initial.time + shift.time),
+          Math.min(initial.freq, initial.freq - shift.freq),
+          Math.max(initial.time, initial.time + shift.time),
+          Math.max(initial.freq, initial.freq - shift.freq),
+        ],
+      };
+      setBBox(currentBBox);
+    },
+    [],
+  );
+
+  const handleMoveEnd = useCallback(() => {
+    if (bbox == null) return;
+    onCreate?.(bbox);
+    setBBox(null);
+  }, [bbox, onCreate]);
+
+  const { props, isDragging } = useWindowMotions({
+    enabled,
+    viewport,
+    dimensions,
+    onMoveStart: handleMoveStart,
+    onMove: handleMove,
+    onMoveEnd: handleMoveEnd,
   });
-  const [bbox, setBBox] = useState<BBox | null>(null);
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
-
-  // Monitor dragging and start and end points
-  const {
-    isDragging,
-    start: startingPoint,
-    current: currentPoint,
-  } = useDrag({
-    dragState: drag,
-    active,
-  });
-
-  const { elW, elH } = drag;
-
-  // Keep track of the dimensions of the element
-  useEffect(() => {
-    if (elW != null && elH != null) setDims({ width: elW, height: elH });
-  }, [elW, elH]);
-
-  // Handle start and end of bbox creation
-  useEffect(() => {
-    if (active) {
-      if (isDragging && bbox == null) {
-        // Start drawing when dragging starts
-        setIsDrawing(true);
-        setBBox(null);
-      } else if (!isDragging && bbox != null) {
-        // Stop drawing when dragging stops
-        setIsDrawing(false);
-
-        // Create the bbox
-        onCreate?.({
-          bbox,
-          dims,
-        });
-        setBBox(null);
-      }
-    }
-  }, [active, isDragging, bbox, onCreate, dims]);
-
-  // Update the bbox when the starting and current points change
-  useEffect(() => {
-    if (active) {
-      const start = startingPoint;
-      const current = currentPoint;
-      if (start != null && current != null) {
-        const left = Math.min(start[0], current[0]);
-        const right = Math.max(start[0], current[0]);
-        const top = Math.max(start[1], current[1]);
-        const bottom = Math.min(start[1], current[1]);
-        setBBox([left, top, right, bottom]);
-      }
-    }
-  }, [active, currentPoint, startingPoint]);
 
   // Create a drawing function for the bbox
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!active) return;
-      if (!isDrawing) return;
-      if (bbox == null) return;
-      drawBBox(ctx, bbox, style);
+      if (!enabled || bbox == null) return;
+      const scaled = scaleGeometryToViewport(dimensions, bbox, viewport);
+      drawGeometry(ctx, scaled, style);
     },
-    [active, bbox, isDrawing, style],
+    [enabled, bbox, style, viewport, dimensions],
   );
 
   return {
-    bbox,
-    isDrawing,
+    props,
     draw,
+    isDragging,
   };
 }

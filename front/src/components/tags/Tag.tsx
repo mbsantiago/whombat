@@ -4,9 +4,10 @@
 import classnames from "classnames";
 import { type HTMLProps } from "react";
 
-import { type Tag } from "@/api/schemas";
 import { ALL_COLORS } from "@/components/colors";
 import { CloseIcon } from "@/components/icons";
+
+import type { Tag } from "@/types";
 
 const COLOR_NAMES = [
   "slate",

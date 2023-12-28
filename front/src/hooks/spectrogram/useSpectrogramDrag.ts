@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import useWindowDrag from "@/hooks/window/useWindowDrag";
-import { type Shift } from "@/hooks/window/useWindowDrag";
+
+import type { Position, SpectrogramWindow } from "@/types";
 
 export default function useSpectrogramDrag({
   viewport,
@@ -28,7 +28,7 @@ export default function useSpectrogramDrag({
   }, [onDragStart, viewport, enabled]);
 
   const onMove = useCallback(
-    (pos: Shift) => {
+    (pos: Position) => {
       if (!enabled) return;
       const window = {
         time: {

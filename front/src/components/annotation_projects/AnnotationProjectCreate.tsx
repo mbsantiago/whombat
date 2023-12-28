@@ -8,9 +8,10 @@ import {
   type AnnotationProjectCreate,
   AnnotationProjectCreateSchema,
 } from "@/api/annotation_projects";
-import { type AnnotationProject } from "@/api/schemas";
 import api from "@/app/api";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
+
+import type { AnnotationProject } from "@/types";
 
 export default function CreateProject({
   onCreate,

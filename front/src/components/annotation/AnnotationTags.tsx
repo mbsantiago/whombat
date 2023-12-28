@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { type AnnotationProject, type Tag as TagType } from "@/api/schemas";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
@@ -9,6 +8,8 @@ import Tag from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import Tooltip from "@/components/Tooltip";
 import useStore from "@/store";
+
+import type { AnnotationProject, Tag as TagType } from "@/types";
 
 export default function AnnotationProjectTags({
   tags,

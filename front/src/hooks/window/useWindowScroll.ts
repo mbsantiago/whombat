@@ -1,7 +1,8 @@
 import { type WheelEvent, useMemo } from "react";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import { scaleXToWindow, scaleYToWindow } from "@/utils/geometry";
+
+import type { SpectrogramWindow } from "@/types";
 
 /**
  * The `useWindowScroll` hook provides functionality to handle window scrolling

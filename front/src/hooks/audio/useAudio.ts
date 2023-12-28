@@ -1,9 +1,10 @@
 import { useMachine } from "@xstate/react";
 import { useMemo, useState } from "react";
 
-import { type Recording } from "@/api/schemas";
 import api from "@/app/api";
 import { audioMachine } from "@/machines/audio";
+
+import type { Recording } from "@/types";
 
 export type PlayerControls = {
   play: () => void;

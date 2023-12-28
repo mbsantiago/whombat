@@ -1,9 +1,11 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { type Clip, ClipSchema } from "@/api/schemas";
+import { ClipSchema } from "@/schemas";
 
 import { GetManySchema, Page } from "./common";
+
+import type { Clip } from "@/types";
 
 export const ClipCreateSchema = z
   .object({

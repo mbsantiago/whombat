@@ -2,13 +2,9 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import {
-  type Feature,
-  GeometrySchema,
-  type Recording,
-  type SoundEvent,
-  SoundEventSchema,
-} from "@/api/schemas";
+import { GeometrySchema, SoundEventSchema } from "@/schemas";
+
+import type { Feature, Recording, SoundEvent } from "@/types";
 
 export const SoundEventCreateSchema = z.object({
   geometry: GeometrySchema,

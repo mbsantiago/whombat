@@ -3,10 +3,11 @@ import { Float } from "@headlessui-float/react";
 import { type ReactNode, useState } from "react";
 
 import Button, { getButtonClassName } from "@/components/Button";
-import { type SetFilter } from "@/components/filters/Filters";
 import { BackIcon, FilterIcon } from "@/components/icons";
 import SearchMenu from "@/components/search/SearchMenu";
-import { type Filter } from "@/hooks/utils/useFilter";
+
+import type { SetFilter } from "@/components/filters/Filters";
+import type { Filter } from "@/hooks/utils/useFilter";
 
 export type FilterDef = {
   icon?: ReactNode;

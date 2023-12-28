@@ -1,12 +1,13 @@
 import { useCallback } from "react";
 import { type Control, useController } from "react-hook-form";
 
-import { type SpectrogramParameters } from "@/api/spectrograms";
 import { InputGroup } from "@/components/inputs";
 import RangeSlider from "@/components/inputs/RangeSlider";
-import { type ParameterConstraints } from "@/utils/spectrogram_parameters";
 
 import SettingsSection from "./SettingsSection";
+
+import type { SpectrogramParameters } from "@/types";
+import type { ParameterConstraints } from "@/utils/spectrogram_parameters";
 
 export default function FilteringSettings({
   constraints,

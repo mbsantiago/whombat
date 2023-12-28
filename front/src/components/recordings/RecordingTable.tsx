@@ -7,7 +7,6 @@ import {
   type RecordingPage,
   type RecordingUpdate,
 } from "@/api/recordings";
-import { type Recording, type Tag } from "@/api/schemas";
 import api from "@/app/api";
 import Loading from "@/app/loading";
 import FilterBar from "@/components/filters/FilterBar";
@@ -16,11 +15,13 @@ import recordingFilterDefs from "@/components/filters/recordings";
 import Search from "@/components/inputs/Search";
 import Pagination from "@/components/lists/Pagination";
 import SelectedMenu from "@/components/tables/SelectedMenu";
+import Table from "@/components/tables/Table";
 import { parsePosition } from "@/components/tables/TableMap";
 import useRecordings from "@/hooks/api/useRecordings";
 import useRecordingTable from "@/hooks/useRecordingTable";
 import useStore from "@/store";
-import Table from "@/components/tables/Table";
+
+import type { Recording, Tag } from "@/types";
 
 const EDITABLE_COLUMNS = ["date", "time", "location", "tags"];
 

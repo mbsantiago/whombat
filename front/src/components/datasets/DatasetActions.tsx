@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-import { type Dataset } from "@/api/schemas";
 import api from "@/app/api";
 import Alert from "@/components/Alert";
 import Button from "@/components/Button";
@@ -12,6 +11,8 @@ import {
   DownloadIcon,
   WarningIcon,
 } from "@/components/icons";
+
+import type { Dataset } from "@/types";
 
 function DeleteDataset({ dataset }: { dataset: Dataset }) {
   const router = useRouter();

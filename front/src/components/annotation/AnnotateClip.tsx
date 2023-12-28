@@ -1,22 +1,21 @@
 import { useCallback } from "react";
 
-import type {
-  ClipAnnotation,
-  SoundEventAnnotation,
-  Tag,
-  User,
-} from "@/api/schemas";
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-} from "@/api/spectrograms";
-import { type TagFilter } from "@/api/tags";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import ClipAnnotationNotes from "@/components/clip_annotations/ClipAnnotationNotes";
 import ClipAnnotationSpectrogram from "@/components/clip_annotations/ClipAnnotationSpectrogram";
 import ClipAnnotationTags from "@/components/clip_annotations/ClipAnnotationTags";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
 import useClipAnnotation from "@/hooks/api/useClipAnnotation";
+
+import type { TagFilter } from "@/api/tags";
+import type {
+  ClipAnnotation,
+  SoundEventAnnotation,
+  SpectrogramParameters,
+  Tag,
+  User,
+} from "@/types";
 
 export default function AnnotateClip({
   clipAnnotation,
@@ -74,6 +73,7 @@ export default function AnnotateClip({
           parameters={parameters}
           clipAnnotation={data}
           onParameterSave={onParameterSave}
+          tagFilter={tagFilter}
         />
       </div>
       <div className="w-96 flex flex-col gap-4">

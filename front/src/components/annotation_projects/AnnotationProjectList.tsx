@@ -25,6 +25,7 @@ export default function AnnotationProjectList({
             label="Search"
             placeholder="Search project..."
             value={filter.get("search")}
+            // @ts-ignore
             onChange={(value) => filter.set("search", value)}
             onSubmit={() => filter.submit()}
             icon={<DatasetIcon />}

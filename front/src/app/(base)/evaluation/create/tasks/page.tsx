@@ -3,7 +3,6 @@ import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import { type EvaluationSet } from "@/api/evaluation_sets";
 import Loading from "@/app/loading";
 import Button from "@/components/Button";
 import EvaluationSetTasks from "@/components/evaluation_sets/EvaluationSetTasks";
@@ -13,6 +12,8 @@ import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
 import { type EvaluationTaskCreate } from "@/api/evaluation_tasks";
 import useEvaluationTasks from "@/hooks/api/useEvaluationTasks";
+
+import type { EvaluationSet } from "@/types";
 
 function NavBar({
   evaluationSet,

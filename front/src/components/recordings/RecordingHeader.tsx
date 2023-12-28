@@ -1,7 +1,5 @@
-import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-import { type Recording } from "@/api/schemas";
 import { H3 } from "@/components/Headings";
 import { RecordingIcon } from "@/components/icons";
 import Tooltip from "@/components/Tooltip";
@@ -10,6 +8,8 @@ import useRecording from "@/hooks/api/useRecording";
 import RecordingDate from "./RecordingDate";
 import RecordingLocation from "./RecordingLocation";
 import RecordingTime from "./RecordingTime";
+
+import type { Recording } from "@/types";
 
 /** Get the basename of a path
  * Taken from https://stackoverflow.com/a/25221100

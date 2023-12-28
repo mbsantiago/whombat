@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { mergeProps } from "react-aria";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import useWindowScroll from "@/hooks/window/useWindowScroll";
 
 import useSpectrogramDrag from "./useSpectrogramDrag";
 import useSpectrogramZoom from "./useSpectrogramZoom";
+
+import type { SpectrogramWindow } from "@/types";
 
 /**
  * The motion modes supported by the spectrogram motions.

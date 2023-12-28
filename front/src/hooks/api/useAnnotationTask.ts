@@ -1,8 +1,9 @@
 import { type AxiosError } from "axios";
 
-import { type AnnotationTask } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { AnnotationTask } from "@/types";
 
 export default function useAnnotationTask({
   uuid,

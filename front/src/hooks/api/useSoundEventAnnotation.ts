@@ -1,8 +1,9 @@
 import { type AxiosError } from "axios";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { SoundEventAnnotation } from "@/types";
 
 /**
  * A hook for managing the state of a sound event annotation.

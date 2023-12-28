@@ -1,9 +1,10 @@
 import { Dialog as HeadlessDialog, Transition } from "@headlessui/react";
-import { type ComponentProps, Fragment, type ReactNode, useState } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button";
+import { CloseIcon } from "@/components/icons";
 
-import { CloseIcon } from "./icons";
+import type { ComponentProps, ReactNode } from "react";
 
 export default function Dialog({
   title,

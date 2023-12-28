@@ -1,6 +1,6 @@
-import { type ReactNode } from "react";
-
 import Spinner from "@/components/Spinner";
+
+import type { ReactNode } from "react";
 
 export default function WithLoading({
   isLoading,

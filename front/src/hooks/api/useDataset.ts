@@ -3,9 +3,10 @@ import { type AxiosError } from "axios";
 import { useMemo } from "react";
 
 import { type DatasetUpdate } from "@/api/datasets";
-import { type Dataset } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { Dataset } from "@/types";
 
 /**
  * Custom hook for managing dataset-related state, fetching, and mutations.

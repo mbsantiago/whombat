@@ -1,7 +1,8 @@
-import type { Dataset } from "@/api/schemas";
 import Card from "@/components/Card";
 import Link from "@/components/Link";
 import useDataset from "@/hooks/api/useDataset";
+
+import type { Dataset } from "@/types";
 
 export default function DatasetExport({ dataset }: { dataset: Dataset }) {
   const { download } = useDataset({
@@ -17,7 +18,7 @@ export default function DatasetExport({ dataset }: { dataset: Dataset }) {
       <div className="grid grid-cols-2 gap-2">
         <Card className="h-full dark:bg-stone-600">
           <Link
-            href={download.csv}
+            href={download.csv || ""}
             className="block mt-2 text-center"
             download
             target="_blank"
@@ -31,9 +32,9 @@ export default function DatasetExport({ dataset }: { dataset: Dataset }) {
         </Card>
         <Card className="h-full dark:bg-stone-600">
           <Link
-            href={download.json}
+            href={download.json || ""}
             className="block mt-2 text-center"
-            donwload
+            download
             target="_blank"
           >
             Download JSON

@@ -5,15 +5,16 @@ import classNames from "classnames";
 import { type HTMLProps, type ReactNode } from "react";
 import { useMemo } from "react";
 
-import { type Tag as TagType } from "@/api/schemas";
-import { type TagFilter } from "@/api/tags";
 import { CloseIcon, TagIcon } from "@/components/icons";
 import TagSearchBar from "@/components/tags/TagSearchBar";
-import {
-  type TagElement,
-  type TagGroup,
-} from "@/hooks/annotation/useAnnotationTags";
 import useStore from "@/store";
+
+import type { TagFilter } from "@/api/tags";
+import type {
+  TagElement,
+  TagGroup,
+} from "@/hooks/annotation/useAnnotationTags";
+import type { Tag as TagType } from "@/types";
 
 function TagBarPopover({
   onClose,
@@ -162,10 +163,10 @@ export function TagGroup({
         filter={filter}
         onCreate={(tag) => {
           onCreate?.(tag);
-          group.onAdd(tag);
+          group.onAdd?.(tag);
         }}
         onAdd={(tag) => {
-          group.onAdd(tag);
+          group.onAdd?.(tag);
         }}
       />
     </div>

@@ -1,15 +1,16 @@
 import { useMemo } from "react";
 
-import { type Dataset, type Tag as TagType } from "@/api/schemas";
-import { type RecordingTag } from "@/api/tags";
 import api from "@/app/api";
 import Loading from "@/app/loading";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { TagsIcon } from "@/components/icons";
-import Tag from "@/components/tags/Tag";
+import TagComponent from "@/components/tags/Tag";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
 import useStore from "@/store";
+
+import type { RecordingTag } from "@/api/tags";
+import type { Dataset, Tag } from "@/types";
 
 /**
  * Component to display a summary of tags for a dataset.
@@ -42,7 +43,7 @@ export default function DatasetTagsSummary({
     pageSize: -1,
   });
 
-  const tagCount: [TagType, number][] = useMemo(() => {
+  const tagCount: [Tag, number][] = useMemo(() => {
     if (isLoading || tags == null) {
       return [];
     }
@@ -67,7 +68,7 @@ export default function DatasetTagsSummary({
   );
 }
 
-function getTagKey(tag: TagType): string {
+function getTagKey(tag: Tag): string {
   return `${tag.key}-${tag.value}`;
 }
 
@@ -77,9 +78,9 @@ function getTagKey(tag: TagType): string {
  * @param tags - An array of tag instances.
  * @returns An array of tuples containing tags and their respective counts.
  */
-function getTagCount(tags: RecordingTag[]): [TagType, number][] {
+function getTagCount(tags: RecordingTag[]): [Tag, number][] {
   const tagCount = new Map<string, number>();
-  const tagMap = new Map<string, TagType>();
+  const tagMap = new Map<string, Tag>();
 
   tags.forEach(({ tag }) => {
     const key = getTagKey(tag);
@@ -91,7 +92,7 @@ function getTagCount(tags: RecordingTag[]): [TagType, number][] {
 
   return Array.from(tagCount.entries())
     .sort((a, b) => b[1] - a[1])
-    .map(([id, count]) => [tagMap.get(id) as TagType, count]);
+    .map(([id, count]) => [tagMap.get(id) as Tag, count]);
 }
 
 /**
@@ -113,7 +114,7 @@ function NoTagsRecorded() {
  * @param popularTags - An array of tuples containing tags and their counts.
  * @returns JSX element displaying popular tags.
  */
-function PopularTags({ popularTags }: { popularTags: [TagType, number][] }) {
+function PopularTags({ popularTags }: { popularTags: [Tag, number][] }) {
   const maxCount = popularTags[0]?.[1] ?? 0;
   const getTagColor = useStore((state) => state.getTagColor);
 
@@ -125,7 +126,7 @@ function PopularTags({ popularTags }: { popularTags: [TagType, number][] }) {
           <div className="pr-2 text-sm text-right text-stone-500">Tag</div>
           {popularTags.map(([tag, _]) => (
             <div key={getTagKey(tag)} className="flex flex-row justify-end">
-              <Tag tag={tag} disabled {...getTagColor(tag)} />
+              <TagComponent tag={tag} disabled {...getTagColor(tag)} />
             </div>
           ))}
         </div>

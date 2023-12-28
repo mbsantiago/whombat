@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { type ClipCreateMany } from "@/api/clips";
-import {
-  type AnnotationProject,
-  type AnnotationTask,
-  type Dataset,
-  type Recording,
-} from "@/api/schemas";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import DatasetSearch from "@/components/datasets/DatasetSearch";
@@ -14,16 +8,20 @@ import FilterBar from "@/components/filters/FilterBar";
 import FilterMenu from "@/components/filters/FilterMenu";
 import recordingFilterDefs from "@/components/filters/recordings";
 import { H2, H3 } from "@/components/Headings";
-import { TasksIcon , FilterIcon } from "@/components/icons";
-import useRecordings from "@/hooks/api/useRecordings";
-import useAnnotationProject from "@/hooks/api/useAnnotationProject";
+import { FilterIcon, TasksIcon } from "@/components/icons";
 import { Input, InputGroup } from "@/components/inputs/index";
 import Toggle from "@/components/inputs/Toggle";
-import {
-  type ClipExtraction,
-  computeClips,
-  getRandomSubarray,
-} from "@/utils/clips";
+import useAnnotationProject from "@/hooks/api/useAnnotationProject";
+import useRecordings from "@/hooks/api/useRecordings";
+import { getRandomSubarray } from "@/utils/arrays";
+import { type ClipExtraction, computeClips } from "@/utils/clips";
+
+import type {
+  AnnotationProject,
+  AnnotationTask,
+  Dataset,
+  Recording,
+} from "@/types";
 
 export default function AnnotationProjectTasks({
   project: data,

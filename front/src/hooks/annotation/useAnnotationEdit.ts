@@ -1,18 +1,11 @@
-import { type RefObject, useCallback, useEffect } from "react";
-import { useKeyPress } from "react-use";
+import useEditAnnotationGeometry from "@/hooks/edit/useEditAnnotation";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import useEditGeometry from "@/hooks/edit/useEditAnnotation";
-import useDrag from "@/hooks/motions/useDrag";
-import { type MouseState } from "@/hooks/motions/useMouse";
-import useScratch from "@/hooks/motions/useScratch";
-import { type Geometry } from "@/utils/types";
-
-import {
-  type CreateAnnotationEvent,
-  type EditAnnotationEvent,
-} from "@/machines/annotate";
+import type {
+  Dimensions,
+  Geometry,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+} from "@/types";
 
 const PRIMARY = "rgb(16 185 129)";
 
@@ -25,83 +18,33 @@ const EDIT_STYLE = {
 };
 
 export default function useAnnotationEdit({
-  mouse,
-  active,
-  send,
-  window,
+  viewport,
+  dimensions,
   annotation,
-  ref,
+  enabled = true,
+  onEdit,
+  onDeselect,
 }: {
-  mouse: MouseState;
-  active: boolean;
-  send: (
-    event: EditAnnotationEvent | CreateAnnotationEvent | { type: "IDLE" },
-  ) => void;
-  window: SpectrogramWindow;
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
   annotation: SoundEventAnnotation | null;
-  ref: RefObject<HTMLCanvasElement>;
+  enabled?: boolean;
+  onEdit?: (geometry: Geometry) => void;
+  onCopy?: (annotation: SoundEventAnnotation, geometry: Geometry) => void;
+  onDeselect?: () => void;
 }) {
-  const [control] = useKeyPress("Control");
-
-  useEffect(() => {
-    if (control) {
-    }
-  }, [control]);
-
-  const drag = useScratch({
-    ref,
-    active,
-  });
-
-  const editState = useDrag({
-    dragState: drag,
-    active,
-  });
-
-  const handleEditAnnotation = useCallback(
-    (geometry: Geometry) => {
-      const event = control
-        ? {
-            type: "CREATE",
-            geometry,
-            tags: annotation?.tags,
-          }
-        : {
-            type: "EDIT",
-            geometry,
-          };
-      // @ts-ignore
-      send(event);
-    },
-    [send, control, annotation?.tags],
-  );
-
-  const handleClickAway = useCallback(() => {
-    send({ type: "IDLE" });
-  }, [send]);
-
-  const { draw: drawEdit } = useEditGeometry({
-    drag: editState,
-    mouse,
-    window,
+  const { draw, props } = useEditAnnotationGeometry({
+    viewport,
+    dimensions,
     soundEventAnnotation: annotation,
-    active,
-    onChange: handleEditAnnotation,
-    onEmptyClick: handleClickAway,
+    enabled,
+    onChange: onEdit,
+    onDeselect,
     style: EDIT_STYLE,
   });
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      if (!active) return;
-      const { canvas } = ctx;
-      drawEdit(ctx);
-      if (control) {
-        canvas.style.cursor = "copy";
-      }
-    },
-    [drawEdit, control, active],
-  );
-
-  return draw;
+  return {
+    draw,
+    props,
+  };
 }

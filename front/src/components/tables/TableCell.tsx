@@ -1,7 +1,8 @@
 import classnames from "classnames";
-import { type HTMLProps, type ReactNode } from "react";
 
 import { EditIcon } from "@/components/icons";
+
+import type { HTMLProps, ReactNode } from "react";
 
 export default function TableCell({
   children,

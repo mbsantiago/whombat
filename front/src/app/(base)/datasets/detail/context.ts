@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { type Dataset } from "@/api/schemas";
+import type { Dataset } from "@/types";
 
 const DatasetContext = createContext<Dataset | null>(null);
 

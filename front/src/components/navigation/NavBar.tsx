@@ -3,8 +3,9 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import classnames from "classnames";
 import { Fragment } from "react";
 
-import { type User } from "@/api/schemas";
 import { HorizontalDivider } from "@/components/Divider";
+
+import type { User } from "@/types";
 
 function Brand() {
   return (

@@ -1,10 +1,7 @@
 import classnames from "classnames";
 import Link from "next/link";
-import {
-  type ButtonHTMLAttributes,
-  type ComponentProps,
-  type ReactNode,
-} from "react";
+
+import type { ButtonHTMLAttributes, ComponentProps, ReactNode } from "react";
 
 type TabType = {
   id: string | number;

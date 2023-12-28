@@ -1,9 +1,10 @@
 import { type AxiosError } from "axios";
 import { useMemo } from "react";
 
-import { type Recording } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { Recording } from "@/types";
 
 export default function useRecording({
   uuid,
@@ -36,7 +37,7 @@ export default function useRecording({
     throw new Error("Recording uuid does not match");
   }
 
-  const { query, useMutation, set } = useObject<Recording>({
+  const { query, useMutation, setData: set } = useObject<Recording>({
     uuid,
     initial: recording,
     name: "dataset",

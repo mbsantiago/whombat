@@ -1,23 +1,22 @@
 import { useMemo } from "react";
 
-import type {
-  AnnotationProject,
-  AnnotationTask,
-  ClipAnnotation,
-  SoundEventAnnotation,
-  Tag,
-  User,
-} from "@/api/schemas";
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-} from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import AnnotateClip from "@/components/annotation/AnnotateClip";
 import AnnotationProgress from "@/components/annotation/AnnotationProgress";
 import AnnotationTaskStatus from "@/components/annotation_tasks/AnnotationTaskStatus";
 import Empty from "@/components/Empty";
 import Loading from "@/components/Loading";
 import useAnnotation from "@/hooks/annotation/useAnnotation";
+
+import type {
+  AnnotationProject,
+  AnnotationTask,
+  ClipAnnotation,
+  SoundEventAnnotation,
+  SpectrogramParameters,
+  Tag,
+  User,
+} from "@/types";
 
 export default function AnnotateProject({
   annotationProject,

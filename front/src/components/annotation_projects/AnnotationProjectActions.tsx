@@ -1,4 +1,3 @@
-import { type AnnotationProject } from "@/api/schemas";
 import Alert from "@/components/Alert";
 import Button from "@/components/Button";
 import {
@@ -9,6 +8,8 @@ import {
 } from "@/components/icons";
 import Link from "@/components/Link";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
+
+import type { AnnotationProject } from "@/types";
 
 function DeleteProject({ onDelete }: { onDelete?: () => void }) {
   return (

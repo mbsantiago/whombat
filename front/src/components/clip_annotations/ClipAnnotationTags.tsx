@@ -1,5 +1,3 @@
-import type { ClipAnnotation, Tag } from "@/api/schemas";
-import { type TagFilter } from "@/api/tags";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
@@ -8,6 +6,9 @@ import { DeleteIcon, TagsIcon } from "@/components/icons";
 import AddTagButton from "@/components/tags/AddTagButton";
 import TagComponent from "@/components/tags/Tag";
 import useStore from "@/store";
+
+import type { TagFilter } from "@/api/tags";
+import type { ClipAnnotation, Tag } from "@/types";
 
 export default function ClipAnnotationTags({
   clipAnnotation,

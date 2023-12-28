@@ -2,7 +2,9 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { type Evaluation, EvaluationSchema } from "@/api/schemas";
+import { EvaluationSchema } from "@/schemas";
+
+import type { Evaluation } from "@/types";
 
 export const EvaluationCreateSchema = z.object({
   task: z.string(),
@@ -61,15 +63,16 @@ export function registerEvaluationAPI(
   }
 
   async function createEvaluation(data: EvaluationCreate): Promise<Evaluation> {
-    const body = EvaluationCreateSchema.parse(evaluation);
+    const body = EvaluationCreateSchema.parse(data);
     const response = await instance.post(endpoints.create, body);
     return EvaluationSchema.parse(response.data);
   }
 
   async function deleteEvaluation(evaluation: Evaluation): Promise<Evaluation> {
-    await instance.delete(endpoints.delete, {
+    const response = await instance.delete(endpoints.delete, {
       params: { evaluation_uuid: evaluation.uuid },
     });
+    return EvaluationSchema.parse(response.data);
   }
 
   return {

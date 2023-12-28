@@ -34,7 +34,7 @@ export default function Page() {
     },
     onSuccess: (data) => {
       router.push(
-        `/annotation_projects/detail/?annotation_project_id=${data.id}`,
+        `/annotation_projects/detail/?annotation_project_uuid=${data.uuid}`,
       );
     },
   });

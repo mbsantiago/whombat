@@ -54,6 +54,7 @@ export default function DatasetList() {
             label="Search"
             placeholder="Search dataset..."
             value={datasets.filter.get("search")}
+            // @ts-ignore
             onChange={(value) => datasets.filter.set("search", value)}
             onSubmit={() => datasets.filter.submit()}
             icon={<DatasetIcon />}

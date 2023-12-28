@@ -1,15 +1,12 @@
 /* Functions for handling spectrogram parameters */
+import {
+  MAX_FFT_SIZE,
+  MAX_HOP_FRACTION,
+  MIN_FFT_SIZE,
+  MIN_HOP_FRACTION,
+} from "@/constants";
 
-import { type SpectrogramParameters } from "@/api/spectrograms";
-
-/* Restrictions on the settings for the STFT computation
- * These are to prevent the user from setting parameters that
- * would cause the STFT to fail or be too slow
- */
-const MAX_FFT_SIZE = 2 ** 13;
-const MIN_FFT_SIZE = 2 ** 7;
-const MAX_HOP_FRACTION = 1; // 100% of window size
-const MIN_HOP_FRACTION = 0.1; // 10% of window size
+import type { SpectrogramParameters } from "@/types";
 
 export type ParameterConstraints = {
   /* Acceptable window sizes for the spectrogram */

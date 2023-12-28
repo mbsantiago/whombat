@@ -1,5 +1,6 @@
-import type { Interval } from "@/api/audio";
 import { Style, setBorderStyle, setFillStyle } from "@/draw/styles";
+
+import type { Interval } from "@/types";
 
 const DEFAULT_FILL_COLOR = "red";
 const DEFAULT_BORDER_ALPHA = 1;

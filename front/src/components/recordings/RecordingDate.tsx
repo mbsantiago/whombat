@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -37,7 +37,7 @@ export default function RecordingDate({
   date,
   onChange,
 }: {
-  date?: Date;
+  date?: Date | null;
   onChange?: (value: { date?: Date | null }) => void;
 }) {
   const { register, handleSubmit, watch } = useForm<{ date: string }>({

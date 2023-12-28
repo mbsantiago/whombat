@@ -1,6 +1,6 @@
 import classnames from "classnames";
 
-import { type Variant } from "./common";
+import type { Variant } from "./common";
 
 function getClassName(variant: Variant) {
   switch (variant) {

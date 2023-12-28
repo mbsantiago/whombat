@@ -7,11 +7,12 @@ import toast from "react-hot-toast";
 
 import {
   EvaluationMode,
-  type EvaluationSet,
   type EvaluationSetCreate,
   EvaluationSetCreateSchema,
 } from "@/api/evaluation_sets";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
+
+import type { EvaluationSet } from "@/types";
 
 function RadioOption({
   checked,

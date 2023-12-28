@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 
-import { type AnnotationProject as AnnotationProjectType } from "@/api/schemas";
 import { AnnotationProjectIcon, CalendarIcon } from "@/components/icons";
+
+import type { AnnotationProject as AnnotationProjectType } from "@/types";
 
 function Atom({ label, value }: { label: ReactNode; value: string }) {
   return (

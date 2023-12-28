@@ -93,6 +93,7 @@ class Tag(Base):
         from whombat.models.recording import Recording, RecordingTag
         from whombat.models.sound_event import SoundEvent
         from whombat.models.sound_event_annotation import (
+            SoundEventAnnotation,
             SoundEventAnnotationTag,
         )
 
@@ -108,6 +109,14 @@ class Tag(Base):
         back_populates="tag",
         init=False,
         repr=False,
+        default_factory=list,
+    )
+    sound_event_annotations: orm.Mapped[list["SoundEventAnnotation"]] = orm.relationship(
+        back_populates="tags",
+        secondary="sound_event_annotation_tag",
+        init=False,
+        repr=False,
+        viewonly=True,
         default_factory=list,
     )
     sound_event_annotation_tags: orm.Mapped[

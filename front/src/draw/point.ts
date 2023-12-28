@@ -1,5 +1,5 @@
 import { type FillStyle } from "@/draw/styles";
-import { type MultiPoint, type Point } from "@/utils/types";
+import { type MultiPoint, type Point } from "@/types";
 
 export interface PointStyle extends FillStyle {
   radius?: number;

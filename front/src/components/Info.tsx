@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { type ReactNode } from "react";
+
+import type { ReactNode } from "react";
 
 export default function Info({
   title,

@@ -1,6 +1,7 @@
 import { Popover as HeadlessPopover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
-import { type ReactElement, type ReactNode } from "react";
+
+import type { ReactElement, ReactNode } from "react";
 
 export default function Popover({
   button,

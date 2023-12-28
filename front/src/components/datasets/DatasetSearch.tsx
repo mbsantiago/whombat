@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from "react";
 import { Item } from "react-stately";
 
-import { type Dataset } from "@/api/schemas";
 import Search from "@/components/search/Search";
 import useDatasets from "@/hooks/api/useDatasets";
+
+import type { Dataset } from "@/types";
 
 export default function DatasetSearch({
   selected,

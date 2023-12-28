@@ -29,7 +29,7 @@ export default function RecordingTime({
   time,
   onChange,
 }: {
-  time?: string;
+  time?: string | null;
   onChange?: (value: { time?: string | null }) => void;
 }) {
   const {

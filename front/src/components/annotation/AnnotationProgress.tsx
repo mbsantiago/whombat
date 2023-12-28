@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
-import { type AnnotationTask } from "@/api/schemas";
 import Button, { getButtonClassName } from "@/components/Button";
 import FilterBar from "@/components/filters/FilterBar";
 import FilterMenu from "@/components/filters/FilterMenu";
@@ -10,8 +8,11 @@ import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
 import Toggle from "@/components/inputs/Toggle";
 import ProgressBar from "@/components/ProgressBar";
 import Tooltip from "@/components/Tooltip";
-import { type Filter } from "@/hooks/utils/useFilter";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
+
+import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
+import type { Filter } from "@/hooks/utils/useFilter";
+import type { AnnotationTask } from "@/types";
 
 export default function AnnotationProgress({
   tasks,

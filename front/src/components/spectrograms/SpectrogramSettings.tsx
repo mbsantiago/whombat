@@ -2,14 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo, useState } from "react";
 import { type Resolver, useForm } from "react-hook-form";
 
-import {
-  type SpectrogramParameters,
-  SpectrogramParametersSchema,
-} from "@/api/spectrograms";
 import Button from "@/components/Button";
 import { SettingsIcon } from "@/components/icons";
 import SlideOver from "@/components/SlideOver";
 import Tooltip from "@/components/Tooltip";
+import { SpectrogramParametersSchema } from "@/schemas";
 import { debounce } from "@/utils/debounce";
 import {
   computeConstraints,
@@ -23,6 +20,8 @@ import DeNoiseSettings from "./settings/DeNoiseSettings";
 import FilteringSettings from "./settings/FilteringSettings";
 import ResamplingSettings from "./settings/ResamplingSettings";
 import STFTSettings from "./settings/STFTSettings";
+
+import type { SpectrogramParameters } from "@/types";
 
 export function SpectrogramSettingForm({
   settings,

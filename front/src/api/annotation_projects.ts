@@ -1,12 +1,10 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { GetManySchema, Page } from "./common";
-import {
-  type AnnotationProject,
-  AnnotationProjectSchema,
-  type Tag,
-} from "./schemas";
+import { GetManySchema, Page } from "@/api/common";
+import { AnnotationProjectSchema } from "@/schemas";
+
+import type { AnnotationProject, Tag } from "@/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/annotation_projects/",

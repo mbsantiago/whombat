@@ -11,8 +11,8 @@ function LocationButton({
   latitude,
   longitude,
 }: {
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
 }) {
   const hasLocation = latitude != null && longitude != null;
   return (
@@ -34,8 +34,8 @@ export default function RecordingLocation({
   longitude,
   onChange,
 }: {
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   onChange?: (value: Location) => void;
 }) {
   return (

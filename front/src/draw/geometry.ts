@@ -1,11 +1,12 @@
-import type { Geometry } from "@/api/schemas";
 import drawBBox from "@/draw/bbox";
 import drawInterval from "@/draw/interval";
 import { drawLineString, drawMultiLineString } from "@/draw/linestring";
 import drawOnset from "@/draw/onset";
 import { drawMultiPoint, drawPoint } from "@/draw/point";
 import { drawMultiPolygon, drawPolygon } from "@/draw/polygon";
+
 import type { BorderStyle, FillStyle } from "@/draw/styles";
+import type { Geometry } from "@/types";
 
 export type Style = BorderStyle & FillStyle;
 

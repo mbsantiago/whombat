@@ -1,5 +1,4 @@
 import { type ComponentProps, type ReactNode } from "react";
-import { useState } from "react";
 
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";

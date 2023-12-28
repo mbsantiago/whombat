@@ -1,11 +1,10 @@
-import { type MouseEvent, useCallback, useMemo, useState } from "react";
-import { mergeProps } from "react-aria";
+import { useCallback, useState } from "react";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import drawBBox from "@/draw/bbox";
-import { type Shift } from "@/hooks/window/useWindowDrag";
-import useWindowDrag from "@/hooks/window/useWindowDrag";
-import { scaleBBoxToViewport, scalePixelsToWindow } from "@/utils/geometry";
+import useWindowMotions from "@/hooks/window/useWindowMotions";
+import { scaleBBoxToViewport } from "@/utils/geometry";
+
+import type { Position, SpectrogramWindow } from "@/types";
 
 export const VALID_STYLE = {
   fillAlpha: 0.3,
@@ -46,70 +45,47 @@ export default function useSpectrogramZoom({
   enabled?: boolean;
 }) {
   const [isValid, setIsValid] = useState(false);
-  const [initialPosition, setInitialPosition] = useState<Shift | null>(null);
   const [currentWindow, setCurrentWindow] = useState<SpectrogramWindow | null>(
     null,
   );
 
-  const clickProps = useMemo(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (!enabled) return;
-      const targetRect = e.currentTarget.getBoundingClientRect();
-      const point = {
-        x: e.pageX - targetRect.left,
-        y: e.pageY - targetRect.top,
-      };
-      const position = scalePixelsToWindow(point, viewport, dimensions);
-      setInitialPosition(position);
-    };
-
-    return {
-      onMouseDown: handleClick,
-      onPointerDown: handleClick,
-      onClick: handleClick,
-    };
-  }, [enabled, viewport, dimensions]);
-
-  const onMoveStart = useCallback(() => {
-    if (!enabled) return;
+  const handleMoveStart = useCallback(() => {
     setCurrentWindow(null);
-  }, [enabled]);
+  }, []);
 
-  const onMove = useCallback(
-    (pos: Shift) => {
-      if (!enabled || initialPosition == null) return;
-      const { time, freq } = initialPosition;
+  const handleMove = useCallback(
+    ({ initial, shift }: { initial: Position; shift: Position }) => {
       const window = {
         time: {
-          min: Math.min(time, time + pos.time),
-          max: Math.max(time, time + pos.time),
+          min: Math.min(initial.time, initial.time + shift.time),
+          max: Math.max(initial.time, initial.time + shift.time),
         },
         freq: {
-          min: Math.min(freq, freq - pos.freq),
-          max: Math.max(freq, freq - pos.freq),
+          min: Math.min(initial.freq, initial.freq - shift.freq),
+          max: Math.max(initial.freq, initial.freq - shift.freq),
         },
       };
       setCurrentWindow(window);
       setIsValid(validateWindow(window));
     },
-    [initialPosition, enabled],
+    [],
   );
 
-  const onMoveEnd = useCallback(() => {
-    if (!enabled || currentWindow == null) return;
+  const handleMoveEnd = useCallback(() => {
+    if (currentWindow == null) return;
     if (isValid) {
       onZoom?.(viewport, currentWindow);
     }
-    setInitialPosition(null);
     setCurrentWindow(null);
-  }, [enabled, currentWindow, onZoom, viewport, isValid]);
+  }, [currentWindow, isValid, onZoom, viewport]);
 
-  const { moveProps, isDragging } = useWindowDrag({
+  const { props, isDragging } = useWindowMotions({
+    enabled,
     viewport,
     dimensions,
-    onMoveStart,
-    onMove,
-    onMoveEnd,
+    onMoveStart: handleMoveStart,
+    onMove: handleMove,
+    onMoveEnd: handleMoveEnd,
   });
 
   const draw = useCallback(
@@ -137,10 +113,8 @@ export default function useSpectrogramZoom({
     [enabled, currentWindow, viewport, isValid],
   );
 
-  const zoomProps = mergeProps(clickProps, moveProps);
-
   return {
-    zoomProps,
+    zoomProps: props,
     isDragging,
     isValid,
     draw,

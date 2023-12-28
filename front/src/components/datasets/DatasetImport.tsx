@@ -3,10 +3,11 @@ import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import { type Dataset } from "@/api/schemas";
 import api from "@/app/api";
 import { UploadIcon } from "@/components/icons";
 import { Input, InputGroup, Submit } from "@/components/inputs/index";
+
+import type { Dataset } from "@/types";
 
 /**
  * Component for importing a dataset.

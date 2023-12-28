@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+import {
+  DEFAULT_CMAP,
+  DEFAULT_FILTER_ORDER,
+  DEFAULT_HOP_SIZE,
+  DEFAULT_SCALE,
+  DEFAULT_WINDOW,
+  DEFAULT_WINDOW_SIZE,
+  MAX_SAMPLERATE,
+  MIN_DB,
+  MIN_SAMPLERATE,
+} from "@/constants";
+
 export const UserSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
@@ -7,21 +19,15 @@ export const UserSchema = z.object({
   name: z.string().nullable().optional(),
 });
 
-export type User = z.infer<typeof UserSchema>;
-
 export const TagSchema = z.object({
   key: z.string(),
   value: z.string(),
 });
 
-export type Tag = z.infer<typeof TagSchema>;
-
 export const FeatureSchema = z.object({
   name: z.string(),
   value: z.number(),
 });
-
-export type Feature = z.infer<typeof FeatureSchema>;
 
 export const NoteSchema = z.object({
   uuid: z.string().uuid(),
@@ -30,8 +36,6 @@ export const NoteSchema = z.object({
   created_by: UserSchema,
   created_on: z.coerce.date(),
 });
-
-export type Note = z.infer<typeof NoteSchema>;
 
 export const RecordingSchema = z.object({
   uuid: z.string().uuid(),
@@ -56,22 +60,16 @@ export const RecordingSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type Recording = z.infer<typeof RecordingSchema>;
-
 export const FileStateSchema = z.enum([
   "missing",
   "registered",
   "unregistered",
 ]);
 
-export type FileState = z.infer<typeof FileStateSchema>;
-
 export const RecordingStateSchema = z.object({
   path: z.string(),
   state: FileStateSchema,
 });
-
-export type RecordingState = z.infer<typeof RecordingStateSchema>;
 
 export const DatasetSchema = z.object({
   uuid: z.string().uuid(),
@@ -81,8 +79,6 @@ export const DatasetSchema = z.object({
   recording_count: z.number().int().default(0),
   created_on: z.coerce.date(),
 });
-
-export type Dataset = z.infer<typeof DatasetSchema>;
 
 export const GeometryTypeSchema = z.enum([
   "TimeStamp",
@@ -96,70 +92,50 @@ export const GeometryTypeSchema = z.enum([
   "MultiPolygon",
 ]);
 
-export type GeometryType = z.infer<typeof GeometryTypeSchema>;
-
 export const TimeStampSchema = z.object({
   type: z.literal("TimeStamp"),
   coordinates: z.number(),
 });
-
-export type TimeStamp = z.infer<typeof TimeStampSchema>;
 
 export const TimeIntervalSchema = z.object({
   type: z.literal("TimeInterval"),
   coordinates: z.array(z.number()),
 });
 
-export type TimeInterval = z.infer<typeof TimeIntervalSchema>;
-
 export const BoundingBoxSchema = z.object({
   type: z.literal("BoundingBox"),
   coordinates: z.array(z.number()),
 });
-
-export type BoundingBox = z.infer<typeof BoundingBoxSchema>;
 
 export const PointSchema = z.object({
   type: z.literal("Point"),
   coordinates: z.array(z.number()),
 });
 
-export type Point = z.infer<typeof PointSchema>;
-
 export const LineStringSchema = z.object({
   type: z.literal("LineString"),
   coordinates: z.array(z.array(z.number())),
 });
-
-export type LineString = z.infer<typeof LineStringSchema>;
 
 export const PolygonSchema = z.object({
   type: z.literal("Polygon"),
   coordinates: z.array(z.array(z.array(z.number()))),
 });
 
-export type Polygon = z.infer<typeof PolygonSchema>;
-
 export const MultiPointSchema = z.object({
   type: z.literal("MultiPoint"),
   coordinates: z.array(z.array(z.number())),
 });
-
-export type MultiPoint = z.infer<typeof MultiPointSchema>;
 
 export const MultiLineStringSchema = z.object({
   type: z.literal("MultiLineString"),
   coordinates: z.array(z.array(z.array(z.number()))),
 });
 
-export type MultiLineString = z.infer<typeof MultiLineStringSchema>;
-
 export const MultiPolygonSchema = z.object({
   type: z.literal("MultiPolygon"),
   coordinates: z.array(z.array(z.array(z.array(z.number())))),
 });
-
-export type MultiPolygon = z.infer<typeof MultiPolygonSchema>;
 
 export const GeometrySchema = z.discriminatedUnion("type", [
   TimeStampSchema,
@@ -173,17 +149,6 @@ export const GeometrySchema = z.discriminatedUnion("type", [
   MultiPolygonSchema,
 ]);
 
-export type Geometry =
-  | TimeStamp
-  | TimeInterval
-  | BoundingBox
-  | Point
-  | LineString
-  | Polygon
-  | MultiPoint
-  | MultiLineString
-  | MultiPolygon;
-
 export const SoundEventSchema = z.object({
   uuid: z.string().uuid(),
   geometry: GeometrySchema,
@@ -191,8 +156,6 @@ export const SoundEventSchema = z.object({
   features: z.array(FeatureSchema).optional(),
   created_on: z.coerce.date(),
 });
-
-export type SoundEvent = z.infer<typeof SoundEventSchema>;
 
 export const ClipSchema = z.object({
   uuid: z.string().uuid(),
@@ -203,26 +166,20 @@ export const ClipSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type Clip = z.infer<typeof ClipSchema>;
-
 export const AnnotationTagSchema = z.object({
   tag: TagSchema,
   created_by: UserSchema.optional(),
   created_on: z.coerce.date(),
 });
 
-export type AnnotationTag = z.infer<typeof AnnotationTagSchema>;
-
 export const SoundEventAnnotationSchema = z.object({
   uuid: z.string().uuid(),
   sound_event: SoundEventSchema,
   created_by: UserSchema.optional(),
   notes: z.array(NoteSchema).optional(),
-  tags: z.array(AnnotationTagSchema).optional(),
+  tags: z.array(TagSchema).optional(),
   created_on: z.coerce.date(),
 });
-
-export type SoundEventAnnotation = z.infer<typeof SoundEventAnnotationSchema>;
 
 export const ClipAnnotationSchema = z.object({
   uuid: z.string().uuid(),
@@ -234,8 +191,6 @@ export const ClipAnnotationSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type ClipAnnotation = z.infer<typeof ClipAnnotationSchema>;
-
 export const AnnotationStatusSchema = z.enum([
   "assigned",
   "verified",
@@ -243,23 +198,17 @@ export const AnnotationStatusSchema = z.enum([
   "completed",
 ]);
 
-export type AnnotationStatus = z.infer<typeof AnnotationStatusSchema>;
-
 export const AnnotationStatusBadgeSchema = z.object({
   state: AnnotationStatusSchema,
   user: UserSchema.optional(),
   created_on: z.coerce.date(),
 });
 
-export type AnnotationStatusBadge = z.infer<typeof AnnotationStatusBadgeSchema>;
-
 export const AnnotationTaskSchema = z.object({
   uuid: z.string().uuid(),
   status_badges: z.array(AnnotationStatusBadgeSchema).optional(),
   created_on: z.coerce.date(),
 });
-
-export type AnnotationTask = z.infer<typeof AnnotationTaskSchema>;
 
 export const AnnotationProjectSchema = z.object({
   uuid: z.string().uuid(),
@@ -270,15 +219,11 @@ export const AnnotationProjectSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type AnnotationProject = z.infer<typeof AnnotationProjectSchema>;
-
 export const PredictionTagSchema = z.object({
   tag: TagSchema,
   score: z.number(),
   created_on: z.coerce.date(),
 });
-
-export type PredictionTag = z.infer<typeof PredictionTagSchema>;
 
 export const SoundEventPredictionSchema = z.object({
   uuid: z.string().uuid(),
@@ -288,8 +233,6 @@ export const SoundEventPredictionSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type SoundEventPrediction = z.infer<typeof SoundEventPredictionSchema>;
-
 export const ClipPredictionSchema = z.object({
   uuid: z.string().uuid(),
   clip: ClipSchema,
@@ -297,8 +240,6 @@ export const ClipPredictionSchema = z.object({
   sound_events: z.array(SoundEventPredictionSchema).optional(),
   created_on: z.coerce.date(),
 });
-
-export type ClipPrediction = z.infer<typeof ClipPredictionSchema>;
 
 export const ModelRunSchema = z.object({
   uuid: z.string().uuid(),
@@ -308,15 +249,11 @@ export const ModelRunSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type ModelRun = z.infer<typeof ModelRunSchema>;
-
 export const UserRunSchema = z.object({
   uuid: z.string().uuid(),
   user: UserSchema,
   created_on: z.coerce.date(),
 });
-
-export type UserRun = z.infer<typeof UserRunSchema>;
 
 export const SoundEventEvaluationSchema = z.object({
   uuid: z.string().uuid(),
@@ -328,8 +265,6 @@ export const SoundEventEvaluationSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type SoundEventEvaluation = z.infer<typeof SoundEventEvaluationSchema>;
-
 export const ClipEvaluationSchema = z.object({
   uuid: z.string().uuid(),
   clip_annotation: ClipAnnotationSchema,
@@ -340,8 +275,6 @@ export const ClipEvaluationSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type ClipEvaluation = z.infer<typeof ClipEvaluationSchema>;
-
 export const EvaluationSchema = z.object({
   uuid: z.string().uuid(),
   task: z.string(),
@@ -349,8 +282,6 @@ export const EvaluationSchema = z.object({
   metrics: z.array(FeatureSchema).optional(),
   created_on: z.coerce.date(),
 });
-
-export type Evaluation = z.infer<typeof EvaluationSchema>;
 
 export const EvaluationSetSchema = z.object({
   uuid: z.string().uuid(),
@@ -360,4 +291,66 @@ export const EvaluationSetSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export type EvaluationSet = z.infer<typeof EvaluationSetSchema>;
+export const IntervalSchema = z.object({
+  min: z.number(),
+  max: z.number(),
+});
+
+export const SpectrogramWindowSchema = z.object({
+  time: IntervalSchema,
+  freq: IntervalSchema,
+});
+
+export const SpectrogramParametersSchema = z
+  .object({
+    resample: z.boolean().default(false),
+    samplerate: z.coerce
+      .number()
+      .positive()
+      .int()
+      .gte(MIN_SAMPLERATE)
+      .lte(MAX_SAMPLERATE)
+      .optional(),
+    low_freq: z.coerce.number().positive().optional(),
+    high_freq: z.coerce.number().positive().optional(),
+    filter_order: z.coerce
+      .number()
+      .positive()
+      .int()
+      .default(DEFAULT_FILTER_ORDER),
+    window_size: z.coerce.number().positive().default(DEFAULT_WINDOW_SIZE),
+    hop_size: z.coerce
+      .number()
+      .positive()
+      .gt(0)
+      .lte(1)
+      .default(DEFAULT_HOP_SIZE),
+    window: z.string().default(DEFAULT_WINDOW),
+    scale: z.enum(["amplitude", "power", "dB"]).default(DEFAULT_SCALE),
+    clamp: z.boolean().default(true),
+    min_dB: z.coerce.number().nonpositive().gte(MIN_DB).default(-80),
+    max_dB: z.coerce.number().nonpositive().gte(MIN_DB).default(0),
+    normalize: z.boolean().default(false),
+    channel: z.coerce.number().nonnegative().int().default(0),
+    pcen: z.boolean().default(false),
+    cmap: z.string().default(DEFAULT_CMAP),
+  })
+  .refine(
+    (data) => {
+      if (data.low_freq == null || data.high_freq == null) return true;
+      return data.low_freq < data.high_freq;
+    },
+    {
+      message: "low_freq must be less than high_freq",
+      path: ["low_freq"],
+    },
+  )
+  .refine(
+    (data) => {
+      return data.min_dB < data.max_dB;
+    },
+    {
+      message: "min_dB must be less than max_dB",
+      path: ["min_dB"],
+    },
+  );

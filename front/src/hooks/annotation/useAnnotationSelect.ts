@@ -1,16 +1,16 @@
 import { useCallback } from "react";
-import { type RefObject } from "react";
+import { mergeProps, usePress } from "react-aria";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import drawGeometry from "@/draw/geometry";
 import { WARNING } from "@/draw/styles";
 import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
-import useClick from "@/hooks/motions/useClick";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 
-import { type SelectAnnotationEvent } from "@/machines/annotate";
+import type {
+  Dimensions,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+} from "@/types";
 
 const SELECT_STYLE = {
   borderColor: WARNING,
@@ -20,47 +20,45 @@ const SELECT_STYLE = {
 };
 
 export default function useAnnotationSelect({
-  ref,
-  mouse,
   annotations,
-  window,
-  send,
-  active,
+  viewport,
+  dimensions,
+  enabled = true,
+  onSelect,
+  onDeselect,
 }: {
-  ref: RefObject<HTMLCanvasElement>;
-  mouse: MouseState;
   annotations: SoundEventAnnotation[];
-  window: SpectrogramWindow;
-  send: (event: SelectAnnotationEvent | { type: "IDLE" }) => void;
-  active: boolean;
+  dimensions: Dimensions;
+  viewport: SpectrogramWindow;
+  enabled: boolean;
+  onSelect?: (annotation: SoundEventAnnotation) => void;
+  onDeselect?: () => void;
 }) {
-  const hovered = useHoveredAnnotation({
-    mouse,
-    annotations,
-    window,
-    active,
-  });
+  const { props: hoverProps, hoveredAnnotation: hovered } =
+    useHoveredAnnotation({
+      viewport,
+      dimensions,
+      annotations,
+      enabled,
+    });
 
   const handleClick = useCallback(() => {
-    if (!active) return;
+    if (!enabled) return;
     if (hovered == null) {
-      send({ type: "IDLE" });
+      onDeselect?.();
     } else {
-      send({
-        type: "SELECT_ANNOTATION",
-        annotation: hovered,
-      });
+      onSelect?.(hovered);
     }
-  }, [hovered, active, send]);
+  }, [hovered, enabled, onSelect, onDeselect]);
 
-  useClick({
-    ref,
-    onClick: handleClick,
+  const { pressProps } = usePress({
+    onPress: handleClick,
+    isDisabled: !enabled,
   });
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!active || hovered == null) return;
+      if (!enabled || hovered == null) return;
 
       ctx.canvas.style.cursor = "pointer";
 
@@ -68,13 +66,18 @@ export default function useAnnotationSelect({
         { width: ctx.canvas.width, height: ctx.canvas.height },
         // @ts-ignore
         hovered.sound_event.geometry,
-        window,
+        viewport,
       );
 
       drawGeometry(ctx, geometry, SELECT_STYLE);
     },
-    [window, hovered, active],
+    [viewport, hovered, enabled],
   );
 
-  return draw;
+  const props = mergeProps(pressProps, hoverProps);
+
+  return {
+    props,
+    draw,
+  };
 }

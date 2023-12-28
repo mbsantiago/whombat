@@ -1,8 +1,7 @@
 import { type ClipCreateMany } from "@/api/clips";
-import { type Recording } from "@/api/schemas";
 import { getRandomSubarray } from "@/utils/arrays";
 
-export { getRandomSubarray };
+import type { Recording } from "@/types";
 
 export type ClipExtraction = {
   clip: boolean;

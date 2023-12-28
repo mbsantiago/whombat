@@ -1,27 +1,37 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type MouseState } from "@/hooks/motions/useMouse";
-import { isCloseToGeometry, scaleGeometryToViewport } from "@/utils/geometry";
+import useWindowHover from "@/hooks/window/useWindowHover";
+import {
+  isCloseToGeometry,
+  scaleGeometryToViewport,
+  scalePositionToViewport,
+} from "@/utils/geometry";
+
+import type {
+  Dimensions,
+  Position,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+} from "@/types";
 
 export default function useHoveredAnnotations({
-  mouse,
+  viewport,
+  dimensions,
   annotations,
-  window,
-  active = true,
+  enabled: enabled = true,
 }: {
-  mouse: MouseState;
+  viewport: SpectrogramWindow;
+  dimensions: Dimensions;
   annotations: SoundEventAnnotation[];
-  window: SpectrogramWindow;
-  active?: boolean;
+  enabled?: boolean;
 }) {
-  const { elX, elY, elH, elW } = mouse;
+  const [hoveredAnnotation, setHoveredAnnotation] =
+    useState<SoundEventAnnotation | null>(null);
 
   const annotationsInWindow = useMemo(() => {
-    if (!active) return [];
-    const { min: startTime, max: endTime } = window.time;
-    const { min: lowFreq, max: highFreq } = window.freq;
+    if (!enabled) return [];
+    const { min: startTime, max: endTime } = viewport.time;
+    const { min: lowFreq, max: highFreq } = viewport.freq;
     return annotations.filter((annotation) => {
       const { geometry } = annotation.sound_event;
 
@@ -56,37 +66,52 @@ export default function useHoveredAnnotations({
 
       return true;
     });
-  }, [active, annotations, window]);
+  }, [enabled, annotations, viewport]);
 
-  // Scale annotation geometries to canvas viewport coordinates
   const scaledGeometries = useMemo(() => {
-    if (!active) return [];
+    if (!enabled) return [];
+    return annotationsInWindow.map(({ sound_event: { geometry } }) => {
+      return scaleGeometryToViewport(dimensions, geometry, viewport);
+    });
+  }, [enabled, annotationsInWindow, viewport, dimensions]);
 
-    return annotationsInWindow.map((annotation) => {
-      const { geometry } = annotation.sound_event;
-      return scaleGeometryToViewport(
-        {
-          width: elW,
-          height: elH,
-        },
-        // @ts-ignore
-        geometry,
-        window,
+  const handleOnHover = useCallback(
+    (position: Position) => {
+      if (!enabled) return;
+      const { time, freq } = position;
+      const [x, y] = scalePositionToViewport(
+        dimensions,
+        [time, freq],
+        viewport,
       );
-    });
-  }, [active, annotationsInWindow, window, elW, elH]);
 
-  // Check if mouse is close to any annotation
-  const hovered = useMemo(() => {
-    if (!active) return null;
-    const hov = scaledGeometries.findIndex((geometry) => {
-      if (geometry == null) return false;
-      // @ts-ignore
-      const hovered = isCloseToGeometry([elX, elY], geometry);
-      return hovered;
-    });
-    return hov;
-  }, [scaledGeometries, elX, elY, active]);
+      const index = scaledGeometries.findIndex((geometry) => {
+        return isCloseToGeometry([x, y], geometry);
+      });
 
-  return hovered == null ? null : annotationsInWindow[hovered] ?? null;
+      if (index < 0) {
+        setHoveredAnnotation(null);
+        return;
+      }
+
+      const annotation = annotationsInWindow[index];
+      setHoveredAnnotation(annotation ?? null);
+    },
+    [scaledGeometries, annotationsInWindow, viewport, dimensions, enabled],
+  );
+
+  const props = useWindowHover({
+    enabled,
+    viewport,
+    dimensions,
+    onHover: handleOnHover,
+  });
+
+  const clear = useCallback(() => setHoveredAnnotation(null), []);
+
+  return {
+    props,
+    hoveredAnnotation,
+    clear,
+  };
 }

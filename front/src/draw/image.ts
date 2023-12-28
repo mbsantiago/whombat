@@ -1,4 +1,4 @@
-import { type SpectrogramWindow } from "@/api/spectrograms";
+import type { SpectrogramWindow } from "@/types";
 
 const FONT_SIZE = 30;
 const FONT_FAMILY = "system-ui";

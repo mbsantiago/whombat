@@ -55,12 +55,12 @@ class SoundEventAnnotation(BaseSchema):
     notes: list[Note] = Field(default_factory=list)
     """Notes attached to this annotation."""
 
-    tags: list[SoundEventAnnotationTag] = Field(default_factory=list)
+    tags: list[Tag] = Field(default_factory=list)
     """Tags attached to this annotation."""
 
 
 class SoundEventAnnotationUpdate(BaseSchema):
     """Schema for data required to update an SoundEventAnnotation."""
 
-    uuid: UUID | None = None
-    """UUID of this annotation."""
+    geometry: Geometry = Field(..., discriminator="type")
+    """Geometry of this annotation."""

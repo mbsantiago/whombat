@@ -6,8 +6,9 @@ import {
 } from "plotly.js";
 import { useCallback, useMemo } from "react";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
 import useTheme from "@/hooks/useTheme";
+
+import type { SoundEventAnnotation } from "@/types";
 
 type GroupKey = string;
 

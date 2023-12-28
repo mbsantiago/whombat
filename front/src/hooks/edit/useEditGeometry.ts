@@ -1,20 +1,21 @@
-import { type EditableElement } from "@/draw/edit";
 import createEditHook from "@/hooks/edit/createEditHook";
 import { shiftGeometry, shiftPolygon } from "@/utils/geometry";
-import {
-  type BoundingBox,
-  type Dimensions,
-  type Geometry,
-  type LineString,
-  type MultiLineString,
-  type MultiPoint,
-  type MultiPolygon,
-  type Point,
-  type Polygon,
-  type Position,
-  type TimeInterval,
-  type TimeStamp,
-} from "@/utils/types";
+
+import type { EditableElement } from "@/draw/edit";
+import type {
+  BoundingBox,
+  Dimensions,
+  Geometry,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Pixel,
+  Point,
+  Polygon,
+  TimeInterval,
+  TimeStamp,
+} from "@/types";
 
 export function getTimeStampEditableElements(
   geometry: TimeStamp,
@@ -23,13 +24,14 @@ export function getTimeStampEditableElements(
   const onset = geometry.coordinates;
   return [
     {
+      id: "onset",
       type: "Edge",
       coords: [
         [onset, 0],
         [onset, height],
       ],
-      drag: (current: TimeStamp, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: TimeStamp, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         return {
           type: "TimeStamp",
           coordinates: current.coordinates + dx,
@@ -50,13 +52,14 @@ export function getTimeIntervalEditableElements(
   const [left, right] = geom.coordinates;
   return [
     {
+      id: "left",
       type: "Edge",
       coords: [
         [left, 0],
         [left, height],
       ],
-      drag: (current: TimeInterval, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: TimeInterval, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         const [l, r] = current.coordinates;
         return {
           type: "TimeInterval",
@@ -65,13 +68,14 @@ export function getTimeIntervalEditableElements(
       },
     },
     {
+      id: "right",
       type: "Edge",
       coords: [
         [right, 0],
         [right, height],
       ],
-      drag: (current: TimeInterval, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: TimeInterval, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         const [l, r] = current.coordinates;
         return {
           type: "TimeInterval",
@@ -80,6 +84,7 @@ export function getTimeIntervalEditableElements(
       },
     },
     {
+      id: "area",
       type: "Area",
       coords: [
         [
@@ -89,8 +94,8 @@ export function getTimeIntervalEditableElements(
           [right, height],
         ],
       ],
-      drag: (current: TimeInterval, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: TimeInterval, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         const [l, r] = current.coordinates;
         return {
           type: "TimeInterval",
@@ -107,11 +112,12 @@ export function getBBoxEditableElements(
   const [left, top, right, bottom] = geometry.coordinates;
   return [
     {
+      id: "top-left",
       type: "Keypoint",
       coords: [left, top],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -120,11 +126,12 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "bottom-left",
       type: "Keypoint",
       coords: [left, bottom],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -133,11 +140,12 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "bottom-right",
       type: "Keypoint",
       coords: [right, top],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -146,11 +154,12 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "top-right",
       type: "Keypoint",
       coords: [right, bottom],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -159,13 +168,14 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "left",
       type: "Edge",
       coords: [
         [left, top],
         [left, bottom],
       ],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -174,13 +184,14 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "bottom",
       type: "Edge",
       coords: [
         [left, bottom],
         [right, bottom],
       ],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -189,13 +200,14 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "right",
       type: "Edge",
       coords: [
         [right, bottom],
         [right, top],
       ],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -204,13 +216,14 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "top",
       type: "Edge",
       coords: [
         [right, top],
         [left, top],
       ],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -219,6 +232,7 @@ export function getBBoxEditableElements(
       },
     },
     {
+      id: "area",
       type: "Area",
       coords: [
         [
@@ -228,9 +242,9 @@ export function getBBoxEditableElements(
           [right, top],
         ],
       ],
-      drag: (current: BoundingBox, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: BoundingBox, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [l, t, r, b] = current.coordinates;
         return {
           type: "BoundingBox",
@@ -246,11 +260,12 @@ export function getPointEditableElements(
 ): EditableElement<Point>[] {
   return [
     {
+      id: "point",
       type: "Keypoint",
       coords: geom.coordinates,
-      drag: (current: Point, start: Position, end: Position) => {
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+      drag: (current: Point, start: Pixel, end: Pixel) => {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [x, y] = current.coordinates;
         return {
           type: "Point",
@@ -266,12 +281,13 @@ export function getMultiPointEditableElements(
 ): EditableElement<MultiPoint>[] {
   return geom.coordinates.map((p, index) => {
     return {
+      id: `point-${index}`,
       type: "Keypoint",
       coords: p,
-      drag: (current: MultiPoint, start: Position, end: Position) => {
+      drag: (current: MultiPoint, start: Pixel, end: Pixel) => {
         const next = [...current.coordinates];
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
         const [x, y] = current.coordinates[index];
         next[index] = [x + dx, y + dy];
         return {
@@ -292,12 +308,13 @@ export function getLineStringEditableElements(
   const vertices: EditableElement<LineString>[] = linestring.coordinates.map(
     (point, index) => {
       return {
+        id: `vertex-${index}`,
         type: "Keypoint",
         coords: point,
-        drag: (current: LineString, start: Position, end: Position) => {
+        drag: (current: LineString, start: Pixel, end: Pixel) => {
           const coords = [...current.coordinates];
-          const dx = end[0] - start[0];
-          const dy = end[1] - start[1];
+          const dx = end.x - start.x;
+          const dy = end.y - start.y;
           const vertex = coords[index];
           coords[index] = [vertex[0] + dx, vertex[1] + dy];
           return {
@@ -315,14 +332,15 @@ export function getLineStringEditableElements(
       const s =
         linestring.coordinates[close ? (length + index - 1) % length : index];
       return {
+        id: `edge-${index}`,
         type: "Edge",
         coords: [s, e],
-        drag: (current: LineString, start: Position, end: Position) => {
+        drag: (current: LineString, start: Pixel, end: Pixel) => {
           const index1 = close ? (length + index - 1) % length : index;
           const index2 = close ? index : index + 1;
           const coords = [...current.coordinates];
-          const dx = end[0] - start[0];
-          const dy = end[1] - start[1];
+          const dx = end.x - start.x;
+          const dy = end.y - start.y;
           const vertex1 = coords[index1];
           coords[index1] = [vertex1[0] + dx, vertex1[1] + dy];
           const vertex2 = coords[index2];
@@ -342,11 +360,11 @@ function _adaptEditableElemToMultiLineString(
   elem: EditableElement<LineString>,
   index: number,
 ): EditableElement<MultiLineString> {
-  const { drag } = elem;
+  const { drag, id } = elem;
   const dragMultiLinestring = (
     multilinestring: MultiLineString,
-    start: Position,
-    end: Position,
+    start: Pixel,
+    end: Pixel,
   ) => {
     const linestrings = [...multilinestring.coordinates];
     const dragged = drag(
@@ -363,6 +381,7 @@ function _adaptEditableElemToMultiLineString(
   };
   return {
     ...elem,
+    id: `${id}-${index}`,
     drag: dragMultiLinestring,
   };
 }
@@ -390,7 +409,7 @@ function _adaptMultiLineStringEditableElemToPolygon(
   elem: EditableElement<MultiLineString>,
 ): EditableElement<Polygon> {
   const { drag } = elem;
-  const dragPolygon = (polygon: Polygon, start: Position, end: Position) => {
+  const dragPolygon = (polygon: Polygon, start: Pixel, end: Pixel) => {
     const dragged = drag(
       { type: "MultiLineString", coordinates: polygon.coordinates },
       start,
@@ -419,10 +438,11 @@ export function getPolygonEditableElements(
     true,
   ).map(_adaptMultiLineStringEditableElemToPolygon);
   const areaElement: EditableElement<Polygon> = {
+    id: "area",
     type: "Area",
     coords: geom.coordinates,
-    drag: (poly: Polygon, start: Position, end: Position) =>
-      shiftPolygon(poly, start, end),
+    drag: (poly: Polygon, start: Pixel, end: Pixel) =>
+      shiftPolygon(poly, [start.x, start.y], [end.x, end.y]),
   };
   elems.push(areaElement);
   return elems;
@@ -432,11 +452,11 @@ function _adaptPolygonEditableElemToMultiPolygon(
   elem: EditableElement<Polygon>,
   index: number,
 ): EditableElement<MultiPolygon> {
-  const { drag } = elem;
+  const { drag, id } = elem;
   const dragMultiPolygon = (
     multipolygon: MultiPolygon,
-    start: Position,
-    end: Position,
+    start: Pixel,
+    end: Pixel,
   ) => {
     const polygons = [...multipolygon.coordinates];
     const dragged = drag(
@@ -453,6 +473,7 @@ function _adaptPolygonEditableElemToMultiPolygon(
   };
   return {
     ...elem,
+    id: `${id}-${index}`,
     drag: dragMultiPolygon,
   };
 }
@@ -520,9 +541,13 @@ export function getGeometryEditableElements(
   }
 }
 
+function _shiftGeometry(geom: Geometry, start: Pixel, end: Pixel) {
+  return shiftGeometry(geom, [start.x, start.y], [end.x, end.y]);
+}
+
 const useEditGeometry = createEditHook(
   getGeometryEditableElements,
-  shiftGeometry,
+  _shiftGeometry,
 );
 
 export default useEditGeometry;

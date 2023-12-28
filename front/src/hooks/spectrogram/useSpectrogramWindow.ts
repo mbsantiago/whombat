@@ -1,15 +1,16 @@
 import { useCallback, useMemo } from "react";
 
-import { type Interval } from "@/api/audio";
-import { type Recording } from "@/api/schemas";
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-  type SpectrogramWindow,
-} from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import api from "@/app/api";
 import drawImage from "@/draw/image";
 import useImage from "@/hooks/spectrogram/useImage";
+
+import type {
+  Interval,
+  Recording,
+  SpectrogramParameters,
+  SpectrogramWindow,
+} from "@/types";
 
 type GetUrlFn = ({
   recording,

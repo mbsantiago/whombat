@@ -2,10 +2,9 @@
 
 import { StateCreator } from "zustand";
 
-import {
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-  type SpectrogramParameters,
-} from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
+
+import type { SpectrogramParameters } from "@/types";
 
 export type SpectrogramSlice = {
   spectrogramSettings: SpectrogramParameters;

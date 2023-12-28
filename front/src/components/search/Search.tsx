@@ -1,18 +1,6 @@
-import { type CollectionElement, type Node } from "@react-types/shared";
 import classNames from "classnames";
-import { type FuseOptionKey } from "fuse.js";
+import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import {
-  type ReactElement,
-  type ReactNode,
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
-import {
-  type AriaListBoxOptions,
-  type AriaPopoverProps,
   DismissButton,
   Overlay,
   VisuallyHidden,
@@ -28,7 +16,12 @@ import { Input } from "@/components/inputs";
 import Loading from "@/components/Loading";
 import useListWithSearch from "@/hooks/lists/useListWithSearch";
 
-function EmptyMessage({}: { state: ComboBoxState<any> }) {
+import type { CollectionElement, Node } from "@react-types/shared";
+import type { FuseOptionKey } from "fuse.js";
+import type { ReactElement, ReactNode } from "react";
+import type { AriaListBoxOptions, AriaPopoverProps } from "react-aria";
+
+function EmptyMessage({ }: { state: ComboBoxState<any> }) {
   return <div className="p-2">No results</div>;
 }
 
@@ -174,8 +167,8 @@ function ListBox<T>({
         {state.collection.size === 0
           ? emptyMessage({ state })
           : Array.from(state.collection).map((item) => (
-              <Option key={item.key} item={item} state={state} />
-            ))}
+            <Option key={item.key} item={item} state={state} />
+          ))}
       </ul>
     </div>
   );

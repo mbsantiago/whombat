@@ -1,14 +1,19 @@
 import { useMemo } from "react";
 
-import { type SoundEventAnnotation, type Tag } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import {
   bboxIntersection,
   computeGeometryBBox,
   isGeometryInWindow,
   scaleBBoxToViewport,
 } from "@/utils/geometry";
-import { type BBox, type Dimensions } from "@/utils/types";
+
+import type {
+  Box,
+  Dimensions,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+  Tag,
+} from "@/types";
 
 export type TagElement = {
   tag: Tag;
@@ -25,9 +30,9 @@ export type Position = {
 export type TagGroup = {
   annotation: SoundEventAnnotation;
   tags: TagElement[];
-  onAdd: (tag: Tag) => void;
   position: Position;
   active: boolean;
+  onAdd?: (tag: Tag) => void;
 };
 
 function getLabelPosition(
@@ -35,7 +40,7 @@ function getLabelPosition(
   window: SpectrogramWindow,
   dimensions: Dimensions,
 ): Position {
-  const windowBBox: BBox = [
+  const windowBBox: Box = [
     window.time.min,
     window.freq.min,
     window.time.max,
@@ -70,38 +75,54 @@ function getLabelPosition(
 
 export default function useAnnotationTags({
   annotations,
-  window,
+  viewport,
   dimensions,
-  send,
-  active = true,
+  onClickTag,
+  onAddTag,
+  enabled = true,
 }: {
   annotations: SoundEventAnnotation[];
-  window: SpectrogramWindow;
+  viewport: SpectrogramWindow;
   dimensions: Dimensions;
-  send: (event: any) => void;
-  active?: boolean;
+  onClickTag?: (annotation: SoundEventAnnotation, tag: Tag) => void;
+  onAddTag?: (annotation: SoundEventAnnotation, tag: Tag) => void;
+  enabled?: boolean;
 }) {
   const annotationsInWindow = useMemo(() => {
     return annotations.filter((annotation) => {
       // @ts-ignore
-      return isGeometryInWindow(annotation.sound_event.geometry, window);
+      return isGeometryInWindow(annotation.sound_event.geometry, viewport);
     });
-  }, [annotations, window]);
+  }, [annotations, viewport]);
 
   const groups: TagGroup[] = useMemo(() => {
     return annotationsInWindow.map((annotation) => {
-      const position = getLabelPosition(annotation, window, dimensions);
+      const position = getLabelPosition(annotation, viewport, dimensions);
 
       const group: TagElement[] =
         annotation.tags?.map((tag) => {
-          const onClick = () => send({ type: "REMOVE_TAG", annotation, tag });
-          return { tag: tag.tag, onClick };
+          return {
+            tag: tag,
+            onClick: () => onClickTag?.(annotation, tag),
+          };
         }) || [];
 
-      const onAdd = (tag: Tag) => send({ type: "ADD_TAG", annotation, tag });
-      return { tags: group, onAdd, position, annotation, active };
+      return {
+        tags: group,
+        onAdd: (tag) => onAddTag?.(annotation, tag),
+        position,
+        annotation,
+        active: enabled,
+      };
     });
-  }, [annotationsInWindow, send, window, dimensions, active]);
+  }, [
+    annotationsInWindow,
+    viewport,
+    dimensions,
+    enabled,
+    onClickTag,
+    onAddTag,
+  ]);
 
   return groups;
 }

@@ -1,15 +1,16 @@
 "use client";
-import { type AxiosError } from "axios";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import { type SpectrogramParameters } from "@/api/spectrograms";
 import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
 import RecordingDetail from "@/components/recordings/RecordingDetail";
 import useRecording from "@/hooks/api/useRecording";
 import useStore from "@/store";
+
+import type { SpectrogramParameters } from "@/types";
+import type { AxiosError } from "axios";
 
 export default function Page() {
   const user = useContext(UserContext);

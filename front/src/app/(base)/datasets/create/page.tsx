@@ -12,10 +12,11 @@
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-import { type Dataset } from "@/api/schemas";
 import DatasetCreate from "@/components/datasets/DatasetCreate";
 import Hero from "@/components/Hero";
 import { Center } from "@/components/layouts";
+
+import type { Dataset } from "@/types";
 
 export default function CreateDataset() {
   const router = useRouter();

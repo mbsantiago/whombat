@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
 import useStore from "@/store";
 
 import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogram";
+
+import type { SoundEventAnnotation } from "@/types";
 
 // TODO: Finish this
 

@@ -4,17 +4,16 @@ import { z } from "zod";
 import { GetManySchema, Page } from "@/api/common";
 import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
 import {
-  type ClipAnnotation,
   GeometrySchema,
-  type Note,
-  type SoundEventAnnotation,
   SoundEventAnnotationSchema,
-  type Tag,
-} from "@/api/schemas";
+  TagSchema,
+} from "@/schemas";
+
+import type { ClipAnnotation, Note, SoundEventAnnotation, Tag } from "@/types";
 
 export const SoundEventAnnotationCreateSchema = z.object({
   geometry: GeometrySchema,
-  tag_ids: z.array(z.number()).optional(),
+  tags: z.array(TagSchema).optional(),
 });
 
 export type SoundEventAnnotationCreate = z.input<

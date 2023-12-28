@@ -4,11 +4,11 @@ import { type ReactNode, useCallback } from "react";
 import { toast } from "react-hot-toast";
 
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
-import { type Tag } from "@/api/schemas";
 import { EvaluationSetContext } from "@/app/contexts";
 import Loading from "@/app/loading";
 import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
 import useEvaluationSet from "@/hooks/api/useEvaluationSet";
+import { type Tag } from "@/schemas";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();

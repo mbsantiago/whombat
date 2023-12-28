@@ -1,8 +1,9 @@
 import Link from "next/link";
 
-import { type EvaluationSet as EvaluationSetType } from "@/api/schemas";
 import { Atom } from "@/components/datasets/Dataset";
 import { CalendarIcon, TasksIcon } from "@/components/icons";
+
+import type { EvaluationSet as EvaluationSetType } from "@/types";
 
 export default function EvaluationSet({
   evaluationSet,

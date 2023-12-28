@@ -2,11 +2,12 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import { type Recording } from "@/api/schemas";
 import DatasetRecordings from "@/components/datasets/DatasetRecordings";
+import { DatasetRecordingsNav } from "@/components/datasets/DatasetRecordingsNav";
 
-import { DatasetRecordingsNav } from "../../../../../components/datasets/DatasetRecordingsNav";
 import DatasetContext from "../context";
+
+import type { Recording } from "@/types";
 
 import "./page.css";
 

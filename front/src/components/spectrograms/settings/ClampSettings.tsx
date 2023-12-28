@@ -1,10 +1,12 @@
 import { type Control, useController } from "react-hook-form";
 
-import { MIN_DB, type SpectrogramParameters } from "@/api/spectrograms";
 import { InputGroup } from "@/components/inputs/index";
 import RangeSlider from "@/components/inputs/RangeSlider";
+import { MIN_DB } from "@/constants";
 
 import SettingsSection from "./SettingsSection";
+
+import type { SpectrogramParameters } from "@/types";
 
 export default function ClampSettings({
   control,

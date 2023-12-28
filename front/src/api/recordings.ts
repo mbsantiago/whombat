@@ -1,16 +1,11 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { type NoteCreate } from "@/api/notes";
-import {
-  type Feature,
-  type Note,
-  type Recording,
-  RecordingSchema,
-  type Tag,
-} from "@/api/schemas";
+import { GetManySchema, Page } from "@/api/common";
+import { RecordingSchema } from "@/schemas";
 
-import { GetManySchema, Page } from "./common";
+import type { NoteCreate } from "@/api/notes";
+import type { Feature, Note, Recording, Tag } from "@/types";
 
 export const RecordingPageSchema = Page(RecordingSchema);
 

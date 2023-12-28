@@ -1,7 +1,9 @@
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
-import { Fragment, type ReactNode } from "react";
+import { Fragment } from "react";
 import { useHover } from "react-use";
+
+import type { ReactNode } from "react";
 
 export default function Tooltip({
   children,

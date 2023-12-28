@@ -1,6 +1,7 @@
-import { type Note } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { Note } from "@/types";
 
 export default function useNote({
   uuid,

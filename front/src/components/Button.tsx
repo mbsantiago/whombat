@@ -1,14 +1,8 @@
 import classnames from "classnames";
-import {
-  type ButtonHTMLAttributes,
-  ForwardedRef,
-  type ReactNode,
-  forwardRef,
-} from "react";
+import { ForwardedRef, forwardRef } from "react";
 
-import type { Variant } from "@/components/common";
-
-export type Mode = "filled" | "outline" | "text";
+import type { Mode, Variant } from "@/components/common";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 const FOCUS_STYLE = "focus:ring-4 focus:ring-emerald-500/50 focus:outline-none";
 

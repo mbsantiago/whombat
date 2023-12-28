@@ -2,7 +2,9 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { type UserRun, UserRunSchema } from "@/api/schemas";
+import { UserRunSchema } from "@/schemas";
+
+import type { UserRun } from "@/types";
 
 export const UserRunFilterSchema = z.object({
   user__eq: z.string().uuid().optional(),

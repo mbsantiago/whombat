@@ -3,9 +3,10 @@ import { type AxiosError } from "axios";
 import { useCallback } from "react";
 
 import { type ClipCreateMany } from "@/api/clips";
-import { type AnnotationProject, type AnnotationTask } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
+
+import type { AnnotationProject, AnnotationTask } from "@/types";
 
 export default function useAnnotationProject({
   uuid,

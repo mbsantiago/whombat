@@ -1,4 +1,3 @@
-import { type Recording } from "@/api/schemas";
 import Card from "@/components/Card";
 import {
   ChannelsIcon,
@@ -6,6 +5,8 @@ import {
   TimeExpansionIcon,
   TimeIcon,
 } from "@/components/icons";
+
+import type { Recording } from "@/types";
 
 function Label({ label }: { label: string }) {
   return <div className="font-thin text-sm text-stone-500 mr-2">{label}</div>;

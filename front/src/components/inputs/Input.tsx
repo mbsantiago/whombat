@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { forwardRef } from "react";
-import type { InputHTMLAttributes } from "react";
 
 import {
   BACKGROUND_STYLE,
@@ -11,6 +10,8 @@ import {
   INVALID_STYLE,
   TEXT_STYLE,
 } from "./styles";
+
+import type { InputHTMLAttributes } from "react";
 
 type HasErrors = {
   errors?: any;

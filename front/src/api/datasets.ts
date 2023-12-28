@@ -1,13 +1,11 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
+import { DatasetSchema, RecordingStateSchema } from "@/schemas";
+
 import { GetManySchema, Page } from "./common";
-import {
-  type Dataset,
-  DatasetSchema,
-  type RecordingState,
-  RecordingStateSchema,
-} from "./schemas";
+
+import type { Dataset, RecordingState } from "@/types";
 
 export const DatasetFilterSchema = z.object({
   search: z.string().optional(),

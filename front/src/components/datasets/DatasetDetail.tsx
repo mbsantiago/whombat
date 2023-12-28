@@ -1,9 +1,9 @@
-import { type Dataset } from "@/api/schemas";
-
 import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetOverview from "./DatasetOverview";
 import DatasetTagsSummary from "./DatasetTagsSummary";
 import DatasetUpdate from "./DatasetUpdateForm";
+
+import type { Dataset } from "@/types";
 
 /**
  * Component to display detailed information about a dataset, including overview,

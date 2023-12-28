@@ -2,12 +2,9 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import {
-  type ClipPrediction,
-  ClipPredictionSchema,
-  PredictionTagSchema,
-  type Tag,
-} from "@/api/schemas";
+import { ClipPredictionSchema, PredictionTagSchema } from "@/schemas";
+
+import type { ClipPrediction, Tag } from "@/types";
 
 export const ClipPredictionCreateSchema = z.object({
   tags: z.array(PredictionTagSchema).optional(),

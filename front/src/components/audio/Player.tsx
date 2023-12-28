@@ -11,8 +11,6 @@ import { Float } from "@headlessui-float/react";
 import classNames from "classnames";
 import { Fragment, useRef } from "react";
 import {
-  type AriaSliderProps,
-  type AriaSliderThumbOptions,
   VisuallyHidden,
   mergeProps,
   useFocusRing,
@@ -20,7 +18,7 @@ import {
   useSlider,
   useSliderThumb,
 } from "react-aria";
-import { type SliderState, useSliderState } from "react-stately";
+import { useSliderState } from "react-stately";
 
 import {
   ExpandIcon,
@@ -29,11 +27,14 @@ import {
   PlayIcon,
   SpeedIcon,
 } from "@/components/icons";
-import {
-  type PlayerControls,
-  type PlayerState,
-  type SpeedOption,
+
+import type {
+  PlayerControls,
+  PlayerState,
+  SpeedOption,
 } from "@/hooks/audio/useAudio";
+import type { AriaSliderProps, AriaSliderThumbOptions } from "react-aria";
+import type { SliderState } from "react-stately";
 
 const COMMON_BUTTON_CLASSES =
   "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
@@ -170,19 +171,17 @@ function SelectSpeed({
               key={option.value.toString()}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${
-                  active
-                    ? "bg-emerald-100 text-emerald-900"
-                    : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${active
+                  ? "bg-emerald-100 text-emerald-900"
+                  : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${
-                      selected ? "text-emerald-500 font-medium" : "font-normal"
-                    }`}
+                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
+                      }`}
                   >
                     {option.label}
                   </span>

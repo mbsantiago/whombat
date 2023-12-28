@@ -1,7 +1,8 @@
-import { type RecordingFilter } from "@/api/recordings";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
+
+import type { RecordingFilter } from "@/api/recordings";
 
 const emptyFilter: RecordingFilter = {};
 const _fixed: (keyof RecordingFilter)[] = [];

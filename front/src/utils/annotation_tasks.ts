@@ -1,4 +1,4 @@
-import { type AnnotationTask } from "@/api/schemas";
+import type { AnnotationTask } from "@/types";
 
 export function computeAnnotationTasksProgress(
   annotationTasks: AnnotationTask[],

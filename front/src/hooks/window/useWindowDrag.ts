@@ -1,16 +1,9 @@
 import { useCallback, useState } from "react";
 import { useMove } from "react-aria";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import { scalePixelsToWindow } from "@/utils/geometry";
 
-/**
- * A type representing the shift in time and frequency.
- */
-export type Shift = {
-  time: number;
-  freq: number;
-};
+import type { Position, SpectrogramWindow } from "@/types";
 
 /**
  * The `useDrag` hook manages dragging behavior for an object
@@ -27,7 +20,7 @@ export default function useWindowDrag({
   viewport: SpectrogramWindow;
   dimensions: { width: number; height: number };
   onMoveStart?: () => void;
-  onMove?: (position: Shift) => void;
+  onMove?: (shift: Position) => void;
   onMoveEnd?: () => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);

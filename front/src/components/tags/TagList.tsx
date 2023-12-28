@@ -1,9 +1,10 @@
-import { type Tag } from "@/api/schemas";
 import Button from "@/components/Button";
 import Search from "@/components/inputs/Search";
 import TagComponent from "@/components/tags/Tag";
 import useListWithSearch from "@/hooks/lists/useListWithSearch";
 import useStore from "@/store";
+
+import type { Tag } from "@/types";
 
 export default function TagList({
   tags,

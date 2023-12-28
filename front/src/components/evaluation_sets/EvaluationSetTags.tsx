@@ -1,10 +1,10 @@
-import { type EvaluationSet } from "@/api/evaluation_sets";
-import { type Tag as TagType } from "@/api/tags";
 import Info from "@/components/Info";
 import SearchMenu from "@/components/search/SearchMenu";
-import Tag from "@/components/tags/Tag";
+import TagComponent from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import useStore from "@/store";
+
+import type { EvaluationSet, Tag } from "@/types";
 
 export default function EvaluationSetTags({
   evaluationSet,
@@ -12,8 +12,8 @@ export default function EvaluationSetTags({
   onRemoveTag,
 }: {
   evaluationSet: EvaluationSet;
-  onAddTag?: (tag: TagType) => void;
-  onRemoveTag?: (tag: TagType) => void;
+  onAddTag?: (tag: Tag) => void;
+  onRemoveTag?: (tag: Tag) => void;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
 
@@ -57,7 +57,7 @@ export default function EvaluationSetTags({
             limit={6}
             static={false}
             renderOption={(tag) => (
-              <Tag
+              <TagComponent
                 key={tag.id}
                 tag={tag}
                 onClose={() => onRemoveTag?.(tag)}

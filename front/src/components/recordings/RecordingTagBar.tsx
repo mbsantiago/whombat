@@ -1,9 +1,10 @@
-import { type Recording, type Tag as TagType } from "@/api/schemas";
 import { TagIcon } from "@/components/icons";
 import AddTagButton from "@/components/tags/AddTagButton";
-import Tag from "@/components/tags/Tag";
+import TagComponent from "@/components/tags/Tag";
 import useRecording from "@/hooks/api/useRecording";
 import useStore from "@/store";
+
+import type { Recording, Tag } from "@/types";
 
 export default function RecordingTagBar({
   recording: data,
@@ -25,8 +26,8 @@ export default function RecordingTagBar({
         </span>
       </div>
       <div className="flex flex-row flex-wrap gap-2">
-        {data.tags?.map((tag: TagType) => (
-          <Tag
+        {data.tags?.map((tag: Tag) => (
+          <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}

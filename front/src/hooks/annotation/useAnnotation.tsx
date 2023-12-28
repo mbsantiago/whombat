@@ -12,16 +12,12 @@ import {
   AnnotationTaskFilter,
   type AnnotationTaskPage,
 } from "@/api/annotation_tasks";
-import {
-  AnnotationStatus,
-  AnnotationTask,
-  ClipAnnotation,
-  type Tag,
-} from "@/api/schemas";
 import api from "@/app/api";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 import { type Filter } from "@/hooks/utils/useFilter";
 import { shuffleArray } from "@/utils/arrays";
+
+import type { AnnotationStatus, AnnotationTask, ClipAnnotation } from "@/types";
 
 type AnnotationState = {
   /** Currently selected annotation task */
@@ -135,7 +131,6 @@ export default function useAnnotation({
 
   const nextTask = useCallback(() => {
     if (!hasNextTask) return;
-    console.log("next task");
     goToTask(items[index + 1]);
   }, [index, items, hasNextTask, goToTask]);
 

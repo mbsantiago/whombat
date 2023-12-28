@@ -1,5 +1,5 @@
 import { ReactElement, useRef } from "react";
-import { VisuallyHidden, mergeProps, useSearchField } from "react-aria";
+import { VisuallyHidden, useSearchField } from "react-aria";
 import { type SearchFieldProps, useSearchFieldState } from "react-stately";
 
 import Button from "@/components/Button";
@@ -7,6 +7,8 @@ import { CloseIcon, SearchIcon } from "@/components/icons";
 import Loading from "@/components/Loading";
 
 import Input from "./Input";
+
+import type { InputHTMLAttributes } from "react";
 
 export default function Search({
   label = "Search",

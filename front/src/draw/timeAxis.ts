@@ -1,4 +1,3 @@
-import { type Interval } from "@/api/audio";
 import {
   type AxisStyle,
   DEFAULT_AXIS_STYLE,
@@ -8,6 +7,8 @@ import {
   setBorderStyle,
   setFontStyle,
 } from "@/draw/styles";
+
+import type { Interval } from "@/types";
 
 export function selectResolution(length: number, interval: Interval) {
   const duration = interval.max - interval.min;

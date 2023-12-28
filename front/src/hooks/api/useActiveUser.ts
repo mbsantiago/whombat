@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { type AxiosError } from "axios";
 
-import { type User } from "@/api/schemas";
-import { type UserUpdate } from "@/api/user";
 import api from "@/app/api";
+
+import type { UserUpdate } from "@/api/user";
+import type { User } from "@/types";
+import type { AxiosError } from "axios";
 
 export default function useActiveUser({
   onUpdate,

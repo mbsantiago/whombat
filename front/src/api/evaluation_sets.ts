@@ -2,11 +2,9 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import {
-  type EvaluationSet,
-  EvaluationSetSchema,
-  type Tag,
-} from "@/api/schemas";
+import { EvaluationSetSchema } from "@/schemas";
+
+import type { EvaluationSet, Tag } from "@/types";
 
 export const EvaluationSetFilterSchema = z.object({
   search: z.string().optional(),

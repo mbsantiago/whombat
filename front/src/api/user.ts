@@ -1,7 +1,9 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { type User, UserSchema } from "./schemas";
+import { UserSchema } from "@/schemas";
+
+import type { User } from "@/types";
 
 export const UserUpdateSchema = z.object({
   username: z.string().optional(),

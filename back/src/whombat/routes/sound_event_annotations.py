@@ -160,7 +160,6 @@ async def remove_annotation_tag(
     sound_event_annotation_uuid: UUID,
     key: str,
     value: str,
-    user_uuid: UUID | None = None,
 ):
     """Remove a tag from an annotation annotation."""
     sound_event_annotation = await api.sound_event_annotations.get(
@@ -168,14 +167,10 @@ async def remove_annotation_tag(
         sound_event_annotation_uuid,
     )
     tag = await api.tags.get(session, (key, value))
-    user = None
-    if user_uuid:
-        user = await api.users.get(session, user_uuid)
     sound_event_annotation = await api.sound_event_annotations.remove_tag(
         session,
         sound_event_annotation,
         tag,
-        user,
     )
     await session.commit()
     return sound_event_annotation

@@ -1,16 +1,16 @@
 import { useCallback } from "react";
-import { type RefObject } from "react";
+import { mergeProps, usePress } from "react-aria";
 
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import drawGeometry from "@/draw/geometry";
 import { DANGER } from "@/draw/styles";
 import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
-import useClick from "@/hooks/motions/useClick";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 
-import { type DeleteAnnotationEvent } from "@/machines/annotate";
+import type {
+  Dimensions,
+  SoundEventAnnotation,
+  SpectrogramWindow,
+} from "@/types";
 
 const DELETE_STYLE = {
   borderColor: DANGER,
@@ -20,60 +20,65 @@ const DELETE_STYLE = {
 };
 
 export default function useAnnotationDelete({
-  ref,
-  mouse,
   annotations,
-  window,
-  active,
-  send,
+  viewport,
+  dimensions,
+  enabled = true,
+  onDelete,
+  onDeselect,
 }: {
-  ref: RefObject<HTMLCanvasElement>;
-  mouse: MouseState;
   annotations: SoundEventAnnotation[];
-  window: SpectrogramWindow;
-  active: boolean;
-  send: (event: DeleteAnnotationEvent | { type: "IDLE" }) => void;
+  dimensions: Dimensions;
+  viewport: SpectrogramWindow;
+  enabled: boolean;
+  onDelete?: (annotation: SoundEventAnnotation) => void;
+  onDeselect?: () => void;
 }) {
-  const hovered = useHoveredAnnotation({
-    mouse,
-    annotations: annotations,
-    window: window,
-    active,
+  const {
+    props: hoverProps,
+    hoveredAnnotation: hovered,
+    clear,
+  } = useHoveredAnnotation({
+    viewport,
+    dimensions,
+    annotations,
+    enabled,
   });
 
   const handleClick = useCallback(() => {
-    if (!active) return;
-
+    if (!enabled) return;
     if (hovered == null) {
-      send({ type: "IDLE" });
+      onDeselect?.();
     } else {
-      send({
-        type: "DELETE_ANNOTATION",
-        annotation: hovered,
-      });
+      onDelete?.(hovered);
+      clear();
     }
-  }, [hovered, send, active]);
+  }, [hovered, enabled, onDelete, onDeselect, clear]);
 
-  useClick({
-    ref,
-    onClick: handleClick,
+  const { pressProps } = usePress({
+    onPress: handleClick,
+    isDisabled: !enabled,
   });
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      if (!active || hovered == null) return;
+      if (!enabled || hovered == null) return;
       ctx.canvas.style.cursor = "pointer";
       const geometry = scaleGeometryToViewport(
         { width: ctx.canvas.width, height: ctx.canvas.height },
-        // @ts-ignore
         hovered.sound_event.geometry,
-        window,
+        viewport,
       );
 
       drawGeometry(ctx, geometry, DELETE_STYLE);
     },
-    [window, hovered, active],
+    [viewport, hovered, enabled],
   );
 
-  return draw;
+  const props = mergeProps(pressProps, hoverProps);
+
+  return {
+    props,
+    draw,
+  };
 }

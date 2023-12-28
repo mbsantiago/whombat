@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
-import { type Dataset } from "@/api/schemas";
 import api from "@/app/api";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
+
+import type { Dataset } from "@/types";
 
 /**
  * Component for creating a new dataset.

@@ -6,8 +6,6 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { type RecordingUpdate } from "@/api/recordings";
-import { type Note, type Recording, type Tag } from "@/api/schemas";
 import {
   DateIcon,
   LocationIcon,
@@ -23,6 +21,9 @@ import TableHeader from "@/components/tables/TableHeader";
 import TableInput from "@/components/tables/TableInput";
 import TableMap, { parsePosition } from "@/components/tables/TableMap";
 import TableTags from "@/components/tables/TableTags";
+
+import type { RecordingUpdate } from "@/api/recordings";
+import type { Note, Recording, Tag } from "@/types";
 
 export default function useRecordingTable({
   data,

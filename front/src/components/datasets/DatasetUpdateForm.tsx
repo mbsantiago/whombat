@@ -1,4 +1,3 @@
-import { type Dataset } from "@/api/schemas";
 import Card from "@/components/Card";
 import DatasetActions from "@/components/datasets/DatasetActions";
 import {
@@ -8,6 +7,8 @@ import {
 } from "@/components/Description";
 import { Input, TextArea } from "@/components/inputs/index";
 import useDataset from "@/hooks/api/useDataset";
+
+import type { Dataset } from "@/types";
 
 export default function DatasetUpdateForm({
   dataset: data,
@@ -22,7 +23,10 @@ export default function DatasetUpdateForm({
 
   return (
     <div className="flex flex-col">
-      <DatasetActions dataset={data} downloadLink={dataset.downloadLink} />
+      <DatasetActions
+        dataset={data}
+        downloadLink={dataset.download.json || ""}
+      />
       <Card>
         <div className="px-4 sm:px-0">
           <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-200">

@@ -9,21 +9,17 @@
 import { Combobox } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import {
-  type InputHTMLAttributes,
-  type KeyboardEvent,
-  forwardRef,
-  useEffect,
-  useState,
-} from "react";
+import { forwardRef, useEffect, useState } from "react";
 
-import { type Tag as TagType } from "@/api/schemas";
-import { type TagCreate, type TagFilter } from "@/api/tags";
 import { Input } from "@/components/inputs/index";
 import KeyboardKey from "@/components/KeyboardKey";
 import Tag from "@/components/tags/Tag";
 import useTags from "@/hooks/api/useTags";
 import useStore from "@/store";
+
+import type { TagCreate, TagFilter } from "@/api/tags";
+import type { Tag as TagType } from "@/types";
+import type { InputHTMLAttributes, KeyboardEvent } from "react";
 
 function ComboBoxSection({ children }: { children: React.ReactNode }) {
   return (

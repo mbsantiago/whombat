@@ -1,8 +1,9 @@
 import dynamic from "next/dynamic";
 
-import { type Recording } from "@/api/schemas";
 import Card from "@/components/Card";
 import { MapIcon } from "@/components/icons";
+
+import type { Recording } from "@/types";
 
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it

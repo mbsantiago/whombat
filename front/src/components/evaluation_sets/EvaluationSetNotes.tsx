@@ -1,4 +1,4 @@
-import { type EvaluationSet } from "@/api/evaluation_sets";
+import type { EvaluationSet } from "@/types";
 
 export default function EvaluationSetNotes({
   evaluationSet,

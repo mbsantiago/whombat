@@ -1,12 +1,13 @@
 import { useEffect } from "react";
+
+import { debounce } from "@/utils/debounce";
+
 import type {
   FieldValues,
   SubmitHandler,
   UseFormHandleSubmit,
   UseFormWatch,
 } from "react-hook-form";
-
-import { debounce } from "@/utils/debounce";
 
 export default function useDebounceSubmit<T extends FieldValues>({
   watch,

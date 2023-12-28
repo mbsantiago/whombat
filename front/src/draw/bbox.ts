@@ -4,7 +4,8 @@ import {
   setBorderStyle,
   setFillStyle,
 } from "@/draw/styles";
-import type { BBox } from "@/utils/types";
+
+import type { Box } from "@/types";
 
 export type BBoxStyle = BorderStyle & FillStyle;
 
@@ -24,7 +25,7 @@ export const DEFAULT_BBOX_STYLE: BBoxStyle = {
 
 export default function drawBBox(
   ctx: CanvasRenderingContext2D,
-  bbox: BBox,
+  bbox: Box,
   style: BBoxStyle = DEFAULT_BBOX_STYLE,
 ) {
   const [left, top, right, bottom] = bbox;

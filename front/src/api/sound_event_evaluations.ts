@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { SoundEventEvaluationSchema } from "@/api/schemas";
+import { SoundEventEvaluationSchema } from "@/schemas";
 
 export const SoundEventEvaluationPageSchema = Page(SoundEventEvaluationSchema);
 

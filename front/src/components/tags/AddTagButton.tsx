@@ -1,12 +1,13 @@
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
-import { type HTMLProps } from "react";
 
-import { type Tag as TagType } from "@/api/schemas";
-import { type TagFilter } from "@/api/tags";
 import Button from "@/components/Button";
 import { AddIcon } from "@/components/icons";
 import TagSearchBar from "@/components/tags/TagSearchBar";
+
+import type { TagFilter } from "@/api/tags";
+import type { Tag as TagType } from "@/types";
+import type { HTMLProps } from "react";
 
 function TagBarPopover({
   onClose,

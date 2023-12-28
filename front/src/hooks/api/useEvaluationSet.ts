@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
-import { type EvaluationSet, type Tag } from "@/api/schemas";
 import api from "@/app/api";
+
+import type { EvaluationSet, Tag } from "@/types";
 
 export default function useEvaluationSet({
   evaluationSet,
@@ -21,15 +22,15 @@ export default function useEvaluationSet({
 }) {
   const client = useQueryClient();
 
-  const query = useQuery(
-    ["evaluation_set", evaluationSet.uuid],
-    () => api.evaluationSets.get(evaluationSet.uuid),
-    {
-      enabled,
-      initialData: evaluationSet,
-      staleTime: 1000 * 60 * 5,
+  const query = useQuery({
+    queryKey: ["evaluation_set", evaluationSet.uuid],
+    queryFn: async () => {
+      return await api.evaluationSets.get(evaluationSet.uuid);
     },
-  );
+    enabled,
+    initialData: evaluationSet,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const update = useMutation({
     mutationFn: async (data: EvaluationSetUpdate) => {

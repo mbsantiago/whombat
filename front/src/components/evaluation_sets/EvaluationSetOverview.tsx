@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { type EvaluationSet } from "@/api/evaluation_sets";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { AddIcon, SettingsIcon, TagsIcon, TasksIcon } from "@/components/icons";
@@ -8,6 +7,8 @@ import Link from "@/components/Link";
 import MetricBadge from "@/components/MetricBadge";
 
 import useEvaluationTasks from "@/hooks/api/useEvaluationTasks";
+
+import type { EvaluationSet } from "@/types";
 
 export default function EvaluationSetOverview({
   evaluationSet,

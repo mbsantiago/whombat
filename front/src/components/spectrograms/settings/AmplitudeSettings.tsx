@@ -1,11 +1,12 @@
 import { type Control, Controller } from "react-hook-form";
 
-import { type SpectrogramParameters } from "@/api/spectrograms";
 import { InputGroup } from "@/components/inputs/index";
 import Select from "@/components/inputs/Select";
 import Toggle from "@/components/inputs/Toggle";
 
 import SettingsSection from "./SettingsSection";
+
+import type { SpectrogramParameters } from "@/types";
 
 const AMPLITUDE_SCALES: Record<
   string,
