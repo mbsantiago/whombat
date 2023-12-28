@@ -1,8 +1,8 @@
 import { type AxiosError } from "axios";
 
+import { type ClipAnnotation } from "@/api/schemas";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
-import { type ClipAnnotation } from "@/api/schemas";
 
 /**
  * A hook for managing the state of a clip annotation.

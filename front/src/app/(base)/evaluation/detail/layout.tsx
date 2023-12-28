@@ -1,14 +1,14 @@
 "use client";
-import { toast } from "react-hot-toast";
-import { useRouter, useSearchParams, notFound } from "next/navigation";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback } from "react";
+import { toast } from "react-hot-toast";
 
-import useEvaluationSet from "@/hooks/api/useEvaluationSet";
-import Loading from "@/app/loading";
-import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
-import { EvaluationSetContext } from "@/app/contexts";
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
 import { type Tag } from "@/api/schemas";
+import { EvaluationSetContext } from "@/app/contexts";
+import Loading from "@/app/loading";
+import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
+import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();
@@ -88,13 +88,15 @@ export default function Layout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <EvaluationSetContext.Provider value={{
-      evaluationSet: evaluationSet.query.data,
-      update: onUpdate,
-      delete: onDelete,
-      addTag: onAddTag,
-      removeTag: onRemoveTag,
-    }}>
+    <EvaluationSetContext.Provider
+      value={{
+        evaluationSet: evaluationSet.query.data,
+        update: onUpdate,
+        delete: onDelete,
+        addTag: onAddTag,
+        removeTag: onRemoveTag,
+      }}
+    >
       <EvaluationSetHeader evaluationSet={evaluationSet.query.data} />
       <div className="p-4">{children}</div>
     </EvaluationSetContext.Provider>

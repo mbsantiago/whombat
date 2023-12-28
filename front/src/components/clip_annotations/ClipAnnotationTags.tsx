@@ -1,12 +1,12 @@
 import type { ClipAnnotation, Tag } from "@/api/schemas";
-import TagComponent from "@/components/tags/Tag";
-import { DeleteIcon, TagsIcon } from "@/components/icons";
-import { H4 } from "@/components/Headings";
-import Card from "@/components/Card";
-import AddTagButton from "@/components/tags/AddTagButton";
-import Button from "@/components/Button";
-import Empty from "@/components/Empty";
 import { type TagFilter } from "@/api/tags";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import Empty from "@/components/Empty";
+import { H4 } from "@/components/Headings";
+import { DeleteIcon, TagsIcon } from "@/components/icons";
+import AddTagButton from "@/components/tags/AddTagButton";
+import TagComponent from "@/components/tags/Tag";
 import useStore from "@/store";
 
 export default function ClipAnnotationTags({

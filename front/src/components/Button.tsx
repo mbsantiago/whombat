@@ -1,10 +1,10 @@
+import classnames from "classnames";
 import {
   type ButtonHTMLAttributes,
+  ForwardedRef,
   type ReactNode,
   forwardRef,
-  ForwardedRef,
 } from "react";
-import classnames from "classnames";
 
 import type { Variant } from "@/components/common";
 

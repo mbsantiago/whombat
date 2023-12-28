@@ -1,19 +1,19 @@
 // Purpose: React component for displaying tags on the spectrogram.
-import { useMemo } from "react";
-import { type ReactNode, type HTMLProps } from "react";
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 import classNames from "classnames";
+import { type HTMLProps, type ReactNode } from "react";
+import { useMemo } from "react";
 
-import useStore from "@/store";
-import TagSearchBar from "@/components/tags/TagSearchBar";
-import { type TagFilter } from "@/api/tags";
-import { TagIcon, CloseIcon } from "@/components/icons";
 import { type Tag as TagType } from "@/api/schemas";
+import { type TagFilter } from "@/api/tags";
+import { CloseIcon, TagIcon } from "@/components/icons";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 import {
-  type TagGroup,
   type TagElement,
+  type TagGroup,
 } from "@/hooks/annotation/useAnnotationTags";
+import useStore from "@/store";
 
 function TagBarPopover({
   onClose,

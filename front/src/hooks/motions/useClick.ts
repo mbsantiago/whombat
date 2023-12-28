@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { off, on } from "react-use/lib/misc/util";
 import { type RefObject } from "react";
+import { off, on } from "react-use/lib/misc/util";
 
 import { type Dimensions, type Position } from "@/utils/types";
 

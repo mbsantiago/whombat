@@ -1,11 +1,13 @@
 "use client";
+import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import DatasetContext from "../context";
-import DatasetRecordings from "@/components/datasets/DatasetRecordings";
-import { notFound } from "next/navigation";
-import { DatasetRecordingsNav } from "../../../../../components/datasets/DatasetRecordingsNav";
 import { type Recording } from "@/api/schemas";
+import DatasetRecordings from "@/components/datasets/DatasetRecordings";
+
+import { DatasetRecordingsNav } from "../../../../../components/datasets/DatasetRecordingsNav";
+import DatasetContext from "../context";
+
 import "./page.css";
 
 function getRecordingLink(recording: Recording): string {

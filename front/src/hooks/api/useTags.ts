@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 
-import api from "@/app/api";
-import usePagedQuery from "@/hooks/utils/usePagedQuery";
-import useFilter from "@/hooks/utils/useFilter";
 import { type TagFilter } from "@/api/tags";
+import api from "@/app/api";
+import useFilter from "@/hooks/utils/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
 
 const _empty: TagFilter = {};
 const _fixed: (keyof TagFilter)[] = [];

@@ -1,20 +1,21 @@
+import { useCallback, useMemo, useState } from "react";
+
+import { type Recording } from "@/api/schemas";
+import {
+  DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
+  type SpectrogramWindow,
+} from "@/api/spectrograms";
+import drawFrequencyAxis from "@/draw/freqAxis";
+import drawTimeAxis from "@/draw/timeAxis";
+import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
+import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
 import {
   adjustWindowToBounds,
   centerWindowOn,
   scaleWindow,
   shiftWindow,
 } from "@/utils/windows";
-import { useState, useMemo, useCallback } from "react";
-import { type Recording } from "@/api/schemas";
-import {
-  type SpectrogramWindow,
-  type SpectrogramParameters,
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-} from "@/api/spectrograms";
-import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
-import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
-import drawTimeAxis from "@/draw/timeAxis";
-import drawFrequencyAxis from "@/draw/freqAxis";
 
 /**
  * A function type representing the drawing function for a spectrogram.
@@ -166,15 +167,13 @@ export default function useSpectrogram({
           ),
         );
       },
-      setParameters: (
-        parameters: SpectrogramParameters
-      ) => {
+      setParameters: (parameters: SpectrogramParameters) => {
         const validated = validateParameters(parameters, recording);
         onParameterChange?.(validated);
         setParameters(validated);
       },
       resetParameters: () => {
-        setParameters(validateParameters(initialParameters, recording))
+        setParameters(validateParameters(initialParameters, recording));
       },
       enableDrag,
       enableZoom,

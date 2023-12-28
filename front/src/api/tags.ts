@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { GetManySchema, Page } from "./common";
-import { TagSchema, type Tag } from "./schemas";
+import { type Tag, TagSchema } from "./schemas";
 
 export const TagPageSchema = Page(TagSchema);
 

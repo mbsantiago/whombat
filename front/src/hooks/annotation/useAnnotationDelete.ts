@@ -1,15 +1,16 @@
 import { useCallback } from "react";
 import { type RefObject } from "react";
 
-import { scaleGeometryToViewport } from "@/utils/geometry";
-import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
-import drawGeometry from "@/draw/geometry";
-import useClick from "@/hooks/motions/useClick";
-import { type DeleteAnnotationEvent } from "@/machines/annotate";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import drawGeometry from "@/draw/geometry";
 import { DANGER } from "@/draw/styles";
+import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
+import useClick from "@/hooks/motions/useClick";
+import { type MouseState } from "@/hooks/motions/useMouse";
+import { scaleGeometryToViewport } from "@/utils/geometry";
+
+import { type DeleteAnnotationEvent } from "@/machines/annotate";
 
 const DELETE_STYLE = {
   borderColor: DANGER,

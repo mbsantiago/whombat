@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 import Button from "@/components/Button";
-import TagSearchBar from "@/components/tags/TagSearchBar";
-import Checkbox from "@/components/tables/TableCheckbox";
 import { CheckIcon, CloseIcon } from "@/components/icons";
+import Checkbox from "@/components/tables/TableCheckbox";
+import TagSearchBar from "@/components/tags/TagSearchBar";
 
 export type SetFilter = ({
   name,

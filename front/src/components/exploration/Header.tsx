@@ -4,10 +4,15 @@ import {
   useSelectedLayoutSegment,
 } from "next/navigation";
 
-import { RecordingIcon, ClipsIcon, SoundEventIcon, HomeIcon } from "@/components/icons";
 import Header from "@/components/Header";
-import Tabs from "@/components/Tabs";
 import { H1 } from "@/components/Headings";
+import {
+  ClipsIcon,
+  HomeIcon,
+  RecordingIcon,
+  SoundEventIcon,
+} from "@/components/icons";
+import Tabs from "@/components/Tabs";
 
 export default function ExplorationHeader() {
   const router = useRouter();
@@ -44,9 +49,7 @@ export default function ExplorationHeader() {
               icon: <ClipsIcon className="h-4 w-4 align-middle" />,
               isActive: selectedLayoutSegment === "clips",
               onClick: () => {
-                router.push(
-                  `/exploration/clips/?${params.toString()}`,
-                );
+                router.push(`/exploration/clips/?${params.toString()}`);
               },
             },
             {
@@ -55,9 +58,7 @@ export default function ExplorationHeader() {
               icon: <SoundEventIcon className="h-4 w-4 align-middle" />,
               isActive: selectedLayoutSegment === "sound_events",
               onClick: () => {
-                router.push(
-                  `/exploration/sound_events/?${params.toString()}`,
-                );
+                router.push(`/exploration/sound_events/?${params.toString()}`);
               },
             },
           ]}

@@ -1,15 +1,15 @@
 "use client";
 import { type AxiosError } from "axios";
-import toast from "react-hot-toast";
-import useRecording from "@/hooks/api/useRecording";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
-import { useContext, useCallback } from "react";
+import { useCallback, useContext } from "react";
+import toast from "react-hot-toast";
 
-import useStore from "@/store";
-import RecordingDetail from "@/components/recordings/RecordingDetail";
+import { type SpectrogramParameters } from "@/api/spectrograms";
 import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
-import { type SpectrogramParameters } from "@/api/spectrograms";
+import RecordingDetail from "@/components/recordings/RecordingDetail";
+import useRecording from "@/hooks/api/useRecording";
+import useStore from "@/store";
 
 export default function Page() {
   const user = useContext(UserContext);
@@ -35,10 +35,13 @@ export default function Page() {
     [returnToRecordings],
   );
 
-  const onParametersSave = useCallback((parameters: SpectrogramParameters) => {
-    toast.success("Parameters saved");
-    setParameters(parameters);
-  }, [setParameters]);
+  const onParametersSave = useCallback(
+    (parameters: SpectrogramParameters) => {
+      toast.success("Parameters saved");
+      setParameters(parameters);
+    },
+    [setParameters],
+  );
 
   const onDelete = useCallback(() => {
     toast.success("Recording deleted");

@@ -1,10 +1,10 @@
+import classnames from "classnames";
+import Link from "next/link";
 import {
   type ButtonHTMLAttributes,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
 } from "react";
-import Link from "next/link";
-import classnames from "classnames";
 
 type TabType = {
   id: string | number;
@@ -29,7 +29,10 @@ function TabButton({
   active = false,
   className,
   ...props
-}: { children: ReactNode, active?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
+}: {
+  children: ReactNode;
+  active?: boolean;
+} & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}

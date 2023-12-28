@@ -1,12 +1,11 @@
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
+import { type Note, type Recording, type User } from "@/api/schemas";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { NotesIcon } from "@/components/icons";
-import Feed from "@/components/notes/Feed";
-import { type User, type Note, type Recording } from "@/api/schemas";
 import CreateNote from "@/components/notes/CreateNote";
-
+import Feed from "@/components/notes/Feed";
 import useRecording from "@/hooks/api/useRecording";
 
 function NoNotes() {

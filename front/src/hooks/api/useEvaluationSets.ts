@@ -1,7 +1,7 @@
 import { type EvaluationSetFilter } from "@/api/evaluation_sets";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/utils/usePagedQuery";
 import useFilter from "@/hooks/utils/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
 
 const emptyFilter: EvaluationSetFilter = {};
 const _fixed: (keyof EvaluationSetFilter)[] = [];

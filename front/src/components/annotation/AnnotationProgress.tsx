@@ -1,16 +1,16 @@
 import { useMemo } from "react";
-import ProgressBar from "@/components/ProgressBar";
-import FilterMenu from "@/components/filters/FilterMenu";
-import FilterBar from "@/components/filters/FilterBar";
-import Button from "@/components/Button";
-import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
-import { type Filter } from "@/hooks/utils/useFilter";
-import { type AnnotationTask } from "@/api/schemas";
+
 import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
-import Toggle from "@/components/inputs/Toggle";
-import Tooltip from "@/components/Tooltip";
-import { getButtonClassName } from "@/components/Button";
+import { type AnnotationTask } from "@/api/schemas";
+import Button, { getButtonClassName } from "@/components/Button";
+import FilterBar from "@/components/filters/FilterBar";
+import FilterMenu from "@/components/filters/FilterMenu";
 import taskFilterDefs from "@/components/filters/tasks";
+import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
+import Toggle from "@/components/inputs/Toggle";
+import ProgressBar from "@/components/ProgressBar";
+import Tooltip from "@/components/Tooltip";
+import { type Filter } from "@/hooks/utils/useFilter";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
 
 export default function AnnotationProgress({

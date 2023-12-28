@@ -1,8 +1,8 @@
 import { type Dataset } from "@/api/schemas";
-import { DownloadIcon, RecordingsIcon, UploadIcon } from "@/components/icons";
-import Dialog from "@/components/Dialog";
 import Button from "@/components/Button";
 import DatasetExport from "@/components/datasets/DatasetExport";
+import Dialog from "@/components/Dialog";
+import { DownloadIcon, RecordingsIcon, UploadIcon } from "@/components/icons";
 
 export function DatasetRecordingsNav({ dataset }: { dataset: Dataset }) {
   return (

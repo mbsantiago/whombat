@@ -117,14 +117,12 @@ export function drawImageOnCanvas(
   const startTimeRel = (window.time.min - interval.min) / totalDuration;
   const highFreqRel = window.freq.max / maxFreq;
 
-  const sx = (startTimeRel * image.width);
-  const sy = ((1 - highFreqRel) * image.height);
-  const sWidth = (
-    ((window.time.max - window.time.min) * image.width) / totalDuration
-  );
-  const sHeight = (
-    ((window.freq.max - window.freq.min) * image.height) / maxFreq
-  );
+  const sx = startTimeRel * image.width;
+  const sy = (1 - highFreqRel) * image.height;
+  const sWidth =
+    ((window.time.max - window.time.min) * image.width) / totalDuration;
+  const sHeight =
+    ((window.freq.max - window.freq.min) * image.height) / maxFreq;
   const dx = 0;
   const dy = 0;
   const dWidth = ctx.canvas.width;

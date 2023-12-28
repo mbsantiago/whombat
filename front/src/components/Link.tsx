@@ -1,6 +1,6 @@
-import { type ComponentProps, type ReactNode } from "react";
 import classnames from "classnames";
 import NextLink from "next/link";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { type Mode, getButtonClassName } from "@/components/Button";
 import { type Variant } from "@/components/common";

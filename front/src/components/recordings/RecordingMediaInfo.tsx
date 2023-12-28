@@ -1,5 +1,5 @@
-import Card from "@/components/Card";
 import { type Recording } from "@/api/schemas";
+import Card from "@/components/Card";
 import {
   ChannelsIcon,
   SampleRateIcon,
@@ -7,19 +7,13 @@ import {
   TimeIcon,
 } from "@/components/icons";
 
-
 function Label({ label }: { label: string }) {
-  return (
-    <div className="font-thin text-sm text-stone-500 mr-2">
-      {label}
-    </div>
-  );
+  return <div className="font-thin text-sm text-stone-500 mr-2">{label}</div>;
 }
 
 function Units({ units }: { units: string }) {
   return <span className="ml-1 text-stone-500">{units}</span>;
 }
-
 
 export default function RecordingMediaInfo({
   recording,

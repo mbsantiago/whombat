@@ -1,12 +1,12 @@
-import { useMemo } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import Button from "@/components/Button";
-import Empty from "@/components/Empty";
-import { AddIcon, TagsIcon } from "@/components/icons";
-import { H4 } from "@/components/Headings";
 import { type AnnotationProject } from "@/api/schemas";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import Empty from "@/components/Empty";
+import { H4 } from "@/components/Headings";
+import { AddIcon, TagsIcon } from "@/components/icons";
 
 function NoTags() {
   return (

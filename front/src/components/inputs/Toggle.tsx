@@ -1,7 +1,7 @@
-import { useToggleState } from "react-stately";
-import { useToggleButton, type AriaToggleButtonProps } from "react-aria";
 import classNames from "classnames";
 import { useRef } from "react";
+import { type AriaToggleButtonProps, useToggleButton } from "react-aria";
+import { useToggleState } from "react-stately";
 
 export default function Toggle({
   label = "Toggle",

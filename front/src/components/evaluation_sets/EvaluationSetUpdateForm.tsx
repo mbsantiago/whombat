@@ -18,12 +18,9 @@ export default function EvaluationSetUpdateForm({
   onChange?: (data: EvaluationSetUpdate) => void;
 }) {
   return (
-
     <>
       <div className="px-4 sm:px-0">
-        <H3 className="text-center">
-          Details
-        </H3>
+        <H3 className="text-center">Details</H3>
       </div>
       <div className="mt-4 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
@@ -52,9 +49,7 @@ export default function EvaluationSetUpdateForm({
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Evaluation Mode</DescriptionTerm>
-            <DescriptionData>
-              {evaluationSet.mode}
-            </DescriptionData>
+            <DescriptionData>{evaluationSet.mode}</DescriptionData>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Created On</DescriptionTerm>
@@ -65,5 +60,5 @@ export default function EvaluationSetUpdateForm({
         </dl>
       </div>
     </>
-  )
+  );
 }

@@ -1,13 +1,13 @@
-import { useMemo, useCallback } from "react";
 import {
-  type PlotData,
   type Datum,
-  type PlotMouseEvent,
   type Layout,
+  type PlotData,
+  type PlotMouseEvent,
 } from "plotly.js";
+import { useCallback, useMemo } from "react";
 
-import useTheme from "@/hooks/useTheme";
 import { type SoundEventAnnotation } from "@/api/schemas";
+import useTheme from "@/hooks/useTheme";
 
 type GroupKey = string;
 

@@ -1,6 +1,6 @@
 import Button from "@/components/Button";
-import Tooltip from "@/components/Tooltip";
 import { DragIcon, HomeIcon, ZoomIcon } from "@/components/icons";
+import Tooltip from "@/components/Tooltip";
 
 export default function SpectrogramControls({
   canDrag,

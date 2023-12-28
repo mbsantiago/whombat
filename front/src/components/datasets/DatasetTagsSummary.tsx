@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import Tag from "@/components/tags/Tag";
-import { H3 } from "@/components/Headings";
 import { type Dataset, type Tag as TagType } from "@/api/schemas";
-import Loading from "@/app/loading";
-import useStore from "@/store";
-import { TagsIcon } from "@/components/icons";
 import { type RecordingTag } from "@/api/tags";
-import usePagedQuery from "@/hooks/utils/usePagedQuery";
 import api from "@/app/api";
+import Loading from "@/app/loading";
+import Card from "@/components/Card";
+import { H3 } from "@/components/Headings";
+import { TagsIcon } from "@/components/icons";
+import Tag from "@/components/tags/Tag";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import useStore from "@/store";
 
 /**
  * Component to display a summary of tags for a dataset.

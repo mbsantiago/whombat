@@ -1,14 +1,14 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
+import { GetManySchema, Page } from "@/api/common";
 import {
-  GeometrySchema,
-  SoundEventPredictionSchema,
   type ClipPrediction,
+  GeometrySchema,
   type SoundEventPrediction,
+  SoundEventPredictionSchema,
   type Tag,
 } from "@/api/schemas";
-import { GetManySchema, Page } from "@/api/common";
 
 export const SoundEventPredictionCreateSchema = z.object({
   geometry: GeometrySchema,

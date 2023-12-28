@@ -1,3 +1,4 @@
+import { type AnnotationProject } from "@/api/schemas";
 import {
   DescriptionData,
   DescriptionTerm,
@@ -5,7 +6,6 @@ import {
 } from "@/components/Description";
 import { H3 } from "@/components/Headings";
 import { Input, TextArea } from "@/components/inputs/index";
-import { type AnnotationProject } from "@/api/schemas";
 import Loading from "@/components/Loading";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 

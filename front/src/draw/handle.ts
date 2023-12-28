@@ -1,5 +1,5 @@
-import type { Position } from "@/utils/types";
 import { BorderStyle, SECONDARY, setBorderStyle } from "@/draw/styles";
+import type { Position } from "@/utils/types";
 
 const DEFAULT_HANDLE_SIZE = 6;
 

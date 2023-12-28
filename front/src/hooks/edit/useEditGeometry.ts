@@ -1,20 +1,20 @@
+import { type EditableElement } from "@/draw/edit";
 import createEditHook from "@/hooks/edit/createEditHook";
-import { shiftPolygon, shiftGeometry } from "@/utils/geometry";
+import { shiftGeometry, shiftPolygon } from "@/utils/geometry";
 import {
-  type TimeStamp,
-  type TimeInterval,
   type BoundingBox,
+  type Dimensions,
+  type Geometry,
   type LineString,
+  type MultiLineString,
+  type MultiPoint,
+  type MultiPolygon,
   type Point,
   type Polygon,
-  type MultiPoint,
-  type MultiLineString,
-  type MultiPolygon,
-  type Geometry,
   type Position,
-  type Dimensions,
+  type TimeInterval,
+  type TimeStamp,
 } from "@/utils/types";
-import { type EditableElement } from "@/draw/edit";
 
 export function getTimeStampEditableElements(
   geometry: TimeStamp,

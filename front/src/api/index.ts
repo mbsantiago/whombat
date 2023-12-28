@@ -7,27 +7,27 @@
 import axios from "axios";
 
 import { registerAnnotationProjectAPI } from "./annotation_projects";
-import { registerSoundEventAnnotationsAPI } from "./sound_event_annotations";
-import { registerClipAnnotationsAPI } from "./clip_annotations";
+import { registerAnnotationTasksAPI } from "./annotation_tasks";
 import { registerAudioAPI } from "./audio";
 import { registerAuthAPI } from "./auth";
+import { registerClipAnnotationsAPI } from "./clip_annotations";
+import { registerClipEvaluationAPI } from "./clip_evaluations";
+import { registerClipPredictionsAPI } from "./clip_predictions";
 import { registerClipAPI } from "./clips";
 import { registerDatasetAPI } from "./datasets";
 import { registerEvaluationSetAPI } from "./evaluation_sets";
 import { registerNotesAPI } from "./notes";
+import { registerSoundEventAnnotationsAPI } from "./sound_event_annotations";
 import { registerRecordingAPI } from "./recordings";
+import { registerSoundEventEvaluationAPI } from "./sound_event_evaluations";
+import { registerSoundEventPredictionsAPI } from "./sound_event_predictions";
 import { registerSoundEventAPI } from "./sound_events";
 import { registerSpectrogramAPI } from "./spectrograms";
 import { registerTagAPI } from "./tags";
-import { registerAnnotationTasksAPI } from "./annotation_tasks";
 import { registerUserAPI } from "./user";
 import { registerPluginsAPI } from "./plugins";
-import { registerSoundEventPredictionsAPI } from "./sound_event_predictions";
-import { registerClipPredictionsAPI } from "./clip_predictions";
 import { registerModelRunAPI } from "./model_runs";
 import { registerUserRunAPI } from "./user_runs";
-import { registerSoundEventEvaluationAPI } from "./sound_event_evaluations";
-import { registerClipEvaluationAPI } from "./clip_evaluations";
 import { registerEvaluationAPI } from "./evaluations";
 
 type APIConfig = {

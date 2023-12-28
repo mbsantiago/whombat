@@ -1,17 +1,22 @@
 import { useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import { type Tag } from "@/api/schemas";
-import { type AnnotationStatus, type AnnotationTask } from "@/api/schemas";
-import { type SoundEventAnnotation, type AnnotationTag } from "@/api/schemas";
-import { type Geometry } from "@/api/schemas";
-import { type AnnotationProject } from "@/api/schemas";
+import {
+  type AnnotationProject,
+  type AnnotationStatus,
+  type AnnotationTag,
+  type AnnotationTask,
+  type Geometry,
+  type SoundEventAnnotation,
+  type Tag,
+} from "@/api/schemas";
 import { type SpectrogramParameters } from "@/api/spectrograms";
 import Loading from "@/app/loading";
+import AnnotationProjectTags from "@/components/annotation/AnnotationTags";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
+
 import TaskSpectrogram from "@/components/spectrograms/TaskSpectrogram";
-import AnnotationProjectTags from "@/components/annotation/AnnotationTags";
 // import TaskStatus from "@/components/tasks/TaskStatus";
 // import useTask from "@/hooks/api/useTask";
 // import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
@@ -64,7 +69,6 @@ export default function AnnotateTask({
   // Get info about the task annotations
   const filter = useMemo(() => ({ task__eq: task_id }), [task_id]);
   const annotations = useSoundEventAnnotations({ filter });
-
 
   const { mutateAsync: addTagAsync } = annotations.addTag;
   const onAddAnnotationTag = useCallback(
@@ -175,9 +179,7 @@ export default function AnnotateTask({
       </div>
       <div className="flex flex-row gap-3">
         <div className="grow flex flex-col gap-3">
-          {task.query.isLoading ||
-          task.query.data == null
-          ? (
+          {task.query.isLoading || task.query.data == null ? (
             <Loading />
           ) : (
             <TaskSpectrogram

@@ -1,17 +1,21 @@
 "use client";
-import { type ReactNode, useContext } from "react";
-import { notFound } from "next/navigation";
-import toast from "react-hot-toast";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
+import {
+  notFound,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { type ReactNode, useContext } from "react";
+import toast from "react-hot-toast";
 
 import queryClient from "@/app/client";
-import useActiveUser from "@/hooks/api/useActiveUser";
-import Notification from "@/components/Notification";
 import Loading from "@/app/loading";
 import { WhombatIcon } from "@/components/icons";
 import { NavBar } from "@/components/navigation/NavBar";
 import { SideMenu } from "@/components/navigation/SideMenu";
+import Notification from "@/components/Notification";
+import useActiveUser from "@/hooks/api/useActiveUser";
 
 import UserContext from "./context";
 

@@ -1,9 +1,10 @@
 "use client";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
-import { Input, InputGroup } from "@/components/inputs";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Input, InputGroup } from "@/components/inputs";
 import useDebounceSubmit from "@/hooks/forms/useDebounceSubmit";
 
 // NOTE: The use of dynamic imports is necessary to avoid

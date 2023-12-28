@@ -1,13 +1,14 @@
 import { useCallback } from "react";
 
-import { scaleGeometryToWindow } from "@/utils/geometry";
-import { type ScratchState } from "@/hooks/motions/useDrag";
+import { type SpectrogramWindow } from "@/api/spectrograms";
 import useCreateBBox from "@/hooks/draw/useCreateBBox";
 import useCreateInterval from "@/hooks/draw/useCreateInterval";
 import useCreateTimeStamp from "@/hooks/draw/useCreateTimeStamp";
+import { type ScratchState } from "@/hooks/motions/useDrag";
+import { scaleGeometryToWindow } from "@/utils/geometry";
 import { type Dimensions } from "@/utils/types";
+
 import { type CreateAnnotationEvent } from "@/machines/annotate";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 
 const PRIMARY = "rgb(16 185 129)";
 const CREATE_STYLE = {

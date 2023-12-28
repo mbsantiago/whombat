@@ -1,8 +1,8 @@
 "use client";
 import { useContext } from "react";
 
-import EvaluationSetDetail from "@/components/evaluation_sets/EvaluationSetDetail";
 import { EvaluationSetContext } from "@/app/contexts";
+import EvaluationSetDetail from "@/components/evaluation_sets/EvaluationSetDetail";
 
 export default function Page() {
   const {

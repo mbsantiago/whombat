@@ -1,17 +1,18 @@
-import { useCallback, useEffect, type RefObject } from "react";
+import { type RefObject, useCallback, useEffect } from "react";
 import { useKeyPress } from "react-use";
 
-import useDrag from "@/hooks/motions/useDrag";
-import useScratch from "@/hooks/motions/useScratch";
-import useEditGeometry from "@/hooks/edit/useEditAnnotation";
-import {
-  type EditAnnotationEvent,
-  type CreateAnnotationEvent,
-} from "@/machines/annotate";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type SoundEventAnnotation } from "@/api/schemas";
+import { type SpectrogramWindow } from "@/api/spectrograms";
+import useEditGeometry from "@/hooks/edit/useEditAnnotation";
+import useDrag from "@/hooks/motions/useDrag";
 import { type MouseState } from "@/hooks/motions/useMouse";
+import useScratch from "@/hooks/motions/useScratch";
 import { type Geometry } from "@/utils/types";
+
+import {
+  type CreateAnnotationEvent,
+  type EditAnnotationEvent,
+} from "@/machines/annotate";
 
 const PRIMARY = "rgb(16 185 129)";
 

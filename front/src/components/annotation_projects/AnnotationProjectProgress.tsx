@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 
-import Link from "@/components/Link";
-import MetricBadge from "@/components/MetricBadge";
+import { type AnnotationProject } from "@/api/schemas";
+import Card from "@/components/Card";
+import Empty from "@/components/Empty";
+import { H3 } from "@/components/Headings";
 import {
   AddIcon,
   CompleteIcon,
@@ -9,12 +11,10 @@ import {
   NeedsReviewIcon,
   VerifiedIcon,
 } from "@/components/icons";
-import Empty from "@/components/Empty";
+import Link from "@/components/Link";
 import Loading from "@/components/Loading";
-import Card from "@/components/Card";
+import MetricBadge from "@/components/MetricBadge";
 import ProgressBar from "@/components/ProgressBar";
-import { H3 } from "@/components/Headings";
-import { type AnnotationProject } from "@/api/schemas";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
 

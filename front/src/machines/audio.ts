@@ -1,4 +1,4 @@
-import { assign, setup, fromCallback, sendTo } from "xstate";
+import { assign, fromCallback, sendTo, setup } from "xstate";
 
 export type AudioInput = {
   url: string;
@@ -119,7 +119,7 @@ export const audioMachine = setup({
           audio.removeEventListener("canplay", onLoadStart);
           audio.removeEventListener("play", onPlay);
           audio.removeEventListener("pause", onPause);
-          audio.src = ""
+          audio.src = "";
           cancelAnimationFrame(request);
         };
       },

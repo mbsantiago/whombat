@@ -1,13 +1,13 @@
 import { useRef } from "react";
-import { useSliderState } from "react-stately";
 import {
+  type AriaSliderProps,
+  VisuallyHidden,
   useNumberFormatter,
   useSlider,
-  VisuallyHidden,
-  type AriaSliderProps,
 } from "react-aria";
-import { Thumb } from './Slider';
+import { useSliderState } from "react-stately";
 
+import { Thumb } from "./Slider";
 
 export default function RangeSlider({
   formatter,

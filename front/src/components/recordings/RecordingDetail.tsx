@@ -1,16 +1,16 @@
 import { type Recording, type User } from "@/api/schemas";
-
-import RecordingSpectrogram from "./RecordingSpectrogram";
-import RecordingNotes from "./RecordingNotes";
-import RecordingActions from "./RecordingActions";
-import RecordingMediaInfo from "./RecordingMediaInfo";
-import RecordingMap from "./RecordingMap";
-import RecordingTagBar from "./RecordingTagBar";
-import RecordingHeader from "./RecordingHeader";
 import {
-  type SpectrogramParameters,
   DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
 } from "@/api/spectrograms";
+
+import RecordingActions from "./RecordingActions";
+import RecordingHeader from "./RecordingHeader";
+import RecordingMap from "./RecordingMap";
+import RecordingMediaInfo from "./RecordingMediaInfo";
+import RecordingNotes from "./RecordingNotes";
+import RecordingSpectrogram from "./RecordingSpectrogram";
+import RecordingTagBar from "./RecordingTagBar";
 
 export default function RecordingDetail({
   recording,

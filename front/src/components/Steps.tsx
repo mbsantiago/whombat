@@ -1,5 +1,5 @@
-import { type FC } from "react";
 import classNames from "classnames";
+import { type FC } from "react";
 
 export function Step({
   Icon,

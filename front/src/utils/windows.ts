@@ -1,10 +1,10 @@
 import { type Interval } from "@/api/audio";
 import {
-  type SpectrogramWindow,
-  type SpectrogramParameters,
-  DEFAULT_WINDOW_SIZE,
-  DEFAULT_SPECTROGRAM_PARAMETERS,
   DEFAULT_HOP_SIZE,
+  DEFAULT_SPECTROGRAM_PARAMETERS,
+  DEFAULT_WINDOW_SIZE,
+  type SpectrogramParameters,
+  type SpectrogramWindow,
 } from "@/api/spectrograms";
 
 // Size of the target initial spectrogram in pixels.
@@ -58,7 +58,7 @@ export function getInitialDuration({
     samplerate,
     window_size,
     hop_size,
-  })
+  });
   const duration = interval.max - interval.min;
   const n_fft = Math.floor(window_size * samplerate);
   const specHeight = Math.floor(n_fft / 2) + 1;

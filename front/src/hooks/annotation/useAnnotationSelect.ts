@@ -1,15 +1,16 @@
 import { useCallback } from "react";
 import { type RefObject } from "react";
 
-import { scaleGeometryToViewport } from "@/utils/geometry";
-import drawGeometry from "@/draw/geometry";
-import useClick from "@/hooks/motions/useClick";
-import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
-import { type SelectAnnotationEvent } from "@/machines/annotate";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import drawGeometry from "@/draw/geometry";
 import { WARNING } from "@/draw/styles";
+import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
+import useClick from "@/hooks/motions/useClick";
+import { type MouseState } from "@/hooks/motions/useMouse";
+import { scaleGeometryToViewport } from "@/utils/geometry";
+
+import { type SelectAnnotationEvent } from "@/machines/annotate";
 
 const SELECT_STYLE = {
   borderColor: WARNING,

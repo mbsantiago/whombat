@@ -1,17 +1,18 @@
 import { ReactNode } from "react";
+
+import { type GeometryType } from "@/api/schemas";
 import Button from "@/components/Button";
-import Tooltip from "@/components/Tooltip";
-import Select from "@/components/inputs/Select";
 import {
   AnnotationProjectIcon,
+  BoundingBoxIcon,
   DeleteIcon,
   EditIcon,
   SelectIcon,
-  BoundingBoxIcon,
   TimeIntervalIcon,
   TimeStampIcon,
 } from "@/components/icons";
-import { type GeometryType } from "@/api/schemas";
+import Select from "@/components/inputs/Select";
+import Tooltip from "@/components/Tooltip";
 
 type Node = {
   id: string;

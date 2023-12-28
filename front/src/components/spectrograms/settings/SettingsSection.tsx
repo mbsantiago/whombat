@@ -7,4 +7,3 @@ export default function SettingsSection({ children }: { children: ReactNode }) {
     </div>
   );
 }
-

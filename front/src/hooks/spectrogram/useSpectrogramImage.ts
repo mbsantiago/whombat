@@ -1,10 +1,10 @@
-import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
-import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
-import {
-  type SpectrogramWindow,
-  type SpectrogramParameters,
-} from "@/api/spectrograms";
 import { type Recording } from "@/api/schemas";
+import {
+  type SpectrogramParameters,
+  type SpectrogramWindow,
+} from "@/api/spectrograms";
+import useRecordingSegments from "@/hooks/spectrogram/useRecordingSegments";
+import useSpectrogramWindow from "@/hooks/spectrogram/useSpectrogramWindow";
 
 export default function useSpectrogramImage({
   recording,

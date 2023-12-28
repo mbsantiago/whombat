@@ -1,7 +1,7 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import { UserSchema, type User } from "./schemas";
+import { type User, UserSchema } from "./schemas";
 
 export const UserUpdateSchema = z.object({
   username: z.string().optional(),

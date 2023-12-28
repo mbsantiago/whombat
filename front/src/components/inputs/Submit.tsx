@@ -1,12 +1,13 @@
 import classNames from "classnames";
 import type { InputHTMLAttributes, ReactNode } from "react";
+
 import {
-  COMMON_STYLE,
-  BORDER_STYLE,
   BACKGROUND_STYLE,
-  TEXT_STYLE,
-  FOCUS_STYLE,
+  BORDER_STYLE,
+  COMMON_STYLE,
   DISABLED_STYLE,
+  FOCUS_STYLE,
+  TEXT_STYLE,
 } from "./styles";
 
 export default function Submit({

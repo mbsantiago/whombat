@@ -1,28 +1,28 @@
-import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
+import { type RecordingUpdate } from "@/api/recordings";
+import { type Note, type Recording, type Tag } from "@/api/schemas";
 import {
-  SunIcon,
   DateIcon,
-  TimeIcon,
   LocationIcon,
-  TagIcon,
   NotesIcon,
+  SunIcon,
+  TagIcon,
+  TimeIcon,
 } from "@/components/icons";
 import { formatLocation } from "@/components/inputs/Location";
-import Checkbox from "@/components/tables/TableCheckbox";
-import TableInput from "@/components/tables/TableInput";
 import TableCell from "@/components/tables/TableCell";
+import Checkbox from "@/components/tables/TableCheckbox";
+import TableHeader from "@/components/tables/TableHeader";
+import TableInput from "@/components/tables/TableInput";
 import TableMap, { parsePosition } from "@/components/tables/TableMap";
 import TableTags from "@/components/tables/TableTags";
-import TableHeader from "@/components/tables/TableHeader";
-import { type RecordingUpdate } from "@/api/recordings";
-import { type Recording, type Tag, type Note } from "@/api/schemas";
 
 export default function useRecordingTable({
   data,

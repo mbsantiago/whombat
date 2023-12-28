@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 
-import useNotes from "@/hooks/api/useNotes";
-import useDataset from "@/hooks/api/useDataset";
-
+import { type Dataset } from "@/api/schemas";
 import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import {
@@ -14,7 +12,8 @@ import {
   WarningIcon,
 } from "@/components/icons";
 import MetricBadge from "@/components/MetricBadge";
-import { type Dataset } from "@/api/schemas";
+import useDataset from "@/hooks/api/useDataset";
+import useNotes from "@/hooks/api/useNotes";
 
 export default function DatasetOverview({ dataset }: { dataset: Dataset }) {
   const params = useSearchParams();

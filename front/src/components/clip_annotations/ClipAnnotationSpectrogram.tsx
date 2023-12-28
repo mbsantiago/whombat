@@ -1,21 +1,22 @@
-import { useRef, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+
 import type { ClipAnnotation } from "@/api/schemas";
-import useCanvas from "@/hooks/draw/useCanvas";
+import {
+  DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
+} from "@/api/spectrograms";
+import AnnotationControls from "@/components/annotation/AnnotationControls";
+import Player from "@/components/audio/Player";
+import Card from "@/components/Card";
+import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
+import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
+import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
+import useAnnotateClip from "@/hooks/annotation/useAnnotateClip";
 import useAudio from "@/hooks/audio/useAudio";
+import useCanvas from "@/hooks/draw/useCanvas";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
-import Card from "@/components/Card";
-import Player from "@/components/audio/Player";
-import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
-import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
-import AnnotationControls from "@/components/annotation/AnnotationControls";
-import {
-  type SpectrogramParameters,
-  DEFAULT_SPECTROGRAM_PARAMETERS,
-} from "@/api/spectrograms";
 import { getInitialViewingWindow } from "@/utils/windows";
-import useAnnotateClip from "@/hooks/annotation/useAnnotateClip";
 
 export default function ClipAnnotationSpectrogram({
   clipAnnotation,

@@ -22,7 +22,9 @@ export default function Page() {
       <Hero text="Whombat Plugins" />
       <div className="container p-4 mx-auto">
         <div>
-          <p className="text-lg text-stone-700 dark:text-stone-300">This is the list of all plugins currently installed. </p>
+          <p className="text-lg text-stone-700 dark:text-stone-300">
+            This is the list of all plugins currently installed.{" "}
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-4 py-6">
           {plugins?.map((plugin) => (

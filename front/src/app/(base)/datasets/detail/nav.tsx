@@ -3,11 +3,12 @@ import {
   useSearchParams,
   useSelectedLayoutSegment,
 } from "next/navigation";
+
+import { type Dataset } from "@/api/schemas";
 import Header from "@/components/Header";
-import Tabs from "@/components/Tabs";
 import { H1 } from "@/components/Headings";
 import { DatasetIcon, RecordingsIcon } from "@/components/icons";
-import { type Dataset } from "@/api/schemas";
+import Tabs from "@/components/Tabs";
 
 /**
  * Navigation header component for the dataset pages.

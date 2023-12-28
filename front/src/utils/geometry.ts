@@ -1,13 +1,9 @@
 // @ts-ignore
+import bbox from "@turf/bbox";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 // @ts-ignore
-import bbox from "@turf/bbox";
 
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import type { BBox, Interval, Onset } from "@/utils/types";
 import type {
-  TimeStamp,
-  TimeInterval,
   BoundingBox,
   Geometry,
   LineString,
@@ -16,7 +12,11 @@ import type {
   MultiPolygon,
   Point,
   Polygon,
+  TimeInterval,
+  TimeStamp,
 } from "@/api/schemas";
+import { type SpectrogramWindow } from "@/api/spectrograms";
+import type { BBox, Interval, Onset } from "@/utils/types";
 
 const MAX_FREQ = 5_000_000;
 

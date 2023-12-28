@@ -1,8 +1,8 @@
-import { type Pagination as PaginationType } from "@/hooks/utils/usePagedQuery";
-import { Input } from "@/components/inputs/index";
 import Button from "@/components/Button";
 import * as icons from "@/components/icons";
+import { Input } from "@/components/inputs/index";
 import Select from "@/components/inputs/Select";
+import { type Pagination as PaginationType } from "@/hooks/utils/usePagedQuery";
 
 const pageSizeOptions = [1, 5, 10, 25, 50, 100];
 

@@ -1,5 +1,5 @@
-import { type HTMLProps, type ReactNode } from "react";
 import classnames from "classnames";
+import { type HTMLProps, type ReactNode } from "react";
 
 import { EditIcon } from "@/components/icons";
 

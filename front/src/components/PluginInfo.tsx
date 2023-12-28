@@ -33,9 +33,7 @@ export default function PluginInfo({
         <small className="mb-3 text-sm text-stone-500">
           {version} - {attribution}
         </small>
-        <p className="mb-2 text-stone-700 dark:text-stone-400">
-          {description}
-        </p>
+        <p className="mb-2 text-stone-700 dark:text-stone-400">{description}</p>
         <div className="flex justify-center p-0">
           <Link mode="text" href={url}>
             View

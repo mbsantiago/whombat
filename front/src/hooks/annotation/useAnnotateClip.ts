@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 
-import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
-import useAnnotationTags from "@/hooks/annotation/useAnnotationTags";
-import useAnnotateKeyShortcuts from "@/hooks/annotation/useAnnotateKeyShortcuts";
-import useAnnotationCreate from "@/hooks/annotation/useAnnotationCreate";
-import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
-import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
-import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
-import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
-import { type SpectrogramParameters } from "@/api/spectrograms";
 import {
-  type SoundEventAnnotation,
-  type Tag,
+  type ClipAnnotation,
   type Geometry,
   type GeometryType,
-  type ClipAnnotation,
+  type SoundEventAnnotation,
+  type Tag,
 } from "@/api/schemas";
+import { type SpectrogramParameters } from "@/api/spectrograms";
+import useAnnotateKeyShortcuts from "@/hooks/annotation/useAnnotateKeyShortcuts";
+import useAnnotationCreate from "@/hooks/annotation/useAnnotationCreate";
+import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
+import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
+import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
+import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
+import useAnnotationTags from "@/hooks/annotation/useAnnotationTags";
+import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 
 type AnnotateMode = "select" | "draw" | "edit" | "delete" | "idle";
 

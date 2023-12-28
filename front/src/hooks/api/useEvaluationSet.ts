@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import api from "@/app/api";
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
 import { type EvaluationSet, type Tag } from "@/api/schemas";
+import api from "@/app/api";
 
 export default function useEvaluationSet({
   evaluationSet,

@@ -1,12 +1,11 @@
-import { LocationIcon } from "@/components/icons";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { CloseIcon } from "@/components/icons";
-import Popover from "@/components/Popover";
+import { CloseIcon, LocationIcon } from "@/components/icons";
 import LocationInput, {
-  formatLocation,
   type Location,
+  formatLocation,
 } from "@/components/inputs/Location";
+import Popover from "@/components/Popover";
 
 function LocationButton({
   latitude,

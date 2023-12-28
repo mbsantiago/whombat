@@ -1,9 +1,9 @@
-import useStore from "@/store";
-import { type Tag as TagType, type Recording } from "@/api/schemas";
+import { type Recording, type Tag as TagType } from "@/api/schemas";
 import { TagIcon } from "@/components/icons";
-import Tag from "@/components/tags/Tag";
 import AddTagButton from "@/components/tags/AddTagButton";
+import Tag from "@/components/tags/Tag";
 import useRecording from "@/hooks/api/useRecording";
+import useStore from "@/store";
 
 export default function RecordingTagBar({
   recording: data,

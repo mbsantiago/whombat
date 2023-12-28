@@ -1,6 +1,6 @@
-import { Fragment, type ReactNode } from "react";
-import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
+import { Float } from "@headlessui-float/react";
+import { Fragment, type ReactNode } from "react";
 
 import { CheckIcon, ExpandIcon } from "@/components/icons";
 import { Submit } from "@/components/inputs/index";
@@ -23,7 +23,12 @@ export default function Select<T>({
   selected: Option<T>;
   onChange: (value: T) => void;
   options: Option<T>[];
-  placement?: "top-end" | "top-start" | "bottom-end" | "bottom-start" | "bottom";
+  placement?:
+    | "top-end"
+    | "top-start"
+    | "bottom-end"
+    | "bottom-start"
+    | "bottom";
 }) {
   return (
     <Listbox value={selected.value} onChange={onChange}>
@@ -46,9 +51,7 @@ export default function Select<T>({
               </Listbox.Label>
             </div>
           ) : null}
-          <Submit
-            className="w-full cursor-default border pl-3 pr-10 text-left"
-          >
+          <Submit className="w-full cursor-default border pl-3 pr-10 text-left">
             <span className="block truncate">{selected.label}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ExpandIcon
@@ -65,7 +68,9 @@ export default function Select<T>({
               value={option.value}
               className={({ active }) =>
                 `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                  active ? "bg-amber-100 text-amber-900" : "text-stone-900 dark:text-stone-400"
+                  active
+                    ? "bg-amber-100 text-amber-900"
+                    : "text-stone-900 dark:text-stone-400"
                 }`
               }
             >

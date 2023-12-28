@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 
-import { scaleGeometryToViewport } from "@/utils/geometry";
-import drawGeometry from "@/draw/geometry";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 import { type SoundEventAnnotation } from "@/api/schemas";
+import { type SpectrogramWindow } from "@/api/spectrograms";
+import drawGeometry from "@/draw/geometry";
 import { SECONDARY } from "@/draw/styles";
+import { scaleGeometryToViewport } from "@/utils/geometry";
 
 const IDLE_STYLE = {
   borderColor: SECONDARY,

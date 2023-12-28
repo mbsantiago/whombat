@@ -1,3 +1,5 @@
+import { type FilterDef } from "@/components/filters/FilterMenu";
+import { FloatFilter, NullableFloatFilter } from "@/components/filters/Filters";
 import {
   ChannelsIcon,
   DateIcon,
@@ -9,9 +11,6 @@ import {
   TimeExpansionIcon,
   TimeIcon,
 } from "@/components/icons";
-import { FloatFilter, NullableFloatFilter } from "@/components/filters/Filters";
-import { type FilterDef } from "@/components/filters/FilterMenu";
-
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values
 const recordingFilterDefs: FilterDef[] = [

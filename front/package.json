@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src"
   },
   "dependencies": {
     "@headlessui-float/react": "^0.13.0",
@@ -52,9 +53,14 @@
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
     "@types/react-plotly.js": "^2.6.3",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.2",
     "prettier": "^3.1.1",
     "react-types": "^0.1.0",
     "ts-prune": "^0.10.3"

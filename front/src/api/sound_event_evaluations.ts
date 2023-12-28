@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import { SoundEventEvaluationSchema } from "@/api/schemas";
 import { GetManySchema, Page } from "@/api/common";
+import { SoundEventEvaluationSchema } from "@/api/schemas";
 
 export const SoundEventEvaluationPageSchema = Page(SoundEventEvaluationSchema);
 

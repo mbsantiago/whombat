@@ -7,14 +7,15 @@
  * (DatasetNavHeader) and wraps the content with the DatasetContext.Provider to
  * provide dataset-related context to its children components.
  */
-import toast from "react-hot-toast";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
+import toast from "react-hot-toast";
 
-import useDataset from "@/hooks/api/useDataset";
 import Loading from "@/app/loading";
-import DatasetNavHeader from "./nav";
+import useDataset from "@/hooks/api/useDataset";
+
 import DatasetContext from "./context";
+import DatasetNavHeader from "./nav";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();

@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 
-import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
-import Tabs from "@/components/Tabs";
-import { ListIcon, GalleryIcon, PlotIcon } from "@/components/icons";
 import AnnotationGallery from "@/components/annotations/AnnotationsGallery";
 import AnnotationsScatterPlot from "@/components/annotations/AnnotationsScatterPlot";
+import { GalleryIcon, ListIcon, PlotIcon } from "@/components/icons";
+import Tabs from "@/components/Tabs";
+
+import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
 
 export default function Page() {
   const [view, setView] = useState("list");

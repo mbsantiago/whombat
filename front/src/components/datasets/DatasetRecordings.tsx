@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import RecordingTable from "@/components/recordings/RecordingTable";
 import { type Dataset, type Recording } from "@/api/schemas";
+import RecordingTable from "@/components/recordings/RecordingTable";
 
 function fixRecordingPath(recording: Recording, dataset: Dataset): Recording {
   const path = recording.path;

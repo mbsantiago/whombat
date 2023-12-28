@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useKeyPress } from "react-use";
 
+import { type EditableElement, drawEditableElement } from "@/draw/edit";
+import { type Style } from "@/draw/styles";
 import useElementHover from "@/hooks/draw/useElementHover";
 import { type DragState } from "@/hooks/motions/useDrag";
-import { type EditableElement, drawEditableElement } from "@/draw/edit";
 import { type MouseState } from "@/hooks/motions/useMouse";
-import { type Style } from "@/draw/styles";
 import { type Position } from "@/utils/types";
 
 interface Dimensions {

@@ -1,12 +1,13 @@
 import { useMemo } from "react";
-import type { ClipAnnotation, Note, User } from "@/api/schemas";
+
 import { type NoteCreate } from "@/api/notes";
+import type { ClipAnnotation, Note, User } from "@/api/schemas";
 import Card from "@/components/Card";
+import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { NotesIcon } from "@/components/icons";
-import Feed from "@/components/notes/Feed";
-import Empty from "@/components/Empty";
 import CreateNote from "@/components/notes/CreateNote";
+import Feed from "@/components/notes/Feed";
 
 function NoNotes() {
   return <Empty>No notes</Empty>;

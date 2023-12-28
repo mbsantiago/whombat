@@ -1,11 +1,6 @@
 "use client";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
 import { divIcon } from "leaflet";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMap } from "react-leaflet/hooks";
 import { Marker as LeafletMarker } from "react-leaflet/Marker";
 import { Popup } from "react-leaflet/Popup";

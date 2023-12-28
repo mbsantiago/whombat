@@ -5,8 +5,8 @@ import {
   CheckIcon,
   CloseIcon,
   NeedsReviewIcon,
-  VerifiedIcon,
   UserIcon,
+  VerifiedIcon,
 } from "@/components/icons";
 
 const ICONS = {
@@ -64,7 +64,11 @@ export default function StatusBadge({
         </span>
       </button>
       {onRemove != null && (
-        <button type="button" className="ml-1 group focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-md" onClick={onRemove}>
+        <button
+          type="button"
+          className="ml-1 group focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-md"
+          onClick={onRemove}
+        >
           <CloseIcon className="transition-all w-4 h-4 group-hover:stroke-3" />
         </button>
       )}

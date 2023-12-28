@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import Note from "@/components/notes/Note";
-import { H3 } from "@/components/Headings";
-import { type Note as NoteType, type Dataset } from "@/api/schemas";
-import { CheckIcon, NotesIcon } from "@/components/icons";
+import { type Dataset, type Note as NoteType } from "@/api/schemas";
 import Loading from "@/app/loading";
+import Card from "@/components/Card";
+import { H3 } from "@/components/Headings";
+import { CheckIcon, NotesIcon } from "@/components/icons";
+import Note from "@/components/notes/Note";
 import useNotes from "@/hooks/api/useNotes";
 
 /**

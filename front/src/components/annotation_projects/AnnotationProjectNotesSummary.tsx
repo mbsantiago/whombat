@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
+import { type AnnotationProject } from "@/api/schemas";
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { CheckIcon, IssuesIcon } from "@/components/icons";
-import { type AnnotationProject } from "@/api/schemas";
 import WithLoading from "@/components/WithLoading";
 
 function NoNotes() {

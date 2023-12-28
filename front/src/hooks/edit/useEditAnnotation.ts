@@ -1,16 +1,16 @@
 import { useCallback, useMemo } from "react";
 
+import { type SoundEventAnnotation } from "@/api/schemas";
+import { type SpectrogramWindow } from "@/api/spectrograms";
+import { type Style } from "@/draw/styles";
+import useEditGeometry from "@/hooks/edit/useEditGeometry";
+import { type DragState } from "@/hooks/motions/useDrag";
+import { type MouseState } from "@/hooks/motions/useMouse";
 import {
   scaleGeometryToViewport,
   scaleGeometryToWindow,
 } from "@/utils/geometry";
-import useEditGeometry from "@/hooks/edit/useEditGeometry";
-import { type MouseState } from "@/hooks/motions/useMouse";
-import { type DragState } from "@/hooks/motions/useDrag";
 import { type Geometry } from "@/utils/types";
-import { type Style } from "@/draw/styles";
-import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type SoundEventAnnotation } from "@/api/schemas";
 
 interface UseEditAnnotationProps {
   drag: DragState;

@@ -1,5 +1,5 @@
 import { type BorderStyle, type FillStyle } from "@/draw/styles";
-import { type Polygon, type MultiPolygon, type Position } from "@/utils/types";
+import { type MultiPolygon, type Polygon, type Position } from "@/utils/types";
 
 export type PolygonStyle = BorderStyle & FillStyle;
 
@@ -78,22 +78,21 @@ export function drawPolygon(
   ctx.stroke();
 }
 
-
 export function drawMultiPolygon(
   ctx: CanvasRenderingContext2D,
   multipolygon: MultiPolygon,
   style: PolygonStyle = DEFAULT_POLYGON_STYLE,
 ) {
-  const { coordinates } = multipolygon
+  const { coordinates } = multipolygon;
 
-  coordinates.forEach(coords => {
+  coordinates.forEach((coords) => {
     drawPolygon(
       ctx,
       {
-        type: 'Polygon',
+        type: "Polygon",
         coordinates: coords,
       },
       style,
-    )
-  })
+    );
+  });
 }

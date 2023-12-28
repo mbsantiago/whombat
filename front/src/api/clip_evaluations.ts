@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import { ClipEvaluationSchema, type ClipEvaluation } from "@/api/schemas";
 import { GetManySchema, Page } from "@/api/common";
+import { type ClipEvaluation, ClipEvaluationSchema } from "@/api/schemas";
 
 export const ClipEvaluationPageSchema = Page(ClipEvaluationSchema);
 

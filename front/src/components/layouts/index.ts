@@ -1,5 +1,3 @@
-import Center from './Center';
+import Center from "./Center";
 
-export {
-  Center,
-}
+export { Center };

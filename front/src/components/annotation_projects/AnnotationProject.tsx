@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 
-import { AnnotationProjectIcon, CalendarIcon } from "@/components/icons";
 import { type AnnotationProject as AnnotationProjectType } from "@/api/schemas";
+import { AnnotationProjectIcon, CalendarIcon } from "@/components/icons";
 
 function Atom({ label, value }: { label: ReactNode; value: string }) {
   return (
@@ -29,7 +29,7 @@ export default function AnnotationProject({
             className="hover:font-bold hover:text-emerald-500"
             href={{
               pathname: "/annotation_projects/detail/",
-              query: { annotation_project_uuid: annotationProject.uuid},
+              query: { annotation_project_uuid: annotationProject.uuid },
             }}
           >
             {annotationProject.name}

@@ -1,13 +1,14 @@
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
-import { TimeIcon, CloseIcon } from "@/components/icons";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import Popover from "@/components/Popover";
+import { CloseIcon, TimeIcon } from "@/components/icons";
 import { Input, InputGroup } from "@/components/inputs";
+import Popover from "@/components/Popover";
 import useDebounceSubmit from "@/hooks/forms/useDebounceSubmit";
-import { useForm } from "react-hook-form";
 
 function TimeButton({ time }: { time?: string | null }) {
   return (
@@ -69,11 +70,7 @@ export default function RecordingTime({
     <Popover button={<TimeButton time={time} />}>
       {() => (
         <Card className="bg-stone-800">
-          <InputGroup
-            name="time"
-            label="Time"
-            error={errors.time?.message}
-          >
+          <InputGroup name="time" label="Time" error={errors.time?.message}>
             <Input
               type="text"
               {...register("time")}

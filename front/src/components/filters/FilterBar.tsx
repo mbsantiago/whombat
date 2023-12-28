@@ -1,5 +1,5 @@
-import { type Filter } from "@/hooks/utils/useFilter";
 import { CloseIcon, FilterIcon } from "@/components/icons";
+import { type Filter } from "@/hooks/utils/useFilter";
 
 const OPERATION_MAP: Record<string, string> = {
   eq: "=",

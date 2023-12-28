@@ -1,5 +1,5 @@
-import Link from "@/components/Link";
 import { NoIcon } from "@/components/icons";
+import Link from "@/components/Link";
 
 export default function NotFound() {
   return (

@@ -76,7 +76,7 @@ export const SpectrogramParametersSchema = z
       message: "min_dB must be less than max_dB",
       path: ["min_dB"],
     },
-  )
+  );
 
 export type SpectrogramParameters = z.infer<typeof SpectrogramParametersSchema>;
 

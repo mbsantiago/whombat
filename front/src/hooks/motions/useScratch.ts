@@ -1,9 +1,9 @@
 import {
+  type MouseEvent,
+  type RefObject,
+  type TouchEvent,
   useEffect,
   useRef,
-  type RefObject,
-  type MouseEvent,
-  type TouchEvent,
 } from "react";
 import { useLatest, useRafState } from "react-use";
 import { off, on } from "react-use/lib/misc/util";

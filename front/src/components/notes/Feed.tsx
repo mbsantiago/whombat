@@ -1,6 +1,6 @@
 import React from "react";
 
-import { type User, type Note } from "@/api/schemas";
+import { type Note, type User } from "@/api/schemas";
 import NoteComponent from "@/components/notes/Note";
 
 export default function Feed({

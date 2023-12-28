@@ -1,18 +1,18 @@
 "use client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useContext, useCallback } from "react";
 
-import useStore from "@/store";
-import Loading from "@/components/Loading";
-import AnnotationProjectContext from "../context";
-import UserContext from "@/app/(base)/context";
-import useAnnotationTask from "@/hooks/api/useAnnotationTask";
-import { changeURLParam } from "@/utils/url";
-import { type SpectrogramParameters } from "@/api/spectrograms";
 import { type AnnotationTask } from "@/api/schemas";
-
+import { type SpectrogramParameters } from "@/api/spectrograms";
+import UserContext from "@/app/(base)/context";
 import AnnotateProject from "@/components/annotation/AnnotateProject";
+import Loading from "@/components/Loading";
+import useAnnotationTask from "@/hooks/api/useAnnotationTask";
+import useStore from "@/store";
+import { changeURLParam } from "@/utils/url";
+
+import AnnotationProjectContext from "../context";
 
 export default function Page() {
   const search = useSearchParams();

@@ -6,8 +6,8 @@
 import { type HTMLProps } from "react";
 
 import { type Tag as TagType } from "@/api/schemas";
-import Tag from "@/components/tags/Tag";
 import AddTagButton from "@/components/tags/AddTagButton";
+import Tag from "@/components/tags/Tag";
 import useStore from "@/store";
 
 /** A table cell that displays a list of tags.

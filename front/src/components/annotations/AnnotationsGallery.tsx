@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-import useStore from "@/store";
-import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogram";
 import { type SoundEventAnnotation } from "@/api/schemas";
+import useStore from "@/store";
+
+import AnnotationSpectrogram from "@/components/spectrograms/AnnotationSpectrogram";
 
 // TODO: Finish this
 

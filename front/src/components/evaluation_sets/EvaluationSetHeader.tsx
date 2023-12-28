@@ -1,15 +1,15 @@
 import { useSearchParams, useSelectedLayoutSegment } from "next/navigation";
 
-import {
-  UserIcon,
-  ModelIcon,
-  TasksIcon,
-  SettingsIcon,
-} from "@/components/icons";
-import Header from "@/components/Header";
-import Tabs from "@/components/Tabs";
-import { H1 } from "@/components/Headings";
 import { type EvaluationSet } from "@/api/evaluation_sets";
+import Header from "@/components/Header";
+import { H1 } from "@/components/Headings";
+import {
+  ModelIcon,
+  SettingsIcon,
+  TasksIcon,
+  UserIcon,
+} from "@/components/icons";
+import Tabs from "@/components/Tabs";
 
 export default function EvaluationSetHeader({
   evaluationSet,

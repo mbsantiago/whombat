@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { type User, UserSchema } from "@/api/schemas";
 

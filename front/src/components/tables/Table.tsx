@@ -1,7 +1,7 @@
-import { type KeyboardEvent } from "react";
-import { flexRender } from "@tanstack/react-table";
 import { useTableNav } from "@table-nav/react";
+import { flexRender } from "@tanstack/react-table";
 import { type Table } from "@tanstack/react-table";
+import { type KeyboardEvent } from "react";
 
 /** A Table component.
  * Will display a table.

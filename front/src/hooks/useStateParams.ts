@@ -1,5 +1,5 @@
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
 
 export default function useStateParams<T>(
   initialState: T,

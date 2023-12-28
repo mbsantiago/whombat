@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
 import {
   type UseQueryResult,
-  useQuery,
   keepPreviousData,
+  useQuery,
 } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 
 import { type GetManyQuery, type Paginated } from "@/api/common";
 

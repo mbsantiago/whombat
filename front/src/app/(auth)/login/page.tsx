@@ -1,12 +1,12 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
+import api from "@/app/api";
 import { WhombatIcon } from "@/components/icons";
 import { Input, InputGroup } from "@/components/inputs/index";
-import api from "@/app/api";
 
 const schema = z.object({
   username: z.string(),

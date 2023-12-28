@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useUpdateEffect } from "react-use";
 
-import { type Position } from "@/utils/types";
 import { type ScratchState } from "@/hooks/motions/useScratch";
+import { type Position } from "@/utils/types";
 
 export { type ScratchState };
 

@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import drawTimeStamp, { DEFAULT_ONSET_STYLE } from "@/draw/onset";
+import { type Style } from "@/draw/styles";
 import useDrag from "@/hooks/motions/useDrag";
 import { type ScratchState } from "@/hooks/motions/useDrag";
 import { type Dimensions } from "@/utils/types";
-import { type Style } from "@/draw/styles";
-import drawTimeStamp, { DEFAULT_ONSET_STYLE } from "@/draw/onset";
 
 export interface UseCreateTimeStampProps {
   drag: ScratchState;

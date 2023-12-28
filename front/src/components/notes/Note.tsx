@@ -1,8 +1,8 @@
 import { type ReactNode } from "react";
 
-import { type User, type Note } from "@/api/schemas";
-import { DeleteIcon, IssueIcon, NoteIcon } from "@/components/icons";
+import { type Note, type User } from "@/api/schemas";
 import Button from "@/components/Button";
+import { DeleteIcon, IssueIcon, NoteIcon } from "@/components/icons";
 import Loading from "@/components/Loading";
 import useNote from "@/hooks/api/useNote";
 

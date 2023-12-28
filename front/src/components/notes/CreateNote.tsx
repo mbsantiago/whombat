@@ -1,9 +1,9 @@
 import { useState } from "react";
 
+import { type NoteCreate } from "@/api/notes";
+import Button from "@/components/Button";
 import { IssueIcon, NotesIcon } from "@/components/icons";
 import { InputGroup, TextArea } from "@/components/inputs/index";
-import Button from "@/components/Button";
-import { type NoteCreate } from "@/api/notes";
 
 export default function CreateNoteForm({
   onCreate,

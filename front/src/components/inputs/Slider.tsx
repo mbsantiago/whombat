@@ -1,16 +1,16 @@
-import { useRef } from "react";
 import classNames from "classnames";
-import { useSliderState, type SliderState } from "react-stately";
+import { useRef } from "react";
 import {
+  type AriaSliderProps,
+  type AriaSliderThumbOptions,
+  VisuallyHidden,
   mergeProps,
   useFocusRing,
   useNumberFormatter,
   useSlider,
   useSliderThumb,
-  VisuallyHidden,
-  type AriaSliderProps,
-  type AriaSliderThumbOptions,
 } from "react-aria";
+import { type SliderState, useSliderState } from "react-stately";
 
 export function Thumb({
   state,

@@ -1,7 +1,7 @@
 import { type ModelRunFilter } from "@/api/model_runs";
 import api from "@/app/api";
-import usePagedQuery from "@/hooks/utils/usePagedQuery";
 import useFilter from "@/hooks/utils/useFilter";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
 
 const _empty: ModelRunFilter = {};
 const _fixed: (keyof ModelRunFilter)[] = [];

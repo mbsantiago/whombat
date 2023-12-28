@@ -8,7 +8,7 @@ import {
   setBorderStyle,
   setFontStyle,
 } from "@/draw/styles";
-import { getTicks, selectResolution, parseNum } from "@/draw/timeAxis";
+import { getTicks, parseNum, selectResolution } from "@/draw/timeAxis";
 
 function drawFreqTick(
   ctx: CanvasRenderingContext2D,

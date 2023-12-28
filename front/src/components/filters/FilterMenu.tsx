@@ -1,12 +1,12 @@
-import { type ReactNode, useState } from "react";
-import { Float } from "@headlessui-float/react";
 import { Popover } from "@headlessui/react";
+import { Float } from "@headlessui-float/react";
+import { type ReactNode, useState } from "react";
 
-import { BackIcon, FilterIcon } from "@/components/icons";
-import { type SetFilter } from "@/components/filters/Filters";
-import { type Filter } from "@/hooks/utils/useFilter";
-import SearchMenu from "@/components/search/SearchMenu";
 import Button, { getButtonClassName } from "@/components/Button";
+import { type SetFilter } from "@/components/filters/Filters";
+import { BackIcon, FilterIcon } from "@/components/icons";
+import SearchMenu from "@/components/search/SearchMenu";
+import { type Filter } from "@/hooks/utils/useFilter";
 
 export type FilterDef = {
   icon?: ReactNode;

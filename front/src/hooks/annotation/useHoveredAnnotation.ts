@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import { isCloseToGeometry, scaleGeometryToViewport } from "@/utils/geometry";
-import { type MouseState } from "@/hooks/motions/useMouse";
 import { type SoundEventAnnotation } from "@/api/schemas";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import { type MouseState } from "@/hooks/motions/useMouse";
+import { isCloseToGeometry, scaleGeometryToViewport } from "@/utils/geometry";
 
 export default function useHoveredAnnotations({
   mouse,
@@ -62,19 +62,18 @@ export default function useHoveredAnnotations({
   const scaledGeometries = useMemo(() => {
     if (!active) return [];
 
-    return annotationsInWindow
-      .map((annotation) => {
-        const { geometry } = annotation.sound_event;
-        return scaleGeometryToViewport(
-          {
-            width: elW,
-            height: elH,
-          },
-          // @ts-ignore
-          geometry,
-          window,
-        );
-      });
+    return annotationsInWindow.map((annotation) => {
+      const { geometry } = annotation.sound_event;
+      return scaleGeometryToViewport(
+        {
+          width: elW,
+          height: elH,
+        },
+        // @ts-ignore
+        geometry,
+        window,
+      );
+    });
   }, [active, annotationsInWindow, window, elW, elH]);
 
   // Check if mouse is close to any annotation

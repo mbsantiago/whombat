@@ -6,7 +6,9 @@
  * Additionally, it allows the user to create new tags by typing the tag in the
  * format `key:value` and pressing `Shift`+`Enter`.
  */
+import { Combobox } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import {
   type InputHTMLAttributes,
   type KeyboardEvent,
@@ -14,16 +16,14 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Combobox } from "@headlessui/react";
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
-import { type TagCreate, type TagFilter } from "@/api/tags";
 import { type Tag as TagType } from "@/api/schemas";
+import { type TagCreate, type TagFilter } from "@/api/tags";
 import { Input } from "@/components/inputs/index";
-import Tag from "@/components/tags/Tag";
 import KeyboardKey from "@/components/KeyboardKey";
-import useStore from "@/store";
+import Tag from "@/components/tags/Tag";
 import useTags from "@/hooks/api/useTags";
+import useStore from "@/store";
 
 function ComboBoxSection({ children }: { children: React.ReactNode }) {
   return (
@@ -174,7 +174,8 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                   <Combobox.Option
                     key={`${tag.key}:${tag.value}`}
                     className={({ active }) =>
-                      `cursor-default py-2 pl-4 pr-2 ${active ? "bg-stone-200 dark:bg-stone-600" : ""
+                      `cursor-default py-2 pl-4 pr-2 ${
+                        active ? "bg-stone-200 dark:bg-stone-600" : ""
                       }`
                     }
                     value={tag}

@@ -1,12 +1,12 @@
+import Input from "./Input";
 import InputGroup from "./InputGroup";
+import Location from "./Location";
+import RangeSlider from "./RangeSlider";
+import Select from "./Select";
+import Slider from "./Slider";
 import Submit from "./Submit";
 import TextArea from "./TextArea";
-import Input from "./Input";
-import Slider from "./Slider";
-import RangeSlider from "./RangeSlider";
 import Toggle from "./Toggle";
-import Select from "./Select";
-import Location from "./Location";
 
 export {
   InputGroup,

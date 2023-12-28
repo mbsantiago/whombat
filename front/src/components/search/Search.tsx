@@ -1,33 +1,34 @@
-import { type FuseOptionKey } from "fuse.js";
-import {
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  RefObject,
-  type ReactNode,
-  type ReactElement
-} from "react";
-import { useComboBoxState, type ComboBoxState } from "react-stately";
 import { type CollectionElement, type Node } from "@react-types/shared";
 import classNames from "classnames";
+import { type FuseOptionKey } from "fuse.js";
 import {
-  useComboBox,
-  VisuallyHidden,
-  DismissButton,
-  Overlay,
-  usePopover,
-  useListBox,
-  useOption,
+  type ReactElement,
+  type ReactNode,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
+import {
   type AriaListBoxOptions,
   type AriaPopoverProps,
+  DismissButton,
+  Overlay,
+  VisuallyHidden,
+  useComboBox,
+  useListBox,
+  useOption,
+  usePopover,
 } from "react-aria";
+import { type ComboBoxState, useComboBoxState } from "react-stately";
+
 import { SearchIcon } from "@/components/icons";
-import Loading from "@/components/Loading";
 import { Input } from "@/components/inputs";
+import Loading from "@/components/Loading";
 import useListWithSearch from "@/hooks/lists/useListWithSearch";
 
-function EmptyMessage({ }: { state: ComboBoxState<any> }) {
+function EmptyMessage({}: { state: ComboBoxState<any> }) {
   return <div className="p-2">No results</div>;
 }
 
@@ -60,11 +61,7 @@ export default function Search<T extends object>({
   delay?: number;
   children: (option: T) => CollectionElement<T>;
 }) {
-  const {
-    search,
-    items,
-    setSearch,
-  } = useListWithSearch({
+  const { search, items, setSearch } = useListWithSearch({
     options,
     fields: fields,
     limit: showMax,
@@ -177,8 +174,8 @@ function ListBox<T>({
         {state.collection.size === 0
           ? emptyMessage({ state })
           : Array.from(state.collection).map((item) => (
-            <Option key={item.key} item={item} state={state} />
-          ))}
+              <Option key={item.key} item={item} state={state} />
+            ))}
       </ul>
     </div>
   );

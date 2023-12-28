@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 
-import { getViewportPosition } from "@/utils/windows";
-import useWindowDrag from "@/hooks/window/useWindowDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import useWindowDrag from "@/hooks/window/useWindowDrag";
+import { getViewportPosition } from "@/utils/windows";
 
 export default function SpectrogramBar({
   bounds,

@@ -1,10 +1,10 @@
 "use client";
-import { type ReactNode } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { type ReactNode } from "react";
 
 import Hero from "@/components/Hero";
-import Steps from "@/components/Steps";
 import { AnnotationProjectIcon, ClipsIcon, TagsIcon } from "@/components/icons";
+import Steps from "@/components/Steps";
 
 const steps = [
   {

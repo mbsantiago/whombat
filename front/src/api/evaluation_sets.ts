@@ -1,10 +1,10 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
 import {
-  EvaluationSetSchema,
   type EvaluationSet,
+  EvaluationSetSchema,
   type Tag,
 } from "@/api/schemas";
 

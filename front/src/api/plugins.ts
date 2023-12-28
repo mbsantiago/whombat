@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 export const PluginSchema = z.object({
   name: z.string(),

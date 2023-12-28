@@ -1,15 +1,14 @@
 import { useMemo } from "react";
 
+import { type SoundEventAnnotation, type Tag } from "@/api/schemas";
+import { type SpectrogramWindow } from "@/api/spectrograms";
 import {
+  bboxIntersection,
+  computeGeometryBBox,
   isGeometryInWindow,
   scaleBBoxToViewport,
-  computeGeometryBBox,
-  bboxIntersection,
 } from "@/utils/geometry";
-import { type Tag } from "@/api/schemas";
 import { type BBox, type Dimensions } from "@/utils/types";
-import { type SoundEventAnnotation } from "@/api/schemas";
-import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export type TagElement = {
   tag: Tag;

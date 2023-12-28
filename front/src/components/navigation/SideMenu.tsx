@@ -1,21 +1,21 @@
-import { usePathname } from "next/navigation";
 import classnames from "classnames";
+import { usePathname } from "next/navigation";
 import { type ComponentProps } from "react";
 
-import Link from "@/components/Link";
+import { HorizontalDivider } from "@/components/Divider";
 import {
   AnnotationProjectIcon,
-  PluginIcon,
   DatasetsIcon,
   EvaluationIcon,
   ExplorationIcon,
   HomeIcon,
   LogOutIcon,
   MessagesIcon,
+  PluginIcon,
   SettingsIcon,
   WhombatIcon,
 } from "@/components/icons";
-import { HorizontalDivider } from "@/components/Divider";
+import Link from "@/components/Link";
 import Tooltip from "@/components/Tooltip";
 
 function SideMenuButton({

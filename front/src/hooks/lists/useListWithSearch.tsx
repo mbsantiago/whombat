@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
 import Fuse, { type FuseOptionKey } from "fuse.js";
+import { useMemo, useState } from "react";
 
 export default function useListWithSearch<T extends Object>({
   options,

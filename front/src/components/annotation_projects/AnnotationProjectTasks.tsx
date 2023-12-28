@@ -1,27 +1,28 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { type ClipCreateMany } from "@/api/clips";
+import {
+  type AnnotationProject,
+  type AnnotationTask,
+  type Dataset,
+  type Recording,
+} from "@/api/schemas";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import DatasetSearch from "@/components/datasets/DatasetSearch";
+import FilterBar from "@/components/filters/FilterBar";
+import FilterMenu from "@/components/filters/FilterMenu";
+import recordingFilterDefs from "@/components/filters/recordings";
 import { H2, H3 } from "@/components/Headings";
-import { TasksIcon } from "@/components/icons";
+import { TasksIcon , FilterIcon } from "@/components/icons";
 import useRecordings from "@/hooks/api/useRecordings";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
-import { type AnnotationProject } from "@/api/schemas";
-import { type Recording } from "@/api/schemas";
-import { type Dataset } from "@/api/schemas";
-import { type ClipCreateMany } from "@/api/clips";
 import { Input, InputGroup } from "@/components/inputs/index";
-import { FilterIcon } from "@/components/icons";
-import FilterMenu from "@/components/filters/FilterMenu";
-import FilterBar from "@/components/filters/FilterBar";
-import Card from "@/components/Card";
 import Toggle from "@/components/inputs/Toggle";
-import Button from "@/components/Button";
-import recordingFilterDefs from "@/components/filters/recordings";
-import DatasetSearch from "@/components/datasets/DatasetSearch";
-import { type AnnotationTask } from "@/api/schemas";
 import {
-  getRandomSubarray,
   type ClipExtraction,
   computeClips,
+  getRandomSubarray,
 } from "@/utils/clips";
 
 export default function AnnotationProjectTasks({
@@ -345,32 +346,31 @@ function ReviewClips({
   return (
     <Card>
       <H3>Summary</H3>
-      {
-        (dataset == null) ? (
+      {dataset == null ? (
+        <p className="text-stone-500">Select a dataset to continue.</p>
+      ) : (
+        <>
+          <ul className="list-disc list-inside">
+            <li>
+              Selected dataset:{" "}
+              <span className="text-emerald-500">{dataset.name}</span>
+            </li>
+            <li>
+              Selected recordings:{" "}
+              <span className="text-emerald-500">{recordings.length}</span>
+            </li>
+            <li>
+              Tasks to add:{" "}
+              <span className="font-bold text-emerald-500">{clips.length}</span>
+            </li>
+          </ul>
           <p className="text-stone-500">
-            Select a dataset to continue.
+            Once satisfied with your selections, click the button below to add
+            the chosen clips to the annotation project.
           </p>
-        ) : (
-          <>
-            <ul className="list-disc list-inside">
-              <li>
-                Selected dataset: <span className="text-emerald-500">{dataset.name}</span>
-              </li>
-              <li>
-                Selected recordings: <span className="text-emerald-500">{recordings.length}</span>
-              </li>
-              <li>
-                Tasks to add: <span className="font-bold text-emerald-500">{clips.length}</span>
-              </li>
-            </ul>
-            <p className="text-stone-500">
-              Once satisfied with your selections, click the button below to add the
-              chosen clips to the annotation project.
-            </p>
-            <Button onClick={onAdd}>Add Clips</Button>
-          </>
-        )
-      }
+          <Button onClick={onAdd}>Add Clips</Button>
+        </>
+      )}
     </Card>
   );
 }

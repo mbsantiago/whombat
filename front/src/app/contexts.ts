@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
-import { type Tag, type EvaluationSet } from "@/api/schemas";
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
+import { type EvaluationSet, type Tag } from "@/api/schemas";
 
 type EvaluationSetContextType = {
   evaluationSet: EvaluationSet;

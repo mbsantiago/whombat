@@ -1,27 +1,28 @@
-import { useMemo, useState, useEffect } from "react";
-import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo, useState } from "react";
+import { type Resolver, useForm } from "react-hook-form";
 
-import Button from "@/components/Button";
-import Tooltip from "@/components/Tooltip";
-import SlideOver from "@/components/SlideOver";
-import { SettingsIcon } from "@/components/icons";
 import {
   type SpectrogramParameters,
   SpectrogramParametersSchema,
 } from "@/api/spectrograms";
-import {
-  validateParameters,
-  computeConstraints,
-} from "@/utils/spectrogram_parameters";
+import Button from "@/components/Button";
+import { SettingsIcon } from "@/components/icons";
+import SlideOver from "@/components/SlideOver";
+import Tooltip from "@/components/Tooltip";
 import { debounce } from "@/utils/debounce";
+import {
+  computeConstraints,
+  validateParameters,
+} from "@/utils/spectrogram_parameters";
+
+import AmplitudeSettings from "./settings/AmplitudeSettings";
+import ClampSettings from "./settings/ClampSettings";
+import ColorSettings from "./settings/ColorSettings";
+import DeNoiseSettings from "./settings/DeNoiseSettings";
 import FilteringSettings from "./settings/FilteringSettings";
 import ResamplingSettings from "./settings/ResamplingSettings";
 import STFTSettings from "./settings/STFTSettings";
-import DeNoiseSettings from "./settings/DeNoiseSettings";
-import ColorSettings from "./settings/ColorSettings";
-import ClampSettings from "./settings/ClampSettings";
-import AmplitudeSettings from "./settings/AmplitudeSettings";
 
 export function SpectrogramSettingForm({
   settings,
@@ -69,9 +70,12 @@ export function SpectrogramSettingForm({
   // When the form is submitted, we debounce the callback to avoid
   // calling it too often
   useEffect(() => {
-    const debouncedCb = debounce(handleSubmit((data) => {
-      onChange?.(data)
-    }), 300);
+    const debouncedCb = debounce(
+      handleSubmit((data) => {
+        onChange?.(data);
+      }),
+      300,
+    );
     const subscription = watch(debouncedCb);
     return () => subscription.unsubscribe();
   }, [watch, handleSubmit, onChange]);

@@ -793,6 +793,4 @@ const ALL_COLORS = [
   "outline-rose-900",
 ];
 
-export {
-  ALL_COLORS,
-}
+export { ALL_COLORS };

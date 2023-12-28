@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMouse } from "react-use";
 
-import { isCloseToGeometry } from "@/utils/geometry";
 import { type EditableElement, convertElementToGeometry } from "@/draw/edit";
+import { isCloseToGeometry } from "@/utils/geometry";
 
 export default function useElementHover<J>({
   elements,

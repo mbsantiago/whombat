@@ -1,20 +1,19 @@
-import { useRef, useCallback } from "react";
-import { useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
-import useCanvas from "@/hooks/draw/useCanvas";
-import useAudio from "@/hooks/audio/useAudio";
-import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
-import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
-import Card from "@/components/Card";
-import Player from "@/components/audio/Player";
-import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
-import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import { type Recording } from "@/api/schemas";
 import {
-  type SpectrogramParameters,
   DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
 } from "@/api/spectrograms";
+import Player from "@/components/audio/Player";
+import Card from "@/components/Card";
+import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
+import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
+import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
+import useAudio from "@/hooks/audio/useAudio";
+import useCanvas from "@/hooks/draw/useCanvas";
+import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
+import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 
 export default function RecordingSpectrogram({
   recording,

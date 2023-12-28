@@ -1,13 +1,13 @@
-import Button from "@/components/Button";
-import Link from "@/components/Link";
+import { type AnnotationProject } from "@/api/schemas";
 import Alert from "@/components/Alert";
+import Button from "@/components/Button";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
 } from "@/components/icons";
-import { type AnnotationProject } from "@/api/schemas";
+import Link from "@/components/Link";
 import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 
 function DeleteProject({ onDelete }: { onDelete?: () => void }) {

@@ -1,5 +1,5 @@
-import { DeleteIcon, TagIcon } from "@/components/icons";
 import Button from "@/components/Button";
+import { DeleteIcon, TagIcon } from "@/components/icons";
 
 export default function SelectedMenu({
   selected,

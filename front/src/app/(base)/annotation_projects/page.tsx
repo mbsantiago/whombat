@@ -1,8 +1,8 @@
 "use client";
-import Hero from "@/components/Hero";
-import Empty from "@/components/Empty";
-import { AddIcon, WarningIcon } from "@/components/icons";
 import AnnotationProjectList from "@/components/annotation_projects/AnnotationProjectList";
+import Empty from "@/components/Empty";
+import Hero from "@/components/Hero";
+import { AddIcon, WarningIcon } from "@/components/icons";
 
 function NoProjects() {
   return (

@@ -1,16 +1,16 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import {
-  GeometrySchema,
-  SoundEventAnnotationSchema,
-  type Note,
-  type Tag,
-  type SoundEventAnnotation,
-  type ClipAnnotation,
-} from "@/api/schemas";
-import { NoteCreateSchema, type NoteCreate } from "@/api/notes";
 import { GetManySchema, Page } from "@/api/common";
+import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
+import {
+  type ClipAnnotation,
+  GeometrySchema,
+  type Note,
+  type SoundEventAnnotation,
+  SoundEventAnnotationSchema,
+  type Tag,
+} from "@/api/schemas";
 
 export const SoundEventAnnotationCreateSchema = z.object({
   geometry: GeometrySchema,

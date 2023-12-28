@@ -1,11 +1,10 @@
-import Tooltip from "@/components/Tooltip";
-import Button from "@/components/Button";
-import StatusBadge from "@/components/StatusBadge";
+import { type AnnotationStatus, type AnnotationTask } from "@/api/schemas";
 import Loading from "@/app/loading";
-import { CheckIcon, CloseIcon, VerifiedIcon } from "@/components/icons";
+import Button from "@/components/Button";
 import { H4 } from "@/components/Headings";
-import { type AnnotationTask } from "@/api/schemas";
-import { type AnnotationStatus } from "@/api/schemas";
+import { CheckIcon, CloseIcon, VerifiedIcon } from "@/components/icons";
+import StatusBadge from "@/components/StatusBadge";
+import Tooltip from "@/components/Tooltip";
 
 export default function AnnotationTaskStatus({
   task,

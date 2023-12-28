@@ -5,10 +5,10 @@ import {
 } from "next/navigation";
 
 import { type AnnotationProject } from "@/api/schemas";
-import { DatasetIcon, EditIcon, TagsIcon, TasksIcon } from "@/components/icons";
 import Header from "@/components/Header";
-import Tabs from "@/components/Tabs";
 import { H1 } from "@/components/Headings";
+import { DatasetIcon, EditIcon, TagsIcon, TasksIcon } from "@/components/icons";
+import Tabs from "@/components/Tabs";
 
 export default function AnnotationProjectHeader({
   annotationProject,

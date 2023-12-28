@@ -1,7 +1,7 @@
-import { type ReactNode, Fragment, useMemo, useState, useEffect } from "react";
 import { Combobox } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 import Fuse from "fuse.js";
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button";
 import Search from "@/components/inputs/Search";

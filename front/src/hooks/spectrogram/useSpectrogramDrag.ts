@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
-import useWindowDrag from "@/hooks/window/useWindowDrag";
+import { useCallback, useState } from "react";
+
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import useWindowDrag from "@/hooks/window/useWindowDrag";
 import { type Shift } from "@/hooks/window/useWindowDrag";
 
 export default function useSpectrogramDrag({

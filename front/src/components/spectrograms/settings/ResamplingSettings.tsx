@@ -1,11 +1,13 @@
-import { type Control, useController, Controller } from "react-hook-form";
+import { type Control, Controller, useController } from "react-hook-form";
+
 import {
-  MIN_SAMPLERATE,
   MAX_SAMPLERATE,
+  MIN_SAMPLERATE,
   type SpectrogramParameters,
 } from "@/api/spectrograms";
 import { Input, InputGroup } from "@/components/inputs/index";
 import Toggle from "@/components/inputs/Toggle";
+
 import SettingsSection from "./SettingsSection";
 
 export default function ResamplingSettings({

@@ -1,5 +1,5 @@
-import Button from "@/components/Button";
 import Alert from "@/components/Alert";
+import Button from "@/components/Button";
 import {
   CloseIcon,
   DeleteIcon,
@@ -47,8 +47,8 @@ function DeleteEvaluationSet({ onDelete }: { onDelete?: () => void }) {
           <>
             <div className="flex flex-col gap-2">
               <p>
-                This action cannot be undone. All evaluations stored
-                in this set will be deleted.
+                This action cannot be undone. All evaluations stored in this set
+                will be deleted.
               </p>
               <p>Do you want to proceed?</p>
             </div>

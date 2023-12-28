@@ -1,9 +1,11 @@
-import { useRef, ReactElement } from "react";
-import { useSearchFieldState, type SearchFieldProps } from "react-stately";
-import { useSearchField, VisuallyHidden, mergeProps } from "react-aria";
-import { SearchIcon, CloseIcon } from "@/components/icons";
+import { ReactElement, useRef } from "react";
+import { VisuallyHidden, mergeProps, useSearchField } from "react-aria";
+import { type SearchFieldProps, useSearchFieldState } from "react-stately";
+
 import Button from "@/components/Button";
+import { CloseIcon, SearchIcon } from "@/components/icons";
 import Loading from "@/components/Loading";
+
 import Input from "./Input";
 
 export default function Search({
@@ -36,11 +38,7 @@ export default function Search({
         <div className="flex absolute inset-y-0 left-0 items-center pl-3 w-8 pointer-events-none">
           {isLoading ? <Loading /> : icon || <SearchIcon />}
         </div>
-        <Input
-          className="pl-10 text-sm 5"
-          ref={ref}
-          {...inputProps}
-        />
+        <Input className="pl-10 text-sm 5" ref={ref} {...inputProps} />
         {state.value !== "" && (
           <Button
             variant="primary"

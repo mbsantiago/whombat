@@ -1,11 +1,11 @@
-import Card from "@/components/Card";
 import { type AnnotationProject } from "@/api/schemas";
+import Card from "@/components/Card";
 
 import AnnotationProjectActions from "./AnnotationProjectActions";
-import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
+import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
 import AnnotationProjectProgress from "./AnnotationProjectProgress";
 import AnnotationProjectTagsSummary from "./AnnotationProjectTagsSummary";
-import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
+import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
 
 export default function AnnotationProjectDetail({
   annotationProject,

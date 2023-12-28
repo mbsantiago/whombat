@@ -1,7 +1,8 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useMove } from "react-aria";
-import { scalePixelsToWindow } from "@/utils/geometry";
+
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import { scalePixelsToWindow } from "@/utils/geometry";
 
 /**
  * A type representing the shift in time and frequency.

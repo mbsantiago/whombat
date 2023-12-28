@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 
-import { CalendarIcon, DatasetIcon, RecordingsIcon } from "@/components/icons";
 import { type Dataset as DatasetType } from "@/api/schemas";
+import { CalendarIcon, DatasetIcon, RecordingsIcon } from "@/components/icons";
 
 export function Atom({ label, value }: { label: ReactNode; value: string }) {
   return (

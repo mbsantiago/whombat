@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { NoteSchema, type Note } from "@/api/schemas";
+import { type Note, NoteSchema } from "@/api/schemas";
 
 export const NotePageSchema = Page(NoteSchema);
 

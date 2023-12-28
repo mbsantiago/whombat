@@ -1,14 +1,14 @@
-import Card from "@/components/Card";
 import {
   type EvaluationSet,
   type EvaluationSetUpdate,
 } from "@/api/evaluation_sets";
+import Card from "@/components/Card";
 
+import EvaluationSetActions from "./EvaluationSetActions";
 import EvaluationSetOverview from "./EvaluationSetOverview";
+import EvaluationSetUpdateForm from "./EvaluationSetUpdateForm";
 import ModelEvaluationSummary from "./ModelEvaluationSummary";
 import UserEvaluationSummary from "./UserEvaluationSummary";
-import EvaluationSetActions from "./EvaluationSetActions";
-import EvaluationSetUpdateForm from "./EvaluationSetUpdateForm";
 
 export default function EvaluationSetDetail({
   evaluationSet,

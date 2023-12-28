@@ -1,8 +1,10 @@
 "use client";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useContext, useCallback } from "react";
+import { useCallback, useContext } from "react";
+import toast from "react-hot-toast";
+
 import AnnotationProjectDetail from "@/components/annotation_projects/AnnotationProjectDetail";
+
 import AnnotationProjectContext from "./context";
 
 export default function Page() {
@@ -15,6 +17,9 @@ export default function Page() {
   }, [router]);
 
   return (
-    <AnnotationProjectDetail annotationProject={annotationProject} onDelete={onDelete} />
+    <AnnotationProjectDetail
+      annotationProject={annotationProject}
+      onDelete={onDelete}
+    />
   );
 }

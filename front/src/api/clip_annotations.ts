@@ -1,15 +1,15 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
+import { GetManySchema, Page } from "@/api/common";
+import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
 import {
   type Clip,
-  type Tag,
-  type Note,
   type ClipAnnotation,
   ClipAnnotationSchema,
+  type Note,
+  type Tag,
 } from "@/api/schemas";
-import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
-import { GetManySchema, Page } from "@/api/common";
 
 export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
 

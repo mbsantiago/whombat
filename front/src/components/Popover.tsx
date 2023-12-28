@@ -1,6 +1,6 @@
-import { type ReactNode, type ReactElement } from "react";
-import { Float } from "@headlessui-float/react";
 import { Popover as HeadlessPopover } from "@headlessui/react";
+import { Float } from "@headlessui-float/react";
+import { type ReactElement, type ReactNode } from "react";
 
 export default function Popover({
   button,
@@ -12,18 +12,18 @@ export default function Popover({
   button: ReactNode;
   children: ({ close }: { close: () => void }) => ReactElement;
   placement?:
-  | "top"
-  | "bottom"
-  | "left"
-  | "right"
-  | "top-start"
-  | "top-end"
-  | "bottom-start"
-  | "bottom-end"
-  | "left-start"
-  | "left-end"
-  | "right-start"
-  | "right-end";
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "top-start"
+    | "top-end"
+    | "bottom-start"
+    | "bottom-end"
+    | "left-start"
+    | "left-end"
+    | "right-start"
+    | "right-end";
   autoPlacement?: boolean;
   offset?: number;
 }) {

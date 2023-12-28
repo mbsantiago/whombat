@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+
 import type {
   ClipAnnotation,
   SoundEventAnnotation,
@@ -6,15 +7,15 @@ import type {
   User,
 } from "@/api/schemas";
 import {
-  type SpectrogramParameters,
   DEFAULT_SPECTROGRAM_PARAMETERS,
+  type SpectrogramParameters,
 } from "@/api/spectrograms";
 import { type TagFilter } from "@/api/tags";
-import ClipAnnotationTags from "@/components/clip_annotations/ClipAnnotationTags";
 import ClipAnnotationNotes from "@/components/clip_annotations/ClipAnnotationNotes";
+import ClipAnnotationSpectrogram from "@/components/clip_annotations/ClipAnnotationSpectrogram";
+import ClipAnnotationTags from "@/components/clip_annotations/ClipAnnotationTags";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
-import ClipAnnotationSpectrogram from "@/components/clip_annotations/ClipAnnotationSpectrogram";
 import useClipAnnotation from "@/hooks/api/useClipAnnotation";
 
 export default function AnnotateClip({

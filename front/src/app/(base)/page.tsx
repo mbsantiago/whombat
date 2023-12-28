@@ -7,7 +7,13 @@ export default function Home() {
       <h1 className="text-center text-6xl">
         Welcome to
         <br />
-        <Image src="whombat.svg" alt="logo" width={64} height={64} className="m-2 inline" />
+        <Image
+          src="whombat.svg"
+          alt="logo"
+          width={64}
+          height={64}
+          className="m-2 inline"
+        />
         <span className="font-sans font-bold text-emerald-500 underline decoration-8">
           Whombat
         </span>

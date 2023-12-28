@@ -1,10 +1,11 @@
-import { useState, useCallback, useMemo, type MouseEvent } from "react";
+import { type MouseEvent, useCallback, useMemo, useState } from "react";
+import { mergeProps } from "react-aria";
+
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import drawBBox from "@/draw/bbox";
 import { type Shift } from "@/hooks/window/useWindowDrag";
 import useWindowDrag from "@/hooks/window/useWindowDrag";
-import { mergeProps } from "react-aria";
-import { scalePixelsToWindow, scaleBBoxToViewport } from "@/utils/geometry";
-import drawBBox from "@/draw/bbox";
+import { scaleBBoxToViewport, scalePixelsToWindow } from "@/utils/geometry";
 
 export const VALID_STYLE = {
   fillAlpha: 0.3,

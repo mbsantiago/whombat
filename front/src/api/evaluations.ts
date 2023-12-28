@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import { EvaluationSchema, type Evaluation } from "@/api/schemas";
 import { GetManySchema, Page } from "@/api/common";
+import { type Evaluation, EvaluationSchema } from "@/api/schemas";
 
 export const EvaluationCreateSchema = z.object({
   task: z.string(),

@@ -1,10 +1,10 @@
-import type { BBox } from "@/utils/types";
 import {
   BorderStyle,
   FillStyle,
   setBorderStyle,
   setFillStyle,
 } from "@/draw/styles";
+import type { BBox } from "@/utils/types";
 
 export type BBoxStyle = BorderStyle & FillStyle;
 

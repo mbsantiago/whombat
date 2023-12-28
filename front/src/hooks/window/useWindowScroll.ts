@@ -1,4 +1,5 @@
-import { useMemo, type WheelEvent } from "react";
+import { type WheelEvent, useMemo } from "react";
+
 import { type SpectrogramWindow } from "@/api/spectrograms";
 import { scaleXToWindow, scaleYToWindow } from "@/utils/geometry";
 

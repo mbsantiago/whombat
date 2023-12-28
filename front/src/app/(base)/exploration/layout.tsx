@@ -7,9 +7,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <ExplorationHeader />
-      <div className="p-2">
-        {children}
-      </div>
+      <div className="p-2">{children}</div>
     </>
   );
 }

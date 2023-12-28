@@ -1,7 +1,9 @@
-import Toggle from "@/components/inputs/Toggle";
 import { type Control, Controller } from "react-hook-form";
-import { InputGroup } from "@/components/inputs/index";
+
 import { type SpectrogramParameters } from "@/api/spectrograms";
+import { InputGroup } from "@/components/inputs/index";
+import Toggle from "@/components/inputs/Toggle";
+
 import SettingsSection from "./SettingsSection";
 
 export default function DeNoiseSettings({

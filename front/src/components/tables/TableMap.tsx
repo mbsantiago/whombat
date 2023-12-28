@@ -1,3 +1,4 @@
+import { Popover, Transition } from "@headlessui/react";
 import dynamic from "next/dynamic";
 import {
   Fragment,
@@ -7,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { Popover, Transition } from "@headlessui/react";
 
 import { EditIcon } from "@/components/icons";
 
@@ -15,9 +15,12 @@ import { EditIcon } from "@/components/icons";
 // importing the leaflet library on the server side as it
 // uses the `window` object which is not available on the server.
 const Map = dynamic(() => import("@/components/maps/Map"), { ssr: false });
-const DraggableMarker = dynamic(() => import("@/components/maps/DraggableMarker"), {
-  ssr: false,
-});
+const DraggableMarker = dynamic(
+  () => import("@/components/maps/DraggableMarker"),
+  {
+    ssr: false,
+  },
+);
 
 /* Parse a string into a position object.
  * @param {string} value - The string to parse.

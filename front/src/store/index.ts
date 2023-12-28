@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { type SessionSlice, createSessionSlice } from "./session";
 import { type ClipboardSlice, createClipboardSlice } from "./clipboard";
 import { type ColorsSlice, createColorsSlice } from "./colors";
+import { type SessionSlice, createSessionSlice } from "./session";
 import { type SpectrogramSlice, createSpectrogramSlice } from "./spectrogram";
 
 type Store = SessionSlice & ClipboardSlice & ColorsSlice & SpectrogramSlice;

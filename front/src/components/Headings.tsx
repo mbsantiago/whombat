@@ -1,5 +1,5 @@
-import { type HTMLAttributes, type ReactNode } from "react";
 import classnames from "classnames";
+import { type HTMLAttributes, type ReactNode } from "react";
 
 export function H1({
   children,

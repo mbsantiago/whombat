@@ -1,10 +1,10 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { GetManySchema, Page } from "./common";
 import {
-  AnnotationProjectSchema,
   type AnnotationProject,
+  AnnotationProjectSchema,
   type Tag,
 } from "./schemas";
 

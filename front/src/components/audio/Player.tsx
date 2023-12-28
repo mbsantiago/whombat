@@ -6,29 +6,34 @@
  * @module
  * @exports Player
  */
-import { Fragment, useRef } from "react";
-import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
+import { Float } from "@headlessui-float/react";
 import classNames from "classnames";
-import { useSliderState, type SliderState } from "react-stately";
+import { Fragment, useRef } from "react";
 import {
+  type AriaSliderProps,
+  type AriaSliderThumbOptions,
+  VisuallyHidden,
   mergeProps,
   useFocusRing,
   useNumberFormatter,
   useSlider,
   useSliderThumb,
-  VisuallyHidden,
-  type AriaSliderProps,
-  type AriaSliderThumbOptions,
 } from "react-aria";
+import { type SliderState, useSliderState } from "react-stately";
 
 import {
-  type PlayerState,
+  ExpandIcon,
+  LoopIcon,
+  PauseIcon,
+  PlayIcon,
+  SpeedIcon,
+} from "@/components/icons";
+import {
   type PlayerControls,
+  type PlayerState,
   type SpeedOption,
 } from "@/hooks/audio/useAudio";
-import { ExpandIcon } from "@/components/icons";
-import { LoopIcon, PauseIcon, PlayIcon, SpeedIcon } from "@/components/icons";
 
 const COMMON_BUTTON_CLASSES =
   "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";

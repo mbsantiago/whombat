@@ -1,8 +1,8 @@
 import { type Dataset } from "@/api/schemas";
 
+import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetOverview from "./DatasetOverview";
 import DatasetTagsSummary from "./DatasetTagsSummary";
-import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetUpdate from "./DatasetUpdateForm";
 
 /**

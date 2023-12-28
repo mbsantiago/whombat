@@ -1,8 +1,8 @@
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
-import { scaleTimeToViewport } from "@/utils/geometry";
-import drawOnset from "@/draw/onset";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import drawOnset from "@/draw/onset";
+import { scaleTimeToViewport } from "@/utils/geometry";
 
 export default function useSpectrogramTrackAudio({
   viewport,

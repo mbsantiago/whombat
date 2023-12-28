@@ -1,8 +1,8 @@
-import { z } from "zod";
 import { AxiosInstance } from "axios";
+import { z } from "zod";
 
-import { ModelRunSchema, type ModelRun } from "@/api/schemas";
 import { GetManySchema, Page } from "@/api/common";
+import { type ModelRun, ModelRunSchema } from "@/api/schemas";
 
 export const ModelRunFilterSchema = z.object({
   name__eq: z.string().optional(),

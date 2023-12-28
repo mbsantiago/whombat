@@ -1,6 +1,6 @@
 import { type Recording } from "@/api/schemas";
-import useAudio from "@/hooks/audio/useAudio";
 import Player from "@/components/audio/Player";
+import useAudio from "@/hooks/audio/useAudio";
 
 export default function RecordingPlayer({
   recording,

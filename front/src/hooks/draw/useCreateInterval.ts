@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import drawInterval, { DEFAULT_INTERVAL_STYLE } from "@/draw/interval";
+import { type Style } from "@/draw/styles";
 import useDrag from "@/hooks/motions/useDrag";
 import { type ScratchState } from "@/hooks/motions/useDrag";
-import { type Interval, type Dimensions } from "@/utils/types";
-import { type Style } from "@/draw/styles";
-import drawInterval, { DEFAULT_INTERVAL_STYLE } from "@/draw/interval";
+import { type Dimensions, type Interval } from "@/utils/types";
 
 export interface UseCreateIntervalProps {
   drag: ScratchState;
