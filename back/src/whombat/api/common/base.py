@@ -18,6 +18,7 @@ from whombat.api.common.utils import (
     delete_object,
     get_object,
     get_objects,
+    find_object,
     update_object,
 )
 from whombat.filters.base import Filter
@@ -80,6 +81,20 @@ class BaseAPI(
         )
         data = self._schema.model_validate(obj)
         self._update_cache(data)
+        return data
+
+    async def find(
+        self,
+        session: AsyncSession,
+        filters: Sequence[Filter | _ColumnExpressionArgument],
+    ) -> WhombatSchema:
+
+        obj = await find_object(
+            session,
+            self._model,
+            filters,
+        )
+        data = self._schema.model_validate(obj)
         return data
 
     async def get_many(

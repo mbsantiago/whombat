@@ -50,9 +50,10 @@ class ClipAnnotation(BaseSchema):
         description="Notes attached to this annotation.",
     )
 
-    tags: list[ClipAnnotationTag] = Field(
+    tags: list[Tag] = Field(
         default_factory=list,
         description="Tags attached to this annotation.",
+        alias_priority=10000,
     )
 
     sound_events: list[SoundEventAnnotation] = Field(

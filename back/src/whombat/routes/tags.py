@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from whombat import api, schemas
 from whombat.dependencies import Session
 from whombat.filters.tags import TagFilter
+from whombat.filters.recording_tags import RecordingTagFilter
 from whombat.routes.types import Limit, Offset
 
 tags_router = APIRouter()
@@ -19,6 +20,30 @@ async def get_tags(
 ):
     """Get all tags."""
     tags, total = await api.tags.get_many(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tags,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@tags_router.get("/recording_tags/", response_model=schemas.Page[schemas.RecordingTag])
+async def get_recording_tags(
+    session: Session,
+    limit: Limit = 100,
+    offset: Offset = 0,
+    sort_by: str | None = "recording_id",
+    filter: RecordingTagFilter = Depends(RecordingTagFilter),  # type: ignore
+):
+    """Get all recording tags."""
+    tags, total = await api.tags.get_recording_tags(
         session,
         limit=limit,
         offset=offset,

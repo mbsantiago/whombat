@@ -42,12 +42,9 @@ async def create_tasks(
         ],
     )
     # Create empty clip annotations
-    clip_annotations = (
-        await api.clip_annotations.create_many_without_duplicates(
-            session,
-            data=[dict(clip_id=clip.id) for clip in clips],
-            return_all=True,
-        )
+    clip_annotations = await api.clip_annotations.create_many(
+        session,
+        data=[dict(clip_id=clip.id) for clip in clips],
     )
     tasks = await api.annotation_tasks.create_many_without_duplicates(
         session,
@@ -158,14 +155,14 @@ async def add_annotation_status_badge(
         session,
         annotation_task_uuid,
     )
-    annotation_task = await api.annotation_tasks.add_status_badge(
+    updated= await api.annotation_tasks.add_status_badge(
         session,
         annotation_task,
         state,
         user,
     )
     await session.commit()
-    return annotation_task
+    return updated
 
 
 @annotation_tasks_router.delete(
@@ -176,18 +173,16 @@ async def remove_annotation_status_badge(
     session: Session,
     annotation_task_uuid: UUID,
     state: AnnotationState,
-    user: ActiveUser,
 ):
     """Remove a badge from an annotation task."""
     annotation_task = await api.annotation_tasks.get(
         session,
         annotation_task_uuid,
     )
-    annotation_task = await api.annotation_tasks.remove_status_badge(
+    updated = await api.annotation_tasks.remove_status_badge(
         session,
         annotation_task,
         state,
-        user,
     )
     await session.commit()
-    return annotation_task
+    return updated

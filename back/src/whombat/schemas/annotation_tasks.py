@@ -6,8 +6,6 @@ from pydantic import Field, BaseModel
 from soundevent.data import AnnotationState
 
 from whombat.schemas.base import BaseSchema
-from whombat.schemas.clip_annotations import ClipAnnotation
-from whombat.schemas.clips import Clip
 from whombat.schemas.users import SimpleUser
 
 __all__ = [
@@ -48,9 +46,6 @@ class AnnotationTask(BaseSchema):
 
     id: int = Field(..., exclude=True)
     """Database ID of the task."""
-
-    clip: Clip
-    """Clip info for the task."""
 
     status_badges: list[AnnotationStatusBadge]
     """Status badges for the task."""

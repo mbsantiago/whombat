@@ -9,16 +9,21 @@ from whombat.filters import base
 
 __all__ = [
     "ChannelsFilter",
+    "DatasetFilter",
     "DateFilter",
     "DurationFilter",
     "IssuesFilter",
     "LatitudeFilter",
     "LongitudeFilter",
-    "SamplerateFilter",
-    "TimeFilter",
     "RecordingFilter",
+    "RecordingFilter",
+    "SamplerateFilter",
+    "SearchFilter",
+    "TagFilter",
+    "TimeFilter",
 ]
 
+UUIDFilter = base.uuid_filter(models.Recording.uuid)
 
 DurationFilter = base.float_filter(models.Recording.duration)
 """Filter recordings by duration."""

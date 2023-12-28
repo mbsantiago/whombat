@@ -76,6 +76,7 @@ from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
     RecordingUpdate,
+    RecordingTag,
 )
 from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotation,
@@ -167,6 +168,7 @@ __all__ = [
     "PredictedTag",
     "Recording",
     "RecordingCreate",
+    "RecordingTag",
     "RecordingUpdate",
     "STFTParameters",
     "Scale",

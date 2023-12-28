@@ -804,20 +804,33 @@ class RecordingAPI(
         if audio_dir is None:
             audio_dir = get_settings().audio_dir
 
-        data = schemas.RecordingCreate(
-            path=recording.path,
+        path = recording.path
+        if not path.is_absolute():
+            path = audio_dir / recording.path
+
+        if not path.is_file():
+            raise FileNotFoundError(f"File {path} does not exist.")
+
+        created = await self.create_from_data(
+            session,
+            path=path.relative_to(audio_dir),
             time_expansion=recording.time_expansion,
             date=recording.date,
             time=recording.time,
             latitude=recording.latitude,
             longitude=recording.longitude,
-        )
-
-        created = await self.create_from_data(
-            session,
-            data,
+            rights=recording.rights,
             uuid=recording.uuid,
+            hash=recording.hash,
+            duration=recording.duration,
+            samplerate=recording.samplerate,
+            channels=recording.channels,
         )
+        created.path = path
+
+        for owner in recording.owners:
+            owner = await users.from_soundevent(session, owner)
+            created = await self.add_owner(session, created, owner)
 
         for se_tag in recording.tags:
             tag = await tags.from_soundevent(session, se_tag)
@@ -936,7 +949,14 @@ def _assemble_recording_data(
     audio_dir: Path,
 ) -> dict | None:
     """Get missing recording data from file."""
-    info = files.get_file_info(data.path)
+    try:
+        info = files.get_file_info(data.path)
+    except (ValueError, KeyError):
+        warnings.warn(
+            f"Could not get file info from file. {data.path} Skipping file.",
+            UserWarning,
+        )
+        return None
 
     if info.media_info is None:
         warnings.warn(

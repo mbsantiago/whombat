@@ -22,6 +22,7 @@ from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 
 from whombat.models.base import Base
 from whombat.models.feature import FeatureName
@@ -184,7 +185,6 @@ class Recording(Base):
         default_factory=list,
     )
     recording_tags: orm.Mapped[list["RecordingTag"]] = orm.relationship(
-        lazy="joined",
         cascade="all, delete-orphan",
         back_populates="recording",
         default_factory=list,
@@ -294,12 +294,18 @@ class RecordingTag(Base):
         back_populates="recording_tags",
         init=False,
         repr=False,
+        lazy="joined",
     )
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="recording_tags",
         init=False,
         repr=False,
         lazy="joined",
+    )
+    recording_uuid: AssociationProxy[UUID] = association_proxy(
+        "recording",
+        "uuid",
+        init=False,
     )
 
 
@@ -344,6 +350,11 @@ class RecordingFeature(Base):
         primary_key=True,
     )
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    name: AssociationProxy[str] = association_proxy(
+        "feature_name",
+        "name",
+        init=False,
+    )
 
     # Relationships
     recording: orm.Mapped[Recording] = orm.relationship(

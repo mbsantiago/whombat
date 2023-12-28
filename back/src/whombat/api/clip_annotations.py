@@ -1,5 +1,6 @@
 """Python API for clip annotations."""
 
+from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
@@ -61,6 +62,47 @@ class ClipAnnotationAPI(
             **kwargs,
         )
 
+    async def create_many(
+        self,
+        session: AsyncSession,
+        data: Sequence[dict],
+    ) -> list[schemas.ClipAnnotation]:
+        """Create multiple clip annotations.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        clips
+            The clips to annotate.
+        **kwargs
+            Additional keyword arguments to pass to the creation
+            (e.g. `uuid`).
+
+        Returns
+        -------
+        list[schemas.ClipAnnotation]
+            The created clip annotations.
+        """
+        db_clip_annotations = []
+        for datum in data:
+            ann = models.ClipAnnotation(**datum)
+            session.add(ann)
+            db_clip_annotations.append(ann)
+
+        await session.flush()
+        ret, _ = await common.get_objects(
+            session,
+            self._model,
+            limit=None,
+            filters=[
+                models.ClipAnnotation.id.in_(
+                    [ann.id for ann in db_clip_annotations],
+                )
+            ],
+        )
+        return [self._schema.model_validate(ann) for ann in ret]
+
     async def add_tag(
         self,
         session: AsyncSession,
@@ -94,17 +136,12 @@ class ClipAnnotationAPI(
         user_id = user.id if user else None
 
         for t in obj.tags:
-            created_by_id = t.created_by.id if t.created_by else None
-            if (
-                t.tag.key == tag.key
-                and t.tag.value == tag.value
-                and created_by_id == user_id
-            ):
+            if t.key == tag.key and t.value == tag.value:
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag.id} already exists in clip annotation {obj.id}."
                 )
 
-        db_tag = await common.create_object(
+        await common.create_object(
             session=session,
             model=models.ClipAnnotationTag,
             clip_annotation_id=obj.id,
@@ -114,10 +151,7 @@ class ClipAnnotationAPI(
 
         obj = obj.model_copy(
             update=dict(
-                tags=[
-                    *obj.tags,
-                    schemas.ClipAnnotationTag.model_validate(db_tag),
-                ],
+                tags=[*obj.tags, tag],
             )
         )
         self._update_cache(obj)
@@ -166,8 +200,8 @@ class ClipAnnotationAPI(
         obj = obj.model_copy(
             update=dict(
                 notes=[
-                    *obj.notes,
                     note,
+                    *obj.notes,
                 ],
             )
         )
@@ -179,7 +213,6 @@ class ClipAnnotationAPI(
         session: AsyncSession,
         obj: schemas.ClipAnnotation,
         tag: schemas.Tag,
-        user: schemas.SimpleUser | None = None,
     ) -> schemas.ClipAnnotation:
         """Remove a tag from a clip annotation.
 
@@ -205,15 +238,8 @@ class ClipAnnotationAPI(
         exceptions.NotFoundError
             If the clip annotation or tag do not exist.
         """
-        user_id = user.id if user else None
-
         for t in obj.tags:
-            created_by_id = t.created_by.id if t.created_by else None
-            if (
-                t.tag.key == tag.key
-                and t.tag.value == tag.value
-                and created_by_id == user_id
-            ):
+            if t.key == tag.key and t.value == tag.value:
                 break
         else:
             raise exceptions.NotFoundError(
@@ -226,7 +252,6 @@ class ClipAnnotationAPI(
             condition=and_(
                 models.ClipAnnotationTag.clip_annotation_id == obj.id,
                 models.ClipAnnotationTag.tag_id == tag.id,
-                models.ClipAnnotationTag.created_by_id == user_id,
             ),
         )
 
@@ -235,11 +260,7 @@ class ClipAnnotationAPI(
                 tags=[
                     t
                     for t in obj.tags
-                    if not (
-                        t.tag.key == tag.key
-                        and t.tag.value == tag.value
-                        and created_by_id == user_id
-                    )
+                    if not (t.key == tag.key and t.value == tag.value)
                 ]
             )
         )
@@ -351,7 +372,7 @@ class ClipAnnotationAPI(
             )
             for annotation in clip_annotation.sound_events
         ]
-        se_tags = [tags.to_soundevent(tag.tag) for tag in clip_annotation.tags]
+        se_tags = [tags.to_soundevent(tag) for tag in clip_annotation.tags]
         se_notes = [
             notes.to_soundevent(note) for note in clip_annotation.notes
         ]
@@ -390,7 +411,7 @@ class ClipAnnotationAPI(
         if not clip_annotation.uuid == data.uuid:
             raise ValueError("The UUID's do not match.")
 
-        tag_keys = {(t.tag.key, t.tag.value) for t in clip_annotation.tags}
+        tag_keys = {(t.key, t.value) for t in clip_annotation.tags}
         note_keys = {n.uuid for n in clip_annotation.notes}
 
         for se_tag in data.tags:

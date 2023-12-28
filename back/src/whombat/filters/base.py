@@ -325,7 +325,7 @@ def uuid_filter(
 class BooleanFilter(Filter):
     """Filter by a boolean value."""
 
-    is_true: bool | None = None
+    eq: bool | None = None
 
 
 def boolean_filter(

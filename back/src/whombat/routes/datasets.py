@@ -1,9 +1,11 @@
 """REST API routes for datasets."""
+import datetime
+from io import StringIO
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, UploadFile
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import DirectoryPath
 from soundevent.io import aoef
 
@@ -121,10 +123,10 @@ async def delete_dataset(
 
 
 @dataset_router.get(
-    "/detail/download/",
+    "/detail/download/json/",
     response_model=aoef.DatasetObject,
 )
-async def download_dataset(
+async def download_dataset_json(
     session: Session,
     dataset_uuid: UUID,
 ):
@@ -136,6 +138,29 @@ async def download_dataset(
     return Response(
         obj.model_dump_json(),
         media_type="application/json",
+        status_code=200,
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@dataset_router.get(
+    "/detail/download/csv/",
+    response_model=aoef.DatasetObject,
+)
+async def download_dataset_csv(
+    session: Session,
+    dataset_uuid: UUID,
+):
+    """Export the dataset recordings in csv format."""
+    dataset = await api.datasets.get(session, dataset_uuid)
+    df = await api.datasets.to_dataframe(session, dataset)
+    buffer = StringIO()
+    df.to_csv(buffer, index=False)
+    buffer.seek(0)
+    filename = f"{dataset.name}_{datetime.datetime.now()}.csv"
+    return StreamingResponse(
+        buffer,
+        media_type="text/csv",
         status_code=200,
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )

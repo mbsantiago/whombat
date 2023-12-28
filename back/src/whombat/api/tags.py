@@ -6,7 +6,8 @@ from sqlalchemy import and_, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api.common import BaseAPI
+from whombat.api.common import BaseAPI, get_objects
+from whombat.filters.base import Filter
 
 __all__ = [
     "TagAPI",
@@ -145,6 +146,27 @@ class TagAPI(
             self._model.key,
             self._model.value,
         )
+
+    async def get_recording_tags(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[list[schemas.RecordingTag], int]:
+        tags, count = await get_objects(
+            session,
+            models.RecordingTag,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+        )
+        return [
+            schemas.RecordingTag.model_validate(obj) for obj in tags
+        ], count
 
 
 def find_tag(

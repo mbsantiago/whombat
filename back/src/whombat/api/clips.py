@@ -329,7 +329,17 @@ class ClipAPI(
             for clip_id, name, value in create_values
         ]
 
-        await common.create_objects(session, models.ClipFeature, data)
+        await common.create_objects_without_duplicates(
+            session,
+            models.ClipFeature,
+            data,
+            key=lambda obj: (obj["clip_id"], obj["feature_name_id"]),
+            key_column=tuple_(
+                models.ClipFeature.clip_id,
+                models.ClipFeature.feature_name_id,
+            ),
+            return_all=True,
+        )
         return clip_features
 
     async def from_soundevent(

@@ -88,7 +88,7 @@ async def test_get_notes_that_are_issues(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            note_filters.IssueFilter(is_true=True),
+            note_filters.IssueFilter(eq=True),
         ],
     )
 
@@ -107,7 +107,7 @@ async def test_get_notes_that_are_not_issues(
     db_notes, _ = await api.notes.get_many(
         session,
         filters=[
-            note_filters.IssueFilter(is_true=False),
+            note_filters.IssueFilter(eq=False),
         ],
     )
 

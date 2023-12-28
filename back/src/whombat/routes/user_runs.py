@@ -1,8 +1,7 @@
 """REST API routes for model runs."""
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, UploadFile
-from soundevent.io import aoef
+from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session

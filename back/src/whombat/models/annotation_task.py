@@ -99,7 +99,7 @@ class AnnotationTask(Base):
     )
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
-        lazy="joined",
+        repr=False,
     )
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="annotation_task",

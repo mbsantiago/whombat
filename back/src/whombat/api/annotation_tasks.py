@@ -12,11 +12,22 @@ from whombat.api.clip_annotations import clip_annotations
 from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
 from whombat.api.users import users
+from whombat.filters.base import Filter
 
 __all__ = [
     "AnnotationTaskAPI",
     "annotation_tasks",
 ]
+
+
+class AnnotationTaskFilter(Filter):
+    eq: int
+
+    def filter(self, query):
+        return query.join(
+            models.AnnotationTask,
+            models.Clip.id == models.AnnotationTask.clip_id,
+        ).filter(models.AnnotationTask.annotation_project_id == self.eq)
 
 
 class AnnotationTaskAPI(
@@ -158,7 +169,6 @@ class AnnotationTaskAPI(
         session: AsyncSession,
         obj: schemas.AnnotationTask,
         state: data.AnnotationState,
-        user: schemas.SimpleUser | None = None,
     ) -> schemas.AnnotationTask:
         """Remove a status badge from a task.
 
@@ -177,22 +187,18 @@ class AnnotationTaskAPI(
             Task with the status badge removed.
         """
         for b in obj.status_badges:
-            if b.user == user and b.state == state:
+            if b.state == state:
                 break
         else:
             raise exceptions.NotFoundError(
-                f"There are no status badges with state {state} "
-                f" and created by user {user} in this annotation"
-                f" {obj}"
+                f"Status badge with state {state} not found in task {obj.id}"
             )
 
-        user_id = b.user.id if b.user else None
         await common.delete_object(
             session,
             models.AnnotationStatusBadge,
             and_(
                 models.AnnotationStatusBadge.annotation_task_id == obj.id,
-                models.AnnotationStatusBadge.user_id == user_id,
                 models.AnnotationStatusBadge.state == b.state,
             ),
         )
@@ -200,12 +206,12 @@ class AnnotationTaskAPI(
         obj = obj.model_copy(
             update=dict(
                 status_badges=[
-                    b
-                    for b in obj.status_badges
-                    if (b.state == state and b.user == user)
+                    b for b in obj.status_badges if (b.state != state)
                 ],
-            )
+            ),
+            deep=True,
         )
+        self._update_cache(obj)
         return obj
 
     async def from_soundevent(
@@ -241,8 +247,32 @@ class AnnotationTaskAPI(
 
         return await self._update_from_soundevent(session, obj, data)
 
-    def to_soundevent(
-        self, task: schemas.AnnotationTask
+    async def get_clip(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+    ) -> schemas.Clip:
+        """Get the clip of a task.
+
+        Parameters
+        ----------
+        obj
+            The task.
+
+        Returns
+        -------
+        schemas.Clip
+            The clip of the task.
+        """
+        return await clips.find(
+            session,
+            filters=[AnnotationTaskFilter(eq=obj.id)],
+        )
+
+    async def to_soundevent(
+        self,
+        session: AsyncSession,
+        task: schemas.AnnotationTask,
     ) -> data.AnnotationTask:
         """Convert a task to a `soundevent` task.
 
@@ -256,9 +286,10 @@ class AnnotationTaskAPI(
         data.AnnotationTask
             The converted task.
         """
+        clip = await self.get_clip(session, task)
         return data.AnnotationTask(
             uuid=task.uuid,
-            clip=clips.to_soundevent(task.clip),
+            clip=clips.to_soundevent(clip),
             status_badges=[
                 data.StatusBadge(
                     owner=users.to_soundevent(sb.user) if sb.user else None,

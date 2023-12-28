@@ -146,6 +146,50 @@ async def get_object(
     return obj
 
 
+async def find_object(
+    session: AsyncSession,
+    model: type[A],
+    filters: Sequence[Filter | _ColumnExpressionArgument],
+) -> A:
+    """Find an object by some filters.
+
+    Parameters
+    ----------
+    session
+        The database session.
+    model
+        The model to query.
+    filters
+        The filters to use.
+
+    Returns
+    -------
+    A
+        The object.
+
+    Raises
+    ------
+    exceptions.NotFoundError
+        If the object was not found.
+    """
+    query = select(model)
+    for filter_ in filters or []:
+        if isinstance(filter_, Filter):
+            query = filter_.filter(query)
+        else:
+            query = query.where(filter_)
+
+    result = await session.execute(query)
+    obj = result.unique().scalar_one_or_none()
+
+    if obj is None:
+        raise exceptions.NotFoundError(
+            f"A {model.__name__} with the specified condition was not found"
+        )
+
+    return obj
+
+
 def get_sort_by_col_from_str(
     model: type[A],
     sort_by: str,
@@ -280,7 +324,7 @@ async def create_object(
         raise exceptions.DuplicateObjectError(
             f"A {model.__name__} could not be created due to a duplicate"
             " object error. This is likely due to a unique constraint "
-            f" violation. Data: {data}"
+            f" violation. Data: {data} {kwargs}"
         ) from e
     return obj
 
@@ -381,6 +425,9 @@ async def create_objects_without_duplicates(
     missing = [obj for obj in data if key(obj) not in existing_keys]
     if not missing and not return_all:
         return []
+
+    if not missing:
+        return existing
 
     values = [get_values(obj) for obj in missing]
     default_values, default_factories = _get_defaults(model)

@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 from typing import Sequence
 
+import pandas as pd
 from soundevent import data
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -502,12 +503,11 @@ class DatasetAPI(
         if dataset_audio_dir is None:
             dataset_audio_dir = get_settings().audio_dir
 
-        obj = await self.create(
+        obj = await self.create_from_data(
             session,
-            dataset_dir=dataset_audio_dir,
+            audio_dir=dataset_audio_dir,
             name=data.name,
             description=data.description,
-            audio_dir=audio_dir,
             uuid=data.uuid,
             created_on=data.created_on,
         )
@@ -515,7 +515,7 @@ class DatasetAPI(
         for rec in data.recordings:
             recording = await recordings.from_soundevent(
                 session,
-                rec,
+                rec.model_copy(update=dict(path=dataset_audio_dir / rec.path)),
                 audio_dir=audio_dir,
             )
             await self.add_recording(session, obj, recording)
@@ -656,6 +656,76 @@ class DatasetAPI(
         )
         self._update_cache(obj)
         return obj
+
+    async def to_dataframe(
+        self,
+        session: AsyncSession,
+        dataset: schemas.Dataset,
+    ) -> pd.DataFrame:
+        """Convert a dataset to a pandas DataFrame.
+
+        Generates a DataFrame containing information about the recordings in
+        the dataset. The DataFrame includes the following columns: 'uuid',
+        'hash', 'path', 'samplerate', 'duration', 'channels', 'time_expansion',
+        'date', 'time', 'latitude', 'longitude', 'rights'.
+
+        Owners, tags, and features receive special treatment. Owners are
+        concatenated into a string with the format 'user1:user2:user3'. Each
+        tag is added as a column with the name 'tag_<key>', and features as
+        'feature_<name>'.
+
+        Parameters
+        ----------
+        session
+            The database session to use.
+        dataset
+            The dataset to convert to a DataFrame.
+
+        Returns
+        -------
+        df : pandas.DataFrame
+            The dataset as a DataFrame.
+
+        Notes
+        -----
+        The encoding of the dataset as a DataFrame is not lossless. Notes are
+        excluded from the DataFrame, and there is no way to recover all owner
+        information from the concatenated string of usernames. For full dataset
+        recovery, use the `to_soundevent` method instead, returning a sound
+        event dataset that can be exported to a JSON file and later imported,
+        recovering all information.
+        """
+        recordings, _ = await self.get_recordings(session, dataset, limit=-1)
+        return pd.DataFrame(
+            [
+                dict(
+                    uuid=rec.uuid,
+                    hash=rec.hash,
+                    path=rec.path.relative_to(dataset.audio_dir),
+                    samplerate=rec.samplerate,
+                    duration=rec.duration,
+                    channels=rec.channels,
+                    time_expansion=rec.time_expansion,
+                    date=rec.date,
+                    time=rec.time,
+                    latitude=rec.latitude,
+                    longitude=rec.longitude,
+                    rights=rec.rights,
+                    owners=":".join(
+                        [
+                            owner.name if owner.name else owner.username
+                            for owner in rec.owners
+                        ]
+                    ),
+                    **{f"tag_{tag.key}": tag.value for tag in rec.tags},
+                    **{
+                        f"feature_{feature.name}": feature.value
+                        for feature in rec.features
+                    },
+                )
+                for rec in recordings
+            ]
+        )
 
 
 datasets = DatasetAPI()

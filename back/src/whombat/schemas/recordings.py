@@ -148,3 +148,13 @@ class RecordingUpdate(BaseModel):
 
     rights: str | None = None
     """A text describing the usage rights of the recording."""
+
+
+class RecordingTag(BaseSchema):
+    """Schema for RecordingTag objects."""
+
+    recording_uuid: UUID
+    """The UUID of the recording."""
+
+    tag: Tag
+    """The tag associated with the recording."""
