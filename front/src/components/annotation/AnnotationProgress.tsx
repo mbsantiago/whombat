@@ -1,38 +1,44 @@
+import { useMemo } from "react";
 import ProgressBar from "@/components/ProgressBar";
 import FilterMenu from "@/components/filters/FilterMenu";
 import FilterBar from "@/components/filters/FilterBar";
 import Button from "@/components/Button";
 import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
-import { type Filter } from "@/hooks/api/useFilter";
+import { type Filter } from "@/hooks/utils/useFilter";
+import { type AnnotationTask } from "@/api/schemas";
 import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
 import Toggle from "@/components/inputs/Toggle";
 import Tooltip from "@/components/Tooltip";
 import { getButtonClassName } from "@/components/Button";
 import taskFilterDefs from "@/components/filters/tasks";
+import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
 
 export default function AnnotationProgress({
-  pending,
-  complete,
+  tasks,
   filter,
-  next,
-  previous,
+  onNext,
+  onPrevious,
 }: {
-  pending: number;
-  complete: number;
+  tasks: AnnotationTask[];
   filter: Filter<AnnotationTaskFilter>;
-  next: () => void;
-  previous: () => void;
+  onNext?: () => void;
+  onPrevious?: () => void;
 }) {
+  const { missing: pending, completed: complete } = useMemo(
+    () => computeAnnotationTasksProgress(tasks),
+    [tasks],
+  );
+
   return (
-    <div className="inline-flex items-center gap-1 w-100">
+    <div className="inline-flex gap-1 items-center w-full">
       <Tooltip tooltip="Previous Task" placement="bottom">
-        <Button mode="text" padding="p-1" onClick={previous}>
-          <PreviousIcon className="w-5 h-5 inline-block" />
+        <Button mode="text" padding="p-1" onClick={onPrevious}>
+          <PreviousIcon className="inline-block w-5 h-5" />
         </Button>
       </Tooltip>
-      <div className="inline-flex gap-4 items-center rounded-lg border dark:border-stone-800 px-2 py-1 grow">
-        <div className="inline-flex items-center gap-1">
-          <span className="text-stone-500 text-sm">Progress:</span>
+      <div className="inline-flex gap-4 items-center py-1 px-2 rounded-lg border grow dark:border-stone-800">
+        <div className="inline-flex gap-1 items-center">
+          <span className="text-sm text-stone-500">Progress:</span>
           <div className="w-36">
             <ProgressBar
               total={pending + complete}
@@ -41,11 +47,12 @@ export default function AnnotationProgress({
             />
           </div>
         </div>
-        <span className="text-stone-500 text-sm whitespace-nowrap align-middle">
-          Remaining: <span className="text-blue-500 font-medium">{pending}</span>
+        <span className="text-sm align-middle whitespace-nowrap text-stone-500">
+          Remaining:{" "}
+          <span className="font-medium text-blue-500">{pending}</span>
         </span>
-        <div className="inline-flex items-center gap-1">
-          <span className="text-stone-500 text-sm">Pending:</span>
+        <div className="inline-flex gap-1 items-center">
+          <span className="text-sm text-stone-500">Pending:</span>
           <Toggle
             label="Only Pending"
             isSelected={filter.get("pending__eq") ?? false}
@@ -68,8 +75,8 @@ export default function AnnotationProgress({
           })}
           button={
             <>
-              <FilterIcon className="w-5 h-5 inline-block mr-1" />
-              <span className="text-sm whitespace-nowrap align-middle">
+              <FilterIcon className="inline-block mr-1 w-5 h-5" />
+              <span className="text-sm align-middle whitespace-nowrap">
                 Filters
               </span>
             </>
@@ -80,8 +87,8 @@ export default function AnnotationProgress({
         </div>
       </div>
       <Tooltip tooltip="Next Task" placement="bottom">
-        <Button mode="text" padding="p-1" onClick={next}>
-          <NextIcon className="w-5 h-5 inline-block" />
+        <Button mode="text" padding="p-1" onClick={onNext}>
+          <NextIcon className="inline-block w-5 h-5" />
         </Button>
       </Tooltip>
     </div>

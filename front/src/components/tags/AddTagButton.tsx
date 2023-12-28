@@ -2,6 +2,7 @@ import { Float } from "@headlessui-float/react";
 import { type HTMLProps } from "react";
 import { Popover } from "@headlessui/react";
 
+import { type TagFilter } from "@/api/tags";
 import { type Tag as TagType } from "@/api/schemas";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import { AddIcon } from "@/components/icons";
@@ -10,9 +11,11 @@ import Button from "@/components/Button";
 function TagBarPopover({
   onClose,
   onAdd,
+  filter,
   ...props
 }: {
   onClose?: () => void;
+  filter?: TagFilter;
   onAdd?: (tag: TagType) => void;
 } & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
   return (
@@ -32,6 +35,7 @@ function TagBarPopover({
           onClose?.();
         }
       }}
+      initialFilter={filter}
       {...props}
     />
   );
@@ -39,9 +43,13 @@ function TagBarPopover({
 
 export default function AddTagButton({
   onAdd,
+  text = "add",
   variant = "secondary",
+  filter,
   ...props
 }: {
+  text?: string;
+  filter?: TagFilter;
   onAdd?: (tag: TagType) => void;
   variant?: "primary" | "secondary" | "danger";
 } & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
@@ -62,12 +70,17 @@ export default function AddTagButton({
         <Popover.Button as="div">
           <Button mode="text" variant={variant} padding="py-1">
             <AddIcon className="inline-block w-5 h-5 align-middle" />
-            add
+            {text}
           </Button>
         </Popover.Button>
         <Popover.Panel className="w-72" focus unmount>
           {({ close }) => (
-            <TagBarPopover onClose={close} onAdd={onAdd} {...props} />
+            <TagBarPopover
+              onClose={close}
+              onAdd={onAdd}
+              filter={filter}
+              {...props}
+            />
           )}
         </Popover.Panel>
       </Float>

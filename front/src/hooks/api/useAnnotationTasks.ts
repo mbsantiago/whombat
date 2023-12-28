@@ -22,8 +22,8 @@ export default function useAnnotationTasks({
     fixed,
   });
 
-  const { query, pagination, items, total } = usePagedQuery({
-    name: "tasks",
+  const { query, pagination, items, total, queryKey } = usePagedQuery({
+    name: "annotation_tasks",
     queryFn: api.annotationTasks.getMany,
     pageSize,
     filter: filter.filter,
@@ -36,5 +36,6 @@ export default function useAnnotationTasks({
     filter,
     pagination,
     total,
+    queryKey,
   };
 }

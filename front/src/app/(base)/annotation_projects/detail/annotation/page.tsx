@@ -1,125 +1,76 @@
 "use client";
-import { useContext, useState, useCallback } from "react";
+import toast from "react-hot-toast";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useContext, useCallback } from "react";
 
 import useStore from "@/store";
-import useTaskAnnotations from "@/hooks/annotation/useAnnotationTasks";
-import useStateParams from "@/hooks/useStateParams";
-import AnnotationProgress from "@/components/annotation/AnnotationProgress";
-import Empty from "@/components/Empty";
-import Loading from "@/app/loading";
-import AnnotateTask from "@/components/annotation/AnnotateTask";
-import { AnnotationProjectContext } from "@/app/contexts";
-import { CompleteIcon } from "@/components/icons";
-import { type Tag } from "@/api/schemas";
-import api from "@/app/api";
+import Loading from "@/components/Loading";
+import AnnotationProjectContext from "../context";
+import UserContext from "@/app/(base)/context";
+import useAnnotationTask from "@/hooks/api/useAnnotationTask";
+import { changeURLParam } from "@/utils/url";
+import { type SpectrogramParameters } from "@/api/spectrograms";
+import { type AnnotationTask } from "@/api/schemas";
+
+import AnnotateProject from "@/components/annotation/AnnotateProject";
 
 export default function Page() {
+  const search = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
   const project = useContext(AnnotationProjectContext);
+  const user = useContext(UserContext);
+
+  const annotationTaskUUID = search.get("annotation_task_uuid");
+
+  const annotationTask = useAnnotationTask({
+    uuid: annotationTaskUUID || "",
+    enabled: !!annotationTaskUUID,
+  });
 
   // Get spectrogram settings
   const parameters = useStore((state) => state.spectrogramSettings);
+  const setParameters = useStore((state) => state.setSpectrogramSettings);
 
-  // Current tags
-  const [tags, setTags] = useState<Tag[]>([]);
-
-  // Load annotation tasks for this project
-  const {
-    isLoading,
-    filter,
-    total,
-    complete,
-    pending,
-    refresh,
-    current,
-    next,
-    previous,
-  } = useTaskAnnotations({
-    project,
-  });
-
-  // Get task_id from URL
-  const [task_id] = useStateParams(
-    current?.id,
-    "task_id",
-    (value: number) => value.toString(),
-    (value: string) => parseInt(value, 10),
+  const onParameterSave = useCallback(
+    (parameters: SpectrogramParameters) => {
+      toast.success("Spectrogram settings saved.");
+      setParameters(parameters);
+    },
+    [setParameters],
   );
 
-  const onAddTag = useCallback(
-    (tag: Tag) => {
-      if (!project.tags.includes(tag)) {
-        api.annotationProjects.addTag(project.id, tag.id);
-      }
-
-      setTags((tags) => {
-        if (tags.includes(tag)) {
-          return tags;
-        }
-        return [...tags, tag];
+  const onChangeTask = useCallback(
+    (task: AnnotationTask) => {
+      const url = changeURLParam({
+        pathname,
+        search,
+        param: "annotation_task_uuid",
+        value: task.uuid,
       });
+      router.push(url);
     },
-    [setTags, project.id, project.tags],
+    [router, pathname, search],
   );
 
-  const onRemoveTag = useCallback(
-    (tag: Tag) => {
-      setTags((tags) => tags.filter((t) => t.id !== tag.id));
-    },
-    [setTags],
-  );
+  if (user == null) {
+    toast.error("You must be logged in to annotate.");
+    return null;
+  }
 
-  const onClearTags = useCallback(() => {
-    setTags([]);
-  }, [setTags]);
-
-  if (isLoading || task_id == null) {
+  if (annotationTask.isLoading && !annotationTask.data) {
     return <Loading />;
   }
 
-  if (total === 0) {
-    return (
-      <Empty>
-        No task available. Please add more tasks to this project to continue
-        annotating.
-      </Empty>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-3">
-      <AnnotationProgress
-        complete={complete}
-        filter={filter}
-        pending={pending}
-        next={next}
-        previous={previous}
-      />
-      {current == null ? (
-        <Empty>
-          <div>
-            <CompleteIcon className="h-16 w-16 text-green-500" />
-          </div>
-          <p className="text-lg font-medium">Congratulations!</p>
-          <p>
-            You have completed all tasks in this project{" "}
-            {filter.size > 0 ? "with the current filter settings. " : ""}
-            Add additional tasks
-            {filter.size > 0 ? ", or change the filter settings, " : ""}to
-            continue annotating.
-          </p>
-        </Empty>
-      ) : (
-        <AnnotateTask
-          parameters={parameters}
-          task_id={task_id}
-          project={project}
-          refresh={refresh}
-          tags={tags}
-          addTag={onAddTag}
-          removeTag={onRemoveTag}
-          clearTags={onClearTags}
-        />
-      )}
-    </div>
+    <AnnotateProject
+      annotationTask={annotationTask.data}
+      annotationProject={project}
+      parameters={parameters}
+      onChangeTask={onChangeTask}
+      currentUser={user}
+      onParameterSave={onParameterSave}
+    />
   );
 }

@@ -1,3 +1,4 @@
+"use client";
 /**
  * Page module for displaying the list of datasets.
  *
@@ -7,7 +8,6 @@
  * @module pages/datasets
  * @see components/datasets/DatasetList
  */
-"use client";
 
 import DatasetList from "@/components/datasets/DatasetList";
 import Hero from "@/components/Hero";

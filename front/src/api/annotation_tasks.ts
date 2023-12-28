@@ -41,13 +41,13 @@ export type GetAnnotationTasksQuery = z.input<
 >;
 
 const DEFAULT_ENDPOINTS = {
-  createMany: "/api/v1/tasks/",
-  getMany: "/api/v1/tasks/",
-  get: "/api/v1/tasks/detail/",
-  getAnnotations: "/api/v1/tasks/detail/annotations/",
-  delete: "/api/v1/tasks/detail/",
-  addBadge: "/api/v1/tasks/detail/badges/",
-  removeBadge: "/api/v1/tasks/detail/badges/",
+  createMany: "/api/v1/annotation_tasks/",
+  getMany: "/api/v1/annotation_tasks/",
+  get: "/api/v1/annotation_tasks/detail/",
+  getAnnotations: "/api/v1/annotation_tasks/detail/clip_annotation/",
+  delete: "/api/v1/annotation_tasks/detail/",
+  addBadge: "/api/v1/annotation_tasks/detail/badges/",
+  removeBadge: "/api/v1/annotation_tasks/detail/badges/",
 };
 
 export function registerAnnotationTasksAPI(
@@ -60,9 +60,7 @@ export function registerAnnotationTasksAPI(
   ): Promise<AnnotationTask[]> {
     const response = await instance.post(
       endpoints.createMany,
-      {
-        clip_uuids: clips.map((clip) => clip.uuid),
-      },
+      clips.map((clip) => clip.uuid),
       {
         params: {
           annotation_project_uuid: annotationProject.uuid,

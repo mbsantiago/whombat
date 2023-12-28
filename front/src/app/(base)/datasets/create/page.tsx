@@ -1,3 +1,4 @@
+"use client";
 /**
  * Page module for creating a new dataset.
  *
@@ -8,7 +9,6 @@
  * @module pages/datasets/create
  * @see components/datasets/DatasetCreate
  */
-"use client";
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import DatasetCreate from "@/components/datasets/DatasetCreate";

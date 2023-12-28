@@ -6,7 +6,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { SunIcon, DateIcon, TimeIcon, LocationIcon, TagIcon, NotesIcon } from "@/components/icons";
+import {
+  SunIcon,
+  DateIcon,
+  TimeIcon,
+  LocationIcon,
+  TagIcon,
+  NotesIcon,
+} from "@/components/icons";
+import { formatLocation } from "@/components/inputs/Location";
 import Checkbox from "@/components/tables/TableCheckbox";
 import TableInput from "@/components/tables/TableInput";
 import TableCell from "@/components/tables/TableCell";
@@ -228,8 +236,10 @@ export default function useRecordingTable({
           );
         },
         accessorFn: (row) => {
-          if (row.latitude == null || row.longitude == null) return null;
-          return `${row.latitude}, ${row.longitude}`;
+          return formatLocation({
+            latitude: row.latitude,
+            longitude: row.longitude,
+          });
         },
         cell: ({ row }) => {
           const location = row.getValue("location") as string;
@@ -302,12 +312,15 @@ export default function useRecordingTable({
         accessorFn: (row) => row.notes,
         cell: ({ row }) => {
           const notes = row.getValue("notes") as Note[];
-          if ((notes || []).length == 0) return null
+          if ((notes || []).length == 0) return null;
 
-          return <span className="ms-2">
-              <SunIcon className="inline-block mr-2 w-5 h-5 align-middle text-blue-500" />
-             {notes.length} notes</span>
-        }
+          return (
+            <span className="ms-2">
+              <SunIcon className="inline-block mr-2 w-5 h-5 text-blue-500 align-middle" />
+              {notes.length} notes
+            </span>
+          );
+        },
       },
     ],
     [onAddTag, onRemoveTag, onUpdate, getRecordingLink],

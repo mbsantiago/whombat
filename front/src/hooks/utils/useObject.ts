@@ -2,6 +2,54 @@ import { type AxiosError } from "axios";
 import { useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+export function useObjectDestruction<T>({
+  uuid,
+  query,
+  client,
+  mutationFn,
+  name,
+  onSuccess,
+  onError,
+}: {
+  uuid: string;
+  query: ReturnType<typeof useQuery<T>>;
+  client: ReturnType<typeof useQueryClient>;
+  mutationFn: (obj: T) => Promise<T>;
+  name: string;
+  onSuccess?: (data: T) => void;
+  onError?: (error: AxiosError) => void;
+}): ReturnType<typeof useMutation<T, AxiosError>> {
+  const { status, data } = query;
+
+  const trueMutationFn = useCallback(async () => {
+    if (status === "pending") {
+      throw new Error(
+        `No data for object of type ${name} (uuid=${uuid}). ` +
+          "Either the query is not enabled or the query is still loading.",
+      );
+    }
+
+    if (status === "error") {
+      throw new Error(
+        `Error while loading object of type ${name} (uuid=${uuid}), cannot mutate`,
+      );
+    }
+
+    return await mutationFn(data);
+  }, [status, data, mutationFn, name, uuid]);
+
+  return useMutation<T, AxiosError>({
+    mutationFn: trueMutationFn,
+    onSuccess: (data) => {
+      client.removeQueries({
+        queryKey: [name, uuid],
+      });
+      onSuccess?.(data);
+    },
+    onError: onError,
+  });
+}
+
 export function useObjectMutation<T, K>({
   uuid,
   query,
@@ -26,7 +74,7 @@ export function useObjectMutation<T, K>({
       if (status === "pending") {
         throw new Error(
           `No data for object of type ${name} (uuid=${uuid}). ` +
-          "Either the query is not enabled or the query is still loading.",
+            "Either the query is not enabled or the query is still loading.",
         );
       }
 
@@ -41,18 +89,54 @@ export function useObjectMutation<T, K>({
     [status, data, mutationFn, name, uuid],
   );
 
-  const mutation = useMutation<T, AxiosError, K>({
+  return useMutation<T, AxiosError, K>({
     mutationFn: trueMutationFn,
     onSuccess: (data) => {
       client.setQueryData([name, uuid], data);
       onSuccess?.(data);
     },
-    onError: (error) => {
-      onError?.(error);
-    },
+    onError: onError,
   });
+}
 
-  return mutation;
+export function useObjectQuery<T, K>({
+  uuid,
+  query,
+  queryFn,
+  name,
+  secondaryName,
+  enabled = false,
+}: {
+  uuid: string;
+  query: ReturnType<typeof useQuery<T>>;
+  queryFn: (obj: T) => Promise<K>;
+  name: string;
+  secondaryName: string;
+  enabled?: boolean;
+}) {
+  const { status, data } = query;
+
+  const trueQueryFn = useCallback(async () => {
+    if (status === "pending") {
+      throw new Error(
+        `No data for object of type ${name} (uuid=${uuid}). ` +
+          "Either the query is not enabled or the query is still loading.",
+      );
+    }
+
+    if (status === "error") {
+      throw new Error(
+        `Error while loading object of type ${name} (uuid=${uuid}), cannot mutate`,
+      );
+    }
+    return await queryFn(data);
+  }, [status, data, queryFn, name, uuid]);
+
+  return useQuery<K, AxiosError>({
+    queryFn: trueQueryFn,
+    queryKey: [name, uuid, secondaryName],
+    enabled: status !== "pending" && status !== "error" && enabled,
+  });
 }
 
 export type UseObjectProps<T> = {
@@ -118,6 +202,24 @@ export default function useObject<T>({
     query,
     client,
     set,
+    useQuery: ({
+      queryFn,
+      name: secondaryName,
+      enabled = false,
+    }: {
+      name: string;
+      queryFn: (obj: T) => Promise<T>;
+      enabled?: boolean;
+    }) => {
+      return useObjectQuery({
+        uuid,
+        query,
+        queryFn,
+        secondaryName,
+        name,
+        enabled,
+      });
+    },
     useMutation: <K>({
       mutationFn,
       onSuccess,
@@ -128,6 +230,25 @@ export default function useObject<T>({
       onError?: (error: AxiosError) => void;
     }) => {
       return useObjectMutation({
+        uuid,
+        query,
+        client,
+        mutationFn,
+        name,
+        onSuccess,
+        onError,
+      });
+    },
+    useDestruction: ({
+      mutationFn,
+      onSuccess,
+      onError,
+    }: {
+      mutationFn: (data: T) => Promise<T>;
+      onSuccess?: (data: T) => void;
+      onError?: (error: AxiosError) => void;
+    }) => {
+      return useObjectDestruction({
         uuid,
         query,
         client,

@@ -11,7 +11,7 @@ import api from "@/app/api";
 import SelectedMenu from "@/components/tables/SelectedMenu";
 import Pagination from "@/components/lists/Pagination";
 import Loading from "@/app/loading";
-import Search from "@/components/search/Search";
+import Search from "@/components/inputs/Search";
 import FilterPopover from "@/components/filters/FilterMenu";
 import FilterBar from "@/components/filters/FilterBar";
 import Table from "@/components/tables/Table";
@@ -264,7 +264,6 @@ export default function RecordingTable({
               placeholder="Search recordings..."
               value={recordings.filter.get("search") ?? ""}
               onChange={(value) => recordings.filter.set("search", value)}
-              withButton={false}
             />
           </div>
           <FilterPopover

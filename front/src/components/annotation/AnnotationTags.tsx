@@ -11,7 +11,7 @@ import Button from "@/components/Button";
 import { H3 } from "@/components/Headings";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 
-export default function AnnotationTags({
+export default function AnnotationProjectTags({
   tags,
   project,
   onClick,
@@ -28,7 +28,10 @@ export default function AnnotationTags({
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
 
-  const filter = useMemo(() => ({ project__eq: project.id }), [project.id]);
+  const filter = useMemo(
+    () => ({ annotation_project__eq: project.uuid }),
+    [project.uuid],
+  );
   return (
     <Card>
       <H3 className="text-center">
@@ -62,7 +65,7 @@ export default function AnnotationTags({
       <div className="flex flex-row flex-wrap gap-1">
         {tags.map((tag) => (
           <Tag
-            key={tag.id}
+            key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}
             onClick={() => onClick?.(tag)}

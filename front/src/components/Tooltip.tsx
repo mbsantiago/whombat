@@ -7,10 +7,12 @@ export default function Tooltip({
   children,
   tooltip,
   placement = "right",
+  autoPlacement = true,
   offset = 8,
 }: {
   children: ReactNode;
   tooltip: ReactNode;
+  autoPlacement?: boolean;
   placement?:
     | "top"
     | "right"
@@ -42,10 +44,13 @@ export default function Tooltip({
         leaveFrom="scale-100 opacity-100"
         leaveTo="scale-95 opacity-0"
         portal={true}
-        autoPlacement
+        autoPlacement={autoPlacement}
       >
         <Popover.Button as={Fragment}>{hoverable}</Popover.Button>
-        <Popover.Panel static className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 text-sm pointer-events-none">
+        <Popover.Panel
+          static
+          className="rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 text-sm pointer-events-none"
+        >
           {tooltip}
         </Popover.Panel>
       </Float>

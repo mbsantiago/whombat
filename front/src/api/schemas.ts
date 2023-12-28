@@ -41,14 +41,14 @@ export const RecordingSchema = z.object({
   channels: z.number().int(),
   samplerate: z.number().int(),
   time_expansion: z.number().default(1),
-  date: z.coerce.date().optional(),
+  date: z.coerce.date().nullish(),
   time: z
     .string()
     .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
-    .optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  rights: z.string().optional(),
+    .nullish(),
+  latitude: z.number().nullish(),
+  longitude: z.number().nullish(),
+  rights: z.string().nullish(),
   tags: z.array(TagSchema).optional(),
   features: z.array(FeatureSchema).optional(),
   notes: z.array(NoteSchema).optional(),
@@ -229,7 +229,7 @@ export const ClipAnnotationSchema = z.object({
   clip: ClipSchema,
   created_by: UserSchema.optional(),
   notes: z.array(NoteSchema).optional(),
-  tags: z.array(AnnotationTagSchema).optional(),
+  tags: z.array(TagSchema).optional(),
   sound_events: z.array(SoundEventAnnotationSchema).optional(),
   created_on: z.coerce.date(),
 });
@@ -255,7 +255,6 @@ export type AnnotationStatusBadge = z.infer<typeof AnnotationStatusBadgeSchema>;
 
 export const AnnotationTaskSchema = z.object({
   uuid: z.string().uuid(),
-  clip: ClipSchema,
   status_badges: z.array(AnnotationStatusBadgeSchema).optional(),
   created_on: z.coerce.date(),
 });
@@ -267,7 +266,7 @@ export const AnnotationProjectSchema = z.object({
   name: z.string(),
   description: z.string(),
   annotation_instructions: z.string().optional(),
-  tags: z.array(AnnotationTagSchema).optional(),
+  tags: z.array(TagSchema).optional(),
   created_on: z.coerce.date(),
 });
 

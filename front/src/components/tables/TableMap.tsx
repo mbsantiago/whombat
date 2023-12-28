@@ -87,10 +87,10 @@ export default function TableInput({
   const { position } = useMemo(() => parsePosition(value), [value]);
 
   return (
-    <Popover className="w-100 relative flex flex-row">
-      <Popover.Button className="grow flex flex-row justify-between items-center gap-2 px-1 text-center">
+    <Popover className="flex relative flex-row w-100">
+      <Popover.Button className="flex flex-row gap-2 justify-between items-center px-1 text-center grow">
         <span>{initialValue}</span>
-        <EditIcon className="flex-none inline-block h-5 w-5 text-stone-500" />
+        <EditIcon className="inline-block flex-none w-5 h-5 text-stone-500" />
       </Popover.Button>
       <Transition
         as={Fragment}
@@ -103,14 +103,14 @@ export default function TableInput({
       >
         <Popover.Panel
           unmount
-          className="absolute left-1/2 z-10 mt-3 -translate-x-1/2 transform px-4 sm:px-0 lg:max-w-3xl"
+          className="absolute left-1/2 z-10 px-4 mt-3 transform -translate-x-1/2 sm:px-0 lg:max-w-3xl"
         >
           <div className="rounded-lg bg-stone-100 dark:bg-stone-700">
-            <div className="p-2 flex flex-row justify-center items-center">
+            <div className="flex flex-row justify-center items-center p-2">
               <input
                 ref={ref}
                 autoFocus
-                className="block w-42 bg-stone-50 dark:bg-stone-800 rounded-md border border-stone-200 dark:border-stone-600 px-2 outline-none focus:ring-emerald-500 focus:ring-1 hover:dark:bg-stone-700 invalid:border-red-500 focus:invalid:border-red-500 invalid:text-red-500 focus:invalid:ring-red-500"
+                className="block px-2 rounded-md border outline-none focus:ring-1 focus:ring-emerald-500 w-42 bg-stone-50 border-stone-200 invalid:border-red-500 invalid:text-red-500 dark:bg-stone-800 dark:border-stone-600 hover:dark:bg-stone-700 focus:invalid:border-red-500 focus:invalid:ring-red-500"
                 value={value as string}
                 pattern="^[\-+]?([1-8]?\d(\.\d+)?|90(.0+)?),\s*[\-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
                 placeholder={initialValue}

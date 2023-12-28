@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, type MouseEvent } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type Shift } from "@/hooks/window/useDrag";
-import useDrag from "@/hooks/window/useDrag";
+import { type Shift } from "@/hooks/window/useWindowDrag";
+import useWindowDrag from "@/hooks/window/useWindowDrag";
 import { mergeProps } from "react-aria";
 import { scalePixelsToWindow, scaleBBoxToViewport } from "@/utils/geometry";
 import drawBBox from "@/draw/bbox";
@@ -103,7 +103,7 @@ export default function useSpectrogramZoom({
     setCurrentWindow(null);
   }, [enabled, currentWindow, onZoom, viewport, isValid]);
 
-  const { moveProps, isDragging } = useDrag({
+  const { moveProps, isDragging } = useWindowDrag({
     viewport,
     dimensions,
     onMoveStart,

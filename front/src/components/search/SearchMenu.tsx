@@ -4,24 +4,13 @@ import { Float } from "@headlessui-float/react";
 import Fuse from "fuse.js";
 
 import Button from "@/components/Button";
-import Search from "@/components/search/Search";
+import Search from "@/components/inputs/Search";
 
 /** A search menu.
  * @component
  * Use this component when you have a list of options that you want to filter
  * using a search bar. The component will display a search bar and menu with
  * the search results. The menu is always visible.
- * @param options The list of options to filter.
- * @param onSelect A callback that is called when an option is selected.
- * @param fields The fields of the options that should be searched.
- * @param getOptionKey A function that returns a unique key for an option.
- * @param limit The maximum number of options to display in the menu.
- * @param static Whether the menu should be static or not. If the menu is
- * static, it will not be hidden when the user clicks outside of it.
- * @param autoFocus Whether the search bar should be focused when the component
- * is mounted.
- * @param renderOption A function that renders an option. Use this to customize
- * the appearance of the options.
  */
 export default function SearchMenu<
   T extends {
@@ -87,7 +76,6 @@ export default function SearchMenu<
             <Combobox.Input
               as={as}
               autoFocus={autoFocus}
-              withButton={false}
               value={!open && value != null ? displayValue?.(value) : undefined}
               // @ts-ignore
               onChange={(value) => setQuery(value)}
@@ -133,7 +121,6 @@ export default function SearchMenu<
             <Combobox.Input
               as={as}
               autoFocus={autoFocus}
-              withButton={false}
               value={value != null ? displayValue?.(value) : undefined}
               // @ts-ignore
               onChange={(value) => setQuery(value)}

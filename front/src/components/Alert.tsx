@@ -14,19 +14,9 @@ export default function Alert({
   title: ReactNode;
   button: ReactNode;
 } & Omit<ComponentProps<typeof Button>, "onClick" | "title" | "children">) {
-  let [isOpen, setIsOpen] = useState(false);
   return (
-    <>
-      <Button type="button" onClick={() => setIsOpen(true)} {...rest}>
-        {button}
-      </Button>
-      <Dialog
-        title={<div className="max-w-md">{title}</div>}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        {({ close }) => <div className="max-w-md">{children({ close })}</div>}
-      </Dialog>
-    </>
+    <Dialog title={title} label={button} {...rest}>
+      {children}
+    </Dialog>
   );
 }

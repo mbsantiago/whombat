@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
 import Select from "@/components/inputs/Select";
@@ -10,10 +11,16 @@ import {
   TimeIntervalIcon,
   TimeStampIcon,
 } from "@/components/icons";
+import { type GeometryType } from "@/api/schemas";
 
-type SupportedGeometryType = "TimeStamp" | "TimeInterval" | "BoundingBox";
+type Node = {
+  id: string;
+  label: ReactNode;
+  value: string;
+};
 
-const geometryTypes = {
+// @ts-ignore   TODO Add all geometry types
+const geometryTypes: Record<GeometryType, Node> = {
   TimeStamp: {
     id: "TimeStamp",
     label: <TimeStampIcon className="w-5 h-5" />,
@@ -46,21 +53,29 @@ export default function AnnotationControls({
   isDeleting: boolean;
   isSelecting: boolean;
   isEditing: boolean;
-  geometryType: SupportedGeometryType;
-  onDraw: () => void;
-  onDelete: () => void;
-  onSelect: () => void;
-  onSelectGeometryType: (type: SupportedGeometryType) => void;
+  geometryType: GeometryType;
+  onDraw?: () => void;
+  onDelete?: () => void;
+  onSelect?: () => void;
+  onSelectGeometryType?: (type: GeometryType) => void;
 }) {
   return (
     <div className="flex space-x-2">
-      <Tooltip tooltip="Create a new annotation" placement="bottom">
+      <Tooltip
+        tooltip="Create a new annotation"
+        placement="bottom"
+        autoPlacement={false}
+      >
         <Button variant={isDrawing ? "primary" : "secondary"} onClick={onDraw}>
           <AnnotationProjectIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
       {!isEditing ? (
-        <Tooltip tooltip="Select an annotation" placement="bottom">
+        <Tooltip
+          tooltip="Select an annotation"
+          placement="bottom"
+          autoPlacement={false}
+        >
           <Button
             variant={isSelecting ? "primary" : "secondary"}
             onClick={onSelect}
@@ -73,7 +88,11 @@ export default function AnnotationControls({
           <EditIcon className="w-5 h-5" />
         </Button>
       )}
-      <Tooltip tooltip="Delete an annotation" placement="bottom">
+      <Tooltip
+        tooltip="Delete an annotation"
+        placement="bottom"
+        autoPlacement={false}
+      >
         <Button
           variant={isDeleting ? "danger" : "secondary"}
           onClick={onDelete}
@@ -85,7 +104,7 @@ export default function AnnotationControls({
         placement="bottom"
         options={Object.values(geometryTypes)}
         selected={geometryTypes[geometryType]}
-        onChange={(type) => onSelectGeometryType(type as SupportedGeometryType)}
+        onChange={(type) => onSelectGeometryType?.(type as GeometryType)}
       />
     </div>
   );

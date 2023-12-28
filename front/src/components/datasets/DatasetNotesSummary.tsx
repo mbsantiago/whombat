@@ -29,7 +29,7 @@ function NoIssues() {
  * @param maxIssues - The maximum number of issues to display (default is 5).
  * @returns JSX element displaying a list of issues.
  */
-function LatestIssues({
+function IssuesSummary({
   notes,
   maxIssues = 5,
 }: {
@@ -40,12 +40,17 @@ function LatestIssues({
     () => notes.filter((note) => note.is_issue).slice(0, maxIssues),
     [notes, maxIssues],
   );
+  if (issues.length === 0) return <NoIssues />;
+
   return (
-    <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
-      {issues.map((issue) => (
-        <Note key={issue.uuid} note={issue} />
-      ))}
-    </ul>
+    <>
+      Latest Issues
+      <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
+        {issues.map((issue) => (
+          <Note key={issue.uuid} note={issue} />
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -70,16 +75,7 @@ export default function DatasetNotesSumary({ dataset }: { dataset: Dataset }) {
         <NotesIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
         Notes and Issues
       </H3>
-      {notes.isLoading ? (
-        <Loading />
-      ) : notes.total === 0 ? (
-        <NoIssues />
-      ) : (
-        <>
-          Latest Issues
-          <LatestIssues notes={notes.items} />
-        </>
-      )}
+      {notes.isLoading ? <Loading /> : <IssuesSummary notes={notes.items} />}
     </Card>
   );
 }

@@ -1,77 +1,65 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type AxiosError } from "axios";
 
 import api from "@/app/api";
-import { type NoteCreate } from "@/api/notes";
-import { type ClipAnnotation, type Tag } from "@/api/schemas";
+import useObject from "@/hooks/utils/useObject";
+import { type ClipAnnotation } from "@/api/schemas";
 
 /**
  * A hook for managing the state of a clip annotation.
  */
 export default function useClipAnnotation({
+  uuid,
   clipAnnotation,
   onDelete,
   onAddTag,
   onRemoveTag,
   onAddNote,
+  onRemoveNote,
+  onError,
   enabled = true,
 }: {
-  clipAnnotation: ClipAnnotation;
+  uuid: string;
+  clipAnnotation?: ClipAnnotation;
   onDelete?: (annotation: ClipAnnotation) => void;
   onAddTag?: (annotation: ClipAnnotation) => void;
   onRemoveTag?: (annotation: ClipAnnotation) => void;
   onAddNote?: (annotation: ClipAnnotation) => void;
+  onRemoveNote?: (annotation: ClipAnnotation) => void;
+  onError?: (error: AxiosError) => void;
   enabled?: boolean;
 }) {
-  const client = useQueryClient();
+  const { query, useMutation, useDestruction } = useObject<ClipAnnotation>({
+    name: "clip_annotation",
+    uuid,
+    initial: clipAnnotation,
+    enabled,
+    getFn: api.clipAnnotations.get,
+    onError,
+  });
 
-  const query = useQuery(
-    ["clip_annotation", clipAnnotation.uuid],
-    async () => await api.clipAnnotations.get(clipAnnotation.uuid),
-    {
-      initialData: clipAnnotation,
-      staleTime: 1000 * 60 * 5,
-      enabled,
-    },
-  );
-
-  const delete_ = useMutation({
-    mutationFn: () => {
-      return api.clipAnnotations.delete(clipAnnotation);
-    },
-    onSuccess: (data, _) => {
-      query.remove();
-      onDelete?.(data);
-    },
+  const delete_ = useDestruction({
+    mutationFn: api.clipAnnotations.delete,
+    onSuccess: onDelete,
   });
 
   const addTag = useMutation({
-    mutationFn: (tag: Tag) => {
-      return api.clipAnnotations.addTag(clipAnnotation, tag);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(["clip_annotation", clipAnnotation.uuid], data);
-      onAddTag?.(data);
-    },
+    mutationFn: api.clipAnnotations.addTag,
+    onSuccess: onAddTag,
   });
 
   const removeTag = useMutation({
-    mutationFn: (tag: Tag) => {
-      return api.clipAnnotations.removeTag(clipAnnotation, tag);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(["clip_annotation", clipAnnotation.uuid], data);
-      onRemoveTag?.(data);
-    },
+    mutationFn: api.clipAnnotations.removeTag,
+    onSuccess: onRemoveTag,
   });
 
   const addNote = useMutation({
-    mutationFn: (data: NoteCreate) => {
-      return api.clipAnnotations.addNote(clipAnnotation, data);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(["clip_annotation", clipAnnotation.uuid], data);
-      onAddNote?.(data);
-    },
+    mutationFn: api.clipAnnotations.addNote,
+    onSuccess: onAddNote,
+  });
+
+  const removeNote = useMutation({
+    mutationFn: api.clipAnnotations.removeNote,
+    onSuccess: onRemoveNote,
   });
 
   return {
@@ -80,5 +68,6 @@ export default function useClipAnnotation({
     addTag,
     removeTag,
     addNote,
+    removeNote,
   } as const;
 }

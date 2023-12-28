@@ -19,6 +19,24 @@ export function H1({
   );
 }
 
+export function H2({
+  children,
+  className,
+  ...props
+}: { children: ReactNode } & HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h2
+      className={classnames(
+        "text-xl font-bold text-stone-900 dark:text-stone-200",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </h2>
+  );
+}
+
 export function H3({
   children,
   className,

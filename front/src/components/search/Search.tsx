@@ -1,81 +1,243 @@
-import { type InputHTMLAttributes } from "react";
-
+import { type FuseOptionKey } from "fuse.js";
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  RefObject,
+  type ReactNode,
+  type ReactElement
+} from "react";
+import { useComboBoxState, type ComboBoxState } from "react-stately";
+import { type CollectionElement, type Node } from "@react-types/shared";
+import classNames from "classnames";
+import {
+  useComboBox,
+  VisuallyHidden,
+  DismissButton,
+  Overlay,
+  usePopover,
+  useListBox,
+  useOption,
+  type AriaListBoxOptions,
+  type AriaPopoverProps,
+} from "react-aria";
 import { SearchIcon } from "@/components/icons";
-import Button from "@/components/Button";
-import { Input } from "@/components/inputs/index";
+import Loading from "@/components/Loading";
+import { Input } from "@/components/inputs";
+import useListWithSearch from "@/hooks/lists/useListWithSearch";
 
-export default function Search({
-  label = "Search",
-  placeholder = "Search...",
-  icon,
+function EmptyMessage({ }: { state: ComboBoxState<any> }) {
+  return <div className="p-2">No results</div>;
+}
+
+export default function Search<T extends object>({
+  label,
   value,
-  onChange,
-  onSubmit,
-  withButton = true,
-  ...props
+  options,
+  fields,
+  isLoading = false,
+  getOptionKey,
+  displayValue,
+  showMax = 10,
+  delay = 300,
+  emptyMessage = EmptyMessage,
+  onSelect,
+  onChangeSearch,
+  children,
 }: {
-  label?: string;
-  placeholder?: string;
-  icon?: React.ReactElement;
-  value?: string;
-  withButton?: boolean;
-  onChange?: (value: string) => void;
-  onSubmit?: () => void;
-} & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  | "onChange"
-  | "onSubmit"
-  | "placeholder"
-  | "value"
-  | "id"
-  | "onKeyDown"
-  | "required"
-  | "type"
-  | "className"
->) {
-  const inputId = `search-${label}`;
+  label: string;
+  value?: T | null;
+  options: T[];
+  fields: FuseOptionKey<T>[];
+  showMax?: number;
+  isLoading?: boolean;
+  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement;
+  onSelect?: (value: T) => void;
+  onChangeSearch?: (value: string) => void;
+  getOptionKey: (value: T) => string;
+  displayValue: (value: T) => string;
+  delay?: number;
+  children: (option: T) => CollectionElement<T>;
+}) {
+  const {
+    search,
+    items,
+    setSearch,
+  } = useListWithSearch({
+    options,
+    fields: fields,
+    limit: showMax,
+  });
 
-  // Handle enter key press
-  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      onSubmit?.();
-    }
-  };
+  const onSelectionChange = useCallback(
+    (key: string | number) => {
+      const option = options.find((option) => getOptionKey(option) === key);
+      if (option) {
+        onSelect?.(option);
+        setSearch(displayValue(option));
+      }
+    },
+    [options, getOptionKey, onSelect, setSearch, displayValue],
+  );
+
+  const props = useMemo(
+    () => ({
+      label,
+      shouldCloseOnBlur: true,
+      allowsEmptyCollection: true,
+      items: items,
+      inputValue: search,
+      selectedKey: value ? getOptionKey(value) : null,
+      onInputChange: (value: string) => setSearch(value),
+      onSelectionChange,
+      children,
+    }),
+    [
+      label,
+      items,
+      search,
+      setSearch,
+      value,
+      getOptionKey,
+      onSelectionChange,
+      children,
+    ],
+  );
+
+  const state = useComboBoxState(props);
+
+  // Setup refs and get props for child elements.
+  const inputRef = useRef(null);
+  const listBoxRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  const { inputProps, listBoxProps, labelProps } = useComboBox(
+    {
+      ...props,
+      inputRef,
+      listBoxRef,
+      popoverRef,
+    },
+    state,
+  );
+
+  useEffect(() => {
+    const timeout = setTimeout(() => onChangeSearch?.(search), delay);
+    return () => clearTimeout(timeout);
+  }, [search, delay, onChangeSearch]);
 
   return (
-    <div className="flex items-center">
-      <label htmlFor={inputId} className="sr-only">
-        {label}
-      </label>
+    <div className="flex items-center w-full">
+      <VisuallyHidden>
+        <label {...labelProps}>{label}</label>
+      </VisuallyHidden>
       <div className="relative w-full">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex w-8 items-center pl-3">
-          {icon || <SearchIcon />}
+        <div className="flex absolute inset-y-0 left-0 items-center pl-3 w-8 pointer-events-none">
+          {isLoading ? <Loading /> : <SearchIcon />}
         </div>
-        <Input
-          type="text"
-          value={value}
-          id={inputId}
-          onKeyDown={onKeyPress}
-          onChange={
-            onChange ? (event) => onChange(event.target.value) : undefined
-          }
-          className="5 pl-10 text-sm"
-          placeholder={placeholder}
-          {...props}
-        />
+        <Input {...inputProps} className="pl-10 text-sm 5" ref={inputRef} />
       </div>
-      {withButton && (
-        <Button
-          type="submit"
-          onSubmit={onSubmit}
-          variant="primary"
-          className="ml-2"
+      {state.isOpen && (
+        <Popover
+          state={state}
+          triggerRef={inputRef}
+          popoverRef={popoverRef}
+          isNonModal
+          placement="bottom start"
+          offset={8}
         >
-          <SearchIcon className="h-4 w-4" />
-          <span className="sr-only">{label}</span>
-        </Button>
+          <ListBox
+            {...listBoxProps}
+            listBoxRef={listBoxRef}
+            state={state}
+            emptyMessage={emptyMessage}
+          />
+        </Popover>
       )}
     </div>
+  );
+}
+
+function ListBox<T>({
+  state,
+  listBoxRef,
+  emptyMessage = EmptyMessage,
+  ...props
+}: AriaListBoxOptions<T> & {
+  state: ComboBoxState<T>;
+  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement;
+  listBoxRef: RefObject<HTMLUListElement>;
+}) {
+  let { listBoxProps } = useListBox(props, state, listBoxRef);
+
+  return (
+    <div className="w-full bg-stone-300 dark:bg-stone-700 rounded-md p-1">
+      <ul {...listBoxProps} ref={listBoxRef} className="flex flex-col gap-1">
+        {state.collection.size === 0
+          ? emptyMessage({ state })
+          : Array.from(state.collection).map((item) => (
+            <Option key={item.key} item={item} state={state} />
+          ))}
+      </ul>
+    </div>
+  );
+}
+
+function Option<T>({
+  item,
+  state,
+}: {
+  item: Node<T>;
+  state: ComboBoxState<T>;
+}) {
+  let ref = useRef(null);
+  let { optionProps, isSelected, isFocused, isDisabled } = useOption(
+    { key: item.key },
+    state,
+    ref,
+  );
+
+  return (
+    <li
+      {...optionProps}
+      className={classNames("rounded-md p-2 cursor-pointer text-sm", {
+        "bg-stone-400 dark:bg-stone-600": isSelected,
+        "bg-stone-200 dark:bg-stone-800": isFocused,
+        "text-gray-500": isDisabled,
+      })}
+      ref={ref}
+    >
+      {item.rendered}
+    </li>
+  );
+}
+
+function Popover({
+  children,
+  state,
+  ...props
+}: {
+  children: ReactNode;
+  state: ComboBoxState<any>;
+  placement: string;
+} & AriaPopoverProps) {
+  let { popoverProps } = usePopover(props, state);
+  const { triggerRef } = props;
+
+  return (
+    <Overlay>
+      <div
+        {...popoverProps}
+        style={{
+          width: triggerRef.current?.clientWidth,
+          ...popoverProps.style,
+        }}
+        ref={props.popoverRef as React.RefObject<HTMLDivElement>}
+      >
+        {children}
+        <DismissButton onDismiss={state.close} />
+      </div>
+    </Overlay>
   );
 }

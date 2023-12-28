@@ -1,12 +1,37 @@
 import { type Interval } from "@/api/audio";
 import {
   type SpectrogramWindow,
+  type SpectrogramParameters,
   DEFAULT_WINDOW_SIZE,
+  DEFAULT_SPECTROGRAM_PARAMETERS,
   DEFAULT_HOP_SIZE,
 } from "@/api/spectrograms";
 
 // Size of the target initial spectrogram in pixels.
 const TARGET_INITIAL_SIZE = 512 * 1024;
+
+export function getInitialViewingWindow({
+  startTime,
+  endTime,
+  samplerate,
+  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+}: {
+  startTime: number;
+  endTime: number;
+  samplerate: number;
+  parameters?: SpectrogramParameters;
+}): SpectrogramWindow {
+  const duration = getInitialDuration({
+    interval: { min: startTime, max: endTime },
+    samplerate,
+    window_size: parameters.window_size,
+    hop_size: parameters.hop_size,
+  });
+  return {
+    time: { min: startTime, max: startTime + duration },
+    freq: { min: 0, max: samplerate / 2 },
+  };
+}
 
 /**
  * Get the ideal duration of a spectrogram window given the interval and
@@ -28,11 +53,18 @@ export function getInitialDuration({
   window_size?: number;
   hop_size?: number;
 }) {
+  console.log({
+    interval,
+    samplerate,
+    window_size,
+    hop_size,
+  })
   const duration = interval.max - interval.min;
   const n_fft = Math.floor(window_size * samplerate);
   const specHeight = Math.floor(n_fft / 2) + 1;
   const specWidth = TARGET_INITIAL_SIZE / specHeight;
-  const windowWidth = specWidth * hop_size;
+  const hopDuration = window_size * hop_size;
+  const windowWidth = specWidth * hopDuration;
   return Math.min(duration, windowWidth);
 }
 

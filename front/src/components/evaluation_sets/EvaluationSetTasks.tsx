@@ -3,7 +3,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import useTasks from "@/hooks/api/useTasks";
 import Card from "@/components/Card";
 import Button from "@/components/Button";
-import SearchAnnotationProjects from "@/components/search/AnnotationProjects";
+import AnnotationProjectSearch from "@/components/annotation_projects/AnnotationProjectSearch";
 import Toggle from "@/components/inputs/Toggle";
 import { InputGroup } from "@/components/inputs/index";
 import { H3 } from "@/components/Headings";
@@ -32,7 +32,7 @@ function SelectAnnotationProject({
           data.
         </p>
       </div>
-      <SearchAnnotationProjects value={selected} onSelect={onSelect} />
+      <AnnotationProjectSearch value={selected} onSelect={onSelect} />
     </Card>
   );
 }

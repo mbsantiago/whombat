@@ -19,15 +19,11 @@ const CREATE_STYLE = {
 };
 
 export default function useAnnotationCreate({
-  drag,
   window,
-  send,
   active,
   geometryType = "TimeStamp",
 }: {
-  drag: ScratchState;
   window: SpectrogramWindow;
-  send: (event: CreateAnnotationEvent) => void;
   active: boolean;
   geometryType: "BoundingBox" | "TimeStamp" | "TimeInterval";
 }) {

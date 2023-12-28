@@ -17,12 +17,12 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
 
   return (
     <Card>
-      <div className="flex flex-row items-center justify-center">
-        <MapIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+      <div className="flex flex-row justify-center items-center">
+        <MapIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         Recorded at
       </div>
       {!hasLocation ? (
-        <div className="dark:text-stone-600 text-stone-400 text-sm">
+        <div className="text-sm text-stone-400 dark:text-stone-600">
           No location provided.
         </div>
       ) : (
@@ -34,7 +34,6 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
               lng: recording.longitude ?? 0,
             }}
             scrollWheelZoom={true}
-              
             zoom={14}
           >
             <Marker

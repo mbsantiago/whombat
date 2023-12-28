@@ -13,19 +13,6 @@ import api from "@/app/api";
  * This hook encapsulates the logic for querying, updating, and deleting
  * dataset information using React Query. It can also fetch and provide
  * additional dataset state if enabled.
- *
- * @param {Object} props - The hook parameters.
- * @param {string} props.uuid - The UUID of the dataset to be managed.
- * @param {Dataset} [props.dataset] - Optional initial dataset data to provide
- * or override.
- * @param {(updated: Dataset) => void} [props.onUpdate] - Callback function
- * invoked on successful dataset update.
- * @param {(deleted: Dataset) => void} [props.onDelete] - Callback function
- * invoked on successful dataset deletion.
- * @param {boolean} [props.enabled=true] - Whether the dataset-related queries
- * and mutations are enabled.
- * @param {boolean} [props.withState=false] - Whether to fetch and provide
- * additional dataset state.
  */
 export default function useDataset({
   uuid,
@@ -74,11 +61,18 @@ export default function useDataset({
   });
 
   const { data } = query;
-  const downloadLink = useMemo(() => {
+  const downloadLinkJSON = useMemo(() => {
     if (data == null) {
       return undefined;
     }
-    return api.datasets.getDownloadUrl(data);
+    return api.datasets.getDownloadUrl(data, "json");
+  }, [data]);
+
+  const downloadLinkCSV = useMemo(() => {
+    if (data == null) {
+      return undefined;
+    }
+    return api.datasets.getDownloadUrl(data, "csv");
   }, [data]);
 
   return {
@@ -86,7 +80,10 @@ export default function useDataset({
     update,
     delete: delete_,
     state,
-    downloadLink,
+    download: {
+      json: downloadLinkJSON,
+      csv: downloadLinkCSV,
+    },
   };
 }
 

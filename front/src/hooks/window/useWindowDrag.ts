@@ -1,100 +1,68 @@
-import { useState } from "react";
-import { useUpdateEffect } from "react-use";
-
+import { useState, useCallback } from "react";
+import { useMove } from "react-aria";
+import { scalePixelsToWindow } from "@/utils/geometry";
 import { type SpectrogramWindow } from "@/api/spectrograms";
-import { type SetWindowFn } from "@/hooks/window/useWindow";
 
-export type DragState = {
-  isScratching: boolean;
-  x?: number;
-  y?: number;
-  dx?: number;
-  dy?: number;
-  docX?: number;
-  docY?: number;
-  posX?: number;
-  posY?: number;
-  elH?: number;
-  elW?: number;
-  elX?: number;
-  elY?: number;
+/**
+ * A type representing the shift in time and frequency.
+ */
+export type Shift = {
+  time: number;
+  freq: number;
 };
 
-export type DragFn = ({
-  window,
-  offset,
+/**
+ * The `useDrag` hook manages dragging behavior for an object
+ * within a specified viewport.
+ *
+ */
+export default function useWindowDrag({
+  viewport,
+  dimensions: { width, height },
+  onMoveStart,
+  onMove,
+  onMoveEnd,
 }: {
-  window: SpectrogramWindow;
-  offset: DragState;
-}) => SpectrogramWindow | null;
+  viewport: SpectrogramWindow;
+  dimensions: { width: number; height: number };
+  onMoveStart?: () => void;
+  onMove?: (position: Shift) => void;
+  onMoveEnd?: () => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-export function dragBackground({
-  window,
-  offset: { dx, dy, elH, elW },
-}: {
-  window: SpectrogramWindow;
-  offset: DragState;
-}): SpectrogramWindow {
-  if (dx == null || dy == null || elH == null || elW == null) {
-    return window;
-  }
+  const onMoveCallback = useCallback(
+    ({ deltaX, deltaY }: { deltaX: number; deltaY: number }) => {
+      setPosition(({ x, y }) => ({ x: x + deltaX, y: y + deltaY }));
+      if (width == null || height == null) return;
+      const shift = scalePixelsToWindow(
+        position,
+        viewport,
+        { width, height },
+        true,
+      );
+      onMove?.(shift);
+    },
+    [width, height, position, viewport, onMove],
+  );
 
-  let { min: start, max: end } = window.time;
-  let { min: low, max: high } = window.freq;
-
-  let height = high - low;
-  let width = end - start;
-
-  let dT = (width * dx) / elW;
-  let dF = (height * dy) / elH;
+  const { moveProps } = useMove({
+    onMoveStart: () => {
+      setPosition({ x: 0, y: 0 });
+      setIsDragging(true);
+      onMoveStart?.();
+    },
+    onMove: onMoveCallback,
+    onMoveEnd: () => {
+      setPosition({ x: 0, y: 0 });
+      onMoveEnd?.();
+    },
+  });
 
   return {
-    time: {
-      min: start - dT,
-      max: end - dT,
-    },
-    freq: {
-      min: low + dF,
-      max: high + dF,
-    },
+    moveProps,
+    isDragging,
+    shift: position,
   };
-}
-
-export default function useWindowDrag({
-  window: initial,
-  setWindow,
-  dragState,
-  active = true,
-  dragFunction = dragBackground,
-}: {
-  window: SpectrogramWindow;
-  dragState: DragState;
-  setWindow?: SetWindowFn;
-  dragFunction?: DragFn;
-  active?: boolean;
-}) {
-  const [startPoint, setStartPoint] = useState<SpectrogramWindow | null>(null);
-
-  const { isScratching } = dragState;
-
-  // Update starting point when scratching starts
-  useUpdateEffect(() => {
-    if (isScratching && active) {
-      setStartPoint(initial);
-    } else {
-      setStartPoint(null);
-    }
-  }, [isScratching, active]);
-
-  useUpdateEffect(() => {
-    if (active && startPoint != null && isScratching) {
-      let draggedWindow = dragFunction({
-        window: startPoint,
-        offset: dragState,
-      });
-      if (draggedWindow != null) {
-        setWindow?.(draggedWindow);
-      }
-    }
-  }, [dragState, active, setWindow, dragFunction, startPoint]);
 }

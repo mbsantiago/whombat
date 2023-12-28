@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import { getViewportPosition } from "@/utils/windows";
-import useDrag from "@/hooks/window/useDrag";
+import useWindowDrag from "@/hooks/window/useWindowDrag";
 import { type SpectrogramWindow } from "@/api/spectrograms";
 
 export default function SpectrogramBar({
@@ -32,7 +32,7 @@ export default function SpectrogramBar({
 
   const [intialViewport, setInitialViewport] = useState(viewport);
 
-  const { moveProps } = useDrag({
+  const { moveProps } = useWindowDrag({
     dimensions: { width, height },
     viewport: bounds,
     onMoveStart: () => setInitialViewport(viewport),

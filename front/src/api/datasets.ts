@@ -49,7 +49,8 @@ const DEFAULT_ENDPOINTS = {
   get: "/api/v1/datasets/detail/",
   update: "/api/v1/datasets/detail/",
   delete: "/api/v1/datasets/detail/",
-  download: "/api/v1/datasets/detail/download/",
+  downloadJson: "/api/v1/datasets/detail/download/json/",
+  downloadCsv: "/api/v1/datasets/detail/download/csv/",
   import: "/api/v1/datasets/import/",
 };
 
@@ -106,8 +107,12 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(data);
   }
 
-  function getDownloadUrl(dataset: Dataset): string {
-    return `${baseUrl}${endpoints.download}?dataset_uuid=${dataset.uuid}`;
+  function getDownloadUrl(dataset: Dataset, format: "json" | "csv"): string {
+    if (format === "json") {
+      return `${baseUrl}${endpoints.downloadJson}?dataset_uuid=${dataset.uuid}`;
+    } else {
+      return `${baseUrl}${endpoints.downloadCsv}?dataset_uuid=${dataset.uuid}`;
+    }
   }
 
   async function importDataset(data: FormData): Promise<Dataset> {

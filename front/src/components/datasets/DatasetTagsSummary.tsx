@@ -3,11 +3,13 @@ import { useMemo } from "react";
 import Card from "@/components/Card";
 import Tag from "@/components/tags/Tag";
 import { H3 } from "@/components/Headings";
-import { type Tag as TagType, type Dataset } from "@/api/schemas";
+import { type Dataset, type Tag as TagType } from "@/api/schemas";
 import Loading from "@/app/loading";
 import useStore from "@/store";
 import { TagsIcon } from "@/components/icons";
-import useTags from "@/hooks/api/useTags";
+import { type RecordingTag } from "@/api/tags";
+import usePagedQuery from "@/hooks/utils/usePagedQuery";
+import api from "@/app/api";
 
 /**
  * Component to display a summary of tags for a dataset.
@@ -29,14 +31,23 @@ export default function DatasetTagsSummary({
     }),
     [dataset.uuid],
   );
-  const tags = useTags({ pageSize: -1, filter });
+
+  const {
+    query: { isLoading },
+    items: tags,
+  } = usePagedQuery({
+    name: "recording_tags",
+    queryFn: api.tags.getRecordingTags,
+    filter,
+    pageSize: -1,
+  });
 
   const tagCount: [TagType, number][] = useMemo(() => {
-    if (tags.isLoading || tags.data == null) {
+    if (isLoading || tags == null) {
       return [];
     }
-    return getTagCount(tags.items);
-  }, [tags]);
+    return getTagCount(tags);
+  }, [tags, isLoading]);
 
   const popularTags = tagCount.slice(0, topK);
   return (
@@ -45,7 +56,7 @@ export default function DatasetTagsSummary({
         <TagsIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
         Tags
       </H3>
-      {tags.isLoading ? (
+      {isLoading ? (
         <Loading />
       ) : popularTags.length === 0 ? (
         <NoTagsRecorded />
@@ -66,11 +77,11 @@ function getTagKey(tag: TagType): string {
  * @param tags - An array of tag instances.
  * @returns An array of tuples containing tags and their respective counts.
  */
-function getTagCount(tags: TagType[]): [TagType, number][] {
+function getTagCount(tags: RecordingTag[]): [TagType, number][] {
   const tagCount = new Map<string, number>();
   const tagMap = new Map<string, TagType>();
 
-  tags.forEach((tag) => {
+  tags.forEach(({ tag }) => {
     const key = getTagKey(tag);
     if (!tagMap.has(key)) {
       tagMap.set(key, tag);

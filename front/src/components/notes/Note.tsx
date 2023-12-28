@@ -23,7 +23,6 @@ export default function Note({
     uuid: data.uuid,
     note: data,
     onUpdate,
-    onDelete,
   });
 
   if (note.isLoading || note.data == null) return <Loading />;
@@ -65,8 +64,7 @@ export default function Note({
                 mode="text"
                 variant="danger"
                 className="text-xs"
-                // @ts-ignore
-                onClick={() => note.delete.mutate()}
+                onClick={() => onDelete?.(note.data)}
               >
                 <DeleteIcon className="inline-block mr-1 w-4 h-4" />
                 Remove

@@ -1,36 +1,20 @@
 "use client";
-import { useContext, useMemo } from "react";
-import { notFound } from "next/navigation";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useContext, useCallback } from "react";
+import AnnotationProjectDetail from "@/components/annotation_projects/AnnotationProjectDetail";
+import AnnotationProjectContext from "./context";
 
-import useTasks from "@/hooks/api/useTasks";
-import useAnnotationProject from "@/hooks/api/useAnnotationProject";
-import Loading from "@/app/loading";
-import ProjectDetail from "@/components/annotation_projects/ProjectDetail";
-import { AnnotationProjectContext } from "@/app/contexts";
+export default function Page() {
+  const annotationProject = useContext(AnnotationProjectContext);
+  const router = useRouter();
 
-export default function AnnotationProjectHome() {
-  const context = useContext(AnnotationProjectContext);
-
-  const project = useAnnotationProject({
-    annotation_project_id: context?.id ?? -1,
-  });
-
-  const filter = useMemo(
-    () => ({ project__eq: context?.id ?? -1 }),
-    [context?.id],
-  );
-  const tasks = useTasks({ pageSize: -1, filter });
-
-  if (project == null) return notFound();
-  if (project.query.data == null) return <Loading />;
+  const onDelete = useCallback(() => {
+    toast.success("Project deleted");
+    router.push("/annotation_projects");
+  }, [router]);
 
   return (
-    <ProjectDetail
-      tasks={tasks.items}
-      project={project.query.data}
-      onChange={project.update.mutate}
-      onDelete={project.delete.mutate}
-      isLoading={project.query.isLoading || tasks.query.isLoading}
-    />
+    <AnnotationProjectDetail annotationProject={annotationProject} onDelete={onDelete} />
   );
 }

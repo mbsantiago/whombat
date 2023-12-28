@@ -11,7 +11,7 @@ import Loading from "@/app/loading";
 import RecordingHeader from "@/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
 import TaskSpectrogram from "@/components/spectrograms/TaskSpectrogram";
-import AnnotationTags from "@/components/annotation/AnnotationTags";
+import AnnotationProjectTags from "@/components/annotation/AnnotationTags";
 // import TaskStatus from "@/components/tasks/TaskStatus";
 // import useTask from "@/hooks/api/useTask";
 // import useSoundEventAnnotations from "@/hooks/api/useAnnotations";
@@ -201,7 +201,7 @@ export default function AnnotateTask({
             verify={() => task.addBadge.mutate("verified")}
             removeBadge={(badge) => task.removeBadge.mutate(badge)}
           />
-          <AnnotationTags
+          <AnnotationProjectTags
             tags={tags}
             project={project}
             onClick={task.addTag.mutate}

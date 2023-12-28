@@ -1,3 +1,4 @@
+"use client";
 /**
  * Layout component for rendering the structure of a dataset detail page.
  *
@@ -6,7 +7,6 @@
  * (DatasetNavHeader) and wraps the content with the DatasetContext.Provider to
  * provide dataset-related context to its children components.
  */
-"use client";
 import toast from "react-hot-toast";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";

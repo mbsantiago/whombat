@@ -30,6 +30,7 @@ export default function RecordingTagBar({
             key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}
+            onClose={() => recording.removeTag.mutate(tag)}
           />
         ))}
         <AddTagButton variant="primary" onAdd={recording.addTag.mutate} />

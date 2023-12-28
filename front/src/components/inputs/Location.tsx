@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
@@ -44,13 +45,6 @@ export default function LocationInput({
   value: Location;
   onChange?: (value: Location) => void;
 }) {
-  if (value.latitude == null || value.longitude == null) {
-    console.log({
-      value,
-      parsed: schema.safeParse(value),
-    });
-  }
-
   const {
     register,
     handleSubmit,

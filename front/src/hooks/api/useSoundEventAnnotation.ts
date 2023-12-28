@@ -1,108 +1,66 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type AxiosError } from "axios";
 
 import api from "@/app/api";
-import { type NoteCreate } from "@/api/notes";
-import { type SoundEventAnnotation, type Tag } from "@/api/schemas";
-import { type SoundEventAnnotationUpdate } from "@/api/sound_event_annotations";
+import useObject from "@/hooks/utils/useObject";
+import { type SoundEventAnnotation } from "@/api/schemas";
 
 /**
  * A hook for managing the state of a sound event annotation.
  */
 export default function useSoundEventAnnotation({
+  uuid,
   soundEventAnnotation,
   onDelete,
   onUpdate,
   onAddTag,
   onRemoveTag,
   onAddNote,
+  onError,
   enabled = true,
 }: {
-  soundEventAnnotation: SoundEventAnnotation;
+  uuid: string;
+  soundEventAnnotation?: SoundEventAnnotation;
   onDelete?: (annotation: SoundEventAnnotation) => void;
   onUpdate?: (annotation: SoundEventAnnotation) => void;
   onAddTag?: (annotation: SoundEventAnnotation) => void;
   onRemoveTag?: (annotation: SoundEventAnnotation) => void;
   onAddNote?: (annotation: SoundEventAnnotation) => void;
+  onError?: (error: AxiosError) => void;
   enabled?: boolean;
 }) {
-  const client = useQueryClient();
-
-  const query = useQuery(
-    ["sound_event_annotation", soundEventAnnotation.uuid],
-    async () => await api.soundEventAnnotations.get(soundEventAnnotation.uuid),
-    {
-      initialData: soundEventAnnotation,
-      staleTime: 1000 * 60 * 5,
+  const { query, useMutation, useDestruction } =
+    useObject<SoundEventAnnotation>({
+      name: "sound_event_annotation",
+      uuid,
+      initial: soundEventAnnotation,
       enabled,
-    },
-  );
+      getFn: api.soundEventAnnotations.get,
+      onError,
+    });
 
   const update = useMutation({
-    mutationFn: ({
-      soundEventAnnotation,
-      data,
-    }: {
-      soundEventAnnotation: SoundEventAnnotation;
-      data: SoundEventAnnotationUpdate;
-    }) => {
-      return api.soundEventAnnotations.update(soundEventAnnotation, data);
-    },
-    onSuccess: (data, _) => {
-      client.setQueryData(
-        ["sound_event_annotation", soundEventAnnotation.uuid],
-        data,
-      );
-      onUpdate?.(data);
-    },
+    mutationFn: api.soundEventAnnotations.update,
+    onSuccess: onUpdate,
   });
 
-  const delete_ = useMutation({
-    mutationFn: (soundEventAnnotation: SoundEventAnnotation) => {
-      return api.soundEventAnnotations.delete(soundEventAnnotation);
-    },
-    onSuccess: (data, _) => {
-      query.remove();
-      onDelete?.(data);
-    },
+  const delete_ = useDestruction({
+    mutationFn: api.soundEventAnnotations.delete,
+    onSuccess: onDelete,
   });
 
   const addTag = useMutation({
-    mutationFn: (tag: Tag) => {
-      return api.soundEventAnnotations.addTag(soundEventAnnotation, tag);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(
-        ["sound_event_annotation", soundEventAnnotation.uuid],
-        data,
-      );
-      onAddTag?.(data);
-    },
+    mutationFn: api.soundEventAnnotations.addTag,
+    onSuccess: onAddTag,
   });
 
   const removeTag = useMutation({
-    mutationFn: (tag: Tag) => {
-      return api.soundEventAnnotations.removeTag(soundEventAnnotation, tag);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(
-        ["sound_event_annotation", soundEventAnnotation.uuid],
-        data,
-      );
-      onRemoveTag?.(data);
-    },
+    mutationFn: api.soundEventAnnotations.removeTag,
+    onSuccess: onRemoveTag,
   });
 
   const addNote = useMutation({
-    mutationFn: (data: NoteCreate) => {
-      return api.soundEventAnnotations.addNote(soundEventAnnotation, data);
-    },
-    onSuccess: (data) => {
-      client.setQueryData(
-        ["sound_event_annotation", soundEventAnnotation.uuid],
-        data,
-      );
-      onAddNote?.(data);
-    },
+    mutationFn: api.soundEventAnnotations.addNote,
+    onSuccess: onAddNote,
   });
 
   return {

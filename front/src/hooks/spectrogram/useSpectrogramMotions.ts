@@ -1,9 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { type SpectrogramWindow } from "@/api/spectrograms";
+import useWindowScroll from "@/hooks/window/useWindowScroll";
 import useSpectrogramDrag from "./useSpectrogramDrag";
 import useSpectrogramZoom from "./useSpectrogramZoom";
-import useSpectrogramScrollMove from "./useSpectrogramScrollMove";
-import useSpectrogramScrollZoom from "./useSpectrogramScrollZoom";
 import { mergeProps } from "react-aria";
 
 /**
@@ -98,36 +97,42 @@ export default function useSpectrogramMotions({
     enabled: enabled && motionMode === "zoom",
   });
 
-  const { scrollProps: scrollMoveTimeProps } = useSpectrogramScrollMove({
+  const { scrollProps: scrollMoveTimeProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: onScrollMoveTime,
+    onScroll: ({ time }) => time && onScrollMoveTime?.(time),
     shift: true,
     enabled,
+    relative: false,
   });
 
-  const { scrollProps: scrollZoomTimeProps } = useSpectrogramScrollZoom({
+  const { scrollProps: scrollZoomTimeProps } = useWindowScroll({
+    viewport,
     dimensions,
-    onScroll: onScrollZoomTime,
+    onScroll: ({ timeRatio }) => timeRatio && onScrollZoomTime?.(1 + timeRatio),
     shift: true,
     alt: true,
     enabled,
+    relative: true,
   });
 
-  const { scrollProps: scrollMoveFreqProps } = useSpectrogramScrollMove({
+  const { scrollProps: scrollMoveFreqProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: onScrollMoveFreq,
+    onScroll: ({ freq }) => freq && onScrollMoveFreq?.(freq),
     ctrl: true,
     enabled,
+    relative: false,
   });
 
-  const { scrollProps: scrollZoomFreqProps } = useSpectrogramScrollZoom({
+  const { scrollProps: scrollZoomFreqProps } = useWindowScroll({
+    viewport,
     dimensions,
-    onScroll: onScrollZoomFreq,
+    onScroll: ({ freqRatio }) => freqRatio && onScrollZoomFreq?.(1 + freqRatio),
     ctrl: true,
     alt: true,
     enabled,
+    relative: true,
   });
 
   const props = mergeProps(

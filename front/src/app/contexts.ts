@@ -1,19 +1,7 @@
 import { createContext } from "react";
 
-import {
-  type AnnotationProject,
-  type Tag,
-  type EvaluationSet,
-} from "@/api/schemas";
+import { type Tag, type EvaluationSet } from "@/api/schemas";
 import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
-
-export const AnnotationProjectContext = createContext<AnnotationProject>({
-  name: "",
-  description: "",
-  tags: [],
-  created_on: new Date(),
-  uuid: "",
-});
 
 type EvaluationSetContextType = {
   evaluationSet: EvaluationSet;

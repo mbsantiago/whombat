@@ -7,7 +7,6 @@ import { GetManySchema, Page } from "./common";
 
 export const ClipCreateSchema = z
   .object({
-    recording_id: z.number(),
     start_time: z.number(),
     end_time: z.number(),
   })
@@ -16,6 +15,12 @@ export const ClipCreateSchema = z
   });
 
 export type ClipCreate = z.input<typeof ClipCreateSchema>;
+
+export const ClipCreateManySchema = z.array(
+  z.tuple([z.string().uuid(), ClipCreateSchema]),
+);
+
+export type ClipCreateMany = z.input<typeof ClipCreateManySchema>;
 
 export const ClipPageSchema = Page(ClipSchema);
 
@@ -58,7 +63,7 @@ export function registerClipAPI(
     return response.data;
   }
 
-  async function createMany(data: ClipCreate[]): Promise<Clip[]> {
+  async function createMany(data: ClipCreateMany): Promise<Clip[]> {
     const response = await api.post(endpoints.createMany, data);
     return response.data;
   }

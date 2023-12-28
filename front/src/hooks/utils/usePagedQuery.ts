@@ -73,7 +73,7 @@ export default function usePagedQuery<T, S extends Object>({
 }): PagedList<T> {
   const [page, setPage] = useState(0);
   const [size, setPageSize] = useState(pageSize);
-  const queryKey = [name, page, size, filter];
+  const queryKey = [name, page, size, JSON.stringify(filter)];
 
   const query = useQuery<Paginated<T>, Error>({
     queryKey,

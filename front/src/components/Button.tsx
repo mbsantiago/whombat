@@ -1,4 +1,9 @@
-import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from "react";
+import {
+  type ButtonHTMLAttributes,
+  type ReactNode,
+  forwardRef,
+  ForwardedRef,
+} from "react";
 import classnames from "classnames";
 
 import type { Variant } from "@/components/common";
@@ -81,8 +86,8 @@ const Button = forwardRef(function Button(
     variant?: Variant;
     padding?: string;
     mode?: Mode;
-  } & ButtonHTMLAttributes<HTMLButtonElement>,
-  ref,
+  } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "ref">,
+  ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const baseClass = getButtonClassName({ variant, mode, padding });
   return (
