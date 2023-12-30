@@ -2,7 +2,16 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { SoundEventEvaluationSchema } from "@/schemas";
+import {
+  ClipEvaluationSchema,
+  FeatureFilterSchema,
+  NumberFilterSchema,
+  PredictedTagFilterSchema,
+  SoundEventAnnotationSchema,
+  SoundEventEvaluationSchema,
+  SoundEventPredictionSchema,
+  TagSchema,
+} from "@/schemas";
 
 export const SoundEventEvaluationPageSchema = Page(SoundEventEvaluationSchema);
 
@@ -11,22 +20,15 @@ export type SoundEventEvaluationPage = z.infer<
 >;
 
 export const SoundEventEvaluationFilterSchema = z.object({
-  clip_evaluation__eq: z.string().uuid().optional(),
-  score__gt: z.number().optional(),
-  score__lt: z.number().optional(),
-  metric__name: z.string().optional(),
-  metric__gt: z.number().optional(),
-  metric__lt: z.number().optional(),
-  target__eq: z.string().uuid().optional(),
-  source__eq: z.string().uuid().optional(),
-  has_source__eq: z.boolean().optional(),
-  has_target__eq: z.boolean().optional(),
-  target_tag__key: z.string().optional(),
-  target_tag__value: z.string().optional(),
-  source_tag__key: z.string().optional(),
-  source_tag__value: z.string().optional(),
-  source_tag__lt: z.string().optional(),
-  source_tag__gt: z.string().optional(),
+  clip_evaluation: ClipEvaluationSchema.optional(),
+  score: NumberFilterSchema.optional(),
+  metric: FeatureFilterSchema.optional(),
+  target: SoundEventAnnotationSchema.optional(),
+  source: SoundEventPredictionSchema.optional(),
+  has_source: z.boolean().optional(),
+  has_target: z.boolean().optional(),
+  target_tag: TagSchema.optional(),
+  source_tag: PredictedTagFilterSchema.optional(),
 });
 
 export type SoundEventEvaluationFilter = z.input<
@@ -54,7 +56,29 @@ export function registerSoundEventEvaluationAPI(
     query: GetSoundEventEvaluationsQuery,
   ): Promise<SoundEventEvaluationPage> {
     const params = GetSoundEventEvaluationsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        clip_evaluation__eq: params.clip_evaluation?.uuid,
+        score__lt: params.score?.lt,
+        score__gt: params.score?.gt,
+        metric__name: params.metric?.name,
+        metric__lt: params.metric?.lt,
+        metric__gt: params.metric?.gt,
+        target__eq: params.target?.uuid,
+        source__eq: params.source?.uuid,
+        has_source: params.has_source,
+        has_target: params.has_target,
+        target_tag__key: params.target_tag?.key,
+        target_tag__value: params.target_tag?.value,
+        source_tag__key: params.source_tag?.tag.key,
+        source_tag__value: params.source_tag?.tag.value,
+        source_tag__lt: params.source_tag?.lt,
+        source_tag__gt: params.source_tag?.gt,
+      },
+    });
     return SoundEventEvaluationPageSchema.parse(response.data);
   }
 

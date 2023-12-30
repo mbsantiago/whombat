@@ -2,7 +2,14 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { AnnotationTaskSchema, ClipAnnotationSchema } from "@/schemas";
+import {
+  AnnotationProjectSchema,
+  AnnotationTaskSchema,
+  ClipAnnotationSchema,
+  DatasetSchema,
+  TagSchema,
+  UserSchema,
+} from "@/schemas";
 
 import type {
   AnnotationProject,
@@ -17,15 +24,14 @@ export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
 export type AnnotationTaskPage = z.infer<typeof AnnotationTaskPageSchema>;
 
 export const AnnotationTaskFilterSchema = z.object({
-  dataset__eq: z.string().uuid().optional(),
-  annotation_project__eq: z.string().uuid().optional(),
-  recording_tag__key: z.string().optional(),
-  recording_tag__value: z.string().optional(),
-  pending__eq: z.boolean().optional(),
-  assigned__eq: z.boolean().optional(),
-  verified__eq: z.boolean().optional(),
-  rejected__eq: z.boolean().optional(),
-  assigned_to__eq: z.string().uuid().optional(),
+  dataset: DatasetSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording_tag: TagSchema.optional(),
+  pending: z.boolean().optional(),
+  assigned: z.boolean().optional(),
+  verified: z.boolean().optional(),
+  rejected: z.boolean().optional(),
+  assigned_to: UserSchema.optional(),
 });
 
 export type AnnotationTaskFilter = z.input<typeof AnnotationTaskFilterSchema>;
@@ -73,7 +79,22 @@ export function registerAnnotationTasksAPI(
     query: GetAnnotationTasksQuery,
   ): Promise<AnnotationTaskPage> {
     const params = GetAnnotationTasksQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        dataset__eq: params.dataset?.uuid,
+        annotation_project__eq: params.annotation_project?.uuid,
+        recording_tag__key: params.recording_tag?.key,
+        recording_tag__value: params.recording_tag?.value,
+        pending: params.pending,
+        assigned: params.assigned,
+        verified: params.verified,
+        rejected: params.rejected,
+        assigned_to__eq: params.assigned_to?.id,
+      },
+    });
     return AnnotationTaskPageSchema.parse(response.data);
   }
 

@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import drawGeometry from "@/draw/geometry";
 import { DEFAULT_INTERVAL_STYLE } from "@/draw/interval";
 import { type Style } from "@/draw/styles";
 import useWindowMotions from "@/hooks/window/useWindowMotions";
+import { scaleGeometryToViewport } from "@/utils/geometry";
 
 import type {
   Dimensions,
@@ -59,12 +60,17 @@ export default function useCreateInterval({
     onMoveEnd: handleMoveEnd,
   });
 
+  useEffect(() => {
+    if (!enabled && interval != null) setInterval(null);
+  }, [enabled, interval]);
+
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!enabled || !isDragging || interval == null) return;
-      drawGeometry(ctx, interval, style);
+      const scaled = scaleGeometryToViewport(dimensions, interval, viewport);
+      drawGeometry(ctx, scaled, style);
     },
-    [enabled, interval, style, isDragging],
+    [enabled, interval, style, isDragging, dimensions, viewport],
   );
 
   return {

@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import drawGeometry from "@/draw/geometry";
 import { DEFAULT_ONSET_STYLE } from "@/draw/onset";
 import { type Style } from "@/draw/styles";
 import useWindowMotions from "@/hooks/window/useWindowMotions";
+import { scaleGeometryToViewport } from "@/utils/geometry";
 
 import type {
   Dimensions,
@@ -56,12 +57,17 @@ export default function useCreateTimeStamp({
     onMoveEnd: handleMoveEnd,
   });
 
+  useEffect(() => {
+    if (!enabled && timeStamp != null) settimeStamp(null);
+  }, [enabled, timeStamp]);
+
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       if (!enabled || timeStamp == null) return;
-      drawGeometry(ctx, timeStamp, style);
+      const scaled = scaleGeometryToViewport(dimensions, timeStamp, viewport);
+      drawGeometry(ctx, scaled, style);
     },
-    [enabled, timeStamp, style],
+    [enabled, timeStamp, style, dimensions, viewport],
   );
 
   return {

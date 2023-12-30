@@ -764,7 +764,7 @@ export function isLineStringInWindow(
   geom: LineString,
   window: SpectrogramWindow,
 ) {
-  const bbox = computeGeometryBox(geom);
+  const bbox = computeGeometryBBox(geom);
   return isBoundingBoxInWindow(
     { type: "BoundingBox", coordinates: bbox },
     window,
@@ -772,7 +772,7 @@ export function isLineStringInWindow(
 }
 
 export function isPolygonInWindow(geom: Polygon, window: SpectrogramWindow) {
-  const bbox = computeGeometryBox(geom);
+  const bbox = computeGeometryBBox(geom);
   return isBoundingBoxInWindow(
     { type: "BoundingBox", coordinates: bbox },
     window,

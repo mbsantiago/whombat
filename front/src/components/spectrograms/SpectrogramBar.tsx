@@ -37,7 +37,7 @@ export default function SpectrogramBar({
     dimensions: { width, height },
     viewport: bounds,
     onMoveStart: () => setInitialViewport(viewport),
-    onMove: ({ time, freq }) => {
+    onMove: ({ shift: { time, freq } }) => {
       onMove?.({
         time: {
           min: intialViewport.time.min + time,

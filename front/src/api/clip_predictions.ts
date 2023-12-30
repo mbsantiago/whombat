@@ -2,7 +2,15 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { ClipPredictionSchema, PredictionTagSchema } from "@/schemas";
+import {
+  ClipPredictionSchema,
+  ClipSchema,
+  ModelRunSchema,
+  PredictionTagSchema,
+  RecordingSchema,
+  TagSchema,
+  UserRunSchema,
+} from "@/schemas";
 
 import type { ClipPrediction, Tag } from "@/types";
 
@@ -13,12 +21,11 @@ export const ClipPredictionCreateSchema = z.object({
 export type ClipPredictionCreate = z.input<typeof ClipPredictionCreateSchema>;
 
 export const ClipPredictionFilterSchema = z.object({
-  clip__eq: z.string().uuid().optional(),
-  recording__eq: z.string().uuid().optional(),
-  tag__key: z.string().optional(),
-  tag__value: z.string().optional(),
-  model_run__eq: z.string().uuid().optional(),
-  user_run__eq: z.string().uuid().optional(),
+  clip: ClipSchema.optional(),
+  recording: RecordingSchema.optional(),
+  tag: TagSchema.optional(),
+  model_run: ModelRunSchema.optional(),
+  user_run: UserRunSchema.optional(),
 });
 
 export type ClipPredictionFilter = z.input<typeof ClipPredictionFilterSchema>;
@@ -63,7 +70,19 @@ export function registerClipPredictionsAPI(
     query: GetClipPredictionsQuery,
   ): Promise<ClipPredictionPage> {
     const params = GetClipPredictionsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        clip__eq: params.clip?.uuid,
+        recording__eq: params.recording?.uuid,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        model_run__eq: params.model_run?.uuid,
+        user_run__eq: params.user_run?.uuid,
+      },
+    });
     return ClipPredictionPageSchema.parse(response.data);
   }
 

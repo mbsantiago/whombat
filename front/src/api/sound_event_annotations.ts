@@ -4,9 +4,13 @@ import { z } from "zod";
 import { GetManySchema, Page } from "@/api/common";
 import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
 import {
+  AnnotationProjectSchema,
   GeometrySchema,
+  RecordingSchema,
   SoundEventAnnotationSchema,
+  SoundEventSchema,
   TagSchema,
+  UserSchema,
 } from "@/schemas";
 
 import type { ClipAnnotation, Note, SoundEventAnnotation, Tag } from "@/types";
@@ -35,11 +39,11 @@ export type SoundEventAnnotationPage = z.infer<
 >;
 
 export const SoundEventAnnotationFilterSchema = z.object({
-  project__eq: z.number().optional(),
-  recording__eq: z.number().optional(),
-  sound_event__eq: z.number().optional(),
-  created_by__eq: z.string().optional(),
-  tag__eq: z.string().optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording: RecordingSchema.optional(),
+  sound_event: SoundEventSchema.optional(),
+  created_by: UserSchema.optional(),
+  tag: TagSchema.optional(),
 });
 
 export type SoundEventAnnotationFilter = z.input<
@@ -86,7 +90,19 @@ export function registerSoundEventAnnotationsAPI(
     query: GetAnnotationsQuerySchema,
   ): Promise<SoundEventAnnotationPage> {
     const params = GetAnnotationsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        annotation_project__eq: params.annotation_project?.uuid,
+        recording__eq: params.recording?.uuid,
+        sound_event__eq: params.sound_event?.uuid,
+        created_by__eq: params.created_by?.id,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+      },
+    });
     return SoundEventAnnotationPageSchema.parse(response.data);
   }
 

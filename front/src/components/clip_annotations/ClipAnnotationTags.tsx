@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
@@ -10,6 +12,12 @@ import useStore from "@/store";
 import type { TagFilter } from "@/api/tags";
 import type { ClipAnnotation, Tag } from "@/types";
 
+function NoTags() {
+  return (
+    <Empty padding="p-2">No tags currently registered in this clip.</Empty>
+  );
+}
+
 export default function ClipAnnotationTags({
   clipAnnotation,
   tagFilter,
@@ -17,14 +25,17 @@ export default function ClipAnnotationTags({
   onRemoveTag,
   onClickTag,
   onClearTags,
+  disabled = false,
 }: {
-  clipAnnotation: ClipAnnotation;
-  tagFilter: TagFilter;
+  clipAnnotation?: ClipAnnotation;
+  tagFilter?: TagFilter;
   onAddTag?: (tag: Tag) => void;
   onClickTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
   onClearTags?: () => void;
+  disabled?: boolean;
 }) {
+  const tags = useMemo(() => clipAnnotation?.tags || [], [clipAnnotation]);
   const getTagColor = useStore((state) => state.getTagColor);
   return (
     <Card>
@@ -33,7 +44,7 @@ export default function ClipAnnotationTags({
         Clip Tags
       </H4>
       <div className="flex flex-row items-center flex-wrap gap-1">
-        {clipAnnotation.tags?.map((tag) => (
+        {tags.map((tag) => (
           <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
@@ -42,27 +53,27 @@ export default function ClipAnnotationTags({
             onClose={() => onRemoveTag?.(tag)}
           />
         ))}
-        {clipAnnotation.tags?.length === 0 && (
-          <Empty>No tags currently registered</Empty>
-        )}
+        {tags.length === 0 && <NoTags />}
       </div>
-      <div className="flex flex-row justify-end gap-4 items-center">
-        <Button
-          className="flex flex-row items-center"
-          onClick={onClearTags}
-          mode="text"
-          variant="danger"
-        >
-          Clear tags <DeleteIcon className="ms-2 w-5 h-5" />
-        </Button>
-        <AddTagButton
-          variant="primary"
-          onAdd={onAddTag}
-          filter={tagFilter}
-          text="Add tags"
-          placeholder="Add tags..."
-        />
-      </div>
+      {!disabled && (
+        <div className="flex flex-row justify-end gap-4 items-center">
+          <Button
+            className="flex flex-row items-center"
+            onClick={onClearTags}
+            mode="text"
+            variant="danger"
+          >
+            Clear tags <DeleteIcon className="ms-2 w-5 h-5" />
+          </Button>
+          <AddTagButton
+            variant="primary"
+            onAdd={onAddTag}
+            filter={tagFilter}
+            text="Add tags"
+            placeholder="Add tags..."
+          />
+        </div>
+      )}
     </Card>
   );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import drawFrequencyAxis from "@/draw/freqAxis";
@@ -12,7 +12,9 @@ import {
   shiftWindow,
 } from "@/utils/windows";
 
+import type { MotionMode } from "@/hooks/spectrogram/useSpectrogramMotions";
 import type {
+  Position,
   Recording,
   SpectrogramParameters,
   SpectrogramWindow,
@@ -65,6 +67,7 @@ export default function useSpectrogram({
   parameters: initialParameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   onParameterChange,
   onModeChange,
+  onDoubleClick,
   enabled = true,
 }: {
   recording: Recording;
@@ -73,14 +76,14 @@ export default function useSpectrogram({
   initial?: SpectrogramWindow;
   parameters?: SpectrogramParameters;
   onParameterChange?: (parameters: SpectrogramParameters) => void;
-  onModeChange?: (mode: "drag" | "zoom" | "idle") => void;
+  onModeChange?: (mode: MotionMode) => void;
+  onDoubleClick?: (dblClickProps: { position: Position }) => void;
   enabled?: boolean;
 }): {
-  state: SpectrogramState;
-  controls: SpectrogramControls;
   draw: DrawFn;
   props: React.HTMLAttributes<HTMLCanvasElement>;
-} {
+} & SpectrogramState &
+  SpectrogramControls {
   const initialBounds = useMemo<SpectrogramWindow>(() => {
     return (
       bounds ?? {
@@ -97,14 +100,33 @@ export default function useSpectrogram({
     initial ?? initialBounds,
   );
 
-  const zoom = useCallback(
+  // NOTE: Need to update the viewport if the initial viewport
+  // changes. This usually happens when the visualised clip
+  // changes.
+  useEffect(() => {
+    if (initial != null) {
+      setViewport(initial);
+    }
+  }, [initial]);
+
+  const {
+    draw: drawImage,
+    isLoading,
+    isError,
+  } = useSpectrogramImage({
+    recording,
+    window: viewport,
+    parameters,
+  });
+
+  const handleZoom = useCallback(
     (window: SpectrogramWindow) => {
       setViewport(adjustWindowToBounds(window, initialBounds));
     },
     [initialBounds],
   );
 
-  const scale = useCallback(
+  const handleScale = useCallback(
     ({ time = 1, freq = 1 }: { time?: number; freq?: number }) => {
       setViewport((prev) =>
         adjustWindowToBounds(scaleWindow(prev, { time, freq }), initialBounds),
@@ -113,7 +135,7 @@ export default function useSpectrogram({
     [initialBounds],
   );
 
-  const shift = useCallback(
+  const handleShift = useCallback(
     ({ time = 0, freq = 0 }: { time?: number; freq?: number }) => {
       setViewport((prev) =>
         adjustWindowToBounds(
@@ -125,95 +147,56 @@ export default function useSpectrogram({
     [initialBounds],
   );
 
-  // Drawing functions
-  const {
-    draw: drawImage,
-    isLoading,
-    isError,
-  } = useSpectrogramImage({
-    recording,
-    window: viewport,
-    parameters,
-  });
+  const handleReset = useCallback(() => {
+    setViewport(initialBounds);
+  }, [initialBounds]);
+
+  const handleCenterOn = useCallback(
+    ({ time, freq }: { time?: number; freq?: number }) => {
+      setViewport((prev) =>
+        adjustWindowToBounds(
+          centerWindowOn(prev, { time, freq }),
+          initialBounds,
+        ),
+      );
+    },
+    [initialBounds],
+  );
+
+  const handleSetParameters = useCallback(
+    (parameters: SpectrogramParameters) => {
+      const validated = validateParameters(parameters, recording);
+      onParameterChange?.(validated);
+      setParameters(validated);
+    },
+    [recording, onParameterChange],
+  );
+
+  const handleResetParameters = useCallback(() => {
+    setParameters(validateParameters(initialParameters, recording));
+  }, [initialParameters, recording]);
 
   const {
     props,
     draw: drawMotions,
-    state: { canDrag, canZoom },
-    controls: { enableDrag, enableZoom, disable },
+    canDrag,
+    canZoom,
+    enableDrag,
+    enableZoom,
+    disable,
   } = useSpectrogramMotions({
     viewport,
-    onDrag: (viewport) => zoom(viewport),
-    onZoom: (_, viewport) => zoom(viewport),
-    onScrollMoveTime: (time) => shift({ time }),
-    onScrollMoveFreq: (freq) => shift({ freq }),
-    onScrollZoomTime: (time) => scale({ time }),
-    onScrollZoomFreq: (freq) => scale({ freq }),
+    onDrag: handleZoom,
+    onZoom: handleZoom,
+    onScrollMoveTime: handleShift,
+    onScrollMoveFreq: handleShift,
+    onScrollZoomTime: handleScale,
+    onScrollZoomFreq: handleScale,
+    onDoubleClick,
     onModeChange,
     dimensions,
     enabled,
   });
-
-  const controls = useMemo(() => {
-    return {
-      reset: () => setViewport(initialBounds),
-      zoom,
-      scale,
-      shift,
-      centerOn: ({ time, freq }: { time?: number; freq?: number }) => {
-        setViewport((prev) =>
-          adjustWindowToBounds(
-            centerWindowOn(prev, { time, freq }),
-            initialBounds,
-          ),
-        );
-      },
-      setParameters: (parameters: SpectrogramParameters) => {
-        const validated = validateParameters(parameters, recording);
-        onParameterChange?.(validated);
-        setParameters(validated);
-      },
-      resetParameters: () => {
-        setParameters(validateParameters(initialParameters, recording));
-      },
-      enableDrag,
-      enableZoom,
-      disable,
-    };
-  }, [
-    recording,
-    initialBounds,
-    initialParameters,
-    setParameters,
-    onParameterChange,
-    zoom,
-    scale,
-    shift,
-    enableDrag,
-    enableZoom,
-    disable,
-  ]);
-
-  // Compute exported state
-  const state = useMemo(() => {
-    return {
-      bounds: initialBounds,
-      parameters,
-      viewport,
-      isLoading,
-      isError,
-      canDrag,
-      canZoom,
-    };
-  }, [
-    parameters,
-    viewport,
-    initialBounds,
-    isLoading,
-    isError,
-    canDrag,
-    canZoom,
-  ]);
 
   // Create the drawing function
   const draw = useCallback<DrawFn>(
@@ -234,10 +217,25 @@ export default function useSpectrogram({
   );
 
   return {
-    state,
-    controls,
+    bounds: initialBounds,
+    parameters,
+    viewport,
+    isLoading,
+    isError,
+    canDrag,
+    canZoom,
     draw,
     props,
+    reset: handleReset,
+    zoom: handleZoom,
+    scale: handleScale,
+    shift: handleShift,
+    centerOn: handleCenterOn,
+    setParameters: handleSetParameters,
+    resetParameters: handleResetParameters,
+    enableDrag,
+    enableZoom,
+    disable,
   };
 }
 

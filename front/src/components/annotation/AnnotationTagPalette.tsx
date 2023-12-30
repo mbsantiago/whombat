@@ -1,40 +1,34 @@
-import { useMemo } from "react";
-
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { H3 } from "@/components/Headings";
-import { DeleteIcon } from "@/components/icons";
-import Tag from "@/components/tags/Tag";
+import { H4 } from "@/components/Headings";
+import { DeleteIcon, ToolsIcon } from "@/components/icons";
+import TagComponent from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import Tooltip from "@/components/Tooltip";
 import useStore from "@/store";
 
-import type { AnnotationProject, Tag as TagType } from "@/types";
+import type { TagFilter } from "@/api/tags";
+import type { Tag } from "@/types";
 
-export default function AnnotationProjectTags({
+export default function AnnotationTagPalette({
   tags,
-  project,
+  tagFilter,
   onClick,
   onAddTag,
   onRemoveTag,
   onClearTags,
 }: {
-  tags: TagType[];
-  project: AnnotationProject;
-  onClick?: (tag: TagType) => void;
-  onAddTag?: (tag: TagType) => void;
-  onRemoveTag?: (tag: TagType) => void;
+  tags: Tag[];
+  tagFilter?: TagFilter;
+  onClick?: (tag: Tag) => void;
+  onAddTag?: (tag: Tag) => void;
+  onRemoveTag?: (tag: Tag) => void;
   onClearTags?: () => void;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
-
-  const filter = useMemo(
-    () => ({ annotation_project__eq: project.uuid }),
-    [project.uuid],
-  );
   return (
     <Card>
-      <H3 className="text-center">
+      <H4 className="text-center">
         <Tooltip
           tooltip={
             <div className="w-48 text-center">
@@ -44,9 +38,10 @@ export default function AnnotationProjectTags({
           }
           placement="top"
         >
-          <span className="cursor-help">Current Tags</span>
+          <ToolsIcon className="inline-block w-5 h-5 mr-1" />
+          <span className="cursor-help">Tag Palette</span>
         </Tooltip>
-      </H3>
+      </H4>
       <div className="flex flex-row gap-1 w-full">
         <Tooltip tooltip="Clear tags" placement="top">
           <Button onClick={onClearTags} mode="text" variant="danger">
@@ -57,14 +52,14 @@ export default function AnnotationProjectTags({
           <TagSearchBar
             onSelect={onAddTag}
             onCreate={onAddTag}
-            initialFilter={filter}
+            initialFilter={tagFilter}
             placeholder="Add tags..."
           />
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1">
         {tags.map((tag) => (
-          <Tag
+          <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}

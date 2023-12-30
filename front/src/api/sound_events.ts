@@ -2,7 +2,13 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { GeometrySchema, SoundEventSchema } from "@/schemas";
+import {
+  DateFilterSchema,
+  FeatureFilterSchema,
+  GeometrySchema,
+  RecordingSchema,
+  SoundEventSchema,
+} from "@/schemas";
 
 import type { Feature, Recording, SoundEvent } from "@/types";
 
@@ -23,13 +29,10 @@ export const SoundEventPageSchema = Page(SoundEventSchema);
 export type SoundEventPage = z.infer<typeof SoundEventPageSchema>;
 
 export const SoundEventFilterSchema = z.object({
-  geometry_type__eq: z.string().optional(),
-  created_on__before: z.date().optional(),
-  created_on__after: z.date().optional(),
-  recording__eq: z.string().uuid().optional(),
-  feature__name: z.string().optional(),
-  feature__lt: z.number().optional(),
-  feature__gt: z.number().optional(),
+  geometry_type: z.string().optional(),
+  created_on: DateFilterSchema.optional(),
+  recording: RecordingSchema.optional(),
+  feature: FeatureFilterSchema.optional(),
 });
 
 export type SoundEventFilter = z.input<typeof SoundEventFilterSchema>;
@@ -65,7 +68,21 @@ export function registerSoundEventAPI(
 
   async function getMany(query: SoundEventQuery): Promise<SoundEventPage> {
     const params = GetSoundEventQuerySchema.parse(query);
-    const { data } = await axios.get(endpoints.getMany, { params });
+    const { data } = await axios.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        geometry_type__eq: params.geometry_type,
+        created_on__before: params.created_on?.before,
+        created_on__after: params.created_on?.after,
+        created_on__on: params.created_on?.on,
+        recording__eq: params.recording?.uuid,
+        feature__name: params.feature?.name,
+        feature__gt: params.feature?.gt,
+        feature__lt: params.feature?.lt,
+      },
+    });
     return SoundEventPageSchema.parse(data);
   }
 

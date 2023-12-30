@@ -1,5 +1,6 @@
 import useCreateBBox from "@/hooks/draw/useCreateBBox";
 import useCreateInterval from "@/hooks/draw/useCreateInterval";
+import useCreateLineString from "@/hooks/draw/useCreateLineString";
 import useCreateTimeStamp from "@/hooks/draw/useCreateTimeStamp";
 
 import type {
@@ -55,6 +56,14 @@ export default function useAnnotationCreate({
     enabled: enabled && geometryType === "TimeStamp",
   });
 
+  const { props: propsLineString, draw: drawLineString } = useCreateLineString({
+    viewport,
+    dimensions,
+    onCreate,
+    style: CREATE_STYLE,
+    enabled: enabled && geometryType === "LineString",
+  });
+
   switch (geometryType) {
     case "BoundingBox":
       return { props: propsBBox, draw: drawBBox };
@@ -62,6 +71,8 @@ export default function useAnnotationCreate({
       return { props: propsInterval, draw: drawInterval };
     case "TimeStamp":
       return { props: propsTimeStamp, draw: drawTimeStamp };
+    case "LineString":
+      return { props: propsLineString, draw: drawLineString };
     default:
       throw new Error(`Invalid geometry type: ${geometryType}`);
   }

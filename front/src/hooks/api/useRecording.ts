@@ -37,7 +37,11 @@ export default function useRecording({
     throw new Error("Recording uuid does not match");
   }
 
-  const { query, useMutation, setData: set } = useObject<Recording>({
+  const {
+    query,
+    useMutation,
+    setData: set,
+  } = useObject<Recording>({
     uuid,
     initial: recording,
     name: "dataset",

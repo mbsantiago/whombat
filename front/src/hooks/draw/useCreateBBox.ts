@@ -62,6 +62,10 @@ export default function useCreateBBox({
     onMoveEnd: handleMoveEnd,
   });
 
+  useEffect(() => {
+    if (!enabled && bbox != null) setBBox(null);
+  }, [enabled, bbox]);
+
   // Create a drawing function for the bbox
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {

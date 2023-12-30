@@ -10,9 +10,15 @@ import { Input, InputGroup } from "@/components/inputs";
 import Popover from "@/components/Popover";
 import useDebounceSubmit from "@/hooks/forms/useDebounceSubmit";
 
-function TimeButton({ time }: { time?: string | null }) {
+function TimeButton({
+  time,
+  disabled,
+}: {
+  time?: string | null;
+  disabled?: boolean;
+}) {
   return (
-    <Button mode="text" variant="secondary" padding="py-1">
+    <Button mode="text" variant="secondary" padding="py-1" disabled={disabled}>
       <TimeIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
       {time != null ? (
         time
@@ -28,9 +34,11 @@ function TimeButton({ time }: { time?: string | null }) {
 export default function RecordingTime({
   time,
   onChange,
+  disabled = false,
 }: {
   time?: string | null;
   onChange?: (value: { time?: string | null }) => void;
+  disabled?: boolean;
 }) {
   const {
     register,
@@ -38,6 +46,7 @@ export default function RecordingTime({
     watch,
     formState: { errors },
   } = useForm({
+    disabled,
     mode: "onBlur",
     values: { time },
     resolver: zodResolver(
@@ -65,6 +74,10 @@ export default function RecordingTime({
     watch,
     handleSubmit,
   });
+
+  if (disabled) {
+    return <TimeButton time={time} disabled />;
+  }
 
   return (
     <Popover button={<TimeButton time={time} />}>

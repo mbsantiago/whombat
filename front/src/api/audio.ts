@@ -109,7 +109,7 @@ export function registerAudioAPI({
       Object.fromEntries(
         Object.entries(query)
           .filter(([_, value]) => value != null)
-          .map(([key, value]) => [key, value.toString()]),
+          .map(([key, value]) => [key, value?.toString() || ""]),
       ),
     );
 

@@ -30,7 +30,7 @@ export default function useClipAnnotation({
   onRemoveTagFromSoundEventAnnotation,
   enabled = true,
 }: {
-  uuid: string;
+  uuid?: string;
   clipAnnotation?: ClipAnnotation;
   onDelete?: (annotation: ClipAnnotation) => void;
   onAddTag?: (annotation: ClipAnnotation) => void;
@@ -47,7 +47,7 @@ export default function useClipAnnotation({
   onError?: (error: AxiosError) => void;
   enabled?: boolean;
 }) {
-  const { query, useMutation, useDestruction, setData } =
+  const { query, useMutation, useDestruction, setData, client } =
     useObject<ClipAnnotation>({
       name: "clip_annotation",
       uuid,
@@ -123,6 +123,7 @@ export default function useClipAnnotation({
       });
     },
     onSuccess: (data) => {
+      client.setQueryData(["sound_event_annotation", data.uuid], data);
       onUpdateSoundEventAnnotation?.(data);
       setData((prev) => {
         if (prev == null) throw new Error("No clip annotation to add to.");

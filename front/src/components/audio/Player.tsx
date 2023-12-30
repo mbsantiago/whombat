@@ -47,23 +47,21 @@ const COMMON_BUTTON_CLASSES =
  * @param {PlayerState} props.state - The state of the audio player.
  * @param {PlayerControls} props.controls - The controls for the audio player.
  */
-export default function Player({
-  state,
-  controls,
-}: {
-  state: PlayerState;
-  controls: PlayerControls;
-}) {
+export default function Player(props: PlayerState & PlayerControls) {
   const {
     currentTime,
     startTime,
     endTime,
-    playing,
+    isPlaying: playing,
     loop,
     speed,
     speedOptions,
-  } = state;
-  const { play, pause, seek, toggleLoop, setSpeed } = controls;
+    play,
+    pause,
+    seek,
+    toggleLoop,
+    setSpeed,
+  } = props;
   return (
     <div className="flex flex-row gap-2 items-center px-2 max-w-max rounded-md border border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700">
       <button

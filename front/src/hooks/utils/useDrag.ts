@@ -1,9 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
 import { mergeProps, useMove } from "react-aria";
 
+import type { Pixel } from "@/types";
 import type { DOMAttributes, MouseEvent } from "react";
 
-export type Point = { x: number; y: number };
+export type EventKeys = {
+  shiftKey?: boolean;
+  ctrlKey?: boolean;
+  metaKey?: boolean;
+  altKey?: boolean;
+};
 
 export default function useDrag<T>({
   enabled = true,
@@ -13,35 +19,26 @@ export default function useDrag<T>({
   onMoveEnd,
 }: {
   enabled?: boolean;
-  onClick?: ({
-    position,
-    shift,
-    ctrl,
-  }: {
-    position: Point;
-    shift: boolean;
-    ctrl: boolean;
-  }) => void;
-  onMoveStart?: () => void;
-  onMove?: ({
-    initial,
-    current,
-    shift,
-    ctrl,
-  }: {
-    initial: Point;
-    current: Point;
-    shift: boolean;
-    ctrl: boolean;
-  }) => void;
-  onMoveEnd?: () => void;
+  onClick?: (
+    clickProps: {
+      position: Pixel;
+    } & EventKeys,
+  ) => void;
+  onMoveStart?: (moveStartProps?: EventKeys) => void;
+  onMove?: (
+    moveProps: {
+      initial: Pixel;
+      current: Pixel;
+    } & EventKeys,
+  ) => void;
+  onMoveEnd?: (moveEndProps?: EventKeys) => void;
 }): {
   props: DOMAttributes<T>;
   isDragging: boolean;
 } {
   const [isDragging, setIsDragging] = useState(false);
-  const [shift, setShift] = useState<Point>({ x: 0, y: 0 });
-  const [initialPosition, setInitialPosition] = useState<Point | null>(null);
+  const [shift, setShift] = useState<Pixel>({ x: 0, y: 0 });
+  const [initialPosition, setInitialPosition] = useState<Pixel | null>(null);
 
   const clickProps = useMemo(() => {
     if (!enabled) return {};
@@ -55,8 +52,10 @@ export default function useDrag<T>({
       setInitialPosition(point);
       onClick?.({
         position: point,
-        shift: e.shiftKey,
-        ctrl: e.ctrlKey,
+        shiftKey: e.shiftKey,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        altKey: e.altKey,
       });
     };
 
@@ -67,12 +66,20 @@ export default function useDrag<T>({
     };
   }, [enabled, onClick]);
 
-  const handleMoveStart = useCallback(() => {
-    if (!enabled) return;
-    setShift({ x: 0, y: 0 });
-    setIsDragging(true);
-    onMoveStart?.();
-  }, [enabled, onMoveStart]);
+  const handleMoveStart = useCallback(
+    ({ shiftKey, ctrlKey, altKey, metaKey }: EventKeys = {}) => {
+      if (!enabled) return;
+      setShift({ x: 0, y: 0 });
+      setIsDragging(true);
+      onMoveStart?.({
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
+      });
+    },
+    [enabled, onMoveStart],
+  );
 
   const handleMove = useCallback(
     ({
@@ -80,12 +87,12 @@ export default function useDrag<T>({
       deltaY,
       shiftKey,
       ctrlKey,
+      altKey,
+      metaKey,
     }: {
       deltaX: number;
       deltaY: number;
-      shiftKey: boolean;
-      ctrlKey: boolean;
-    }) => {
+    } & EventKeys) => {
       if (!enabled || initialPosition == null) return;
       setShift(({ x, y }) => ({ x: x + deltaX, y: y + deltaY }));
       onMove?.({
@@ -94,20 +101,30 @@ export default function useDrag<T>({
           x: initialPosition.x + shift.x + deltaX,
           y: initialPosition.y + shift.y + deltaY,
         },
-        shift: shiftKey,
-        ctrl: ctrlKey,
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
       });
     },
     [enabled, initialPosition, shift, onMove],
   );
 
-  const handleMoveEnd = useCallback(() => {
-    if (!enabled) return;
-    setInitialPosition(null);
-    setIsDragging(false);
-    setShift({ x: 0, y: 0 });
-    onMoveEnd?.();
-  }, [enabled, onMoveEnd]);
+  const handleMoveEnd = useCallback(
+    ({ shiftKey, ctrlKey, altKey, metaKey }: EventKeys = {}) => {
+      if (!enabled) return;
+      setInitialPosition(null);
+      setIsDragging(false);
+      setShift({ x: 0, y: 0 });
+      onMoveEnd?.({
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
+      });
+    },
+    [enabled, onMoveEnd],
+  );
 
   const { moveProps } = useMove({
     onMoveStart: handleMoveStart,

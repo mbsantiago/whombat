@@ -244,3 +244,22 @@ export function TagFilter({
     </div>
   );
 }
+
+export function DatasetFilter({
+  setFilter,
+  prefix = "",
+}: {
+  setFilter: SetFilter;
+  prefix?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      <TagSearchBar
+        onSelect={(tag) => {
+          setFilter({ name: `${prefix}__key`, value: tag.key });
+          setFilter({ name: `${prefix}__value`, value: tag.value });
+        }}
+      />
+    </div>
+  );
+}

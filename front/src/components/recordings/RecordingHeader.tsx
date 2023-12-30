@@ -14,11 +14,11 @@ import type { Recording } from "@/types";
 /** Get the basename of a path
  * Taken from https://stackoverflow.com/a/25221100
  */
-function getBaseName(path: string) {
+export function getBaseName(path: string) {
   return path.split("\\").pop()?.split("/").pop();
 }
 
-function removeExtension(path: string) {
+export function removeExtension(path: string) {
   return path.split(".").slice(0, -1).join(".");
 }
 

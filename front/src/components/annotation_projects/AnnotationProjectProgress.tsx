@@ -26,9 +26,9 @@ export default function ProjectProgress({
 }) {
   const filter = useMemo(
     () => ({
-      annotation_project__eq: annotationProject.uuid,
+      annotation_project: annotationProject,
     }),
-    [annotationProject.uuid],
+    [annotationProject],
   );
 
   const { items: annotationTasks, isLoading } = useAnnotationTasks({

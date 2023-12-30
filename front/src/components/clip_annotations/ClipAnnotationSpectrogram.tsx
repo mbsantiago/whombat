@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { mergeProps } from "react-aria";
 
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import AnnotationControls from "@/components/annotation/AnnotationControls";
@@ -10,6 +9,7 @@ import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
 import SpectrogramTags from "@/components/spectrograms/SpectrogramTags";
 import useAnnotateClip from "@/hooks/annotation/useAnnotateClip";
+import useAnnotateClipKeyShortcuts from "@/hooks/annotation/useAnnotateClipKeyShortcuts";
 import useAudio from "@/hooks/audio/useAudio";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
@@ -17,19 +17,44 @@ import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAud
 import { getInitialViewingWindow } from "@/utils/windows";
 
 import type { TagFilter } from "@/api/tags";
-import type { ClipAnnotation, SpectrogramParameters } from "@/types";
+import type { AnnotateMode } from "@/hooks/annotation/useAnnotateClip";
+import type { MotionMode as SpectrogramMode } from "@/hooks/spectrogram/useSpectrogramMotions";
+import type {
+  ClipAnnotation,
+  Position,
+  SoundEventAnnotation,
+  SpectrogramParameters,
+  Tag,
+} from "@/types";
 
 export default function ClipAnnotationSpectrogram({
   clipAnnotation,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
-  onParameterSave,
   tagFilter,
+  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  disabled = false,
+  defaultTags,
+  onAddSoundEventTag,
+  onRemoveSoundEventTag,
+  onCreateSoundEventAnnotation,
+  onUpdateSoundEventAnnotation,
+  onDeleteSoundEventAnnotation,
+  onParameterSave,
+  onSelectAnnotation,
 }: {
   clipAnnotation: ClipAnnotation;
   parameters?: SpectrogramParameters;
-  onParameterSave?: (params: SpectrogramParameters) => void;
   tagFilter?: TagFilter;
+  disabled?: boolean;
+  defaultTags?: Tag[];
+  onParameterSave?: (params: SpectrogramParameters) => void;
+  onSelectAnnotation?: (annotation: SoundEventAnnotation | null) => void;
+  onCreateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
+  onUpdateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
+  onDeleteSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
+  onAddSoundEventTag?: (annotation: SoundEventAnnotation) => void;
+  onRemoveSoundEventTag?: (annotation: SoundEventAnnotation) => void;
 }) {
+  const [isAnnotating, setIsAnnotating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dimensions = canvasRef.current?.getBoundingClientRect() ?? {
     width: 0,
@@ -39,7 +64,6 @@ export default function ClipAnnotationSpectrogram({
   const { clip } = clipAnnotation;
   const { recording } = clip;
 
-  // These are the absolute bounds of the spectrogram
   const bounds = useMemo(
     () => ({
       time: { min: clip.start_time, max: clip.end_time },
@@ -48,7 +72,6 @@ export default function ClipAnnotationSpectrogram({
     [clip.start_time, clip.end_time, recording.samplerate],
   );
 
-  // This is the initial viewport of the spectrogram
   const initial = useMemo(
     () =>
       getInitialViewingWindow({
@@ -60,13 +83,29 @@ export default function ClipAnnotationSpectrogram({
     [recording.samplerate, clip.start_time, clip.end_time, parameters],
   );
 
-  const [isAnnotating, setIsAnnotating] = useState(false);
-
   const audio = useAudio({
     recording,
     endTime: bounds.time.max,
     startTime: bounds.time.min,
   });
+
+  const handleSpectrogramModeChange = useCallback(
+    (mode: SpectrogramMode) => {
+      setIsAnnotating(mode === "idle");
+      if (mode !== "idle") {
+        onSelectAnnotation?.(null);
+      }
+    },
+    [onSelectAnnotation],
+  );
+
+  const { seek } = audio;
+  const handleDoubleClick = useCallback(
+    ({ position }: { position: Position }) => {
+      seek(position.time);
+    },
+    [seek],
+  );
 
   const spectrogram = useSpectrogram({
     dimensions,
@@ -74,67 +113,111 @@ export default function ClipAnnotationSpectrogram({
     bounds,
     initial,
     parameters,
-    onModeChange: (mode) => setIsAnnotating(mode === "idle"),
-    enabled: !isAnnotating,
+    onDoubleClick: handleDoubleClick,
+    onModeChange: handleSpectrogramModeChange,
+    enabled: !isAnnotating && !audio.isPlaying,
   });
 
-  const annotate = useAnnotateClip({
-    clipAnnotation,
-    viewport: spectrogram.state.viewport,
-    dimensions,
-    onModeChange: (mode) => setIsAnnotating(mode !== "idle"),
-    onDeselect: () => setIsAnnotating(false),
-    enabled: isAnnotating,
-  });
+  const { centerOn } = spectrogram;
 
-  const {
-    controls: { centerOn },
-  } = spectrogram;
   const handleTimeChange = useCallback(
     (time: number) => centerOn({ time }),
     [centerOn],
   );
 
-  const { draw: drawTrackAudio } = useSpectrogramTrackAudio({
-    viewport: spectrogram.state.viewport,
-    currentTime: audio.state.currentTime,
-    isPlaying: audio.state.playing,
-    onTimeChange: handleTimeChange,
+  const { draw: drawTrackAudio, enabled: trackingAudio } =
+    useSpectrogramTrackAudio({
+      viewport: spectrogram.viewport,
+      currentTime: audio.currentTime,
+      isPlaying: audio.isPlaying,
+      onTimeChange: handleTimeChange,
+    });
+
+  const handleAnnotationModeChange = useCallback(
+    (mode: AnnotateMode) => setIsAnnotating(mode !== "idle"),
+    [],
+  );
+
+  const handleAnnotationDeselect = useCallback(() => {
+    setIsAnnotating(false);
+    onSelectAnnotation?.(null);
+  }, [onSelectAnnotation]);
+
+  const annotate = useAnnotateClip({
+    clipAnnotation,
+    viewport: spectrogram.viewport,
+    dimensions,
+    defaultTags,
+    onModeChange: handleAnnotationModeChange,
+    onDeselect: handleAnnotationDeselect,
+    active: isAnnotating && !audio.isPlaying,
+    onSelectAnnotation,
+    disabled,
+    onAddAnnotationTag: onAddSoundEventTag,
+    onRemoveAnnotationTag: onRemoveSoundEventTag,
+    onCreateAnnotation: onCreateSoundEventAnnotation,
+    onUpdateAnnotation: onUpdateSoundEventAnnotation,
+    onDeleteAnnotation: onDeleteSoundEventAnnotation,
   });
 
   const {
     props: spectrogramProps,
     draw: drawSpectrogram,
-    state: { isLoading: spectrogramIsLoading },
+    isLoading: spectrogramIsLoading,
   } = spectrogram;
   const { props: annotateProps, draw: drawAnnotations } = annotate;
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      ctx.canvas.style.cursor = "wait";
-      if (spectrogramIsLoading) return;
+  const draw = useMemo(() => {
+    if (spectrogramIsLoading) {
+      return (ctx: CanvasRenderingContext2D) => {
+        ctx.canvas.style.cursor = "wait";
+      };
+    }
+    if (trackingAudio) {
+      return (ctx: CanvasRenderingContext2D) => {
+        drawSpectrogram(ctx);
+        drawTrackAudio(ctx);
+        drawAnnotations(ctx);
+      };
+    }
+    return (ctx: CanvasRenderingContext2D) => {
       drawSpectrogram(ctx);
-      drawTrackAudio(ctx);
       drawAnnotations(ctx);
-    },
-    [drawSpectrogram, drawTrackAudio, drawAnnotations, spectrogramIsLoading],
-  );
+    };
+  }, [
+    drawSpectrogram,
+    drawTrackAudio,
+    drawAnnotations,
+    spectrogramIsLoading,
+    trackingAudio,
+  ]);
 
-  const props = mergeProps(spectrogramProps, annotateProps);
+  useAnnotateClipKeyShortcuts({
+    onGoCreate: annotate.enableDraw,
+    onGoDelete: annotate.enableDelete,
+    onGoSelect: annotate.enableSelect,
+    onGoZoom: spectrogram.enableZoom,
+    onGoMove: spectrogram.enableDrag,
+    onUnfocus: spectrogram.enableDrag,
+    onGoHome: spectrogram.reset,
+    onTogglePlay: audio.togglePlay,
+  });
 
   useCanvas({ ref: canvasRef, draw });
 
+  const props = isAnnotating ? annotateProps : spectrogramProps;
   return (
     <Card>
-      <div className="flex flex-row gap-8">
+      <div className="flex flex-row gap-4">
         <SpectrogramControls
-          canDrag={spectrogram.state.canDrag}
-          canZoom={spectrogram.state.canZoom}
-          onReset={() => spectrogram.controls.reset()}
-          onDrag={() => spectrogram.controls.enableDrag()}
-          onZoom={() => spectrogram.controls.enableZoom()}
+          canDrag={spectrogram.canDrag}
+          canZoom={spectrogram.canZoom}
+          onReset={spectrogram.reset}
+          onDrag={spectrogram.enableDrag}
+          onZoom={spectrogram.enableZoom}
         />
         <AnnotationControls
+          disabled={disabled}
           isDrawing={annotate.isDrawing}
           isDeleting={annotate.isDeleting}
           isSelecting={annotate.isSelecting}
@@ -147,17 +230,19 @@ export default function ClipAnnotationSpectrogram({
         />
         <SpectrogramSettings
           samplerate={recording.samplerate}
-          settings={spectrogram.state.parameters}
-          onChange={(parameters) =>
-            spectrogram.controls.setParameters(parameters)
-          }
-          onReset={() => spectrogram.controls.resetParameters()}
-          onSave={() => onParameterSave?.(spectrogram.state.parameters)}
+          settings={spectrogram.parameters}
+          onChange={spectrogram.setParameters}
+          onReset={spectrogram.resetParameters}
+          onSave={() => onParameterSave?.(spectrogram.parameters)}
         />
-        <Player state={audio.state} controls={audio.controls} />
+        <Player {...audio} />
       </div>
       <div className="relative overflow-hidden h-96 rounded-md">
-        <SpectrogramTags tags={annotate.tags} filter={tagFilter}>
+        <SpectrogramTags
+          disabled={disabled}
+          tags={annotate.tags}
+          filter={tagFilter}
+        >
           <canvas
             ref={canvasRef}
             {...props}
@@ -166,9 +251,9 @@ export default function ClipAnnotationSpectrogram({
         </SpectrogramTags>
       </div>
       <SpectrogramBar
-        bounds={spectrogram.state.bounds}
-        viewport={spectrogram.state.viewport}
-        onMove={spectrogram.controls.zoom}
+        bounds={spectrogram.bounds}
+        viewport={spectrogram.viewport}
+        onMove={spectrogram.zoom}
       />
     </Card>
   );

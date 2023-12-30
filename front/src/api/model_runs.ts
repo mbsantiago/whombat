@@ -2,19 +2,22 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { ModelRunSchema } from "@/schemas";
+import {
+  EvaluationSetSchema,
+  ModelRunSchema,
+  NumberFilterSchema,
+  StringFilterSchema,
+} from "@/schemas";
 
 import type { ModelRun } from "@/types";
 
 export const ModelRunFilterSchema = z.object({
-  name__eq: z.string().optional(),
-  name__has: z.string().optional(),
-  version__eq: z.string().optional(),
-  evaluated__eq: z.boolean().optional(),
-  score__lt: z.number().optional(),
-  score__gt: z.number().optional(),
-  evaluation_set__eq: z.string().uuid().optional(),
-  has_evaluation__eq: z.boolean().optional(),
+  name: StringFilterSchema.optional(),
+  version: z.string().optional(),
+  evaluated: z.boolean().optional(),
+  score: NumberFilterSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+  has_evaluation: z.boolean().optional(),
 });
 
 export type ModelRunFilter = z.input<typeof ModelRunFilterSchema>;
@@ -54,7 +57,21 @@ export function registerModelRunAPI(
     query: GetModelRunQuery,
   ): Promise<ModelRunPage> {
     const params = GetModelRunQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        name__has: params.name?.has,
+        name__eq: params.name?.eq,
+        version__eq: params.version,
+        evaluated__eq: params.evaluated,
+        score__lt: params.score?.lt,
+        score__gt: params.score?.gt,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+        has_evaluation__eq: params.has_evaluation,
+      },
+    });
     return ModelRunPageSchema.parse(response.data);
   }
 

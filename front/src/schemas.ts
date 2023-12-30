@@ -37,6 +37,8 @@ export const NoteSchema = z.object({
   created_on: z.coerce.date(),
 });
 
+export const TimeStringSchema = z.string().regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/);
+
 export const RecordingSchema = z.object({
   uuid: z.string().uuid(),
   path: z.string(),
@@ -46,10 +48,7 @@ export const RecordingSchema = z.object({
   samplerate: z.number().int(),
   time_expansion: z.number().default(1),
   date: z.coerce.date().nullish(),
-  time: z
-    .string()
-    .regex(/^\d{2}:\d{2}:\d{2}(\.\d+)?$/)
-    .nullish(),
+  time: TimeStringSchema.nullish(),
   latitude: z.number().nullish(),
   longitude: z.number().nullish(),
   rights: z.string().nullish(),
@@ -354,3 +353,39 @@ export const SpectrogramParametersSchema = z
       path: ["min_dB"],
     },
   );
+
+export const FeatureFilterSchema = z.object({
+  name: z.string(),
+  gt: z.number().optional(),
+  lt: z.number().optional(),
+});
+
+export const NumberFilterSchema = z.object({
+  gt: z.number().optional(),
+  lt: z.number().optional(),
+  is_null: z.boolean().optional(),
+});
+
+export const PredictedTagFilterSchema = z.object({
+  tag: TagSchema,
+  gt: z.number().optional(),
+  lt: z.number().optional(),
+});
+
+export const StringFilterSchema = z.object({
+  eq: z.string().optional(),
+  has: z.string().optional(),
+});
+
+export const DateFilterSchema = z.object({
+  before: z.coerce.date().optional(),
+  on: z.coerce.date().optional(),
+  after: z.coerce.date().optional(),
+  is_null: z.boolean().optional(),
+});
+
+export const TimeFilterSchema = z.object({
+  before: TimeStringSchema.optional(),
+  after: TimeStringSchema.optional(),
+  is_null: z.boolean().optional(),
+});

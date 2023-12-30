@@ -41,7 +41,7 @@ export default function useSpectrogramZoom({
 }: {
   viewport: SpectrogramWindow;
   dimensions: { width: number; height: number };
-  onZoom?: (prev: SpectrogramWindow, zoomed: SpectrogramWindow) => void;
+  onZoom?: (window: SpectrogramWindow) => void;
   enabled?: boolean;
 }) {
   const [isValid, setIsValid] = useState(false);
@@ -74,10 +74,10 @@ export default function useSpectrogramZoom({
   const handleMoveEnd = useCallback(() => {
     if (currentWindow == null) return;
     if (isValid) {
-      onZoom?.(viewport, currentWindow);
+      onZoom?.(currentWindow);
     }
     setCurrentWindow(null);
-  }, [currentWindow, isValid, onZoom, viewport]);
+  }, [currentWindow, isValid, onZoom]);
 
   const { props, isDragging } = useWindowMotions({
     enabled,

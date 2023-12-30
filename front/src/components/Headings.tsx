@@ -10,7 +10,7 @@ export function H1({
   return (
     <h1
       className={classnames(
-        "text-2xl font-bold text-stone-900 dark:text-stone-200",
+        "text-2xl font-bold text-stone-800 dark:text-stone-300",
         className,
       )}
       {...props}
@@ -28,7 +28,7 @@ export function H2({
   return (
     <h2
       className={classnames(
-        "text-xl font-bold text-stone-900 dark:text-stone-200",
+        "text-xl font-bold text-stone-800 dark:text-stone-300",
         className,
       )}
       {...props}
@@ -46,7 +46,7 @@ export function H3({
   return (
     <h3
       className={classnames(
-        "text-lg font-semibold leading-7 items-center text-stone-900 dark:text-stone-200",
+        "text-lg font-semibold leading-7 items-center text-stone-800 dark:text-stone-300",
         className,
       )}
       {...props}
@@ -64,8 +64,8 @@ export function H4({
   return (
     <h4
       className={classnames(
-        "text-md font-semibold leading-6 text-stone-900 dark:text-stone-200",
         className,
+        "text-md font-semibold leading-6 text-stone-800 dark:text-stone-300",
       )}
       {...props}
     >

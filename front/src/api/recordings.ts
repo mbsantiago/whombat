@@ -2,7 +2,15 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { RecordingSchema } from "@/schemas";
+import {
+  DatasetSchema,
+  DateFilterSchema,
+  NumberFilterSchema,
+  RecordingSchema,
+  TagSchema,
+  TimeFilterSchema,
+  TimeStringSchema,
+} from "@/schemas";
 
 import type { NoteCreate } from "@/api/notes";
 import type { Feature, Note, Recording, Tag } from "@/types";
@@ -12,15 +20,11 @@ export const RecordingPageSchema = Page(RecordingSchema);
 export type RecordingPage = z.infer<typeof RecordingPageSchema>;
 
 export const RecordingUpdateSchema = z.object({
-  date: z.coerce.date().nullable().optional(),
-  time: z
-    .string()
-    .regex(/^\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/)
-    .nullable()
-    .optional(),
-  latitude: z.number().nullable().optional(),
-  longitude: z.number().nullable().optional(),
-  rights: z.string().nullable().optional(),
+  date: z.coerce.date().nullish(),
+  time: TimeStringSchema.nullish(),
+  latitude: z.number().nullish(),
+  longitude: z.number().nullish(),
+  rights: z.string().nullish(),
   time_expansion: z.coerce.number().optional(),
 });
 
@@ -28,25 +32,14 @@ export type RecordingUpdate = z.input<typeof RecordingUpdateSchema>;
 
 export const RecordingFilterSchema = z.object({
   search: z.string().optional(),
-  dataset: z.string().uuid().optional(),
-  duration__gt: z.number().optional(),
-  duration__lt: z.number().optional(),
-  duration__ge: z.number().optional(),
-  duration__le: z.number().optional(),
-  latitude__gt: z.number().optional(),
-  latitude__lt: z.number().optional(),
-  latitude__ge: z.number().optional(),
-  latitude__le: z.number().optional(),
-  latitude__is_null: z.boolean().optional(),
-  longitude__gt: z.number().optional(),
-  longitude__lt: z.number().optional(),
-  longitude__ge: z.number().optional(),
-  longitude__le: z.number().optional(),
-  longitude__is_null: z.boolean().optional(),
-  tag__key: z.string().optional(),
-  tag__value: z.string().optional(),
-  dataset__eq: z.string().uuid().optional(),
-  has_issues__eq: z.boolean().optional(),
+  dataset: DatasetSchema.optional(),
+  duration: NumberFilterSchema.optional(),
+  latitude: NumberFilterSchema.optional(),
+  longitude: NumberFilterSchema.optional(),
+  tag: TagSchema.optional(),
+  has_issues: z.boolean().optional(),
+  date: DateFilterSchema.optional(),
+  time: TimeFilterSchema.optional(),
 });
 
 export type RecordingFilter = z.input<typeof RecordingFilterSchema>;
@@ -78,7 +71,33 @@ export function registerRecordingAPI(
 ) {
   async function getMany(query: GetRecordingsQuery): Promise<RecordingPage> {
     const params = GetRecordingsQuerySchema.parse(query);
-    const { data } = await instance.get(endpoints.getMany, { params });
+    const { data } = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        search: params.search,
+        dataset__eq: params.dataset?.uuid,
+        duration__gt: params.duration?.gt,
+        duration__lt: params.duration?.lt,
+        latitude__gt: params.latitude?.gt,
+        latitude__lt: params.latitude?.lt,
+        latitude__is_null: params.latitude?.is_null,
+        longitude__gt: params.longitude?.gt,
+        longitude__lt: params.longitude?.lt,
+        longitude__is_null: params.longitude?.is_null,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        has_issues__eq: params.has_issues,
+        date__before: params.date?.before,
+        date__after: params.date?.after,
+        date__on: params.date?.on,
+        date__is_null: params.date?.is_null,
+        time__before: params.time?.before,
+        time__after: params.time?.after,
+        time__is_null: params.time?.is_null,
+      },
+    });
     return RecordingPageSchema.parse(data);
   }
 

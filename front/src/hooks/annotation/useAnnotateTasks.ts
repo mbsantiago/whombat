@@ -13,6 +13,7 @@ import {
   type AnnotationTaskPage,
 } from "@/api/annotation_tasks";
 import api from "@/app/api";
+import useAnnotateTasksKeyShortcuts from "@/hooks/annotation/useAnnotateTasksKeyShortcuts";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 import { type Filter } from "@/hooks/utils/useFilter";
 import { shuffleArray } from "@/utils/arrays";
@@ -63,8 +64,10 @@ type AnnotationControls = {
   removeBadge: UseMutationResult<AnnotationTask, AxiosError, AnnotationStatus>;
 };
 
-export default function useAnnotation({
-  filter: initialFilter,
+const empty = {};
+
+export default function useAnnotateTasks({
+  filter: initialFilter = empty,
   annotationTask: initialTask,
   shuffle = false,
   onChangeTask,
@@ -73,7 +76,7 @@ export default function useAnnotation({
   onVerifyTask,
 }: {
   /** Initial filter to select which annotation tasks to show */
-  filter: AnnotationTaskFilter;
+  filter?: AnnotationTaskFilter;
   /** Optional, initial annotation task to select */
   annotationTask?: AnnotationTask;
   /** If true, the annotation tasks will be shuffled */
@@ -126,21 +129,35 @@ export default function useAnnotation({
   );
 
   const hasNextTask = useMemo(() => {
-    return index !== -1 && index < items.length - 1;
-  }, [index, items]);
+    if (index !== -1) {
+      return index < items.length - 1;
+    }
+    return items.length > 0;
+  }, [index, items.length]);
 
   const nextTask = useCallback(() => {
     if (!hasNextTask) return;
-    goToTask(items[index + 1]);
+    if (index === -1) {
+      goToTask(items[0]);
+    } else {
+      goToTask(items[index + 1]);
+    }
   }, [index, items, hasNextTask, goToTask]);
 
   const hasPrevTask = useMemo(() => {
-    return index !== -1 && index > 0;
-  }, [index]);
+    if (index !== -1) {
+      return index > 0;
+    }
+    return items.length > 0;
+  }, [index, items.length]);
 
   const prevTask = useCallback(() => {
     if (!hasPrevTask) return;
-    goToTask(items[index - 1]);
+    if (index === -1) {
+      goToTask(items[0]);
+    } else {
+      goToTask(items[index - 1]);
+    }
   }, [index, items, hasPrevTask, goToTask]);
 
   const { set: setFilterKeyValue } = filter;
@@ -266,6 +283,14 @@ export default function useAnnotation({
       goToTask(items[0]);
     }
   }, [currentTask, items, goToTask]);
+
+  useAnnotateTasksKeyShortcuts({
+    onGoNext: nextTask,
+    onGoPrevious: prevTask,
+    onMarkCompleted: markCompleted.mutate,
+    onMarkRejected: markRejected.mutate,
+    onMarkVerified: markVerified.mutate,
+  });
 
   return {
     task: currentTask,

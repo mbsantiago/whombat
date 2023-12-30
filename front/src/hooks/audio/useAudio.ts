@@ -1,5 +1,5 @@
 import { useMachine } from "@xstate/react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import api from "@/app/api";
 import { audioMachine } from "@/machines/audio";
@@ -14,6 +14,7 @@ export type PlayerControls = {
   setVolume: (volume: number) => void;
   setSpeed: (speed: number) => void;
   toggleLoop: () => void;
+  togglePlay: () => void;
 };
 
 export type SpeedOption = {
@@ -28,7 +29,7 @@ export type PlayerState = {
   currentTime: number;
   speed: number;
   loop: boolean;
-  playing: boolean;
+  isPlaying: boolean;
   speedOptions: SpeedOption[];
 };
 
@@ -69,7 +70,8 @@ export default function useAudio({
   endTime,
   startTime = 0,
   speed: initialSpeed,
-}: { recording: Recording } & Partial<PlayerState>) {
+}: { recording: Recording } & Partial<PlayerState>): PlayerState &
+  PlayerControls {
   const speedOptions = useMemo(() => getSpeedOptions(recording), [recording]);
   const defaultSpeedOption = useMemo(
     () => getDefaultSpeedOption(speedOptions),
@@ -100,58 +102,79 @@ export default function useAudio({
   // Export player state
   const { currentTime, volume, loop } = machineState.context;
   const isPlaying = machineState.matches("playing");
-  const state: PlayerState = useMemo(() => {
-    return {
-      startTime,
-      endTime: endTime || recording.duration,
-      volume,
-      currentTime: currentTime * speed + startTime,
-      speed: speed,
-      loop,
-      playing: isPlaying,
-      speedOptions,
-    };
-  }, [
-    volume,
-    currentTime,
-    loop,
-    isPlaying,
-    speed,
-    endTime,
-    startTime,
-    speedOptions,
-    recording.duration,
-  ]);
 
-  // Create player controls
-  const controls: PlayerControls = useMemo(() => {
-    return {
-      play: () => send({ type: "audio.play" }),
-      pause: () => send({ type: "audio.pause" }),
-      stop: () => send({ type: "audio.stop" }),
-      setVolume: (volume) => send({ type: "audio.set_volume", volume }),
-      toggleLoop: () => send({ type: "audio.toggle_loop" }),
-      seek: (time) =>
-        send({ type: "audio.seek", time: (time - startTime) / speed }),
-      setSpeed: (newSpeed) => {
-        setSpeed(newSpeed);
-        const url = api.audio.getStreamUrl({
-          recording,
-          startTime,
-          endTime,
-          speed: newSpeed,
-        });
-        send({
-          type: "audio.change_url",
-          url,
-          play: true,
-        });
-      },
-    };
-  }, [send, speed, startTime, endTime, recording]);
+  const handlePlay = useCallback(() => {
+    send({ type: "audio.play" });
+  }, [send]);
+
+  const handlePause = useCallback(() => {
+    send({ type: "audio.pause" });
+  }, [send]);
+
+  const handleStop = useCallback(() => {
+    send({ type: "audio.stop" });
+  }, [send]);
+
+  const handleSetVolume = useCallback(
+    (volume: number) => {
+      send({ type: "audio.set_volume", volume });
+    },
+    [send],
+  );
+
+  const handleToggleLoop = useCallback(() => {
+    send({ type: "audio.toggle_loop" });
+  }, [send]);
+
+  const handleSeek = useCallback(
+    (time: number) => {
+      send({ type: "audio.seek", time: (time - startTime) / speed });
+    },
+    [send, speed, startTime],
+  );
+
+  const handleSetSpeed = useCallback(
+    (newSpeed: number) => {
+      setSpeed(newSpeed);
+      const url = api.audio.getStreamUrl({
+        recording,
+        startTime,
+        endTime,
+        speed: newSpeed,
+      });
+      send({
+        type: "audio.change_url",
+        url,
+        play: true,
+      });
+    },
+    [send, recording, startTime, endTime],
+  );
+
+  const handleTogglePlay = useCallback(() => {
+    if (isPlaying) {
+      handlePause();
+    } else {
+      handlePlay();
+    }
+  }, [isPlaying, handlePlay, handlePause]);
 
   return {
-    state,
-    controls,
+    startTime,
+    endTime: endTime || recording.duration,
+    volume,
+    currentTime: currentTime * speed + startTime,
+    speed,
+    loop,
+    isPlaying,
+    speedOptions,
+    togglePlay: handleTogglePlay,
+    play: handlePlay,
+    pause: handlePause,
+    stop: handleStop,
+    setVolume: handleSetVolume,
+    toggleLoop: handleToggleLoop,
+    seek: handleSeek,
+    setSpeed: handleSetSpeed,
   };
 }

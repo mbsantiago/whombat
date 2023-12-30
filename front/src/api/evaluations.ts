@@ -2,7 +2,14 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { EvaluationSchema } from "@/schemas";
+import {
+  EvaluationSchema,
+  EvaluationSetSchema,
+  ModelRunSchema,
+  NumberFilterSchema,
+  StringFilterSchema,
+  UserRunSchema,
+} from "@/schemas";
 
 import type { Evaluation } from "@/types";
 
@@ -18,13 +25,11 @@ export const EvaluationPageSchema = Page(EvaluationSchema);
 export type EvaluationPage = z.infer<typeof EvaluationPageSchema>;
 
 export const EvaluationFilterSchema = z.object({
-  score__lt: z.number().optional(),
-  score__gt: z.number().optional(),
-  task__eq: z.string().optional(),
-  task__has: z.string().optional(),
-  model_run__eq: z.string().uuid().optional(),
-  user_run__eq: z.string().uuid().optional(),
-  evaluation_set__eq: z.string().uuid().optional(),
+  score: NumberFilterSchema.optional(),
+  task: StringFilterSchema.optional(),
+  model_run: ModelRunSchema.optional(),
+  user_run: UserRunSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
 });
 
 export type EvaluationFilter = z.input<typeof EvaluationFilterSchema>;
@@ -51,7 +56,20 @@ export function registerEvaluationAPI(
     query: GetEvaluationsQuery,
   ): Promise<EvaluationPage> {
     const params = GetEvaluationsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        score__lt: params.score?.lt,
+        score__gt: params.score?.gt,
+        task__has: params.task?.has,
+        task__eq: params.task?.eq,
+        model_run__eq: params.model_run?.uuid,
+        user_run__eq: params.user_run?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
     return EvaluationPageSchema.parse(response.data);
   }
 

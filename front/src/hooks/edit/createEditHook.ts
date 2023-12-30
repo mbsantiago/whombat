@@ -12,9 +12,10 @@ import type { DOMAttributes } from "react";
 interface UseEditObjectProps<J> {
   dimensions: Dimensions;
   object: J | null;
-  active: boolean;
+  enabled: boolean;
   style?: Style;
   onChange?: (obj: J) => void;
+  onDrop?: (obj: J) => void;
   onDeselect?: () => void;
 }
 
@@ -38,9 +39,10 @@ export default function createEditHook<J, T>(
   function useEdit({
     dimensions,
     object,
-    active,
-    style = EDIT_STYLE,
+    enabled,
+    style: style = EDIT_STYLE,
     onChange,
+    onDrop,
     onDeselect,
   }: UseEditObjectProps<J>): {
     object: J | null;
@@ -52,6 +54,10 @@ export default function createEditHook<J, T>(
     draw: (ctx: CanvasRenderingContext2D) => void;
   } {
     const [tmpObject, setTmpObject] = useState<J | null>(null);
+    const [keys, setKeys] = useState<EventKeys>({
+      shiftKey: false,
+      ctrlKey: false,
+    });
 
     const editableElements: EditableElement<J>[] = useMemo(() => {
       if (object == null) return [];
@@ -60,35 +66,47 @@ export default function createEditHook<J, T>(
 
     const { hovered, hoverProps } = useElementHover({
       elements: editableElements,
-      enabled: active,
+      enabled,
     });
 
     const handleMoveStart = useCallback(() => {
-      if (!active) return;
+      if (!enabled) return;
+      setKeys({ shiftKey: false, ctrlKey: false });
       setTmpObject(object);
-    }, [active, object]);
+    }, [enabled, object]);
 
-    const handleMoveEnd = useCallback(() => {
-      if (!active) return;
-      setTmpObject(null);
-      if (tmpObject != null && tmpObject !== object) {
-        onChange?.(tmpObject);
-      }
-    }, [active, object, tmpObject, onChange]);
+    const handleMoveEnd = useCallback(
+      ({ ctrlKey }: { ctrlKey?: boolean } = {}) => {
+        if (!enabled) return;
+        setTmpObject(null);
+        if (tmpObject != null && tmpObject !== object) {
+          if (!ctrlKey) {
+            onChange?.(tmpObject);
+          } else {
+            onDrop?.(tmpObject);
+          }
+        }
+        setKeys({ shiftKey: false, ctrlKey: false });
+      },
+      [enabled, object, tmpObject, onChange, onDrop],
+    );
 
     const handleMove = useCallback(
       ({
         initial,
         current,
-        shift,
+        shiftKey,
+        ctrlKey,
       }: {
         initial: Pixel;
         current: Pixel;
-        shift: boolean;
+        shiftKey: boolean;
+        ctrlKey: boolean;
       }) => {
         if (hovered == null || object == null) return;
+        setKeys({ shiftKey, ctrlKey });
 
-        if (!shift) {
+        if (!shiftKey) {
           setTmpObject(hovered.drag(object, initial, current));
         } else {
           setTmpObject(shiftObject(object, initial, current));
@@ -104,9 +122,9 @@ export default function createEditHook<J, T>(
     });
 
     const handleOnPress = useCallback(() => {
-      if (!active || hovered != null || isDragging) return;
+      if (!enabled || hovered != null || isDragging) return;
       onDeselect?.();
-    }, [active, hovered, isDragging, onDeselect]);
+    }, [enabled, hovered, isDragging, onDeselect]);
 
     const { pressProps } = usePress({
       onPress: handleOnPress,
@@ -114,7 +132,7 @@ export default function createEditHook<J, T>(
 
     const draw = useCallback(
       (ctx: CanvasRenderingContext2D) => {
-        if (!active || object == null) return;
+        if (!enabled || object == null) return;
 
         // Set the cursor depending on the hovered element
         ctx.canvas.style.cursor = "default";
@@ -123,6 +141,9 @@ export default function createEditHook<J, T>(
         }
         if (tmpObject != null) {
           ctx.canvas.style.cursor = "grabbing";
+          if (keys.ctrlKey) {
+            ctx.canvas.style.cursor = "copy";
+          }
         }
 
         const els = createEditableElementsFn(tmpObject ?? object, {
@@ -134,17 +155,17 @@ export default function createEditHook<J, T>(
           drawEditableElement(ctx, element, style, element.id === hovered?.id),
         );
       },
-      [active, object, style, hovered, tmpObject],
+      [enabled, object, style, hovered, tmpObject, keys.ctrlKey],
     );
 
-    const props = active ? mergeProps(dragProps, pressProps, hoverProps) : {};
+    const props = enabled ? mergeProps(dragProps, pressProps, hoverProps) : {};
 
     return {
       props,
       object,
       tmpObject,
       isEditing: tmpObject != null,
-      active,
+      active: enabled,
       hovered,
       draw,
     };

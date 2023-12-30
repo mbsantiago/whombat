@@ -6,6 +6,7 @@ import {
   BoundingBoxIcon,
   DeleteIcon,
   EditIcon,
+  LineStringIcon,
   SelectIcon,
   TimeIntervalIcon,
   TimeStampIcon,
@@ -38,6 +39,11 @@ const geometryTypes: Record<GeometryType, Node> = {
     label: <BoundingBoxIcon className="w-5 h-5" />,
     value: "BoundingBox",
   },
+  LineString: {
+    id: "LineString",
+    label: <LineStringIcon className="w-5 h-5" />,
+    value: "LineString",
+  },
 };
 
 export default function AnnotationControls({
@@ -46,6 +52,7 @@ export default function AnnotationControls({
   isSelecting,
   isEditing,
   geometryType,
+  disabled = false,
   onDraw,
   onDelete,
   onSelect,
@@ -56,11 +63,30 @@ export default function AnnotationControls({
   isSelecting: boolean;
   isEditing: boolean;
   geometryType: GeometryType;
+  disabled?: boolean;
   onDraw?: () => void;
   onDelete?: () => void;
   onSelect?: () => void;
   onSelectGeometryType?: (type: GeometryType) => void;
 }) {
+  if (disabled)
+    return (
+      <div className="flex space-x-2">
+        <Tooltip
+          tooltip="Select an annotation"
+          placement="bottom"
+          autoPlacement={false}
+        >
+          <Button
+            variant={isSelecting ? "primary" : "secondary"}
+            onClick={onSelect}
+          >
+            <SelectIcon className="w-5 h-5" />
+          </Button>
+        </Tooltip>
+      </div>
+    );
+
   return (
     <div className="flex space-x-2">
       <Tooltip

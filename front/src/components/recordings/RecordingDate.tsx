@@ -9,9 +9,15 @@ import { Input, InputGroup } from "@/components/inputs";
 import Popover from "@/components/Popover";
 import useDebounceSubmit from "@/hooks/forms/useDebounceSubmit";
 
-function DateButton({ date }: { date?: Date | null }) {
+function DateButton({
+  date,
+  disabled,
+}: {
+  date?: Date | null;
+  disabled?: boolean;
+}) {
   return (
-    <Button mode="text" variant="secondary" padding="py-1">
+    <Button mode="text" variant="secondary" padding="py-1" disabled={disabled}>
       <DateIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
       {date != null ? (
         date.toLocaleDateString()
@@ -36,13 +42,16 @@ const schema = z.object({
 export default function RecordingDate({
   date,
   onChange,
+  disabled = false,
 }: {
   date?: Date | null;
   onChange?: (value: { date?: Date | null }) => void;
+  disabled?: boolean;
 }) {
   const { register, handleSubmit, watch } = useForm<{ date: string }>({
     mode: "onChange",
     values: { date: toString(date) },
+    disabled,
   });
 
   const onSubmit = useCallback(
@@ -62,6 +71,8 @@ export default function RecordingDate({
   });
 
   const [value] = watch(["date"]);
+
+  if (disabled) return <DateButton date={date} disabled />;
 
   return (
     <Popover button={<DateButton date={date} />}>

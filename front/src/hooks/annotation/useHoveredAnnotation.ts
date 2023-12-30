@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import useWindowHover from "@/hooks/window/useWindowHover";
 import {
@@ -99,6 +99,12 @@ export default function useHoveredAnnotations({
     },
     [scaledGeometries, annotationsInWindow, viewport, dimensions, enabled],
   );
+
+  useEffect(() => {
+    if (!enabled && hoveredAnnotation != null) {
+      setHoveredAnnotation(null);
+    }
+  }, [enabled, hoveredAnnotation]);
 
   const props = useWindowHover({
     enabled,

@@ -20,6 +20,7 @@ export default function useEditAnnotationGeometry({
   soundEventAnnotation,
   enabled = true,
   onChange,
+  onCopy,
   onDeselect,
   style,
 }: {
@@ -28,6 +29,7 @@ export default function useEditAnnotationGeometry({
   soundEventAnnotation: SoundEventAnnotation | null;
   enabled?: boolean;
   onChange?: (geometry: Geometry) => void;
+  onCopy?: (geometry: Geometry) => void;
   onDeselect?: () => void;
   style?: Style;
 }) {
@@ -47,11 +49,21 @@ export default function useEditAnnotationGeometry({
     [onChange, viewport, dimensions],
   );
 
+  const handleOnCopy = useCallback(
+    (geometry?: Geometry) => {
+      if (geometry == null) return;
+      const rescaled = scaleGeometryToWindow(dimensions, geometry, viewport);
+      onCopy?.(rescaled);
+    },
+    [onCopy, viewport, dimensions],
+  );
+
   const ret = useEditGeometry({
     dimensions,
     object: scaledGeometry,
-    active: enabled,
-    style,
+    enabled: enabled,
+    style: style,
+    onDrop: handleOnCopy,
     onChange: handleOnChange,
     onDeselect: onDeselect,
   });

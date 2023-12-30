@@ -3,7 +3,13 @@ import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
 import { type NoteCreate, NoteCreateSchema } from "@/api/notes";
-import { ClipAnnotationSchema } from "@/schemas";
+import {
+  AnnotationProjectSchema,
+  ClipAnnotationSchema,
+  ClipSchema,
+  EvaluationSetSchema,
+  TagSchema,
+} from "@/schemas";
 
 import type { Clip, ClipAnnotation, Note, Tag } from "@/types";
 
@@ -12,11 +18,10 @@ export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
 export type ClipAnnotationPage = z.infer<typeof ClipAnnotationPageSchema>;
 
 export const ClipAnnotationFilterSchema = z.object({
-  clip__eq: z.string().uuid().optional(),
-  tag__key: z.string().optional(),
-  tag__value: z.string().optional(),
-  annotation_project__eq: z.string().uuid().optional(),
-  evaluation_set__eq: z.string().uuid().optional(),
+  clip: ClipSchema.optional(),
+  tag: TagSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
 });
 
 export type ClipAnnotationFilter = z.input<typeof ClipAnnotationFilterSchema>;
@@ -60,7 +65,18 @@ export function registerClipAnnotationsAPI(
     query: GetClipAnnotationsQuery,
   ): Promise<ClipAnnotationPage> {
     const params = GetClipAnnotationsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        clip__eq: params.clip?.uuid,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        annotation_project__eq: params.annotation_project?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
     return ClipAnnotationPageSchema.parse(response.data);
   }
 

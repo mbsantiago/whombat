@@ -1,10 +1,10 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import toast from "react-hot-toast";
 
 import UserContext from "@/app/(base)/context";
-import AnnotateProject from "@/components/annotation/AnnotateProject";
+import AnnotateTasks from "@/components/annotation/AnnotateTasks";
 import Loading from "@/components/Loading";
 import useAnnotationTask from "@/hooks/api/useAnnotationTask";
 import useStore from "@/store";
@@ -29,7 +29,6 @@ export default function Page() {
     enabled: !!annotationTaskUUID,
   });
 
-  // Get spectrogram settings
   const parameters = useStore((state) => state.spectrogramSettings);
   const setParameters = useStore((state) => state.setSpectrogramSettings);
 
@@ -54,6 +53,32 @@ export default function Page() {
     [router, pathname, search],
   );
 
+  const handleCompleteTask = useCallback(() => {
+    toast.success("Task marked as complete.");
+  }, []);
+
+  const handleRejectTask = useCallback(() => {
+    toast.error("Task marked for review.");
+  }, []);
+
+  const handleVerifyTask = useCallback(() => {
+    toast.success("Task verified.");
+  }, []);
+
+  const filter = useMemo(
+    () => ({
+      annotation_project: project,
+    }),
+    [project],
+  );
+
+  const tagFilter = useMemo(
+    () => ({
+      annotation_project__eq: project.uuid,
+    }),
+    [project],
+  );
+
   if (user == null) {
     toast.error("You must be logged in to annotate.");
     return null;
@@ -64,13 +89,17 @@ export default function Page() {
   }
 
   return (
-    <AnnotateProject
+    <AnnotateTasks
+      taskFilter={filter}
+      tagFilter={tagFilter}
       annotationTask={annotationTask.data}
-      annotationProject={project}
       parameters={parameters}
       onChangeTask={onChangeTask}
       currentUser={user}
       onParameterSave={onParameterSave}
+      onCompleteTask={handleCompleteTask}
+      onRejectTask={handleRejectTask}
+      onVerifyTask={handleVerifyTask}
     />
   );
 }

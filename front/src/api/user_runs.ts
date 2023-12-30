@@ -2,17 +2,21 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { UserRunSchema } from "@/schemas";
+import {
+  EvaluationSetSchema,
+  NumberFilterSchema,
+  UserRunSchema,
+  UserSchema,
+} from "@/schemas";
 
 import type { UserRun } from "@/types";
 
 export const UserRunFilterSchema = z.object({
-  user__eq: z.string().uuid().optional(),
-  evaluated__eq: z.boolean().optional(),
-  score__lt: z.number().optional(),
-  score__gt: z.number().optional(),
-  evaluation_set__eq: z.string().uuid().optional(),
-  has_evaluation__eq: z.boolean().optional(),
+  user: UserSchema.optional(),
+  evaluated: z.boolean().optional(),
+  score: NumberFilterSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+  has_evaluation: z.boolean().optional(),
 });
 
 export type UserRunFilter = z.input<typeof UserRunFilterSchema>;
@@ -46,7 +50,19 @@ export function registerUserRunAPI(
 
   async function getManyUserRuns(query: GetUserRunQuery): Promise<UserRunPage> {
     const params = GetUserRunQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getMany, { params });
+    const response = await instance.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        user__eq: params.user?.id,
+        evaluated__eq: params.evaluated,
+        score__lt: params.score?.lt,
+        score__gt: params.score?.gt,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+        has_evaluation__eq: params.has_evaluation,
+      },
+    });
     return UserRunPageSchema.parse(response.data);
   }
 

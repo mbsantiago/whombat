@@ -42,9 +42,11 @@ const schema = z.object({
 export default function LocationInput({
   value,
   onChange,
+  disabled,
 }: {
   value: Location;
   onChange?: (value: Location) => void;
+  disabled?: boolean;
 }) {
   const {
     register,
@@ -68,34 +70,36 @@ export default function LocationInput({
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row gap-2 justify-center items-center p-2">
-        <InputGroup
-          name="latitude"
-          label="latitude"
-          error={errors.latitude?.message}
-        >
-          <Input
-            type="number"
-            {...register("latitude")}
-            min={-90}
-            max={90}
-            step="any"
-          />
-        </InputGroup>
-        <InputGroup
-          name="longitude"
-          label="longitude"
-          error={errors.longitude?.message}
-        >
-          <Input
-            type="number"
-            {...register("longitude")}
-            min={-180}
-            max={180}
-            step="any"
-          />
-        </InputGroup>
-      </div>
+      {!disabled && (
+        <div className="flex flex-row gap-2 justify-center items-center p-2">
+          <InputGroup
+            name="latitude"
+            label="latitude"
+            error={errors.latitude?.message}
+          >
+            <Input
+              type="number"
+              {...register("latitude")}
+              min={-90}
+              max={90}
+              step="any"
+            />
+          </InputGroup>
+          <InputGroup
+            name="longitude"
+            label="longitude"
+            error={errors.longitude?.message}
+          >
+            <Input
+              type="number"
+              {...register("longitude")}
+              min={-180}
+              max={180}
+              step="any"
+            />
+          </InputGroup>
+        </div>
+      )}
       <div className="relative p-2">
         {position.latitude != null && position.longitude != null && (
           <Map

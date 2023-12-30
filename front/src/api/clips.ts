@@ -1,7 +1,13 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { ClipSchema } from "@/schemas";
+import {
+  ClipSchema,
+  DatasetSchema,
+  FeatureFilterSchema,
+  NumberFilterSchema,
+  RecordingSchema,
+} from "@/schemas";
 
 import { GetManySchema, Page } from "./common";
 
@@ -29,15 +35,11 @@ export const ClipPageSchema = Page(ClipSchema);
 export type ClipPage = z.infer<typeof ClipPageSchema>;
 
 export const ClipFilterSchema = z.object({
-  recording__eq: z.string().uuid().optional(),
-  dataset__eq: z.string().uuid().optional(),
-  start_time__gt: z.number().optional(),
-  start_time__lt: z.number().optional(),
-  end_time__gt: z.number().optional(),
-  end_time__lt: z.number().optional(),
-  feature__name: z.string().optional(),
-  feature__gt: z.number().optional(),
-  feature__lt: z.number().optional(),
+  recording: RecordingSchema.optional(),
+  dataset: DatasetSchema.optional(),
+  start_time: NumberFilterSchema.optional(),
+  end_time: NumberFilterSchema.optional(),
+  feature: FeatureFilterSchema.optional(),
 });
 
 export type ClipFilter = z.input<typeof ClipFilterSchema>;
@@ -61,7 +63,22 @@ export function registerClipAPI(
 ) {
   async function getMany(query: GetClipsQuery): Promise<ClipPage> {
     const params = GetClipsQuerySchema.parse(query);
-    const response = await api.get(endpoints.getMany, { params });
+    const response = await api.get(endpoints.getMany, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        recording__eq: params.recording?.uuid,
+        dataset__eq: params.dataset?.uuid,
+        start_time__lt: params.start_time?.lt,
+        start_time__gt: params.start_time?.gt,
+        end_time__lt: params.end_time?.lt,
+        end_time__gt: params.end_time?.gt,
+        feature__name: params.feature?.name,
+        feature__lt: params.feature?.lt,
+        feature__gt: params.feature?.gt,
+      },
+    });
     return response.data;
   }
 

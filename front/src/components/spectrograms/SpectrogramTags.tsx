@@ -132,10 +132,12 @@ export function TagGroup({
   group,
   filter,
   onCreate,
+  disabled = false,
 }: {
   group: TagGroup;
   filter?: TagFilter;
   onCreate?: (tag: TagType) => void;
+  disabled?: boolean;
 }) {
   const { x, y } = group.position;
   return (
@@ -159,16 +161,18 @@ export function TagGroup({
           />
         ))}
       </div>
-      <AddTagButton
-        filter={filter}
-        onCreate={(tag) => {
-          onCreate?.(tag);
-          group.onAdd?.(tag);
-        }}
-        onAdd={(tag) => {
-          group.onAdd?.(tag);
-        }}
-      />
+      {!disabled && (
+        <AddTagButton
+          filter={filter}
+          onCreate={(tag) => {
+            onCreate?.(tag);
+            group.onAdd?.(tag);
+          }}
+          onAdd={(tag) => {
+            group.onAdd?.(tag);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -178,11 +182,13 @@ export default function SpectrogramTags({
   children,
   filter,
   onCreate,
+  disabled = false,
 }: {
   tags: TagGroup[];
   children: ReactNode;
   filter?: TagFilter;
   onCreate?: (tag: TagType) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="overflow-hidden relative w-full h-full rounded">
@@ -193,6 +199,7 @@ export default function SpectrogramTags({
           group={group}
           filter={filter}
           onCreate={onCreate}
+          disabled={disabled}
         />
       ))}
     </div>

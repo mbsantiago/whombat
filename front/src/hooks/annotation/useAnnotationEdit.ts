@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import useEditAnnotationGeometry from "@/hooks/edit/useEditAnnotation";
 
 import type {
@@ -23,6 +25,7 @@ export default function useAnnotationEdit({
   annotation,
   enabled = true,
   onEdit,
+  onCopy,
   onDeselect,
 }: {
   viewport: SpectrogramWindow;
@@ -33,12 +36,22 @@ export default function useAnnotationEdit({
   onCopy?: (annotation: SoundEventAnnotation, geometry: Geometry) => void;
   onDeselect?: () => void;
 }) {
+  const handleCopy = useCallback(
+    (geometry: Geometry) => {
+      if (annotation !== null) {
+        onCopy?.(annotation, geometry);
+      }
+    },
+    [annotation, onCopy],
+  );
+
   const { draw, props } = useEditAnnotationGeometry({
     viewport,
     dimensions,
     soundEventAnnotation: annotation,
     enabled,
     onChange: onEdit,
+    onCopy: handleCopy,
     onDeselect,
     style: EDIT_STYLE,
   });

@@ -13,7 +13,7 @@ export function useObjectDestruction<T>({
   onSuccess,
   onError,
 }: {
-  uuid: string;
+  uuid?: string;
   query: ReturnType<typeof useQuery<T>>;
   client: ReturnType<typeof useQueryClient>;
   mutationFn: (obj: T) => Promise<T>;
@@ -24,6 +24,10 @@ export function useObjectDestruction<T>({
   const { status, data } = query;
 
   const trueMutationFn = useCallback(async () => {
+    if (uuid == null) {
+      throw new Error(`No uuid provided for object of type ${name}`);
+    }
+
     if (status === "pending") {
       throw new Error(
         `No data for object of type ${name} (uuid=${uuid}). ` +
@@ -61,7 +65,7 @@ export function useObjectMutation<T, K>({
   onSuccess,
   onError,
 }: {
-  uuid: string;
+  uuid?: string;
   query: ReturnType<typeof useQuery<T>>;
   client: ReturnType<typeof useQueryClient>;
   mutationFn: (obj: T, extra: K) => Promise<T>;
@@ -73,6 +77,10 @@ export function useObjectMutation<T, K>({
 
   const trueMutationFn = useCallback(
     async (extra: K) => {
+      if (uuid == null) {
+        throw new Error(`No uuid provided for object of type ${name}`);
+      }
+
       if (status === "pending") {
         throw new Error(
           `No data for object of type ${name} (uuid=${uuid}). ` +
@@ -109,7 +117,7 @@ export function useObjectQuery<T, K>({
   secondaryName,
   enabled = false,
 }: {
-  uuid: string;
+  uuid?: string;
   query: ReturnType<typeof useQuery<T>>;
   queryFn: (obj: T) => Promise<K>;
   name: string;
@@ -142,7 +150,7 @@ export function useObjectQuery<T, K>({
 }
 
 export type UseObjectProps<T> = {
-  uuid: string;
+  uuid?: string;
   name: string;
   enabled?: boolean;
   getFn: (uuid: string) => Promise<T>;
@@ -161,9 +169,16 @@ export default function useObject<T>({
 } & UseObjectProps<T>) {
   const client = useQueryClient();
 
+  const queryFn = useCallback(async () => {
+    if (uuid == null) {
+      throw new Error(`No uuid provided for object of type ${name}`);
+    }
+    return await getFn(uuid);
+  }, [uuid, name, getFn]);
+
   const query = useQuery<T, AxiosError>({
     queryKey: [name, uuid],
-    queryFn: async () => await getFn(uuid),
+    queryFn,
     retry: (failureCount, error) => {
       if (error == null) {
         return failureCount < 3;
@@ -183,7 +198,7 @@ export default function useObject<T>({
     },
     initialData: initial,
     staleTime: 1000 * 60 * 5,
-    enabled,
+    enabled: enabled && uuid != null,
   });
 
   const setData = useCallback(

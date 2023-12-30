@@ -1,26 +1,21 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { mergeProps } from "react-aria";
 
+import useSpectrogramDrag from "@/hooks/spectrogram/useSpectrogramDrag";
+import useSpectrogramZoom from "@/hooks/spectrogram/useSpectrogramZoom";
 import useWindowScroll from "@/hooks/window/useWindowScroll";
 
-import useSpectrogramDrag from "./useSpectrogramDrag";
-import useSpectrogramZoom from "./useSpectrogramZoom";
-
-import type { SpectrogramWindow } from "@/types";
+import type { Position, SpectrogramWindow } from "@/types";
 
 /**
  * The motion modes supported by the spectrogram motions.
  *
  * @description Either "drag", "zoom", or "idle".
  */
-type MotionMode = "drag" | "zoom" | "idle";
+export type MotionMode = "drag" | "zoom" | "idle";
 
 /**
  * The state of the spectrogram motions.
- *
- * @property {boolean} canDrag - Indicates whether dragging is allowed.
- * @property {boolean} canZoom - Indicates whether zooming is allowed.
- * @property {boolean} enabled - Indicates whether the motions are enabled.
  */
 export type MotionState = {
   canDrag: boolean;
@@ -30,10 +25,6 @@ export type MotionState = {
 
 /**
  * The controls for managing spectrogram motions.
- *
- * @property {Function} enableDrag - Enables dragging mode.
- * @property {Function} enableZoom - Enables zooming mode.
- * @property {Function} disable - Disables all motions.
  */
 export type MotionControls = {
   enableDrag: () => void;
@@ -57,19 +48,21 @@ export default function useSpectrogramMotions({
   onScrollMoveFreq,
   onScrollZoomTime,
   onScrollZoomFreq,
+  onDoubleClick,
   enabled = true,
 }: {
   viewport: SpectrogramWindow;
   dimensions: { width: number; height: number };
+  onDoubleClick?: (dblClickProps: { position: Position }) => void;
   onDragStart?: () => void;
   onDrag?: (window: SpectrogramWindow) => void;
   onDragEnd?: () => void;
-  onZoom?: (prev: SpectrogramWindow, next: SpectrogramWindow) => void;
+  onZoom?: (window: SpectrogramWindow) => void;
   onModeChange?: (mode: MotionMode) => void;
-  onScrollMoveTime?: (time: number) => void;
-  onScrollMoveFreq?: (freq: number) => void;
-  onScrollZoomTime?: (time: number) => void;
-  onScrollZoomFreq?: (time: number) => void;
+  onScrollMoveTime?: (props: { time: number }) => void;
+  onScrollMoveFreq?: (props: { freq: number }) => void;
+  onScrollZoomTime?: (props: { time: number }) => void;
+  onScrollZoomFreq?: (props: { freq: number }) => void;
   enabled?: boolean;
 }) {
   const [motionMode, setMotionMode] = useState<MotionMode>(
@@ -82,12 +75,13 @@ export default function useSpectrogramMotions({
     onDragStart,
     onDrag,
     onDragEnd,
+    onDoubleClick,
     enabled: enabled && motionMode === "drag",
   });
 
   const handleOnZoom = useCallback(
-    (prev: SpectrogramWindow, next: SpectrogramWindow) => {
-      onZoom?.(prev, next);
+    (next: SpectrogramWindow) => {
+      onZoom?.(next);
       setMotionMode("drag");
     },
     [onZoom],
@@ -100,38 +94,70 @@ export default function useSpectrogramMotions({
     enabled: enabled && motionMode === "zoom",
   });
 
+  const handleTimeScroll = useCallback(
+    ({ time }: { time?: number }) => {
+      if (time == null) return;
+      onScrollMoveTime?.({ time });
+    },
+    [onScrollMoveTime],
+  );
+
   const { scrollProps: scrollMoveTimeProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: ({ time }) => time && onScrollMoveTime?.(time),
+    onScroll: handleTimeScroll,
     shift: true,
     enabled,
     relative: false,
   });
 
+  const handleTimeZoom = useCallback(
+    ({ timeRatio }: { timeRatio?: number }) => {
+      if (timeRatio == null) return;
+      onScrollZoomTime?.({ time: 1 + timeRatio });
+    },
+    [onScrollZoomTime],
+  );
+
   const { scrollProps: scrollZoomTimeProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: ({ timeRatio }) => timeRatio && onScrollZoomTime?.(1 + timeRatio),
+    onScroll: handleTimeZoom,
     shift: true,
     alt: true,
     enabled,
     relative: true,
   });
 
+  const handleFreqScroll = useCallback(
+    ({ freq }: { freq?: number }) => {
+      if (freq == null) return;
+      onScrollMoveFreq?.({ freq });
+    },
+    [onScrollMoveFreq],
+  );
+
   const { scrollProps: scrollMoveFreqProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: ({ freq }) => freq && onScrollMoveFreq?.(freq),
+    onScroll: handleFreqScroll,
     ctrl: true,
     enabled,
     relative: false,
   });
 
+  const handleFreqZoom = useCallback(
+    ({ freqRatio }: { freqRatio?: number }) => {
+      if (freqRatio == null) return;
+      onScrollZoomFreq?.({ freq: 1 + freqRatio });
+    },
+    [onScrollZoomFreq],
+  );
+
   const { scrollProps: scrollZoomFreqProps } = useWindowScroll({
     viewport,
     dimensions,
-    onScroll: ({ freqRatio }) => freqRatio && onScrollZoomFreq?.(1 + freqRatio),
+    onScroll: handleFreqZoom,
     ctrl: true,
     alt: true,
     enabled,
@@ -147,35 +173,29 @@ export default function useSpectrogramMotions({
     scrollMoveFreqProps,
   );
 
-  const motionState = useMemo<MotionState>(() => {
-    return {
-      canDrag: enabled && motionMode === "drag",
-      canZoom: enabled && motionMode === "zoom",
-      enabled,
-    };
-  }, [enabled, motionMode]);
+  const handleEnableDrag = useCallback(() => {
+    onModeChange?.("drag");
+    setMotionMode("drag");
+  }, [onModeChange]);
 
-  const motionControls = useMemo<MotionControls>(() => {
-    return {
-      enableDrag: () => {
-        onModeChange?.("drag");
-        setMotionMode("drag");
-      },
-      enableZoom: () => {
-        onModeChange?.("zoom");
-        setMotionMode("zoom");
-      },
-      disable: () => {
-        onModeChange?.("idle");
-        setMotionMode("idle");
-      },
-    };
+  const handleEnableZoom = useCallback(() => {
+    onModeChange?.("zoom");
+    setMotionMode("zoom");
+  }, [onModeChange]);
+
+  const handleDisable = useCallback(() => {
+    onModeChange?.("idle");
+    setMotionMode("idle");
   }, [onModeChange]);
 
   return {
     props,
     draw,
-    state: motionState,
-    controls: motionControls,
+    canDrag: enabled && motionMode === "drag",
+    canZoom: enabled && motionMode === "zoom",
+    enabled,
+    enableDrag: handleEnableDrag,
+    enableZoom: handleEnableZoom,
+    disable: handleDisable,
   } as const;
 }

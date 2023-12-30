@@ -2,7 +2,18 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/api/common";
-import { TagSchema } from "@/schemas";
+import {
+  AnnotationProjectSchema,
+  ClipAnnotationSchema,
+  ClipPredictionSchema,
+  DatasetSchema,
+  EvaluationSchema,
+  RecordingSchema,
+  SoundEventAnnotationSchema,
+  SoundEventPredictionSchema,
+  StringFilterSchema,
+  TagSchema,
+} from "@/schemas";
 
 import type { Tag } from "@/types";
 
@@ -30,17 +41,16 @@ export type RecordingTagPage = z.infer<typeof RecordingTagPageSchema>;
 
 export const TagFilterSchema = z.object({
   search: z.string().optional(),
-  key__eq: z.string().optional(),
-  value__eq: z.string().optional(),
-  value__has: z.string().optional(),
-  annotation_project__eq: z.string().uuid().optional(),
-  recording__eq: z.string().uuid().optional(),
-  sound_event_annotation__eq: z.string().uuid().optional(),
-  clip_annotation__eq: z.string().uuid().optional(),
-  sound_event_prediction__eq: z.string().uuid().optional(),
-  clip_prediction__eq: z.string().uuid().optional(),
-  evaluation_set__eq: z.string().uuid().optional(),
-  dataset__eq: z.string().uuid().optional(),
+  key: z.string().optional(),
+  value: StringFilterSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording: RecordingSchema.optional(),
+  sound_event_annotation: SoundEventAnnotationSchema.optional(),
+  clip_annotation: ClipAnnotationSchema.optional(),
+  sound_event_prediction: SoundEventPredictionSchema.optional(),
+  clip_prediction: ClipPredictionSchema.optional(),
+  evaluation_set: EvaluationSchema.optional(),
+  dataset: DatasetSchema.optional(),
 });
 
 export type TagFilter = z.input<typeof TagFilterSchema>;
@@ -80,8 +90,25 @@ export function registerTagAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getTags(query: GetTagsQuery): Promise<TagPage> {
+    const params = GetTagsQuerySchema.parse(query);
     const response = await instance.get(endpoints.get, {
-      params: GetTagsQuerySchema.parse(query),
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        search: params.search,
+        key__eq: params.key,
+        value__eq: params.value?.eq,
+        value__has: params.value?.has,
+        annotation_project__eq: params.annotation_project?.uuid,
+        recording__eq: params.recording?.uuid,
+        sound_event_annotation__eq: params.sound_event_annotation?.uuid,
+        clip_annotation__eq: params.clip_annotation?.uuid,
+        sound_event_prediction__eq: params.sound_event_prediction?.uuid,
+        clip_prediction__eq: params.clip_prediction?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+        dataset__eq: params.dataset?.uuid,
+      },
     });
     return response.data;
   }

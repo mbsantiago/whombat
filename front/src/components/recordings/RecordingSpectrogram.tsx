@@ -58,28 +58,26 @@ export default function RecordingSpectrogram({
     bounds,
     initial,
     parameters,
-    enabled: !audio.state.playing,
+    enabled: !audio.isPlaying,
   });
 
-  const {
-    controls: { centerOn },
-  } = spectrogram;
+  const { centerOn } = spectrogram;
   const handleTimeChange = useCallback(
     (time: number) => centerOn({ time }),
     [centerOn],
   );
 
   const { draw: drawTrackAudio } = useSpectrogramTrackAudio({
-    viewport: spectrogram.state.viewport,
-    currentTime: audio.state.currentTime,
-    isPlaying: audio.state.playing,
+    viewport: spectrogram.viewport,
+    currentTime: audio.currentTime,
+    isPlaying: audio.isPlaying,
     onTimeChange: handleTimeChange,
   });
 
   const {
     props,
     draw: drawSpectrogram,
-    state: { isLoading: spectrogramIsLoading },
+    isLoading: spectrogramIsLoading,
   } = spectrogram;
 
   const draw = useCallback(
@@ -98,30 +96,28 @@ export default function RecordingSpectrogram({
     <Card>
       <div className="flex flex-row gap-2">
         <SpectrogramControls
-          canDrag={spectrogram.state.canDrag}
-          canZoom={spectrogram.state.canZoom}
-          onReset={() => spectrogram.controls.reset()}
-          onDrag={() => spectrogram.controls.enableDrag()}
-          onZoom={() => spectrogram.controls.enableZoom()}
+          canDrag={spectrogram.canDrag}
+          canZoom={spectrogram.canZoom}
+          onReset={spectrogram.reset}
+          onDrag={spectrogram.enableDrag}
+          onZoom={spectrogram.enableZoom}
         />
         <SpectrogramSettings
           samplerate={recording.samplerate}
-          settings={spectrogram.state.parameters}
-          onChange={(parameters) =>
-            spectrogram.controls.setParameters(parameters)
-          }
-          onReset={() => spectrogram.controls.resetParameters()}
-          onSave={() => onParameterSave?.(spectrogram.state.parameters)}
+          settings={spectrogram.parameters}
+          onChange={spectrogram.setParameters}
+          onReset={spectrogram.resetParameters}
+          onSave={() => onParameterSave?.(spectrogram.parameters)}
         />
-        <Player state={audio.state} controls={audio.controls} />
+        <Player {...audio} />
       </div>
       <div className="overflow-hidden h-96 rounded-md">
         <canvas ref={canvasRef} {...props} className="w-full h-full" />
       </div>
       <SpectrogramBar
-        bounds={spectrogram.state.bounds}
-        viewport={spectrogram.state.viewport}
-        onMove={spectrogram.controls.zoom}
+        bounds={spectrogram.bounds}
+        viewport={spectrogram.viewport}
+        onMove={spectrogram.zoom}
       />
     </Card>
   );

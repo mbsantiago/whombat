@@ -35,7 +35,7 @@ export default function useSpectrogramTrackAudio({
   );
 
   return {
-    tracking: isPlaying && enabled,
+    enabled: isPlaying && enabled,
     draw,
   };
 }

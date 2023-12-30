@@ -31,13 +31,13 @@ export default function AnnotationProgress({
   );
 
   return (
-    <div className="inline-flex gap-1 items-center w-full">
+    <div className="inline-flex gap-1 items-center h-full w-full">
       <Tooltip tooltip="Previous Task" placement="bottom">
         <Button mode="text" padding="p-1" onClick={onPrevious}>
-          <PreviousIcon className="inline-block w-5 h-5" />
+          <PreviousIcon className="inline-block w-8 h-8" />
         </Button>
       </Tooltip>
-      <div className="inline-flex gap-4 items-center py-1 px-2 rounded-lg border grow dark:border-stone-800">
+      <div className="inline-flex gap-4 items-center px-2 h-full rounded-lg border grow dark:border-stone-800">
         <div className="inline-flex gap-1 items-center">
           <span className="text-sm text-stone-500">Progress:</span>
           <div className="w-36">
@@ -56,12 +56,12 @@ export default function AnnotationProgress({
           <span className="text-sm text-stone-500">Pending:</span>
           <Toggle
             label="Only Pending"
-            isSelected={filter.get("pending__eq") ?? false}
+            isSelected={filter.get("pending") ?? false}
             onChange={(checked) => {
               if (checked) {
-                filter.set("pending__eq", checked, true);
+                filter.set("pending", checked, true);
               } else {
-                filter.clear("pending__eq", true);
+                filter.clear("pending", true);
               }
             }}
           />
@@ -89,7 +89,7 @@ export default function AnnotationProgress({
       </div>
       <Tooltip tooltip="Next Task" placement="bottom">
         <Button mode="text" padding="p-1" onClick={onNext}>
-          <NextIcon className="inline-block w-5 h-5" />
+          <NextIcon className="inline-block w-8 h-8" />
         </Button>
       </Tooltip>
     </div>

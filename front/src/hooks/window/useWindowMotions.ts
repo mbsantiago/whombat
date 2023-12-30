@@ -1,10 +1,10 @@
 import { type MouseEvent, useCallback, useMemo, useState } from "react";
 import { mergeProps } from "react-aria";
 
+import useWindowDrag from "@/hooks/window/useWindowDrag";
 import { scalePixelsToWindow } from "@/utils/geometry";
 
-import useWindowDrag from "./useWindowDrag";
-
+import type { EventKeys } from "@/hooks/utils/useDrag";
 import type { Position, SpectrogramWindow } from "@/types";
 
 /**
@@ -15,6 +15,7 @@ export default function useWindowMotions({
   dimensions,
   enabled = true,
   onClick,
+  onDoubleClick,
   onMoveStart,
   onMove,
   onMoveEnd,
@@ -26,27 +27,33 @@ export default function useWindowMotions({
   /** Whether the motion is enabled. */
   enabled?: boolean;
   /** Callback when a click occurs */
-  onClick?: ({
-    position,
-    shift,
-    ctrl,
-  }: {
-    position: Position;
-    shift: boolean;
-    ctrl: boolean;
-  }) => void;
+  onClick?: (
+    clickProps: {
+      position: Position;
+    } & EventKeys,
+  ) => void;
+  onDoubleClick?: (
+    clickProps: {
+      position: Position;
+    } & EventKeys,
+  ) => void;
   /** Callback when motion starts.
    * A motion starts when the mouse is pressed down and starts moving.
    * It is not triggered when the mouse is pressed down but not moving.
    */
-  onMoveStart?: () => void;
+  onMoveStart?: (keys?: EventKeys) => void;
   /** Callback during motion.
    * This motion is triggered when the mouse is pressed down and moving.
    * Every time the mouse moves, this callback is triggered.
    */
-  onMove?: ({ initial, shift }: { initial: Position; shift: Position }) => void;
+  onMove?: (
+    moveProps: {
+      initial: Position;
+      shift: Position;
+    } & EventKeys,
+  ) => void;
   /* Callback when motion ends. */
-  onMoveEnd?: () => void;
+  onMoveEnd?: (keys?: EventKeys) => void;
 }) {
   const [initialPosition, setInitialPosition] = useState<Position | null>(null);
 
@@ -61,9 +68,21 @@ export default function useWindowMotions({
       setInitialPosition(position);
       onClick?.({
         position,
-        shift: e.shiftKey,
-        ctrl: e.ctrlKey,
+        shiftKey: e.shiftKey,
+        ctrlKey: e.ctrlKey,
+        altKey: e.altKey,
+        metaKey: e.metaKey,
       });
+
+      if (e.detail === 2) {
+        onDoubleClick?.({
+          position,
+          shiftKey: e.shiftKey,
+          ctrlKey: e.ctrlKey,
+          altKey: e.altKey,
+          metaKey: e.metaKey,
+        });
+      }
     };
 
     return {
@@ -71,29 +90,57 @@ export default function useWindowMotions({
       onPointerDown: handleClick,
       onClick: handleClick,
     };
-  }, [enabled, viewport, dimensions, onClick]);
+  }, [enabled, viewport, dimensions, onClick, onDoubleClick]);
 
-  const handleMoveStart = useCallback(() => {
-    if (!enabled) return;
-    onMoveStart?.();
-  }, [enabled, onMoveStart]);
+  const handleMoveStart = useCallback(
+    ({ shiftKey, ctrlKey, altKey, metaKey }: EventKeys = {}) => {
+      if (!enabled) return;
+      onMoveStart?.({
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
+      });
+    },
+    [enabled, onMoveStart],
+  );
 
   const handleMove = useCallback(
-    (pos: Position) => {
+    ({
+      shift,
+      shiftKey,
+      ctrlKey,
+      altKey,
+      metaKey,
+    }: {
+      shift: Position;
+    } & EventKeys) => {
       if (!enabled || initialPosition == null) return;
       onMove?.({
         initial: initialPosition,
-        shift: pos,
+        shift,
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
       });
     },
     [initialPosition, enabled, onMove],
   );
 
-  const handleMoveEnd = useCallback(() => {
-    if (!enabled) return;
-    setInitialPosition(null);
-    onMoveEnd?.();
-  }, [enabled, onMoveEnd]);
+  const handleMoveEnd = useCallback(
+    ({ shiftKey, ctrlKey, altKey, metaKey }: EventKeys = {}) => {
+      if (!enabled) return;
+      setInitialPosition(null);
+      onMoveEnd?.({
+        shiftKey,
+        ctrlKey,
+        altKey,
+        metaKey,
+      });
+    },
+    [enabled, onMoveEnd],
+  );
 
   const { moveProps, isDragging } = useWindowDrag({
     viewport,

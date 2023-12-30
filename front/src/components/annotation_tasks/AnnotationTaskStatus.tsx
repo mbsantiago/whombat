@@ -21,8 +21,7 @@ export default function AnnotationTaskStatus({
   onRemoveBadge?: (state: AnnotationStatus) => void;
 }) {
   return (
-    <div className="flex flex-row justify-between items-center border rounded-md border-stone-800 px-6">
-      <H4 className="text-center">Task Status</H4>
+    <div className="flex flex-row justify-between items-center border rounded-md border-stone-200 dark:border-stone-800 px-6">
       <div className="flex flex-row flex-wrap gap-2">
         {task == null ? (
           <Loading />
@@ -37,19 +36,23 @@ export default function AnnotationTaskStatus({
         )}
       </div>
       <div className="flex flex-row gap-2 justify-center">
-        <Tooltip tooltip="Task Done!" placement="bottom">
+        <Tooltip tooltip="Task Done!" placement="bottom" autoPlacement={false}>
           <Button mode="text" variant="primary" onClick={onDone}>
-            <CheckIcon className="w-6 h-6" />
+            <CheckIcon className="w-8 h-8" />
           </Button>
         </Tooltip>
-        <Tooltip tooltip="Needs review" placement="bottom">
+        <Tooltip
+          tooltip="Needs review"
+          placement="bottom"
+          autoPlacement={false}
+        >
           <Button mode="text" variant="danger" onClick={onReview}>
-            <CloseIcon className="w-6 h-6" />
+            <CloseIcon className="w-8 h-8" />
           </Button>
         </Tooltip>
-        <Tooltip tooltip="Verified" placement="bottom">
+        <Tooltip tooltip="Verified" placement="bottom" autoPlacement={false}>
           <Button mode="text" variant="warning" onClick={onVerify}>
-            <VerifiedIcon className="w-6 h-6" />
+            <VerifiedIcon className="w-8 h-8" />
           </Button>
         </Tooltip>
       </div>

@@ -31,7 +31,8 @@ export type TagGroup = {
   annotation: SoundEventAnnotation;
   tags: TagElement[];
   position: Position;
-  active: boolean;
+  active?: boolean;
+  disabled?: boolean;
   onAdd?: (tag: Tag) => void;
 };
 
@@ -54,23 +55,90 @@ function getLabelPosition(
     throw new Error("Annotation is not in the window");
   }
 
-  const viewportBBox = scaleBBoxToViewport(dimensions, intersection, window);
+  const [left, top, right, bottom] = scaleBBoxToViewport(
+    dimensions,
+    intersection,
+    window,
+  );
 
-  if (viewportBBox[2] > dimensions.width - 50) {
-    return {
-      x: viewportBBox[0],
-      y: viewportBBox[3],
-      offset: 5,
-      placement: "left",
-    };
+  const tooLeft = left < 50;
+  const tooBottom = bottom > dimensions.height - 50;
+  const tooRight = right > dimensions.width - 50;
+  const tooTop = top < 50;
+
+  switch (true) {
+    case tooLeft && tooTop:
+      return {
+        x: right,
+        y: bottom,
+        offset: 5,
+        placement: "right",
+      };
+
+    case tooLeft && tooBottom:
+      return {
+        x: right,
+        y: top,
+        offset: 5,
+        placement: "right",
+      };
+
+    case tooRight && tooTop:
+      return {
+        x: left,
+        y: bottom,
+        offset: 5,
+        placement: "left",
+      };
+
+    case tooRight && tooBottom:
+      return {
+        x: left,
+        y: top,
+        offset: 5,
+        placement: "left",
+      };
+
+    case tooLeft:
+      return {
+        x: right,
+        y: top,
+        offset: 5,
+        placement: "right",
+      };
+
+    case tooRight:
+      return {
+        x: left,
+        y: top,
+        offset: 5,
+        placement: "left",
+      };
+
+    case tooTop:
+      return {
+        x: left,
+        y: bottom,
+        offset: 5,
+        placement: "bottom",
+      };
+
+    case tooBottom:
+      return {
+        x: right,
+        y: top,
+        offset: 5,
+        placement: "right",
+      };
+
+    default:
+      return {
+        x: right,
+        y: top,
+        offset: 5,
+        placement: "right",
+      };
   }
-
-  return {
-    x: viewportBBox[2],
-    y: viewportBBox[1],
-    offset: 5,
-    placement: "right",
-  };
 }
 
 export default function useAnnotationTags({
@@ -79,14 +147,16 @@ export default function useAnnotationTags({
   dimensions,
   onClickTag,
   onAddTag,
-  enabled = true,
+  active = true,
+  disabled = false,
 }: {
   annotations: SoundEventAnnotation[];
   viewport: SpectrogramWindow;
   dimensions: Dimensions;
   onClickTag?: (annotation: SoundEventAnnotation, tag: Tag) => void;
   onAddTag?: (annotation: SoundEventAnnotation, tag: Tag) => void;
-  enabled?: boolean;
+  active?: boolean;
+  disabled?: boolean;
 }) {
   const annotationsInWindow = useMemo(() => {
     return annotations.filter((annotation) => {
@@ -112,16 +182,18 @@ export default function useAnnotationTags({
         onAdd: (tag) => onAddTag?.(annotation, tag),
         position,
         annotation,
-        active: enabled,
+        active,
+        disabled,
       };
     });
   }, [
     annotationsInWindow,
     viewport,
     dimensions,
-    enabled,
+    active,
     onClickTag,
     onAddTag,
+    disabled,
   ]);
 
   return groups;
