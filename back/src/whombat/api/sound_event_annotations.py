@@ -119,15 +119,15 @@ class SoundEventAnnotationAPI(
         await common.create_object(
             session,
             models.SoundEventAnnotationNote,
-            annotation_id=obj.id,
+            sound_event_annotation_id=obj.id,
             note_id=note.id,
         )
 
         obj = obj.model_copy(
             update=dict(
                 notes=[
-                    *obj.notes,
                     note,
+                    *obj.notes,
                 ],
             )
         )

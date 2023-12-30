@@ -36,6 +36,7 @@ from uuid import UUID, uuid4
 import sqlalchemy.orm as orm
 from soundevent import Geometry
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 
 from whombat.models.base import Base
 from whombat.models.feature import FeatureName
@@ -169,6 +170,11 @@ class SoundEventFeature(Base):
         primary_key=True,
     )
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    name: AssociationProxy[str] = association_proxy(
+        "feature_name",
+        "name",
+        init=False,
+    )
 
     # Relations
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(

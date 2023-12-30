@@ -16,9 +16,9 @@ from whombat.api.common.utils import (
     create_objects,
     create_objects_without_duplicates,
     delete_object,
+    find_object,
     get_object,
     get_objects,
-    find_object,
     update_object,
 )
 from whombat.filters.base import Filter
@@ -88,7 +88,6 @@ class BaseAPI(
         session: AsyncSession,
         filters: Sequence[Filter | _ColumnExpressionArgument],
     ) -> WhombatSchema:
-
         obj = await find_object(
             session,
             self._model,
@@ -138,6 +137,30 @@ class BaseAPI(
             sort_by=sort_by,
         )
         return [self._schema.model_validate(obj) for obj in objs], count
+
+    async def _create(
+        self,
+        session: AsyncSession,
+        data: CreateSchema | None = None,
+        **kwargs,
+    ) -> WhombatModel:
+        """Create an object.
+
+        Parameters
+        ----------
+        session
+            The SQLAlchemy AsyncSession of the database to use.
+        data
+            The data to use for creation of the object.
+        **kwargs
+            Additional keyword arguments to pass to the creation function.
+
+        Returns
+        -------
+        WhombatSchema
+            The created object.
+        """
+        return await create_object(session, self._model, data, **kwargs)
 
     async def create_from_data(
         self,

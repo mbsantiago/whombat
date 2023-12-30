@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from whombat.schemas.base import BaseSchema
 from whombat.schemas.notes import Note
 from whombat.schemas.sound_events import Geometry, SoundEvent
-from whombat.schemas.tags import Tag
+from whombat.schemas.tags import Tag, TagCreate
 from whombat.schemas.users import SimpleUser
 
 __all__ = [
@@ -33,7 +33,7 @@ class SoundEventAnnotationCreate(BaseModel):
     geometry: Geometry = Field(..., discriminator="type")
     """Geometry of this annotation."""
 
-    tags: list[Tag] = Field(default_factory=list)
+    tags: list[TagCreate] = Field(default_factory=list)
     """Tags attached to this annotation."""
 
 

@@ -5,7 +5,7 @@ from uuid import UUID
 
 from soundevent import data
 from soundevent.geometry import compute_geometric_features
-from sqlalchemy import and_
+from sqlalchemy import and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
@@ -57,14 +57,45 @@ class SoundEventAPI(
         schemas.SoundEvent
             The created sound event.
         """
-        return await self.create_from_data(
+        sound_event = await self._create(
             session,
-            schemas.SoundEventCreate(
-                geometry=geometry,
-            ),
+            geometry=geometry,
+            geometry_type=geometry.type,
             recording_id=recording.id,
             **kwargs,
         )
+        await self.create_geometric_features(session, [sound_event])
+        return await self.get(session, sound_event.uuid)
+
+    async def update(
+        self,
+        session: AsyncSession,
+        obj: schemas.SoundEvent,
+        data: schemas.SoundEventUpdate,
+    ) -> schemas.SoundEvent:
+        """Update a sound event.
+
+        Parameters
+        ----------
+        session
+            The database session.
+        obj
+            The sound event to update.
+        data
+            The data to update the sound event with.
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The updated sound event.
+
+        Raises
+        ------
+        exceptions.NotFoundError
+            If the sound event does not exist in the database.
+        """
+        obj = await super().update(session, obj, data)
+        return await self.update_geometric_features(session, obj)
 
     async def add_feature(
         self,
@@ -232,7 +263,7 @@ class SoundEventAPI(
         self._update_cache(obj)
         return obj
 
-    async def _create_sound_event_features(
+    async def create_geometric_features(
         self,
         session: AsyncSession,
         sound_events: Sequence[models.SoundEvent],
@@ -275,6 +306,52 @@ class SoundEventAPI(
             data=data,
         )
 
+    async def update_geometric_features(
+        self,
+        session: AsyncSession,
+        sound_event: schemas.SoundEvent,
+    ) -> schemas.SoundEvent:
+        """Update the geometric features of a sound event.
+
+        Parameters
+        ----------
+        sound_event
+            The sound event to update the geometric features for.
+
+        Returns
+        -------
+        schemas.SoundEvent
+            The updated sound event.
+        """
+        geom_features = compute_geometric_features(sound_event.geometry)
+        for feature in geom_features:
+            try:
+                sound_event = await self.update_feature(
+                    session,
+                    sound_event,
+                    schemas.Feature(name=feature.name, value=feature.value),
+                )
+            except ValueError:
+                sound_event = await self.add_feature(
+                    session,
+                    sound_event,
+                    schemas.Feature(name=feature.name, value=feature.value),
+                )
+
+        feature_mapping = {f.name: f for f in geom_features}
+        sound_event = sound_event.model_copy(
+            update=dict(
+                features=[
+                    f
+                    if f.name not in feature_mapping
+                    else feature_mapping[f.name]
+                    for f in sound_event.features
+                ]
+            )
+        )
+        self._update_cache(sound_event)
+        return sound_event
+
     async def from_soundevent(
         self,
         session: AsyncSession,
@@ -305,12 +382,18 @@ class SoundEventAPI(
         if data.geometry is None:
             raise ValueError("The sound event does not have a geometry.")
 
-        return await self.create(
+        sound_event = await self.create(
             session,
             recording=recording,
             geometry=data.geometry,
             uuid=data.uuid,
         )
+
+        for feature in data.features:
+            feat = await features.from_soundevent(session, feature)
+            sound_event = await self.add_feature(session, sound_event, feat)
+
+        return sound_event
 
     def to_soundevent(
         self,

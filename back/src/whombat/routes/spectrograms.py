@@ -1,6 +1,7 @@
 """REST API routes for spectrograms."""
-from fastapi import APIRouter, Depends, Response
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, Response
 
 from whombat import api, schemas
 from whombat.core import images
@@ -61,12 +62,12 @@ async def get_spectrogram(
 
     # Normalize.
     if spectrogram_parameters.normalize:
-        data = data / data.max()
         data_min = data.min()
         data_max = data.max()
+        data = data - data_min
         data_range = data_max - data_min
         if data_range > 0:
-            data = (data - data.min()) / data_range
+            data = data / data_range
 
     image = images.array_to_image(
         data,

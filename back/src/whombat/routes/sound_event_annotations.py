@@ -46,6 +46,16 @@ async def create_annotation(
         clip_annotation=clip_annotation,
         created_by=user,
     )
+
+    for tag in data.tags:
+        tag = await api.tags.get(session, (tag.key, tag.value))
+        sound_event_annotation = await api.sound_event_annotations.add_tag(
+            session,
+            sound_event_annotation,
+            tag,
+            user,
+        )
+
     await session.commit()
     return sound_event_annotation
 
@@ -195,7 +205,7 @@ async def create_annotation_note(
         session,
         message=data.message,
         is_issue=data.is_issue,
-        created_by_id=user.id,
+        created_by=user,
     )
     sound_event_annotation = await api.sound_event_annotations.add_note(
         session,

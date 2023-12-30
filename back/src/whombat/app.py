@@ -6,8 +6,8 @@ import functools
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from whombat import exceptions
@@ -57,6 +57,15 @@ def create_app(settings: Settings) -> FastAPI:
     async def not_found_error_handler(_, exc: exceptions.NotFoundError):
         return JSONResponse(
             status_code=404,
+            content={"message": str(exc)},
+        )
+
+    @app.exception_handler(exceptions.DuplicateObjectError)
+    async def duplicate_object_error_handled(
+        _, exc: exceptions.DuplicateObjectError
+    ):
+        return JSONResponse(
+            status_code=409,
             content={"message": str(exc)},
         )
 
