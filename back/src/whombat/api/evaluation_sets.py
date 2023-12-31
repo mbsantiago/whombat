@@ -3,12 +3,17 @@ import uuid
 from typing import Sequence
 
 from soundevent import data
-from sqlalchemy import and_
+from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api.clip_annotations import clip_annotations
-from whombat.api.common import BaseAPI, create_object, delete_object
+from whombat.api.common import (
+    BaseAPI,
+    create_object,
+    create_objects_without_duplicates,
+    delete_object,
+)
 from whombat.api.model_runs import model_runs
 from whombat.api.tags import tags
 from whombat.api.user_runs import user_runs
@@ -88,6 +93,46 @@ class EvaluationSetAPI(
             models.EvaluationSetAnnotation,
             evaluation_set_id=obj.id,
             clip_annotation_id=annotation.id,
+        )
+        return obj
+
+    async def add_annotation_tasks(
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        annotation_task_uuids: Sequence[uuid.UUID],
+    ) -> schemas.EvaluationSet:
+        """Add multiple annotation tasks to an evaluation set."""
+        stmt = (
+            select(
+                models.ClipAnnotation.id,
+                models.AnnotationTask.uuid,
+            )
+            .join(
+                models.AnnotationTask,
+                models.ClipAnnotation.id
+                == models.AnnotationTask.clip_annotation_id,
+            )
+            .where(models.AnnotationTask.uuid.in_(annotation_task_uuids))
+        )
+        result = await session.execute(stmt)
+        mapping = {r[1]: r[0] for r in result.all()}
+        await create_objects_without_duplicates(
+            session,
+            model=models.EvaluationSetAnnotation,
+            data=[
+                dict(
+                    evaluation_set_id=obj.id,
+                    clip_annotation_id=mapping[uuid],
+                )
+                for uuid in annotation_task_uuids
+            ],
+            key=lambda x: (x["evaluation_set_id"], x["clip_annotation_id"]),
+            key_column=tuple_(
+                models.EvaluationSetAnnotation.evaluation_set_id,
+                models.EvaluationSetAnnotation.clip_annotation_id,
+            ),
+            return_all=True,
         )
         return obj
 
@@ -230,7 +275,10 @@ class EvaluationSetAPI(
             session,
             limit=limit,
             offset=offset,
-            filters=[UserRunEvaluationSetFilter(eq=obj.uuid), *(filters or [])],
+            filters=[
+                UserRunEvaluationSetFilter(eq=obj.uuid),
+                *(filters or []),
+            ],
             sort_by=sort_by,
         )
 

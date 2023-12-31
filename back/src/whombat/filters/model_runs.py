@@ -8,6 +8,7 @@ from whombat import models
 from whombat.filters import base
 
 __all__ = [
+    "SearchFilter",
     "ModelRunFilter",
     "CreatedOnFilter",
     "NameFilter",
@@ -15,6 +16,10 @@ __all__ = [
     "ScoreFilter",
     "HasEvaluationFilter",
 ]
+
+SearchFilter = base.search_filter(
+    [models.ModelRun.name, models.ModelRun.version]
+)
 
 
 NameFilter = base.string_filter(models.ModelRun.name)
@@ -100,6 +105,7 @@ class EvaluationSetFilter(base.Filter):
 
 
 ModelRunFilter = base.combine(
+    SearchFilter,
     name=NameFilter,
     version=VersionFilter,
     created_on=CreatedOnFilter,

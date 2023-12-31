@@ -17,7 +17,7 @@ __all__ = [
 model_runs_router = APIRouter()
 
 
-@model_runs_router.get("/", response_model=list[schemas.ModelRun])
+@model_runs_router.get("/", response_model=schemas.Page[schemas.ModelRun])
 async def get_model_runs(
     session: Session,
     limit: Limit = 100,

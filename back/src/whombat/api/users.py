@@ -286,4 +286,24 @@ def _get_user_manager(session: AsyncSession) -> UserManager:
     )
 
 
+def generate_random_password_hash(session: AsyncSession, length=32):
+    """Generate a random password and hash it.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    length
+        The length of the password to generate.
+
+    Returns
+    -------
+    password_hash : str
+        The generated password hash.
+    """
+    user_manager = _get_user_manager(session)
+    password = _generate_random_password(length)
+    return user_manager.password_helper.hash(password)
+
+
 users = UserAPI()

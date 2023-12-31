@@ -65,8 +65,6 @@ class SoundEvent(Base):
         The type of geometry used to mark the RoI of the sound event.
     geometry
         The geometry of the mark used to mark the RoI of the sound event.
-    recording
-        The recording to which the sound event belongs.
     features
         A list of features associated with the sound event.
 

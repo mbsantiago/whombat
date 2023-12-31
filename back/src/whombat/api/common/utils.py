@@ -6,7 +6,7 @@ from dataclasses import MISSING, fields
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import Select, func, insert, select
+from sqlalchemy import Select, func, insert, select, Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
@@ -29,6 +29,7 @@ __all__ = [
     "get_count",
     "get_object",
     "get_objects",
+    "get_objects_from_query",
     "get_or_create_object",
     "remove_feature_from_object",
     "remove_note_from_object",
@@ -228,6 +229,66 @@ def get_sort_by_col_from_str(
     return col
 
 
+async def get_objects_from_query(
+    session: AsyncSession,
+    model: type[A],
+    query: Select,
+    *,
+    limit: int | None = 1000,
+    offset: int | None = 0,
+    filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
+    sort_by: _ColumnExpressionArgument | str | None = None,
+) -> tuple[Result[Any], int]:
+    """Get a list of objects from a query.
+
+    Parameters
+    ----------
+    session
+        The database session to use.
+    query
+        The query to use to get the objects.
+    model
+        The model to query.
+    limit
+        The maximum number of objects to return, by default 1000
+    offset
+        The offset to use, by default 0
+    filters
+        A list of filters to apply, by default None
+    sort_by
+        The column to sort by, by default None
+
+    Returns
+    -------
+    list[A]
+        The objects.
+    count : int
+        The total number of objects. This is the number of objects that would
+        have been returned if no limit or offset was applied.
+    """
+    for filter_ in filters or []:
+        if isinstance(filter_, Filter):
+            query = filter_.filter(query)
+        else:
+            query = query.where(filter_)
+
+    count = await get_count(session, model, query)
+
+    if sort_by is not None:
+        if isinstance(sort_by, str):
+            sort_by = get_sort_by_col_from_str(model, sort_by)
+        query = query.order_by(sort_by)
+
+    if limit is not None and limit >= 0:
+        query = query.limit(limit)
+
+    if offset is not None:
+        query = query.offset(offset)
+
+    result = await session.execute(query)
+    return result, count
+
+
 async def get_objects(
     session: AsyncSession,
     model: type[A],
@@ -263,27 +324,15 @@ async def get_objects(
         have been returned if no limit or offset was applied.
     """
     query = select(model)
-    for filter_ in filters or []:
-        if isinstance(filter_, Filter):
-            query = filter_.filter(query)
-        else:
-            query = query.where(filter_)
-
-    count = await get_count(session, model, query)
-
-    if sort_by is not None:
-        if isinstance(sort_by, str):
-            sort_by = get_sort_by_col_from_str(model, sort_by)
-
-        query = query.order_by(sort_by)
-
-    if limit is not None and limit >= 0:
-        query = query.limit(limit)
-
-    if offset is not None:
-        query = query.offset(offset)
-
-    result = await session.execute(query)
+    result, count = await get_objects_from_query(
+        session,
+        model,
+        query,
+        limit=limit,
+        offset=offset,
+        filters=filters,
+        sort_by=sort_by,
+    )
     return result.unique().scalars().all(), count
 
 

@@ -1,5 +1,6 @@
 """REST API routes for datasets."""
 import datetime
+import json
 from io import StringIO
 from typing import Annotated
 from uuid import UUID
@@ -7,11 +8,12 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from pydantic import DirectoryPath
-from soundevent.io import aoef
+from soundevent.io.aoef import DatasetObject, to_aeof
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.datasets import DatasetFilter
+from whombat.io import aoef
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -124,7 +126,7 @@ async def delete_dataset(
 
 @dataset_router.get(
     "/detail/download/json/",
-    response_model=aoef.DatasetObject,
+    response_model=DatasetObject,
 )
 async def download_dataset_json(
     session: Session,
@@ -133,7 +135,7 @@ async def download_dataset_json(
     """Export a dataset."""
     whombat_dataset = await api.datasets.get(session, dataset_uuid)
     dataset = await api.datasets.to_soundevent(session, whombat_dataset)
-    obj = aoef.to_aeof(dataset)
+    obj = to_aeof(dataset)
     filename = f"{dataset.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(),
@@ -145,7 +147,6 @@ async def download_dataset_json(
 
 @dataset_router.get(
     "/detail/download/csv/",
-    response_model=aoef.DatasetObject,
 )
 async def download_dataset_csv(
     session: Session,
@@ -171,6 +172,7 @@ async def download_dataset_csv(
     response_model=schemas.Dataset,
 )
 async def import_dataset(
+    settings: WhombatSettings,
     session: Session,
     dataset: UploadFile,
     audio_dir: Annotated[DirectoryPath, Body()],
@@ -179,12 +181,13 @@ async def import_dataset(
     if not audio_dir.exists():
         raise FileNotFoundError(f"Audio directory {audio_dir} does not exist.")
 
-    obj = aoef.AOEFObject.model_validate_json(dataset.file.read())
-    data = aoef.to_soundevent(obj)
-    imported = await api.datasets.from_soundevent(
+    obj = json.loads(dataset.file.read())
+    db_dataset = await aoef.import_dataset(
         session,
-        data,  # type: ignore
-        dataset_audio_dir=audio_dir,
+        obj,
+        dataset_dir=audio_dir,
+        audio_dir=settings.audio_dir,
     )
     await session.commit()
-    return imported
+    await session.refresh(db_dataset)
+    return schemas.Dataset.model_validate(db_dataset)

@@ -1,14 +1,14 @@
 """REST API routes for annotation projects."""
 from uuid import UUID
+import json
 
 from fastapi import APIRouter, Depends, UploadFile
-from soundevent import data
-from soundevent.io import aoef
 
 from whombat import api, schemas
 from whombat.dependencies import Session
 from whombat.filters.annotation_projects import AnnotationProjectFilter
 from whombat.routes.types import Limit, Offset
+from whombat.io import aoef
 
 __all__ = [
     "annotation_projects_router",
@@ -174,8 +174,11 @@ async def import_annotation_project(
     annotation_project: UploadFile,
 ):
     """Import an annotation project."""
-    obj = aoef.AOEFObject.model_validate_json(annotation_project.file.read())
-    ann_proj: data.AnnotationProject = aoef.to_soundevent(obj)  # type: ignore
-    imported = await api.annotation_projects.from_soundevent(session, ann_proj)
+    obj = json.loads(annotation_project.file.read())
+    db_dataset = await aoef.import_annotation_project(
+        session,
+        obj,
+    )
     await session.commit()
-    return imported
+    await session.refresh(db_dataset)
+    return schemas.Dataset.model_validate(db_dataset)

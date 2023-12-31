@@ -2,11 +2,11 @@
 from typing import Any, Sequence
 
 from soundevent import data
-from sqlalchemy import and_, tuple_
+from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api.common import BaseAPI, get_objects
+from whombat.api.common import BaseAPI, get_objects_from_query
 from whombat.filters.base import Filter
 
 __all__ = [
@@ -156,16 +156,39 @@ class TagAPI(
         filters: Sequence[Filter] | None = None,
         sort_by: str | None = "-created_on",
     ) -> tuple[list[schemas.RecordingTag], int]:
-        tags, count = await get_objects(
+        query = (
+            select(
+                models.RecordingTag.recording_id,
+                models.RecordingTag.created_on,
+                models.Tag,
+                models.Recording.uuid.label("recording_uuid"),
+            )
+            .join(
+                models.Tag,
+                models.RecordingTag.tag_id == models.Tag.id,
+            )
+            .join(
+                models.Recording,
+                models.RecordingTag.recording_id == models.Recording.id,
+            )
+        )
+
+        tags, count = await get_objects_from_query(
             session,
             models.RecordingTag,
+            query,
             limit=limit,
             offset=offset,
             filters=filters,
             sort_by=sort_by,
         )
         return [
-            schemas.RecordingTag.model_validate(obj) for obj in tags
+            schemas.RecordingTag(
+                created_on=obj.created_on,
+                tag=schemas.Tag.model_validate(obj.Tag),
+                recording_uuid=obj.recording_uuid,
+            )
+            for obj in tags.unique().all()
         ], count
 
 

@@ -2,9 +2,11 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import Response
+from soundevent.io import aoef
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.evaluation_sets import EvaluationSetFilter
 from whombat.routes.types import Limit, Offset
 
@@ -94,6 +96,29 @@ async def update_evaluation_set(
     return evaluation_set
 
 
+@evaluation_sets_router.post(
+    "/detail/tasks/",
+    response_model=schemas.EvaluationSet,
+)
+async def add_tasks_to_evaluation_set(
+    session: Session,
+    evaluation_set_uuid: UUID,
+    annotation_task_uuids: list[UUID],
+):
+    """Add tasks to an evaluation set."""
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    evaluation = await api.evaluation_sets.add_annotation_tasks(
+        session,
+        evaluation_set,
+        annotation_task_uuids,
+    )
+    await session.commit()
+    return evaluation
+
+
 @evaluation_sets_router.delete(
     "/detail/",
     response_model=schemas.EvaluationSet,
@@ -160,3 +185,34 @@ async def remove_tag_from_evaluation_set(
     )
     await session.commit()
     return evaluation_set
+
+
+@evaluation_sets_router.get(
+    "/detail/download/",
+)
+async def download_evaluation_set(
+    settings: WhombatSettings,
+    session: Session,
+    evaluation_set_uuid: UUID,
+    exclude: list[str] | None = None,
+):
+    """Download an evaluation set."""
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    soundevent_object = await api.evaluation_sets.to_soundevent(
+        session,
+        evaluation_set,
+    )
+    obj = aoef.to_aeof(soundevent_object, audio_dir=settings.audio_dir)
+    filename = f"{evaluation_set.name}_{obj.created_on.isoformat()}.json"
+    return Response(
+        obj.model_dump_json(
+            exclude=set(exclude or []),
+            exclude_none=True,
+        ),
+        media_type="application/json",
+        status_code=200,
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )

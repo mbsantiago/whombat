@@ -294,7 +294,6 @@ class RecordingTag(Base):
         back_populates="recording_tags",
         init=False,
         repr=False,
-        lazy="joined",
     )
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="recording_tags",

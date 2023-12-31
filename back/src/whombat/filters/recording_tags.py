@@ -14,6 +14,11 @@ __all__ = [
     "RecordingTagFilter",
 ]
 
+# NOTE: The base query for recording tags already joins the recording
+# and tag tables. This means that we do not need to join them again in
+# the filters. See the `api.tags.get_recording_tags` method for more
+# details on how the query is constructed.
+
 
 class DatasetFilter(base.Filter):
     """Filter recordings by the dataset they are in."""
@@ -27,10 +32,6 @@ class DatasetFilter(base.Filter):
 
         return (
             query.join(
-                models.Recording,
-                models.RecordingTag.recording_id == models.Recording.id,
-            )
-            .join(
                 models.DatasetRecording,
                 models.Recording.id == models.DatasetRecording.recording_id,
             )
@@ -59,10 +60,6 @@ class IssuesFilter(base.Filter):
 
         return (
             query.join(
-                models.Recording,
-                models.RecordingTag.recording_id == models.Recording.id,
-            )
-            .join(
                 models.RecordingNote,
                 models.Recording.id == models.RecordingNote.recording_id,
             )
@@ -89,11 +86,6 @@ class TagFilter(base.Filter):
         if self.key is None and self.value is None:
             return query
 
-        query = query.join(
-            models.Tag,
-            models.RecordingTag.tag_id == models.Tag.id,
-        )
-
         conditions = []
         if self.key is not None:
             conditions.append(models.Tag.key == self.key)
@@ -113,10 +105,7 @@ class RecordingFilter(base.Filter):
         if not self.eq:
             return query
 
-        return query.join(
-            models.Recording,
-            models.RecordingTag.recording_id == models.Recording.id,
-        ).where(models.Recording.uuid == self.eq)
+        return query.where(models.Recording.uuid == self.eq)
 
 
 RecordingTagFilter = base.combine(

@@ -12,7 +12,7 @@ __all__ = [
 async def init_database(settings: Settings) -> None:
     """Create the database and tables on startup."""
     db_url = utils.get_database_url(settings)
-    cfg = utils.create_alembic_config(db_url)
+    cfg = utils.create_alembic_config(db_url, is_async=False)
     engine = utils.create_async_db_engine(db_url)
 
     async with engine.begin() as conn:
