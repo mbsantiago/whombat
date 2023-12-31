@@ -1,4 +1,4 @@
-import { RecordingIcon, TagIcon } from "@/components/icons";
+import { RecordingIcon } from "@/components/icons";
 import Link from "@/components/Link";
 import RecordingDate from "@/components/recordings/RecordingDate";
 import {
@@ -8,8 +8,6 @@ import {
 import RecordingLocation from "@/components/recordings/RecordingLocation";
 import RecordingTagBar from "@/components/recordings/RecordingTagBar";
 import RecordingTime from "@/components/recordings/RecordingTime";
-import TagComponent from "@/components/tags/Tag";
-import useStore from "@/store";
 
 import type { Recording, Tag } from "@/types";
 
@@ -20,7 +18,6 @@ export default function RecordingAnnotationContext({
   recording: Recording;
   onTagClick?: (tag: Tag) => void;
 }) {
-  const getTagColor = useStore((state) => state.getTagColor);
   const { path } = recording;
   const baseName = removeExtension(getBaseName(path) ?? "");
 
@@ -47,6 +44,18 @@ export default function RecordingAnnotationContext({
         />
         <RecordingTime time={recording.time} disabled />
         <RecordingDate date={recording.date} disabled />
+        <div className="text-stone-500">
+          <span className="font-semibold">SR</span>{" "}
+          {recording.samplerate.toLocaleString()} Hz
+        </div>
+        <div className="text-stone-500">
+          <span className="font-semibold">C</span>{" "}
+          {recording.channels.toLocaleString()}
+        </div>
+        <div className="text-stone-500">
+          <span className="font-semibold">TE</span>{" "}
+          {recording.time_expansion.toLocaleString()}
+        </div>
       </div>
       <RecordingTagBar
         label="Recording Tags"

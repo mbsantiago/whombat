@@ -12,12 +12,14 @@ import {
   ClipPredictionSchema,
   ClipSchema,
   DatasetSchema,
+  DateFilterSchema,
   EvaluationSchema,
   EvaluationSetSchema,
   FeatureSchema,
   FileStateSchema,
   GeometrySchema,
   GeometryTypeSchema,
+  IntegerFilterSchema,
   IntervalSchema,
   LineStringSchema,
   ModelRunSchema,
@@ -25,8 +27,10 @@ import {
   MultiPointSchema,
   MultiPolygonSchema,
   NoteSchema,
+  NumberFilterSchema,
   PointSchema,
   PolygonSchema,
+  PredictedTagFilterSchema,
   PredictionTagSchema,
   RecordingSchema,
   RecordingStateSchema,
@@ -36,7 +40,9 @@ import {
   SoundEventSchema,
   SpectrogramParametersSchema,
   SpectrogramWindowSchema,
+  StringFilterSchema,
   TagSchema,
+  TimeFilterSchema,
   TimeIntervalSchema,
   TimeStampSchema,
   UserRunSchema,
@@ -149,3 +155,15 @@ export interface JSONObject {
 }
 
 export type JSONArray = Array<JSONValue>;
+
+export type DateFilter = z.input<typeof DateFilterSchema>;
+
+export type TimeFilter = z.input<typeof TimeFilterSchema>;
+
+export type NumberFilter = z.input<typeof NumberFilterSchema>;
+
+export type StringFilter = z.input<typeof StringFilterSchema>;
+
+export type PredictedTagFilter = z.input<typeof PredictedTagFilterSchema>;
+
+export type IntegerFilter = z.input<typeof IntegerFilterSchema>;

@@ -1,5 +1,7 @@
-import Loading from "@/app/loading";
-import Dataset from "@/components/datasets/Dataset";
+import DatasetComponent from "@/components/datasets/Dataset";
+import DatasetCreate from "@/components/datasets/DatasetCreate";
+import DatasetImport from "@/components/datasets/DatasetImport";
+import Dialog from "@/components/Dialog";
 import Empty from "@/components/Empty";
 import {
   AddIcon,
@@ -8,10 +10,12 @@ import {
   WarningIcon,
 } from "@/components/icons";
 import Search from "@/components/inputs/Search";
-import Link from "@/components/Link";
 import Pagination from "@/components/lists/Pagination";
 import StackedList from "@/components/lists/StackedList";
+import Loading from "@/components/Loading";
 import useDatasets from "@/hooks/api/useDatasets";
+
+import type { Dataset } from "@/types";
 
 /**
  * Component to display a message when no datasets are found.
@@ -43,7 +47,10 @@ function NoDatasets() {
  * @returns JSX element displaying a list of datasets with search and
  * navigation options.
  */
-export default function DatasetList() {
+export default function DatasetList(props: {
+  onCreate?: (dataset: Promise<Dataset>) => void;
+}) {
+  const { onCreate } = props;
   const datasets = useDatasets();
 
   return (
@@ -61,14 +68,31 @@ export default function DatasetList() {
           />
         </div>
         <div className="h-full">
-          <Link mode="text" href="/datasets/create">
-            <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
-          </Link>
+          <Dialog
+            mode="text"
+            title="Create Dataset"
+            label={
+              <>
+                <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
+              </>
+            }
+          >
+            {() => <DatasetCreate onCreate={onCreate} />}
+          </Dialog>
         </div>
         <div className="h-full">
-          <Link mode="text" href="/datasets/import">
-            <UploadIcon className="inline-block w-4 h-4 align-middle" /> Import
-          </Link>
+          <Dialog
+            mode="text"
+            title="Import a Dataset"
+            label={
+              <>
+                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+                Import
+              </>
+            }
+          >
+            {() => <DatasetImport onCreate={onCreate} />}
+          </Dialog>
         </div>
       </div>
       {datasets.isLoading ? (
@@ -78,7 +102,7 @@ export default function DatasetList() {
           {datasets.items.length === 0 && <NoDatasets />}
           <StackedList
             items={datasets.items.map((item) => (
-              <Dataset key={item.uuid} dataset={item} />
+              <DatasetComponent key={item.uuid} dataset={item} />
             ))}
           />
           {datasets.pagination.numPages > 1 && (

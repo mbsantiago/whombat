@@ -1,62 +1,19 @@
+import { useMemo } from "react";
+
 import { CloseIcon, FilterIcon } from "@/components/icons";
-import { type Filter } from "@/hooks/utils/useFilter";
 
-const OPERATION_MAP: Record<string, string> = {
-  eq: "=",
-  ne: "≠",
-  gt: ">",
-  lt: "<",
-  ge: "≥",
-  le: "≤",
-};
-
-export function FilterBadge({
-  field,
-  value,
-  onRemove,
-}: {
-  field: string;
-  value: string | number | boolean;
-  onRemove?: () => void;
-}) {
-  let [fieldName, operation] = field.split("__");
-
-  if (operation in OPERATION_MAP) {
-    operation = OPERATION_MAP[operation];
-  }
-
-  if (typeof value === "boolean") {
-    value = value ? "yes" : "no";
-  }
-
-  if (typeof value === "number") {
-    value = value.toLocaleString();
-  }
-
-  return (
-    <span className="inline-flex items-center whitespace-nowrap rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600 ring-1 ring-inset ring-blue-500/10">
-      <span className="align-middle h-full">
-        {fieldName} {operation} {value}
-      </span>
-      <button
-        className="ml-1 hover:bg-blue-200 rounded p-1"
-        onClick={() => {
-          onRemove?.();
-        }}
-      >
-        <CloseIcon className="h-3 w-3" />
-      </button>
-    </span>
-  );
-}
+import type { FilterDef } from "@/components/filters/FilterMenu";
+import type { Filter } from "@/hooks/utils/useFilter";
 
 export default function FilterBar<T extends Object>({
   filter,
+  filterDef,
   total,
   showIfEmpty = false,
   withLabel = true,
 }: {
   filter: Filter<T>;
+  filterDef: FilterDef<T>[];
   total?: number;
   showIfEmpty?: boolean;
   withLabel?: boolean;
@@ -64,6 +21,14 @@ export default function FilterBar<T extends Object>({
   const activeFilters = Object.keys(filter.filter).filter(
     (key) => !filter.isFixed(key as keyof T),
   ).length;
+
+  const filterDefMapping = useMemo(() => {
+    const mapping: Record<string, FilterDef<T>> = {};
+    for (const def of filterDef) {
+      mapping[def.field] = def;
+    }
+    return mapping;
+  }, [filterDef]);
 
   if (activeFilters === 0 && !showIfEmpty) {
     return null;
@@ -83,14 +48,16 @@ export default function FilterBar<T extends Object>({
         )}
         {Object.entries(filter.filter)
           .filter(([key, _]) => !filter.isFixed(key as keyof T))
+          .filter(([key, _]) => key in filterDefMapping)
           .map(([key, value]) => {
+            const filterDef = filterDefMapping[key];
             return (
-              <FilterBadge
-                key={key}
-                field={key}
-                value={value}
-                onRemove={() => filter.clear(key as keyof T)}
-              />
+              <div key={key}>
+                {filterDef.render({
+                  value,
+                  clear: () => filter.clear(key as keyof T),
+                })}
+              </div>
             );
           })}
       </div>

@@ -25,7 +25,7 @@ export default function TagList({
   const getTagColor = useStore((state) => state.getTagColor);
   return (
     <div className="flex flex-col gap-4">
-      <Search onChange={setSearch} />
+      <Search onChange={(value) => setSearch(value as string)} />
       <div className="flex overflow-hidden flex-col gap-2 w-full">
         {items.map((tag) => (
           <TagComponent

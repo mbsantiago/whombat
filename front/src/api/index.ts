@@ -53,7 +53,9 @@ export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
     auth: registerAuthAPI(instance),
     clips: registerClipAPI(instance),
     datasets: registerDatasetAPI({ instance, baseUrl: config.baseURL }),
-    evaluationSets: registerEvaluationSetAPI(instance),
+    evaluationSets: registerEvaluationSetAPI(instance, {
+      baseUrl: config.baseURL,
+    }),
     notes: registerNotesAPI(instance),
     recordings: registerRecordingAPI(instance),
     soundEvents: registerSoundEventAPI(instance),

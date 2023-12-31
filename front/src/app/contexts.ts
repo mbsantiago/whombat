@@ -12,7 +12,7 @@ type EvaluationSetContextType = {
   removeTag?: (tag: Tag) => Promise<EvaluationSet>;
 };
 
-export const EvaluationSetContext = createContext<EvaluationSetContextType>({
+const EvaluationSetContext = createContext<EvaluationSetContextType>({
   evaluationSet: {
     name: "",
     description: "",
@@ -21,3 +21,5 @@ export const EvaluationSetContext = createContext<EvaluationSetContextType>({
     created_on: new Date(),
   },
 });
+
+export default EvaluationSetContext;

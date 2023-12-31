@@ -14,7 +14,7 @@ export default function Page() {
 
   return (
     <Center>
-      <ProjectTags project={project} />
+      <ProjectTags annotationProject={project} />
     </Center>
   );
 }

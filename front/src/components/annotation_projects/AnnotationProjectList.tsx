@@ -1,19 +1,43 @@
-import { type ReactNode } from "react";
-
 import Loading from "@/app/loading";
-import AnnotationProject from "@/components/annotation_projects/AnnotationProject";
+import AnnotationProjectComponent from "@/components/annotation_projects/AnnotationProject";
+import AnnotationProjectCreate from "@/components/annotation_projects/AnnotationProjectCreate";
+import AnnotationProjectImport from "@/components/annotation_projects/AnnotationProjectImport";
+import Dialog from "@/components/Dialog";
 import Empty from "@/components/Empty";
-import { AddIcon, DatasetIcon, UploadIcon } from "@/components/icons";
+import {
+  AddIcon,
+  DatasetIcon,
+  UploadIcon,
+  WarningIcon,
+} from "@/components/icons";
 import Search from "@/components/inputs/Search";
-import Link from "@/components/Link";
 import Pagination from "@/components/lists/Pagination";
 import StackedList from "@/components/lists/StackedList";
 import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
 
+import type { AnnotationProject } from "@/types";
+
+function NoProjects() {
+  return (
+    <Empty>
+      <WarningIcon className="w-16 h-16 text-stone-500" />
+      <p>No annotation project exist yet!</p>
+      <p>
+        To create a new project, click on the
+        <span className="text-emerald-500">
+          <AddIcon className="inline-block mr-1 ml-2 w-4 h-4" />
+          Create{" "}
+        </span>{" "}
+        button above.
+      </p>
+    </Empty>
+  );
+}
+
 export default function AnnotationProjectList({
-  empty,
+  onCreate,
 }: {
-  empty?: ReactNode;
+  onCreate?: (annotationProject: Promise<AnnotationProject>) => void;
 }) {
   const { items, pagination, isLoading, filter } = useAnnotationProjects();
 
@@ -25,19 +49,37 @@ export default function AnnotationProjectList({
             label="Search"
             placeholder="Search project..."
             value={filter.get("search")}
-            // @ts-ignore
-            onChange={(value) => filter.set("search", value)}
+            onChange={(value) => filter.set("search", value as string)}
             onSubmit={() => filter.submit()}
             icon={<DatasetIcon />}
           />
         </div>
-        <div className="inline-flex gap-4 h-full">
-          <Link mode="text" href="/annotation_projects/create/">
-            <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
-          </Link>
-          <Link mode="text" href="/annotation_projects/import/">
-            <UploadIcon className="inline-block w-4 h-4 align-middle" /> Import
-          </Link>
+        <div className="h-full">
+          <Dialog
+            mode="text"
+            title="Create Annotation Project"
+            label={
+              <>
+                <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
+              </>
+            }
+          >
+            {() => <AnnotationProjectCreate onCreate={onCreate} />}
+          </Dialog>
+        </div>
+        <div className="h-full">
+          <Dialog
+            mode="text"
+            title="Import annotation project"
+            label={
+              <>
+                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+                Import
+              </>
+            }
+          >
+            {() => <AnnotationProjectImport onCreate={onCreate} />}
+          </Dialog>
         </div>
       </div>
       {isLoading ? (
@@ -47,12 +89,15 @@ export default function AnnotationProjectList({
           </div>
         </Empty>
       ) : items.length === 0 ? (
-        empty
+        <NoProjects />
       ) : (
         <>
           <StackedList
             items={items.map((item) => (
-              <AnnotationProject key={item.uuid} annotationProject={item} />
+              <AnnotationProjectComponent
+                key={item.uuid}
+                annotationProject={item}
+              />
             ))}
           />
         </>

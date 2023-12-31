@@ -30,7 +30,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   }
 
   if (project.isError || project.data == null) {
-    // If not found, go to the annotation projects page.
     toast.error("Annotation project not found.");
     router.push("/annotation_projects/");
     return;

@@ -25,10 +25,13 @@ export default function AnnotationProgress({
   onNext?: () => void;
   onPrevious?: () => void;
 }) {
-  const { missing: pending, completed: complete } = useMemo(
-    () => computeAnnotationTasksProgress(tasks),
-    [tasks],
-  );
+  const {
+    missing: pending,
+    completed: complete,
+    verified,
+    needReview,
+    total,
+  } = useMemo(() => computeAnnotationTasksProgress(tasks), [tasks]);
 
   return (
     <div className="inline-flex gap-1 items-center h-full w-full">
@@ -42,7 +45,9 @@ export default function AnnotationProgress({
           <span className="text-sm text-stone-500">Progress:</span>
           <div className="w-36">
             <ProgressBar
-              total={pending + complete}
+              error={needReview}
+              verified={verified}
+              total={total}
               complete={complete}
               className="mb-0"
             />
@@ -50,7 +55,7 @@ export default function AnnotationProgress({
         </div>
         <span className="text-sm align-middle whitespace-nowrap text-stone-500">
           Remaining:{" "}
-          <span className="font-medium text-blue-500">{pending}</span>
+          <span className="font-medium text-blue-500">{pending}</span>/{total}
         </span>
         <div className="inline-flex gap-1 items-center">
           <span className="text-sm text-stone-500">Pending:</span>
@@ -84,7 +89,11 @@ export default function AnnotationProgress({
           }
         />
         <div className="overflow-x-scroll">
-          <FilterBar withLabel={false} filter={filter} />
+          <FilterBar
+            withLabel={false}
+            filter={filter}
+            filterDef={taskFilterDefs}
+          />
         </div>
       </div>
       <Tooltip tooltip="Next Task" placement="bottom">

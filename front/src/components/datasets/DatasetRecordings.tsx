@@ -29,11 +29,11 @@ export default function DatasetRecordings({
       return `${url}&dataset_uuid=${dataset.uuid}`;
     };
   }, [getRecordingLinkFn, dataset.uuid]);
-  const filter = useMemo(() => ({ dataset__eq: dataset.uuid }), [dataset.uuid]);
+  const filter = useMemo(() => ({ dataset }), [dataset]);
   return (
     <RecordingTable
       filter={filter}
-      fixed={["dataset__eq"]}
+      fixed={["dataset"]}
       getRecordingLink={getRecordingLink}
     />
   );

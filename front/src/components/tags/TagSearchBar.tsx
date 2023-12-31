@@ -105,12 +105,12 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
 
       if (value == null || key == null) {
         tags.filter.set("search", query);
-        tags.filter.clear("key__eq");
-        tags.filter.clear("value__has");
+        tags.filter.clear("key");
+        tags.filter.clear("value");
       } else {
         tags.filter.clear("search");
-        tags.filter.set("key__eq", key);
-        tags.filter.set("value__has", value);
+        tags.filter.set("key", key);
+        tags.filter.set("value", { has: value });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query]);

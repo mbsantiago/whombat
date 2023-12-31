@@ -9,20 +9,21 @@ import SearchMenu from "@/components/search/SearchMenu";
 import type { SetFilter } from "@/components/filters/Filters";
 import type { Filter } from "@/hooks/utils/useFilter";
 
-export type FilterDef = {
-  icon?: ReactNode;
+export type FilterDef<T extends Object> = {
+  field: keyof T;
   name: string;
-  selector: ({ setFilter }: { setFilter: SetFilter }) => ReactNode;
   description?: string;
-  prefix?: string;
+  icon?: ReactNode;
+  selector: ({ setFilter }: { setFilter: SetFilter<T> }) => ReactNode;
+  render: (renderProps: { value: any; clear: () => void }) => ReactNode;
 };
 
-function FilterCombobox({
+function FilterCombobox<T extends Object>({
   filterDefs,
   onChange,
 }: {
-  filterDefs: FilterDef[];
-  onChange?: (filter: FilterDef) => void;
+  filterDefs: FilterDef<T>[];
+  onChange?: (filter: FilterDef<T>) => void;
 }) {
   return (
     <>
@@ -53,9 +54,11 @@ function FilterPanel<T extends Object>({
   filterDefs,
 }: {
   filter: Filter<T>;
-  filterDefs: FilterDef[];
+  filterDefs: FilterDef<T>[];
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<FilterDef | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<FilterDef<T> | null>(
+    null,
+  );
 
   if (selectedFilter == null) {
     return (
@@ -92,8 +95,8 @@ function FilterPanel<T extends Object>({
       ) : null}
       <div className="flex flex-row space-x-2">
         {selectedFilter.selector({
-          setFilter: ({ name, value }) => {
-            filter.set(name as keyof T, value as any);
+          setFilter: (name, value) => {
+            filter.set(name, value);
             setSelectedFilter(null);
           },
         })}
@@ -111,7 +114,7 @@ export default function FilterPopover<T extends Object>({
   className,
 }: {
   filter: Filter<T>;
-  filterDefs: FilterDef[];
+  filterDefs: FilterDef<T>[];
   button?: ReactNode;
   mode?: "filled" | "outline" | "text";
   variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";

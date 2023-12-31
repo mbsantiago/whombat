@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { type AxiosError } from "axios";
 import { useMemo } from "react";
 
-import { type DatasetUpdate } from "@/api/datasets";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
+import type { DatasetUpdate } from "@/api/datasets";
 import type { Dataset } from "@/types";
+import type { AxiosError } from "axios";
 
 /**
  * Custom hook for managing dataset-related state, fetching, and mutations.

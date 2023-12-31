@@ -264,7 +264,9 @@ export default function RecordingTable({
               label="Search"
               placeholder="Search recordings..."
               value={recordings.filter.get("search") ?? ""}
-              onChange={(value) => recordings.filter.set("search", value)}
+              onChange={(value) =>
+                recordings.filter.set("search", value as string)
+              }
             />
           </div>
           <FilterPopover
@@ -276,7 +278,11 @@ export default function RecordingTable({
           selected={Object.keys(table.options.state.rowSelection ?? {}).length}
         />
       </div>
-      <FilterBar filter={recordings.filter} total={recordings.total} />
+      <FilterBar
+        filter={recordings.filter}
+        total={recordings.total}
+        filterDef={recordingFilterDefs}
+      />
       <div className="w-full">
         <div className="overflow-x-scroll overflow-y-scroll w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
           <Table table={table} onCellKeyDown={handleKeyDown} />

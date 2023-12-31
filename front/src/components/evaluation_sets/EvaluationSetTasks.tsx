@@ -3,21 +3,18 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AnnotationProjectSearch from "@/components/annotation_projects/AnnotationProjectSearch";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { H3 } from "@/components/Headings";
-import { AddIcon } from "@/components/icons";
+import { H2, H3 } from "@/components/Headings";
+import { AddIcon, TasksIcon } from "@/components/icons";
 import { InputGroup } from "@/components/inputs/index";
 import Toggle from "@/components/inputs/Toggle";
+import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
+import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
-import useTasks from "@/hooks/api/useTasks";
-
-import type {
-  EvaluationTask,
-  EvaluationTaskCreate,
-} from "@/api/evaluation_tasks";
 import type {
   AnnotationProject,
+  AnnotationTask,
+  ClipAnnotation,
   EvaluationSet,
-  AnnotationTask as Task,
 } from "@/types";
 
 function SelectAnnotationProject({
@@ -41,21 +38,21 @@ function SelectAnnotationProject({
   );
 }
 
-function FilterTasks({
+function FilterAnnotations({
   onChange,
   project,
 }: {
-  onChange: (tasks: Task[]) => void;
+  onChange: (annotations: AnnotationTask[]) => void;
   project: AnnotationProject | null;
 }) {
   const filter = useMemo(
     () => ({
-      project__eq: project?.id ?? -1,
+      annotation_project: project || undefined,
     }),
-    [project?.id],
+    [project],
   );
 
-  const tasks = useTasks({
+  const tasks = useAnnotationTasks({
     filter,
     pageSize: -1,
     enabled: project != null,
@@ -81,12 +78,12 @@ function FilterTasks({
           help="Only include tasks that have been completed."
         >
           <Toggle
-            isSelected={tasks.filter.get("pending__eq") == false}
+            isSelected={tasks.filter.get("pending") == false}
             onChange={(checked) => {
               if (checked) {
-                tasks.filter.set("pending__eq", false);
+                tasks.filter.set("pending", false);
               } else {
-                tasks.filter.clear("pending__eq");
+                tasks.filter.clear("pending");
               }
             }}
           />
@@ -97,12 +94,12 @@ function FilterTasks({
           help="Only include tasks that have been verified."
         >
           <Toggle
-            isSelected={tasks.filter.get("verified__eq") == true}
+            isSelected={tasks.filter.get("verified") == true}
             onChange={(checked) => {
               if (checked) {
-                tasks.filter.set("verified__eq", true);
+                tasks.filter.set("verified", true);
               } else {
-                tasks.filter.clear("verified__eq");
+                tasks.filter.clear("verified");
               }
             }}
           />
@@ -117,7 +114,7 @@ function ReviewTasks({
   project,
   onAdd,
 }: {
-  toAdd: Task[];
+  toAdd: AnnotationTask[];
   project: AnnotationProject | null;
   onAdd: () => void;
 }) {
@@ -135,82 +132,80 @@ function ReviewTasks({
   return (
     <Card>
       <H3>Review</H3>
-      <div className="w-full">
-        <p className="text-stone-500">Tasks selected from:</p>
-        <p className="text-amber-500 font-bold w-full text-center">
-          {project.name}
-        </p>
-      </div>
-      <div className="w-full">
-        <p className="text-stone-500">New tasks to add:</p>
-        <p className="text-blue-500 font-bold w-full text-center">
-          {toAdd.length}
-        </p>
-      </div>
-      <div className="flex flex-row justify-center">
-        <Button mode="text" variant="primary" padding="p-1" onClick={onAdd}>
-          <AddIcon className="inline-block w-4 h-4 mr-1" /> Add tasks
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function CurrentTasks({ tasks }: { tasks: number }) {
-  return (
-    <Card>
-      <H3>Current tasks</H3>
+      <ul className="list-disc list-inside">
+        <li>
+          Tasks selected from:{" "}
+          <span className="text-emerald-500">{project.name}</span>
+        </li>
+        <li>
+          Tasks to add:{" "}
+          <span className="font-bold text-emerald-500">{toAdd.length}</span>
+        </li>
+      </ul>
       <p className="text-stone-500">
-        There are{" "}
-        <span className="text-blue-500 font-bold">
-          {tasks.toLocaleString()}
-        </span>{" "}
-        tasks currently in this evaluation set.
+        Once satisfied with your selections, click the button below to add the
+        chosen tasks to the evaluation set.
       </p>
+      <Button mode="text" variant="primary" padding="p-1" onClick={onAdd}>
+        <AddIcon className="inline-block w-4 h-4 mr-1" /> Add tasks
+      </Button>
     </Card>
   );
 }
 
 export default function EvaluationSetTasks({
-  evaluationSet,
-  tasks,
+  evaluationSet: initialData,
   onAddTasks,
 }: {
   evaluationSet: EvaluationSet;
-  tasks: number;
-  onAddTasks: (tasks: EvaluationTaskCreate[]) => Promise<EvaluationTask[]>;
+  onAddTasks?: (data: EvaluationSet) => void;
 }) {
+  const {
+    addEvaluationTasks: { mutate: addEvaluationTasks },
+  } = useEvaluationSet({
+    uuid: initialData.uuid,
+    evaluationSet: initialData,
+    onAddTasks,
+  });
+
   const [annotationProject, setAnnotationProject] =
     useState<AnnotationProject | null>(null);
-  const [tasksToAdd, setTasksToAdd] = useState<Task[]>([]);
+  const [tasksToAdd, setTasksToAdd] = useState<AnnotationTask[]>([]);
 
-  const onAdd = useCallback(async () => {
-    if (annotationProject != null) {
-      const tasksCreate = tasksToAdd.map((task) => ({
-        task_id: task.id,
-        evaluation_set_id: evaluationSet.id,
-      }));
-      await onAddTasks(tasksCreate);
-    }
-  }, [annotationProject, evaluationSet, onAddTasks, tasksToAdd]);
+  const handleOnAdd = useCallback(() => {
+    addEvaluationTasks(tasksToAdd);
+  }, [addEvaluationTasks, tasksToAdd]);
 
   return (
-    <div className="flex flex-row gap-8">
-      <div className="flex flex-col gap-y-6">
-        <SelectAnnotationProject
-          selected={annotationProject ?? undefined}
-          onSelect={setAnnotationProject}
-        />
-        <FilterTasks onChange={setTasksToAdd} project={annotationProject} />
-      </div>
-      <div className="basis-96">
-        <div className="sticky top-8 flex flex-col gap-2">
-          <CurrentTasks tasks={tasks} />
-          <ReviewTasks
-            toAdd={tasksToAdd}
-            project={annotationProject}
-            onAdd={onAdd}
+    <div className="flex flex-col gap-8">
+      <H2>
+        <TasksIcon className="inline-block mr-2 w-5 h-5 align-middle" />
+        Add Tasks
+      </H2>
+      <div className="flex flex-row gap-8">
+        <div className="flex flex-col gap-y-6 max-w-prose">
+          <p className="max-w-prose text-stone-500">
+            On this page, you can add tasks to the evaluation set. Choose an
+            annotation project to source tasks from, and then filter the tasks
+            to add to the evaluation set.
+          </p>
+          <SelectAnnotationProject
+            selected={annotationProject ?? undefined}
+            onSelect={setAnnotationProject}
           />
+          <FilterAnnotations
+            onChange={setTasksToAdd}
+            project={annotationProject}
+          />
+        </div>
+        <div className="w-96">
+          <div className="sticky top-8 flex flex-col gap-2">
+            <ReviewTasks
+              toAdd={tasksToAdd}
+              project={annotationProject}
+              onAdd={handleOnAdd}
+            />
+          </div>
         </div>
       </div>
     </div>

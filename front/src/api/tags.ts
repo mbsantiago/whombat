@@ -56,11 +56,10 @@ export const TagFilterSchema = z.object({
 export type TagFilter = z.input<typeof TagFilterSchema>;
 
 export const RecordingTagFilterSchema = z.object({
-  recording__eq: z.string().uuid().optional(),
-  dataset__eq: z.string().uuid().optional(),
-  tag__key: z.string().uuid().optional(),
-  tag__value: z.string().uuid().optional(),
-  issue__eq: z.string().uuid().optional(),
+  recording: RecordingSchema.optional(),
+  dataset: DatasetSchema.optional(),
+  tag: TagSchema.optional(),
+  issue: z.boolean().optional(),
 });
 
 export type RecordingTagFilter = z.input<typeof RecordingTagFilterSchema>;
@@ -116,8 +115,18 @@ export function registerTagAPI(
   async function getRecordingTags(
     query: GetRecordingTagsQuery,
   ): Promise<RecordingTagPage> {
+    const params = GetRecordingTagsQuerySchema.parse(query);
     const response = await instance.get(endpoints.getRecordingTags, {
-      params: GetRecordingTagsQuerySchema.parse(query),
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        recording__eq: params.recording?.uuid,
+        dataset__eq: params.dataset?.uuid,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        issue__eq: params.issue,
+      },
     });
     return response.data;
   }

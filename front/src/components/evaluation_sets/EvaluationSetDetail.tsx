@@ -1,11 +1,9 @@
-import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
 import Card from "@/components/Card";
-
-import EvaluationSetActions from "./EvaluationSetActions";
-import EvaluationSetOverview from "./EvaluationSetOverview";
-import EvaluationSetUpdateForm from "./EvaluationSetUpdateForm";
-import ModelEvaluationSummary from "./ModelEvaluationSummary";
-import UserEvaluationSummary from "./UserEvaluationSummary";
+import EvaluationSetActions from "@/components/evaluation_sets/EvaluationSetActions";
+import EvaluationSetOverview from "@/components/evaluation_sets/EvaluationSetOverview";
+import EvaluationSetUpdateForm from "@/components/evaluation_sets/EvaluationSetUpdateForm";
+import ModelEvaluationSummary from "@/components/evaluation_sets/ModelEvaluationSummary";
+import UserEvaluationSummary from "@/components/evaluation_sets/UserEvaluationSummary";
 
 import type { EvaluationSet } from "@/types";
 
@@ -15,8 +13,8 @@ export default function EvaluationSetDetail({
   onDelete,
 }: {
   evaluationSet: EvaluationSet;
-  onChange?: (data: EvaluationSetUpdate) => void;
-  onDelete?: () => void;
+  onChange?: (evaluationSet: EvaluationSet) => void;
+  onDelete?: (evaluationSet: EvaluationSet) => void;
 }) {
   return (
     <div className="w-100 flex flex-row gap-8 justify-between">
@@ -32,7 +30,10 @@ export default function EvaluationSetDetail({
         </div>
       </div>
       <div className="flex flex-col flex-none max-w-sm gap-4">
-        <EvaluationSetActions onDelete={onDelete} />
+        <EvaluationSetActions
+          evaluationSet={evaluationSet}
+          onDelete={onDelete}
+        />
         <div className="sticky top-8">
           <Card>
             <EvaluationSetUpdateForm

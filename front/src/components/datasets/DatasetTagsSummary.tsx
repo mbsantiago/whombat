@@ -26,12 +26,7 @@ export default function DatasetTagsSummary({
   dataset: Dataset;
   topK?: number;
 }) {
-  const filter = useMemo(
-    () => ({
-      dataset__eq: dataset.uuid,
-    }),
-    [dataset.uuid],
-  );
+  const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
 
   const {
     query: { isLoading },

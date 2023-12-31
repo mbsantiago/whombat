@@ -5,8 +5,9 @@ import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { TrainIcon, UserIcon } from "@/components/icons";
 import Link from "@/components/Link";
-import useModelRuns from "@/hooks/api/useModelRuns";
-import { type EvaluationSet } from "@/schemas";
+import useUserRuns from "@/hooks/api/useUserRuns";
+
+import type { EvaluationSet } from "@/types";
 
 export default function UserEvaluationSummary({
   evaluationSet,
@@ -17,12 +18,11 @@ export default function UserEvaluationSummary({
 }) {
   const filter = useMemo(
     () => ({
-      evaluation_set__eq: evaluationSet.uuid,
-      is_model__eq: false,
+      evaluation_set: evaluationSet,
     }),
-    [evaluationSet.uuid],
+    [evaluationSet],
   );
-  const predictionRuns = useModelRuns({ filter, pageSize: showMax });
+  const predictionRuns = useUserRuns({ filter, pageSize: showMax });
 
   return (
     <div>
@@ -32,7 +32,7 @@ export default function UserEvaluationSummary({
           User Training Sessions
         </H4>
         <Link
-          href={`/evaluation/detail/train/new/?evaluation_set_uuid=${evaluationSet.uuid}`}
+          href={`/evaluation/detail/user_runs/create/?evaluation_set_uuid=${evaluationSet.uuid}`}
           mode="text"
           variant="primary"
         >
@@ -43,9 +43,9 @@ export default function UserEvaluationSummary({
         <Loading />
       ) : predictionRuns.items.length > 0 ? (
         <div className="flex flex-col gap-2">
-          {predictionRuns.items.map((modelRun) => (
-            <div key={modelRun.uuid}>
-              {modelRun.name} - {modelRun.version}
+          {predictionRuns.items.map((userRun) => (
+            <div key={userRun.uuid}>
+              {userRun.user.username} - {userRun.created_on.toLocaleString()}
             </div>
           ))}
         </div>

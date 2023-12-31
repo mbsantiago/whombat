@@ -6,20 +6,39 @@ import {
   DownloadIcon,
   WarningIcon,
 } from "@/components/icons";
+import Link from "@/components/Link";
+import useEvaluationSet from "@/hooks/api/useEvaluationSet";
+
+import type { EvaluationSet } from "@/types";
 
 export default function EvaluationSetActions({
+  evaluationSet,
   onDelete,
-  onDownload,
 }: {
-  onDelete?: () => void;
-  onDownload?: () => void;
+  evaluationSet: EvaluationSet;
+  onDelete?: (evaluationSet: EvaluationSet) => void;
 }) {
+  const {
+    delete: { mutate: deleteEvaluationSet },
+    downloadUrl,
+  } = useEvaluationSet({
+    uuid: evaluationSet.uuid,
+    evaluationSet,
+    onDelete,
+  });
+
   return (
     <div className="flex flex-row gap-2 justify-center">
-      <Button mode="text" variant="primary" onClick={onDownload}>
+      <Link
+        mode="text"
+        variant="primary"
+        href={downloadUrl}
+        download
+        target="_blank"
+      >
         <DownloadIcon className="h-5 w-5 inline-block mr-2" /> Download
-      </Button>
-      <DeleteEvaluationSet onDelete={onDelete} />
+      </Link>
+      <DeleteEvaluationSet onDelete={deleteEvaluationSet} />
     </div>
   );
 }

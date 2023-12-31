@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import Button from "@/components/Button";
+import DatasetSearch from "@/components/datasets/DatasetSearch";
 import { CheckIcon, CloseIcon } from "@/components/icons";
 import Checkbox from "@/components/tables/TableCheckbox";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 
-export type SetFilter = ({
-  name,
-  value,
-}: {
-  name: string;
-  value: unknown;
-}) => void;
+import type { Dataset, NumberFilter, Tag } from "@/types";
+
+export type SetFilter<T extends Object> = <K extends keyof T>(
+  key: K,
+  value: T[K],
+) => void;
 
 function FloatField({
   operation,
@@ -25,8 +25,8 @@ function FloatField({
   value: number;
   onChangeValue: (value: number) => void;
   onSubmit: () => void;
-  operation: string;
-  onChangeOperation: (operation: string) => void;
+  operation: "gt" | "lt";
+  onChangeOperation: (operation: "gt" | "lt") => void;
 }) {
   return (
     <div>
@@ -46,12 +46,10 @@ function FloatField({
             id={`${name}-operation`}
             name={`${name}-operation`}
             value={operation}
-            onChange={(e) => onChangeOperation(e.target.value)}
+            onChange={(e) => onChangeOperation(e.target.value as "lt" | "gt")}
           >
             <option value="gt">&gt;</option>
             <option value="lt">&lt;</option>
-            <option value="ge">&ge;</option>
-            <option value="le">&le;</option>
           </select>
         </div>
         <input
@@ -127,20 +125,20 @@ function IsNullField({
 }
 
 export function FloatFilter({
-  setFilter,
-  prefix = "",
   name = "field",
+  onChange,
 }: {
-  setFilter: SetFilter;
-  prefix?: string;
   name?: string;
+  onChange: (filter: NumberFilter) => void;
 }) {
   const [value, setValue] = useState(0);
-  const [operation, setOperation] = useState("gt");
+  const [operation, setOperation] = useState<"gt" | "lt">("gt");
 
-  const submit = () => {
-    setFilter({ name: `${prefix}__${operation}`, value });
-  };
+  const handleSubmit = useCallback(() => {
+    onChange({
+      [operation]: value,
+    });
+  }, [onChange, operation, value]);
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -150,24 +148,29 @@ export function FloatFilter({
         onChangeValue={setValue}
         operation={operation}
         onChangeOperation={setOperation}
-        onSubmit={submit}
+        onSubmit={handleSubmit}
       />
     </div>
   );
 }
 
 export function NullableFloatFilter({
-  setFilter,
-  prefix = "",
-  name = "field",
+  name,
+  onChange,
 }: {
-  setFilter: SetFilter;
-  prefix?: string;
-  name?: string;
+  name: string;
+  onChange: (filter: NumberFilter) => void;
 }) {
   const [value, setValue] = useState(0);
-  const [operation, setOperation] = useState("gt");
+  const [operation, setOperation] = useState<"gt" | "lt">("gt");
   const [isNull, setIsNull] = useState<boolean | null>(null);
+
+  const handleSubmit = useCallback(() => {
+    onChange({
+      is_null: isNull || undefined,
+      [operation]: value,
+    });
+  }, [onChange, isNull, operation, value]);
 
   return (
     <div className="flex relative flex-col gap-4 w-full">
@@ -177,48 +180,30 @@ export function NullableFloatFilter({
         onChangeValue={setValue}
         operation={operation}
         onChangeOperation={setOperation}
-        onSubmit={() => {
-          setFilter({ name: `${prefix}__${operation}`, value });
-        }}
+        onSubmit={handleSubmit}
       />
       <IsNullField
         name="is_null"
         value={isNull}
         onChange={setIsNull}
-        onSubmit={() => {
-          setFilter({ name: `${prefix}__is_null`, value: isNull });
-        }}
+        onSubmit={handleSubmit}
       />
     </div>
   );
 }
 
 export function BooleanFilter({
-  setFilter,
-  prefix = "",
+  onChange,
 }: {
-  setFilter: SetFilter;
-  prefix?: string;
+  onChange: (value: boolean) => void;
 }) {
   return (
     <div className="flex flex-row gap-2 justify-center w-full">
-      <Button
-        mode="text"
-        variant="primary"
-        onClick={() => {
-          setFilter({ name: `${prefix}__eq`, value: true });
-        }}
-      >
+      <Button mode="text" variant="primary" onClick={() => onChange(true)}>
         <CheckIcon className="mr-1 w-5 h-5 group-hover:stroke-3" />
         Yes
       </Button>
-      <Button
-        mode="text"
-        variant="danger"
-        onClick={() => {
-          setFilter({ name: `${prefix}__eq`, value: false });
-        }}
-      >
+      <Button mode="text" variant="danger" onClick={() => onChange(false)}>
         <CloseIcon className="mr-1 w-5 h-5 group-hover:stroke-3" />
         No
       </Button>
@@ -226,40 +211,22 @@ export function BooleanFilter({
   );
 }
 
-export function TagFilter({
-  setFilter,
-  prefix = "",
-}: {
-  setFilter: SetFilter;
-  prefix?: string;
-}) {
+export function TagFilter({ onChange }: { onChange: (tag: Tag) => void }) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <TagSearchBar
-        onSelect={(tag) => {
-          setFilter({ name: `${prefix}__key`, value: tag.key });
-          setFilter({ name: `${prefix}__value`, value: tag.value });
-        }}
-      />
+      <TagSearchBar onSelect={(tag) => onChange(tag)} />
     </div>
   );
 }
 
 export function DatasetFilter({
-  setFilter,
-  prefix = "",
+  onChange,
 }: {
-  setFilter: SetFilter;
-  prefix?: string;
+  onChange: (dataset: Dataset) => void;
 }) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <TagSearchBar
-        onSelect={(tag) => {
-          setFilter({ name: `${prefix}__key`, value: tag.key });
-          setFilter({ name: `${prefix}__value`, value: tag.value });
-        }}
-      />
+      <DatasetSearch onSelect={(dataset) => onChange(dataset)} />
     </div>
   );
 }

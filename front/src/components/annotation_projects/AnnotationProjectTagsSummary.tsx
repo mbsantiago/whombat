@@ -42,9 +42,9 @@ export default function ProjectTagsSummary({
 }) {
   const filter = useMemo(
     () => ({
-      annotation_project__eq: project.uuid,
+      annotation_project: project,
     }),
-    [project.uuid],
+    [project],
   );
   const tags = project.tags || [];
   // const annotationTags = useAnnotationTags({ filter });

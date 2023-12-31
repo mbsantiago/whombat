@@ -5,6 +5,7 @@ import { GetManySchema, Page } from "@/api/common";
 import {
   DatasetSchema,
   DateFilterSchema,
+  IntegerFilterSchema,
   NumberFilterSchema,
   RecordingSchema,
   TagSchema,
@@ -34,6 +35,9 @@ export const RecordingFilterSchema = z.object({
   search: z.string().optional(),
   dataset: DatasetSchema.optional(),
   duration: NumberFilterSchema.optional(),
+  samplerate: IntegerFilterSchema.optional(),
+  channels: IntegerFilterSchema.optional(),
+  time_expansion: NumberFilterSchema.optional(),
   latitude: NumberFilterSchema.optional(),
   longitude: NumberFilterSchema.optional(),
   tag: TagSchema.optional(),

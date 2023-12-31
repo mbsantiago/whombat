@@ -72,13 +72,6 @@ export default function Page() {
     [project],
   );
 
-  const tagFilter = useMemo(
-    () => ({
-      annotation_project__eq: project.uuid,
-    }),
-    [project],
-  );
-
   if (user == null) {
     toast.error("You must be logged in to annotate.");
     return null;
@@ -91,7 +84,7 @@ export default function Page() {
   return (
     <AnnotateTasks
       taskFilter={filter}
-      tagFilter={tagFilter}
+      tagFilter={filter}
       annotationTask={annotationTask.data}
       parameters={parameters}
       onChangeTask={onChangeTask}

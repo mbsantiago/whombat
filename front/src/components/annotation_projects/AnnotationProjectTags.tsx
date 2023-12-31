@@ -8,13 +8,19 @@ import useAnnotationProject from "@/hooks/api/useAnnotationProject";
 import type { AnnotationProject } from "@/types";
 
 export default function AnnotationProjectTags({
-  project: data,
+  annotationProject: data,
+  onAddTag,
+  onRemoveTag,
 }: {
-  project: AnnotationProject;
+  annotationProject: AnnotationProject;
+  onAddTag?: (project: AnnotationProject) => void;
+  onRemoveTag?: (project: AnnotationProject) => void;
 }) {
   const project = useAnnotationProject({
     uuid: data.uuid,
     annotationProject: data,
+    onAddTag,
+    onRemoveTag,
   });
 
   return (

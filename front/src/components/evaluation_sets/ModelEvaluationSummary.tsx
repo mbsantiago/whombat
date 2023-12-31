@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
-import { type EvaluationSet } from "@/api/evaluation_sets";
 import Loading from "@/app/loading";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";
 import { AddIcon, ModelIcon } from "@/components/icons";
 import Link from "@/components/Link";
+import useModelRuns from "@/hooks/api/useModelRuns";
 
-import usePredictionRuns from "@/hooks/api/usePredictionRuns";
+import type { EvaluationSet } from "@/types";
 
 export default function ModelEvaluationSummary({
   evaluationSet,
@@ -18,12 +18,11 @@ export default function ModelEvaluationSummary({
 }) {
   const filter = useMemo(
     () => ({
-      evaluation_set__eq: evaluationSet.id,
-      is_model__eq: true,
+      evaluation_set: evaluationSet,
     }),
-    [evaluationSet.id],
+    [evaluationSet],
   );
-  const predictionRuns = usePredictionRuns({ filter, pageSize: showMax });
+  const predictionRuns = useModelRuns({ filter, pageSize: showMax });
 
   return (
     <div>
@@ -33,20 +32,20 @@ export default function ModelEvaluationSummary({
           Model Evaluations
         </H4>
         <Link
-          href={`/evaluation/detail/model_runs/create/?evaluation_set_id=${evaluationSet.id}`}
+          href={`/evaluation/detail/model_runs/create/?evaluation_set_uuid=${evaluationSet.uuid}`}
           mode="text"
           variant="primary"
         >
           <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Model Runs
         </Link>
       </div>
-      {predictionRuns.query.isLoading ? (
+      {predictionRuns.isLoading ? (
         <Loading />
       ) : predictionRuns.items.length > 0 ? (
         <div className="flex flex-col gap-2">
           {predictionRuns.items.map((predictionRun) => (
-            <div key={predictionRun.id}>
-              {predictionRun.model_name} - {predictionRun.model_version}
+            <div key={predictionRun.uuid}>
+              {predictionRun.name} - {predictionRun.version}
             </div>
           ))}
         </div>

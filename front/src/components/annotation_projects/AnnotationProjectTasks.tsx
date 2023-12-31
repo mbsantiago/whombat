@@ -24,15 +24,15 @@ import type {
 } from "@/types";
 
 export default function AnnotationProjectTasks({
-  project: data,
+  annotationProject: initialData,
   onAddTasks,
 }: {
-  project: AnnotationProject;
+  annotationProject: AnnotationProject;
   onAddTasks?: (tasks: AnnotationTask[]) => void;
 }) {
   const project = useAnnotationProject({
-    uuid: data.uuid,
-    annotationProject: data,
+    uuid: initialData.uuid,
+    annotationProject: initialData,
     onAddAnnotationTasks: onAddTasks,
   });
 
@@ -120,15 +120,12 @@ function SelectRecordings({
     maxRecordings: 5000,
   });
 
-  const filter = useMemo(
-    () => ({ dataset__eq: dataset?.uuid ?? "" }),
-    [dataset],
-  );
+  const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
 
   const recordings = useRecordings({
     pageSize: 10000,
     filter,
-    fixed: ["dataset__eq"],
+    fixed: ["dataset"],
   });
 
   useEffect(() => {

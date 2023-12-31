@@ -45,5 +45,6 @@ export function computeAnnotationTasksProgress(
     needReview,
     completed,
     verified,
+    total: annotationTasks.length,
   };
 }

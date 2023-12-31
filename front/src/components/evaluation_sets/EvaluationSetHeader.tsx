@@ -5,6 +5,7 @@ import { H1 } from "@/components/Headings";
 import {
   ModelIcon,
   SettingsIcon,
+  TagsIcon,
   TasksIcon,
   UserIcon,
 } from "@/components/icons";
@@ -20,12 +21,12 @@ export default function EvaluationSetHeader({
   const params = useSearchParams();
   const selectedLayoutSegment = useSelectedLayoutSegment();
 
-  const { name } = evaluationSet;
-
   return (
     <Header>
       <div className="flex w-full flex-row space-x-4 overflow-x-scroll">
-        <H1 className="max-w-xl whitespace-nowrap overflow-scroll">{name}</H1>
+        <H1 className="max-w-xl whitespace-nowrap overflow-scroll">
+          {evaluationSet.name}
+        </H1>
         <Tabs
           tabs={[
             {
@@ -36,25 +37,32 @@ export default function EvaluationSetHeader({
               href: `/evaluation/detail/?${params.toString()}`,
             },
             {
+              id: "tasks",
+              title: "Tasks",
+              isActive: selectedLayoutSegment === "tasks",
+              icon: <SettingsIcon className="h-5 w-5 align-middle" />,
+              href: `/evaluation/detail/tasks/?${params.toString()}`,
+            },
+            {
               id: "model-runs",
               title: "Model Runs",
               isActive: selectedLayoutSegment === "model_runs",
               icon: <ModelIcon className="h-5 w-5 align-middle" />,
-              href: `/evaluation/detail/runs/?${params.toString()}`,
+              href: `/evaluation/detail/model_runs/?${params.toString()}`,
             },
             {
               id: "user-sessions",
               title: "User Sessions",
-              isActive: selectedLayoutSegment === "user_sessions",
+              isActive: selectedLayoutSegment === "user_runs",
               icon: <UserIcon className="h-5 w-5 align-middle" />,
-              href: `/evaluation/detail/train/?${params.toString()}`,
+              href: `/evaluation/detail/user_runs/?${params.toString()}`,
             },
             {
-              id: "settings",
-              title: "Settings",
-              isActive: selectedLayoutSegment === "settings",
-              icon: <SettingsIcon className="h-5 w-5 align-middle" />,
-              href: `/evaluation/detail/settings/?${params.toString()}`,
+              id: "tags",
+              title: "Tags",
+              isActive: selectedLayoutSegment === "tags",
+              icon: <TagsIcon className="h-5 w-5 align-middle" />,
+              href: `/evaluation/detail/tags/?${params.toString()}`,
             },
           ]}
         />

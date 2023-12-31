@@ -1,12 +1,15 @@
 import Loading from "@/app/loading";
+import Dialog from "@/components/Dialog";
 import Empty from "@/components/Empty";
-import EvaluationSet from "@/components/evaluation_sets/EvaluationSet";
+import EvaluationSetComponent from "@/components/evaluation_sets/EvaluationSet";
+import EvaluationSetCreate from "@/components/evaluation_sets/EvaluationSetCreate";
 import { AddIcon, TasksIcon, WarningIcon } from "@/components/icons";
 import Search from "@/components/inputs/Search";
-import Link from "@/components/Link";
 import Pagination from "@/components/lists/Pagination";
 import StackedList from "@/components/lists/StackedList";
 import useEvaluationSets from "@/hooks/api/useEvaluationSets";
+
+import type { EvaluationSet } from "@/types";
 
 function NoEvaluationSets() {
   return (
@@ -25,7 +28,10 @@ function NoEvaluationSets() {
   );
 }
 
-export default function EvaluationSets() {
+export default function EvaluationSets(props: {
+  onCreate?: (evaluationSet: EvaluationSet) => void;
+}) {
+  const { onCreate } = props;
   const { items, pagination, filter, isLoading } = useEvaluationSets();
 
   return (
@@ -36,15 +42,23 @@ export default function EvaluationSets() {
             label="Search"
             placeholder="Search evaluation set..."
             value={filter.get("search")}
-            onChange={(value) => filter.set("search", value)}
+            onChange={(value) => filter.set("search", value as string)}
             onSubmit={() => filter.submit()}
             icon={<TasksIcon />}
           />
         </div>
         <div className="h-full">
-          <Link mode="text" href="/evaluation/create/">
-            <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
-          </Link>
+          <Dialog
+            mode="text"
+            title="Create Evaluation Set"
+            label={
+              <>
+                <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
+              </>
+            }
+          >
+            {() => <EvaluationSetCreate onCreate={onCreate} />}
+          </Dialog>
         </div>
       </div>
       {isLoading ? (
@@ -54,7 +68,7 @@ export default function EvaluationSets() {
           {items.length === 0 && <NoEvaluationSets />}
           <StackedList
             items={items.map((item) => (
-              <EvaluationSet key={item.uuid} evaluationSet={item} />
+              <EvaluationSetComponent key={item.uuid} evaluationSet={item} />
             ))}
           />
           {items.length > 0 && <Pagination {...pagination} />}

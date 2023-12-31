@@ -17,9 +17,9 @@ export default function Page() {
 
   const filter = useMemo(
     () => ({
-      evaluation_set__eq: evaluationSet.id,
+      evaluation_set: evaluationSet,
     }),
-    [evaluationSet.id],
+    [evaluationSet],
   );
 
   const {

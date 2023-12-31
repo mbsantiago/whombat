@@ -62,12 +62,7 @@ function IssuesSummary({
  * @returns JSX element displaying the notes and issues summary.
  */
 export default function DatasetNotesSumary({ dataset }: { dataset: Dataset }) {
-  const filter = useMemo(
-    () => ({
-      dataset__eq: dataset.uuid,
-    }),
-    [dataset.uuid],
-  );
+  const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
   const notes = useNotes({ pageSize: -1, filter });
 
   return (

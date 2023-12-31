@@ -12,6 +12,7 @@ import {
 import type { ModelRun } from "@/types";
 
 export const ModelRunFilterSchema = z.object({
+  search: z.string().optional(),
   name: StringFilterSchema.optional(),
   version: z.string().optional(),
   evaluated: z.boolean().optional(),

@@ -17,7 +17,7 @@ export default function CreateProject({
   onCreate,
   onError,
 }: {
-  onCreate?: (project: AnnotationProject) => void;
+  onCreate?: (project: Promise<AnnotationProject>) => void;
   onError?: (error: AxiosError) => void;
 }) {
   const form = useForm<AnnotationProject>({
@@ -27,19 +27,26 @@ export default function CreateProject({
 
   const { errors } = form.formState;
 
-  const { mutate } = useMutation({
+  const { mutateAsync: createAnnotationProject } = useMutation({
     mutationFn: api.annotationProjects.create,
-    onSuccess: onCreate,
     onError: onError,
   });
 
   const onSubmit = useCallback(
-    (data: AnnotationProjectCreate) => mutate(data),
-    [mutate],
+    async (data: AnnotationProjectCreate) => {
+      const project = createAnnotationProject(data);
+      if (onCreate) {
+        onCreate(project);
+      }
+    },
+    [createAnnotationProject, onCreate],
   );
 
   return (
-    <form className="w-full max-w-prose" onSubmit={form.handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
       <InputGroup
         label="Name"
         name="name"

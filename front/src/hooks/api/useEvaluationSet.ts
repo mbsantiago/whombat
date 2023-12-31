@@ -1,82 +1,79 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { type EvaluationSetUpdate } from "@/api/evaluation_sets";
 import api from "@/app/api";
+import useObject from "@/hooks/utils/useObject";
 
-import type { EvaluationSet, Tag } from "@/types";
+import type { EvaluationSet } from "@/types";
+import type { AxiosError } from "axios";
 
 export default function useEvaluationSet({
+  uuid,
   evaluationSet,
   enabled = true,
   onUpdate,
   onDelete,
   onAddTag,
   onRemoveTag,
+  onAddTasks,
+  onError,
 }: {
-  evaluationSet: EvaluationSet;
+  uuid?: string;
+  evaluationSet?: EvaluationSet;
   enabled?: boolean;
   onUpdate?: (evaluation_set: EvaluationSet) => void;
   onDelete?: (evaluation_set: EvaluationSet) => void;
   onAddTag?: (evaluation_set: EvaluationSet) => void;
   onRemoveTag?: (evaluation_set: EvaluationSet) => void;
+  onAddTasks?: (evaluation_set: EvaluationSet) => void;
+  onError?: (error: AxiosError) => void;
 }) {
-  const client = useQueryClient();
-
-  const query = useQuery({
-    queryKey: ["evaluation_set", evaluationSet.uuid],
-    queryFn: async () => {
-      return await api.evaluationSets.get(evaluationSet.uuid);
-    },
+  const { query, useMutation, useDestruction } = useObject<EvaluationSet>({
+    uuid,
+    initial: evaluationSet,
+    name: "evaluation_set",
     enabled,
-    initialData: evaluationSet,
-    staleTime: 1000 * 60 * 5,
+    getFn: api.evaluationSets.get,
+    onError,
   });
 
   const update = useMutation({
-    mutationFn: async (data: EvaluationSetUpdate) => {
-      return await api.evaluationSets.update(evaluationSet, data);
-    },
-    onSuccess: (data) => {
-      onUpdate?.(data);
-      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
-    },
+    mutationFn: api.evaluationSets.update,
+    onSuccess: onUpdate,
+    onError: console.log,
   });
 
   const addTag = useMutation({
-    mutationFn: async (tag: Tag) => {
-      return await api.evaluationSets.addTag(evaluationSet, tag);
-    },
-    onSuccess: (data) => {
-      onAddTag?.(data);
-      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
-    },
+    mutationFn: api.evaluationSets.addTag,
+    onSuccess: onAddTag,
   });
 
   const removeTag = useMutation({
-    mutationFn: async (tag: Tag) => {
-      return await api.evaluationSets.removeTag(evaluationSet, tag);
-    },
-    onSuccess: (data) => {
-      onRemoveTag?.(data);
-      client.setQueryData(["evaluation_set", evaluationSet.uuid], data);
-    },
+    mutationFn: api.evaluationSets.removeTag,
+    onSuccess: onRemoveTag,
   });
 
-  const delete_ = useMutation({
-    mutationFn: async () => {
-      return await api.evaluationSets.delete(evaluationSet);
-    },
-    onSuccess: (data) => {
-      onDelete?.(data);
-      query.remove();
-    },
+  const addEvaluationTasks = useMutation({
+    mutationFn: api.evaluationSets.addEvaluationTasks,
+    onSuccess: onAddTasks,
   });
+
+  const delete_ = useDestruction({
+    mutationFn: api.evaluationSets.delete,
+    onSuccess: onDelete,
+  });
+
+  const downloadUrl = useMemo(() => {
+    if (!query.data) return "";
+    return api.evaluationSets.getDownloadUrl(query.data);
+  }, [query.data]);
 
   return {
     ...query,
     update,
     addTag,
     removeTag,
+    addEvaluationTasks,
     delete: delete_,
+    downloadUrl,
   } as const;
 }

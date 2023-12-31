@@ -27,8 +27,8 @@ export default function DatasetOverview({ dataset }: { dataset: Dataset }) {
   });
 
   const filter = useMemo(
-    () => ({ dataset__eq: dataset.uuid, is_issue__eq: true }),
-    [dataset.uuid],
+    () => ({ dataset: dataset, is_issue: true }),
+    [dataset],
   );
 
   const issues = useNotes({

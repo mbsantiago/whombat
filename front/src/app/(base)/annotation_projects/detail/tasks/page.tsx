@@ -23,7 +23,7 @@ export default function Page() {
 
   return (
     <Center>
-      <AnnotationProjectTasks project={project} onAddTasks={onCreateTasks} />
+      <AnnotationProjectTasks annotationProject={project} onAddTasks={onCreateTasks} />
     </Center>
   );
 }

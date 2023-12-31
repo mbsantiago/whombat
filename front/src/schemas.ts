@@ -286,7 +286,7 @@ export const EvaluationSetSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
   description: z.string().optional(),
-  tags: z.array(AnnotationTagSchema).optional(),
+  tags: z.array(TagSchema).optional(),
   created_on: z.coerce.date(),
 });
 
@@ -363,6 +363,15 @@ export const FeatureFilterSchema = z.object({
 export const NumberFilterSchema = z.object({
   gt: z.number().optional(),
   lt: z.number().optional(),
+  is_null: z.boolean().optional(),
+});
+
+export const IntegerFilterSchema = z.object({
+  gt: z.number().int().optional(),
+  lt: z.number().int().optional(),
+  ge: z.number().int().optional(),
+  eq: z.number().int().optional(),
+  le: z.number().int().optional(),
   is_null: z.boolean().optional(),
 });
 

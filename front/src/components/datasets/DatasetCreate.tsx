@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 
 import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
 import api from "@/app/api";
@@ -20,9 +20,9 @@ import type { Dataset } from "@/types";
 export default function CreateDataset({
   onCreate,
 }: {
-  onCreate?: (dataset: Dataset) => void;
+  onCreate?: (dataset: Promise<Dataset>) => void;
 }) {
-  const mutation = useMutation({
+  const { mutateAsync: createDataset } = useMutation({
     mutationFn: api.datasets.create,
     onSuccess: (data) => {
       onCreate?.(data);
@@ -38,14 +38,13 @@ export default function CreateDataset({
     mode: "onChange",
   });
 
-  const onSubmit = async (data: DatasetCreate) => {
-    toast.promise(mutation.mutateAsync(data), {
-      loading:
-        "Creating dataset. Please wait while the folder is scanned for recordings.",
-      success: "Dataset created successfully.",
-      error: "Failed to create dataset.",
-    });
-  };
+  const onSubmit = useCallback(
+    async (data: DatasetCreate) => {
+      const promise = createDataset(data);
+      onCreate?.(promise);
+    },
+    [createDataset, onCreate],
+  );
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

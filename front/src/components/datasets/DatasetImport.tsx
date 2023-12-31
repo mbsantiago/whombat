@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 
 import api from "@/app/api";
 import { UploadIcon } from "@/components/icons";
@@ -19,7 +19,7 @@ import type { Dataset } from "@/types";
 export default function DatasetImport({
   onCreate,
 }: {
-  onCreate?: (dataset: Dataset) => void;
+  onCreate?: (dataset: Promise<Dataset>) => void;
 }) {
   const {
     register,
@@ -40,24 +40,20 @@ export default function DatasetImport({
         });
       }
     },
-    onSuccess: (dataset) => {
-      onCreate?.(dataset);
-    },
   });
 
   // @ts-ignore
-  const onSubmit = async (data) => {
-    const formData = new FormData();
-    const file = data.dataset[0];
-    formData.append("dataset", file);
-    formData.append("audio_dir", data.audio_dir);
-
-    return await toast.promise(importDataset(formData), {
-      loading: "Importing dataset...",
-      success: "Dataset imported successfully!",
-      error: "Failed to import dataset.",
-    });
-  };
+  const onSubmit = useCallback(
+    async (data: any) => {
+      const formData = new FormData();
+      const file = data.dataset[0];
+      formData.append("dataset", file);
+      formData.append("audio_dir", data.audio_dir);
+      const promise = importDataset(formData);
+      onCreate?.(promise);
+    },
+    [importDataset, onCreate],
+  );
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

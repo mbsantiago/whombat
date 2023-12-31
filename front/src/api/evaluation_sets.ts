@@ -4,7 +4,7 @@ import { z } from "zod";
 import { GetManySchema, Page } from "@/api/common";
 import { EvaluationSetSchema } from "@/schemas";
 
-import type { EvaluationSet, Tag } from "@/types";
+import type { AnnotationTask, EvaluationSet, Tag } from "@/types";
 
 export const EvaluationSetFilterSchema = z.object({
   search: z.string().optional(),
@@ -45,11 +45,16 @@ const DEFAULT_ENDPOINTS = {
   delete: "/api/v1/evaluation_sets/detail/",
   addTag: "/api/v1/evaluation_sets/detail/tags/",
   removeTag: "/api/v1/evaluation_sets/detail/tags/",
+  addEvaluationTasks: "/api/v1/evaluation_sets/detail/tasks/",
+  download: "/api/v1/evaluation_sets/detail/download/",
 };
 
 export function registerEvaluationSetAPI(
   instance: AxiosInstance,
-  endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
+  {
+    baseUrl,
+    endpoints = DEFAULT_ENDPOINTS,
+  }: { baseUrl?: string; endpoints?: typeof DEFAULT_ENDPOINTS } = {},
 ) {
   async function getManyEvaluationSets(
     query: GetEvaluationSetQuery,
@@ -69,7 +74,8 @@ export function registerEvaluationSetAPI(
   async function createEvaluationSet(
     data: EvaluationSetCreate,
   ): Promise<EvaluationSet> {
-    const res = await instance.post(endpoints.create, data);
+    const body = EvaluationSetCreateSchema.parse(data);
+    const res = await instance.post(endpoints.create, body);
     return EvaluationSetSchema.parse(res.data);
   }
 
@@ -125,12 +131,34 @@ export function registerEvaluationSetAPI(
     return EvaluationSetSchema.parse(res.data);
   }
 
+  async function addEvaluationTasks(
+    evaluationSet: EvaluationSet,
+    annotationTasks: AnnotationTask[],
+  ): Promise<EvaluationSet> {
+    const res = await instance.post(
+      endpoints.addEvaluationTasks,
+      annotationTasks.map((clipAnnotation) => clipAnnotation.uuid),
+      {
+        params: {
+          evaluation_set_uuid: evaluationSet.uuid,
+        },
+      },
+    );
+    return EvaluationSetSchema.parse(res.data);
+  }
+
+  function getDownloadUrl(evaluationSet: EvaluationSet): string {
+    return `${baseUrl}${endpoints.download}?evaluation_set_uuid=${evaluationSet.uuid}`;
+  }
+
   return {
     get: getEvaluationSet,
     getMany: getManyEvaluationSets,
     create: createEvaluationSet,
     update: updateEvaluationSet,
     delete: deleteEvaluationSet,
+    getDownloadUrl,
+    addEvaluationTasks,
     addTag,
     removeTag,
   } as const;
