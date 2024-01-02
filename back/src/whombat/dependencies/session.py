@@ -21,7 +21,7 @@ __all__ = [
 def create_engine(settings: WhombatSettings):
     """Create an async engine for the database."""
     db_url = get_database_url(settings)
-    return create_async_engine(db_url)
+    return create_async_engine(db_url, insertmanyvalues_page_size=500)
 
 
 def create_session_maker(engine: AsyncEngine):

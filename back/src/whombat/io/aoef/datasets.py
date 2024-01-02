@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models
 from whombat.api import common
+from whombat.io.aoef.features import get_feature_names
 from whombat.io.aoef.recordings import import_recordings
 from whombat.io.aoef.tags import import_tags
 from whombat.io.aoef.users import import_users
@@ -38,12 +39,17 @@ async def import_dataset(
 
     tags = await import_tags(session, dataset_object.tags or [])
     users = await import_users(session, dataset_object.users or [])
+    feature_names = await get_feature_names(
+        session,
+        dataset_object,
+    )
 
     recordings = await import_recordings(
         session,
         dataset_object.recordings or [],
         tags=tags,
         users=users,
+        feature_names=feature_names,
         audio_dir=dataset_dir,
         base_audio_dir=audio_dir,
     )
@@ -65,7 +71,7 @@ async def import_dataset(
         )
 
     path_mapping = {
-        recording.uuid: (audio_dir / recording.path).relative_to(dataset_dir)
+        recording.uuid: normalize_path(recording.path, dataset_dir)
         for recording in dataset_object.recordings or []
     }
 
@@ -90,3 +96,10 @@ async def import_dataset(
     )
 
     return dataset
+
+
+def normalize_path(path: Path, dataset_dir: Path) -> Path:
+    """Normalize a path to a dataset directory"""
+    if path.is_absolute():
+        return path.relative_to(dataset_dir)
+    return path

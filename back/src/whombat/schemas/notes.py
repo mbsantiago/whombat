@@ -37,7 +37,7 @@ class Note(BaseSchema):
     is_issue: bool
     """Whether the note is an issue."""
 
-    created_by: SimpleUser
+    created_by: SimpleUser | None
     """The user who created the note."""
 
     def __hash__(self):

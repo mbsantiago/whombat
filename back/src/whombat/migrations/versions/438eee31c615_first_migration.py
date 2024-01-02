@@ -1,8 +1,8 @@
 """first migration
 
-Revision ID: 4303e3d9566d
+Revision ID: 438eee31c615
 Revises: 
-Create Date: 2023-12-11 14:41:16.444317
+Create Date: 2024-01-02 11:27:29.451607
 
 """
 from typing import Sequence, Union
@@ -14,7 +14,7 @@ import whombat.models.base
 
 
 # revision identifiers, used by Alembic.
-revision: str = "4303e3d9566d"
+revision: str = "438eee31c615"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -205,6 +205,7 @@ def upgrade() -> None:
         sa.Column("recording_id", sa.Integer(), nullable=False),
         sa.Column("start_time", sa.Float(), nullable=False),
         sa.Column("end_time", sa.Float(), nullable=False),
+        sa.Column("score", sa.Float(), nullable=True),
         sa.Column("created_on", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
             ["recording_id"],
@@ -357,7 +358,7 @@ def upgrade() -> None:
         sa.Column(
             "created_by_id",
             fastapi_users_db_sqlalchemy.generics.GUID(),
-            nullable=False,
+            nullable=True,
         ),
         sa.Column("is_issue", sa.Boolean(), nullable=False),
         sa.Column(

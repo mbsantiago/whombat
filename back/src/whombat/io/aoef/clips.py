@@ -1,39 +1,76 @@
-import uuid
+from uuid import UUID
 
+from soundevent.io.aoef import (
+    AnnotationProjectObject,
+    AnnotationSetObject,
+    EvaluationObject,
+    PredictionSetObject,
+)
 from soundevent.io.aoef.clip import ClipObject
 from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
 from whombat.api import common
-from whombat.io.aoef.features import import_feature_names
+from whombat.io.aoef.common import get_mapping
+
+
+async def get_clips(
+    session: AsyncSession,
+    obj: AnnotationSetObject
+    | EvaluationObject
+    | PredictionSetObject
+    | AnnotationProjectObject,
+    recordings: dict[UUID, int],
+    feature_names: dict[str, int],
+) -> dict[UUID, int]:
+    if obj.clips:
+        return await import_clips(
+            session,
+            obj.clips,
+            recordings,
+            feature_names,
+        )
+
+    clip_uuids = set()
+
+    if isinstance(obj, (AnnotationSetObject, EvaluationObject)):
+        for clip_annotation in obj.clip_annotations or []:
+            clip_uuids.add(clip_annotation.clip)
+
+    if isinstance(obj, AnnotationProjectObject):
+        for task in obj.tasks or []:
+            clip_uuids.add(task.clip)
+
+    if isinstance(obj, (EvaluationObject, PredictionSetObject)):
+        for match in obj.clip_predictions or []:
+            clip_uuids.add(match.clip)
+
+    if not clip_uuids:
+        return {}
+
+    return await get_mapping(session, clip_uuids, models.Clip)
 
 
 async def import_clips(
     session: AsyncSession,
     clips: list[ClipObject],
-    recordings: dict[uuid.UUID, int],
-) -> dict[uuid.UUID, int]:
-    # Get existing clips by UUID
-    uuids = {clip.uuid for clip in clips}
-    db_clips, _ = await common.get_objects(
-        session,
-        models.Clip,
-        limit=None,
-        filters=[models.Clip.uuid.in_(uuids)],
-    )
-    mapping = {clip.uuid: clip.id for clip in db_clips}
+    recordings: dict[UUID, int],
+    feature_names: dict[str, int],
+) -> dict[UUID, int]:
+    mapping = await get_mapping(session, {c.uuid for c in clips}, models.Clip)
+
+    missing = [c for c in clips if c.uuid not in mapping]
+    if not missing:
+        return mapping
 
     values = []
-    for clip in clips:
+    for clip in missing:
         if clip.uuid in mapping:
             continue
-
         recording_db_id = recordings.get(clip.recording)
-
         if recording_db_id is None:
             continue
-
         values.append(
             {
                 "uuid": clip.uuid,
@@ -61,7 +98,7 @@ async def import_clips(
     )
     mapping.update({clip.uuid: clip.id for clip in db_clips})
 
-    await _create_clip_features(session, clips, mapping)
+    await _create_clip_features(session, clips, mapping, feature_names)
 
     return mapping
 
@@ -69,16 +106,9 @@ async def import_clips(
 async def _create_clip_features(
     session: AsyncSession,
     clips: list[ClipObject],
-    mapping: dict[uuid.UUID, int],
+    mapping: dict[UUID, int],
+    feature_names: dict[str, int],
 ) -> None:
-    feature_names = set()
-    for clip in clips:
-        if not clip.features:
-            continue
-        feature_names.update(clip.features.keys())
-
-    db_feature_names = await import_feature_names(session, list(feature_names))
-
     values = []
     for clip in clips:
         if not clip.features:
@@ -89,7 +119,7 @@ async def _create_clip_features(
             continue
 
         for name, value in clip.features.items():
-            feature_name_db_id = db_feature_names.get(name)
+            feature_name_db_id = feature_names.get(name)
             if feature_name_db_id is None:
                 # If feature name could not be found, skip it
                 continue

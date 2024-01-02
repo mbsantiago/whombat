@@ -124,16 +124,20 @@ class NoteAPI(
             The soundevent Note object.
         """
         user = obj.created_by
-        return data.Note(
-            uuid=obj.uuid,
-            created_on=obj.created_on,
-            message=obj.message,
-            created_by=data.User(
+        created_by = None
+        if user is not None:
+            created_by = data.User(
                 uuid=user.id,
                 email=user.email,
                 username=user.username,
                 name=user.name,
-            ),
+            )
+
+        return data.Note(
+            uuid=obj.uuid,
+            created_on=obj.created_on,
+            message=obj.message,
+            created_by=created_by,
             is_issue=obj.is_issue,
         )
 

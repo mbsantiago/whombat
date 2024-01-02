@@ -24,7 +24,7 @@ target_metadata = models.Base.metadata
 
 
 # Check if we should run migrations asynchronously
-should_run_async = config.attributes.get("should_run_async", False)
+should_run_async = config.attributes.get("should_run_async", True)
 
 
 def get_url() -> URL:

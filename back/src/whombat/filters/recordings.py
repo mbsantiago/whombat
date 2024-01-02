@@ -12,6 +12,7 @@ __all__ = [
     "DatasetFilter",
     "DateFilter",
     "DurationFilter",
+    "TimeExpansionFilter",
     "IssuesFilter",
     "LatitudeFilter",
     "LongitudeFilter",
@@ -45,6 +46,9 @@ DateFilter = base.optional_date_filter(models.Recording.date)
 
 TimeFilter = base.optional_time_filter(models.Recording.time)
 """Filter recordings by time."""
+
+TimeExpansionFilter = base.float_filter(models.Recording.time_expansion)
+"""Filter recordings by time expansion."""
 
 HashFilter = base.string_filter(models.Recording.hash)
 """Filter recordings by hash."""
@@ -147,4 +151,5 @@ RecordingFilter = base.combine(
     date=DateFilter,
     time=TimeFilter,
     has_issues=IssuesFilter,
+    time_expansion=TimeExpansionFilter,
 )

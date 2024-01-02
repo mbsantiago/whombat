@@ -1,14 +1,16 @@
 """REST API routes for evaluation sets."""
 from uuid import UUID
+import json
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import Response
-from soundevent.io import aoef
+from soundevent.io.aoef import to_aeof
 
 from whombat import api, schemas
 from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.evaluation_sets import EvaluationSetFilter
 from whombat.routes.types import Limit, Offset
+from whombat.io import aoef
 
 __all__ = [
     "evaluation_sets_router",
@@ -205,7 +207,7 @@ async def download_evaluation_set(
         session,
         evaluation_set,
     )
-    obj = aoef.to_aeof(soundevent_object, audio_dir=settings.audio_dir)
+    obj = to_aeof(soundevent_object, audio_dir=settings.audio_dir)
     filename = f"{evaluation_set.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(
@@ -216,3 +218,26 @@ async def download_evaluation_set(
         status_code=200,
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@evaluation_sets_router.post(
+    "/import/",
+    response_model=schemas.EvaluationSet,
+)
+async def import_evaluation_set(
+    settings: WhombatSettings,
+    session: Session,
+    evaluation_set: UploadFile,
+):
+    """Import an annotation project."""
+    obj = json.loads(evaluation_set.file.read())
+
+    db_dataset = await aoef.import_evaluation_set(
+        session,
+        obj,
+        audio_dir=settings.audio_dir,
+        base_audio_dir=settings.audio_dir,
+    )
+    await session.commit()
+    await session.refresh(db_dataset)
+    return schemas.EvaluationSet.model_validate(db_dataset)

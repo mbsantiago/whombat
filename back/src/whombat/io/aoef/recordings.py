@@ -1,27 +1,67 @@
 import logging
-import uuid
 from pathlib import Path
+from uuid import UUID
 
+from soundevent.io.aoef import (
+    AnnotationSetObject,
+    EvaluationObject,
+    PredictionSetObject,
+)
 from soundevent.io.aoef.recording import RecordingObject
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
 from whombat.api.common import create_objects_without_duplicates
-from whombat.io.aoef.features import import_feature_names
+from whombat.io.aoef.common import get_mapping
 from whombat.io.aoef.notes import import_notes
 
 logger = logging.getLogger(__name__)
 
 
+async def get_recordings(
+    session: AsyncSession,
+    obj: AnnotationSetObject | EvaluationObject | PredictionSetObject,
+    tags: dict[int, int],
+    users: dict[UUID, UUID],
+    feature_names: dict[str, int],
+    audio_dir: Path,
+    base_audio_dir: Path,
+) -> dict[UUID, int]:
+    if obj.recordings:
+        return await import_recordings(
+            session,
+            obj.recordings,
+            tags=tags,
+            users=users,
+            feature_names=feature_names,
+            audio_dir=audio_dir,
+            base_audio_dir=base_audio_dir,
+        )
+
+    recording_uuids: set[UUID] = set()
+
+    for sound_event in obj.sound_events or []:
+        recording_uuids.add(sound_event.recording)
+
+    for clip in obj.clips or []:
+        recording_uuids.add(clip.recording)
+
+    if not recording_uuids:
+        return {}
+
+    return await get_mapping(session, recording_uuids, models.Recording)
+
+
 async def import_recordings(
     session: AsyncSession,
     recordings: list[RecordingObject],
-    tags: dict[int, int] | None = None,
-    users: dict[uuid.UUID, uuid.UUID] | None = None,
+    tags: dict[int, int],
+    users: dict[UUID, UUID],
+    feature_names: dict[str, int],
     audio_dir: Path | None = None,
     base_audio_dir: Path = Path.home(),
-) -> dict[uuid.UUID, int]:
+) -> dict[UUID, int]:
     """Import a set of recordings in AOEF format into the database.
 
     Notes
@@ -32,12 +72,6 @@ async def import_recordings(
     """
     if not recordings:
         return {}
-
-    if not tags:
-        tags = {}
-
-    if not users:
-        users = {}
 
     if not audio_dir:
         # If no audio directory is given, assume that the paths are relative
@@ -63,7 +97,7 @@ async def import_recordings(
         )
     ]
 
-    mapping: dict[uuid.UUID, int] = {}
+    mapping: dict[UUID, int] = {}
 
     # Get existing recordings by UUID
     recs_by_uuid = await _get_existing_recordings_by_uuid(session, recordings)
@@ -105,7 +139,12 @@ async def import_recordings(
     await _create_recording_notes(session, recordings, mapping, users)
 
     # Create recording features
-    await _create_recording_features(session, recordings, mapping)
+    await _create_recording_features(
+        session,
+        recordings,
+        mapping,
+        feature_names,
+    )
 
     return mapping
 
@@ -113,7 +152,7 @@ async def import_recordings(
 async def _get_existing_recordings_by_uuid(
     session: AsyncSession,
     recordings: list[RecordingObject],
-) -> dict[uuid.UUID, int]:
+) -> dict[UUID, int]:
     uuids = {rec.uuid for rec in recordings}
     if not uuids:
         return {}
@@ -129,7 +168,7 @@ async def _get_existing_recordings_by_uuid(
 async def _get_existing_recordings_by_hash(
     session: AsyncSession,
     recordings: list[RecordingObject],
-) -> dict[uuid.UUID, int]:
+) -> dict[UUID, int]:
     hashes = {rec.hash for rec in recordings}
     if not hashes:
         return {}
@@ -147,7 +186,7 @@ async def _get_existing_recordings_by_path(
     recordings: list[RecordingObject],
     audio_dir: Path,
     base_audio_dir: Path,
-) -> dict[uuid.UUID, int]:
+) -> dict[UUID, int]:
     paths = {
         normalize_audio_path(rec, audio_dir, base_audio_dir)
         for rec in recordings
@@ -168,12 +207,13 @@ async def _create_recordings(
     recordings: list[RecordingObject],
     audio_dir: Path,
     base_audio_dir: Path,
-) -> dict[uuid.UUID, int]:
+) -> dict[UUID, int]:
     values = [
         {
             "uuid": rec.uuid,
             "hash": rec.hash,
             "path": normalize_audio_path(rec, audio_dir, base_audio_dir),
+            "time_expansion": rec.time_expansion or 1,
             "duration": rec.duration,
             "samplerate": rec.samplerate,
             "channels": rec.channels,
@@ -198,7 +238,7 @@ async def _create_recordings(
 async def _create_recording_tags(
     session: AsyncSession,
     recordings: list[RecordingObject],
-    mapping: dict[uuid.UUID, int],
+    mapping: dict[UUID, int],
     tags: dict[int, int],
 ) -> None:
     values = []
@@ -236,8 +276,8 @@ async def _create_recording_tags(
 async def _create_recording_notes(
     session: AsyncSession,
     recordings: list[RecordingObject],
-    mapping: dict[uuid.UUID, int],
-    users: dict[uuid.UUID, uuid.UUID],
+    mapping: dict[UUID, int],
+    users: dict[UUID, UUID],
 ) -> None:
     notes = [
         note for recording in recordings for note in recording.notes or []
@@ -281,16 +321,9 @@ async def _create_recording_notes(
 async def _create_recording_features(
     session: AsyncSession,
     recordings: list[RecordingObject],
-    mapping: dict[uuid.UUID, int],
+    mapping: dict[UUID, int],
+    feature_names: dict[str, int],
 ) -> None:
-    feature_names = set()
-    for recording in recordings:
-        if not recording.features:
-            continue
-        feature_names.update(recording.features.keys())
-
-    db_feature_names = await import_feature_names(session, list(feature_names))
-
     values = []
     for recording in recordings:
         if not recording.features:
@@ -304,7 +337,7 @@ async def _create_recording_features(
             continue
 
         for name, value in recording.features.items():
-            feature_name_db_id = db_feature_names.get(name)
+            feature_name_db_id = feature_names.get(name)
             if feature_name_db_id is None:
                 # If feature name could not be found, skip it
                 continue

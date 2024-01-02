@@ -69,7 +69,7 @@ class Note(Base):
     message: orm.Mapped[str] = orm.mapped_column(nullable=False)
     created_by_id: orm.Mapped[UUID] = orm.mapped_column(
         ForeignKey("user.id"),
-        nullable=False,
+        nullable=True,
     )
     is_issue: orm.Mapped[bool] = orm.mapped_column(
         nullable=False,
@@ -91,14 +91,14 @@ class Note(Base):
     # Relationships (backrefs)
 
     if TYPE_CHECKING:
+        from whombat.models.clip_annotation import (
+            ClipAnnotation,
+            ClipAnnotationNote,
+        )
         from whombat.models.recording import Recording, RecordingNote
         from whombat.models.sound_event_annotation import (
             SoundEventAnnotation,
             SoundEventAnnotationNote,
-        )
-        from whombat.models.clip_annotation import (
-            ClipAnnotation,
-            ClipAnnotationNote,
         )
 
     recording: orm.Mapped[Optional["Recording"]] = orm.relationship(

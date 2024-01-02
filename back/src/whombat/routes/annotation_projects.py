@@ -1,14 +1,14 @@
 """REST API routes for annotation projects."""
-from uuid import UUID
 import json
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.annotation_projects import AnnotationProjectFilter
-from whombat.routes.types import Limit, Offset
 from whombat.io import aoef
+from whombat.routes.types import Limit, Offset
 
 __all__ = [
     "annotation_projects_router",
@@ -170,15 +170,19 @@ async def remove_tag_from_annotation_project(
     response_model=schemas.AnnotationProject,
 )
 async def import_annotation_project(
+    settings: WhombatSettings,
     session: Session,
     annotation_project: UploadFile,
 ):
     """Import an annotation project."""
     obj = json.loads(annotation_project.file.read())
+
     db_dataset = await aoef.import_annotation_project(
         session,
         obj,
+        audio_dir=settings.audio_dir,
+        base_audio_dir=settings.audio_dir,
     )
     await session.commit()
     await session.refresh(db_dataset)
-    return schemas.Dataset.model_validate(db_dataset)
+    return schemas.AnnotationProject.model_validate(db_dataset)

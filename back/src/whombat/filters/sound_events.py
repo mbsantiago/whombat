@@ -22,6 +22,7 @@ class RecordingFilter(base.Filter):
         """Filter by recording ID."""
         if self.eq is None:
             return query
+
         return query.join(
             models.Recording,
             models.SoundEvent.recording_id == models.Recording.id,
