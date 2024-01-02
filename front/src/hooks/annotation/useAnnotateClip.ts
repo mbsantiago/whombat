@@ -5,8 +5,8 @@ import useAnnotationDelete from "@/hooks/annotation/useAnnotationDelete";
 import useAnnotationDraw from "@/hooks/annotation/useAnnotationDraw";
 import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
 import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
-import useAnnotationTags from "@/hooks/annotation/useAnnotationTags";
 import useClipAnnotation from "@/hooks/api/useClipAnnotation";
+import useSpectrogramTags from "@/hooks/spectrogram/useSpectrogramTags";
 
 import type {
   ClipAnnotation,
@@ -88,7 +88,7 @@ export default function useAnnotateClip(props: {
     viewport,
     dimensions,
     defaultTags,
-    mode: initialMode = "draw",
+    mode: initialMode = "select",
     active = true,
     disabled = false,
     onModeChange,
@@ -258,9 +258,9 @@ export default function useAnnotateClip(props: {
     [addTagToSoundEvent, disabled],
   );
 
-  const tags = useAnnotationTags({
+  const tags = useSpectrogramTags({
     annotations: soundEvents,
-    viewport,
+    viewport: viewport,
     dimensions,
     onClickTag: handleOnClickTag,
     onAddTag: handleOnAddTag,

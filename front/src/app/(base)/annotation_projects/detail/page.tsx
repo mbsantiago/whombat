@@ -7,14 +7,26 @@ import AnnotationProjectDetail from "@/components/annotation_projects/Annotation
 
 import AnnotationProjectContext from "./context";
 
+import type { AnnotationProject } from "@/types";
+
 export default function Page() {
   const annotationProject = useContext(AnnotationProjectContext);
   const router = useRouter();
 
-  const onDelete = useCallback(() => {
-    toast.success("Project deleted");
-    router.push("/annotation_projects");
-  }, [router]);
+  const onDelete = useCallback(
+    (project: Promise<AnnotationProject>) => {
+      toast.promise(project, {
+        loading: "Deleting project... Please wait",
+        success: "Project deleted!",
+        error: "Failed to delete project",
+      });
+
+      project.then(() => {
+        router.push("/annotation_projects");
+      });
+    },
+    [router],
+  );
 
   return (
     <AnnotationProjectDetail

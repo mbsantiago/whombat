@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import Alert from "@/components/Alert";
 import Button from "@/components/Button";
 import {
@@ -61,13 +63,21 @@ export default function ProjectActions({
   onDelete,
 }: {
   annotationProject: AnnotationProject;
-  onDelete?: () => void;
+  onDelete?: (project: Promise<AnnotationProject>) => void;
 }) {
-  const { delete: deleteProject, download } = useAnnotationProject({
+  const {
+    delete: { mutateAsync: deleteProject },
+    download,
+  } = useAnnotationProject({
     uuid: annotationProject.uuid,
     annotationProject,
-    onDelete,
   });
+
+  const handleDelete = useCallback(async () => {
+    // @ts-ignore
+    const promise = deleteProject();
+    onDelete?.(promise);
+  }, [deleteProject, onDelete]);
 
   return (
     <div className="flex flex-row gap-2 justify-center">
@@ -80,10 +90,7 @@ export default function ProjectActions({
       >
         <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
       </Link>
-      <DeleteProject
-        // @ts-ignore
-        onDelete={deleteProject.mutate}
-      />
+      <DeleteProject onDelete={handleDelete} />
     </div>
   );
 }

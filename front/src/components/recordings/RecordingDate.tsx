@@ -22,9 +22,7 @@ function DateButton({
       {date != null ? (
         date.toLocaleDateString()
       ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-600">
-          No date
-        </span>
+        <span className="text-sm text-stone-400 dark:text-stone-600">-</span>
       )}
     </Button>
   );

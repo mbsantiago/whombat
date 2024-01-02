@@ -33,7 +33,7 @@ export const NoteSchema = z.object({
   uuid: z.string().uuid(),
   message: z.string(),
   is_issue: z.boolean(),
-  created_by: UserSchema,
+  created_by: UserSchema.nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -174,7 +174,7 @@ export const AnnotationTagSchema = z.object({
 export const SoundEventAnnotationSchema = z.object({
   uuid: z.string().uuid(),
   sound_event: SoundEventSchema,
-  created_by: UserSchema.optional(),
+  created_by: UserSchema.nullish(),
   notes: z.array(NoteSchema).optional(),
   tags: z.array(TagSchema).optional(),
   created_on: z.coerce.date(),
@@ -199,7 +199,7 @@ export const AnnotationStatusSchema = z.enum([
 
 export const AnnotationStatusBadgeSchema = z.object({
   state: AnnotationStatusSchema,
-  user: UserSchema.optional(),
+  user: UserSchema.nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -213,7 +213,7 @@ export const AnnotationProjectSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
   description: z.string(),
-  annotation_instructions: z.string().optional(),
+  annotation_instructions: z.string().nullish(),
   tags: z.array(TagSchema).optional(),
   created_on: z.coerce.date(),
 });

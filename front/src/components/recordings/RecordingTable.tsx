@@ -171,10 +171,12 @@ export default function RecordingTable({
   filter,
   fixed,
   getRecordingLink,
+  pathFormatter,
 }: {
   filter: RecordingFilter;
   fixed?: (keyof RecordingFilter)[];
   getRecordingLink?: (recording: Recording) => string;
+  pathFormatter?: (path: string) => string;
 }) {
   const client = useQueryClient();
   const recordings = useRecordings({ filter, fixed });
@@ -240,6 +242,7 @@ export default function RecordingTable({
   const table = useRecordingTable({
     data: recordings.items,
     getRecordingLink,
+    pathFormatter,
     onUpdate: updateRecording.mutate,
     onAddTag: addTag.mutate,
     onRemoveTag: removeTag.mutate,

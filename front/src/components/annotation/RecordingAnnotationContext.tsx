@@ -44,15 +44,15 @@ export default function RecordingAnnotationContext({
         />
         <RecordingTime time={recording.time} disabled />
         <RecordingDate date={recording.date} disabled />
-        <div className="text-stone-500">
+        <div className="text-stone-500 text-sm">
           <span className="font-semibold">SR</span>{" "}
           {recording.samplerate.toLocaleString()} Hz
         </div>
-        <div className="text-stone-500">
+        <div className="text-stone-500 text-sm">
           <span className="font-semibold">C</span>{" "}
           {recording.channels.toLocaleString()}
         </div>
-        <div className="text-stone-500">
+        <div className="text-stone-500 text-sm">
           <span className="font-semibold">TE</span>{" "}
           {recording.time_expansion.toLocaleString()}
         </div>

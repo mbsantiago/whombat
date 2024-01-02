@@ -39,6 +39,7 @@ export default function useAnnotationTask({
     queryFn: api.annotationTasks.getAnnotations,
     enabled: withAnnotations,
   });
+  if (annotationsQuery.error) console.error(annotationsQuery.error);
 
   const deleteTask = useDestruction({
     mutationFn: api.annotationTasks.delete,

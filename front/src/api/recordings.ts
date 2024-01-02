@@ -90,6 +90,8 @@ export function registerRecordingAPI(
         longitude__gt: params.longitude?.gt,
         longitude__lt: params.longitude?.lt,
         longitude__is_null: params.longitude?.is_null,
+        time_expansion__gt: params.time_expansion?.gt,
+        time_expansion__lt: params.time_expansion?.lt,
         tag__key: params.tag?.key,
         tag__value: params.tag?.value,
         has_issues__eq: params.has_issues,

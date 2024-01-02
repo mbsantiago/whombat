@@ -17,7 +17,7 @@ export default function EvaluationSetCreate({
   onCreate,
   onError,
 }: {
-  onCreate?: (data: EvaluationSet) => void;
+  onCreate?: (data: Promise<EvaluationSet>) => void;
   onError?: (error: AxiosError) => void;
 }) {
   const {
@@ -29,17 +29,17 @@ export default function EvaluationSetCreate({
     mode: "onChange",
   });
 
-  const { mutate: createEvaluationSet } = useMutation({
+  const { mutateAsync: createEvaluationSet } = useMutation({
     mutationFn: api.evaluationSets.create,
-    onSuccess: onCreate,
     onError: onError,
   });
 
   const onSubmit = useCallback(
-    (data: EvaluationSetCreate) => {
-      createEvaluationSet(data);
+    async (data: EvaluationSetCreate) => {
+      const promise = createEvaluationSet(data);
+      onCreate?.(promise);
     },
-    [createEvaluationSet],
+    [createEvaluationSet, onCreate],
   );
 
   return (

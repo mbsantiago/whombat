@@ -4,10 +4,10 @@
  */
 
 import AddTagButton from "@/components/tags/AddTagButton";
-import Tag from "@/components/tags/Tag";
+import TagComponent from "@/components/tags/Tag";
 import useStore from "@/store";
 
-import type { Tag as TagType } from "@/types";
+import type { Tag } from "@/types";
 import type { HTMLProps } from "react";
 
 /** A table cell that displays a list of tags.
@@ -20,32 +20,32 @@ export default function TableTags({
   tags,
   onAdd,
   onRemove,
+  onClick,
   ...props
 }: {
-  tags: TagType[];
-  onAdd?: (tag: TagType) => void;
-  onRemove?: (tag: TagType) => void;
+  tags: Tag[];
+  onAdd?: (tag: Tag) => void;
+  onClick?: (tag: Tag) => void;
+  onRemove?: (tag: Tag) => void;
 } & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
   // Get each tag color from the store to provide a consistent color
   // experience across the app
   const getTagColor = useStore((state) => state.getTagColor);
 
   return (
-    <div className="flex overflow-scroll flex-row flex-wrap gap-2 items-center px-1 m-0 w-full h-full">
-      <AddTagButton onAdd={onAdd} {...props} />
+    <div className="flex overflow-scroll flex-row flex-wrap gap-2 items-center px-1 m-0 w-full max-h-40">
       {/* Display the list of tags and allow users to remove a tag from */}
       {/* list by clicking on it*/}
       {tags.map((tag) => (
-        <Tag
+        <TagComponent
           key={`${tag.key}:${tag.value}`}
           tag={tag}
-          className="hover:text-red-700 hover:bg-red-300 hover:border-red-500"
           {...getTagColor(tag)}
-          onClick={() => {
-            onRemove?.(tag);
-          }}
+          onClick={() => onClick?.(tag)}
+          onClose={() => onRemove?.(tag)}
         />
       ))}
+      <AddTagButton variant="primary" onAdd={onAdd} {...props} />
     </div>
   );
 }

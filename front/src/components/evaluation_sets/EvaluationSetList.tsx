@@ -3,7 +3,13 @@ import Dialog from "@/components/Dialog";
 import Empty from "@/components/Empty";
 import EvaluationSetComponent from "@/components/evaluation_sets/EvaluationSet";
 import EvaluationSetCreate from "@/components/evaluation_sets/EvaluationSetCreate";
-import { AddIcon, TasksIcon, WarningIcon } from "@/components/icons";
+import EvaluationSetImport from "@/components/evaluation_sets/EvaluationSetImport";
+import {
+  AddIcon,
+  TasksIcon,
+  UploadIcon,
+  WarningIcon,
+} from "@/components/icons";
 import Search from "@/components/inputs/Search";
 import Pagination from "@/components/lists/Pagination";
 import StackedList from "@/components/lists/StackedList";
@@ -29,7 +35,7 @@ function NoEvaluationSets() {
 }
 
 export default function EvaluationSets(props: {
-  onCreate?: (evaluationSet: EvaluationSet) => void;
+  onCreate?: (evaluationSet: Promise<EvaluationSet>) => void;
 }) {
   const { onCreate } = props;
   const { items, pagination, filter, isLoading } = useEvaluationSets();
@@ -46,6 +52,20 @@ export default function EvaluationSets(props: {
             onSubmit={() => filter.submit()}
             icon={<TasksIcon />}
           />
+        </div>
+        <div className="h-full">
+          <Dialog
+            mode="text"
+            title="Import an Evaluation Set"
+            label={
+              <>
+                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+                Import
+              </>
+            }
+          >
+            {() => <EvaluationSetImport onCreate={onCreate} />}
+          </Dialog>
         </div>
         <div className="h-full">
           <Dialog

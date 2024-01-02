@@ -23,9 +23,7 @@ function TimeButton({
       {time != null ? (
         time
       ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-600">
-          No time
-        </span>
+        <span className="text-sm text-stone-400 dark:text-stone-600">-</span>
       )}
     </Button>
   );

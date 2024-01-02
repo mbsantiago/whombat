@@ -47,6 +47,7 @@ const DEFAULT_ENDPOINTS = {
   removeTag: "/api/v1/evaluation_sets/detail/tags/",
   addEvaluationTasks: "/api/v1/evaluation_sets/detail/tasks/",
   download: "/api/v1/evaluation_sets/detail/download/",
+  import: "/api/v1/evaluation_sets/import/",
 };
 
 export function registerEvaluationSetAPI(
@@ -151,6 +152,11 @@ export function registerEvaluationSetAPI(
     return `${baseUrl}${endpoints.download}?evaluation_set_uuid=${evaluationSet.uuid}`;
   }
 
+  async function importEvaluationSet(data: FormData): Promise<EvaluationSet> {
+    const { data: res } = await instance.post(endpoints.import, data);
+    return EvaluationSetSchema.parse(res);
+  }
+
   return {
     get: getEvaluationSet,
     getMany: getManyEvaluationSets,
@@ -161,5 +167,6 @@ export function registerEvaluationSetAPI(
     addEvaluationTasks,
     addTag,
     removeTag,
+    import: importEvaluationSet,
   } as const;
 }

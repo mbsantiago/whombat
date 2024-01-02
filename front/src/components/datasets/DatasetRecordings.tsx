@@ -1,18 +1,8 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import RecordingTable from "@/components/recordings/RecordingTable";
 
 import type { Dataset, Recording } from "@/types";
-
-function fixRecordingPath(recording: Recording, dataset: Dataset): Recording {
-  const path = recording.path;
-  const prefix = dataset.audio_dir;
-  if (prefix == null) return recording;
-  if (path.startsWith(prefix)) {
-    return { ...recording, path: path.slice(prefix.length) };
-  }
-  return recording;
-}
 
 export default function DatasetRecordings({
   dataset,
@@ -21,6 +11,18 @@ export default function DatasetRecordings({
   dataset: Dataset;
   getRecordingLink?: (recording: Recording) => string;
 }) {
+  const pathFormatter = useCallback(
+    (path: string) => {
+      const prefix = dataset.audio_dir;
+      if (prefix == null) return path;
+      if (path.startsWith(prefix)) {
+        return path.slice(prefix.length);
+      }
+      return path;
+    },
+    [dataset.audio_dir],
+  );
+
   const getRecordingLink = useMemo(() => {
     if (getRecordingLinkFn == null) return undefined;
 
@@ -30,11 +32,13 @@ export default function DatasetRecordings({
     };
   }, [getRecordingLinkFn, dataset.uuid]);
   const filter = useMemo(() => ({ dataset }), [dataset]);
+
   return (
     <RecordingTable
       filter={filter}
       fixed={["dataset"]}
       getRecordingLink={getRecordingLink}
+      pathFormatter={pathFormatter}
     />
   );
 }

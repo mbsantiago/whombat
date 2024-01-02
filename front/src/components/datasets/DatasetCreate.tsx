@@ -24,9 +24,6 @@ export default function CreateDataset({
 }) {
   const { mutateAsync: createDataset } = useMutation({
     mutationFn: api.datasets.create,
-    onSuccess: (data) => {
-      onCreate?.(data);
-    },
   });
 
   const {

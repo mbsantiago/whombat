@@ -39,7 +39,9 @@ export default function Note({
           )}
         </div>
         <h4 className="flex flex-col items-start text-base font-medium leading-6 md:flex-row lg:items-center text-stone-700 dark:text-stone-300">
-          <span className="flex-1">{data.created_by.username}</span>
+          <span className="flex-1">
+            {data.created_by?.username || "anonymous"}
+          </span>
           <span className="text-xs font-normal text-stone-400">
             {" "}
             {note.data.created_on.toLocaleString()}
@@ -59,7 +61,7 @@ export default function Note({
               Resolve
             </Button>
           )}
-          {currentUser?.id === note.data.created_by.id ? (
+          {currentUser?.id === note.data.created_by?.id ? (
             <>
               <Button
                 mode="text"

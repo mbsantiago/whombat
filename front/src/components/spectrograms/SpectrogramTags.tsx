@@ -13,7 +13,7 @@ import type { TagFilter } from "@/api/tags";
 import type {
   TagElement,
   TagGroup,
-} from "@/hooks/annotation/useAnnotationTags";
+} from "@/hooks/spectrogram/useSpectrogramTags";
 import type { Tag as TagType } from "@/types";
 
 function TagBarPopover({
@@ -57,7 +57,7 @@ export function SpectrogramTag({ tag, onClick }: TagElement) {
   }, [color]);
 
   return (
-    <span className="flex flex-row gap-1 items-center px-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 -my-2 items-center px-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
       <span
         className={`inline-block my-2 w-2 h-2 rounded-full ${className} ring-1 ring-stone-900 opacity-100`}
       ></span>
@@ -90,9 +90,9 @@ export function AddTagButton({
   return (
     <Popover as="div">
       <Float
-        zIndex={999}
         placement="bottom"
         offset={4}
+        zIndex={20}
         enter="transition duration-200 ease-out"
         enterFrom="scale-95 opacity-0"
         enterTo="scale-100 opacity-100"
@@ -101,7 +101,7 @@ export function AddTagButton({
         leaveTo="scale-95 opacity-0"
         portal={true}
       >
-        <Popover.Button className="rounded hover:text-emerald-500 focus:ring-4 focus:outline-none group focus:ring-emerald-500/50">
+        <Popover.Button className="rounded hover:text-emerald-500 focus:ring-4 focus:outline-none group focus:ring-emerald-500/50 z-20">
           +<TagIcon className="inline-block ml-1 w-4 h-4 stroke-2" />
           <span className="hidden absolute ml-1 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:inline-block group-hover:opacity-100">
             Add tag
@@ -146,14 +146,14 @@ export function TagGroup({
         {
           "pointer-events-none": !group.active,
         },
-        "h-5 flex flex-col gap-2 absolute px-2 text-stone-300 ",
+        "h-5 flex flex-col absolute px-2 text-stone-300 hover:z-50 z-40",
       )}
       style={{
         left: x,
         top: y,
       }}
     >
-      <div className="relative right-0">
+      <div className="-ms-2 relative flex flex-col right-0 hover:gap-2">
         {group.tags.map((tagElement) => (
           <SpectrogramTag
             key={`${tagElement.tag.key}:${tagElement.tag.value}`}

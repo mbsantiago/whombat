@@ -15,7 +15,7 @@ export default function AnnotationProjectDetail({
 }: {
   annotationProject: AnnotationProject;
   onChange?: (data: AnnotationProject) => void;
-  onDelete?: () => void;
+  onDelete?: (data: Promise<AnnotationProject>) => void;
 }) {
   return (
     <div className="flex flex-row gap-8 justify-between w-100">

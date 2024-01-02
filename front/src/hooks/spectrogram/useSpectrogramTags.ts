@@ -5,6 +5,7 @@ import {
   computeGeometryBBox,
   isGeometryInWindow,
   scaleBBoxToViewport,
+  scaleTimeToViewport,
 } from "@/utils/geometry";
 
 import type {
@@ -13,6 +14,8 @@ import type {
   SoundEventAnnotation,
   SpectrogramWindow,
   Tag,
+  TimeInterval,
+  TimeStamp,
 } from "@/types";
 
 export type TagElement = {
@@ -36,19 +39,143 @@ export type TagGroup = {
   onAdd?: (tag: Tag) => void;
 };
 
+function getTimeIntervalLabelPosition({
+  annotation,
+  window,
+  dimensions,
+}: {
+  annotation: SoundEventAnnotation;
+  window: SpectrogramWindow;
+  dimensions: Dimensions;
+}): Position {
+  const geometry = annotation.sound_event.geometry as TimeInterval;
+  const {
+    time: { min: startTime, max: endTime },
+  } = window;
+  const [start, end] = geometry.coordinates;
+
+  if (end < startTime || start > endTime) {
+    throw new Error("Annotation is not in the window");
+  }
+
+  const x = scaleTimeToViewport(start, window, dimensions.width);
+  const x2 = scaleTimeToViewport(end, window, dimensions.width);
+
+  const randomVal = Number(`0x${annotation.uuid.slice(-8)}`) / 0xffffffff;
+  const y = 50 + randomVal * (dimensions.height - 100);
+
+  const tooLeft = x < 50;
+  const tooRight = x2 > dimensions.width - 50;
+
+  if (tooLeft && tooRight) {
+    return {
+      x: x,
+      y,
+      offset: 5,
+      placement: "right",
+    };
+  }
+
+  if (tooLeft) {
+    return {
+      x: x2,
+      y,
+      offset: 5,
+      placement: "left",
+    };
+  }
+
+  if (tooRight) {
+    return {
+      x: x,
+      y,
+      offset: 5,
+      placement: "left",
+    };
+  }
+
+  return {
+    x: x2,
+    y,
+    offset: 5,
+    placement: "left",
+  };
+}
+
+function getTimeStampLabelPosition({
+  annotation,
+  window,
+  dimensions,
+}: {
+  annotation: SoundEventAnnotation;
+  window: SpectrogramWindow;
+  dimensions: Dimensions;
+}): Position {
+  const geometry = annotation.sound_event.geometry as TimeStamp;
+  const {
+    time: { min: startTime, max: endTime },
+  } = window;
+  const time = geometry.coordinates;
+
+  if (time < startTime || time > endTime) {
+    throw new Error("Annotation is not in the window");
+  }
+
+  const x = scaleTimeToViewport(time, window, dimensions.width);
+
+  // Get random height between 50 and dimensions.height - 50
+  const y = 50 + Math.random() * (dimensions.height - 100);
+
+  const tooLeft = x < 50;
+
+  if (tooLeft) {
+    return {
+      x: x + 5,
+      y,
+      offset: 5,
+      placement: "right",
+    };
+  }
+
+  return {
+    x: x - 5,
+    y,
+    offset: 5,
+    placement: "left",
+  };
+}
+
 function getLabelPosition(
   annotation: SoundEventAnnotation,
   window: SpectrogramWindow,
   dimensions: Dimensions,
 ): Position {
+  const { geometry } = annotation.sound_event;
+
+  if (geometry.type === "TimeStamp") {
+    return getTimeStampLabelPosition({
+      annotation,
+      window,
+      dimensions,
+    });
+  }
+
+  if (geometry.type === "TimeInterval") {
+    return getTimeIntervalLabelPosition({
+      annotation,
+      window,
+      dimensions,
+    });
+  }
+
   const windowBBox: Box = [
     window.time.min,
     window.freq.min,
     window.time.max,
     window.freq.max,
   ];
-  // @ts-ignore
-  const bbox = computeGeometryBBox(annotation.sound_event.geometry);
+
+  const bbox = computeGeometryBBox(geometry);
   const intersection = bboxIntersection(bbox, windowBBox);
 
   if (intersection === null) {
@@ -141,7 +268,7 @@ function getLabelPosition(
   }
 }
 
-export default function useAnnotationTags({
+export default function useSpectrogramTags({
   annotations,
   viewport,
   dimensions,

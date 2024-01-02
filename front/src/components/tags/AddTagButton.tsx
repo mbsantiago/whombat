@@ -57,7 +57,7 @@ export default function AddTagButton({
   return (
     <Popover as="div" className="inline-block text-left">
       <Float
-        zIndex={999}
+        zIndex={20}
         placement="bottom"
         offset={4}
         enter="transition duration-200 ease-out"

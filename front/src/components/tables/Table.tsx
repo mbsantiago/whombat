@@ -36,7 +36,7 @@ export default function Table<S>({
 
   return (
     <table
-      className="min-w-full rounded-lg border border-collapse table-fixed border-stone-300 text-stone-700 dark:border-stone-700 dark:text-stone-300"
+      className="relative min-w-full rounded-lg border border-collapse table-fixed border-stone-300 text-stone-700 dark:border-stone-700 dark:text-stone-300"
       onKeyUp={(event) => {
         if (event.target instanceof HTMLInputElement) return;
         onKeyUp();
@@ -51,7 +51,7 @@ export default function Table<S>({
         },
       }}
     >
-      <thead className="sticky top-0">
+      <thead className="z-10 sticky top-0">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
@@ -84,18 +84,18 @@ export default function Table<S>({
           </tr>
         ))}
       </thead>
-      <tbody className="text-sm text-stone-800 dark:text-stone-300">
+      <tbody className="z-0 text-sm text-stone-800 dark:text-stone-300">
         {table.getRowModel().rows.map((row) => {
           return (
             <tr
               key={row.id}
-              className="hover:dark:bg-stone-800 hover:bg-stone-200"
+              className="hover:dark:bg-stone-800 hover:bg-stone-200 max-h-40 h-min"
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
                     role="gridcell"
-                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600"
+                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600 max-h-40 overflow-y-hidden"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {

@@ -25,14 +25,18 @@ import TableTags from "@/components/tables/TableTags";
 import type { RecordingUpdate } from "@/api/recordings";
 import type { Note, Recording, Tag } from "@/types";
 
+const defaultPathFormatter = (path: string) => path;
+
 export default function useRecordingTable({
   data,
+  pathFormatter = defaultPathFormatter,
   getRecordingLink,
   onUpdate,
   onAddTag,
   onRemoveTag,
 }: {
   data: Recording[];
+  pathFormatter: (path: string) => string;
   getRecordingLink?: (recording: Recording) => string;
   onUpdate: ({
     recording,
@@ -108,7 +112,7 @@ export default function useRecordingTable({
                 className="hover:font-bold hover:text-emerald-500 focus:ring focus:ring-emerald-500 focus:outline-none"
                 href={getRecordingLink?.(row.original) || "#"}
               >
-                {path}
+                {pathFormatter(path)}
               </Link>
             </TableCell>
           );
@@ -324,7 +328,7 @@ export default function useRecordingTable({
         },
       },
     ],
-    [onAddTag, onRemoveTag, onUpdate, getRecordingLink],
+    [onAddTag, onRemoveTag, onUpdate, getRecordingLink, pathFormatter],
   );
 
   const table = useReactTable<Recording>({

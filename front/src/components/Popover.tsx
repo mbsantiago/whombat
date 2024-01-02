@@ -31,7 +31,7 @@ export default function Popover({
   return (
     <HeadlessPopover as="div" className="inline-block text-left">
       <Float
-        zIndex={999}
+        zIndex={10}
         placement={placement}
         offset={offset}
         enter="transition duration-200 ease-out"
