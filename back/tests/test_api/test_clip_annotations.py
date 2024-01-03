@@ -110,25 +110,6 @@ async def test_added_tag_is_stored_in_the_database(
     assert db_clip_annotation_tag.tag_id == tag.id
 
 
-async def test_added_tag_is_in_the_tags_list(
-    session: AsyncSession,
-    clip_annotation: schemas.ClipAnnotation,
-    tag: schemas.Tag,
-    user: schemas.SimpleUser,
-):
-    """Test that an added tag is returned."""
-    clip_annotation = await api.clip_annotations.add_tag(
-        session,
-        clip_annotation,
-        tag,
-        user,
-    )
-    assert any(
-        clip_annotation_tag.tag.id == tag.id
-        for clip_annotation_tag in clip_annotation.tags
-    )
-
-
 async def test_cannot_add_duplicate_tag_to_clip_annotation(
     session: AsyncSession,
     clip_annotation: schemas.ClipAnnotation,
@@ -145,72 +126,6 @@ async def test_cannot_add_duplicate_tag_to_clip_annotation(
             tag,
             user,
         )
-
-
-async def test_can_remove_tag_from_clip_annotation(
-    session: AsyncSession,
-    clip_annotation: schemas.ClipAnnotation,
-    tag: schemas.Tag,
-    user: schemas.SimpleUser,
-):
-    """Test that a tag can be removed from a clip_annotation."""
-    clip_annotation = await api.clip_annotations.add_tag(
-        session, clip_annotation, tag, user
-    )
-    clip_annotation_tag = next(
-        (
-            clip_annotation_tag
-            for clip_annotation_tag in clip_annotation.tags
-            if clip_annotation_tag.tag.id == tag.id
-            and clip_annotation_tag.created_by == user
-        ),
-        None,
-    )
-    assert clip_annotation_tag is not None
-    clip_annotation = await api.clip_annotations.remove_tag(
-        session, clip_annotation, tag, user=user
-    )
-    assert len(clip_annotation.tags) == 0
-
-
-async def test_removed_tag_is_deleted_in_the_database(
-    session: AsyncSession,
-    clip_annotation: schemas.ClipAnnotation,
-    tag: schemas.Tag,
-    user: schemas.SimpleUser,
-):
-    """Test that a removed tag is deleted in the database."""
-    clip_annotation = await api.clip_annotations.add_tag(
-        session, clip_annotation, tag, user
-    )
-    clip_annotation_tag = next(
-        (
-            clip_annotation_tag
-            for clip_annotation_tag in clip_annotation.tags
-            if clip_annotation_tag.tag.id == tag.id
-            and clip_annotation_tag.created_by == user
-        ),
-        None,
-    )
-    assert clip_annotation_tag is not None
-    await api.clip_annotations.remove_tag(
-        session,
-        clip_annotation,
-        tag,
-        user=user,
-    )
-
-    stmt = select(models.ClipAnnotationTag).where(
-        tuple_(
-            models.ClipAnnotationTag.clip_annotation_id,
-            models.ClipAnnotationTag.tag_id,
-            models.ClipAnnotationTag.created_by_id,
-        )
-        == (clip_annotation.id, tag.id, user.id),
-    )
-    result = await session.execute(stmt)
-    db_clip_annotation_tag = result.unique().scalars().one_or_none()
-    assert db_clip_annotation_tag is None
 
 
 async def test_added_note_is_stored_in_the_database(

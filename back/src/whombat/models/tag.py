@@ -89,12 +89,16 @@ class Tag(Base):
             ClipAnnotation,
             ClipAnnotationTag,
         )
+        from whombat.models.clip_prediction import ClipPredictionTag
         from whombat.models.evaluation_set import EvaluationSetTag
         from whombat.models.recording import Recording, RecordingTag
         from whombat.models.sound_event import SoundEvent
         from whombat.models.sound_event_annotation import (
             SoundEventAnnotation,
             SoundEventAnnotationTag,
+        )
+        from whombat.models.sound_event_prediction import (
+            SoundEventPredictionTag,
         )
 
     recordings: orm.Mapped[list["Recording"]] = orm.relationship(
@@ -111,7 +115,9 @@ class Tag(Base):
         repr=False,
         default_factory=list,
     )
-    sound_event_annotations: orm.Mapped[list["SoundEventAnnotation"]] = orm.relationship(
+    sound_event_annotations: orm.Mapped[
+        list["SoundEventAnnotation"]
+    ] = orm.relationship(
         back_populates="tags",
         secondary="sound_event_annotation_tag",
         init=False,
@@ -163,6 +169,22 @@ class Tag(Base):
     )
     annotation_project_tags: orm.Mapped[
         list["AnnotationProjectTag"]
+    ] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+    sound_event_prediction_tags: orm.Mapped[
+        list["SoundEventPredictionTag"]
+    ] = orm.relationship(
+        back_populates="tag",
+        init=False,
+        repr=False,
+        default_factory=list,
+    )
+    clip_prediction_tags: orm.Mapped[
+        list["ClipPredictionTag"]
     ] = orm.relationship(
         back_populates="tag",
         init=False,

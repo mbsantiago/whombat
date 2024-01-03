@@ -175,8 +175,8 @@ async def _create_sound_event_annotations(
     if not values:
         return mapping
 
-    stmt = insert(models.SoundEventAnnotation).values(values)
-    await session.execute(stmt)
+    stmt = insert(models.SoundEventAnnotation)
+    await session.execute(stmt, values)
 
     # Get the IDs of the newly created annotations.
     created = await get_mapping(

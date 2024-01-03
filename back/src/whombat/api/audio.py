@@ -1,9 +1,9 @@
 """API functions to load audio."""
+import struct
 from pathlib import Path
 
+import soundfile as sf
 from soundevent import audio, data
-from soundevent.audio.io import audio_to_bytes
-from soundevent.audio.media_info import generate_wav_header
 
 from whombat import schemas
 
@@ -84,15 +84,23 @@ def load_audio(
     return wav
 
 
+BIT_DEPTH_MAP: dict[str, int] = {
+    "PCM_S8": 8,
+    "PCM_16": 16,
+    "PCM_24": 24,
+    "PCM_32": 32,
+    "PCM_U8": 8,
+    "FLOAT": 32,
+    "DOUBLE": 64,
+}
+
+
 def load_clip_bytes(
     path: Path,
-    samplerate: int,
-    channels: int,
-    duration: float,
     start: int,
     end: int | None = None,
-    bit_depth: int = 16,
     speed: float = 1,
+    time_expansion: float = 1,
     start_time: float | None = None,
     end_time: float | None = None,
 ) -> tuple[bytes, int, int, int]:
@@ -118,112 +126,111 @@ def load_clip_bytes(
     filesize
         Total size of clip in bytes.
     """
+    with open(path, "rb") as f:
+        with sf.SoundFile(f) as sf_file:
+            samplerate = sf_file.samplerate * time_expansion
+            channels = sf_file.channels
+            bit_depth = BIT_DEPTH_MAP.get(sf_file.subtype)
+            bytes_per_sample = channels * bit_depth // 8
 
-    end = end if end else start + CHUNK_SIZE
-    start_time = start_time if start_time else 0.0
-    end_time = end_time if end_time else duration
-    total_samples = int((end_time - start_time) * samplerate)
+            if bit_depth is None:
+                raise NotImplementedError(
+                    f"Unsupported audio subtype: {sf_file.subtype}"
+                )
 
-    bytes_per_sample = channels * (bit_depth // 8)
-    filesize = (total_samples * bytes_per_sample) + 44
+            duration: float = sf_file.frames / samplerate
+            start_time = start_time if start_time else 0.0
+            end_time = end_time if end_time else duration
 
-    header = b""
-    if start < 44:
-        end = end - start
-        start = 0
-        header = generate_wav_header(
-            int(samplerate * speed),
-            channels,
-            total_samples,
-            bit_depth,
-        )
+            start_frame = int(start_time * samplerate)
+            end_frame = min(int(end_time * samplerate), sf_file.frames)
 
-    audio_bytes = load_audio_fragment(
-        path=path,
-        channels=channels,
-        samplerate=samplerate,
-        bit_depth=bit_depth,
-        start_bytes=max(start - 44, 0),
-        end_bytes=max(end - 44, 0),
-        start_time=start_time,
-        end_time=end_time,
-    )
+            sf_file.seek(start_frame)
+            start_position = f.tell()
 
-    data = bytes(header + audio_bytes)
-    end = start + len(data)
-    return data, start, end, filesize
+            sf_file.seek(end_frame)
+            end_position = f.tell()
+
+            data_size = end_position - start_position
+            filesize = data_size + 44
+
+            bytes_to_load = end - start if end else CHUNK_SIZE
+
+            header = b""
+            if start < 44:
+                start = 0
+                bytes_to_load -= 44
+                header = generate_wav_header(
+                    int(samplerate * speed),
+                    channels,
+                    data_size,
+                    bit_depth,
+                )
+
+            if bytes_to_load < 0:
+                return header, 0, 44, filesize
+
+            start_sample = int(start_time * samplerate)
+            start_offset = max(int((start - 44) / bytes_per_sample), 0)
+
+            sf_file.seek(start_sample + start_offset)
+            current_position = f.tell()
+
+            max_bytes_to_load = int(end_position - current_position)
+            audio_bytes = f.read(min(bytes_to_load, max_bytes_to_load))
+
+            data = bytes(header + audio_bytes)
+            end = start + len(data)
+            return data, start, end, filesize
 
 
-def load_audio_fragment(
-    path: Path,
-    channels: int,
+def generate_wav_header(
     samplerate: int,
-    bit_depth: int,
-    start_bytes: int,
-    end_bytes: int | None = None,
-    start_time: float | None = None,
-    end_time: float | None = None,
+    channels: int,
+    data_size: int,
+    bit_depth: int = 16,
 ) -> bytes:
-    """Load a fragment of audio from a recording.
+    """Generate the data of a WAV header.
 
-    This function loads a fragment of audio from a recording in bytes, using
-    the provided parameters to specify the range or time window.
+    This function generates the data of a WAV header according to the
+    given parameters. The WAV header is a 44-byte string that contains
+    information about the audio data, such as the sample rate, the
+    number of channels, and the number of samples. The WAV header
+    assumes that the audio data is PCM encoded.
 
     Parameters
     ----------
-    recording : schemas.Recording
-        Data about the recording to load audio from.
-    media_info : audio.MediaInfo
-        Object containing information about the audio file.
-    start_bytes : int
-        The first byte to load from the recording.
-    end_bytes : int, optional
-        The last byte to load from the recording. If None, CHUNK_SIZE bytes
-        will be loaded.
-    start_time : float, optional
-        If provided, the function will load audio starting from this time.
-        Defaults to 0.0 if not specified.
-    end_time : float, optional
-        If provided, the function will load audio up to this time.
-        No audio will be loaded after this time.
+    samplerate
+        Sample rate in Hz.
+    channels
+        Number of channels.
+    samples
+        Number of samples.
+    bit_depth
+        The number of bits per sample. By default, it is 16 bits.
 
-    Returns
-    -------
-    bytes
-        Audio data.
+    Notes
+    -----
+    The structure of the WAV header is described in
+    (WAV PCM soundfile format)[http://soundfile.sapp.org/doc/WaveFormat/].
     """
 
-    # Set default value for end_bytes if not provided
-    end_bytes = (
-        end_bytes if end_bytes is not None else start_bytes + CHUNK_SIZE
+    byte_rate = samplerate * channels * bit_depth // 8
+    block_align = channels * bit_depth // 8
+
+    return struct.pack(
+        "<4si4s4sihhiihh4si",  # Format string
+        b"RIFF",  # RIFF chunk id
+        data_size + 36,  # Size of the entire file minus 8 bytes
+        b"WAVE",  # RIFF chunk id
+        b"fmt ",  # fmt chunk id
+        16,  # Size of the fmt chunk
+        1,  # Audio format (3 corresponds to float)
+        channels,  # Number of channels
+        samplerate,  # Sample rate in Hz
+        byte_rate,  # Byte rate
+        block_align,  # Block align
+        bit_depth,  # Number of bits per sample
+        b"data",  # data chunk id
+        data_size,  # Size of the data chunk
     )
-
-    # Set default values for start_time and end_time if not provided
-    start_time = start_time if start_time is not None else 0.0
-    end_time = end_time if end_time is not None else None
-
-    # Calculate start sample position
-    start_sample = int(start_time * samplerate)
-
-    # Calculate bytes per sample based on channels and bit depth
-    bytes_per_sample = channels * (bit_depth // 8)
-
-    # Calculate offset and total bytes to load
-    offset = int(start_bytes / bytes_per_sample)
-    total_bytes = end_bytes - start_bytes
-
-    # Calculate the number of samples to load
-    samples = int(total_bytes / bytes_per_sample)
-
-    # If end_time is provided, adjust the number of samples to load
-    # so that the audio does not extend past the end_time
-    if end_time is not None:
-        end_sample = int(end_time * samplerate)
-        samples = min(samples, end_sample - start_sample - offset)
-
-    data, _ = audio.load_audio(
-        path=path,
-        offset=start_sample + offset,
-        samples=samples,
-    )
-    return audio_to_bytes(data, samplerate, bit_depth)

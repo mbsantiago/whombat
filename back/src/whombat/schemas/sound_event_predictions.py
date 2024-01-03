@@ -30,9 +30,6 @@ class SoundEventPredictionCreate(BaseModel):
 class SoundEventPredictionTag(BaseSchema):
     """Schema for a sound event prediction tag."""
 
-    id: int
-    """Database ID of the tag."""
-
     score: float
     """Score of the tag."""
 

@@ -208,5 +208,5 @@ async def add_clip_annotations(
     if not missing:
         return
 
-    stmt = insert(models.EvaluationSetAnnotation).values(missing)
-    await session.execute(stmt)
+    stmt = insert(models.EvaluationSetAnnotation)
+    await session.execute(stmt, missing)

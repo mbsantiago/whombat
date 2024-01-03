@@ -129,8 +129,6 @@ async def _create_annotation_tasks(
     if not values:
         return mapping
 
-    print(f"Will create {len(values)} annotation tasks.")
-
     stmt = insert(models.AnnotationTask).values(values)
     await session.execute(stmt)
 

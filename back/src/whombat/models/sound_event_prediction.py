@@ -16,6 +16,7 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
+from whombat.models.tag import Tag
 from whombat.models.sound_event import SoundEvent
 
 if TYPE_CHECKING:
@@ -157,4 +158,10 @@ class SoundEventPredictionTag(Base):
     score: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
         default=1.0,
+    )
+    tag: orm.Mapped[Tag] = orm.relationship(
+        back_populates="sound_event_prediction_tags",
+        lazy="joined",
+        init=False,
+        repr=False,
     )

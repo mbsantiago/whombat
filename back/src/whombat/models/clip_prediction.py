@@ -61,7 +61,7 @@ class ClipPrediction(Base):
         lazy="joined",
         repr=False,
     )
-    tags: orm.Mapped[list["ClipPredictionTag"]] = orm.relationship(
+    predicted_tags: orm.Mapped[list["ClipPredictionTag"]] = orm.relationship(
         cascade="all, delete-orphan",
         lazy="joined",
         init=False,
@@ -126,6 +126,7 @@ class ClipPredictionTag(Base):
 
     # Relations
     tag: orm.Mapped[Tag] = orm.relationship(
+        back_populates="clip_prediction_tags",
         init=False,
         repr=False,
         lazy="joined",

@@ -13,7 +13,7 @@ __all__ = ["audio_router"]
 
 audio_router = APIRouter()
 
-CHUNK_SIZE = 1024 * 1024
+CHUNK_SIZE = 1024 * 124
 
 
 @audio_router.get("/stream/")
@@ -42,10 +42,10 @@ async def stream_recording_audio(
     Response
         The audio file.
     """
-    media_info = await api.recordings.get_media_info(
+    audio_dir = settings.audio_dir
+    recording = await api.recordings.get(
         session,
         recording_uuid,
-        audio_dir=settings.audio_dir,
     )
 
     start, end = range.replace("bytes=", "").split("-")
@@ -53,13 +53,10 @@ async def stream_recording_audio(
     end = int(end) if end else start + CHUNK_SIZE
 
     data, start, end, filesize = api.load_clip_bytes(
-        path=media_info.path,
-        samplerate=media_info.samplerate,
-        channels=media_info.channels,
-        duration=media_info.duration,
+        path=audio_dir / recording.path,
         start=start,
         end=end,
-        bit_depth=media_info.bit_depth,
+        time_expansion=recording.time_expansion,
         speed=speed,
         start_time=start_time,
         end_time=end_time,

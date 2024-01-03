@@ -375,11 +375,9 @@ def check_recording(
 
     if not path.is_file():
         logger.warning(f"Recording file {path} not found")
-        print(f"Recording file {path} not found")
         return False
 
     if not path.is_relative_to(base_audio_dir):
-        print(f"Recording file {path} is not in the base audio directory")
         logger.warning(
             f"Recording file {path} is not in the base audio directory"
         )

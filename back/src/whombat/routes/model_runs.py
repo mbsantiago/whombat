@@ -1,12 +1,13 @@
 """REST API routes for model runs."""
+import json
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
-from soundevent.io import aoef
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.model_runs import ModelRunFilter
+from whombat.io import aoef
 from whombat.routes.types import Limit, Offset
 
 __all__ = [
@@ -77,17 +78,20 @@ async def delete_model_run(
     return model_run
 
 
-@model_runs_router.get("/import/", response_model=schemas.ModelRun)
+@model_runs_router.post("/import/", response_model=schemas.ModelRun)
 async def import_model_run(
     session: Session,
-    upload_file: UploadFile,
+    model_run: UploadFile,
+    settings: WhombatSettings,
 ) -> schemas.ModelRun:
     """Import model run."""
-    obj = aoef.AOEFObject.model_validate_json(upload_file.file.read())
-    data = aoef.to_soundevent(obj)
-    model_run = await api.model_runs.from_soundevent(
+    obj = json.loads(model_run.file.read())
+    db_model_run = await aoef.import_model_run(
         session,
-        data,  # type: ignore
+        obj,
+        audio_dir=settings.audio_dir,
+        base_audio_dir=settings.audio_dir,
     )
     await session.commit()
-    return model_run
+    await session.refresh(db_model_run)
+    return schemas.ModelRun.model_validate(db_model_run)

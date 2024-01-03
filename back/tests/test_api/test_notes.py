@@ -21,6 +21,7 @@ async def test_create_note(session: AsyncSession, user: schemas.SimpleUser):
 
     # Assert
     assert isinstance(note, schemas.Note)
+    assert note.created_by is not None
     assert note.created_by.id == user.id
     assert note.message == "test"
     assert note.is_issue is False
