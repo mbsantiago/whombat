@@ -35,8 +35,8 @@ export const ModelRunPageSchema = Page(ModelRunSchema);
 export type ModelRunPage = z.infer<typeof ModelRunPageSchema>;
 
 export const ModelRunUpdateSchema = z.object({
-  name: z.string(),
-  version: z.string(),
+  name: z.string().optional(),
+  version: z.string().optional(),
   description: z.string().optional(),
 });
 

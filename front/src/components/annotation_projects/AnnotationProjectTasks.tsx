@@ -155,7 +155,11 @@ function SelectRecordings({
         >
           <div className="flex flex-row gap-2 items-center">
             <div className="grow">
-              <FilterBar showIfEmpty filter={recordings.filter} />
+              <FilterBar
+                showIfEmpty
+                filter={recordings.filter}
+                filterDef={recordingFilterDefs}
+              />
             </div>
             <FilterMenu
               filter={recordings.filter}

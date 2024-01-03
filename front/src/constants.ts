@@ -10,7 +10,7 @@ export const DEFAULT_HOP_SIZE = 0.5;
 export const DEFAULT_WINDOW = "hann";
 export const DEFAULT_SCALE = "dB";
 export const DEFAULT_FILTER_ORDER = 5;
-export const DEFAULT_CMAP = "inferno";
+export const DEFAULT_CMAP = "gray";
 
 /* Restrictions on the settings for the STFT computation
  * These are to prevent the user from setting parameters that

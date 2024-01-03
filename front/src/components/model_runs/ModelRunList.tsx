@@ -1,3 +1,4 @@
+import Dialog from "@/components/Dialog";
 import Empty from "@/components/Empty";
 import {
   AddIcon,
@@ -6,16 +7,17 @@ import {
   WarningIcon,
 } from "@/components/icons";
 import Search from "@/components/inputs/Search";
-import Link from "@/components/Link";
 import Pagination from "@/components/lists/Pagination";
 import StackedList from "@/components/lists/StackedList";
 import Loading from "@/components/Loading";
-import ModelRun from "@/components/model_runs/ModelRun";
+import ModelRunComponent from "@/components/model_runs/ModelRun";
+import ModelRunImport from "@/components/model_runs/ModelRunImport";
 import useModelRuns from "@/hooks/api/useModelRuns";
 
 import type { ModelRunFilter } from "@/api/model_runs";
+import type { ModelRun } from "@/types";
 
-function NoModelRunss() {
+function NoModelRuns() {
   return (
     <Empty>
       <WarningIcon className="w-8 h-8 text-stone-500" />
@@ -34,8 +36,12 @@ function NoModelRunss() {
 
 export default function ModelRunsList({
   filter: initialFilter,
+  onCreate,
+  openImport = false,
 }: {
   filter?: ModelRunFilter;
+  onCreate?: (data: Promise<ModelRun>) => void;
+  openImport?: boolean;
 }) {
   const { items, isLoading, filter, pagination } = useModelRuns({
     filter: initialFilter,
@@ -56,19 +62,29 @@ export default function ModelRunsList({
           />
         </div>
         <div className="h-full">
-          <Link mode="text" href="/evaluation/detail/model_runs/create/">
-            <UploadIcon className="inline-block w-4 h-4 align-middle" /> Import
-          </Link>
+          <Dialog
+            mode="text"
+            title="Import a Model Run"
+            open={openImport}
+            label={
+              <>
+                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+                Import
+              </>
+            }
+          >
+            {() => <ModelRunImport onCreate={onCreate} />}
+          </Dialog>
         </div>
       </div>
       {isLoading ? (
         <Loading />
       ) : (
         <>
-          {items.length === 0 && <NoModelRunss />}
+          {items.length === 0 && <NoModelRuns />}
           <StackedList
             items={items.map((item) => (
-              <ModelRun key={item.uuid} modelRun={item} />
+              <ModelRunComponent key={item.uuid} modelRun={item} />
             ))}
           />
           {pagination.numPages > 1 && <Pagination {...pagination} />}

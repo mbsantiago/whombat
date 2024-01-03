@@ -11,8 +11,10 @@ import { Thumb } from "./Slider";
 
 export default function RangeSlider({
   formatter,
+  labelHidden = true,
   ...props
 }: AriaSliderProps & {
+  labelHidden?: boolean;
   formatter?: (value: number) => string;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -27,9 +29,13 @@ export default function RangeSlider({
     <div {...groupProps} className="ml-2 w-full pe-2">
       {props.label && (
         <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
-          <VisuallyHidden>
-            <label {...labelProps}>{props.label}</label>
-          </VisuallyHidden>
+          {labelHidden ? (
+            <VisuallyHidden>
+              <label {...labelProps}>{props.label}</label>
+            </VisuallyHidden>
+          ) : (
+            <span>{props.label}</span>
+          )}
           <output {...outputProps}>
             {formatter
               ? formatter(state.getThumbValue(0))
@@ -47,7 +53,7 @@ export default function RangeSlider({
         {...trackProps}
         ref={trackRef}
       >
-        <div className="w-full h-1 rounded-full bg-stone-900">
+        <div className="w-full h-1 rounded-full dark:bg-emerald-900 bg-emerald-100">
           <span
             className="absolute h-1 bg-emerald-600 rounded-full dark:bg-emerald-200"
             style={{

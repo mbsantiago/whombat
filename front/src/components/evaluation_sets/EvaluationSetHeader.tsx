@@ -33,14 +33,14 @@ export default function EvaluationSetHeader({
               id: "overview",
               title: "Overview",
               isActive: selectedLayoutSegment === null,
-              icon: <TasksIcon className="h-5 w-5 align-middle" />,
+              icon: <SettingsIcon className="h-5 w-5 align-middle" />,
               href: `/evaluation/detail/?${params.toString()}`,
             },
             {
               id: "tasks",
               title: "Tasks",
               isActive: selectedLayoutSegment === "tasks",
-              icon: <SettingsIcon className="h-5 w-5 align-middle" />,
+              icon: <TasksIcon className="h-5 w-5 align-middle" />,
               href: `/evaluation/detail/tasks/?${params.toString()}`,
             },
             {

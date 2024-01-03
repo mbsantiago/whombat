@@ -36,13 +36,17 @@ const COLOR_NAMES = [
 
 const LEVELS = [1, 2, 3, 4, 5, 6];
 
-function getClassNames(color: string, level: number) {
-  const bg = `bg-${color}-${level}00 dark:bg-${color}-${10 - level}00`;
+export function getTagClassNames(color: string, level: number) {
+  const background = `bg-${color}-${level}00 dark:bg-${color}-${10 - level}00`;
   const border = `border-${color}-${level + 2}00 dark:border-${color}-${10 - level - 2
     }00`;
   const text = `text-${color}-${level + 3}00 dark:text-${color}-${10 - level - 3
     }00`;
-  return `${bg} ${border} ${text}`;
+  return  {
+    background,
+    border,
+    text,
+  }
 }
 
 /** A Tag.
@@ -65,7 +69,7 @@ export default function Tag({
   onClick?: () => void;
   onClose?: () => void;
 } & HTMLProps<HTMLDivElement>) {
-  const classNames = getClassNames(color, level);
+  const classNames = getTagClassNames(color, level);
 
   return (
     <div
@@ -95,4 +99,4 @@ export default function Tag({
   );
 }
 
-export { ALL_COLORS, COLOR_NAMES, LEVELS, getClassNames };
+export { ALL_COLORS, COLOR_NAMES, LEVELS, getTagClassNames as getClassNames };

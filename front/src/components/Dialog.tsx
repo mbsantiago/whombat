@@ -10,13 +10,15 @@ export default function Dialog({
   title,
   children,
   label,
+  open = false,
   ...rest
 }: {
   title?: ReactNode;
   label: ReactNode;
+  open?: boolean;
   children: ({ close }: { close: () => void }) => ReactNode;
 } & Omit<ComponentProps<typeof Button>, "onClick" | "title" | "children">) {
-  let [isOpen, setIsOpen] = useState(false);
+  let [isOpen, setIsOpen] = useState(open);
   return (
     <>
       <Button type="button" onClick={() => setIsOpen(true)} {...rest}>

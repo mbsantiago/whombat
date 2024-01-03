@@ -98,6 +98,7 @@ export default function Player(props: PlayerState & PlayerControls) {
         value={currentTime}
         minValue={startTime}
         maxValue={endTime}
+        step={0.01}
         onChange={(value) => seek(value as number)}
       />
       <SelectSpeed

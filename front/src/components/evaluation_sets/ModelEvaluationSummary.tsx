@@ -29,14 +29,14 @@ export default function ModelEvaluationSummary({
       <div className="flex flex-row items-center justify-between">
         <H4>
           <ModelIcon className="h-5 w-5 inline-block mr-2" />
-          Model Evaluations
+          Model Runs
         </H4>
         <Link
-          href={`/evaluation/detail/model_runs/create/?evaluation_set_uuid=${evaluationSet.uuid}`}
+          href={`/evaluation/detail/model_runs/?evaluation_set_uuid=${evaluationSet.uuid}&import=true`}
           mode="text"
           variant="primary"
         >
-          <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Model Runs
+          <AddIcon className="h-5 w-5 inline-block mr-2" /> Add Model Run
         </Link>
       </div>
       {predictionRuns.isLoading ? (

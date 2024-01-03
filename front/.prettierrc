@@ -1,3 +1,5 @@
 {
-  "plugins": []
+  "importOrder": ["^components/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }
