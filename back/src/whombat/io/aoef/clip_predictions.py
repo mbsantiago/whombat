@@ -153,7 +153,7 @@ async def _create_clip_prediction_tags(
         ).in_({(v["sound_event_prediction_id"], v["tag_id"]) for v in values})
     )
     result = await session.execute(stmt)
-    existing = {r for r in result.scalars()}
+    existing = set(result.all())
 
     missing = [
         v

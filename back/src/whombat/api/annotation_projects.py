@@ -1,5 +1,6 @@
 """Python API for annotation projects."""
 
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -256,6 +257,7 @@ class AnnotationProjectAPI(
         self,
         session: AsyncSession,
         obj: schemas.AnnotationProject,
+        audio_dir: Path | None = None,
     ) -> data.AnnotationProject:
         """Convert a Whombat annotation project to a soundevent annotation
         project.
@@ -275,7 +277,10 @@ class AnnotationProjectAPI(
         annotations, _ = await self.get_annotations(session, obj, limit=-1)
 
         se_clip_annotations = [
-            clip_annotations.to_soundevent(ca) for ca in annotations
+            await clip_annotations.to_soundevent(
+                session, ca, audio_dir=audio_dir
+            )
+            for ca in annotations
         ]
 
         return data.AnnotationProject(

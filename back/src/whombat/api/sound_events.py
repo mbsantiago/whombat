@@ -1,17 +1,19 @@
 """API functions to interact with sound events."""
 
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
 from soundevent.geometry import compute_geometric_features
-from sqlalchemy import and_, update
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.common import BaseAPI
 from whombat.api.features import features
+from whombat.api.recordings import recordings
 
 __all__ = [
     "SoundEventAPI",
@@ -352,6 +354,27 @@ class SoundEventAPI(
         self._update_cache(sound_event)
         return sound_event
 
+    async def get_recording(
+        self,
+        session: AsyncSession,
+        sound_event: schemas.SoundEvent,
+    ) -> schemas.Recording:
+        stmt = (
+            select(models.Recording)
+            .join(
+                models.SoundEvent,
+                models.SoundEvent.recording_id == models.Recording.id,
+            )
+            .filter(models.SoundEvent.id == sound_event.id)
+        )
+        result = await session.execute(stmt)
+        db_recording = result.unique().scalar_one()
+        if db_recording is None:
+            raise exceptions.NotFoundError(
+                f"Recording for sound event {sound_event.uuid} not found."
+            )
+        return schemas.Recording.model_validate(db_recording)
+
     async def from_soundevent(
         self,
         session: AsyncSession,
@@ -395,9 +418,11 @@ class SoundEventAPI(
 
         return sound_event
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         sound_event: schemas.SoundEvent,
+        audio_dir: Path | None = None
     ) -> data.SoundEvent:
         """Create a soundevent SoundEvent object from a sound event.
 
@@ -411,9 +436,11 @@ class SoundEventAPI(
         data.SoundEvent
             The soundevent sound event object.
         """
+        recording = await self.get_recording(session, sound_event)
         return data.SoundEvent(
             uuid=sound_event.uuid,
             geometry=sound_event.geometry,
+            recording=recordings.to_soundevent(recording, audio_dir=audio_dir),
             features=[features.to_soundevent(f) for f in sound_event.features],
         )
 

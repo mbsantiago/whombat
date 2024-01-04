@@ -1,6 +1,6 @@
 """Python API for managing clip predictions."""
 
-
+from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
@@ -190,9 +190,11 @@ class ClipPredictionAPI(
         self._update_cache(obj)
         return obj
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         clip_prediction: schemas.ClipPrediction,
+        audio_dir: Path | None = None,
     ) -> data.ClipPrediction:
         """Convert a clip prediction to an object in soundevent format.
 
@@ -214,7 +216,9 @@ class ClipPredictionAPI(
             for tag in clip_prediction.predicted_tags
         ]
         sound_events = [
-            sound_event_predictions.to_soundevent(prediction)
+            await sound_event_predictions.to_soundevent(
+                session, prediction, audio_dir=audio_dir
+            )
             for prediction in clip_prediction.sound_events
         ]
         return data.ClipPrediction(

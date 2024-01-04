@@ -7,6 +7,10 @@ from whombat import api, schemas
 from whombat.dependencies import ActiveUser, Session
 from whombat.filters.sound_event_annotations import SoundEventAnnotationFilter
 from whombat.routes.types import Limit, Offset
+from whombat.scatterplots.sound_event_annotations import (
+    ScatterPlotData,
+    get_scatterplot_data,
+)
 
 __all__ = [
     "sound_event_annotations_router",
@@ -58,6 +62,21 @@ async def create_annotation(
 
     await session.commit()
     return sound_event_annotation
+
+
+@sound_event_annotations_router.get(
+    "/detail/",
+    response_model=schemas.SoundEventAnnotation,
+)
+async def get_annotation(
+    session: Session,
+    sound_event_annotation_uuid: UUID,
+):
+    """Get an annotation."""
+    return await api.sound_event_annotations.get(
+        session,
+        sound_event_annotation_uuid,
+    )
 
 
 @sound_event_annotations_router.get(
@@ -238,3 +257,28 @@ async def delete_annotation_note(
     )
     await session.commit()
     return sound_event_annotation
+
+
+@sound_event_annotations_router.get(
+    "/scatter_plot/",
+    response_model=schemas.Page[ScatterPlotData],
+)
+async def get_scatter_plot_data(
+    session: Session,
+    limit: Limit = 1000,
+    offset: Offset = 0,
+    filter: SoundEventAnnotationFilter = Depends(SoundEventAnnotationFilter),  # type: ignore
+):
+    items, count = await get_scatterplot_data(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+    )
+
+    return schemas.Page(
+        items=items,
+        total=count,
+        limit=limit,
+        offset=offset,
+    )

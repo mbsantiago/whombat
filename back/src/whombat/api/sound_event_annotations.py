@@ -1,5 +1,6 @@
 """Python API for sound event annotations."""
 
+from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
@@ -246,9 +247,11 @@ class SoundEventAnnotationAPI(
             clip_annotation,
         )
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         annotation: schemas.SoundEventAnnotation,
+        audio_dir: Path | None = None,
     ) -> data.SoundEventAnnotation:
         """Convert an annotation to a `soundevent` annotation.
 
@@ -268,7 +271,9 @@ class SoundEventAnnotationAPI(
             created_by=users.to_soundevent(annotation.created_by)
             if annotation.created_by
             else None,
-            sound_event=sound_events.to_soundevent(annotation.sound_event),
+            sound_event=await sound_events.to_soundevent(
+                session, annotation.sound_event, audio_dir=audio_dir
+            ),
             tags=[tags.to_soundevent(t) for t in annotation.tags],
             notes=[notes.to_soundevent(n) for n in annotation.notes],
         )

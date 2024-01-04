@@ -11,7 +11,6 @@ import numpy as np
 import pytest
 import soundevent
 import soundfile as sf
-from scipy.io import wavfile
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 

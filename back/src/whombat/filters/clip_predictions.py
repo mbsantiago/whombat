@@ -1,7 +1,7 @@
 """Filters for Clip Predictions."""
 from uuid import UUID
 
-from sqlalchemy import Select, and_
+from sqlalchemy import Select, and_, select
 
 from whombat import models
 from whombat.filters import base
@@ -64,11 +64,7 @@ class TagFilter(base.Filter):
         if self.key is None and self.value is None:
             return query
 
-        query = query.join(
-            models.ClipPredictionTag,
-            models.ClipPredictionTag.clip_prediction_id
-            == models.ClipPrediction.id,
-        ).join(
+        subquery = select(models.ClipPredictionTag.clip_prediction_id).join(
             models.Tag,
             models.Tag.id == models.ClipPredictionTag.tag_id,
         )
@@ -86,7 +82,50 @@ class TagFilter(base.Filter):
         if self.lt is not None:
             conditions.append(models.ClipPredictionTag.score < self.lt)
 
-        return query.filter(and_(*conditions))
+        subquery = subquery.filter(and_(*conditions)).distinct()
+        return query.filter(models.ClipPrediction.id.in_(subquery))
+
+
+class SoundEventTagFilter(base.Filter):
+    """Filter prediction if it has a specific tag."""
+
+    key: str | None = None
+    value: str | None = None
+    gt: float | None = None
+    lt: float | None = None
+
+    def filter(self, query: Select) -> Select:
+        if self.key is None and self.value is None:
+            return query
+
+        subquery = (
+            select(models.SoundEventPrediction.clip_prediction_id)
+            .join(
+                models.SoundEventPredictionTag,
+                models.SoundEventPredictionTag.sound_event_prediction_id
+                == models.SoundEventPrediction.id,
+            )
+            .join(
+                models.Tag,
+                models.Tag.id == models.SoundEventPredictionTag.tag_id,
+            )
+        )
+
+        conditions = []
+        if self.key is not None:
+            conditions.append(models.Tag.key == self.key)
+
+        if self.value is not None:
+            conditions.append(models.Tag.value == self.value)
+
+        if self.gt is not None:
+            conditions.append(models.SoundEventPredictionTag.score > self.gt)
+
+        if self.lt is not None:
+            conditions.append(models.SoundEventPredictionTag.score < self.lt)
+
+        subquery = subquery.filter(and_(*conditions)).distinct()
+        return query.filter(models.ClipPrediction.id.in_(subquery))
 
 
 class ModelRunFilter(base.Filter):
@@ -140,4 +179,5 @@ ClipPredictionFilter = base.combine(
     tag=TagFilter,
     model_run=ModelRunFilter,
     user_run=UserRunFilter,
+    sound_event_tag=SoundEventTagFilter,
 )

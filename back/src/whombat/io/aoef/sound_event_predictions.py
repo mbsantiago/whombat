@@ -31,10 +31,6 @@ async def get_sound_event_predictions(
             clip_predictions_objs,
         )
 
-        print(
-            f"Will import {len(sound_event_predictions)} sound event predictions."
-        )
-
         return await import_sound_event_predictions(
             session,
             sound_event_predictions,
@@ -206,7 +202,7 @@ async def _create_sound_event_prediction_tags(
         ).in_({(v["sound_event_prediction_id"], v["tag_id"]) for v in values})
     )
     result = await session.execute(stmt)
-    existing = {r for r in result.scalars()}
+    existing = set(result.all())
 
     missing = [
         v

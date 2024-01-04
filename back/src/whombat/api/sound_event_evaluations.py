@@ -1,4 +1,5 @@
 """API functions to interact with sound event evaluations."""
+from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
@@ -232,18 +233,24 @@ class SoundEventEvaluationAPI(
 
         return obj
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         obj: schemas.SoundEventEvaluation,
+        audio_dir: Path | None = None,
     ) -> data.Match:
         """Convert a sound event evaluation to soundevent format."""
         source = None
         if obj.source:
-            source = sound_event_predictions.to_soundevent(obj.source)
+            source = await sound_event_predictions.to_soundevent(
+                session, obj.source, audio_dir=audio_dir
+            )
 
         target = None
         if obj.target:
-            target = sound_event_annotations.to_soundevent(obj.target)
+            target = await sound_event_annotations.to_soundevent(
+                session, obj.target, audio_dir=audio_dir
+            )
 
         return data.Match(
             uuid=obj.uuid,

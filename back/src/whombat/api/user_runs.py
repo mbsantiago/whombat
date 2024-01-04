@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -127,6 +128,7 @@ class UserRunAPI(
         self,
         session: AsyncSession,
         obj: schemas.UserRun,
+        audio_dir: Path | None = None,
     ) -> data.PredictionSet:
         predictions, _ = await self.get_clip_predictions(
             session, obj, limit=-1
@@ -135,7 +137,10 @@ class UserRunAPI(
             uuid=obj.uuid,
             created_on=obj.created_on,
             clip_predictions=[
-                clip_predictions.to_soundevent(cp) for cp in predictions
+                await clip_predictions.to_soundevent(
+                    session, cp, audio_dir=audio_dir
+                )
+                for cp in predictions
             ],
         )
 

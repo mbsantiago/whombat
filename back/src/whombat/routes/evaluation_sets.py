@@ -189,6 +189,54 @@ async def remove_tag_from_evaluation_set(
     return evaluation_set
 
 
+@evaluation_sets_router.post(
+    "/detail/model_runs/",
+    response_model=schemas.EvaluationSet,
+)
+async def add_model_run_to_evaluation_set(
+    session: Session,
+    evaluation_set_uuid: UUID,
+    model_run_uuid: UUID,
+):
+    """Add a model run to an evaluation set."""
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    model_run = await api.model_runs.get(session, model_run_uuid)
+    evaluation_set = await api.evaluation_sets.add_model_run(
+        session,
+        evaluation_set,
+        model_run,
+    )
+    await session.commit()
+    return evaluation_set
+
+
+@evaluation_sets_router.post(
+    "/detail/user_runs/",
+    response_model=schemas.EvaluationSet,
+)
+async def add_user_run_to_evaluation_set(
+    session: Session,
+    evaluation_set_uuid: UUID,
+    user_run_uuid: UUID,
+):
+    """Add a user run to an evaluation set."""
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    user_run = await api.user_runs.get(session, user_run_uuid)
+    evaluation_set = await api.evaluation_sets.add_user_run(
+        session,
+        evaluation_set,
+        user_run,
+    )
+    await session.commit()
+    return evaluation_set
+
+
 @evaluation_sets_router.get(
     "/detail/download/",
 )

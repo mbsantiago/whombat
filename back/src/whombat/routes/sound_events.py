@@ -16,6 +16,19 @@ sound_events_router = APIRouter()
 
 
 @sound_events_router.get(
+    "/detail/recording/",
+    response_model=schemas.Recording,
+)
+async def get_sound_event_recording(
+    session: Session,
+    sound_event_uuid: UUID,
+):
+    """Get the recording for a sound_event."""
+    sound_event = await api.sound_events.get(session, sound_event_uuid)
+    return await api.sound_events.get_recording(session, sound_event)
+
+
+@sound_events_router.get(
     "/",
     response_model=schemas.Page[schemas.SoundEvent],
 )

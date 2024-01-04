@@ -1,5 +1,6 @@
 """Python API for clip annotations."""
 
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -349,9 +350,11 @@ class ClipAnnotationAPI(
 
         return await self._create_from_soundevent(session, data)
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         clip_annotation: schemas.ClipAnnotation,
+        audio_dir: Path | None = None,
     ) -> data.ClipAnnotation:
         """Convert a clip annotation to a soundevent object.
 
@@ -367,8 +370,10 @@ class ClipAnnotationAPI(
         """
         se_clip = clips.to_soundevent(clip_annotation.clip)
         se_sound_events = [
-            sound_event_annotations.to_soundevent(
+            await sound_event_annotations.to_soundevent(
+                session,
                 annotation,
+                audio_dir=audio_dir,
             )
             for annotation in clip_annotation.sound_events
         ]

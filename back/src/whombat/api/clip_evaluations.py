@@ -1,4 +1,5 @@
 """API functions to interact with clip evaluations."""
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -234,6 +235,7 @@ class ClipEvaluationAPI(
         self,
         session: AsyncSession,
         obj: schemas.ClipEvaluation,
+        audio_dir: Path | None = None,
     ) -> data.ClipEvaluation:
         """Create a clip evaluation in soundevent format from a clip evaluation
         in whombat format.
@@ -256,12 +258,16 @@ class ClipEvaluationAPI(
             limit=-1,
         )
 
-        annotations = clip_annotations.to_soundevent(
+        annotations = await clip_annotations.to_soundevent(
+            session,
             obj.clip_annotation,
+            audio_dir=audio_dir,
         )
 
-        predictions = clip_predictions.to_soundevent(
+        predictions = await clip_predictions.to_soundevent(
+            session,
             obj.clip_prediction,
+            audio_dir=audio_dir,
         )
 
         return data.ClipEvaluation(
@@ -270,7 +276,9 @@ class ClipEvaluationAPI(
             predictions=predictions,
             metrics=[features.to_soundevent(feat) for feat in obj.metrics],
             matches=[
-                sound_event_evaluations.to_soundevent(se_eval)
+                await sound_event_evaluations.to_soundevent(
+                    session, se_eval, audio_dir=audio_dir
+                )
                 for se_eval in se_evaluations
             ],
             score=obj.score,

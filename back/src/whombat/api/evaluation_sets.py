@@ -1,5 +1,6 @@
 """API functions for interacting with evaluation sets."""
 import uuid
+from pathlib import Path
 from typing import Sequence
 
 from soundevent import data
@@ -351,7 +352,10 @@ class EvaluationSetAPI(
         return obj
 
     async def to_soundevent(
-        self, session: AsyncSession, obj: schemas.EvaluationSet
+        self,
+        session: AsyncSession,
+        obj: schemas.EvaluationSet,
+        audio_dir: Path | None = None,
     ) -> data.EvaluationSet:
         """Create an object in `soundevent` format from an evaluation set."""
         anns, _ = await self.get_clip_annotations(session, obj, limit=-1)
@@ -362,7 +366,12 @@ class EvaluationSetAPI(
             name=obj.name,
             description=obj.description,
             evaluation_tags=[tags.to_soundevent(t) for t in obj.tags],
-            clip_annotations=[clip_annotations.to_soundevent(a) for a in anns],
+            clip_annotations=[
+                await clip_annotations.to_soundevent(
+                    session, a, audio_dir=audio_dir
+                )
+                for a in anns
+            ],
         )
 
     async def _create_from_soundevent(

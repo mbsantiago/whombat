@@ -1,7 +1,7 @@
 """Filters for Annotations."""
 from uuid import UUID
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select, tuple_
 
 from whombat import models
 from whombat.filters import base
@@ -126,22 +126,31 @@ class TagFilter(base.Filter):
         if self.key is None and self.value is None:
             return query
 
-        query = query.join(
-            models.SoundEventAnnotationTag,
-            models.SoundEventAnnotationTag.sound_event_annotation_id
-            == models.SoundEventAnnotation.id,
-        ).join(
-            models.Tag,
-            models.Tag.id == models.SoundEventAnnotationTag.tag_id,
+        subquery = (
+            select(models.SoundEventAnnotation.id)
+            .join(
+                models.SoundEventAnnotationTag,
+                models.SoundEventAnnotationTag.sound_event_annotation_id
+                == models.SoundEventAnnotation.id,
+            )
+            .join(
+                models.Tag,
+                models.Tag.id == models.SoundEventAnnotationTag.tag_id,
+            )
         )
 
-        conditions = []
-        if self.key:
-            conditions.append(models.Tag.key == self.key)
-        if self.value:
-            conditions.append(models.Tag.value == self.value)
+        if self.key is None:
+            subquery = subquery.where(models.Tag.value == self.value)
+        elif self.value is None:
+            subquery = subquery.where(models.Tag.key == self.key)
+        else:
+            subquery = subquery.where(
+                tuple_(models.Tag.key, models.Tag.value)
+                == (self.key, self.value)
+            )
 
-        return query.where(*conditions)
+        subquery = subquery.distinct(models.SoundEventAnnotation.id)
+        return query.where(models.SoundEventAnnotation.id.in_(subquery))
 
 
 SoundEventAnnotationFilter = base.combine(

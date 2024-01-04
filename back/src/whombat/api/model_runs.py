@@ -1,4 +1,5 @@
 """API functions to interact with model runs."""
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -136,7 +137,10 @@ class ModelRunAPI(
         return await self.update_from_soundevent(session, model_run, data)
 
     async def to_soundevent(
-        self, session: AsyncSession, obj: schemas.ModelRun
+        self,
+        session: AsyncSession,
+        obj: schemas.ModelRun,
+        audio_dir: Path | None = None,
     ) -> data.ModelRun:
         predictions, _ = await self.get_clip_predictions(
             session, obj, limit=-1
@@ -148,7 +152,10 @@ class ModelRunAPI(
             version=obj.version,
             description=obj.description,
             clip_predictions=[
-                clip_predictions.to_soundevent(cp) for cp in predictions
+                await clip_predictions.to_soundevent(
+                    session, cp, audio_dir=audio_dir
+                )
+                for cp in predictions
             ],
         )
 

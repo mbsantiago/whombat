@@ -1,5 +1,6 @@
 """Python API for interacting with Predictions."""
 
+from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
@@ -161,7 +162,11 @@ class SoundEventPredictionAPI(
 
         obj = obj.model_copy(
             update=dict(
-                predicted_tags=[t for t in obj.predicted_tags if t.id != t.id]
+                predicted_tags=[
+                    t
+                    for t in obj.predicted_tags
+                    if t.tag.key != tag.key or t.tag.value != tag.value
+                ]
             )
         )
         self._update_cache(obj)
@@ -217,9 +222,11 @@ class SoundEventPredictionAPI(
 
         return prediction
 
-    def to_soundevent(
+    async def to_soundevent(
         self,
+        session: AsyncSession,
         sound_event_prediction: schemas.SoundEventPrediction,
+        audio_dir: Path | None = None,
     ) -> data.SoundEventPrediction:
         """Get the the sound event prediction in `soundevent` format.
 
@@ -233,8 +240,10 @@ class SoundEventPredictionAPI(
         sound_event : data.SoundEventPrediction
             The sound event prediction in soundevent format.
         """
-        sound_event = sound_events.to_soundevent(
+        sound_event = await sound_events.to_soundevent(
+            session,
             sound_event_prediction.sound_event,
+            audio_dir=audio_dir,
         )
 
         return data.SoundEventPrediction(
