@@ -3,6 +3,9 @@
 
 echo "Starting whombat..."
 
+# Move to the root directory of the backend
+cd back
+
 # Run whombat. This assumes that whombat is already installed
 python -m whombat >whombat.log 2>&1 &
 serverPID=$!

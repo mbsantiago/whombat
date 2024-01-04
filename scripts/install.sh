@@ -7,6 +7,9 @@ if [[ ! $(python --version) =~ "3.11" ]]; then
     exit 1
 fi
 
+# Move to the root directory of the backend
+cd back
+
 # Update pip and setuptools
 pip install -U pip setuptools wheel
 
