@@ -1,9 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[1742],{18762:function(e,t,n){Promise.resolve().then(n.bind(n,85232))},85232:function(e,t,n){"use strict";n.r(t),n.d(t,{default:function(){return a}});var r=n(14357),o=n(93372),s=n.n(o);function a(){return(0,r.jsxs)("div",{className:"container mx-auto p-16",children:[(0,r.jsxs)("h1",{className:"text-center text-6xl",children:["Welcome to",(0,r.jsx)("br",{}),(0,r.jsx)(s(),{src:"whombat.svg",alt:"logo",width:64,height:64,className:"m-2 inline"}),(0,r.jsx)("span",{className:"font-sans font-bold text-emerald-500 underline decoration-8",children:"Whombat"})]}),(0,r.jsx)("h2",{className:"text-center text-3xl text-stone-500 dark:text-stone-500",children:"Audio annotation tool with ML in mind!"})]})}},67543:function(e,t,n){"use strict";/**
- * @license React
- * react-jsx-runtime.production.min.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */var r=n(6439),o=Symbol.for("react.element"),s=Symbol.for("react.fragment"),a=Object.prototype.hasOwnProperty,i=r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,c={key:!0,ref:!0,__self:!0,__source:!0};function l(e,t,n){var r,s={},l=null,u=null;for(r in void 0!==n&&(l=""+n),void 0!==t.key&&(l=""+t.key),void 0!==t.ref&&(u=t.ref),t)a.call(t,r)&&!c.hasOwnProperty(r)&&(s[r]=t[r]);if(e&&e.defaultProps)for(r in t=e.defaultProps)void 0===s[r]&&(s[r]=t[r]);return{$$typeof:o,type:e,key:l,ref:u,props:s,_owner:i.current}}t.Fragment=s,t.jsx=l,t.jsxs=l},14357:function(e,t,n){"use strict";e.exports=n(67543)}},function(e){e.O(0,[3372,8702,7431,1744],function(){return e(e.s=18762)}),_N_E=e.O()}]);
