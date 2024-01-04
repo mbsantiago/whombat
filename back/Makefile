@@ -98,4 +98,4 @@ install: clean
 	pip install .
 
 dev:
-	uvicorn src.whombat.app:app --reload --port $(WHOMBAT_BACKEND_DEV_PORT)
+	python -m whombat

@@ -17,7 +17,11 @@ config = context.config
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    try:
+        fileConfig(config.config_file_name)
+    except KeyError:
+        # Ignore KeyError as it is raised when the config file does not contain
+        pass
 
 # add your model's MetaData object here
 target_metadata = models.Base.metadata
