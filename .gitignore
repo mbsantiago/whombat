@@ -169,3 +169,5 @@ site
 
 whombat.db
 .pdm-python
+back/src/whombat/statics
+back/src/whombat/statics
