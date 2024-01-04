@@ -75,7 +75,9 @@ export default function Tag({
     <div
       className={classnames(
         "border rounded-md px-1 whitespace-nowrap tracking-tighter inline-flex w-fit max-w-full flex-nowrap",
-        classNames,
+        classNames.background,
+        classNames.text,
+        classNames.border,
         className,
       )}
       {...props}

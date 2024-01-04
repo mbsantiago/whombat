@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { CloseIcon, FilterIcon } from "@/components/icons";
+import {  FilterIcon } from "@/components/icons";
 
 import type { FilterDef } from "@/components/filters/FilterMenu";
 import type { Filter } from "@/hooks/utils/useFilter";
@@ -25,7 +25,7 @@ export default function FilterBar<T extends Object>({
   const filterDefMapping = useMemo(() => {
     const mapping: Record<string, FilterDef<T>> = {};
     for (const def of filterDef) {
-      mapping[def.field] = def;
+      mapping[def.field as string] = def;
     }
     return mapping;
   }, [filterDef]);

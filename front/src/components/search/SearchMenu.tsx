@@ -30,6 +30,7 @@ export default function SearchMenu<
   onChange,
   initialQuery = "",
   as = Search,
+  empty,
 }: {
   options: T[];
   renderOption: (option: T) => ReactNode;
@@ -44,6 +45,7 @@ export default function SearchMenu<
   displayValue?: (value: T) => string;
   onChange?: (value: string) => void;
   initialQuery?: string;
+  empty?: ReactNode;
 }) {
   const [limit, setLimit] = useState(initialLimit);
   const [query, setQuery] = useState(initialQuery);
@@ -92,6 +94,7 @@ export default function SearchMenu<
                 renderOption={renderOption}
                 getOptionKey={getOptionKey}
                 setLimit={setLimit}
+                empty={empty}
               />
             </Combobox.Options>
           </div>
@@ -136,6 +139,7 @@ export default function SearchMenu<
                 renderOption={renderOption}
                 getOptionKey={getOptionKey}
                 setLimit={setLimit}
+                empty={empty}
               />
             </Combobox.Options>
           </div>
@@ -155,10 +159,9 @@ function MenuOption<T>({
   return (
     <Combobox.Option
       className={({ active }) =>
-        `relative cursor-default select-none p-2 rounded-md ${
-          active
-            ? "bg-stone-200 dark:bg-stone-800 text-emerald-600 dark:text-emerald-500"
-            : ""
+        `relative cursor-default select-none p-2 rounded-md ${active
+          ? "bg-stone-200 dark:bg-stone-800 text-emerald-600 dark:text-emerald-500"
+          : ""
         }`
       }
       value={option}
@@ -173,6 +176,7 @@ function MenuContents<T>({
   total,
   limit,
   initialLimit,
+  empty = "No options found",
   renderOption,
   getOptionKey,
   setLimit,
@@ -181,6 +185,7 @@ function MenuContents<T>({
   total: number;
   limit: number;
   initialLimit: number;
+  empty?: ReactNode;
   renderOption: (option: T) => ReactNode;
   getOptionKey: (option: T, index: number) => string | number;
   setLimit: (limit: number) => void;
@@ -218,6 +223,7 @@ function MenuContents<T>({
           </div>
         </Button>
       ) : null}
+      {total == 0 && (empty || null)}
     </>
   );
 }

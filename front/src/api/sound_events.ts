@@ -47,6 +47,7 @@ export type SoundEventQuery = z.input<typeof GetSoundEventQuerySchema>;
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/sound_events/",
   get: "/api/v1/sound_events/detail/",
+  getRecording: "/api/v1/sound_events/detail/recording/",
   update: "/api/v1/sound_events/detail/",
   delete: "/api/v1/sound_events/detail/",
   create: "/api/v1/sound_events/",
@@ -84,6 +85,13 @@ export function registerSoundEventAPI(
       },
     });
     return SoundEventPageSchema.parse(data);
+  }
+
+  async function getRecording(soundEvent: SoundEvent): Promise<Recording> {
+    const { data } = await axios.get(endpoints.getRecording, {
+      params: { sound_event_uuid: soundEvent.uuid },
+    });
+    return RecordingSchema.parse(data);
   }
 
   async function createSoundEvent(
@@ -165,6 +173,7 @@ export function registerSoundEventAPI(
     update: updateSoundEvent,
     delete: deleteSoundEvent,
     addFeature,
+    getRecording,
     updateFeature,
     removeFeature,
   } as const;

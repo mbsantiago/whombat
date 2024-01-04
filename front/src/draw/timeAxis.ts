@@ -30,7 +30,7 @@ export function selectResolution(length: number, interval: Interval) {
 }
 
 export function parseNum(value: number, digits: number): string {
-  const numDigits = Math.floor(Math.log10(value + 1)) + 1;
+  const numDigits = Math.floor(Math.log10(Math.max(value, 0) + 1)) + 1;
   return value.toPrecision(numDigits - Math.min(digits, 0));
 }
 

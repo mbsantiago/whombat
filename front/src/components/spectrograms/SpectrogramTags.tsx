@@ -10,10 +10,7 @@ import TagSearchBar from "@/components/tags/TagSearchBar";
 import useStore from "@/store";
 
 import type { TagFilter } from "@/api/tags";
-import type {
-  TagElement,
-  TagGroup,
-} from "@/hooks/spectrogram/useSpectrogramTags";
+import type { TagElement, TagGroup } from "@/utils/tags";
 import type { Tag as TagType } from "@/types";
 
 function TagBarPopover({
@@ -49,7 +46,11 @@ function TagBarPopover({
   );
 }
 
-export function SpectrogramTag({ tag, onClick }: TagElement) {
+export function SpectrogramTag({
+  tag,
+  onClick,
+  disabled = false,
+}: TagElement & { disabled?: boolean }) {
   const getTagColor = useStore((state) => state.getTagColor);
   const color = getTagColor(tag);
   const className = useMemo(() => {
@@ -72,7 +73,7 @@ export function SpectrogramTag({ tag, onClick }: TagElement) {
         <span className="hidden text-sm font-medium whitespace-nowrap opacity-0 transition-all group-hover:inline-block group-hover:opacity-100">
           {tag.value}
         </span>
-        <CloseIcon className="inline-block w-3 h-3 stroke-2" />
+        {!disabled && <CloseIcon className="inline-block w-3 h-3 stroke-2" />}
       </button>
     </span>
   );
@@ -158,6 +159,7 @@ export function TagGroup({
           <SpectrogramTag
             key={`${tagElement.tag.key}:${tagElement.tag.value}`}
             {...tagElement}
+            disabled={disabled}
           />
         ))}
       </div>
@@ -191,7 +193,7 @@ export default function SpectrogramTags({
   disabled?: boolean;
 }) {
   return (
-    <div className="overflow-hidden relative w-full h-full rounded">
+    <div className="relative w-full h-full rounded">
       {children}
       {tags.map((group) => (
         <TagGroup

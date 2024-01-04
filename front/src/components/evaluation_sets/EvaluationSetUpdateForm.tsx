@@ -7,7 +7,6 @@ import { H3 } from "@/components/Headings";
 import { Input, TextArea } from "@/components/inputs/index";
 import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
-import type { EvaluationSetUpdate } from "@/api/evaluation_sets";
 import type { EvaluationSet } from "@/types";
 
 export default function EvaluationSetUpdateForm({
@@ -36,30 +35,30 @@ export default function EvaluationSetUpdateForm({
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Name</DescriptionTerm>
             <EditableDescriptionData
-              value={evaluationSet.name}
+              value={evaluationSet?.name}
               onChange={(name) => updateEvaluationSet({ name })}
               Input={Input}
               autoFocus
             >
-              {evaluationSet.name}
+              {evaluationSet?.name}
             </EditableDescriptionData>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Description</DescriptionTerm>
             <EditableDescriptionData
-              value={evaluationSet.description}
+              value={evaluationSet?.description}
               onChange={(description) => updateEvaluationSet({ description })}
               rows={6}
               Input={TextArea}
               autoFocus
             >
-              {evaluationSet.description}
+              {evaluationSet?.description}
             </EditableDescriptionData>
           </div>
           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
             <DescriptionTerm>Created On</DescriptionTerm>
             <DescriptionData>
-              {evaluationSet.created_on.toLocaleString()}
+              {evaluationSet?.created_on.toLocaleString()}
             </DescriptionData>
           </div>
         </dl>

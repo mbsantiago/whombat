@@ -219,13 +219,13 @@ export default function useObject<T>({
     query,
     client,
     setData,
-    useQuery: ({
+    useQuery: <K>({
       queryFn,
       name: secondaryName,
       enabled = false,
     }: {
       name: string;
-      queryFn: (obj: T) => Promise<T>;
+      queryFn: (obj: T) => Promise<K>;
       enabled?: boolean;
     }) => {
       return useObjectQuery({

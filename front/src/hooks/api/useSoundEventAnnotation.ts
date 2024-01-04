@@ -1,9 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
-import type { ClipAnnotation, SoundEventAnnotation } from "@/types";
+import type { ClipAnnotation, SoundEventAnnotation, Recording } from "@/types";
 import type { AxiosError } from "axios";
 
 /**
@@ -20,6 +20,7 @@ export default function useSoundEventAnnotation({
   onAddNote,
   onError,
   enabled = true,
+  withRecording = false,
 }: {
   uuid: string;
   clipAnnotation?: ClipAnnotation;
@@ -31,8 +32,9 @@ export default function useSoundEventAnnotation({
   onAddNote?: (annotation: SoundEventAnnotation) => void;
   onError?: (error: AxiosError) => void;
   enabled?: boolean;
+  withRecording?: boolean;
 }) {
-  const { query, useMutation, useDestruction, client } =
+  const { query, useQuery, useMutation, useDestruction, client } =
     useObject<SoundEventAnnotation>({
       name: "sound_event_annotation",
       uuid,
@@ -42,20 +44,47 @@ export default function useSoundEventAnnotation({
       onError,
     });
 
+  const getRecordingFn = useMemo(() => {
+    if (!withRecording)
+      return () => {
+        throw new Error(
+          "Cannot get recording for sound event annotation without recording",
+        );
+      };
+
+    return () => {
+      if (query.data == null) {
+        throw new Error(
+          "Cannot get recording for sound event annotation without recording",
+        );
+      }
+      return api.soundEvents.getRecording(query.data.sound_event);
+    };
+  }, [query.data, withRecording]);
+
+  const recordingQuery = useQuery<Recording | null>({
+    name: "annotations",
+    queryFn: getRecordingFn,
+    enabled: withRecording && query.data != null,
+  });
+
   const updateClipAnnotation = useCallback(
     (annotation: SoundEventAnnotation) => {
       if (clipAnnotation == null) return;
 
       // Update the clip annotation in the cache.
-      client.setQueryData(["clip_annotation", clipAnnotation.uuid], (data) => {
-        if (data == null) return;
-        return {
-          ...data,
-          sound_events: data.sound_events.map((a) =>
-            a.uuid === annotation.uuid ? annotation : a,
-          ),
-        };
-      });
+      client.setQueryData(
+        ["clip_annotation", clipAnnotation.uuid],
+        (data: ClipAnnotation) => {
+          if (data == null) return;
+          return {
+            ...data,
+            sound_events: data.sound_events?.map((a) =>
+              a.uuid === annotation.uuid ? annotation : a,
+            ),
+          };
+        },
+      );
     },
     [client, clipAnnotation],
   );
@@ -132,5 +161,6 @@ export default function useSoundEventAnnotation({
     addTag,
     removeTag,
     addNote,
+    recording: recordingQuery,
   } as const;
 }

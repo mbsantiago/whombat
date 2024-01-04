@@ -36,7 +36,7 @@ export default function useRecordingTable({
   onRemoveTag,
 }: {
   data: Recording[];
-  pathFormatter: (path: string) => string;
+  pathFormatter?: (path: string) => string;
   getRecordingLink?: (recording: Recording) => string;
   onUpdate: ({
     recording,

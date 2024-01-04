@@ -4,7 +4,13 @@ import { z } from "zod";
 import { GetManySchema, Page } from "@/api/common";
 import { EvaluationSetSchema } from "@/schemas";
 
-import type { AnnotationTask, EvaluationSet, Tag } from "@/types";
+import type {
+  AnnotationTask,
+  EvaluationSet,
+  ModelRun,
+  UserRun,
+  Tag,
+} from "@/types";
 
 export const EvaluationSetFilterSchema = z.object({
   search: z.string().optional(),
@@ -44,6 +50,8 @@ const DEFAULT_ENDPOINTS = {
   update: "/api/v1/evaluation_sets/detail/",
   delete: "/api/v1/evaluation_sets/detail/",
   addTag: "/api/v1/evaluation_sets/detail/tags/",
+  addModelRun: "/api/v1/evaluation_sets/detail/model_runs/",
+  addUserRun: "/api/v1/evaluation_sets/detail/user_runs/",
   removeTag: "/api/v1/evaluation_sets/detail/tags/",
   addEvaluationTasks: "/api/v1/evaluation_sets/detail/tasks/",
   download: "/api/v1/evaluation_sets/detail/download/",
@@ -148,6 +156,40 @@ export function registerEvaluationSetAPI(
     return EvaluationSetSchema.parse(res.data);
   }
 
+  async function addModelRun(
+    evaluationSet: EvaluationSet,
+    modelRun: ModelRun,
+  ): Promise<EvaluationSet> {
+    const res = await instance.post(
+      endpoints.addModelRun,
+      {},
+      {
+        params: {
+          evaluation_set_uuid: evaluationSet.uuid,
+          model_run_uuid: modelRun.uuid,
+        },
+      },
+    );
+    return EvaluationSetSchema.parse(res.data);
+  }
+
+  async function addUserRun(
+    evaluationSet: EvaluationSet,
+    userRun: UserRun,
+  ): Promise<EvaluationSet> {
+    const res = await instance.post(
+      endpoints.addUserRun,
+      {},
+      {
+        params: {
+          evaluation_set_uuid: evaluationSet.uuid,
+          user_run_uuid: userRun.uuid,
+        },
+      },
+    );
+    return EvaluationSetSchema.parse(res.data);
+  }
+
   function getDownloadUrl(evaluationSet: EvaluationSet): string {
     return `${baseUrl}${endpoints.download}?evaluation_set_uuid=${evaluationSet.uuid}`;
   }
@@ -166,6 +208,8 @@ export function registerEvaluationSetAPI(
     getDownloadUrl,
     addEvaluationTasks,
     addTag,
+    addModelRun,
+    addUserRun,
     removeTag,
     import: importEvaluationSet,
   } as const;

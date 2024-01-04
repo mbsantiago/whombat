@@ -6,6 +6,7 @@ import drawTimeAxis from "@/draw/timeAxis";
 import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
 import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
 import {
+  getInitialViewingWindow,
   adjustWindowToBounds,
   centerWindowOn,
   scaleWindow,
@@ -93,11 +94,20 @@ export default function useSpectrogram({
     );
   }, [bounds, recording]);
 
+  const initialViewport = useMemo<SpectrogramWindow>(() => {
+    return initial ?? getInitialViewingWindow({ 
+      startTime: initialBounds.time.min,
+      endTime: initialBounds.time.max,
+      samplerate: recording.samplerate,
+      parameters: initialParameters,
+    });
+  }, [initial, initialBounds, recording, initialParameters]);
+
   const [parameters, setParameters] = useState<SpectrogramParameters>(
     validateParameters(initialParameters, recording),
   );
   const [viewport, setViewport] = useState<SpectrogramWindow>(
-    initial ?? initialBounds,
+    initialViewport,
   );
 
   // NOTE: Need to update the viewport if the initial viewport
@@ -148,8 +158,8 @@ export default function useSpectrogram({
   );
 
   const handleReset = useCallback(() => {
-    setViewport(initialBounds);
-  }, [initialBounds]);
+    setViewport(initialViewport);
+  }, [initialViewport]);
 
   const handleCenterOn = useCallback(
     ({ time, freq }: { time?: number; freq?: number }) => {

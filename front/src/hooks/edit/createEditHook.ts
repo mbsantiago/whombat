@@ -8,6 +8,7 @@ import useDrag from "@/hooks/utils/useDrag";
 import type { Style } from "@/draw/styles";
 import type { Dimensions, Pixel } from "@/types";
 import type { DOMAttributes } from "react";
+import type { EventKeys } from "@/hooks/utils/useDrag";
 
 interface UseEditObjectProps<J> {
   dimensions: Dimensions;
@@ -95,13 +96,13 @@ export default function createEditHook<J, T>(
       ({
         initial,
         current,
-        shiftKey,
-        ctrlKey,
+        shiftKey = false,
+        ctrlKey = false,
       }: {
         initial: Pixel;
         current: Pixel;
-        shiftKey: boolean;
-        ctrlKey: boolean;
+        shiftKey?: boolean;
+        ctrlKey?: boolean;
       }) => {
         if (hovered == null || object == null) return;
         setKeys({ shiftKey, ctrlKey });

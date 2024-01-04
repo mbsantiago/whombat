@@ -163,7 +163,7 @@ function SelectRecordings({
             </div>
             <FilterMenu
               filter={recordings.filter}
-              filterDefs={recordingFilterDefs}
+              filterDef={recordingFilterDefs}
               mode="text"
               button={
                 <>

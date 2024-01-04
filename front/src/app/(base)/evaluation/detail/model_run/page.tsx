@@ -26,7 +26,7 @@ export default function Page() {
   const handleError = useCallback(
     (error: AxiosError) => {
       if (error.response?.status === 404) {
-        toast.error("Recording not found");
+        toast.error("Model run not found");
         returnToModelRuns();
       }
     },

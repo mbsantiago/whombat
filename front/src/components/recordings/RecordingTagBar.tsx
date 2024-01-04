@@ -18,14 +18,14 @@ export default function RecordingTagBar({
 }: {
   recording: Recording;
   label?: string;
-  onAddTag?: (tag: Tag) => void;
   onTagClick?: (tag: Tag) => void;
-  onRemoveTag?: (tag: Tag) => void;
+  onAddTag?: (data: Recording) => void;
+  onRemoveTag?: (data: Recording) => void;
   disabled?: boolean;
 }) {
   const getTagColor = useStore((state) => state.getTagColor);
   const {
-    data: { tags },
+    data: { tags } = {},
     addTag: { mutate: addTag },
     removeTag: { mutate: removeTag },
   } = useRecording({
@@ -57,8 +57,8 @@ export default function RecordingTagBar({
             key={`${tag.key}-${tag.value}`}
             tag={tag}
             {...getTagColor(tag)}
-            onClick={onTagClick}
-            onClose={handleRemoveTag}
+            onClick={() => onTagClick?.(tag)}
+            onClose={() => handleRemoveTag?.(tag)}
           />
         ))}
         {tags?.length === 0 && (

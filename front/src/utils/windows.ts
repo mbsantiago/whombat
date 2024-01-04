@@ -33,6 +33,33 @@ export function getInitialViewingWindow({
   };
 }
 
+export function getCenteredViewingWindow({
+  startTime,
+  endTime,
+  samplerate,
+  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+}: {
+  startTime: number;
+  endTime: number;
+  samplerate: number;
+  parameters?: SpectrogramParameters;
+}): SpectrogramWindow {
+  const center = (startTime + endTime) / 2;
+  const duration = getInitialDuration({
+    interval: {
+      min: startTime,
+      max: endTime,
+    },
+    samplerate,
+    window_size: parameters.window_size,
+    hop_size: parameters.hop_size,
+  });
+  return {
+    time: { min: center - duration / 2, max: center + duration / 2 },
+    freq: { min: 0, max: samplerate / 2 },
+  };
+}
+
 /**
  * Get the ideal duration of a spectrogram window given the interval and
  * samplerate of the audio.

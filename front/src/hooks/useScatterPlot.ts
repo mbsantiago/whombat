@@ -8,16 +8,16 @@ import { useCallback, useMemo } from "react";
 
 import useTheme from "@/hooks/useTheme";
 
-import type { SoundEventAnnotation } from "@/types";
+import type { ScatterPlotData } from "@/api/sound_event_annotations";
 
 type GroupKey = string;
 
-type Grouper = (annotation: SoundEventAnnotation) => GroupKey | null;
+type Grouper = (annotation: ScatterPlotData) => GroupKey | null;
 
 const defaultGrouper = () => "annotation";
 
-const getFeatureValue = (annotation: SoundEventAnnotation, name: string) => {
-  const feature = annotation.sound_event.features?.find((f) => f.name === name);
+const getFeatureValue = (annotation: ScatterPlotData, name: string) => {
+  const feature = annotation.features?.find((f) => f.name === name);
   return feature?.value ?? null;
 };
 
@@ -49,12 +49,12 @@ function newTrace(
 export interface UseScatterPlotProps {
   width?: number;
   height?: number;
-  annotations: SoundEventAnnotation[];
+  annotations: ScatterPlotData[];
   groupBy?: Grouper;
   xFeature?: string;
   yFeature?: string;
   zFeature?: string;
-  onClick?: (annotation: SoundEventAnnotation) => void;
+  onClick?: (annotation: ScatterPlotData) => void;
 }
 
 export default function useScatterPlot({
@@ -126,7 +126,7 @@ export default function useScatterPlot({
     (datum: Readonly<PlotMouseEvent>) => {
       const annotation = datum.points[0].customdata;
       onSoundEventAnnotationClick?.(
-        annotation as unknown as SoundEventAnnotation,
+        annotation as unknown as ScatterPlotData,
       );
     },
     [onSoundEventAnnotationClick],

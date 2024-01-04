@@ -10,6 +10,8 @@ export default function useEvaluationSet({
   uuid,
   evaluationSet,
   enabled = true,
+  onAddModelRun,
+  onAddUserRun,
   onUpdate,
   onDelete,
   onAddTag,
@@ -25,6 +27,8 @@ export default function useEvaluationSet({
   onAddTag?: (evaluation_set: EvaluationSet) => void;
   onRemoveTag?: (evaluation_set: EvaluationSet) => void;
   onAddTasks?: (evaluation_set: EvaluationSet) => void;
+  onAddModelRun?: (evaluation_set: EvaluationSet) => void;
+  onAddUserRun?: (evaluation_set: EvaluationSet) => void;
   onError?: (error: AxiosError) => void;
 }) {
   const { query, useMutation, useDestruction } = useObject<EvaluationSet>({
@@ -57,6 +61,16 @@ export default function useEvaluationSet({
     onSuccess: onAddTasks,
   });
 
+  const addModelRun = useMutation({
+    mutationFn: api.evaluationSets.addModelRun,
+    onSuccess: onAddModelRun,
+  });
+
+  const addUserRun = useMutation({
+    mutationFn: api.evaluationSets.addUserRun,
+    onSuccess: onAddUserRun,
+  });
+
   const delete_ = useDestruction({
     mutationFn: api.evaluationSets.delete,
     onSuccess: onDelete,
@@ -73,6 +87,8 @@ export default function useEvaluationSet({
     addTag,
     removeTag,
     addEvaluationTasks,
+    addModelRun,
+    addUserRun,
     delete: delete_,
     downloadUrl,
   } as const;

@@ -1,6 +1,6 @@
 import { CloseIcon } from "@/components/icons";
 
-import type { IntegerFilter, NumberFilter } from "@/types";
+import type { NumberFilter } from "@/types";
 
 export default function FilterBadge({
   field,
@@ -36,7 +36,7 @@ export function NumberFilterBadge(props: {
   onRemove: () => void;
 }) {
   const { field, value, onRemove } = props;
-  const { lt, gt, eq } = value;
+  const { lt, gt } = value;
   let operation = "";
   let val = "";
   if (lt) {
@@ -45,9 +45,6 @@ export function NumberFilterBadge(props: {
   } else if (gt) {
     operation = ">";
     val = gt.toString();
-  } else if (eq) {
-    operation = "=";
-    val = eq.toString();
   }
   return (
     <FilterBadge

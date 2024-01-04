@@ -11,7 +11,7 @@ export default function DatasetSearch({
   onSelect,
   showMax = 10,
 }: {
-  selected: Dataset | null;
+  selected?: Dataset | null;
   onSelect?: (dataset: Dataset) => void;
   emptyMessage?: string;
   showMax?: number;

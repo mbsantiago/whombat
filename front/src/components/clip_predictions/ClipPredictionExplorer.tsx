@@ -10,6 +10,7 @@ import {
   NextIcon,
   PreviousIcon,
 } from "@/components/icons";
+import clipPredictionFilterDef from "@/components/filters/clip_predictions";
 import useExploreClipPredictions from "@/hooks/prediction/useExploreClipPredictions";
 import ClipPredictionDisplay from "@/components/clip_predictions/ClipPredictionDisplay";
 
@@ -78,7 +79,11 @@ function ExplorerControls(props: {
         <NavigationControls {...props} />
       </div>
       <div className="flex flex-row items-center gap-2">
-        <FilterBar filter={props.filter} filterDef={[]} showIfEmpty />
+        <FilterBar
+          filter={props.filter}
+          filterDef={clipPredictionFilterDef}
+          showIfEmpty
+        />
       </div>
     </div>
   );
@@ -102,7 +107,7 @@ function FilterControls(props: {
     <div className="inline-flex gap-2">
       <FilterMenu
         filter={props.filter}
-        filterDefs={[]}
+        filterDef={clipPredictionFilterDef}
         mode="text"
         button={
           <>

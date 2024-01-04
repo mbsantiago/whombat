@@ -63,6 +63,7 @@ export function registerModelRunAPI(
         limit: params.limit,
         offset: params.offset,
         sort_by: params.sort_by,
+        search: params.search,
         name__has: params.name?.has,
         name__eq: params.name?.eq,
         version__eq: params.version,

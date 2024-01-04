@@ -8,8 +8,8 @@ import {
   ModelRunSchema,
   PredictionTagSchema,
   RecordingSchema,
-  TagSchema,
   UserRunSchema,
+  PredictedTagFilterSchema
 } from "@/schemas";
 
 import type { ClipPrediction, Tag } from "@/types";
@@ -23,7 +23,8 @@ export type ClipPredictionCreate = z.input<typeof ClipPredictionCreateSchema>;
 export const ClipPredictionFilterSchema = z.object({
   clip: ClipSchema.optional(),
   recording: RecordingSchema.optional(),
-  tag: TagSchema.optional(),
+  tag: PredictedTagFilterSchema.optional(),
+  sound_event_tag: PredictedTagFilterSchema.optional(),
   model_run: ModelRunSchema.optional(),
   user_run: UserRunSchema.optional(),
 });
@@ -77,8 +78,14 @@ export function registerClipPredictionsAPI(
         sort_by: params.sort_by,
         clip__eq: params.clip?.uuid,
         recording__eq: params.recording?.uuid,
-        tag__key: params.tag?.key,
-        tag__value: params.tag?.value,
+        tag__key: params.tag?.tag.key,
+        tag__value: params.tag?.tag.value,
+        tag__gt: params.tag?.gt,
+        tag__lt: params.tag?.lt,
+        sound_event_tag__key: params.sound_event_tag?.tag.key,
+        sound_event_tag__value: params.sound_event_tag?.tag.value,
+        sound_event_tag__gt: params.sound_event_tag?.gt,
+        sound_event_tag__lt: params.sound_event_tag?.lt,
         model_run__eq: params.model_run?.uuid,
         user_run__eq: params.user_run?.uuid,
       },

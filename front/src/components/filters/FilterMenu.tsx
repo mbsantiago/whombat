@@ -43,6 +43,11 @@ function FilterCombobox<T extends Object>({
         fields={["name", "prefix"]}
         getOptionKey={(filter) => filter.name}
         onSelect={onChange}
+        empty={
+          <div className="text-stone-500 text-center w-full">
+            No filters found
+          </div>
+        }
         autoFocus
       />
     </>
@@ -107,14 +112,14 @@ function FilterPanel<T extends Object>({
 
 export default function FilterPopover<T extends Object>({
   filter,
-  filterDefs,
+  filterDef,
   button,
   mode = "filled",
   variant = "primary",
   className,
 }: {
   filter: Filter<T>;
-  filterDefs: FilterDef<T>[];
+  filterDef: FilterDef<T>[];
   button?: ReactNode;
   mode?: "filled" | "outline" | "text";
   variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";
@@ -127,8 +132,7 @@ export default function FilterPopover<T extends Object>({
   return (
     <Popover as="div" className="relative inline-block text-left">
       <Float
-        placement="bottom"
-        flip={true}
+        autoPlacement
         portal={true}
         offset={4}
         enter="transition ease-out duration-100"
@@ -150,7 +154,7 @@ export default function FilterPopover<T extends Object>({
           className="w-96 divide-y divide-stone-100 rounded-md bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-500 shadow-md dark:shadow-stone-800 ring-1 ring-stone-900 ring-opacity-5 focus:outline-none z-50"
         >
           <div className="p-4">
-            <FilterPanel filter={filter} filterDefs={filterDefs} />
+            <FilterPanel filter={filter} filterDefs={filterDef} />
           </div>
         </Popover.Panel>
       </Float>

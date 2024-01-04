@@ -73,7 +73,7 @@ export default function AnnotationProgress({
         </div>
         <FilterMenu
           filter={filter}
-          filterDefs={taskFilterDefs}
+          filterDef={taskFilterDefs}
           className={getButtonClassName({
             variant: "info",
             mode: "text",

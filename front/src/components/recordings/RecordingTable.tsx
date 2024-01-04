@@ -274,7 +274,7 @@ export default function RecordingTable({
           </div>
           <FilterPopover
             filter={recordings.filter}
-            filterDefs={recordingFilterDefs}
+            filterDef={recordingFilterDefs}
           />
         </div>
         <SelectedMenu
