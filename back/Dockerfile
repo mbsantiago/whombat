@@ -1,6 +1,6 @@
 FROM python:3.11
 
-# Install libsndfile1 for librosa
+# Install libsndfile1
 RUN apt-get update && apt-get install -y libsndfile1 build-essential libffi-dev cargo python3-dev
 
 # Set the working directory to /code

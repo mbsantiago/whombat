@@ -3,7 +3,7 @@
 from typing import Sequence
 from uuid import UUID
 
-from soundevent import data
+from soundevent import data, evaluation as evaluate
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,7 +15,9 @@ from whombat.api.common import (
     delete_object,
     update_object,
 )
+from whombat.api.evaluation_sets import evaluation_sets
 from whombat.api.features import features
+from whombat.api.model_runs import model_runs
 from whombat.filters.base import Filter
 from whombat.filters.clip_evaluations import EvaluationFilter
 
@@ -289,6 +291,33 @@ class EvaluationAPI(
                 for ce in evals
             ],
         )
+
+    async def evaluate_model_run(
+        self,
+        session: AsyncSession,
+        model_run: schemas.ModelRun,
+        evaluation_set: schemas.EvaluationSet,
+        task: str,
+    ) -> schemas.Evaluation:
+        clip_predictions, _ = await model_runs.get_clip_predictions(
+            session,
+            model_run,
+            limit=-1,
+        )
+        clip_annotations, _ = await evaluation_sets.get_clip_annotations(
+            session,
+            evaluation_set,
+            limit=-1,
+        )
+
+        # TODO: Finish this
+
+        evaluation = evaluate.sound_event_detection(
+            clip_predictions,
+            clip_annotations,
+            evaluation_set.tags,
+        )
+        return evaluation
 
 
 evaluations = EvaluationAPI()

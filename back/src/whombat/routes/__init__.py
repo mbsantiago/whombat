@@ -30,6 +30,7 @@ from whombat.routes.spectrograms import spectrograms_router
 from whombat.routes.tags import tags_router
 from whombat.routes.user_runs import user_runs_router
 from whombat.routes.users import users_router
+from whombat.routes.evaluations import evaluations_router
 
 __all__ = [
     "main_router",
@@ -162,6 +163,11 @@ main_router.include_router(
     evaluation_sets_router,
     prefix="/evaluation_sets",
     tags=["Evaluation Sets"],
+)
+main_router.include_router(
+    evaluations_router,
+    prefix="/evaluations",
+    tags=["Evaluations"],
 )
 
 # Extensions
