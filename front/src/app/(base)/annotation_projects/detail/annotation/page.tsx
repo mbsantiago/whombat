@@ -72,11 +72,6 @@ export default function Page() {
     [project],
   );
 
-  if (user == null) {
-    toast.error("You must be logged in to annotate.");
-    return null;
-  }
-
   if (annotationTask.isLoading && !annotationTask.data) {
     return <Loading />;
   }

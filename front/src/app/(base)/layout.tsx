@@ -6,7 +6,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { type ReactNode, useContext } from "react";
+import { type ReactNode, useContext, useCallback } from "react";
 import toast from "react-hot-toast";
 
 import queryClient from "@/app/client";
@@ -35,9 +35,6 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
       toast.success("You have been logged out");
       router.push(`/login?back=${encodeURIComponent(currentPath)}`);
     },
-    onUnauthorized: () => {
-      router.push(`/login?back=${encodeURIComponent(currentPath)}`);
-    },
   });
 
   if (isLoading) {
@@ -55,28 +52,31 @@ function WithLogIn({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (user == null || isError) {
+  if (isError) {
     router.push(`/login?back=${encodeURIComponent(currentPath)}`);
     return;
+  }
+
+  if (user == null) {
+    throw Error("User is null");
   }
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
 function Contents({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const user = useContext(UserContext);
 
-  if (user == null) {
-    notFound();
-  }
-
-  const { logout } = useActiveUser({ enabled: false });
+  const handleLogout = useCallback(() => {
+    router.push("/login");
+  }, [router]);
 
   return (
     <div className="flex flex-row w-full max-w-full h-full">
-      <SideMenu logout={logout.mutate} />
+      <SideMenu user={user} onLogout={handleLogout} />
       <main className="w-full max-w-full h-full overflow-x-clip">
-        <NavBar user={user} />
+        <NavBar user={user} onLogout={handleLogout} />
         {children}
       </main>
       <Notification />

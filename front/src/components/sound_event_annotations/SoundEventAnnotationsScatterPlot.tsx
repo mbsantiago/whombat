@@ -37,8 +37,6 @@ export default function AnnotationsScatterPlot(props: {
   const [selectedAnnotation, setSelectedAnnotation] =
     useState<ScatterPlotData | null>(null);
 
-  if (query.error != null) console.log(query.error);
-
   if (query.isFetching) {
     return <Loading />;
   }

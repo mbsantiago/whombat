@@ -7,23 +7,23 @@ import type { User } from "@/types";
 import type { AxiosError } from "axios";
 
 export default function useActiveUser({
+  user: initial,
   onUpdate,
   onLogout,
-  onUnauthorized,
   enabled = true,
 }: {
+  user?: User;
   onUpdate?: (user: User) => void;
   onLogout?: () => void;
-  onUnauthorized?: (error: AxiosError) => void;
   enabled?: boolean;
 } = {}) {
   const client = useQueryClient();
 
   const query = useQuery<User, AxiosError>({
     queryKey: ["me"],
-    queryFn: async () => {
-      return await api.user.me();
-    },
+    queryFn: api.user.me,
+    initialData: initial,
+    staleTime: 30_000,
     retry: false,
     enabled,
     refetchOnWindowFocus: false,
@@ -47,13 +47,6 @@ export default function useActiveUser({
       onLogout?.();
     },
   });
-
-  const { error } = query;
-  if (error != null) {
-    if (error?.response?.status === 401) {
-      onUnauthorized?.(error);
-    }
-  }
 
   return {
     ...query,

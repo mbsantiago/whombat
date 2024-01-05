@@ -9,6 +9,7 @@ export const UserUpdateSchema = z.object({
   username: z.string().optional(),
   email: z.string().optional(),
   name: z.string().optional(),
+  password: z.string().optional(),
 });
 
 export type UserUpdate = z.input<typeof UserUpdateSchema>;
@@ -33,12 +34,12 @@ export function registerUserAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getActiveUser() {
+  async function getActiveUser(): Promise<User> {
     let response = await instance.get<User>(endpoints.me);
     return UserSchema.parse(response.data);
   }
 
-  async function updateActiveUser(data: UserUpdate) {
+  async function updateActiveUser(data: UserUpdate): Promise<User> {
     let body = UserUpdateSchema.parse(data);
     let response = await instance.patch<User>(endpoints.update, body);
     return UserSchema.parse(response.data);

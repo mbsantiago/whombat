@@ -76,14 +76,6 @@ export default function DatasetOverview({ dataset }: { dataset: Dataset }) {
           value={missing}
           isLoading={state.isLoading}
         />
-        <MetricBadge
-          icon={
-            <NewRecordingIcon className="inline-block w-8 h-8 text-emerald-500" />
-          }
-          title="New Files Detected"
-          value={newRecordings}
-          isLoading={state.isLoading}
-        />
       </div>
     </Card>
   );

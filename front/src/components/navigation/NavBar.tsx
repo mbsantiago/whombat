@@ -2,6 +2,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
 import classnames from "classnames";
 import { Fragment } from "react";
+import useActiveUser from "@/hooks/api/useActiveUser";
 
 import { HorizontalDivider } from "@/components/Divider";
 
@@ -26,11 +27,10 @@ function UserDetail({ user }: { user?: User }) {
   );
 }
 
-function UserMenu({ user }: { user?: User }) {
-  const links = [
-    { href: "/profile", label: "Profile" },
-    { href: "/logout", label: "Sign out" },
-  ];
+function UserMenu({ user, onLogout }: { user?: User; onLogout?: () => void }) {
+  const {
+    logout: { mutate: logout },
+  } = useActiveUser({ user, onLogout });
 
   return (
     <Menu as="div" className="relative z-10 inline-block text-left">
@@ -51,23 +51,36 @@ function UserMenu({ user }: { user?: User }) {
             <UserDetail user={user} />
           </Menu.Item>
           <HorizontalDivider />
-          {links.map((link) => (
-            <Menu.Item key={link.href}>
-              {({ active }) => (
-                <a
-                  href={link.href}
-                  className={classnames(
-                    active
-                      ? "bg-stone-300 text-stone-900 dark:bg-stone-800 dark:text-stone-100"
-                      : "bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300",
-                    "group flex w-full items-center rounded-md px-2 py-2 text-sm",
-                  )}
-                >
-                  {link.label}
-                </a>
-              )}
-            </Menu.Item>
-          ))}
+          <Menu.Item>
+            {({ active }) => (
+              <a
+                href={"profile"}
+                className={classnames(
+                  active
+                    ? "bg-stone-300 text-stone-900 dark:bg-stone-800 dark:text-stone-100"
+                    : "bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300",
+                  "group flex w-full items-center rounded-md px-2 py-2 text-sm",
+                )}
+              >
+                Profile
+              </a>
+            )}
+          </Menu.Item>
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                onClick={() => logout()}
+                className={classnames(
+                  active
+                    ? "bg-stone-300 text-stone-900 dark:bg-stone-800 dark:text-stone-100"
+                    : "bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300",
+                  "group flex w-full items-center rounded-md px-2 py-2 text-sm",
+                )}
+              >
+                Logout
+              </button>
+            )}
+          </Menu.Item>
         </Menu.Items>
       </Transition>
     </Menu>
@@ -105,13 +118,19 @@ function Navigation() {
   );
 }
 
-export function NavBar({ user }: { user: User }) {
+export function NavBar({
+  user,
+  onLogout,
+}: {
+  user: User;
+  onLogout?: () => void;
+}) {
   return (
     <nav>
       <div className="z-50 flex max-w-screen-xl flex-wrap items-center justify-between p-4">
         <Brand />
         <Navigation />
-        <UserMenu user={user} />
+        <UserMenu user={user} onLogout={onLogout} />
       </div>
     </nav>
   );

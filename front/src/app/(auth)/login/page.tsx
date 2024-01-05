@@ -33,14 +33,12 @@ export default function LoginForm() {
   const onSubmit = (data: FormData) => {
     api.auth
       .login(data)
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         reset();
         setError("username", { message: "Invalid username or password" });
         setError("password", { message: "Invalid username or password" });
         return Promise.reject("Invalid username or password");
       })
-      .then(() => api.user.me())
       .then(() => {
         const back = params.get("back");
         if (back) {

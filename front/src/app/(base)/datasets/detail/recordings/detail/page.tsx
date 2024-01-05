@@ -58,11 +58,6 @@ export default function Page() {
     onError: handleError,
   });
 
-  if (user == null) {
-    router.push("/login");
-    return;
-  }
-
   if (recording.isLoading) {
     return <Loading />;
   }

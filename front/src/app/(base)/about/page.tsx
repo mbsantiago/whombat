@@ -9,19 +9,21 @@ export default function Page() {
       <div className="p-6 flex flex-col items-center gap-4">
         <div className="flex flex-col items-center p-4">
           <WhombatIcon width={128} height={128} />
-          <span className="font-sans font-bold text-emerald-500 underline decoration-8 text-6xl">
+          <h1 className="font-sans font-bold text-emerald-500 underline decoration-8 text-6xl">
             Whombat
-          </span>
-        </div>
-        <div className="max-w-prose text-center flex flex-col gap-2 text-lg">
-          <p>
+          </h1>
+          <p className="mt-6 text-xl leading-8 text-stone-700 dark:text-stone-300">
             Welcome to Whombat, an open-source web application for audio
-            annotation and machine learning. At Whombat, we believe that
-            effective annotation is at the heart of a successful machine
-            learning process. Our platform not only facilitates seamless audio
-            annotation but also offers robust project management capabilities,
-            integrating annotation projects seamlessly into machine learning
-            pipelines.
+            annotation and machine learning.
+          </p>
+        </div>
+        <div className="max-w-prose text-center text-base flex flex-col gap-4 text-stone-600 dark:text-stone-400">
+          <p>
+            At Whombat, we believe that effective annotation is at the heart of
+            a successful machine learning process. Our platform not only
+            facilitates audio annotation but also offers robust project
+            management capabilities, integrating annotation projects into
+            machine learning pipelines.
           </p>
           <p>
             Whombat is the result of collaborative efforts, developed with the

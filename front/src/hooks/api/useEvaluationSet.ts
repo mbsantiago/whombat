@@ -43,7 +43,6 @@ export default function useEvaluationSet({
   const update = useMutation({
     mutationFn: api.evaluationSets.update,
     onSuccess: onUpdate,
-    onError: console.log,
   });
 
   const addTag = useMutation({

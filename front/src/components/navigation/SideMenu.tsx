@@ -1,6 +1,5 @@
 import classnames from "classnames";
 import { usePathname } from "next/navigation";
-import { type ComponentProps } from "react";
 
 import { HorizontalDivider } from "@/components/Divider";
 import {
@@ -10,15 +9,19 @@ import {
   ExplorationIcon,
   HomeIcon,
   LogOutIcon,
-  MessagesIcon,
   PluginIcon,
   SettingsIcon,
   WhombatIcon,
 } from "@/components/icons";
+import Button from "@/components/Button";
 import Link from "@/components/Link";
 import Tooltip from "@/components/Tooltip";
+import useActiveUser from "@/hooks/api/useActiveUser";
 
-function SideMenuButton({
+import type { User } from "@/types";
+import type { ComponentProps } from "react";
+
+function SideMenuLink({
   children,
   tooltip,
   isActive,
@@ -54,85 +57,130 @@ function SideMenuButton({
   );
 }
 
+function SideMenuButton({
+  children,
+  tooltip,
+  isActive,
+  ...props
+}: ComponentProps<typeof Button> & {
+  tooltip?: string;
+  isActive?: boolean;
+}) {
+  return (
+    <Tooltip
+      tooltip={
+        <p className="whitespace-nowrap text-stone-700 dark:text-stone-300">
+          {tooltip}
+        </p>
+      }
+    >
+      <Button
+        mode="text"
+        variant={isActive ? "primary" : "secondary"}
+        className={classnames(
+          isActive
+            ? "bg-stone-200 dark:bg-stone-900"
+            : "hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+        )}
+        {...props}
+      >
+        {children}
+      </Button>
+    </Tooltip>
+  );
+}
+
 function MainNavigation({ pathname }: { pathname?: string }) {
   return (
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <li className="px-3">
-        <SideMenuButton
+        <SideMenuLink
           isActive={pathname?.startsWith("/datasets")}
           tooltip={"Datasets"}
           href="/datasets"
         >
           <DatasetsIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <li className="px-3">
-        <SideMenuButton
+        <SideMenuLink
           isActive={pathname?.startsWith("/annotation_projects")}
           tooltip={"Annotation Projects"}
           href="/annotation_projects"
         >
           <AnnotationProjectIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <li className="px-3">
-        <SideMenuButton
+        <SideMenuLink
           isActive={pathname?.startsWith("/evaluation")}
           tooltip={"Evaluation"}
           href="/evaluation"
         >
           <EvaluationIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <li className="px-3">
-        <SideMenuButton
+        <SideMenuLink
           isActive={pathname?.startsWith("/exploration")}
           tooltip={"Exploration"}
           href="/exploration"
         >
           <ExplorationIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
     </ul>
   );
 }
 
 function SecondaryNavigation({
+  user,
   pathname,
-  logout,
+  onLogout,
 }: {
+  user: User;
   pathname?: string;
-  logout?: () => void;
+  onLogout?: () => void;
 }) {
+  const {
+    logout: { mutate: logout },
+  } = useActiveUser({ user, onLogout });
+
   return (
     <ul className="flex flex-col space-y-3 py-4 text-stone-400">
       <HorizontalDivider />
       <li className="px-3">
-        <SideMenuButton isActive={pathname === "/"} tooltip={"Home"} href="/">
+        <SideMenuLink isActive={pathname === "/"} tooltip={"Home"} href="/">
           <HomeIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <li className="px-3">
-        <SideMenuButton href="/plugins" tooltip={"Plugins"}>
+        <SideMenuLink href="/plugins" tooltip={"Plugins"}>
           <PluginIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <li className="px-3">
-        <SideMenuButton href="/" tooltip={"Settings"}>
+        <SideMenuLink href="/" tooltip={"Settings"}>
           <SettingsIcon className="w-6 h-6" />
-        </SideMenuButton>
+        </SideMenuLink>
       </li>
       <HorizontalDivider />
       <li className="px-3">
-        <SideMenuButton href="/logout" tooltip={"Log Out"}>
-          <LogOutIcon onClick={() => logout?.()} className="w-6 h-6" />
+        <SideMenuButton tooltip={"Log Out"}>
+          <LogOutIcon onClick={() => logout()} className="w-6 h-6" />
         </SideMenuButton>
       </li>
     </ul>
   );
 }
 
-export function SideMenu({ logout }: { logout?: () => void }) {
+export function SideMenu({
+  onLogout,
+  user,
+}: {
+  onLogout?: () => void;
+  user: User;
+}) {
   const pathname = usePathname();
   return (
     <aside
@@ -147,7 +195,11 @@ export function SideMenu({ logout }: { logout?: () => void }) {
           </div>
           <MainNavigation pathname={pathname} />
         </div>
-        <SecondaryNavigation pathname={pathname} logout={logout} />
+        <SecondaryNavigation
+          pathname={pathname}
+          user={user}
+          onLogout={onLogout}
+        />
       </div>
     </aside>
   );
