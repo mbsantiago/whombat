@@ -5,7 +5,7 @@ import { Fragment, type ReactNode } from "react";
 import { CheckIcon, ExpandIcon } from "@/components/icons";
 import { Submit } from "@/components/inputs/index";
 
-type Option<T> = {
+export type Option<T> = {
   id: string | number;
   label: ReactNode;
   value: T;

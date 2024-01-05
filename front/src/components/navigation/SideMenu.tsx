@@ -113,11 +113,6 @@ function SecondaryNavigation({
         </SideMenuButton>
       </li>
       <li className="px-3">
-        <SideMenuButton href="/" tooltip={"Messages"}>
-          <MessagesIcon className="w-6 h-6" />
-        </SideMenuButton>
-      </li>
-      <li className="px-3">
         <SideMenuButton href="/plugins" tooltip={"Plugins"}>
           <PluginIcon className="w-6 h-6" />
         </SideMenuButton>

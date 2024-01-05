@@ -8,7 +8,7 @@ export default function Home() {
         Welcome to
         <br />
         <Image
-          src="whombat.svg"
+          src="/whombat.svg"
           alt="logo"
           width={64}
           height={64}

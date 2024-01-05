@@ -7,9 +7,10 @@ import {
   ModelRunSchema,
   NumberFilterSchema,
   StringFilterSchema,
+  EvaluationSchema,
 } from "@/schemas";
 
-import type { ModelRun } from "@/types";
+import type { ModelRun, Evaluation, EvaluationSet } from "@/types";
 
 export const ModelRunFilterSchema = z.object({
   search: z.string().optional(),
@@ -48,6 +49,7 @@ const DEFAULT_ENDPOINTS = {
   update: "/api/v1/model_runs/detail/",
   delete: "/api/v1/model_runs/detail/",
   import: "/api/v1/model_runs/import/",
+  evaluate: "/api/v1/model_runs/detail/evaluate/",
 };
 
 export function registerModelRunAPI(
@@ -107,10 +109,33 @@ export function registerModelRunAPI(
     return ModelRunSchema.parse(res);
   }
 
+  async function evaluateModelRun(
+    modelRun: ModelRun,
+    data: {
+      evaluationSet: EvaluationSet;
+      task: string;
+    },
+  ): Promise<Evaluation> {
+    const { data: res } = await instance.post(
+      endpoints.evaluate,
+      {
+        task: data.task,
+      },
+      {
+        params: {
+          model_run_uuid: modelRun.uuid,
+          evaluation_set_uuid: data.evaluationSet.uuid,
+        },
+      },
+    );
+    return EvaluationSchema.parse(res);
+  }
+
   return {
     getMany: getManyModelRuns,
     get: getModelRun,
     update: updateModelRun,
+    evaluate: evaluateModelRun,
     delete: deleteModelRun,
     import: importModelRun,
   } as const;

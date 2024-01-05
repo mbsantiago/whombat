@@ -39,6 +39,11 @@ export default function useModelRun({
     onSuccess: onUpdate,
   });
 
+  const evaluate = useMutation({
+    mutationFn: api.modelRuns.evaluate,
+    onSuccess: onUpdate,
+  });
+
   const delete_ = useDestruction({
     mutationFn: api.modelRuns.delete,
     onSuccess: onDelete,
@@ -48,5 +53,6 @@ export default function useModelRun({
     ...query,
     update,
     delete: delete_,
+    evaluate,
   };
 }

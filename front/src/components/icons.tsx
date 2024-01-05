@@ -84,6 +84,7 @@ import { type ComponentProps, type HTMLProps } from "react";
 function WhombatIcon(props: Omit<ComponentProps<typeof Image>, "src" | "alt">) {
   return <Image alt="Whombat Logo" src="/whombat.svg" {...props} />;
 }
+
 function BoundingBoxIcon(props: HTMLProps<SVGSVGElement>) {
   return (
     <svg

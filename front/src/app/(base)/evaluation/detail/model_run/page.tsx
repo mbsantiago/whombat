@@ -1,11 +1,12 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
 import Loading from "@/components/Loading";
 import ModelRunDetail from "@/components/model_runs/ModelRunDetail";
 import useModelRun from "@/hooks/api/useModelRun";
+import EvaluationSetContext from "../context";
 
 import type { AxiosError } from "axios";
 import type { ModelRun } from "@/types";
@@ -15,6 +16,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const modelRunUUID = searchParams.get("model_run_uuid");
   const evaluationSetUUID = searchParams.get("evaluation_set_uuid");
+  const evaluationSet = useContext(EvaluationSetContext);
 
   const returnToModelRuns = useCallback(() => {
     if (evaluationSetUUID == null) router.push("/evaluation/");
@@ -59,5 +61,11 @@ export default function Page() {
     return handleError(modelRun.error as AxiosError);
   }
 
-  return <ModelRunDetail modelRun={modelRun.data} onDelete={onDelete} />;
+  return (
+    <ModelRunDetail
+      modelRun={modelRun.data}
+      onDelete={onDelete}
+      evaluationSet={evaluationSet}
+    />
+  );
 }
