@@ -42,4 +42,5 @@ pyinstaller \
 	--add-data "alembic.ini:." \
 	--splash "docs/assets/logo.png" \
 	--name whombat \
+    --onefile \
 	app.py
