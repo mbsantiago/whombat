@@ -46,9 +46,9 @@ def create_app(settings: Settings) -> FastAPI:
         add_plugin_pages(app, name, plugin)
 
     app.mount(
-        "/docs/",
-        StaticFiles(directory="site", html=True),
-        name="docs",
+        "/guide/",
+        StaticFiles(directory="user_guide", html=True),
+        name="guide",
     )
 
     # NOTE: It is important that the static files are mounted after the

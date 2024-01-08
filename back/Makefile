@@ -80,26 +80,28 @@ format:
 test:
 	pytest -n auto
 
+install: clean
+	pip install .
+
 coverage:
 	coverage run --source whombat -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs:
+build-docs:
 	mkdocs build
-	URL="site/index.html"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 
-docs-serve:
+build-guide:
+	mkdocs build -f mkdocs-guide.yml -d user_guide
+
+serve-docs:
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 	@$(ENV_PREFIX)mkdocs serve
 
-guide-serve:
+serve-guide:
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 	@$(ENV_PREFIX)mkdocs serve -f mkdocs-guide.yml
 
-install: clean
-	pip install .
-
-dev:
+serve-dev:
 	python -m whombat

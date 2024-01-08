@@ -172,3 +172,4 @@ whombat.db
 back/src/whombat/statics
 back/src/whombat/statics
 back/.build_venv
+back/user_guide
