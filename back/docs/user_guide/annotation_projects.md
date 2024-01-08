@@ -373,6 +373,15 @@ view your annotations (assuming they have the recordings pre-registered, check
 your annotations becomes a seamless process, enabling collaborative efforts and
 knowledge exchange.
 
+## Conclusion
+
+Congratulations! You are now well-equipped to successfully manage and execute
+your annotation projects in Whombat. Whether you're diving into the
+[Evaluation section](evaluation.md) to gain insights into the performance of ML
+models and user annotators, or exploring the data further using the tools in the
+[Exploration section](exploration.md), you have a solid foundation to make the
+most of your annotations.
+
 *[RoI]: Region of Interest
 
 *[ML]: Machine Learning

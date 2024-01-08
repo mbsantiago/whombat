@@ -12,15 +12,15 @@ work and make best use of this tool.
 
 ### Table of Contents
 
-1. Installation
-2. Registering Recordings and Managing Datasets
-3. Creating Annotation Projects
-4. Visualizing and Evaluating Model Predictions
-5. Exploration of Data
+1. [Installation](installation.md)
+2. [Registering Recordings and Managing Datasets](datasets.md)
+3. [Creating Annotation Projects](annotation_projects.md)
+4. [Visualizing and Evaluating Model Predictions](evaluation.md)
+5. [Exploration of Data](exploration.md)
 
 Feel free to use the handy search bar above to quickly locate the information
-you need. Additionally, we've curated a FAQ section to address common queries
-and provide even more insights.
+you need. Additionally, we've curated a [FAQ section](faq.md) to address common
+queries and provide even more insights.
 
 ### Searching for Answers
 
