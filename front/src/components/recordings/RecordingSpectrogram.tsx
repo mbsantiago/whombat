@@ -94,7 +94,7 @@ export default function RecordingSpectrogram({
 
   return (
     <Card>
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-4">
         <SpectrogramControls
           canDrag={spectrogram.canDrag}
           canZoom={spectrogram.canZoom}

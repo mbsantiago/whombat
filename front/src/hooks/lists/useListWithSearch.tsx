@@ -5,10 +5,12 @@ export default function useListWithSearch<T extends Object>({
   options,
   fields,
   limit: initialLimit = 20,
+  shouldSort = true,
 }: {
   options: T[];
   fields: FuseOptionKey<T>[];
   limit?: number;
+  shouldSort?: boolean;
 }) {
   const [limit, setLimit] = useState(initialLimit);
   const [search, setSearch] = useState("");
@@ -18,11 +20,11 @@ export default function useListWithSearch<T extends Object>({
       new Fuse(options, {
         keys: fields,
         threshold: 0.3,
-        shouldSort: true,
+        shouldSort: shouldSort,
         includeMatches: false,
         includeScore: false,
       }),
-    [options, fields],
+    [options, fields, shouldSort],
   );
 
   const filteredOptions = useMemo(() => {
@@ -32,6 +34,7 @@ export default function useListWithSearch<T extends Object>({
 
   return {
     items: filteredOptions,
+    limit,
     search,
     setSearch,
     setLimit,

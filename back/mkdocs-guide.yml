@@ -1,0 +1,81 @@
+site_name: Whombat User Guide
+site_url: "http://localhost:5000/docs/"
+nav:
+  - user_guide/index.md
+  - Installation: user_guide/installation.md
+  - Datasets: user_guide/datasets.md
+  - Annotation Projects: user_guide/annotation_projects.md
+  - Evaluation: user_guide/evaluation.md
+  - Data Exploration: user_guide/exploration.md
+  - FAQ: user_guide/faq.md
+  - About the Project:
+      - Authors: AUTHORS.md
+      - Sponsors: sponsors.md
+theme:
+  name: material
+  logo: assets/logo.svg
+  font:
+    text: Mulish
+  favicon: assets/favicon.svg
+  features:
+    - content.code.copy
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+watch:
+  - docs
+markdown_extensions:
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - admonition
+  - tables
+  - md_in_html
+  - toc:
+      toc_depth: 4
+      permalink: true
+  - pymdownx.critic
+  - pymdownx.keys
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.inlinehilite
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.superfences:
+      preserve_tabs: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+extra_javascript:
+  - javascripts/jquery-3.3.1.min.js
+  - javascripts/jquery.json-viewer.js
+  - javascripts/json-viewer.js
+extra_css:
+  - stylesheets/jquery.json-viewer.css

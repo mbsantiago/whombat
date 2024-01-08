@@ -23,7 +23,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container">
+    <div className="w-full">
       <DatasetRecordingsNav dataset={dataset} />
       <DatasetRecordings
         dataset={dataset}

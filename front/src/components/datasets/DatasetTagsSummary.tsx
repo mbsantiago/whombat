@@ -6,6 +6,10 @@ import Card from "@/components/Card";
 import { H3 } from "@/components/Headings";
 import { TagsIcon } from "@/components/icons";
 import TagComponent from "@/components/tags/Tag";
+import InputGroup from "@/components/inputs/InputGroup";
+import Select from "@/components/inputs/Select";
+import Search from "@/components/inputs/Search";
+import useListWithSearch from "@/hooks/lists/useListWithSearch";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
 import useStore from "@/store";
 
@@ -38,14 +42,13 @@ export default function DatasetTagsSummary({
     pageSize: -1,
   });
 
-  const tagCount: [Tag, number][] = useMemo(() => {
+  const tagCount: { tag: Tag; count: number }[] = useMemo(() => {
     if (isLoading || tags == null) {
       return [];
     }
     return getTagCount(tags);
   }, [tags, isLoading]);
 
-  const popularTags = tagCount.slice(0, topK);
   return (
     <Card>
       <H3>
@@ -54,10 +57,10 @@ export default function DatasetTagsSummary({
       </H3>
       {isLoading ? (
         <Loading />
-      ) : popularTags.length === 0 ? (
+      ) : tagCount.length === 0 ? (
         <NoTagsRecorded />
       ) : (
-        <PopularTags popularTags={popularTags} />
+        <TagCount tagCount={tagCount} />
       )}
     </Card>
   );
@@ -73,7 +76,10 @@ function getTagKey(tag: Tag): string {
  * @param tags - An array of tag instances.
  * @returns An array of tuples containing tags and their respective counts.
  */
-function getTagCount(tags: RecordingTag[]): [Tag, number][] {
+function getTagCount(tags: RecordingTag[]): {
+  tag: Tag;
+  count: number;
+}[] {
   const tagCount = new Map<string, number>();
   const tagMap = new Map<string, Tag>();
 
@@ -87,7 +93,10 @@ function getTagCount(tags: RecordingTag[]): [Tag, number][] {
 
   return Array.from(tagCount.entries())
     .sort((a, b) => b[1] - a[1])
-    .map(([id, count]) => [tagMap.get(id) as Tag, count]);
+    .map(([id, count]) => ({
+      tag: tagMap.get(id) as Tag,
+      count,
+    }));
 }
 
 /**
@@ -104,32 +113,62 @@ function NoTagsRecorded() {
 }
 
 /**
- * Component to display popular tags and their respective frequencies.
+ * Component to display tags and their respective frequencies.
  *
- * @param popularTags - An array of tuples containing tags and their counts.
- * @returns JSX element displaying popular tags.
+ * @param tagCount - An array of objects containing tags and their respective
+ * counts.
+ * @returns JSX element displaying tags.
  */
-function PopularTags({ popularTags }: { popularTags: [Tag, number][] }) {
-  const maxCount = popularTags[0]?.[1] ?? 0;
+function TagCount({
+  tagCount,
+  showMax: initialShowMax = 5,
+}: {
+  tagCount: { tag: Tag; count: number }[];
+  showMax?: number;
+}) {
+  const { items, setSearch, setLimit, limit } = useListWithSearch({
+    options: tagCount,
+    fields: ["tag.key", "tag.value"],
+    limit: initialShowMax,
+    shouldSort: false,
+  });
   const getTagColor = useStore((state) => state.getTagColor);
+  const maxCount = Math.max(...items.map(({ count }) => count));
 
   return (
     <>
-      <div>Top {popularTags.length} by number of recordings tagged</div>
-      <div className="flex flex-row gap-2">
-        <div className="flex flex-col gap-1">
-          <div className="pr-2 text-sm text-right text-stone-500">Tag</div>
-          {popularTags.map(([tag, _]) => (
-            <div key={getTagKey(tag)} className="flex flex-row justify-end">
-              <TagComponent tag={tag} disabled {...getTagColor(tag)} />
-            </div>
-          ))}
+      <p className="text-stone-500">
+        Use the search bar to find a specific tag and discover how many
+        recordings have been associated with it.
+      </p>
+      <div className="inline-flex justify-between gap-2 items-center">
+        <div className="grow">
+          <InputGroup name="search" label="Search">
+            <Search onChange={(value) => setSearch(value as string)} />
+          </InputGroup>
         </div>
-        <div className="flex flex-col gap-1 grow">
-          <div className="text-sm text-left whitespace-nowrap text-stone-500">
-            Recordings
-          </div>
-          {popularTags.map(([tag, count]) => (
+        <div className="w-24">
+          <InputGroup name="limit" label="Show Max">
+            <Select
+              selected={{ id: limit, label: limit, value: limit }}
+              onChange={(value) => setLimit(value as number)}
+              options={[5, 10, 20, 50, 100].map((value) => ({
+                id: value,
+                label: value,
+                value,
+              }))}
+            />
+          </InputGroup>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {items.map(({ tag, count }) => (
+          <>
+            <div key={`${tag.key}-${tag.value}-tag`}>
+              <div className="flex flex-row justify-end">
+                <TagComponent tag={tag} disabled {...getTagColor(tag)} />
+              </div>
+            </div>
             <div
               key={getTagKey(tag)}
               className="flex flex-row items-center m-px h-6"
@@ -143,8 +182,8 @@ function PopularTags({ popularTags }: { popularTags: [Tag, number][] }) {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </>
+        ))}
       </div>
     </>
   );

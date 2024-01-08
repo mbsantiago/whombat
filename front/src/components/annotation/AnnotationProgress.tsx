@@ -8,6 +8,7 @@ import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
 import Toggle from "@/components/inputs/Toggle";
 import ProgressBar from "@/components/ProgressBar";
 import Tooltip from "@/components/Tooltip";
+import Dialog from "@/components/Dialog";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
 
 import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
@@ -15,11 +16,13 @@ import type { Filter } from "@/hooks/utils/useFilter";
 import type { AnnotationTask } from "@/types";
 
 export default function AnnotationProgress({
+  instructions,
   tasks,
   filter,
   onNext,
   onPrevious,
 }: {
+  instructions: string;
   tasks: AnnotationTask[];
   filter: Filter<AnnotationTaskFilter>;
   onNext?: () => void;
@@ -42,6 +45,14 @@ export default function AnnotationProgress({
       </Tooltip>
       <div className="inline-flex gap-4 items-center px-2 h-full rounded-lg border grow dark:border-stone-800">
         <div className="inline-flex gap-1 items-center">
+          <Dialog
+            mode="text"
+            variant="info"
+            title="Annotation Instruction"
+            label="Instructions"
+          >
+            {() => <p>{instructions}</p>}
+          </Dialog>
           <span className="text-sm text-stone-500">Progress:</span>
           <div className="w-36">
             <ProgressBar

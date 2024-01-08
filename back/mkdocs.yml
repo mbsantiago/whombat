@@ -5,7 +5,10 @@ nav:
   - User Guide:
       - user_guide/index.md
       - Installation: user_guide/installation.md
-      - Configuration: user_guide/configuration.md
+      - Datasets: user_guide/datasets.md
+      - Annotation Projects: user_guide/annotation_projects.md
+      - Evaluation: user_guide/evaluation.md
+      - Data Exploration: user_guide/exploration.md
       - FAQ: user_guide/faq.md
   - Developer Guide:
       - developer_guide/index.md

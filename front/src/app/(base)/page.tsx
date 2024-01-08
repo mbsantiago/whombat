@@ -6,23 +6,27 @@ import Link from "@/components/Link";
 export default function Page() {
   return (
     <div className="container mx-auto p-16">
-      <h1 className="text-center text-6xl">
-        Welcome to
-        <br />
-        <Image
-          src="/whombat.svg"
-          alt="logo"
-          width={64}
-          height={64}
-          className="m-2 inline"
-        />
-        <span className="font-sans font-bold text-emerald-500 underline decoration-8">
-          Whombat
-        </span>
-      </h1>
-      <h2 className="text-center text-3xl text-stone-500 dark:text-stone-500">
-        Audio annotation tool with ML in mind!
-      </h2>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-center text-7xl">
+          <span className="text-6xl font-thin">
+            Welcome to
+          </span>
+          <br />
+          <Image
+            src="/whombat.svg"
+            alt="logo"
+            width={100}
+            height={100}
+            className="m-2 inline"
+          />
+          <span className="font-sans font-bold text-emerald-500 underline decoration-8">
+            Whombat
+          </span>
+        </h1>
+        <h2 className="text-center text-3xl text-stone-500 dark:text-stone-500">
+          Audio annotation tool with ML in mind!
+        </h2>
+      </div>
       <div className="pt-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <Card className="p-6 justify-between">

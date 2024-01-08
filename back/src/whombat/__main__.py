@@ -3,8 +3,14 @@
 This module is used to run the app using uvicorn.
 """
 
-from whombat.dependencies import get_settings
+import warnings
+
+# Ignore warnings from pydantic
+warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
+
 import uvicorn
+
+from whombat.dependencies import get_settings
 
 if __name__ == "__main__":
     settings = get_settings()
@@ -14,4 +20,5 @@ if __name__ == "__main__":
         log_level=str(settings.log_level),
         reload=True if settings.debug else False,
         port=settings.backend_port,
+        access_log=False,
     )

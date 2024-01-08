@@ -1,4 +1,4 @@
-"""Functions to handle the Whombat system."""
+"""Create the FastAPI application."""
 import functools
 from contextlib import asynccontextmanager
 
@@ -12,15 +12,18 @@ from whombat.database.init import init_database
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
 from whombat.routes import main_router
 from whombat.settings import Settings
+from whombat.system.boot import print_welcome_message
+
 
 @asynccontextmanager
 async def lifespan(settings: Settings, _: FastAPI):
     """Context manager to run startup and shutdown events."""
+    print_welcome_message()
+    print("Please wait while the database is initialized...")
     await init_database(settings)
-
-    print("Whombat has started.")
+    print("Whombat is ready to go!")
+    print("Press Ctrl+C to exit.")
     yield
-    print("Whombat is shutting down.")
 
 
 def create_app(settings: Settings) -> FastAPI:
@@ -41,6 +44,12 @@ def create_app(settings: Settings) -> FastAPI:
     for name, plugin in load_plugins():
         add_plugin_routes(app, name, plugin)
         add_plugin_pages(app, name, plugin)
+
+    app.mount(
+        "/docs/",
+        StaticFiles(directory="site", html=True),
+        name="docs",
+    )
 
     # NOTE: It is important that the static files are mounted after the
     # plugin routes, otherwise the plugin routes will not be found.

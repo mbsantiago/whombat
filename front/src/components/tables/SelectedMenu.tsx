@@ -1,5 +1,9 @@
 import Button from "@/components/Button";
 import { DeleteIcon, TagIcon } from "@/components/icons";
+import Popover from "@/components/Popover";
+import TagSearchBar from "@/components/tags/TagSearchBar";
+
+import type { Tag } from "@/types";
 
 export default function SelectedMenu({
   selected,
@@ -8,7 +12,7 @@ export default function SelectedMenu({
 }: {
   selected: number;
   onDelete?: () => void;
-  onTag?: () => void;
+  onTag?: (tag: Tag) => void;
 }) {
   if (selected === 0) {
     return null;
@@ -27,10 +31,16 @@ export default function SelectedMenu({
         </Button>
       </li>
       <li>
-        <Button mode="text" variant="primary" onClick={onTag}>
-          <TagIcon className="inline-block mr-1 w-5 h-5 align-middle" />
-          tag selected
-        </Button>
+        <Popover
+          button={
+            <Button mode="text" variant="primary">
+              <TagIcon className="inline-block mr-1 w-5 h-5 align-middle" />
+              tag selected
+            </Button>
+          }
+        >
+          {() => <TagSearchBar onSelect={onTag} />}
+        </Popover>
       </li>
     </ul>
   );

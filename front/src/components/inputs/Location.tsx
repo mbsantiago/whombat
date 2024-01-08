@@ -100,7 +100,7 @@ export default function LocationInput({
           </InputGroup>
         </div>
       )}
-      <div className="relative p-2">
+      <div className="relative inline-flex justify-center">
         {position.latitude != null && position.longitude != null && (
           <Map
             center={{ lat: position.latitude, lng: position.longitude }}

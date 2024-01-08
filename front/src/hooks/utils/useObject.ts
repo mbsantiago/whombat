@@ -31,7 +31,7 @@ export function useObjectDestruction<T>({
     if (status === "pending") {
       throw new Error(
         `No data for object of type ${name} (uuid=${uuid}). ` +
-          "Either the query is not enabled or the query is still loading.",
+        "Either the query is not enabled or the query is still loading.",
       );
     }
 
@@ -56,7 +56,7 @@ export function useObjectDestruction<T>({
   });
 }
 
-export function useObjectMutation<T, K>({
+export function useObjectMutation<T, K, J = T>({
   uuid,
   query,
   client,
@@ -64,15 +64,17 @@ export function useObjectMutation<T, K>({
   name,
   onSuccess,
   onError,
+  withUpdate = true,
 }: {
   uuid?: string;
   query: ReturnType<typeof useQuery<T>>;
   client: ReturnType<typeof useQueryClient>;
-  mutationFn: (obj: T, extra: K) => Promise<T>;
+  mutationFn: (obj: T, extra: K) => Promise<J>;
   name: string;
-  onSuccess?: (data: T) => void;
+  onSuccess?: (data: J) => void;
   onError?: (error: AxiosError) => void;
-}): ReturnType<typeof useMutation<T, AxiosError, K>> {
+  withUpdate?: boolean;
+}): ReturnType<typeof useMutation<J, AxiosError, K>> {
   const { status, data } = query;
 
   const trueMutationFn = useCallback(
@@ -84,7 +86,7 @@ export function useObjectMutation<T, K>({
       if (status === "pending") {
         throw new Error(
           `No data for object of type ${name} (uuid=${uuid}). ` +
-            "Either the query is not enabled or the query is still loading.",
+          "Either the query is not enabled or the query is still loading.",
         );
       }
 
@@ -99,10 +101,12 @@ export function useObjectMutation<T, K>({
     [status, data, mutationFn, name, uuid],
   );
 
-  return useMutation<T, AxiosError, K>({
+  return useMutation<J, AxiosError, K>({
     mutationFn: trueMutationFn,
     onSuccess: (data) => {
-      client.setQueryData([name, uuid], data);
+      if (withUpdate) {
+        client.setQueryData([name, uuid], data);
+      }
       onSuccess?.(data);
     },
     onError: onError,
@@ -130,7 +134,7 @@ export function useObjectQuery<T, K>({
     if (status === "pending") {
       throw new Error(
         `No data for object of type ${name} (uuid=${uuid}). ` +
-          "Either the query is not enabled or the query is still loading.",
+        "Either the query is not enabled or the query is still loading.",
       );
     }
 
@@ -237,14 +241,16 @@ export default function useObject<T>({
         enabled,
       });
     },
-    useMutation: <K>({
+    useMutation: <K, J = T>({
       mutationFn,
       onSuccess,
       onError,
+      withUpdate = true,
     }: {
-      mutationFn: (data: T, extra: K) => Promise<T>;
-      onSuccess?: (data: T) => void;
+      mutationFn: (data: T, extra: K) => Promise<J>;
+      onSuccess?: (data: J) => void;
       onError?: (error: AxiosError) => void;
+      withUpdate?: boolean;
     }) => {
       return useObjectMutation({
         uuid,
@@ -254,6 +260,7 @@ export default function useObject<T>({
         name,
         onSuccess,
         onError,
+        withUpdate,
       });
     },
     useDestruction: ({

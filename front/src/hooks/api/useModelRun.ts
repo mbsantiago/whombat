@@ -2,7 +2,7 @@ import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
 import type { ModelRunUpdate } from "@/api/model_runs";
-import type { ModelRun } from "@/types";
+import type { ModelRun, EvaluationSet, Evaluation } from "@/types";
 import type { AxiosError } from "axios";
 
 export default function useModelRun({
@@ -11,6 +11,7 @@ export default function useModelRun({
   enabled = true,
   onUpdate,
   onDelete,
+  onEvaluate,
   onError,
 }: {
   uuid?: string;
@@ -18,6 +19,7 @@ export default function useModelRun({
   enabled?: boolean;
   withState?: boolean;
   onUpdate?: (updated: ModelRun) => void;
+  onEvaluate?: (evaluation: Evaluation) => void;
   onDelete?: (deleted: ModelRun) => void;
   onError?: (error: AxiosError) => void;
 }) {
@@ -39,9 +41,16 @@ export default function useModelRun({
     onSuccess: onUpdate,
   });
 
-  const evaluate = useMutation({
+  const evaluate = useMutation<
+    {
+      evaluationSet: EvaluationSet;
+      task: string;
+    },
+    Evaluation
+  >({
     mutationFn: api.modelRuns.evaluate,
-    onSuccess: onUpdate,
+    onSuccess: onEvaluate,
+    withUpdate: false,
   });
 
   const delete_ = useDestruction({

@@ -53,7 +53,7 @@ export default function RecordingLocation({
       button={<LocationButton latitude={latitude} longitude={longitude} />}
     >
       {() => (
-        <Card className="bg-stone-800">
+        <Card className="bg-stone-800 w-80">
           <LocationInput
             value={{ latitude, longitude }}
             onChange={onChange}

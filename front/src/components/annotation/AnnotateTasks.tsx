@@ -31,6 +31,7 @@ export default function AnnotateTasks({
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   annotationTask,
   currentUser,
+  instructions,
   onCreateSoundEventAnnotation,
   onUpdateSoundEventAnnotation,
   onAddSoundEventTag,
@@ -44,6 +45,7 @@ export default function AnnotateTasks({
   onRejectTask,
   onVerifyTask,
 }: {
+  instructions: string;
   /** Filter to select which tasks are to be annotated */
   taskFilter?: AnnotationTaskFilter;
   /** Filter to select which tags are to be used for annotation */
@@ -137,6 +139,7 @@ export default function AnnotateTasks({
       <div className="flex flex-row justify-between gap-8">
         <div className="grow">
           <AnnotationProgress
+            instructions={instructions}
             tasks={tasks.tasks}
             filter={tasks._filter}
             onNext={tasks.nextTask}

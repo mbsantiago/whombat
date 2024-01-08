@@ -78,6 +78,7 @@ export default function Page() {
 
   return (
     <AnnotateTasks
+      instructions={project.annotation_instructions || ""}
       taskFilter={filter}
       tagFilter={filter}
       annotationTask={annotationTask.data}

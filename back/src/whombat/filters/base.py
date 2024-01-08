@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import Type, TypeVar
 from uuid import UUID
 
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, ConfigDict, create_model
 from pydantic.fields import FieldInfo
 from sqlalchemy import Select, or_
 from sqlalchemy.orm import InstrumentedAttribute, MappedColumn
@@ -111,6 +111,8 @@ def isin_filter(
 
 class Filter(ABC, BaseModel):
     """A filter to use on a query."""
+
+    model_config = ConfigDict(protected_namespaces=())
 
     _filter_mapping = {
         "eq": eq_filter,

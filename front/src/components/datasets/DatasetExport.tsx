@@ -16,7 +16,7 @@ export default function DatasetExport({ dataset }: { dataset: Dataset }) {
         the format for downloading the metadata:
       </p>
       <div className="grid grid-cols-2 gap-2">
-        <Card className="h-full dark:bg-stone-600">
+        <Card className="h-full">
           <Link
             href={download.csv || ""}
             className="block mt-2 text-center"
@@ -30,7 +30,7 @@ export default function DatasetExport({ dataset }: { dataset: Dataset }) {
             tabular software.
           </p>
         </Card>
-        <Card className="h-full dark:bg-stone-600">
+        <Card className="h-full">
           <Link
             href={download.json || ""}
             className="block mt-2 text-center"
