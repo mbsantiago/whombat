@@ -11,6 +11,7 @@ from whombat.routes.clip_predictions import clip_predictions_router
 from whombat.routes.clips import clips_router
 from whombat.routes.datasets import dataset_router
 from whombat.routes.evaluation_sets import evaluation_sets_router
+from whombat.routes.evaluations import evaluations_router
 from whombat.routes.features import features_router
 from whombat.routes.model_runs import model_runs_router
 from whombat.routes.notes import notes_router
@@ -30,7 +31,6 @@ from whombat.routes.spectrograms import spectrograms_router
 from whombat.routes.tags import tags_router
 from whombat.routes.user_runs import user_runs_router
 from whombat.routes.users import users_router
-from whombat.routes.evaluations import evaluations_router
 
 __all__ = [
     "main_router",

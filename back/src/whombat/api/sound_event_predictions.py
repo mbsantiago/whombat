@@ -93,7 +93,7 @@ class SoundEventPredictionAPI(
         sound_event_prediction_tag : schemas.SoundEventPredictionTag
             Updated sound event prediction.
         """
-        for t in obj.predicted_tags:
+        for t in obj.tags:
             if (t.tag.key, t.tag.value) == (tag.key, tag.value):
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag} already exists in sound event "
@@ -110,8 +110,8 @@ class SoundEventPredictionAPI(
 
         obj = obj.model_copy(
             update=dict(
-                predicted_tags=[
-                    *obj.predicted_tags,
+                tags=[
+                    *obj.tags,
                     schemas.SoundEventPredictionTag.model_validate(db_tag),
                 ]
             )
@@ -141,7 +141,7 @@ class SoundEventPredictionAPI(
         sound_event_prediction : schemas.SoundEventPrediction
             The updated sound event prediction.
         """
-        for t in obj.predicted_tags:
+        for t in obj.tags:
             if (t.tag.key, t.tag.value) == (tag.key, tag.value):
                 break
         else:
@@ -162,9 +162,9 @@ class SoundEventPredictionAPI(
 
         obj = obj.model_copy(
             update=dict(
-                predicted_tags=[
+                tags=[
                     t
-                    for t in obj.predicted_tags
+                    for t in obj.tags
                     if t.tag.key != tag.key or t.tag.value != tag.value
                 ]
             )
@@ -203,9 +203,7 @@ class SoundEventPredictionAPI(
                 clip_prediction,
             )
 
-        existing_tags = {
-            (t.tag.key, t.tag.value) for t in prediction.predicted_tags
-        }
+        existing_tags = {(t.tag.key, t.tag.value) for t in prediction.tags}
         for predicted_tag in data.tags:
             if (
                 predicted_tag.tag.key,
@@ -255,7 +253,7 @@ class SoundEventPredictionAPI(
                     tag=tags.to_soundevent(tag.tag),
                     score=tag.score,
                 )
-                for tag in sound_event_prediction.predicted_tags
+                for tag in sound_event_prediction.tags
             ],
         )
 

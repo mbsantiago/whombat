@@ -16,8 +16,8 @@ import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
 
 from whombat.models.base import Base
-from whombat.models.tag import Tag
 from whombat.models.sound_event import SoundEvent
+from whombat.models.tag import Tag
 
 if TYPE_CHECKING:
     from whombat.models.clip_prediction import ClipPrediction
@@ -43,7 +43,7 @@ class SoundEventPrediction(Base):
     score
         The confidence score assigned to the sound event prediction by the
         model.
-    predicted_tags
+    tags
         A list of predicted tags associated with the sound event prediction.
     created_on
         The date and time when the sound event prediction was created.
@@ -103,9 +103,7 @@ class SoundEventPrediction(Base):
         init=False,
         repr=False,
     )
-    predicted_tags: orm.Mapped[
-        list["SoundEventPredictionTag"]
-    ] = orm.relationship(
+    tags: orm.Mapped[list["SoundEventPredictionTag"]] = orm.relationship(
         "SoundEventPredictionTag",
         cascade="all, delete-orphan",
         lazy="joined",

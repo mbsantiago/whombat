@@ -1,7 +1,8 @@
 """Test suite for migrations and database creation."""
 
-from sqlalchemy.engine import URL
 from pathlib import Path
+
+from sqlalchemy.engine import URL
 
 from whombat.database import utils
 

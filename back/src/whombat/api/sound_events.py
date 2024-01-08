@@ -422,7 +422,7 @@ class SoundEventAPI(
         self,
         session: AsyncSession,
         sound_event: schemas.SoundEvent,
-        audio_dir: Path | None = None
+        audio_dir: Path | None = None,
     ) -> data.SoundEvent:
         """Create a soundevent SoundEvent object from a sound event.
 

@@ -26,10 +26,7 @@ async def create_clip_prediction(
     data: schemas.ClipPredictionCreate,
 ):
     """Create a clip prediction."""
-    clip = await api.clips.get(
-        session,
-        clip_uuid
-    )
+    clip = await api.clips.get(session, clip_uuid)
     clip_prediction = await api.clip_predictions.create(
         session,
         clip=clip,

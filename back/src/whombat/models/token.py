@@ -1,6 +1,6 @@
 """Module for defining the AccessToken Model."""
-from uuid import UUID
 import datetime
+from uuid import UUID
 
 import sqlalchemy.orm as orm
 from fastapi_users_db_sqlalchemy.generics import GUID
@@ -54,7 +54,7 @@ class AccessToken(Base):
     def created_at(self) -> datetime.datetime:
         return self.created_on
 
-    @created_at.expression 
+    @created_at.expression
     @classmethod
     def _created_at_expression(cls):
         return cls.created_on

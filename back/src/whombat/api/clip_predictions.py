@@ -85,7 +85,7 @@ class ClipPredictionAPI(
         clip_prediction : schemas.ClipPrediction
             Clip prediction with the added tag.
         """
-        for t in obj.predicted_tags:
+        for t in obj.tags:
             if (t.tag.key, t.tag.value) == (tag.key, tag.value):
                 raise exceptions.DuplicateObjectError(
                     f"Tag {tag} already exists in clip prediction {obj.id}"
@@ -101,8 +101,8 @@ class ClipPredictionAPI(
 
         obj = obj.model_copy(
             update=dict(
-                predicted_tags=[
-                    *obj.predicted_tags,
+                tags=[
+                    *obj.tags,
                     schemas.PredictedTag.model_validate(db_tag),
                 ],
             )
@@ -132,7 +132,7 @@ class ClipPredictionAPI(
         clip_prediction : schemas.ClipPrediction
             Clip prediction with the removed tag.
         """
-        for t in obj.predicted_tags:
+        for t in obj.tags:
             if (t.tag.key, t.tag.value) == (tag.key, tag.value):
                 break
         else:
@@ -151,9 +151,9 @@ class ClipPredictionAPI(
 
         obj = obj.model_copy(
             update=dict(
-                predicted_tags=[
+                tags=[
                     t
-                    for t in obj.predicted_tags
+                    for t in obj.tags
                     if not (t.tag.key == tag.key and t.tag.value == tag.value)
                 ],
             )
@@ -213,7 +213,7 @@ class ClipPredictionAPI(
                 tag=tags.to_soundevent(tag.tag),
                 score=tag.score,
             )
-            for tag in clip_prediction.predicted_tags
+            for tag in clip_prediction.tags
         ]
         sound_events = [
             await sound_event_predictions.to_soundevent(

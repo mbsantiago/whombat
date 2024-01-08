@@ -2,6 +2,7 @@
 from uuid import UUID
 
 from pydantic import Field
+
 from whombat.schemas.base import BaseSchema
 
 __all__ = [

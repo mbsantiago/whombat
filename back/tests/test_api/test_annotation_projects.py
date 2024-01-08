@@ -251,9 +251,7 @@ async def test_add_tag_to_project_does_not_add_duplicate(
         tag,
     )
     with pytest.raises(exceptions.DuplicateObjectError):
-        await api.annotation_projects.add_tag(
-            session, annotation_project, tag
-        )
+        await api.annotation_projects.add_tag(session, annotation_project, tag)
 
 
 async def test_remove_tag_from_project(
@@ -308,4 +306,6 @@ async def test_remove_tag_from_project_fails_if_tag_not_present(
 ):
     """Test that a tag can be removed from an annotation project."""
     with pytest.raises(exceptions.NotFoundError):
-        await api.annotation_projects.remove_tag(session, annotation_project, tag)
+        await api.annotation_projects.remove_tag(
+            session, annotation_project, tag
+        )

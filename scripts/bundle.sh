@@ -23,8 +23,6 @@ fi
 # Activate the virtual environment
 source build/.venv/bin/activate
 
-pwd
-
 # Whombat dependencies should be installed in the virtual environment
 pip install .
 
@@ -39,8 +37,9 @@ pyinstaller \
 	--hidden-import "passlib.handlers.bcrypt" \
 	--add-data "src/whombat/migrations:whombat/migrations" \
 	--add-data "src/whombat/statics:whombat/statics" \
+	--add-data "src/whombat/user_guide:whombat/user_guide" \
 	--add-data "alembic.ini:." \
-	--splash "docs/assets/logo.png" \
+	--splash "../front/public/whombat512x512png.png" \
 	--name whombat \
     --onefile \
 	app.py

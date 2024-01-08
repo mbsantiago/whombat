@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from pydantic import Field, BaseModel
+from pydantic import BaseModel, Field
 from soundevent.data import AnnotationState
 
 from whombat.schemas.base import BaseSchema

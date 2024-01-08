@@ -6,7 +6,7 @@ from dataclasses import MISSING, fields
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
-from sqlalchemy import Select, func, insert, select, Result
+from sqlalchemy import Result, Select, func, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect

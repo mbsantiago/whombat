@@ -155,7 +155,7 @@ async def add_annotation_status_badge(
         session,
         annotation_task_uuid,
     )
-    updated= await api.annotation_tasks.add_status_badge(
+    updated = await api.annotation_tasks.add_status_badge(
         session,
         annotation_task,
         state,

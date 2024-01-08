@@ -48,7 +48,7 @@ class ClipPrediction(BaseSchema):
     sound_events: list[SoundEventPrediction] = Field(default_factory=list)
     """Sound event predictions of the clip."""
 
-    predicted_tags: list[ClipPredictionTag] = Field(default_factory=list)
+    tags: list[ClipPredictionTag] = Field(default_factory=list)
     """Tags of the prediction."""
 
 

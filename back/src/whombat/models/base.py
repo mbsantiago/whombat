@@ -7,11 +7,11 @@ import datetime
 import uuid
 from pathlib import Path
 
-from sqlalchemy import MetaData
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
 from fastapi_users_db_sqlalchemy.generics import GUID
 from soundevent import data
+from sqlalchemy import MetaData
 
 __all__ = [
     "Base",

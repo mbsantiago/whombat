@@ -3,7 +3,8 @@
 from typing import Sequence
 from uuid import UUID
 
-from soundevent import data, evaluation as evaluate
+from soundevent import data
+from soundevent import evaluation as evaluate
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 

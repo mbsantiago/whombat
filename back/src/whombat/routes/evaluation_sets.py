@@ -1,6 +1,6 @@
 """REST API routes for evaluation sets."""
-from uuid import UUID
 import json
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
 from fastapi.responses import Response
@@ -9,8 +9,8 @@ from soundevent.io.aoef import to_aeof
 from whombat import api, schemas
 from whombat.dependencies import Session, WhombatSettings
 from whombat.filters.evaluation_sets import EvaluationSetFilter
-from whombat.routes.types import Limit, Offset
 from whombat.io import aoef
+from whombat.routes.types import Limit, Offset
 
 __all__ = [
     "evaluation_sets_router",

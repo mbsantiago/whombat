@@ -75,8 +75,8 @@ from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
-    RecordingUpdate,
     RecordingTag,
+    RecordingUpdate,
 )
 from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotation,
@@ -108,11 +108,7 @@ from whombat.schemas.spectrograms import (
     Window,
 )
 from whombat.schemas.tags import PredictedTag, Tag, TagCreate, TagUpdate
-from whombat.schemas.user_runs import (
-    UserRun,
-    UserRunCreate,
-    UserRunUpdate,
-)
+from whombat.schemas.user_runs import UserRun, UserRunCreate, UserRunUpdate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
 __all__ = [

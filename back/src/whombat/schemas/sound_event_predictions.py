@@ -52,7 +52,7 @@ class SoundEventPrediction(BaseSchema):
     score: float
     """Overall score of the prediction."""
 
-    predicted_tags: list[SoundEventPredictionTag] = Field(default_factory=list)
+    tags: list[SoundEventPredictionTag] = Field(default_factory=list)
     """Tags of the prediction."""
 
 
