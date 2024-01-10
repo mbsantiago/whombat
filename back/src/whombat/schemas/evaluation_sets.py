@@ -23,6 +23,9 @@ class EvaluationSetCreate(BaseModel):
     description: str | None = Field(default=None)
     """The description of the evaluation set."""
 
+    task: str = Field(..., min_length=1)
+    """The name of the task the evaluation set is used for."""
+
 
 class EvaluationSet(BaseSchema):
     """Schema for EvaluationSet objects returned to the user."""
@@ -38,6 +41,9 @@ class EvaluationSet(BaseSchema):
 
     description: str | None
     """The description of the evaluation set."""
+
+    task: str
+    """The name of the task the evaluation set is used for."""
 
     tags: list[Tag] = Field(default_factory=list)
     """The tags to use for the evaluation set."""

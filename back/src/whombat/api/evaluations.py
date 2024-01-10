@@ -1,7 +1,6 @@
 """API functions to interact with evaluations."""
 
 from pathlib import Path
-from time import perf_counter
 from typing import Sequence
 from uuid import UUID
 
@@ -331,6 +330,16 @@ class EvaluationAPI(
             audio_dir=audio_dir,
             base_audio_dir=audio_dir,
         )
+
+        # Create model run evaluation
+        model_run_eval = models.ModelRunEvaluation(
+            model_run_id=model_run.id,
+            evaluation_id=db_eval.id,
+            evaluation_set_id=evaluation_set.id,
+        )
+        session.add(model_run_eval)
+        await session.flush()
+
         await session.refresh(db_eval)
         return schemas.Evaluation.model_validate(db_eval)
 

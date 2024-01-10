@@ -138,13 +138,18 @@ class UserRunPrediction(Base):
 
 
 class UserRunEvaluation(Base):
-    """User Run Evaluation User."""
+    """User Run Evaluation Model."""
 
     __tablename__ = "user_run_evaluation"
-    __table_args__ = (UniqueConstraint("user_run_id", "evaluation_id"),)
+    __table_args__ = (UniqueConstraint("user_run_id", "evaluation_set_id"),)
 
     user_run_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("user_run.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
         nullable=False,
         primary_key=True,
     )

@@ -276,6 +276,7 @@ async def import_evaluation_set(
     settings: WhombatSettings,
     session: Session,
     evaluation_set: UploadFile,
+    task: str = "sound_event_detection",
 ):
     """Import an annotation project."""
     obj = json.loads(evaluation_set.file.read())
@@ -285,6 +286,7 @@ async def import_evaluation_set(
         obj,
         audio_dir=settings.audio_dir,
         base_audio_dir=settings.audio_dir,
+        task=task,
     )
     await session.commit()
     await session.refresh(db_dataset)

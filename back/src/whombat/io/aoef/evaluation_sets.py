@@ -20,6 +20,7 @@ from whombat.io.aoef.users import import_users
 async def import_evaluation_set(
     session: AsyncSession,
     obj: dict,
+    task: str,
     audio_dir: Path,
     base_audio_dir: Path,
 ) -> models.EvaluationSet:
@@ -32,7 +33,11 @@ async def import_evaluation_set(
     data = obj["data"]
     evalset_object = EvaluationSetObject.model_validate(data)
 
-    project = await get_or_create_evaluation_set(session, evalset_object)
+    project = await get_or_create_evaluation_set(
+        session,
+        evalset_object,
+        task=task,
+    )
 
     tags = await import_tags(session, evalset_object.tags or [])
     users = await import_users(session, evalset_object.users or [])
@@ -95,6 +100,7 @@ async def import_evaluation_set(
 async def get_or_create_evaluation_set(
     session: AsyncSession,
     obj: EvaluationSetObject,
+    task: str = "sound_event_detection",
 ) -> models.EvaluationSet:
     stmt = select(models.EvaluationSet).where(
         models.EvaluationSet.uuid == obj.uuid
@@ -107,6 +113,7 @@ async def get_or_create_evaluation_set(
     db_obj = models.EvaluationSet(
         uuid=obj.uuid,
         name=obj.name,
+        task=task,
         description=obj.description or "",
         created_on=obj.created_on or datetime.datetime.now(),
     )

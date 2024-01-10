@@ -100,6 +100,10 @@ class EvaluationSet(Base):
         The name of the evaluation set.
     description
         A textual description of the evaluation set.
+    task
+        The name of the task the evaluation set is for. For example,
+        Sound Event Detection. The task name should be linked
+        to a precise way of evaluating the model.
     tags
         The tags to focus on for this evaluation set.
     clip_annotations
@@ -128,6 +132,7 @@ class EvaluationSet(Base):
     )
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
     description: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    task: orm.Mapped[str] = orm.mapped_column(nullable=False)
 
     # Relationships
     tags: orm.Mapped[list[Tag]] = orm.relationship(

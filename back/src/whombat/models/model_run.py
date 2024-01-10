@@ -143,10 +143,20 @@ class ModelRunEvaluation(Base):
     """Model Run Evaluation Model."""
 
     __tablename__ = "model_run_evaluation"
-    __table_args__ = (UniqueConstraint("model_run_id", "evaluation_id"),)
+    __table_args__ = (
+        UniqueConstraint(
+            "model_run_id",
+            "evaluation_set_id",
+        ),
+    )
 
     model_run_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("model_run.id"),
+        nullable=False,
+        primary_key=True,
+    )
+    evaluation_set_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("evaluation_set.id"),
         nullable=False,
         primary_key=True,
     )

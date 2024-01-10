@@ -51,6 +51,7 @@ class EvaluationSetAPI(
         session: AsyncSession,
         name: str,
         description: str | None = None,
+        task: str = "sound_event_detection",
         **kwargs,
     ) -> schemas.EvaluationSet:
         """Create an evaluation set.
@@ -65,6 +66,9 @@ class EvaluationSetAPI(
             A description of the evaluation set. Include information about
             how the evaluation set was created and what it is meant to be
             used for.
+        task
+            The task the evaluation set is used for. For example,
+            Sound Event Detection.
         **kwargs
             Additional keyword arguments to pass to the create function.
 
@@ -78,6 +82,7 @@ class EvaluationSetAPI(
             schemas.EvaluationSetCreate(
                 name=name,
                 description=description,
+                task=task,
             ),
             **kwargs,
         )

@@ -1,20 +1,20 @@
 """first migration
 
-Revision ID: a3f80326d1ff
+Revision ID: 03a1d239e06e
 Revises: 
-Create Date: 2024-01-08 22:58:02.184770
+Create Date: 2024-01-10 20:08:09.823754
 
 """
 from typing import Sequence, Union
 
-import fastapi_users_db_sqlalchemy.generics
-import sqlalchemy as sa
 from alembic import op
-
+import sqlalchemy as sa
+import fastapi_users_db_sqlalchemy.generics
 import whombat.models.base
 
+
 # revision identifiers, used by Alembic.
-revision: str = "a3f80326d1ff"
+revision: str = "03a1d239e06e"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -71,6 +71,7 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
+        sa.Column("task", sa.String(), nullable=False),
         sa.Column("created_on", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_evaluation_set")),
         sa.UniqueConstraint("name", name=op.f("uq_evaluation_set_name")),
@@ -328,6 +329,7 @@ def upgrade() -> None:
     op.create_table(
         "model_run_evaluation",
         sa.Column("model_run_id", sa.Integer(), nullable=False),
+        sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
         sa.Column("created_on", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -336,18 +338,26 @@ def upgrade() -> None:
             name=op.f("fk_model_run_evaluation_evaluation_id_evaluation"),
         ),
         sa.ForeignKeyConstraint(
+            ["evaluation_set_id"],
+            ["evaluation_set.id"],
+            name=op.f(
+                "fk_model_run_evaluation_evaluation_set_id_evaluation_set"
+            ),
+        ),
+        sa.ForeignKeyConstraint(
             ["model_run_id"],
             ["model_run.id"],
             name=op.f("fk_model_run_evaluation_model_run_id_model_run"),
         ),
         sa.PrimaryKeyConstraint(
             "model_run_id",
+            "evaluation_set_id",
             "evaluation_id",
             name=op.f("pk_model_run_evaluation"),
         ),
         sa.UniqueConstraint(
             "model_run_id",
-            "evaluation_id",
+            "evaluation_set_id",
             name=op.f("uq_model_run_evaluation_model_run_id"),
         ),
     )
@@ -623,6 +633,7 @@ def upgrade() -> None:
     op.create_table(
         "user_run_evaluation",
         sa.Column("user_run_id", sa.Integer(), nullable=False),
+        sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
         sa.Column("created_on", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -631,16 +642,26 @@ def upgrade() -> None:
             name=op.f("fk_user_run_evaluation_evaluation_id_evaluation"),
         ),
         sa.ForeignKeyConstraint(
+            ["evaluation_set_id"],
+            ["evaluation_set.id"],
+            name=op.f(
+                "fk_user_run_evaluation_evaluation_set_id_evaluation_set"
+            ),
+        ),
+        sa.ForeignKeyConstraint(
             ["user_run_id"],
             ["user_run.id"],
             name=op.f("fk_user_run_evaluation_user_run_id_user_run"),
         ),
         sa.PrimaryKeyConstraint(
-            "user_run_id", "evaluation_id", name=op.f("pk_user_run_evaluation")
+            "user_run_id",
+            "evaluation_set_id",
+            "evaluation_id",
+            name=op.f("pk_user_run_evaluation"),
         ),
         sa.UniqueConstraint(
             "user_run_id",
-            "evaluation_id",
+            "evaluation_set_id",
             name=op.f("uq_user_run_evaluation_user_run_id"),
         ),
     )
