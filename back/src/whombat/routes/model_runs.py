@@ -1,9 +1,8 @@
 """REST API routes for model runs."""
 import json
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, UploadFile
+from fastapi import APIRouter, Depends, UploadFile
 from pydantic import BaseModel
 
 from whombat import api, schemas
@@ -72,14 +71,14 @@ class EvaluationData(BaseModel):
     task: str
 
 
-@model_runs_router.post("/detail/evaluate/", response_model=schemas.ModelRun)
+@model_runs_router.post("/detail/evaluate/", response_model=schemas.Evaluation)
 async def evaluate_model_run(
     session: Session,
     model_run_uuid: UUID,
     evaluation_set_uuid: UUID,
     data: EvaluationData,
+    settings: WhombatSettings,
 ) -> schemas.Evaluation:
-    print("evaluate_model_run")
     model_run = await api.model_runs.get(session, model_run_uuid)
     evaluation_set = await api.evaluation_sets.get(
         session, evaluation_set_uuid
@@ -89,7 +88,9 @@ async def evaluate_model_run(
         model_run,
         evaluation_set,
         data.task,
+        audio_dir=settings.audio_dir,
     )
+    await session.commit()
     return evaluation
 
 

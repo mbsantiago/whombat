@@ -3,6 +3,8 @@ import json
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
+from fastapi.responses import Response
+from soundevent.io.aoef import to_aeof
 
 from whombat import api, schemas
 from whombat.dependencies import Session, WhombatSettings
@@ -163,6 +165,31 @@ async def remove_tag_from_annotation_project(
     )
     await session.commit()
     return project
+
+
+@annotation_projects_router.get(
+    "/detail/download/",
+    response_model=schemas.Page[schemas.Recording],
+)
+async def download_annotation_project(
+    session: Session,
+    annotation_project_uuid: UUID,
+):
+    """Export an annotation project."""
+    whombat_project = await api.annotation_projects.get(
+        session, annotation_project_uuid
+    )
+    project = await api.annotation_projects.to_soundevent(
+        session, whombat_project
+    )
+    obj = to_aeof(project)
+    filename = f"{project.name}_{obj.created_on.isoformat()}.json"
+    return Response(
+        obj.model_dump_json(),
+        media_type="application/json",
+        status_code=200,
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
 
 
 @annotation_projects_router.post(

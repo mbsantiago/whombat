@@ -1,5 +1,6 @@
 """Python API for interacting with Tasks."""
 
+from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
@@ -273,6 +274,8 @@ class AnnotationTaskAPI(
         self,
         session: AsyncSession,
         task: schemas.AnnotationTask,
+        clip: schemas.Clip | None = None,
+        audio_dir: Path | None = None,
     ) -> data.AnnotationTask:
         """Convert a task to a `soundevent` task.
 
@@ -286,10 +289,11 @@ class AnnotationTaskAPI(
         data.AnnotationTask
             The converted task.
         """
-        clip = await self.get_clip(session, task)
+        if clip is None:
+            clip = await self.get_clip(session, task)
         return data.AnnotationTask(
             uuid=task.uuid,
-            clip=clips.to_soundevent(clip),
+            clip=clips.to_soundevent(clip, audio_dir=audio_dir),
             status_badges=[
                 data.StatusBadge(
                     owner=users.to_soundevent(sb.user) if sb.user else None,
@@ -351,6 +355,7 @@ class AnnotationTaskAPI(
         session: AsyncSession,
         data: data.AnnotationTask,
         annotation_project: schemas.AnnotationProject,
+        clip: schemas.Clip | None = None,
     ) -> schemas.AnnotationTask:
         """Create a task from a `soundevent` task.
 
@@ -368,7 +373,8 @@ class AnnotationTaskAPI(
         schemas.AnnotationTask
             The created task.
         """
-        clip = await clips.from_soundevent(session, data.clip)
+        if clip is None:
+            clip = await clips.from_soundevent(session, data.clip)
         return await self.create(
             session,
             clip=clip,

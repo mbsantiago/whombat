@@ -236,6 +236,7 @@ class ClipEvaluationAPI(
         session: AsyncSession,
         obj: schemas.ClipEvaluation,
         audio_dir: Path | None = None,
+        evaluations: Sequence[schemas.SoundEventEvaluation] | None = None,
     ) -> data.ClipEvaluation:
         """Create a clip evaluation in soundevent format from a clip evaluation
         in whombat format.
@@ -252,11 +253,12 @@ class ClipEvaluationAPI(
         data.ClipEvaluation
             The clip evaluation in soundevent format.
         """
-        se_evaluations, _ = await self.get_sound_event_evaluations(
-            session,
-            obj,
-            limit=-1,
-        )
+        if evaluations is None:
+            evaluations, _ = await self.get_sound_event_evaluations(
+                session,
+                obj,
+                limit=-1,
+            )
 
         annotations = await clip_annotations.to_soundevent(
             session,
@@ -277,9 +279,12 @@ class ClipEvaluationAPI(
             metrics=[features.to_soundevent(feat) for feat in obj.metrics],
             matches=[
                 await sound_event_evaluations.to_soundevent(
-                    session, se_eval, audio_dir=audio_dir
+                    session,
+                    se_eval,
+                    audio_dir=audio_dir,
+                    recording=obj.clip_annotation.clip.recording,
                 )
-                for se_eval in se_evaluations
+                for se_eval in evaluations
             ],
             score=obj.score,
         )

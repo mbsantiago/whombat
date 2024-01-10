@@ -48,6 +48,7 @@ async def import_evaluation_set(
         feature_names=feature_names,
         audio_dir=audio_dir,
         base_audio_dir=base_audio_dir,
+        should_import=False,
     )
     clips = await get_clips(
         session,

@@ -238,18 +238,25 @@ class SoundEventEvaluationAPI(
         session: AsyncSession,
         obj: schemas.SoundEventEvaluation,
         audio_dir: Path | None = None,
+        recording: schemas.Recording | None = None,
     ) -> data.Match:
         """Convert a sound event evaluation to soundevent format."""
         source = None
         if obj.source:
             source = await sound_event_predictions.to_soundevent(
-                session, obj.source, audio_dir=audio_dir
+                session,
+                obj.source,
+                audio_dir=audio_dir,
+                recording=recording,
             )
 
         target = None
         if obj.target:
             target = await sound_event_annotations.to_soundevent(
-                session, obj.target, audio_dir=audio_dir
+                session,
+                obj.target,
+                audio_dir=audio_dir,
+                recording=recording,
             )
 
         return data.Match(

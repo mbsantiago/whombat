@@ -217,7 +217,10 @@ class ClipPredictionAPI(
         ]
         sound_events = [
             await sound_event_predictions.to_soundevent(
-                session, prediction, audio_dir=audio_dir
+                session,
+                prediction,
+                audio_dir=audio_dir,
+                recording=clip_prediction.clip.recording,
             )
             for prediction in clip_prediction.sound_events
         ]

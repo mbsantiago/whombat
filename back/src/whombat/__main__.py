@@ -20,5 +20,5 @@ if __name__ == "__main__":
         log_level=str(settings.log_level),
         reload=True if settings.debug else False,
         port=settings.backend_port,
-        access_log=False,
+        access_log=True if settings.debug else False,
     )

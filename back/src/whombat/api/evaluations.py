@@ -1,10 +1,13 @@
 """API functions to interact with evaluations."""
 
+from pathlib import Path
+from time import perf_counter
 from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
 from soundevent import evaluation as evaluate
+from soundevent.io.aoef import EvaluationObject, to_aeof
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +24,7 @@ from whombat.api.features import features
 from whombat.api.model_runs import model_runs
 from whombat.filters.base import Filter
 from whombat.filters.clip_evaluations import EvaluationFilter
+from whombat.io.aoef.evaluations import import_evaluation
 
 
 class EvaluationAPI(
@@ -272,6 +276,7 @@ class EvaluationAPI(
         self,
         session: AsyncSession,
         obj: schemas.Evaluation,
+        audio_dir: Path | None = None,
     ) -> data.Evaluation:
         """Create a sound event evaluation from an evaluation."""
         evals, _ = await self.get_clip_evaluations(
@@ -288,7 +293,11 @@ class EvaluationAPI(
             evaluation_task=obj.task,
             metrics=metrics,
             clip_evaluations=[
-                await clip_evaluations.to_soundevent(session, ce)
+                await clip_evaluations.to_soundevent(
+                    session,
+                    ce,
+                    audio_dir=audio_dir,
+                )
                 for ce in evals
             ],
         )
@@ -299,26 +308,58 @@ class EvaluationAPI(
         model_run: schemas.ModelRun,
         evaluation_set: schemas.EvaluationSet,
         task: str,
+        audio_dir: Path,
     ) -> schemas.Evaluation:
-        clip_predictions, _ = await model_runs.get_clip_predictions(
+        model_run_se = await model_runs.to_soundevent(
             session,
             model_run,
-            limit=-1,
         )
-        clip_annotations, _ = await evaluation_sets.get_clip_annotations(
+        evaluation_set_se = await evaluation_sets.to_soundevent(
             session,
             evaluation_set,
-            limit=-1,
         )
-
-        # TODO: Finish this
-
-        evaluation = evaluate.sound_event_detection(
-            clip_predictions,
-            clip_annotations,
-            evaluation_set.tags,
+        evaluation = evaluate_predictions(
+            model_run_se.clip_predictions,
+            evaluation_set_se.clip_annotations,
+            evaluation_set_se.evaluation_tags,
+            task,
         )
-        return evaluation
+        obj: EvaluationObject = to_aeof(evaluation)  # type: ignore
+        db_eval = await import_evaluation(
+            session,
+            obj.model_dump(),
+            audio_dir=audio_dir,
+            base_audio_dir=audio_dir,
+        )
+        await session.refresh(db_eval)
+        return schemas.Evaluation.model_validate(db_eval)
+
+
+EVALUATION_METHODS = {
+    "sound_event_detection": evaluate.sound_event_detection,
+    "clip_classification": evaluate.clip_classification,
+    "clip_multilabel_classification": evaluate.clip_multilabel_classification,
+    "sound_event_classification": evaluate.sound_event_classification,
+}
+
+
+def evaluate_predictions(
+    clip_predictions: Sequence[data.ClipPrediction],
+    clip_annotations: Sequence[data.ClipAnnotation],
+    tags: Sequence[data.Tag],
+    task: str,
+) -> data.Evaluation:
+    """Evaluate predictions."""
+    eval_fn = EVALUATION_METHODS.get(task)
+
+    if eval_fn is None:
+        raise ValueError(f"Task {task} not supported.")
+
+    return eval_fn(
+        clip_predictions,
+        clip_annotations,
+        tags,
+    )
 
 
 evaluations = EvaluationAPI()

@@ -71,7 +71,7 @@ class ClipPrediction(Base):
     sound_events: orm.Mapped[list[SoundEventPrediction]] = orm.relationship(
         back_populates="clip_prediction",
         cascade="all, delete-orphan",
-        lazy="joined",
+        lazy="selectin",
         init=False,
         repr=False,
         default_factory=list,

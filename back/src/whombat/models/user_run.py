@@ -54,7 +54,7 @@ class UserRun(Base):
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         nullable=False,
         unique=True,
-        default=uuid4,
+        default_factory=uuid4,
         kw_only=True,
     )
     user_id: orm.Mapped[int] = orm.mapped_column(

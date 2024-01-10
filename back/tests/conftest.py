@@ -25,6 +25,12 @@ logging.getLogger("asyncio").setLevel(logging.WARNING)
 logging.getLogger("passlib").setLevel(logging.WARNING)
 
 
+@pytest.fixture
+def data_dir() -> Path:
+    """Return the path to the data directory."""
+    return Path(__file__).parent / "data"
+
+
 @pytest.fixture(autouse=True)
 def clear_api_cache() -> None:
     """Clear the api cache before each test."""

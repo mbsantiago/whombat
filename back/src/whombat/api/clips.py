@@ -1,5 +1,6 @@
 """API functions for interacting with audio clips."""
 
+from pathlib import Path
 from typing import Sequence
 from uuid import UUID
 
@@ -377,8 +378,7 @@ class ClipAPI(
         )
 
     def to_soundevent(
-        self,
-        obj: schemas.Clip,
+        self, obj: schemas.Clip, audio_dir: Path | None = None
     ) -> data.Clip:
         """Create a soundevent Clip object from a clip.
 
@@ -394,7 +394,10 @@ class ClipAPI(
         """
         return data.Clip(
             uuid=obj.uuid,
-            recording=recordings.to_soundevent(obj.recording),
+            recording=recordings.to_soundevent(
+                obj.recording,
+                audio_dir=audio_dir,
+            ),
             start_time=obj.start_time,
             end_time=obj.end_time,
         )

@@ -9,6 +9,7 @@ from pathlib import Path
 
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from fastapi_users_db_sqlalchemy.generics import GUID
 from soundevent import data
 from sqlalchemy import MetaData
@@ -48,7 +49,7 @@ class GeometryType(types.TypeDecorator):
         return data.geometry_validate(value, mode="json")
 
 
-class Base(orm.MappedAsDataclass, orm.DeclarativeBase):
+class Base(AsyncAttrs, orm.MappedAsDataclass, orm.DeclarativeBase):
     """Base class for SqlAlchemy Models."""
 
     metadata = MetaData(

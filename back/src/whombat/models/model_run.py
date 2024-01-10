@@ -62,7 +62,7 @@ class ModelRun(Base):
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         nullable=False,
         unique=True,
-        default=uuid4,
+        default_factory=uuid4,
         kw_only=True,
     )
     name: orm.Mapped[str] = orm.mapped_column(nullable=False)
@@ -114,6 +114,7 @@ class ModelRun(Base):
         list["EvaluationSetModelRun"]
     ] = orm.relationship(
         back_populates="model_run",
+        cascade="all, delete-orphan",
         init=False,
         repr=False,
         default_factory=list,

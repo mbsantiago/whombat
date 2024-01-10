@@ -26,6 +26,7 @@ from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 
 from whombat.models.base import Base
 from whombat.models.clip_evaluation import ClipEvaluation
@@ -67,7 +68,7 @@ class Evaluation(Base):
 
     __tablename__ = "evaluation"
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         nullable=False,
         kw_only=True,
@@ -126,7 +127,7 @@ class EvaluationMetric(Base):
         ),
     )
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("evaluation.id"),
         nullable=False,
@@ -136,6 +137,11 @@ class EvaluationMetric(Base):
         nullable=False,
     )
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    name: AssociationProxy[str] = association_proxy(
+        "feature_name",
+        "name",
+        init=False,
+    )
 
     # Relationships
     feature_name: orm.Mapped[FeatureName] = orm.relationship(

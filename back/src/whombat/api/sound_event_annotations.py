@@ -252,6 +252,7 @@ class SoundEventAnnotationAPI(
         session: AsyncSession,
         annotation: schemas.SoundEventAnnotation,
         audio_dir: Path | None = None,
+        recording: schemas.Recording | None = None,
     ) -> data.SoundEventAnnotation:
         """Convert an annotation to a `soundevent` annotation.
 
@@ -272,7 +273,10 @@ class SoundEventAnnotationAPI(
             if annotation.created_by
             else None,
             sound_event=await sound_events.to_soundevent(
-                session, annotation.sound_event, audio_dir=audio_dir
+                session,
+                annotation.sound_event,
+                audio_dir=audio_dir,
+                recording=recording,
             ),
             tags=[tags.to_soundevent(t) for t in annotation.tags],
             notes=[notes.to_soundevent(n) for n in annotation.notes],

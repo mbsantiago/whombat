@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select
 
 from whombat import models
 from whombat.filters import base
@@ -63,8 +63,9 @@ class AnnotationProjectFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.ClipAnnotation.id)
+            .join(
                 models.AnnotationTask,
                 models.AnnotationTask.clip_annotation_id
                 == models.ClipAnnotation.id,
@@ -76,6 +77,8 @@ class AnnotationProjectFilter(base.Filter):
             )
             .filter(models.AnnotationProject.uuid == self.eq)
         )
+
+        return query.filter(models.ClipAnnotation.id.in_(subquery))
 
 
 class EvaluationSetFilter(base.Filter):

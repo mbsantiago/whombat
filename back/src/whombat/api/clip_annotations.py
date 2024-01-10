@@ -374,6 +374,7 @@ class ClipAnnotationAPI(
                 session,
                 annotation,
                 audio_dir=audio_dir,
+                recording=clip_annotation.clip.recording,
             )
             for annotation in clip_annotation.sound_events
         ]

@@ -120,13 +120,11 @@ async def _create_sound_event_predictions(
         sound_event_db_id = sound_events.get(prediction.sound_event)
         if sound_event_db_id is None:
             # Skip predictions that do not have a sound event.
-            print("Missing sound event.")
             continue
 
         clip_prediction_db_id = clip_predictions.get(clip_prediction_uuid)
         if clip_prediction_db_id is None:
             # Skip predictions that do not have a clip prediction.
-            print("Missing clip prediction.")
             continue
 
         values.append(
@@ -134,8 +132,8 @@ async def _create_sound_event_predictions(
                 "uuid": prediction.uuid,
                 "sound_event_id": sound_event_db_id,
                 "clip_prediction_id": clip_prediction_db_id,
-                "created_on": datetime.datetime.now(),
                 "score": prediction.score or 1,
+                "created_on": datetime.datetime.now(),
             }
         )
 
@@ -143,8 +141,6 @@ async def _create_sound_event_predictions(
     # database.
     if not values:
         return mapping
-
-    print(f"Will insert {len(values)} sound event predictions.")
 
     stmt = insert(models.SoundEventPrediction)
     await session.execute(stmt, values)

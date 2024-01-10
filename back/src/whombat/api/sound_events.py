@@ -423,6 +423,7 @@ class SoundEventAPI(
         session: AsyncSession,
         sound_event: schemas.SoundEvent,
         audio_dir: Path | None = None,
+        recording: schemas.Recording | None = None,
     ) -> data.SoundEvent:
         """Create a soundevent SoundEvent object from a sound event.
 
@@ -436,7 +437,8 @@ class SoundEventAPI(
         data.SoundEvent
             The soundevent sound event object.
         """
-        recording = await self.get_recording(session, sound_event)
+        if recording is None:
+            recording = await self.get_recording(session, sound_event)
         return data.SoundEvent(
             uuid=sound_event.uuid,
             geometry=sound_event.geometry,

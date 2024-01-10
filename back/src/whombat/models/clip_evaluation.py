@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 
 from whombat.models.base import Base
 from whombat.models.clip_annotation import ClipAnnotation
@@ -67,7 +68,7 @@ class ClipEvaluation(Base):
         ),
     )
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
@@ -90,11 +91,11 @@ class ClipEvaluation(Base):
     # Relationships
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         init=False,
-        lazy="joined",
+        lazy="selectin",
     )
     clip_prediction: orm.Mapped[ClipPrediction] = orm.relationship(
         init=False,
-        lazy="joined",
+        lazy="selectin",
     )
     sound_event_evaluations: orm.Mapped[
         list[SoundEventEvaluation]
@@ -159,7 +160,7 @@ class ClipEvaluationMetric(Base):
         ),
     )
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
     clip_evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_evaluation.id"),
         nullable=False,
@@ -169,6 +170,11 @@ class ClipEvaluationMetric(Base):
         nullable=False,
     )
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    name: AssociationProxy[str] = association_proxy(
+        "feature_name",
+        "name",
+        init=False,
+    )
 
     # Relationships
     feature_name: orm.Mapped[FeatureName] = orm.relationship(

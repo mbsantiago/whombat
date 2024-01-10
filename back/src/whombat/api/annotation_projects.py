@@ -5,13 +5,18 @@ from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
+from whombat.api.annotation_tasks import annotation_tasks
 from whombat.api.clip_annotations import clip_annotations
+from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
+from whombat.filters.annotation_tasks import (
+    AnnotationProjectFilter as AnnotationTaskAnnotationProjectFilter,
+)
 from whombat.filters.base import Filter
 from whombat.filters.clip_annotations import AnnotationProjectFilter
 
@@ -274,8 +279,37 @@ class AnnotationProjectAPI(
         data.AnnotationProject
             soundevent annotation project.
         """
-        annotations, _ = await self.get_annotations(session, obj, limit=-1)
+        tasks, _ = await annotation_tasks.get_many(
+            session,
+            limit=-1,
+            filters=[AnnotationTaskAnnotationProjectFilter(eq=obj.uuid)],
+        )
 
+        stmt = (
+            select(models.Clip, models.AnnotationTask.id)
+            .join(
+                models.AnnotationTask,
+                models.Clip.id == models.AnnotationTask.clip_id,
+            )
+            .where(
+                models.AnnotationTask.id.in_({t.id for t in tasks}),
+            )
+        )
+        results = await session.execute(stmt)
+        mapping = {r[1]: r[0] for r in results.unique().all()}
+
+        se_tasks = [
+            await annotation_tasks.to_soundevent(
+                session,
+                task,
+                audio_dir=audio_dir,
+                clip=mapping[task.id],
+            )
+            for task in tasks
+            if task.id in mapping
+        ]
+
+        annotations, _ = await self.get_annotations(session, obj, limit=-1)
         se_clip_annotations = [
             await clip_annotations.to_soundevent(
                 session, ca, audio_dir=audio_dir
@@ -290,6 +324,7 @@ class AnnotationProjectAPI(
             instructions=obj.annotation_instructions,
             created_on=obj.created_on,
             clip_annotations=se_clip_annotations,
+            tasks=se_tasks,
         )
 
 

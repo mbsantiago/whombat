@@ -69,7 +69,7 @@ class ClipAnnotation(Base):
     )
     sound_events: orm.Mapped[list[SoundEventAnnotation]] = orm.relationship(
         "SoundEventAnnotation",
-        lazy="joined",
+        lazy="selectin",
         back_populates="clip_annotation",
         default_factory=list,
         cascade="all, delete-orphan",
@@ -99,7 +99,6 @@ class ClipAnnotation(Base):
     clip_annotation_notes: orm.Mapped[
         list["ClipAnnotationNote"]
     ] = orm.relationship(
-        lazy="joined",
         default_factory=list,
         cascade="all, delete-orphan",
         repr=False,
@@ -108,7 +107,6 @@ class ClipAnnotation(Base):
     clip_annotation_tags: orm.Mapped[
         list["ClipAnnotationTag"]
     ] = orm.relationship(
-        lazy="joined",
         default_factory=list,
         cascade="all, delete-orphan",
         repr=False,

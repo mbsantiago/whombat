@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Sequence
 
 from soundevent import data
-from soundevent import evaluation as evaluate
 from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -369,7 +368,9 @@ class EvaluationSetAPI(
             evaluation_tags=[tags.to_soundevent(t) for t in obj.tags],
             clip_annotations=[
                 await clip_annotations.to_soundevent(
-                    session, a, audio_dir=audio_dir
+                    session,
+                    a,
+                    audio_dir=audio_dir,
                 )
                 for a in anns
             ],

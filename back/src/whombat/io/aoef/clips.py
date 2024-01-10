@@ -23,8 +23,9 @@ async def get_clips(
     | AnnotationProjectObject,
     recordings: dict[UUID, int],
     feature_names: dict[str, int],
+    should_import: bool = True,
 ) -> dict[UUID, int]:
-    if obj.clips:
+    if obj.clips and should_import:
         return await import_clips(
             session,
             obj.clips,

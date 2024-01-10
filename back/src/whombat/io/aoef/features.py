@@ -1,42 +1,53 @@
 import datetime
 
 from soundevent.geometry import GeometricFeature
+from soundevent.io.aoef import (
+    AnnotationSetObject,
+    EvaluationObject,
+    PredictionSetObject,
+    RecordingSetObject,
+)
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
-from whombat.io.aoef.common import AOEFObject
 
 
 async def get_feature_names(
     session: AsyncSession,
-    obj: AOEFObject,
+    obj: AnnotationSetObject
+    | EvaluationObject
+    | PredictionSetObject
+    | RecordingSetObject,
 ) -> dict[str, int]:
     names: set[str] = set(feat.value for feat in GeometricFeature)
 
-    recordings = getattr(obj, "recordings", [])
-    for recording in recordings or []:
+    recordings = obj.recordings or []
+    for recording in recordings:
         if not recording.features:
             continue
 
         for name in recording.features:
             names.add(name)
 
-    clips = getattr(obj, "clips", [])
-    for clip in clips or []:
-        if not clip.features:
-            continue
+    if isinstance(
+        obj, (EvaluationObject, PredictionSetObject, AnnotationSetObject)
+    ):
+        clips = obj.clips or []
+        for clip in clips:
+            if not clip.features:
+                continue
 
-        for name in clip.features:
-            names.add(name)
+            for name in clip.features:
+                names.add(name)
 
-    sound_events = getattr(obj, "sound_events", [])
-    for sound_event in sound_events or []:
-        if not sound_event.features:
-            continue
+        sound_events = obj.sound_events or []
+        for sound_event in sound_events:
+            if not sound_event.features:
+                continue
 
-        for name in sound_event.features:
-            names.add(name)
+            for name in sound_event.features:
+                names.add(name)
 
     return await import_feature_names(session, list(names))
 

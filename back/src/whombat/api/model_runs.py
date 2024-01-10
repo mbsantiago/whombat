@@ -153,7 +153,9 @@ class ModelRunAPI(
             description=obj.description,
             clip_predictions=[
                 await clip_predictions.to_soundevent(
-                    session, cp, audio_dir=audio_dir
+                    session,
+                    cp,
+                    audio_dir=audio_dir,
                 )
                 for cp in predictions
             ],

@@ -27,8 +27,9 @@ async def get_recordings(
     feature_names: dict[str, int],
     audio_dir: Path,
     base_audio_dir: Path,
+    should_import: bool = True,
 ) -> dict[UUID, int]:
-    if obj.recordings:
+    if obj.recordings and should_import:
         return await import_recordings(
             session,
             obj.recordings,

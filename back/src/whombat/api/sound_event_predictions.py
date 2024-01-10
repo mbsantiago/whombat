@@ -225,6 +225,7 @@ class SoundEventPredictionAPI(
         session: AsyncSession,
         sound_event_prediction: schemas.SoundEventPrediction,
         audio_dir: Path | None = None,
+        recording: schemas.Recording | None = None,
     ) -> data.SoundEventPrediction:
         """Get the the sound event prediction in `soundevent` format.
 
@@ -242,6 +243,7 @@ class SoundEventPredictionAPI(
             session,
             sound_event_prediction.sound_event,
             audio_dir=audio_dir,
+            recording=recording,
         )
 
         return data.SoundEventPrediction(
