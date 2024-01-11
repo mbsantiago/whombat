@@ -1,6 +1,5 @@
 name: Bundle App
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
@@ -23,11 +22,11 @@ jobs:
         run: scripts/bundle.ps1
       - run: |
           mkdir dist/
-          mv "back/dist/whombat.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
+          mv "back/dist/whombat.zip" "dist/whombat-windows-${{ github.ref_name }}.zip"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-windows-${{ github.ref_name }}.exe"
+          asset_path: "dist/whombat-windows-${{ github.ref_name }}.zip"
 
   build-ubuntu:
     runs-on: ubuntu-20.04
@@ -45,12 +44,11 @@ jobs:
       - run: make bundle-pyinstaller
       - run: |
           mkdir dist/
-          chmod +x "back/dist/whombat"
-          mv back/dist/whombat "dist/whombat-ubuntu-${{ github.ref_name }}"
+          mv back/dist/whombat.zip "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-ubuntu-${{ github.ref_name }}"
+          asset_path: "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
 
   build-macos:
     runs-on: macos-11
@@ -67,9 +65,8 @@ jobs:
       - run: make bundle-pyinstaller
       - run: |
           mkdir dist/
-          chmod +x "back/dist/whombat"
-          mv back/dist/whombat "dist/whombat-macos-${{ github.ref_name }}"
+          mv back/dist/whombat.zip "dist/whombat-macos-${{ github.ref_name }}.zip"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-macos-${{ github.ref_name }}"
+          asset_path: "dist/whombat-macos-${{ github.ref_name }}.zip"

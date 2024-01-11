@@ -38,3 +38,7 @@ build\.venv\Scripts\pyinstaller `
     --name whombat `
     --onefile `
     app.py
+
+
+# Zip the executable file 
+Compress-Archive -Path "dist\whombat.exe" -DestinationPath "dist\whombat.zip"

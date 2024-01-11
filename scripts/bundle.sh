@@ -41,3 +41,9 @@ build/.venv/bin/pyinstaller \
 	--name whombat \
 	--onefile \
 	app.py
+
+
+chmod +x dist/whombat
+
+# Zip the executable file
+zip -r dist/whombat.zip dist/whombat
