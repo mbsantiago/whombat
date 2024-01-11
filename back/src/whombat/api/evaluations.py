@@ -306,7 +306,6 @@ class EvaluationAPI(
         session: AsyncSession,
         model_run: schemas.ModelRun,
         evaluation_set: schemas.EvaluationSet,
-        task: str,
         audio_dir: Path,
     ) -> schemas.Evaluation:
         model_run_se = await model_runs.to_soundevent(
@@ -321,7 +320,7 @@ class EvaluationAPI(
             model_run_se.clip_predictions,
             evaluation_set_se.clip_annotations,
             evaluation_set_se.evaluation_tags,
-            task,
+            evaluation_set.task,
         )
         obj: EvaluationObject = to_aeof(evaluation)  # type: ignore
         db_eval = await import_evaluation(

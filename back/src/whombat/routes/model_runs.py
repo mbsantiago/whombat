@@ -67,16 +67,11 @@ async def update_model_run(
     return model_run
 
 
-class EvaluationData(BaseModel):
-    task: str
-
-
 @model_runs_router.post("/detail/evaluate/", response_model=schemas.Evaluation)
 async def evaluate_model_run(
     session: Session,
     model_run_uuid: UUID,
     evaluation_set_uuid: UUID,
-    data: EvaluationData,
     settings: WhombatSettings,
 ) -> schemas.Evaluation:
     model_run = await api.model_runs.get(session, model_run_uuid)
@@ -87,7 +82,6 @@ async def evaluate_model_run(
         session,
         model_run,
         evaluation_set,
-        data.task,
         audio_dir=settings.audio_dir,
     )
     await session.commit()

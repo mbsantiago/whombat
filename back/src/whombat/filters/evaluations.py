@@ -1,7 +1,7 @@
 """Filters for Evaluations."""
 from uuid import UUID
 
-from sqlalchemy import Select, or_
+from sqlalchemy import Select, or_, select
 from sqlalchemy.orm import aliased
 
 from whombat import models
@@ -78,51 +78,39 @@ class EvaluationSetFilter(base.Filter):
         if self.eq is None:
             return query
 
-        EvalSetModelRun = aliased(models.EvaluationSet)
-        EvalSetUserRun = aliased(models.EvaluationSet)
-
-        return (
-            query.join(
-                models.UserRunEvaluation,
-                models.UserRunEvaluation.evaluation_id == models.Evaluation.id,
-            )
-            .join(
-                models.UserRun,
-                models.UserRun.id == models.UserRunEvaluation.user_run_id,
-            )
+        subquery1 = (
+            select(models.Evaluation.id)
             .join(
                 models.ModelRunEvaluation,
                 models.ModelRunEvaluation.evaluation_id
                 == models.Evaluation.id,
             )
             .join(
-                models.ModelRun,
-                models.ModelRun.id == models.ModelRunEvaluation.model_run_id,
+                models.EvaluationSet,
+                models.EvaluationSet.id
+                == models.ModelRunEvaluation.evaluation_set_id,
+            )
+            .filter(models.EvaluationSet.uuid == self.eq)
+        )
+
+        subquery2 = (
+            select(models.Evaluation.id)
+            .join(
+                models.UserRunEvaluation,
+                models.UserRunEvaluation.evaluation_id == models.Evaluation.id,
             )
             .join(
-                models.EvaluationSetUserRun,
-                models.EvaluationSetUserRun.user_run_id == models.UserRun.id,
+                models.EvaluationSet,
+                models.EvaluationSet.id
+                == models.UserRunEvaluation.evaluation_set_id,
             )
-            .join(
-                models.EvaluationSetModelRun,
-                models.EvaluationSetModelRun.model_run_id
-                == models.ModelRun.id,
-            )
-            .join(
-                EvalSetUserRun,
-                EvalSetUserRun.id
-                == models.EvaluationSetUserRun.evaluation_set_id,
-            )
-            .join(
-                EvalSetModelRun,
-                EvalSetModelRun.id
-                == models.EvaluationSetModelRun.evaluation_set_id,
-            )
-            .filter(
-                or_(
-                    EvalSetUserRun.uuid == self.eq,
-                    EvalSetModelRun.uuid == self.eq,
-                )
+            .filter(models.EvaluationSet.uuid == self.eq)
+        )
+
+        return query.filter(
+            or_(
+                models.Evaluation.id.in_(subquery1),
+                models.Evaluation.id.in_(subquery2),
             )
         )
 

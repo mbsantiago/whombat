@@ -1,8 +1,9 @@
 """REST API routes for evaluation sets."""
 import json
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Body, Depends, UploadFile
 from fastapi.responses import Response
 from soundevent.io.aoef import to_aeof
 
@@ -276,7 +277,7 @@ async def import_evaluation_set(
     settings: WhombatSettings,
     session: Session,
     evaluation_set: UploadFile,
-    task: str = "sound_event_detection",
+    task: Annotated[str, Body()],
 ):
     """Import an annotation project."""
     obj = json.loads(evaluation_set.file.read())

@@ -21,12 +21,25 @@ __all__ = [
 
 UUIDFilter = base.uuid_filter(models.ClipEvaluation.uuid)
 
-
 ScoreFilter = base.float_filter(models.ClipEvaluation.score)
 
 CreatedOnFilter = base.date_filter(models.ClipEvaluation.created_on)
 
-EvaluationFilter = base.integer_filter(models.ClipEvaluation.evaluation_id)
+
+class EvaluationFilter(base.Filter):
+    """Filter for clip evaluations with a specific evaluation."""
+
+    eq: UUID | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter query by evaluation."""
+        if self.eq is None:
+            return query
+
+        return query.join(
+            models.Evaluation,
+            models.Evaluation.id == models.ClipEvaluation.evaluation_id,
+        ).filter(models.Evaluation.uuid == self.eq)
 
 
 class ClipAnnotationFilter(base.Filter):
