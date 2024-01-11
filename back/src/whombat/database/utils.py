@@ -158,7 +158,7 @@ def create_alembic_config(db_url: str | URL, is_async: bool = True) -> Config:
         db_url = make_url(db_url)
     db_url = validate_database_url(db_url, is_async=is_async)
 
-    cfg = Config("alembic.ini")
+    cfg = Config()
     cfg.set_main_option("script_location", "whombat:migrations")
     cfg.set_main_option("sqlalchemy.url", db_url.render_as_string())
 
