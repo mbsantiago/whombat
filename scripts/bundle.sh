@@ -31,6 +31,7 @@ build/.venv/bin/pip install .
 build/.venv/bin/pyinstaller \
 	--hidden-import "app" \
 	--hidden-import "aiosqlite" \
+	--hidden-import "colorama" \
 	--hidden-import "logging.config" \
 	--hidden-import "passlib.handlers.bcrypt" \
 	--add-data "src/whombat/migrations:whombat/migrations" \

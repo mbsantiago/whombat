@@ -5,7 +5,7 @@
 groups = ["default", "dev", "docs", "postgre"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:7c1ff6a757a9ef6e7c073c4b3a38d64313f3068c8a21053587966bb44e5575b2"
+content_hash = "sha256:cb8a3892be1ed4be6d348e02486b2dd7d541d966b96b06620c917e16d94d0458"
 
 [[package]]
 name = "aiosqlite"

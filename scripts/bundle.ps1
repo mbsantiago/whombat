@@ -29,6 +29,7 @@ build\.venv\Scripts\pyinstaller `
     --hidden-import "app" `
     --hidden-import "aiosqlite" `
     --hidden-import "logging.config" `
+    --hidden-import "colorama" `
     --hidden-import "passlib.handlers.bcrypt" `
     --add-data "src\whombat\migrations;whombat\migrations" `
     --add-data "src\whombat\statics;whombat\statics" `
