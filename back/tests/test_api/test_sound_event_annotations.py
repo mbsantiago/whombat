@@ -53,7 +53,7 @@ async def test_created_annotation_is_returned(
     isinstance(annotation, schemas.SoundEventAnnotation)
     assert annotation.id is not None
     assert annotation.created_by == user
-    assert annotation.sound_event == sound_event
+    assert annotation.sound_event.model_dump() == sound_event.model_dump()
 
 
 async def test_can_get_annotation_by_uuid(

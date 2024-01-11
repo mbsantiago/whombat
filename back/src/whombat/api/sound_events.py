@@ -67,7 +67,8 @@ class SoundEventAPI(
             **kwargs,
         )
         await self.create_geometric_features(session, [sound_event])
-        return await self.get(session, sound_event.uuid)
+        await session.refresh(sound_event)
+        return self._schema.model_validate(sound_event)
 
     async def update(
         self,

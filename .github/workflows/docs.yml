@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - run: cd back
       - name: Install dependencies
         run: pdm install --dev --group docs
       - uses: actions/cache@v3

@@ -1,8 +1,5 @@
 #!/bin/bash
-# Description: Starts the backend development server
-
-# Load environment variables for development
-source scripts/dev_env.sh
+# This script is used to update the user guide
 
 # Move to the root directory of the backend
 cd back
@@ -17,5 +14,5 @@ fi
 # Activate virtual environment
 source .venv/bin/activate
 
-# Run the server
-make serve-dev
+# Build the user guide
+make build-guide

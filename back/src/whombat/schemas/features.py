@@ -1,6 +1,6 @@
 """Schemas for handling Features."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from whombat.schemas.base import BaseSchema
 
@@ -36,7 +36,7 @@ class FeatureNameUpdate(BaseModel):
     """The name of the feature."""
 
 
-class Feature(BaseSchema):
+class Feature(BaseModel):
     """Schema for Feature objects returned to the user."""
 
     name: str
@@ -44,6 +44,8 @@ class Feature(BaseSchema):
 
     value: float
     """The value of the feature."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     def __hash__(self):
         """Hash the Feature object."""

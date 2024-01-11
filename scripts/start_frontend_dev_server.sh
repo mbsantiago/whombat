@@ -8,4 +8,4 @@ source scripts/dev_env.sh
 cd front
 
 # Run the development server
-pnpm run dev
+npm run dev

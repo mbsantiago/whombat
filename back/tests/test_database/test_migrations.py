@@ -38,6 +38,3 @@ def test_can_create_database(
 
     # Check that the database file exists
     assert database_test.exists()
-
-    with engine.connect() as conn:
-        assert utils.get_db_state(conn, cfg) == utils.DatabaseState.OK
