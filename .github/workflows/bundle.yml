@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: 21
       - shell: pwsh
@@ -21,7 +21,9 @@ jobs:
         run: scripts/update_guide.ps1
       - shell: pwsh
         run: scripts/bundle.ps1
-      - run: mv "dist/app.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
+      - run: |
+          mkdir dist/
+          mv "back/dist/app.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
@@ -34,7 +36,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: 21
       - run: npm cache clean --force
@@ -48,7 +50,7 @@ jobs:
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-ubuntus-${{ github.ref_name }}"
+          asset_path: "dist/whombat-ubuntu-${{ github.ref_name }}"
 
   build-macos:
     runs-on: macos-11
@@ -57,7 +59,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
           node-version: 21
       - run: make build-frontend
@@ -67,7 +69,6 @@ jobs:
           mkdir dist/
           chmod +x "back/dist/whombat"
           mv back/dist/whombat "dist/whombat-macos-${{ github.ref_name }}"
-      - uses: shogo82148/actions-upload-release-asset@v1
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
