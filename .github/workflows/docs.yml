@@ -19,13 +19,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - run: cd back
       - name: Install dependencies
-        run: pdm install --dev --group docs
+        run: |
+          cd back
+          pdm install --dev --group docs
       - uses: actions/cache@v3
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pdm run mkdocs gh-deploy --force
+      - run: |
+          cd back
+          pdm run mkdocs gh-deploy --force

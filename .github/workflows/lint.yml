@@ -17,14 +17,20 @@ jobs:
         uses: pdm-project/setup-pdm@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - run: cd back
       - name: Install dependencies
-        run: pdm install --dev
+        run: |
+          cd back
+          pdm install --dev
       - name: Check formatting
         run: |
+          cd back
           pdm run black --check src
           pdm run black --check tests
       - name: Check typing
-        run: pdm run pyright src
+        run: |
+          cd back
+          pdm run pyright src
       - name: Check for overall code issues
-        run: pdm run ruff src
+        run: |
+          cd back
+          pdm run ruff src
