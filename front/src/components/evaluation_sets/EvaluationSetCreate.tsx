@@ -55,7 +55,7 @@ export default function EvaluationSetCreate({
     control,
     formState: { errors },
     register,
-  } = useForm<EvaluationSet>({
+  } = useForm<EvaluationSetCreate>({
     resolver: zodResolver(EvaluationSetCreateSchema),
     mode: "onChange",
   });

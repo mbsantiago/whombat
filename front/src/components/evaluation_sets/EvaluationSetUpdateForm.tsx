@@ -47,7 +47,9 @@ export default function EvaluationSetUpdateForm({
             <DescriptionTerm>Description</DescriptionTerm>
             <EditableDescriptionData
               value={evaluationSet?.description}
-              onChange={(description) => updateEvaluationSet({ description })}
+              onChange={(description) =>
+                updateEvaluationSet({ description: description || undefined })
+              }
               rows={6}
               Input={TextArea}
               autoFocus
