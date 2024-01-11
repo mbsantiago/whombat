@@ -1,6 +1,7 @@
 """Create the FastAPI application."""
 import functools
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +14,8 @@ from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
 from whombat.routes import main_router
 from whombat.settings import Settings
 from whombat.system.boot import print_welcome_message
+
+ROOT_DIR = Path(__file__).parent.parent
 
 
 @asynccontextmanager
@@ -44,6 +47,16 @@ def create_app(settings: Settings) -> FastAPI:
     for name, plugin in load_plugins():
         add_plugin_routes(app, name, plugin)
         add_plugin_pages(app, name, plugin)
+
+    # Make sure the user guide directory exists.
+    # Otherwise app initialization will fail.
+    user_guide_dir = ROOT_DIR / "user_guide"
+    if not user_guide_dir.exists():
+        user_guide_dir.mkdir(parents=True, exist_ok=True)
+
+    statics_dir = user_guide_dir / "statics"
+    if not statics_dir.exists():
+        statics_dir.mkdir(parents=True, exist_ok=True)
 
     app.mount(
         "/guide/",
