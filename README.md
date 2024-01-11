@@ -33,7 +33,7 @@ If you want to use Whombat for your research, please cite as:
 
 > Balvanera, S. M., Mac Aodha, O., Weldy, M. J., Pringle, H., Browning, E., &
 > Jones, K. E. (2023). Whombat: An open-source annotation tool for machine
-> learning development in bioacoustics. arXiv preprint arXiv:2308.12688.
+> learning development in bioacoustics. arXiv preprint [arXiv:2308.12688](https://arxiv.org/abs/2308.12688).
 
 ## Acknowledgements
 
