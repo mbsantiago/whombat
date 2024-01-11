@@ -10,12 +10,7 @@ import Toggle from "@/components/inputs/Toggle";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";
 import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
-import type {
-  AnnotationProject,
-  AnnotationTask,
-  ClipAnnotation,
-  EvaluationSet,
-} from "@/types";
+import type { AnnotationProject, AnnotationTask, EvaluationSet } from "@/types";
 
 function SelectAnnotationProject({
   selected,
@@ -66,16 +61,17 @@ function FilterAnnotations({
 
   return (
     <Card>
-      <H3>Filter tasks</H3>
+      <H3>Filter Annotations</H3>
       <p className="text-stone-500">
-        Select which tasks from the annotation project to add to the evaluation
-        set. Here are some recommended filters:
+        Select which annotations from the annotation project to add to the
+        evaluation set as evaluation examples. Here are some recommended
+        filters:
       </p>
       <div>
         <InputGroup
           label="Completed"
           name="completed"
-          help="Only include tasks that have been completed."
+          help="Only include clips that have been completely annotated."
         >
           <Toggle
             isSelected={tasks.filter.get("pending") == false}
@@ -91,7 +87,7 @@ function FilterAnnotations({
         <InputGroup
           label="Verified"
           name="verified"
-          help="Only include tasks that have been verified."
+          help="Only include clips that have been verified."
         >
           <Toggle
             isSelected={tasks.filter.get("verified") == true}
@@ -109,7 +105,7 @@ function FilterAnnotations({
   );
 }
 
-function ReviewTasks({
+function ReviewExamples({
   toAdd,
   project,
   onAdd,
@@ -123,7 +119,7 @@ function ReviewTasks({
       <Card>
         <H3>Review</H3>
         <p className="dark:text-red-400 text-red-600">
-          To proceed, select an annotation project to add tasks from.
+          To proceed, select an annotation project to add examples from.
         </p>
       </Card>
     );
@@ -134,26 +130,26 @@ function ReviewTasks({
       <H3>Review</H3>
       <ul className="list-disc list-inside">
         <li>
-          Tasks selected from:{" "}
+          Examples selected from:{" "}
           <span className="text-emerald-500">{project.name}</span>
         </li>
         <li>
-          Tasks to add:{" "}
+          Examples to add:{" "}
           <span className="font-bold text-emerald-500">{toAdd.length}</span>
         </li>
       </ul>
       <p className="text-stone-500">
         Once satisfied with your selections, click the button below to add the
-        chosen tasks to the evaluation set.
+        chosen examples to the evaluation set.
       </p>
       <Button mode="text" variant="primary" padding="p-1" onClick={onAdd}>
-        <AddIcon className="inline-block w-4 h-4 mr-1" /> Add tasks
+        <AddIcon className="inline-block w-4 h-4 mr-1" /> Add examples
       </Button>
     </Card>
   );
 }
 
-export default function EvaluationSetTasks({
+export default function EvaluationSetExamples({
   evaluationSet: initialData,
   onAddTasks,
 }: {
@@ -180,14 +176,14 @@ export default function EvaluationSetTasks({
     <div className="flex flex-col gap-8">
       <H2>
         <TasksIcon className="inline-block mr-2 w-5 h-5 align-middle" />
-        Add Tasks
+        Add Examples
       </H2>
       <div className="flex flex-row gap-8">
         <div className="flex flex-col gap-y-6 max-w-prose">
           <p className="max-w-prose text-stone-500">
-            On this page, you can add tasks to the evaluation set. Choose an
-            annotation project to source tasks from, and then filter the tasks
-            to add to the evaluation set.
+            On this page, you can add examples to the evaluation set. Choose an
+            annotation project to source examples from, and then filter the
+            examples to add to the evaluation set.
           </p>
           <SelectAnnotationProject
             selected={annotationProject ?? undefined}
@@ -200,7 +196,7 @@ export default function EvaluationSetTasks({
         </div>
         <div className="w-96">
           <div className="sticky top-8 flex flex-col gap-2">
-            <ReviewTasks
+            <ReviewExamples
               toAdd={tasksToAdd}
               project={annotationProject}
               onAdd={handleOnAdd}

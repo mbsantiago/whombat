@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import EvaluationSetTasks from "@/components/evaluation_sets/EvaluationSetTasks";
+import EvaluationSetExamples from "@/components/evaluation_sets/EvaluationSetExamples";
 import Center from "@/components/layouts/Center";
 
 import EvaluationSetContext from "../context";
@@ -13,7 +13,7 @@ export default function Page() {
   const evaluationSet = useContext(EvaluationSetContext);
 
   const handleOnAddTask = useCallback(() => {
-    toast.success("Evaluation tasks added!");
+    toast.success("Evaluation examples added!");
     router.push(
       `/evaluation/detail/?evaluation_set_uuid=${evaluationSet.uuid}`,
     );
@@ -21,7 +21,7 @@ export default function Page() {
 
   return (
     <Center>
-      <EvaluationSetTasks
+      <EvaluationSetExamples
         evaluationSet={evaluationSet}
         onAddTasks={handleOnAddTask}
       />

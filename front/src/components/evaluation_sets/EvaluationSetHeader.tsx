@@ -38,7 +38,7 @@ export default function EvaluationSetHeader({
             },
             {
               id: "tasks",
-              title: "Tasks",
+              title: "Examples",
               isActive: selectedLayoutSegment === "tasks",
               icon: <TasksIcon className="h-5 w-5 align-middle" />,
               href: `/evaluation/detail/tasks/?${params.toString()}`,

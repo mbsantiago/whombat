@@ -19,18 +19,18 @@ import useUserRuns from "@/hooks/api/useUserRuns";
 
 import type { EvaluationSet } from "@/types";
 
-function NoEvaluationTasks() {
+function NoEvaluationExamples() {
   return (
     <Empty padding="p-2">
       <div className="inline-flex gap-4 text-amber-500">
         <TasksIcon className="h-8 w-8 text-amber-500" />
-        Missing Evaluation Tasks
+        Missing Evaluation Examples
       </div>
       <div className="text-center">
-        No tasks are currently assigned to this evaluation set! Please add some
-        evaluation tasks to get started, by clicking
-        <span className="text-emerald-500"> Add Evaluation Tasks </span> button
-        above.
+        No examples are currently assigned to this evaluation set! Please add
+        some evaluation examples to get started, by clicking
+        <span className="text-emerald-500"> Add Evaluation Examples</span>{" "}
+        button above.
       </div>
     </Empty>
   );
@@ -98,7 +98,7 @@ export default function EvaluationSetOverview({
           >
             <AddIcon className="h-5 w-5 inline-block mr-2" />
             <TasksIcon className="h-5 w-5 inline-block mr-2" />
-            Add Evaluation Tasks
+            Add Evaluation Examples
           </Link>
         </div>
       </div>
@@ -133,7 +133,7 @@ export default function EvaluationSetOverview({
           isLoading={isLoadingUserRuns}
         />
       </div>
-      {total === 0 && !isLoading && <NoEvaluationTasks />}
+      {total === 0 && !isLoading && <NoEvaluationExamples />}
       {tags.length === 0 && <NoEvaluationTags />}
     </Card>
   );
