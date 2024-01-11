@@ -44,3 +44,6 @@ build/.venv/bin/pyinstaller \
 
 
 chmod +x dist/whombat
+
+# Zip the executable file
+zip -r dist/whombat.zip dist/whombat
