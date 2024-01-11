@@ -4,7 +4,9 @@
 cd back
 
 # Delete the old static files
-Remove-Item -Path src/whombat/statics/* -Recurse -Force
+if (Test-Path src/whombat/statics/*) {
+    Remove-Item -Path src/whombat/statics/* -Recurse -Force
+}
 
 # Go to the root directory of the frontend
 cd ../front
