@@ -7,6 +7,7 @@ import functools
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from colorama import Fore, Style
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -24,10 +25,19 @@ ROOT_DIR = Path(__file__).parent.parent
 @asynccontextmanager
 async def lifespan(settings: Settings, _: FastAPI):
     """Context manager to run startup and shutdown events."""
+    host = settings.backend_host
+    port = settings.backend_port
     print("Please wait while the database is initialized...")
     await init_database(settings)
-    print("Whombat is ready to go!")
-    print("Press Ctrl+C to exit.")
+    print(
+        f"""
+    {Fore.GREEN}{Style.DIM}Whombat is ready to go!{Style.RESET_ALL}
+
+    {Fore.GREEN}{Style.BRIGHT} * Listening on http://{host}:{port}/{Style.RESET_ALL}
+
+    {Fore.YELLOW}Press Ctrl+C to exit.{Style.RESET_ALL}
+    """
+    )
     yield
 
 
