@@ -26,6 +26,9 @@ export default function EvaluationSet({
           >
             {evaluationSet.name}
           </Link>
+          <span className="ms-4 text-sm text-stone-500">
+            {evaluationSet.task}
+          </span>
         </h3>
         <p className="mt-1 w-full text-sm leading-5 text-stone-600 dark:text-stone-400">
           {evaluationSet.description}

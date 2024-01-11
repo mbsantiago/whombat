@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import drawGeometry from "@/draw/geometry";
-import { WARNING } from "@/draw/styles";
+import { ORANGE } from "@/draw/styles";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 import type { SoundEventPrediction, SpectrogramWindow, Interval } from "@/types";
 
 const IDLE_STYLE = {
-  borderColor: WARNING,
-  fillColor: WARNING,
+  borderColor: ORANGE,
+  fillColor: ORANGE,
   borderWidth: 2,
   fillAlpha: 0.1,
 };

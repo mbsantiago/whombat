@@ -32,7 +32,7 @@ export default function UserEvaluationSummary({
           User Training Sessions
         </H4>
         <Link
-          href={`/evaluation/detail/user_runs/create/?evaluation_set_uuid=${evaluationSet.uuid}`}
+          href={`/evaluation/detail/user_runs/?evaluation_set_uuid=${evaluationSet.uuid}`}
           mode="text"
           variant="primary"
         >

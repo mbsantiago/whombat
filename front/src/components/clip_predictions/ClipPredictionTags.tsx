@@ -18,11 +18,11 @@ export default function ClipPredictionTags(props: {
   const { clipPrediction, onTagClick, threshold = DEFAULT_THRESHOLD } = props;
 
   const tags = useMemo(() => {
-    const tags = clipPrediction.predicted_tags || [];
+    const tags = clipPrediction.tags || [];
     return tags.filter(
       (tag) => tag.score >= threshold.min && tag.score <= threshold.max,
     );
-  }, [clipPrediction.predicted_tags, threshold]);
+  }, [clipPrediction.tags, threshold]);
 
   return (
     <div className="p-2">

@@ -152,7 +152,7 @@ export const SoundEventSchema = z.object({
   uuid: z.string().uuid(),
   geometry: GeometrySchema,
   geometry_type: GeometryTypeSchema,
-  features: z.array(FeatureSchema).optional(),
+  features: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -161,13 +161,13 @@ export const ClipSchema = z.object({
   start_time: z.number(),
   end_time: z.number(),
   recording: RecordingSchema,
-  features: z.array(FeatureSchema).optional(),
+  features: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
 export const AnnotationTagSchema = z.object({
   tag: TagSchema,
-  created_by: UserSchema.optional(),
+  created_by: UserSchema.nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -175,18 +175,18 @@ export const SoundEventAnnotationSchema = z.object({
   uuid: z.string().uuid(),
   sound_event: SoundEventSchema,
   created_by: UserSchema.nullish(),
-  notes: z.array(NoteSchema).optional(),
-  tags: z.array(TagSchema).optional(),
+  notes: z.array(NoteSchema).nullish(),
+  tags: z.array(TagSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
 export const ClipAnnotationSchema = z.object({
   uuid: z.string().uuid(),
   clip: ClipSchema,
-  created_by: UserSchema.optional(),
-  notes: z.array(NoteSchema).optional(),
-  tags: z.array(TagSchema).optional(),
-  sound_events: z.array(SoundEventAnnotationSchema).optional(),
+  created_by: UserSchema.nullish(),
+  notes: z.array(NoteSchema).nullish(),
+  tags: z.array(TagSchema).nullish(),
+  sound_events: z.array(SoundEventAnnotationSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -205,7 +205,7 @@ export const AnnotationStatusBadgeSchema = z.object({
 
 export const AnnotationTaskSchema = z.object({
   uuid: z.string().uuid(),
-  status_badges: z.array(AnnotationStatusBadgeSchema).optional(),
+  status_badges: z.array(AnnotationStatusBadgeSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -214,7 +214,7 @@ export const AnnotationProjectSchema = z.object({
   name: z.string(),
   description: z.string(),
   annotation_instructions: z.string().nullish(),
-  tags: z.array(TagSchema).optional(),
+  tags: z.array(TagSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -228,15 +228,15 @@ export const SoundEventPredictionSchema = z.object({
   uuid: z.string().uuid(),
   sound_event: SoundEventSchema,
   score: z.number(),
-  predicted_tags: z.array(PredictionTagSchema).optional(),
+  tags: z.array(PredictionTagSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
 export const ClipPredictionSchema = z.object({
   uuid: z.string().uuid(),
   clip: ClipSchema,
-  predicted_tags: z.array(PredictionTagSchema).optional(),
-  sound_events: z.array(SoundEventPredictionSchema).optional(),
+  tags: z.array(PredictionTagSchema).nullish(),
+  sound_events: z.array(SoundEventPredictionSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -244,7 +244,7 @@ export const ModelRunSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
   version: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -256,11 +256,11 @@ export const UserRunSchema = z.object({
 
 export const SoundEventEvaluationSchema = z.object({
   uuid: z.string().uuid(),
-  source: SoundEventPredictionSchema,
-  target: SoundEventAnnotationSchema,
+  source: SoundEventPredictionSchema.nullish(),
+  target: SoundEventAnnotationSchema.nullish(),
   affinity: z.number(),
   score: z.number(),
-  metrics: z.array(FeatureSchema).optional(),
+  metrics: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -268,9 +268,9 @@ export const ClipEvaluationSchema = z.object({
   uuid: z.string().uuid(),
   clip_annotation: ClipAnnotationSchema,
   clip_prediction: ClipPredictionSchema,
-  sound_event_evaluations: z.array(SoundEventEvaluationSchema).optional(),
+  sound_event_evaluations: z.array(SoundEventEvaluationSchema).nullish(),
   score: z.number(),
-  metrics: z.array(FeatureSchema).optional(),
+  metrics: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
@@ -278,15 +278,16 @@ export const EvaluationSchema = z.object({
   uuid: z.string().uuid(),
   task: z.string(),
   score: z.number(),
-  metrics: z.array(FeatureSchema).optional(),
+  metrics: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
 
 export const EvaluationSetSchema = z.object({
   uuid: z.string().uuid(),
   name: z.string(),
-  description: z.string().optional(),
-  tags: z.array(TagSchema).optional(),
+  description: z.string().nullish(),
+  task: z.string(),
+  tags: z.array(TagSchema).nullish(),
   created_on: z.coerce.date(),
 });
 

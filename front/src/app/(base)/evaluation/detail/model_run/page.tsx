@@ -9,7 +9,7 @@ import useModelRun from "@/hooks/api/useModelRun";
 import EvaluationSetContext from "../context";
 
 import type { AxiosError } from "axios";
-import type { ModelRun } from "@/types";
+import type { ModelRun, Evaluation } from "@/types";
 
 export default function Page() {
   const router = useRouter();
@@ -50,6 +50,14 @@ export default function Page() {
     [returnToModelRuns],
   );
 
+  const handleEvaluate = useCallback((promise: Promise<Evaluation>) => {
+    toast.promise(promise, {
+      loading: "Evaluating the model run. Please wait...",
+      success: "Model run evaluated!",
+      error: "Failed to evaluate the model run.",
+    });
+  }, []);
+
   const modelRun = useModelRun({
     uuid: modelRunUUID || undefined,
     onError: handleError,
@@ -66,6 +74,7 @@ export default function Page() {
       modelRun={modelRun.data}
       onDelete={onDelete}
       evaluationSet={evaluationSet}
+      onEvaluate={handleEvaluate}
     />
   );
 }

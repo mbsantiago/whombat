@@ -9,6 +9,7 @@ import {
   TagsIcon,
   TasksIcon,
   UserIcon,
+  TrophyIcon,
 } from "@/components/icons";
 import Link from "@/components/Link";
 import MetricBadge from "@/components/MetricBadge";
@@ -102,6 +103,12 @@ export default function EvaluationSetOverview({
         </div>
       </div>
       <div className="flex flex-row gap-2 justify-around">
+        <MetricBadge
+          icon={<TrophyIcon className="h-8 w-8 inline-block text-blue-500" />}
+          title="Evaluation Task"
+          value={evaluationSet.task}
+          isLoading={isLoading}
+        />
         <MetricBadge
           icon={<TasksIcon className="h-8 w-8 inline-block text-blue-500" />}
           title="Num Examples"

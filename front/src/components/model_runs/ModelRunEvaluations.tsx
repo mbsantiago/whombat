@@ -1,80 +1,115 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
+
+import api from "@/app/api";
+import useEvaluations from "@/hooks/api/useEvaluations";
+import { H4 } from "@/components/Headings";
 import Card from "@/components/Card";
 import Loading from "@/components/Loading";
 import Empty from "@/components/Empty";
-import Dialog from "@/components/Dialog";
-import { AddIcon } from "@/components/icons";
-import { H4 } from "@/components/Headings";
-import ModelRunEvaluate from "@/components/model_runs/ModelRunEvaluate";
-import useEvaluations from "@/hooks/api/useEvaluations";
-import type { ModelRun, EvaluationSet } from "@/types";
+import Button from "@/components/Button";
+import EvaluationComponent from "@/components/evaluations/Evaluation";
+import ClipEvaluationExplorer from "@/components/clip_evaluations/ClipEvaluationExplorer";
+
+import type { ModelRun, EvaluationSet, Evaluation } from "@/types";
 
 function NoEvaluation() {
   return (
     <Empty>
-      No evaluations for this model run. Create a new evaluation by clicking the
-      button above.
+      <p>
+        This model run has not been evaluated yet! Evaluate this model run by
+        clicking the
+        <span className="text-emerald-500"> Evaluate </span>
+        button above.
+      </p>
     </Empty>
   );
 }
 
-export default function ModelRunEvaluations(props: {
+export default function ModelRunEvaluation(props: {
   modelRun: ModelRun;
   evaluationSet: EvaluationSet;
-  onEvaluate?: () => void;
+  onEvaluate?: (data: Promise<Evaluation>) => void;
 }) {
   const filter = useMemo(
-    () => ({ model_run: props.modelRun }),
-    [props.modelRun],
+    () => ({ model_run: props.modelRun, evaluation_set: props.evaluationSet }),
+    [props.modelRun, props.evaluationSet],
   );
 
   const { items: evaluations, isLoading } = useEvaluations({
     filter,
+    pageSize: 1,
   });
 
+  const evaluation = evaluations[0];
+
+  const onMutate = useCallback(() => {
+    return api.modelRuns.evaluate(props.modelRun, props.evaluationSet);
+  }, [props.modelRun, props.evaluationSet]);
+
+  const { mutateAsync: evaluateModelRun } = useMutation({
+    mutationFn: onMutate,
+  });
+
+  const { onEvaluate } = props;
+  const handleEvaluate = useCallback(async () => {
+    const promise = evaluateModelRun();
+    onEvaluate?.(promise);
+  }, [evaluateModelRun, onEvaluate]);
+
+  const clipsFilter = useMemo(
+    () => ({
+      evaluation,
+    }),
+    [evaluation],
+  );
+
   return (
-    <Card>
-      <div className="flex justify-between">
-        <div>
-          <H4>Evaluations</H4>
-          <span className="text-stone-500 text-sm">
-            Here you can see the evaluations for this model run.
-          </span>
-        </div>
-        <div className="flex items-center">
-          <Dialog
-            mode="text"
-            title="Evaluation model run"
-            label={
-              <>
-                <AddIcon className="w-4 h-4 mr-2" />
-                Create evaluation
-              </>
-            }
-          >
-            {() => (
-              <ModelRunEvaluate
-                evaluationSet={props.evaluationSet}
-                modelRun={props.modelRun}
-                onEvaluate={props.onEvaluate}
-              />
+    <>
+      <Card>
+        <div className="flex justify-between">
+          <div>
+            <H4>Evaluation</H4>
+            <span className="text-stone-500 text-sm">
+              Here you can see the evaluation for this model predictions when
+              compared against the evaluation set.
+            </span>
+          </div>
+          <div className="flex items-center">
+            {isLoading ? (
+              <Button disabled>
+                <Loading />
+              </Button>
+            ) : evaluation == null ? (
+              <Button mode="text" onClick={handleEvaluate}>
+                Evaluate
+              </Button>
+            ) : (
+              <Button mode="text" onClick={handleEvaluate}>
+                Update
+              </Button>
             )}
-          </Dialog>
+          </div>
         </div>
-      </div>
-      <div className="mt-4">
+        <div className="mt-4">
+          {isLoading ? (
+            <Loading />
+          ) : evaluation == null ? (
+            <NoEvaluation />
+          ) : (
+            <EvaluationComponent evaluation={evaluation} />
+          )}
+        </div>
+      </Card>
+      <Card>
         {isLoading ? (
           <Loading />
-        ) : evaluations.length == 0 ? (
+        ) : evaluation == null ? (
           <NoEvaluation />
         ) : (
-          <ul>
-            {evaluations.map((evaluation) => (
-              <li key={evaluation.uuid}>{evaluation.task}</li>
-            ))}
-          </ul>
+          <ClipEvaluationExplorer filter={clipsFilter} />
         )}
-      </div>
-    </Card>
+      </Card>
+    </>
   );
 }

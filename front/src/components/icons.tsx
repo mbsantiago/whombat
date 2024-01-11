@@ -1,4 +1,5 @@
 import {
+  TrophyIcon,
   AcademicCapIcon,
   AdjustmentsVerticalIcon,
   ArchiveBoxIcon,
@@ -314,4 +315,5 @@ export {
   SunIcon,
   LineStringIcon,
   WrenchScrewdriverIcon as ToolsIcon,
+  TrophyIcon,
 };

@@ -46,7 +46,9 @@ const DEFAULT_CONFIG: APIConfig = {
 export default function createAPI(config: APIConfig = DEFAULT_CONFIG) {
   let instance = axios.create(config);
   return {
-    annotationProjects: registerAnnotationProjectAPI(instance),
+    annotationProjects: registerAnnotationProjectAPI(instance, {
+      baseUrl: config.baseURL,
+    }),
     soundEventAnnotations: registerSoundEventAnnotationsAPI(instance),
     clipAnnotations: registerClipAnnotationsAPI(instance),
     audio: registerAudioAPI({ baseUrl: config.baseURL }),

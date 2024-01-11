@@ -14,7 +14,7 @@ export default function EvaluationSetDetail({
 }: {
   evaluationSet: EvaluationSet;
   onChange?: (evaluationSet: EvaluationSet) => void;
-  onDelete?: (evaluationSet: EvaluationSet) => void;
+  onDelete?: (evaluationSet: Promise<EvaluationSet>) => void;
 }) {
   return (
     <div className="w-100 flex flex-row gap-8 justify-between">

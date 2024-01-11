@@ -1,4 +1,4 @@
-import { BorderStyle, SECONDARY, setBorderStyle } from "@/draw/styles";
+import { BorderStyle, BLUE, setBorderStyle } from "@/draw/styles";
 
 import type { Coordinates } from "@/types";
 
@@ -9,7 +9,7 @@ type HandleStlye = {
 } & BorderStyle;
 
 export const DEFAULT_HANDLE_STYLE = {
-  borderColor: SECONDARY,
+  borderColor: BLUE,
   borderWidth: 1,
   size: 7,
 };

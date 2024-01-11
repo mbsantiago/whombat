@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import Alert from "@/components/Alert";
 import Button from "@/components/Button";
 import {
@@ -16,16 +17,20 @@ export default function EvaluationSetActions({
   onDelete,
 }: {
   evaluationSet: EvaluationSet;
-  onDelete?: (evaluationSet: EvaluationSet) => void;
+  onDelete?: (evaluationSet: Promise<EvaluationSet>) => void;
 }) {
   const {
-    delete: { mutate: deleteEvaluationSet },
+    delete: { mutateAsync: deleteEvaluationSet },
     downloadUrl,
   } = useEvaluationSet({
     uuid: evaluationSet.uuid,
     evaluationSet,
-    onDelete,
   });
+
+  const handleDelete = useCallback(async () => {
+    const promise = deleteEvaluationSet();
+    onDelete?.(promise);
+  }, [deleteEvaluationSet, onDelete]);
 
   return (
     <div className="flex flex-row gap-2 justify-center">
@@ -38,7 +43,7 @@ export default function EvaluationSetActions({
       >
         <DownloadIcon className="h-5 w-5 inline-block mr-2" /> Download
       </Link>
-      <DeleteEvaluationSet onDelete={deleteEvaluationSet} />
+      <DeleteEvaluationSet onDelete={handleDelete} />
     </div>
   );
 }

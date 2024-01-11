@@ -14,6 +14,7 @@ const DEFAULT_ENDPOINTS = {
   delete: "/api/v1/annotation_projects/detail/",
   addTag: "/api/v1/annotation_projects/detail/tags/",
   removeTag: "/api/v1/annotation_projects/detail/tags/",
+  download: "/api/v1/annotation_projects/detail/download/",
   import: "/api/v1/annotation_projects/import/",
 };
 
@@ -60,7 +61,13 @@ export type GetAnnotationProjectsQuery = z.input<
 
 export function registerAnnotationProjectAPI(
   instance: AxiosInstance,
-  endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
+  {
+    endpoints = DEFAULT_ENDPOINTS,
+    baseUrl = "",
+  }: {
+    endpoints?: typeof DEFAULT_ENDPOINTS;
+    baseUrl?: string;
+  },
 ) {
   async function getMany(
     query: GetAnnotationProjectsQuery,
@@ -141,6 +148,10 @@ export function registerAnnotationProjectAPI(
     return AnnotationProjectSchema.parse(data);
   }
 
+  function getDownloadUrl(annotationProject: AnnotationProject): string {
+    return `${baseUrl}${endpoints.download}?annotation_project_uuid=${annotationProject.uuid}`;
+  }
+
   async function importProject(data: FormData): Promise<AnnotationProject> {
     const { data: res } = await instance.post(endpoints.import, data);
     return AnnotationProjectSchema.parse(res);
@@ -155,5 +166,6 @@ export function registerAnnotationProjectAPI(
     addTag,
     removeTag,
     import: importProject,
+    getDownloadUrl,
   } as const;
 }

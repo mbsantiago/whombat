@@ -15,10 +15,20 @@ import type { Recording, SpectrogramParameters } from "@/types";
 
 export default function RecordingSpectrogram({
   recording,
+  height = 384,
+  withBar = true,
+  withControls = true,
+  withSettings = true,
+  withPlayer = true,
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   onParameterSave,
 }: {
   recording: Recording;
+  height?: number;
+  withBar?: boolean;
+  withControls?: boolean;
+  withSettings?: boolean;
+  withPlayer?: boolean;
   parameters?: SpectrogramParameters;
   onParameterSave?: (params: SpectrogramParameters) => void;
 }) {
@@ -95,30 +105,36 @@ export default function RecordingSpectrogram({
   return (
     <Card>
       <div className="flex flex-row gap-4">
-        <SpectrogramControls
-          canDrag={spectrogram.canDrag}
-          canZoom={spectrogram.canZoom}
-          onReset={spectrogram.reset}
-          onDrag={spectrogram.enableDrag}
-          onZoom={spectrogram.enableZoom}
-        />
-        <SpectrogramSettings
-          samplerate={recording.samplerate}
-          settings={spectrogram.parameters}
-          onChange={spectrogram.setParameters}
-          onReset={spectrogram.resetParameters}
-          onSave={() => onParameterSave?.(spectrogram.parameters)}
-        />
-        <Player {...audio} />
+        {withControls && (
+          <SpectrogramControls
+            canDrag={spectrogram.canDrag}
+            canZoom={spectrogram.canZoom}
+            onReset={spectrogram.reset}
+            onDrag={spectrogram.enableDrag}
+            onZoom={spectrogram.enableZoom}
+          />
+        )}
+        {withSettings && (
+          <SpectrogramSettings
+            samplerate={recording.samplerate}
+            settings={spectrogram.parameters}
+            onChange={spectrogram.setParameters}
+            onReset={spectrogram.resetParameters}
+            onSave={() => onParameterSave?.(spectrogram.parameters)}
+          />
+        )}
+        {withPlayer && <Player {...audio} />}
       </div>
-      <div className="overflow-hidden h-96 rounded-md">
+      <div className="overflow-hidden rounded-md" style={{ height }}>
         <canvas ref={canvasRef} {...props} className="w-full h-full" />
       </div>
-      <SpectrogramBar
-        bounds={spectrogram.bounds}
-        viewport={spectrogram.viewport}
-        onMove={spectrogram.zoom}
-      />
+      {withBar && (
+        <SpectrogramBar
+          bounds={spectrogram.bounds}
+          viewport={spectrogram.viewport}
+          onMove={spectrogram.zoom}
+        />
+      )}
     </Card>
   );
 }

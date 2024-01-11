@@ -1,6 +1,6 @@
 import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { type ClipCreateMany } from "@/api/clips";
 import api from "@/app/api";
@@ -79,6 +79,11 @@ export default function useAnnotationProject({
     },
   });
 
+  const download = useMemo(() => {
+    if (data == null) return;
+    return api.annotationProjects.getDownloadUrl(data);
+  }, [data]);
+
   return {
     ...query,
     update,
@@ -86,6 +91,6 @@ export default function useAnnotationProject({
     addAnnotationTasks,
     removeTag,
     delete: delete_,
-    download: "/api/annotation_projects/download",
+    download,
   } as const;
 }

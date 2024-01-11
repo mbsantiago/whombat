@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 
 import drawGeometry from "@/draw/geometry";
-import { SECONDARY } from "@/draw/styles";
+import { BLUE } from "@/draw/styles";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 
 import type { SoundEventAnnotation, SpectrogramWindow } from "@/types";
 
 const IDLE_STYLE = {
-  borderColor: SECONDARY,
-  fillColor: SECONDARY,
+  borderColor: BLUE,
+  fillColor: BLUE,
   borderWidth: 2,
   fillAlpha: 0.1,
 };

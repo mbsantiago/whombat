@@ -49,7 +49,7 @@ export default function useSpectrogramPredictionTags({
       const position = getLabelPosition(prediction, viewport, dimensions);
 
       const group: TagElement[] =
-        prediction.predicted_tags?.map((tag) => {
+        prediction.tags?.map((tag) => {
           return {
             score: tag.score,
             tag: tag.tag,

@@ -1,14 +1,14 @@
 import DetailLayout from "@/components/layouts/Detail";
-import ModelRunPredictions from "@/components/model_runs/ModelRunPredictions";
 import ModelRunUpdateForm from "@/components/model_runs/ModelRunUpdateForm";
-import ModelRunEvaluations from "@/components/model_runs/ModelRunEvaluations";
-import type { ModelRun, EvaluationSet } from "@/types";
+import ModelRunEvaluation from "@/components/model_runs/ModelRunEvaluations";
+import type { ModelRun, EvaluationSet, Evaluation } from "@/types";
 
 export default function ModelRunDetail(props: {
   modelRun: ModelRun;
   evaluationSet: EvaluationSet;
   onDelete?: (data: Promise<ModelRun>) => void;
   onUpdate?: (data: Promise<ModelRun>) => void;
+  onEvaluate?: (data: Promise<Evaluation>) => void;
 }) {
   return (
     <DetailLayout
@@ -21,11 +21,11 @@ export default function ModelRunDetail(props: {
       }
     >
       <div className="flex flex-col gap-4">
-        <ModelRunEvaluations
+        <ModelRunEvaluation
           modelRun={props.modelRun}
           evaluationSet={props.evaluationSet}
+          onEvaluate={props.onEvaluate}
         />
-        <ModelRunPredictions modelRun={props.modelRun} />
       </div>
     </DetailLayout>
   );

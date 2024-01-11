@@ -32,6 +32,11 @@ export default function ClipAnnotationSpectrogram({
   tagFilter,
   parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
   disabled = false,
+  height = 384,
+  withBar = true,
+  withPlayer = true,
+  withControls = true,
+  withSettings = true,
   defaultTags,
   onAddSoundEventTag,
   onRemoveSoundEventTag,
@@ -46,6 +51,11 @@ export default function ClipAnnotationSpectrogram({
   tagFilter?: TagFilter;
   disabled?: boolean;
   defaultTags?: Tag[];
+  height?: number;
+  withBar?: boolean;
+  withPlayer?: boolean;
+  withControls?: boolean;
+  withSettings?: boolean;
   onParameterSave?: (params: SpectrogramParameters) => void;
   onSelectAnnotation?: (annotation: SoundEventAnnotation | null) => void;
   onCreateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
@@ -209,35 +219,41 @@ export default function ClipAnnotationSpectrogram({
   return (
     <Card>
       <div className="flex flex-row gap-4">
-        <SpectrogramControls
-          canDrag={spectrogram.canDrag}
-          canZoom={spectrogram.canZoom}
-          onReset={spectrogram.reset}
-          onDrag={spectrogram.enableDrag}
-          onZoom={spectrogram.enableZoom}
-        />
-        <AnnotationControls
-          disabled={disabled}
-          isDrawing={annotate.isDrawing}
-          isDeleting={annotate.isDeleting}
-          isSelecting={annotate.isSelecting}
-          isEditing={annotate.isEditing}
-          geometryType={annotate.geometryType}
-          onDraw={annotate.enableDraw}
-          onDelete={annotate.enableDelete}
-          onSelect={annotate.enableSelect}
-          onSelectGeometryType={annotate.setGeometryType}
-        />
-        <SpectrogramSettings
-          samplerate={recording.samplerate}
-          settings={spectrogram.parameters}
-          onChange={spectrogram.setParameters}
-          onReset={spectrogram.resetParameters}
-          onSave={() => onParameterSave?.(spectrogram.parameters)}
-        />
-        <Player {...audio} />
+        {withControls && (
+          <SpectrogramControls
+            canDrag={spectrogram.canDrag}
+            canZoom={spectrogram.canZoom}
+            onReset={spectrogram.reset}
+            onDrag={spectrogram.enableDrag}
+            onZoom={spectrogram.enableZoom}
+          />
+        )}
+        {!disabled && withControls && (
+          <AnnotationControls
+            disabled={disabled}
+            isDrawing={annotate.isDrawing}
+            isDeleting={annotate.isDeleting}
+            isSelecting={annotate.isSelecting}
+            isEditing={annotate.isEditing}
+            geometryType={annotate.geometryType}
+            onDraw={annotate.enableDraw}
+            onDelete={annotate.enableDelete}
+            onSelect={annotate.enableSelect}
+            onSelectGeometryType={annotate.setGeometryType}
+          />
+        )}
+        {withSettings && (
+          <SpectrogramSettings
+            samplerate={recording.samplerate}
+            settings={spectrogram.parameters}
+            onChange={spectrogram.setParameters}
+            onReset={spectrogram.resetParameters}
+            onSave={() => onParameterSave?.(spectrogram.parameters)}
+          />
+        )}
+        {withPlayer && <Player {...audio} />}
       </div>
-      <div className="relative overflow-hidden h-96 rounded-md">
+      <div className="relative overflow-hidden rounded-md" style={{ height }}>
         <SpectrogramTags
           disabled={disabled}
           tags={annotate.tags}
@@ -250,11 +266,13 @@ export default function ClipAnnotationSpectrogram({
           />
         </SpectrogramTags>
       </div>
-      <SpectrogramBar
-        bounds={spectrogram.bounds}
-        viewport={spectrogram.viewport}
-        onMove={spectrogram.zoom}
-      />
+      {withBar && (
+        <SpectrogramBar
+          bounds={spectrogram.bounds}
+          viewport={spectrogram.viewport}
+          onMove={spectrogram.zoom}
+        />
+      )}
     </Card>
   );
 }

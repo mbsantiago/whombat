@@ -111,20 +111,15 @@ export function registerModelRunAPI(
 
   async function evaluateModelRun(
     modelRun: ModelRun,
-    data: {
-      evaluationSet: EvaluationSet;
-      task: string;
-    },
+    evaluationSet: EvaluationSet,
   ): Promise<Evaluation> {
     const { data: res } = await instance.post(
       endpoints.evaluate,
-      {
-        task: data.task,
-      },
+      {},
       {
         params: {
           model_run_uuid: modelRun.uuid,
-          evaluation_set_uuid: data.evaluationSet.uuid,
+          evaluation_set_uuid: evaluationSet.uuid,
         },
       },
     );

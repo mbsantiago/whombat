@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import api from "@/app/api";
 import { UploadIcon } from "@/components/icons";
-import { Input, InputGroup, Submit } from "@/components/inputs/index";
+import { Input, Select, InputGroup, Submit } from "@/components/inputs/index";
+import { EVALUATION_OPTIONS } from "@/components/evaluation_sets/EvaluationSetCreate";
 
 import type { EvaluationSet } from "@/types";
 import type { AxiosError } from "axios";
@@ -18,6 +19,7 @@ export default function EvaluationSetImport({
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -44,7 +46,9 @@ export default function EvaluationSetImport({
     async (data) => {
       const formData = new FormData();
       const file = data.evaluation_set[0];
+      const task = data.task;
       formData.append("evaluation_set", file);
+      formData.append("task", task);
       const promise = importEvaluationSet(formData);
       onCreate?.(promise);
     },
@@ -61,6 +65,27 @@ export default function EvaluationSetImport({
         error={errors.file?.message}
       >
         <Input type="file" {...register("evaluation_set")} required />
+      </InputGroup>
+      <InputGroup
+        name="task"
+        label="Select which task to evaluate"
+        help="Select the name of the particular Machine Learning task that you want to evaluate this model run on."
+      >
+        <Controller
+          control={control}
+          name="task"
+          render={({ field }) => (
+            <Select
+              options={EVALUATION_OPTIONS}
+              selected={
+                EVALUATION_OPTIONS.find(
+                  (option) => option.value === field.value,
+                ) || EVALUATION_OPTIONS[0]
+              }
+              onChange={(value) => field.onChange(value)}
+            />
+          )}
+        />
       </InputGroup>
       <Submit>
         <UploadIcon className="inline-block h-6 w-6 align-middle mr-2" />

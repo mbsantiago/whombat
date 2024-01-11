@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { mergeProps, usePress } from "react-aria";
 
 import drawGeometry from "@/draw/geometry";
-import { DANGER } from "@/draw/styles";
+import { RED } from "@/draw/styles";
 import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 
@@ -13,8 +13,8 @@ import type {
 } from "@/types";
 
 const DELETE_STYLE = {
-  borderColor: DANGER,
-  fillColor: DANGER,
+  borderColor: RED,
+  fillColor: RED,
   borderWidth: 3,
   fillAlpha: 0.2,
 };

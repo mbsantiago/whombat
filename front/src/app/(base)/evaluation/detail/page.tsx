@@ -7,14 +7,23 @@ import EvaluationSetDetail from "@/components/evaluation_sets/EvaluationSetDetai
 
 import EvaluationSetContext from "./context";
 
+import type { EvaluationSet } from "@/types";
+
 export default function Page() {
   const router = useRouter();
   const evaluationSet = useContext(EvaluationSetContext);
 
-  const handleDelete = useCallback(() => {
-    toast.success("Evaluation set deleted");
-    router.push("/evaluation/");
-  }, [router]);
+  const handleDelete = useCallback(
+    (data: Promise<EvaluationSet>) => {
+      toast.promise(data, {
+        loading: "Deleting evaluation set...",
+        success: "Evaluation set deleted",
+        error: "Failed to delete evaluation set",
+      });
+      data.then(() => router.push("/evaluation/"));
+    },
+    [router],
+  );
 
   return (
     <EvaluationSetDetail

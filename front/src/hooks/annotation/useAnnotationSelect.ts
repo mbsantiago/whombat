@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { mergeProps, usePress } from "react-aria";
 
 import drawGeometry from "@/draw/geometry";
-import { WARNING } from "@/draw/styles";
+import { ORANGE } from "@/draw/styles";
 import useHoveredAnnotation from "@/hooks/annotation/useHoveredAnnotation";
 import { scaleGeometryToViewport } from "@/utils/geometry";
 
@@ -13,8 +13,8 @@ import type {
 } from "@/types";
 
 const SELECT_STYLE = {
-  borderColor: WARNING,
-  fillColor: WARNING,
+  borderColor: ORANGE,
+  fillColor: ORANGE,
   borderWidth: 2,
   fillAlpha: 0.2,
 };
