@@ -23,11 +23,11 @@ fi
 # Activate the virtual environment
 source build/.venv/bin/activate
 
-# Whombat dependencies should be installed in the virtual environment
-pip install .
-
 # Pyinstaller should be installed in the virtual environment
 pip install pyinstaller
+
+# Whombat dependencies should be installed in the virtual environment
+pip install .
 
 # Run pyinstaller to bundle whombat into an executable file
 pyinstaller \
