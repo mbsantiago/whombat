@@ -16,5 +16,10 @@ npm install
 # Run the build script
 npm run build
 
+# Make sure the statics folder exists
+if [ ! -d "../back/src/whombat/statics" ]; then
+    mkdir ../back/src/whombat/statics
+fi
+
 # Move the static files to the backend
 mv out/* ../back/src/whombat/statics/
