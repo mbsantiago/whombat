@@ -20,11 +20,8 @@ if [ ! -d "build/.venv" ]; then
 	python -m venv build/.venv
 fi
 
-# Pyinstaller should be installed in the virtual environment
-build/.venv/bin/pip install pyinstaller
-
-# Whombat dependencies should be installed in the virtual environment
-build/.venv/bin/pip install .
+# Upgrade pip and setuptools
+build/.venv/bin/pip install -r build_requirements.txt
 
 # Run pyinstaller to bundle whombat into an executable file
 build/.venv/bin/pyinstaller \
