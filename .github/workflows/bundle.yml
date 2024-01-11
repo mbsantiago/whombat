@@ -23,7 +23,7 @@ jobs:
         run: scripts/bundle.ps1
       - run: |
           mkdir dist/
-          mv "back/dist/app.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
+          mv "back/dist/whombat.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
