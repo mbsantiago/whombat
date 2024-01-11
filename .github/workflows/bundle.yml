@@ -16,13 +16,13 @@ jobs:
           node-version: 21
       - shell: pwsh
         run:
-          scripts\build-frontend.ps1
+          scripts/update_front.ps1
       - shell: pwsh
         run:
-          scripts\build-guide.ps1
+          scripts/update_guide.ps1
       - shell: pwsh
         run:
-          scripts\bundle-pyinstaller.ps1
+          scripts/bundle.ps1
       - run: mv "dist/app.exe" "dist/whombat-windows-${{ github.ref_name }}.exe"
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
