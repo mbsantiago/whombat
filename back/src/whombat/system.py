@@ -19,7 +19,7 @@ from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
 from whombat.routes import main_router
 from whombat.settings import Settings
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).parent
 
 
 @asynccontextmanager
