@@ -36,6 +36,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 21
+      - run: npm cache clean --force
       - run: make build-frontend
       - run: make build-guide
       - run: make bundle-pyinstaller
