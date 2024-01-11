@@ -54,7 +54,7 @@ def create_app(settings: Settings) -> FastAPI:
     if not user_guide_dir.exists():
         user_guide_dir.mkdir(parents=True, exist_ok=True)
 
-    statics_dir = user_guide_dir / "statics"
+    statics_dir = ROOT_DIR / "statics"
     if not statics_dir.exists():
         statics_dir.mkdir(parents=True, exist_ok=True)
 
