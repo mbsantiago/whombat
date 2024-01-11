@@ -20,17 +20,15 @@ if [ ! -d "build/.venv" ]; then
 	python -m venv build/.venv
 fi
 
-# Activate the virtual environment
-source build/.venv/bin/activate
+build/.venv/bin/pip install -U pip setuptools wheel
 
-# Whombat dependencies should be installed in the virtual environment
-pip install .
+build/.venv/bin/pip install pyinstaller
 
-# Pyinstaller should be installed in the virtual environment
-pip install pyinstaller
+# Install whombat
+build/.venv/bin/pip install .
 
 # Run pyinstaller to bundle whombat into an executable file
-pyinstaller \
+build/.venv/bin/pyinstaller \
 	--hidden-import "app" \
 	--hidden-import "aiosqlite" \
 	--hidden-import "logging.config" \
@@ -39,7 +37,6 @@ pyinstaller \
 	--add-data "src/whombat/statics:whombat/statics" \
 	--add-data "src/whombat/user_guide:whombat/user_guide" \
 	--add-data "alembic.ini:." \
-	--splash "../front/public/whombat512x512png.png" \
 	--name whombat \
-    --onefile \
+	--onefile \
 	app.py

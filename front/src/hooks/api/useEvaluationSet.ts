@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
+import type { EvaluationSetUpdate } from "@/api/evaluation_sets";
 import type { EvaluationSet } from "@/types";
 import type { AxiosError } from "axios";
 
@@ -40,7 +41,7 @@ export default function useEvaluationSet({
     onError,
   });
 
-  const update = useMutation({
+  const update = useMutation<EvaluationSetUpdate>({
     mutationFn: api.evaluationSets.update,
     onSuccess: onUpdate,
   });

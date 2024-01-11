@@ -45,8 +45,7 @@ export default function ClipEvaluationSpectrogram(props: {
     height: 0,
   };
 
-  const { sound_event_evaluations: matches, clip_prediction: clipPrediction } =
-    clipEvaluation;
+  const { clip_prediction: clipPrediction } = clipEvaluation;
 
   const { clip } = clipPrediction;
   const { recording } = clip;
@@ -118,6 +117,11 @@ export default function ClipEvaluationSpectrogram(props: {
   const predictions = useMemo(
     () => clipPrediction.sound_events || [],
     [clipPrediction.sound_events],
+  );
+
+  const matches = useMemo(
+    () => clipEvaluation.sound_event_evaluations || [],
+    [clipEvaluation.sound_event_evaluations],
   );
 
   const drawMatches = useMatchDraw({

@@ -84,7 +84,7 @@ export default function ProjectActions({
       <Link
         mode="text"
         variant="primary"
-        href={download}
+        href={download || ""}
         target="_blank"
         download
       >

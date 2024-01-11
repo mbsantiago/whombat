@@ -21,6 +21,7 @@ export type EvaluationSetFilter = z.input<typeof EvaluationSetFilterSchema>;
 export const EvaluationSetCreateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
+  task: z.string(),
 });
 
 export type EvaluationSetCreate = z.input<typeof EvaluationSetCreateSchema>;

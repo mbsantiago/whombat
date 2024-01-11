@@ -41,13 +41,7 @@ export default function useModelRun({
     onSuccess: onUpdate,
   });
 
-  const evaluate = useMutation<
-    {
-      evaluationSet: EvaluationSet;
-      task: string;
-    },
-    Evaluation
-  >({
+  const evaluate = useMutation<EvaluationSet, Evaluation>({
     mutationFn: api.modelRuns.evaluate,
     onSuccess: onEvaluate,
     withUpdate: false,

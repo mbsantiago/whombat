@@ -1,8 +1,13 @@
-"""Create the FastAPI application."""
+"""System module for Whombat.
+
+Functions:
+    create_app: Create a FastAPI app.
+"""
 import functools
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+from colorama import Fore, Style
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,19 +18,26 @@ from whombat.database.init import init_database
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
 from whombat.routes import main_router
 from whombat.settings import Settings
-from whombat.system.boot import print_welcome_message
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).parent
 
 
 @asynccontextmanager
 async def lifespan(settings: Settings, _: FastAPI):
     """Context manager to run startup and shutdown events."""
-    print_welcome_message()
+    host = settings.backend_host
+    port = settings.backend_port
     print("Please wait while the database is initialized...")
     await init_database(settings)
-    print("Whombat is ready to go!")
-    print("Press Ctrl+C to exit.")
+    print(
+        f"""
+    {Fore.GREEN}{Style.DIM}Whombat is ready to go!{Style.RESET_ALL}
+
+    {Fore.GREEN}{Style.BRIGHT} * Listening on http://{host}:{port}/{Style.RESET_ALL}
+
+    {Fore.YELLOW}Press Ctrl+C to exit.{Style.RESET_ALL}
+    """
+    )
     yield
 
 

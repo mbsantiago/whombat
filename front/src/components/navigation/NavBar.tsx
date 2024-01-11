@@ -103,9 +103,9 @@ function NavItem({ href, label }: { href: string; label: string }) {
 
 function Navigation() {
   const navItems = [
-    { href: "/docs", label: "User Guide" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
+    { href: "/guide/", label: "User Guide" },
+    { href: "/about/", label: "About" },
+    { href: "/contact/", label: "Contact" },
   ];
   return (
     <div className="hidden w-full md:block md:w-auto" id="navbar-default">

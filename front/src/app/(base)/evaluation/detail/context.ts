@@ -8,6 +8,7 @@ const EvaluationSetContext = createContext<EvaluationSet>({
   tags: [],
   uuid: "",
   created_on: new Date(),
+  task: "sound_event_detection",
 });
 
 export default EvaluationSetContext;
