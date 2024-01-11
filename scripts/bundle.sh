@@ -20,8 +20,12 @@ if [ ! -d "build/.venv" ]; then
 	python -m venv build/.venv
 fi
 
-# Upgrade pip and setuptools
-build/.venv/bin/pip install -r build_requirements.txt
+build/.venv/bin/pip install -U pip setuptools wheel
+
+build/.venv/bin/pip install pyinstaller
+
+# Install whombat
+build/.venv/bin/pip install .
 
 # Run pyinstaller to bundle whombat into an executable file
 build/.venv/bin/pyinstaller \

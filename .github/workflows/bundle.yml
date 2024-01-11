@@ -41,8 +41,6 @@ jobs:
       - run:
           make build-frontend
       - run:
-          make install-dev
-      - run:
           make build-guide
       - run:
           make bundle-pyinstaller
@@ -68,8 +66,6 @@ jobs:
           node-version: 21
       - run:
           make build-frontend
-      - run:
-          make install-dev
       - run:
           make build-guide
       - run:

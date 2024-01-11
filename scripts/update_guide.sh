@@ -6,13 +6,13 @@ cd back
 
 # Make sure there is a virtual environment
 if [ ! -d .venv ]; then
-	# Exit if the virtual environment does not exist
-	echo "Virtual environment does not exist. Please run the install_dev.sh script first."
-	exit 1
+  python -m venv .venv
 fi
 
 # Activate virtual environment
 source .venv/bin/activate
+
+pip install .[docs]
 
 # Build the user guide
 make build-guide
