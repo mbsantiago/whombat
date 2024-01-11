@@ -212,7 +212,7 @@ class EvaluationAPI(
             offset=offset,
             filters=[
                 EvaluationFilter(
-                    eq=obj.id,
+                    eq=obj.uuid,
                 ),
                 *(filters or []),
             ],

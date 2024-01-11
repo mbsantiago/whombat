@@ -12,7 +12,6 @@ from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.annotation_tasks import annotation_tasks
 from whombat.api.clip_annotations import clip_annotations
-from whombat.api.clips import clips
 from whombat.api.common import BaseAPI
 from whombat.filters.annotation_tasks import (
     AnnotationProjectFilter as AnnotationTaskAnnotationProjectFilter,

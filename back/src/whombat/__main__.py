@@ -6,11 +6,15 @@ This module is used to run the app using uvicorn.
 import warnings
 
 # Ignore warnings from pydantic
-warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    module="pydantic",
+)
 
-import uvicorn
+import uvicorn  # noqa: E402
 
-from whombat.dependencies import get_settings
+from whombat.dependencies import get_settings  # noqa: E402
 
 if __name__ == "__main__":
     settings = get_settings()

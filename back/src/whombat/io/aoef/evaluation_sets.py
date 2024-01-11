@@ -27,7 +27,7 @@ async def import_evaluation_set(
     if not isinstance(obj, dict):
         raise TypeError(f"Expected dict, got {type(obj)}")
 
-    if not "data" in obj:
+    if "data" not in obj:
         raise ValueError("Missing 'data' key")
 
     data = obj["data"]

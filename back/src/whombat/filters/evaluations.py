@@ -2,7 +2,6 @@
 from uuid import UUID
 
 from sqlalchemy import Select, or_, select
-from sqlalchemy.orm import aliased
 
 from whombat import models
 from whombat.filters import base

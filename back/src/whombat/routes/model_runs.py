@@ -3,7 +3,6 @@ import json
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
-from pydantic import BaseModel
 
 from whombat import api, schemas
 from whombat.dependencies import Session, WhombatSettings

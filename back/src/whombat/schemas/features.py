@@ -1,6 +1,6 @@
 """Schemas for handling Features."""
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from whombat.schemas.base import BaseSchema
 

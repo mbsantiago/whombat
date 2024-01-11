@@ -27,7 +27,7 @@ async def import_annotation_project(
     if not isinstance(data, dict):
         raise TypeError(f"Expected dict, got {type(data)}")
 
-    if not "data" in data:
+    if "data" not in data:
         raise ValueError("Missing 'data' key")
 
     obj = aoef.AnnotationProjectObject.model_validate(data["data"])

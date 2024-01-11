@@ -7,11 +7,11 @@ Create Date: 2024-01-10 20:08:09.823754
 """
 from typing import Sequence, Union
 
-from alembic import op
-import sqlalchemy as sa
 import fastapi_users_db_sqlalchemy.generics
-import whombat.models.base
+import sqlalchemy as sa
+from alembic import op
 
+import whombat.models.base
 
 # revision identifiers, used by Alembic.
 revision: str = "03a1d239e06e"

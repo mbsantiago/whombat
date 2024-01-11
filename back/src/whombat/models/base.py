@@ -9,10 +9,10 @@ from pathlib import Path
 
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
-from sqlalchemy.ext.asyncio import AsyncAttrs
 from fastapi_users_db_sqlalchemy.generics import GUID
 from soundevent import data
 from sqlalchemy import MetaData
+from sqlalchemy.ext.asyncio import AsyncAttrs
 
 __all__ = [
     "Base",
