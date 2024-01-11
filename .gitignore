@@ -174,3 +174,4 @@ back/src/whombat/statics
 back/.build_venv
 back/user_guide
 back/src/whombat/user_guide
+.bumpversion.cfg
