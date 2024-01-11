@@ -37,7 +37,6 @@ build/.venv/bin/pyinstaller \
 	--add-data "src/whombat/statics:whombat/statics" \
 	--add-data "src/whombat/user_guide:whombat/user_guide" \
 	--add-data "alembic.ini:." \
-	--splash "../front/public/whombat512x512png.png" \
 	--name whombat \
 	--onefile \
 	app.py
