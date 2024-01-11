@@ -1,6 +1,6 @@
 # User Guide
 
-## Welcome to the Whombat!
+## Welcome to Whombat!
 
 We're happy to have you on board with Whombat, the open-source tool for audio
 annotation with ML in mind. Whether you're just getting started or looking to

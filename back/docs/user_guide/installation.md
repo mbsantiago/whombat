@@ -15,7 +15,7 @@ to suit your preferences and needs.
 
 The simplest way to dive into Whombat is by downloading our pre-packaged
 executable file. We've tailored versions for Windows, Mac OS, and Ubuntu. Head
-over to our GitHub repository's releases section to get the latest version.
+over to our GitHub repository's [releases](https://github.com/mbsantiago/whombat/releases) section to get the latest version.
 
 ### Python Package
 

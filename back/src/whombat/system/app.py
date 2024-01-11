@@ -47,7 +47,11 @@ def create_app(settings: Settings) -> FastAPI:
 
     app.mount(
         "/guide/",
-        StaticFiles(packages=[("whombat", "user_guide")], html=True),
+        StaticFiles(
+            packages=[("whombat", "user_guide")],
+            html=True,
+            check_dir=False,
+        ),
         name="guide",
     )
 
