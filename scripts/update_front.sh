@@ -10,6 +10,9 @@ rm -rf src/whombat/statics/*
 # Go to the root directory of the frontend
 cd ../front
 
+# Install the dependencies
+npm install
+
 # Run the build script
 npm run build
 
