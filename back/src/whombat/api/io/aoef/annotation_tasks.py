@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
 from whombat.api.common import create_objects_without_duplicates
-from whombat.io.aoef.common import get_mapping
+from whombat.api.io.aoef.common import get_mapping
 
 
 async def get_annotation_tasks(

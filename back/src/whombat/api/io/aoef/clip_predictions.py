@@ -7,7 +7,7 @@ from sqlalchemy import insert, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
-from whombat.io.aoef.common import get_mapping
+from whombat.api.io.aoef.common import get_mapping
 
 
 async def get_clip_predictions(

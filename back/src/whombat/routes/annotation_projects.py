@@ -9,7 +9,7 @@ from soundevent.io.aoef import to_aeof
 from whombat import api, schemas
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.filters.annotation_projects import AnnotationProjectFilter
-from whombat.io import aoef
+from whombat.api.io import aoef
 from whombat.routes.types import Limit, Offset
 
 __all__ = [

@@ -7,8 +7,8 @@ from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
-from whombat.io.aoef.common import get_mapping
-from whombat.io.aoef.notes import import_notes
+from whombat.api.io.aoef.common import get_mapping
+from whombat.api.io.aoef.notes import import_notes
 
 
 async def get_clip_annotations(

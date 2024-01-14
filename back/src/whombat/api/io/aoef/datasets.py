@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models
 from whombat.api import common
-from whombat.io.aoef.features import get_feature_names
-from whombat.io.aoef.recordings import import_recordings
-from whombat.io.aoef.tags import import_tags
-from whombat.io.aoef.users import import_users
+from whombat.api.io.aoef.features import get_feature_names
+from whombat.api.io.aoef.recordings import import_recordings
+from whombat.api.io.aoef.tags import import_tags
+from whombat.api.io.aoef.users import import_users
 
 
 async def import_dataset(

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, UploadFile
 from whombat import api, schemas
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.filters.model_runs import ModelRunFilter
-from whombat.io import aoef
+from whombat.api.io import aoef
 from whombat.routes.types import Limit, Offset
 
 __all__ = [

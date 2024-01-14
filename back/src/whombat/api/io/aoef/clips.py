@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
 from whombat.api import common
-from whombat.io.aoef.common import get_mapping
+from whombat.api.io.aoef.common import get_mapping
 
 
 async def get_clips(
