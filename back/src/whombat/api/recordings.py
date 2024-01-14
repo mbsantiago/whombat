@@ -22,7 +22,7 @@ from whombat.api.tags import tags
 from whombat.api.users import users
 from whombat.core import files
 from whombat.core.common import remove_duplicates
-from whombat.dependencies import get_settings
+from whombat.system import get_settings
 
 __all__ = [
     "RecordingAPI",

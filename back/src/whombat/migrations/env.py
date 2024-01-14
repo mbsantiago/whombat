@@ -7,8 +7,8 @@ from sqlalchemy.engine import URL, Connection, engine_from_config
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from whombat import models
-from whombat.database.utils import get_database_url
-from whombat.dependencies import get_settings
+from whombat.system import get_settings
+from whombat.system.database import get_database_url
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

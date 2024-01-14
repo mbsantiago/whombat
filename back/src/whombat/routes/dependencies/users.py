@@ -9,7 +9,7 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy import select
 
 from whombat import models
-from whombat.dependencies.session import Session
+from whombat.routes.dependencies.session import Session
 
 __all__ = [
     "get_user_manager",

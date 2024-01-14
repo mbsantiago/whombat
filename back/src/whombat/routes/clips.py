@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.routes.dependencies import Session
 from whombat.filters.clips import ClipFilter
 from whombat.filters.recordings import UUIDFilter as RecordingUUIDFilter
 from whombat.routes.types import Limit, Offset

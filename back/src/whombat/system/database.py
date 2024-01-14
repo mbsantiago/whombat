@@ -1,4 +1,4 @@
-"""Base module for the database."""
+"""Function to initialize the database."""
 import logging
 from contextlib import asynccontextmanager
 from enum import Enum
@@ -17,15 +17,24 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from whombat import models
+from whombat import api, exceptions, models
 from whombat.settings import Settings
 
 logger = logging.getLogger("whombat.database")
 
 __all__ = [
-    "models",
     "create_async_db_engine",
+    "create_db",
     "create_or_update_db",
+    "create_async_db_engine",
+    "create_sync_db_engine",
+    "get_database_url",
+    "get_db_state",
+    "init_database",
+    "get_async_session",
+    "models",
+    "run_migrations",
+    "validate_database_url",
 ]
 
 
@@ -239,3 +248,25 @@ async def get_async_session(
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
     async with async_session_maker() as session:
         yield session
+
+
+async def init_database(settings: Settings) -> None:
+    """Create the database and tables on startup."""
+    db_url = get_database_url(settings)
+    cfg = create_alembic_config(db_url, is_async=False)
+    engine = create_async_db_engine(db_url)
+
+    async with engine.begin() as conn:
+        await conn.run_sync(create_or_update_db, cfg)
+
+    async with get_async_session(engine) as session:
+        try:
+            await api.users.get_by_email(session, settings.admin_email)
+        except exceptions.NotFoundError:
+            await api.users.create(
+                session,
+                username=settings.admin_username,
+                email=settings.admin_email,
+                password=settings.admin_password,
+                is_superuser=True,
+            )

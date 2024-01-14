@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Response
 
 from whombat import api, schemas
 from whombat.core import images
-from whombat.dependencies import Session, WhombatSettings
+from whombat.routes.dependencies import Session, WhombatSettings
 
 __all__ = ["spectrograms_router"]
 

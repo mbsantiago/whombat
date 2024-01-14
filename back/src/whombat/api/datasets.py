@@ -15,7 +15,7 @@ from whombat.api import common
 from whombat.api.common import BaseAPI
 from whombat.api.recordings import recordings
 from whombat.core import files
-from whombat.dependencies import get_settings
+from whombat.system import get_settings
 from whombat.filters.base import Filter
 from whombat.filters.recordings import DatasetFilter
 

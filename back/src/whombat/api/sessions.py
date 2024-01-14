@@ -5,7 +5,7 @@ from typing import AsyncGenerator
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat.database import utils
+from whombat.system import database
 
 __all__ = [
     "create_session",
@@ -61,11 +61,11 @@ async def create_session(
     This function is asynchronous, so it must be called with the ``await``
     keyword.
     """
-    engine = utils.create_async_db_engine(db_url)
-    cfg = utils.create_alembic_config(db_url, is_async=False)
+    engine = database.create_async_db_engine(db_url)
+    cfg = database.create_alembic_config(db_url, is_async=False)
     async with engine.begin() as conn:
-        await conn.run_sync(utils.create_or_update_db, cfg)
+        await conn.run_sync(database.create_or_update_db, cfg)
 
-    engine = utils.create_async_db_engine(db_url)
-    async with utils.get_async_session(engine) as session:
+    engine = database.create_async_db_engine(db_url)
+    async with database.get_async_session(engine) as session:
         yield session

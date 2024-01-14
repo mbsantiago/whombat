@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.dependencies import Session
+from whombat.routes.dependencies import Session
 from whombat.filters.recording_tags import RecordingTagFilter
 from whombat.filters.tags import TagFilter
 from whombat.routes.types import Limit, Offset

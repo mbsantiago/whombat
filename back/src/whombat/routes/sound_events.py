@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.dependencies import Session
 from whombat.filters.sound_events import SoundEventFilter
+from whombat.routes.dependencies import Session
 from whombat.routes.types import Limit, Offset
 
 __all__ = [

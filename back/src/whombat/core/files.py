@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "get_audio_files_in_folder",
+    "get_file_info",
+    "FileInfo",
 ]
 
 

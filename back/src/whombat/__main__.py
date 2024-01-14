@@ -14,7 +14,7 @@ warnings.filterwarnings(
 
 import uvicorn  # noqa: E402
 
-from whombat.dependencies import get_settings  # noqa: E402
+from whombat.system import get_settings  # noqa: E402
 
 if __name__ == "__main__":
     settings = get_settings()

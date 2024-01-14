@@ -14,8 +14,8 @@ from fastapi_users_db_sqlalchemy.access_token import (
 )
 
 from whombat import models, schemas
-from whombat.dependencies.session import Session
-from whombat.dependencies.users import get_user_manager
+from whombat.routes.dependencies.session import Session
+from whombat.routes.dependencies.users import get_user_manager
 
 TokenDatabase = AccessTokenDatabase[models.AccessToken]  # type: ignore
 

@@ -7,7 +7,7 @@ from fastapi.responses import Response
 from soundevent.io.aoef import to_aeof
 
 from whombat import api, schemas
-from whombat.dependencies import Session, WhombatSettings
+from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.filters.annotation_projects import AnnotationProjectFilter
 from whombat.io import aoef
 from whombat.routes.types import Limit, Offset

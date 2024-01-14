@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Header, Response
 from fastapi.responses import StreamingResponse
 
 from whombat import api, schemas
-from whombat.dependencies import Session, WhombatSettings
+from whombat.routes.dependencies import Session, WhombatSettings
 
 __all__ = ["audio_router"]
 

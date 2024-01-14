@@ -8,6 +8,12 @@ from PIL import Image as img
 from PIL.Image import Image
 
 
+__all__ = [
+    "array_to_image",
+    "image_to_buffer",
+]
+
+
 def array_to_image(array: np.ndarray, cmap: str) -> Image:
     """Convert a numpy array to a PIL image.
 

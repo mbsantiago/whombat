@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.dependencies import ActiveUser, Session
+from whombat.routes.dependencies import ActiveUser, Session
 from whombat.filters.sound_event_annotations import SoundEventAnnotationFilter
 from whombat.routes.types import Limit, Offset
 from whombat.scatterplots.sound_event_annotations import (

@@ -7,17 +7,17 @@ import functools
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from colorama import Fore, Style
+from colorama import Fore, Style, just_fix_windows_console
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from whombat import exceptions
-from whombat.database.init import init_database
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
 from whombat.routes import main_router
 from whombat.settings import Settings
+from whombat.system.database import init_database
 
 ROOT_DIR = Path(__file__).parent
 
@@ -25,6 +25,7 @@ ROOT_DIR = Path(__file__).parent
 @asynccontextmanager
 async def lifespan(settings: Settings, _: FastAPI):
     """Context manager to run startup and shutdown events."""
+    just_fix_windows_console()
     host = settings.backend_host
     port = settings.backend_port
     print("Please wait while the database is initialized...")

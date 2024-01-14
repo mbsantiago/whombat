@@ -8,7 +8,8 @@ __all__ = [
 
 
 def normalize_spectrogram(
-    spectrogram: xr.DataArray, relative: bool = False
+    spectrogram: xr.DataArray,
+    relative: bool = False,
 ) -> xr.DataArray:
     """Normalize array values to [0, 1].
 
@@ -17,12 +18,16 @@ def normalize_spectrogram(
 
     Parameters
     ----------
-    array : np.ndarray
-        Array to normalize.
+    spectrogram : xr.DataArray
+        The spectrogram to normalize.
+    relative : bool
+        If True, use the minimum and maximum values of the spectrogram to
+        normalize. If False, use the minimum and maximum values of the
+        spectrogram's attributes.
 
     Returns
     -------
-    np.ndarray
+    xr.DataArray
         Normalized array.
     """
 

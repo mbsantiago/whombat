@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.common import BaseAPI
-from whombat.dependencies.users import UserDatabase, UserManager
+from whombat.routes.dependencies.users import UserDatabase, UserManager
 
 __all__ = []
 
