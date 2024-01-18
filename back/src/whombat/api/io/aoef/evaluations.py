@@ -6,18 +6,27 @@ from sqlalchemy import insert, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
-from whombat.io.aoef.clip_annotations import get_clip_annotations
-from whombat.io.aoef.clip_evaluations import get_clip_evaluations
-from whombat.io.aoef.clip_predictions import get_clip_predictions
-from whombat.io.aoef.clips import get_clips
-from whombat.io.aoef.features import get_feature_names, import_feature_names
-from whombat.io.aoef.recordings import get_recordings
-from whombat.io.aoef.sound_event_annotations import get_sound_event_annotations
-from whombat.io.aoef.sound_event_evaluations import get_sound_event_evaluations
-from whombat.io.aoef.sound_event_predictions import get_sound_event_predictions
-from whombat.io.aoef.sound_events import get_sound_events
-from whombat.io.aoef.tags import import_tags
-from whombat.io.aoef.users import import_users
+from whombat.api.io.aoef.clip_annotations import get_clip_annotations
+from whombat.api.io.aoef.clip_evaluations import get_clip_evaluations
+from whombat.api.io.aoef.clip_predictions import get_clip_predictions
+from whombat.api.io.aoef.clips import get_clips
+from whombat.api.io.aoef.features import (
+    get_feature_names,
+    import_feature_names,
+)
+from whombat.api.io.aoef.recordings import get_recordings
+from whombat.api.io.aoef.sound_event_annotations import (
+    get_sound_event_annotations,
+)
+from whombat.api.io.aoef.sound_event_evaluations import (
+    get_sound_event_evaluations,
+)
+from whombat.api.io.aoef.sound_event_predictions import (
+    get_sound_event_predictions,
+)
+from whombat.api.io.aoef.sound_events import get_sound_events
+from whombat.api.io.aoef.tags import import_tags
+from whombat.api.io.aoef.users import import_users
 
 
 async def import_evaluation(

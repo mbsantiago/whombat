@@ -4,8 +4,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from whombat.app import app
-from whombat.database.init import init_database
-from whombat.settings import Settings
+from whombat.system import init_database
+from whombat.system.settings import Settings
 
 
 @pytest.fixture

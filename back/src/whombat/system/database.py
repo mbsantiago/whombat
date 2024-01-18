@@ -17,8 +17,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from whombat import api, exceptions, models
-from whombat.settings import Settings
+from whombat import models
+from whombat.system.settings import Settings
 
 logger = logging.getLogger("whombat.database")
 
@@ -99,6 +99,13 @@ def get_database_url(
     URL
         The database url.
     """
+    if settings.debug:
+        return make_url(
+            "sqlite+aiosqlite:///whombat.db"
+            if is_async
+            else "sqlite:///whombat.db"
+        )
+
     if settings.db_url:
         return make_url(settings.db_url)
 
@@ -253,20 +260,8 @@ async def get_async_session(
 async def init_database(settings: Settings) -> None:
     """Create the database and tables on startup."""
     db_url = get_database_url(settings)
-    cfg = create_alembic_config(db_url, is_async=False)
     engine = create_async_db_engine(db_url)
 
     async with engine.begin() as conn:
+        cfg = create_alembic_config(db_url, is_async=False)
         await conn.run_sync(create_or_update_db, cfg)
-
-    async with get_async_session(engine) as session:
-        try:
-            await api.users.get_by_email(session, settings.admin_email)
-        except exceptions.NotFoundError:
-            await api.users.create(
-                session,
-                username=settings.admin_username,
-                email=settings.admin_email,
-                password=settings.admin_password,
-                is_superuser=True,
-            )

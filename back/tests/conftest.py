@@ -14,10 +14,11 @@ import soundfile as sf
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from whombat import api, cache, dependencies, schemas
+from whombat import api, cache, schemas
+from whombat.routes import dependencies
 from whombat.app import app
-from whombat.database.utils import get_database_url
-from whombat.settings import Settings
+from whombat.system import get_database_url
+from whombat.system.settings import Settings
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)

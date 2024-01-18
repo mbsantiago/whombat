@@ -104,4 +104,4 @@ serve-guide:
 	@$(ENV_PREFIX)mkdocs serve -f mkdocs-guide.yml
 
 serve-dev:
-	python -m whombat
+	DEBUG=true python -m whombat

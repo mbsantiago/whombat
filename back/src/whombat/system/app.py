@@ -7,7 +7,6 @@ import functools
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from colorama import Fore, Style, just_fix_windows_console
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,34 +14,23 @@ from fastapi.staticfiles import StaticFiles
 
 from whombat import exceptions
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
-from whombat.routes import main_router
-from whombat.settings import Settings
-from whombat.system.database import init_database
+from whombat.system.boot import whombat_init
+from whombat.system.settings import Settings
 
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path(__file__).parent.parent
 
 
 @asynccontextmanager
-async def lifespan(settings: Settings, _: FastAPI):
+async def lifespan(settings: Settings, app: FastAPI):
     """Context manager to run startup and shutdown events."""
-    just_fix_windows_console()
-    host = settings.backend_host
-    port = settings.backend_port
-    print("Please wait while the database is initialized...")
-    await init_database(settings)
-    print(
-        f"""
-    {Fore.GREEN}{Style.DIM}Whombat is ready to go!{Style.RESET_ALL}
-
-    {Fore.GREEN}{Style.BRIGHT} * Listening on http://{host}:{port}/{Style.RESET_ALL}
-
-    {Fore.YELLOW}Press Ctrl+C to exit.{Style.RESET_ALL}
-    """
-    )
+    await whombat_init(settings, app)
     yield
 
 
 def create_app(settings: Settings) -> FastAPI:
+    # NOTE: Import the routes here to avoid circular imports
+    from whombat.routes import main_router
+
     app = FastAPI(lifespan=functools.partial(lifespan, settings))
 
     app.add_middleware(

@@ -2,11 +2,7 @@
 
 It contains the FastAPI instance and the root endpoint.
 """
-import warnings
+from whombat.system import create_app, get_settings
 
-# Ignore warnings from pydantic
-warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
-
-from whombat.system import create_app, get_settings  # noqa: E402
-
-app = create_app(get_settings())
+settings = get_settings()
+app = create_app(settings)

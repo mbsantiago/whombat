@@ -23,7 +23,7 @@ from whombat.api.features import features
 from whombat.api.model_runs import model_runs
 from whombat.filters.base import Filter
 from whombat.filters.clip_evaluations import EvaluationFilter
-from whombat.io.aoef.evaluations import import_evaluation
+from whombat.api.io.aoef.evaluations import import_evaluation
 
 
 class EvaluationAPI(
