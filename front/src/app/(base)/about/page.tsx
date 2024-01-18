@@ -12,12 +12,12 @@ export default function Page() {
           <h1 className="font-sans font-bold text-emerald-500 underline decoration-8 text-6xl">
             Whombat
           </h1>
-          <p className="mt-6 text-xl leading-8 text-stone-700 dark:text-stone-300">
+          <p className="mt-6 text-2xl leading-8 text-stone-700 dark:text-stone-300">
             Welcome to Whombat, an open-source web application for audio
             annotation and machine learning.
           </p>
         </div>
-        <div className="max-w-prose text-center text-base flex flex-col gap-4 text-stone-600 dark:text-stone-400">
+        <div className="max-w-prose text-center flex flex-col gap-8 text-lg">
           <p>
             At Whombat, we believe that effective annotation is at the heart of
             a successful machine learning process. Our platform not only

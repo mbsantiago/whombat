@@ -1,20 +1,12 @@
 "use client";
-import { QueryClientProvider } from "@tanstack/react-query";
-import {
-  notFound,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useContext, useCallback } from "react";
 import toast from "react-hot-toast";
 
-import queryClient from "@/app/client";
 import Loading from "@/app/loading";
 import { WhombatIcon } from "@/components/icons";
 import { NavBar } from "@/components/navigation/NavBar";
 import { SideMenu } from "@/components/navigation/SideMenu";
-import Notification from "@/components/Notification";
 import useActiveUser from "@/hooks/api/useActiveUser";
 
 import UserContext from "./context";
@@ -79,17 +71,14 @@ function Contents({ children }: { children: ReactNode }) {
         <NavBar user={user} onLogout={handleLogout} />
         {children}
       </main>
-      <Notification />
     </div>
   );
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WithLogIn>
-        <Contents>{children}</Contents>
-      </WithLogIn>
-    </QueryClientProvider>
+    <WithLogIn>
+      <Contents>{children}</Contents>
+    </WithLogIn>
   );
 }

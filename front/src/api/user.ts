@@ -5,6 +5,22 @@ import { UserSchema } from "@/schemas";
 
 import type { User } from "@/types";
 
+export const UserCreateSchema = z
+  .object({
+    email: z.string().email(),
+    username: z.string(),
+    password: z.string(),
+    password_confirm: z.string(),
+    name: z.string(),
+    is_superuser: z.boolean().optional(),
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    message: "Passwords do not match",
+    path: ["password_confirm"],
+  });
+
+export type UserCreate = z.input<typeof UserCreateSchema>;
+
 export const UserUpdateSchema = z.object({
   username: z.string().optional(),
   email: z.string().optional(),
@@ -28,6 +44,7 @@ export type PasswordUpdate = z.input<typeof PasswordUpdateSchema>;
 const DEFAULT_ENDPOINTS = {
   me: "/api/v1/users/me",
   update: "/api/v1/users/me",
+  first: "/api/v1/users/first/",
 };
 
 export function registerUserAPI(
@@ -45,8 +62,15 @@ export function registerUserAPI(
     return UserSchema.parse(response.data);
   }
 
+  async function createFirstUser(data: UserCreate): Promise<User> {
+    let body = UserCreateSchema.parse(data);
+    let response = await instance.post<User>(endpoints.first, body);
+    return UserSchema.parse(response.data);
+  }
+
   return {
     me: getActiveUser,
     update: updateActiveUser,
+    first: createFirstUser,
   } as const;
 }

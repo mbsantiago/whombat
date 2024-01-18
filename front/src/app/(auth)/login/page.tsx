@@ -7,6 +7,8 @@ import { z } from "zod";
 import api from "@/app/api";
 import { WhombatIcon } from "@/components/icons";
 import { Input, InputGroup } from "@/components/inputs/index";
+import Link from "@/components/Link";
+import Info from "@/components/Info";
 
 const schema = z.object({
   username: z.string(),
@@ -50,10 +52,16 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="mb-4">
+    <div className="flex flex-col gap-4 items-center justify-center min-h-screen">
+      <div className="mb-4 flex flex-col items-center gap-4 text-center text-7xl">
         <WhombatIcon width={128} height={128} />
+        <span className="font-sans font-bold text-emerald-500 underline decoration-8">
+          Whombat
+        </span>
       </div>
+      <p className="max-w-prose text-stone-500">
+        Welcome back! Please sign in to continue.
+      </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <InputGroup
@@ -77,6 +85,22 @@ export default function LoginForm() {
           <Input type="submit" value="Sign in" />
         </div>
       </form>
+      <Info className="w-80">
+        <p>
+          Don&apos;t have an account? Ask your administrator to create one for
+          you.
+        </p>
+      </Info>
+      <Info className="w-80">
+        <p>
+          First time booting up Whombat? Click instead to create an account:
+        </p>
+        <div className="w-full flex flex-row justify-center">
+          <Link mode="text" href="/first/" variant="info">
+            Create account
+          </Link>
+        </div>
+      </Info>
     </div>
   );
 }
