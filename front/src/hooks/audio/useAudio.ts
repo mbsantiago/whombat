@@ -1,8 +1,7 @@
-import { useMachine } from "@xstate/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 
 import api from "@/app/api";
-import { audioMachine } from "@/machines/audio";
+import useAudioKeyShortcuts from "@/hooks/audio/useAudioKeyShortcuts";
 
 import type { Recording } from "@/types";
 
@@ -70,8 +69,13 @@ export default function useAudio({
   endTime,
   startTime = 0,
   speed: initialSpeed,
-}: { recording: Recording } & Partial<PlayerState>): PlayerState &
-  PlayerControls {
+  withShortcuts = true,
+}: {
+  recording: Recording;
+  withShortcuts?: boolean;
+} & Partial<PlayerState>): PlayerState & PlayerControls {
+  const audio = useRef<HTMLAudioElement>(new Audio());
+
   const speedOptions = useMemo(() => getSpeedOptions(recording), [recording]);
   const defaultSpeedOption = useMemo(
     () => getDefaultSpeedOption(speedOptions),
@@ -82,6 +86,10 @@ export default function useAudio({
   const [speed, setSpeed] = useState<number>(
     initialSpeed || defaultSpeedOption.value,
   );
+  const [time, setTime] = useState<number>(startTime);
+  const [loop, setLoop] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(1);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const initialUrl = useMemo(() => {
     return api.audio.getStreamUrl({
@@ -92,64 +100,70 @@ export default function useAudio({
     });
   }, [recording, startTime, endTime, speed]);
 
-  // Initialize audio machine
-  const [machineState, send] = useMachine(audioMachine, {
-    input: {
-      url: initialUrl,
-    },
-  });
+  useEffect(() => {
+    const { current } = audio;
+    current.preload = "none";
+    current.src = initialUrl;
+    current.loop = loop;
+    current.volume = volume;
 
-  // Export player state
-  const { currentTime, volume, loop } = machineState.context;
-  const isPlaying = machineState.matches("playing");
+    setIsPlaying(false);
+    setTime(startTime);
+
+    let timer: number;
+
+    const updateTime = () => {
+      if (current.paused) return;
+      const currentTime = current.currentTime * speed + startTime;
+      setTime(currentTime);
+      timer = requestAnimationFrame(updateTime);
+    };
+
+    timer = requestAnimationFrame(updateTime);
+
+    const onPlay = () => {
+      timer = requestAnimationFrame(updateTime);
+    };
+
+    const onPause = () => {
+      cancelAnimationFrame(timer);
+    };
+
+    current.addEventListener("play", onPlay);
+    current.addEventListener("pause", onPause);
+
+    return () => {
+      cancelAnimationFrame(timer);
+      current.removeEventListener("play", onPlay);
+      current.removeEventListener("pause", onPause);
+    };
+  }, [initialUrl, speed, startTime, loop, volume]);
 
   const handlePlay = useCallback(() => {
-    send({ type: "audio.play" });
-  }, [send]);
+    audio.current.play();
+    setIsPlaying(true);
+  }, []);
 
   const handlePause = useCallback(() => {
-    send({ type: "audio.pause" });
-  }, [send]);
+    audio.current.pause();
+    setIsPlaying(false);
+  }, []);
 
   const handleStop = useCallback(() => {
-    send({ type: "audio.stop" });
-  }, [send]);
+    audio.current.pause();
+    audio.current.currentTime = 0;
+    setTime(startTime);
+    setIsPlaying(false);
+  }, [startTime]);
 
-  const handleSetVolume = useCallback(
-    (volume: number) => {
-      send({ type: "audio.set_volume", volume });
-    },
-    [send],
-  );
+  const handleSetVolume = useCallback((volume: number) => {
+    audio.current.volume = volume;
+    setVolume(volume);
+  }, []);
 
-  const handleToggleLoop = useCallback(() => {
-    send({ type: "audio.toggle_loop" });
-  }, [send]);
-
-  const handleSeek = useCallback(
-    (time: number) => {
-      send({ type: "audio.seek", time: (time - startTime) / speed });
-    },
-    [send, speed, startTime],
-  );
-
-  const handleSetSpeed = useCallback(
-    (newSpeed: number) => {
-      setSpeed(newSpeed);
-      const url = api.audio.getStreamUrl({
-        recording,
-        startTime,
-        endTime,
-        speed: newSpeed,
-      });
-      send({
-        type: "audio.change_url",
-        url,
-        play: true,
-      });
-    },
-    [send, recording, startTime, endTime],
-  );
+  const handleSeek = useCallback((time: number) => {
+    audio.current.currentTime = time;
+  }, []);
 
   const handleTogglePlay = useCallback(() => {
     if (isPlaying) {
@@ -159,11 +173,21 @@ export default function useAudio({
     }
   }, [isPlaying, handlePlay, handlePause]);
 
+  const handleToggleLoop = useCallback(() => {
+    audio.current.loop = !audio.current.loop;
+    setLoop(audio.current.loop);
+  }, []);
+
+  useAudioKeyShortcuts({
+    onTogglePlay: handleTogglePlay,
+    enabled: withShortcuts,
+  });
+
   return {
     startTime,
     endTime: endTime || recording.duration,
     volume,
-    currentTime: currentTime * speed + startTime,
+    currentTime: time,
     speed,
     loop,
     isPlaying,
@@ -175,6 +199,6 @@ export default function useAudio({
     setVolume: handleSetVolume,
     toggleLoop: handleToggleLoop,
     seek: handleSeek,
-    setSpeed: handleSetSpeed,
+    setSpeed,
   };
 }

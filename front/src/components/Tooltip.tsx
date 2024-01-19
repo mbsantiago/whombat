@@ -9,7 +9,7 @@ export default function Tooltip({
   children,
   tooltip,
   placement = "right",
-  autoPlacement = true,
+  autoPlacement = false,
   offset = 8,
 }: {
   children: ReactNode;

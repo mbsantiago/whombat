@@ -64,7 +64,11 @@ export default function AnnotationProjectList({
               </>
             }
           >
-            {() => <AnnotationProjectCreate onCreate={onCreate} />}
+            {() => (
+              <div className="w-max-prose">
+                <AnnotationProjectCreate onCreate={onCreate} />
+              </div>
+            )}
           </Dialog>
         </div>
         <div className="h-full">

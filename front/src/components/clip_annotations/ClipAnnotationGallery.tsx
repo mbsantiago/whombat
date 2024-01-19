@@ -70,7 +70,6 @@ function Spectrogram(props: {
   height?: number;
 }) {
   const { annotation, parameters, onParametersSave, height = 260 } = props;
-
   return (
     <ClipAnnotationSpectrogram
       clipAnnotation={annotation}
@@ -81,6 +80,7 @@ function Spectrogram(props: {
       withPlayer={false}
       withControls={false}
       withSettings={false}
+      withAudioShortcuts={false}
       disabled={true}
     />
   );

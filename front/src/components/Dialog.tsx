@@ -35,7 +35,7 @@ export default function Dialog({
   );
 }
 
-function DialogOverlay({
+export function DialogOverlay({
   title,
   children,
   onClose,

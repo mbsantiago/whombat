@@ -9,7 +9,6 @@ import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
 import SpectrogramTags from "@/components/spectrograms/SpectrogramTags";
 import useAnnotateClip from "@/hooks/annotation/useAnnotateClip";
-import useAnnotateClipKeyShortcuts from "@/hooks/annotation/useAnnotateClipKeyShortcuts";
 import useAudio from "@/hooks/audio/useAudio";
 import useCanvas from "@/hooks/draw/useCanvas";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
@@ -37,6 +36,8 @@ export default function ClipAnnotationSpectrogram({
   withPlayer = true,
   withControls = true,
   withSettings = true,
+  withAudioShortcuts = true,
+  withSpectrogramShortcuts = true,
   defaultTags,
   onAddSoundEventTag,
   onRemoveSoundEventTag,
@@ -56,6 +57,8 @@ export default function ClipAnnotationSpectrogram({
   withPlayer?: boolean;
   withControls?: boolean;
   withSettings?: boolean;
+  withAudioShortcuts?: boolean;
+  withSpectrogramShortcuts?: boolean;
   onParameterSave?: (params: SpectrogramParameters) => void;
   onSelectAnnotation?: (annotation: SoundEventAnnotation | null) => void;
   onCreateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
@@ -97,6 +100,7 @@ export default function ClipAnnotationSpectrogram({
     recording,
     endTime: bounds.time.max,
     startTime: bounds.time.min,
+    withShortcuts: withAudioShortcuts,
   });
 
   const handleSpectrogramModeChange = useCallback(
@@ -126,6 +130,7 @@ export default function ClipAnnotationSpectrogram({
     onDoubleClick: handleDoubleClick,
     onModeChange: handleSpectrogramModeChange,
     enabled: !isAnnotating && !audio.isPlaying,
+    withShortcuts: withSpectrogramShortcuts,
   });
 
   const { centerOn } = spectrogram;
@@ -201,17 +206,6 @@ export default function ClipAnnotationSpectrogram({
     spectrogramIsLoading,
     trackingAudio,
   ]);
-
-  useAnnotateClipKeyShortcuts({
-    onGoCreate: annotate.enableDraw,
-    onGoDelete: annotate.enableDelete,
-    onGoSelect: annotate.enableSelect,
-    onGoZoom: spectrogram.enableZoom,
-    onGoMove: spectrogram.enableDrag,
-    onUnfocus: spectrogram.enableDrag,
-    onGoHome: spectrogram.reset,
-    onTogglePlay: audio.togglePlay,
-  });
 
   useCanvas({ ref: canvasRef, draw });
 

@@ -14,12 +14,11 @@ import {
   TagIcon,
   TimeIcon,
 } from "@/components/icons";
-import { formatLocation } from "@/components/inputs/Location";
 import TableCell from "@/components/tables/TableCell";
 import Checkbox from "@/components/tables/TableCheckbox";
 import TableHeader from "@/components/tables/TableHeader";
 import TableInput from "@/components/tables/TableInput";
-import TableMap, { parsePosition } from "@/components/tables/TableMap";
+import TableMap from "@/components/tables/TableMap";
 import TableTags from "@/components/tables/TableTags";
 
 import type { RecordingUpdate } from "@/api/recordings";
@@ -240,29 +239,25 @@ export default function useRecordingTable({
             </TableHeader>
           );
         },
-        accessorFn: (row) => {
-          return formatLocation({
-            latitude: row.latitude,
-            longitude: row.longitude,
-          });
-        },
+        accessorFn: (row) => ({
+          latitude: row.latitude,
+          longitude: row.longitude,
+        }),
         cell: ({ row }) => {
-          const location = row.getValue("location") as string;
+          const location = row.getValue("location") as {
+            latitude: number | null;
+            longitude: number | null;
+          };
           return (
             <TableMap
-              pattern="^[\-+]?([1-8]?\d(\.\d+)?|90(.0+)?),\s*[\-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$"
               onChange={(value) => {
                 if (value === null) return;
-                const { position, isComplete } = parsePosition(value);
-                if (!isComplete) return;
-                const { lat: latitude, lng: longitude } = position;
                 onUpdate({
                   recording: row.original,
-                  data: { latitude, longitude },
+                  data: value,
                   index: row.index,
                 });
               }}
-              type="text"
               value={location}
             />
           );

@@ -45,7 +45,11 @@ export default function AnnotationProjectTags({
             to add.
           </small>
           <div className="py-2">
-            <TagSearchBar autoFocus={false} onSelect={project.addTag.mutate} />
+            <TagSearchBar
+              autoFocus={false}
+              onSelect={project.addTag.mutate}
+              onCreate={project.addTag.mutate}
+            />
           </div>
           <small className="text-stone-500">
             Create new tags if needed, but avoid duplicating meanings.

@@ -139,6 +139,7 @@ export default function AnnotateTasks({
       <div className="flex flex-row justify-between gap-8">
         <div className="grow">
           <AnnotationProgress
+            current={tasks.current}
             instructions={instructions}
             tasks={tasks.tasks}
             filter={tasks._filter}

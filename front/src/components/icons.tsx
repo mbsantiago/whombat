@@ -1,4 +1,5 @@
 import {
+  QuestionMarkCircleIcon,
   TrophyIcon,
   AcademicCapIcon,
   AdjustmentsVerticalIcon,
@@ -316,4 +317,5 @@ export {
   LineStringIcon,
   WrenchScrewdriverIcon as ToolsIcon,
   TrophyIcon,
+  QuestionMarkCircleIcon as HelpIcon,
 };

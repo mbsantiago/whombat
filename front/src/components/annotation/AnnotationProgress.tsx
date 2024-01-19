@@ -9,19 +9,32 @@ import Toggle from "@/components/inputs/Toggle";
 import ProgressBar from "@/components/ProgressBar";
 import Tooltip from "@/components/Tooltip";
 import Dialog from "@/components/Dialog";
+import KeyboardKey from "@/components/KeyboardKey";
+import ShortcutHelper from "@/components/ShortcutHelper";
 import { computeAnnotationTasksProgress } from "@/utils/annotation_tasks";
+import { AUDIO_KEY_SHORTCUTS } from "@/hooks/audio/useAudioKeyShortcuts";
+import { SPECTROGRAM_KEY_SHORTCUTS } from "@/hooks/spectrogram/useSpectrogramKeyShortcuts";
+import { ANNOTATION_KEY_SHORTCUTS } from "@/hooks/annotation/useAnnotateClipKeyShortcuts";
 
 import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
 import type { Filter } from "@/hooks/utils/useFilter";
 import type { AnnotationTask } from "@/types";
 
+const SHORTCUTS = [
+  ...AUDIO_KEY_SHORTCUTS,
+  ...SPECTROGRAM_KEY_SHORTCUTS,
+  ...ANNOTATION_KEY_SHORTCUTS,
+];
+
 export default function AnnotationProgress({
+  current,
   instructions,
   tasks,
   filter,
   onNext,
   onPrevious,
 }: {
+  current?: number | null;
   instructions: string;
   tasks: AnnotationTask[];
   filter: Filter<AnnotationTaskFilter>;
@@ -38,34 +51,51 @@ export default function AnnotationProgress({
 
   return (
     <div className="inline-flex gap-1 items-center h-full w-full">
-      <Tooltip tooltip="Previous Task" placement="bottom">
+      <Tooltip
+        tooltip={
+          <div className="inline-flex gap-2 items-center">
+            Previous Task
+            <div className="text-xs">
+              <KeyboardKey code="p" />
+            </div>
+          </div>
+        }
+        placement="bottom"
+      >
         <Button mode="text" padding="p-1" onClick={onPrevious}>
           <PreviousIcon className="inline-block w-8 h-8" />
         </Button>
       </Tooltip>
       <div className="inline-flex gap-4 items-center px-2 h-full rounded-lg border grow dark:border-stone-800">
-        <div className="inline-flex gap-1 items-center">
+        <div className="inline-flex gap-3 items-center">
+          <ShortcutHelper shortcuts={SHORTCUTS} />
           <Dialog
             mode="text"
             variant="info"
-            title="Annotation Instruction"
+            title="Annotation Instructions"
             label="Instructions"
           >
             {() => <p>{instructions}</p>}
           </Dialog>
-          <span className="text-sm text-stone-500">Progress:</span>
-          <div className="w-36">
-            <ProgressBar
-              error={needReview}
-              verified={verified}
-              total={total}
-              complete={complete}
-              className="mb-0"
-            />
-          </div>
+          <span className="inline-flex gap-1 items-center text-sm whitespace-nowrap">
+            <span className="text-stone-500">#:</span>
+            <span className="font-bold text-blue-500">{current}</span>
+          </span>
+          <span className="text-sm inline-flex gap-1 items-center whitespace-nowrap">
+            <span className="text-stone-500">Progress:</span>
+            <div className="w-36">
+              <ProgressBar
+                error={needReview}
+                verified={verified}
+                total={total}
+                complete={complete}
+                className="mb-0"
+              />
+            </div>
+          </span>
         </div>
-        <span className="text-sm align-middle whitespace-nowrap text-stone-500">
-          Remaining:{" "}
+        <span className="text-sm inline-flex gap-1 items-center whitespace-nowrap text-stone-500">
+          <span>Remaining:</span>
           <span className="font-medium text-blue-500">{pending}</span>/{total}
         </span>
         <div className="inline-flex gap-1 items-center">
@@ -107,7 +137,17 @@ export default function AnnotationProgress({
           />
         </div>
       </div>
-      <Tooltip tooltip="Next Task" placement="bottom">
+      <Tooltip
+        tooltip={
+          <div className="inline-flex gap-2 items-center">
+            Next Task
+            <div className="text-xs">
+              <KeyboardKey code="n" />
+            </div>
+          </div>
+        }
+        placement="bottom"
+      >
         <Button mode="text" padding="p-1" onClick={onNext}>
           <NextIcon className="inline-block w-8 h-8" />
         </Button>

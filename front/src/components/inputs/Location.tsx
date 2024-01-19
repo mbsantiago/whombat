@@ -74,7 +74,7 @@ export default function LocationInput({
         <div className="flex flex-row gap-2 justify-center items-center p-2">
           <InputGroup
             name="latitude"
-            label="latitude"
+            label="lat"
             error={errors.latitude?.message}
           >
             <Input
@@ -87,7 +87,7 @@ export default function LocationInput({
           </InputGroup>
           <InputGroup
             name="longitude"
-            label="longitude"
+            label="lon"
             error={errors.longitude?.message}
           >
             <Input
@@ -100,7 +100,7 @@ export default function LocationInput({
           </InputGroup>
         </div>
       )}
-      <div className="relative inline-flex justify-center">
+      <div className="relative inline-flex justify-center p-2">
         {position.latitude != null && position.longitude != null && (
           <Map
             center={{ lat: position.latitude, lng: position.longitude }}

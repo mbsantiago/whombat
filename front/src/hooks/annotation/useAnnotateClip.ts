@@ -7,6 +7,7 @@ import useAnnotationEdit from "@/hooks/annotation/useAnnotationEdit";
 import useAnnotationSelect from "@/hooks/annotation/useAnnotationSelect";
 import useClipAnnotation from "@/hooks/api/useClipAnnotation";
 import useSpectrogramTags from "@/hooks/spectrogram/useSpectrogramTags";
+import useAnnotateClipKeyShortcuts from "@/hooks/annotation/useAnnotateClipKeyShortcuts";
 
 import type {
   ClipAnnotation,
@@ -337,6 +338,13 @@ export default function useAnnotateClip(props: {
   const disable = useCallback(() => {
     setMode("idle");
   }, [setMode]);
+
+  useAnnotateClipKeyShortcuts({
+    onGoCreate: enableDraw,
+    onGoDelete: enableDelete,
+    onGoSelect: enableSelect,
+    enabled: !disabled,
+  });
 
   return {
     mode,

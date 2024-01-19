@@ -2,7 +2,6 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from threading import Timer
 
 from soundevent.audio import (
     MediaInfo,
@@ -55,11 +54,7 @@ class FileInfo:
     media_info: MediaInfo | None = None
 
 
-def _timeout_handler() -> None:
-    raise TimeoutError("Timeout while getting file info.")
-
-
-def get_file_info(path: Path, timeout: float | None = None) -> FileInfo:
+def get_file_info(path: Path) -> FileInfo:
     """Get information about a file.
 
     This function will gather the following information about the file:
@@ -82,11 +77,6 @@ def get_file_info(path: Path, timeout: float | None = None) -> FileInfo:
     file_info: FileInfo
         Information about the file.
     """
-    timer = None
-    if timeout is not None:
-        timer = Timer(timeout, _timeout_handler)
-        timer.start()
-
     logger.debug(f"Getting information about file: {path}")
 
     if not path.is_file():
@@ -110,10 +100,6 @@ def get_file_info(path: Path, timeout: float | None = None) -> FileInfo:
         media_info = None
 
     logger.debug(f"Finished getting information about file: {path}")
-
-    if timer is not None:
-        timer.cancel()
-
     return FileInfo(
         path=path,
         exists=True,

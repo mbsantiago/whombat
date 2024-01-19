@@ -21,6 +21,8 @@ import { shuffleArray } from "@/utils/arrays";
 import type { AnnotationStatus, AnnotationTask, ClipAnnotation } from "@/types";
 
 type AnnotationState = {
+  /** Currently selected annotation task index */
+  current: number | null;
   /** Currently selected annotation task */
   task: AnnotationTask | null;
   /** Clip annotations for the current task */
@@ -293,6 +295,7 @@ export default function useAnnotateTasks({
   });
 
   return {
+    current: index,
     task: currentTask,
     filter: filter.filter,
     tasks: items,

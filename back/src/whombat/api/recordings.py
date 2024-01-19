@@ -1,6 +1,6 @@
 """API functions for interacting with recordings."""
 import datetime
-import warnings
+import logging
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
@@ -28,6 +28,8 @@ __all__ = [
     "RecordingAPI",
     "recordings",
 ]
+
+logger = logging.getLogger(__name__)
 
 
 class MediaInfo(NamedTuple):
@@ -274,11 +276,10 @@ class RecordingAPI(
                 partial(_assemble_recording_data, audio_dir=audio_dir),
                 validated_data,
             )
-            # Take at most 1 second per file on average
-            # Some very large files may take longer, but this is a reasonable
-            # estimate for most files.
-            estimated_time = len(data)
-            all_data: list[dict | None] = results.get(timeout=estimated_time)
+            # NOTE: This will block until all results are ready. Might
+            # want to change this in the future as it could be very
+            # slow for large numbers of files or large files.
+            all_data: list[dict | None] = results.get()
 
         recordings = await common.create_objects_without_duplicates(
             session,
@@ -949,42 +950,40 @@ def _assemble_recording_data(
     audio_dir: Path,
 ) -> dict | None:
     """Get missing recording data from file."""
+    logger.debug(f"Assembling recording data from file: {data.path}")
+
     try:
         info = files.get_file_info(data.path)
-    except (ValueError, KeyError):
-        warnings.warn(
+    except (ValueError, KeyError) as e:
+        logger.warning(
             f"Could not get file info from file. {data.path} Skipping file.",
-            UserWarning,
+            exc_info=e,
         )
         return None
 
     if info.media_info is None:
-        warnings.warn(
+        logger.warning(
             f"Could not extract media info from file. {data.path}"
             "Skipping file.",
-            UserWarning,
         )
         return None
 
     if not info.is_audio:
-        warnings.warn(
+        logger.warning(
             f"File is not an audio file. {data.path} Skipping file.",
-            UserWarning,
         )
         return None
 
     if not data.path.is_relative_to(audio_dir):
-        warnings.warn(
+        logger.warning(
             f"File is not in audio directory. {data.path} Skipping file."
             f"Root audio directory: {audio_dir}",
-            UserWarning,
         )
         return None
 
     if info.hash is None:
-        warnings.warn(
-            f"Could not compute hash of file. {data.path} Skipping file.",
-            UserWarning,
+        logger.warning(
+            f"Could not compute hash of file. {data.path} Skipping file."
         )
         return None
 

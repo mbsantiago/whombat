@@ -1,6 +1,7 @@
 import Button from "@/components/Button";
 import { DragIcon, HomeIcon, ZoomIcon } from "@/components/icons";
 import Tooltip from "@/components/Tooltip";
+import KeyboardKey from "@/components/KeyboardKey";
 
 export default function SpectrogramControls({
   canDrag,
@@ -22,12 +23,32 @@ export default function SpectrogramControls({
           <HomeIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
-      <Tooltip tooltip="Drag spectrogram" placement="bottom">
+      <Tooltip
+        tooltip={
+          <div className="inline-flex gap-2 items-center">
+            Drag spectrogram
+            <div className="text-xs">
+              <KeyboardKey code="x" />
+            </div>
+          </div>
+        }
+        placement="bottom"
+      >
         <Button variant={canDrag ? "primary" : "secondary"} onClick={onDrag}>
           <DragIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
-      <Tooltip tooltip="Zoom to selection" placement="bottom">
+      <Tooltip
+        tooltip={
+          <div className="inline-flex gap-2 items-center">
+            Zoom to selection
+            <div className="text-xs">
+              <KeyboardKey code="z" />
+            </div>
+          </div>
+        }
+        placement="bottom"
+      >
         <Button variant={canZoom ? "primary" : "secondary"} onClick={onZoom}>
           <ZoomIcon className="w-5 h-5" />
         </Button>

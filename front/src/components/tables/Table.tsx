@@ -95,10 +95,11 @@ export default function Table<S>({
                 return (
                   <td
                     role="gridcell"
-                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600 max-h-40 overflow-y-hidden"
+                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600 max-h-40"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {
+                      if (event.target instanceof HTMLInputElement) return;
                       onCellKeyDown?.({
                         data: row.original,
                         row: row.index,

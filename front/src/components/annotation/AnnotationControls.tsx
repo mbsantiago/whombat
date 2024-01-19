@@ -11,6 +11,7 @@ import {
   TimeIntervalIcon,
   TimeStampIcon,
 } from "@/components/icons";
+import KeyboardKey from "@/components/KeyboardKey";
 import Select from "@/components/inputs/Select";
 import Tooltip from "@/components/Tooltip";
 
@@ -73,7 +74,14 @@ export default function AnnotationControls({
     return (
       <div className="flex space-x-2">
         <Tooltip
-          tooltip="Select an annotation"
+          tooltip={
+            <div className="inline-flex gap-1">
+              Select
+              <span className="text-xs">
+                <KeyboardKey code="s" />
+              </span>
+            </div>
+          }
           placement="bottom"
           autoPlacement={false}
         >
@@ -90,7 +98,14 @@ export default function AnnotationControls({
   return (
     <div className="flex space-x-2">
       <Tooltip
-        tooltip="Create a new annotation"
+        tooltip={
+          <div className="inline-flex gap-1">
+            Create
+            <span className="text-xs">
+              <KeyboardKey code="a" />
+            </span>
+          </div>
+        }
         placement="bottom"
         autoPlacement={false}
       >
@@ -100,7 +115,14 @@ export default function AnnotationControls({
       </Tooltip>
       {!isEditing ? (
         <Tooltip
-          tooltip="Select an annotation"
+          tooltip={
+            <div className="inline-flex gap-1">
+              Select
+              <span className="text-xs">
+                <KeyboardKey code="s" />
+              </span>
+            </div>
+          }
           placement="bottom"
           autoPlacement={false}
         >
@@ -117,7 +139,14 @@ export default function AnnotationControls({
         </Button>
       )}
       <Tooltip
-        tooltip="Delete an annotation"
+        tooltip={
+          <div className="inline-flex gap-1">
+            Delete
+            <span className="text-xs">
+              <KeyboardKey code="d" />
+            </span>
+          </div>
+        }
         placement="bottom"
         autoPlacement={false}
       >

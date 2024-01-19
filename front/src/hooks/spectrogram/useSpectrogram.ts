@@ -5,6 +5,7 @@ import drawFrequencyAxis from "@/draw/freqAxis";
 import drawTimeAxis from "@/draw/timeAxis";
 import useSpectrogramImage from "@/hooks/spectrogram//useSpectrogramImage";
 import useSpectrogramMotions from "@/hooks/spectrogram/useSpectrogramMotions";
+import useSpectrogramKeyShortcuts from "@/hooks/spectrogram/useSpectrogramKeyShortcuts";
 import {
   getInitialViewingWindow,
   adjustWindowToBounds,
@@ -70,6 +71,7 @@ export default function useSpectrogram({
   onModeChange,
   onDoubleClick,
   enabled = true,
+  withShortcuts = true,
 }: {
   recording: Recording;
   dimensions: { width: number; height: number };
@@ -80,6 +82,7 @@ export default function useSpectrogram({
   onModeChange?: (mode: MotionMode) => void;
   onDoubleClick?: (dblClickProps: { position: Position }) => void;
   enabled?: boolean;
+  withShortcuts?: boolean;
 }): {
   draw: DrawFn;
   props: React.HTMLAttributes<HTMLCanvasElement>;
@@ -225,6 +228,12 @@ export default function useSpectrogram({
     },
     [drawImage, drawMotions, viewport, canDrag, canZoom],
   );
+
+  useSpectrogramKeyShortcuts({
+    onGoMove: enableDrag,
+    onGoZoom: enableZoom,
+    enabled: withShortcuts,
+  })
 
   return {
     bounds: initialBounds,
