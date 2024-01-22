@@ -10,4 +10,4 @@ build-guide:
 	bash scripts/update_guide.sh
 
 bundle-pyinstaller:
-	bash scripts/bundle.sh
+	bash scripts/bundle_linux.sh

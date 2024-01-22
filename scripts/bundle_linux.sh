@@ -40,6 +40,8 @@ build/.venv/bin/pyinstaller \
 	--add-data "alembic.ini:." \
 	--name whombat \
 	--onefile \
+    --console \
+    --splash "../front/public/whombat256x256.png" \
 	app.py
 
 
