@@ -37,6 +37,8 @@ build\.venv\Scripts\pyinstaller `
     --add-data "alembic.ini;." `
     --name whombat `
     --onefile `
+    --console `
+    --splash "..\assets\splash.png" `
     app.py
 
 

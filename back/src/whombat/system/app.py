@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from whombat import exceptions
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
-from whombat.system.boot import whombat_init
+from whombat.system.boot import whombat_init, update_splash_screen, close_splash_screen
 from whombat.system.settings import Settings
 
 ROOT_DIR = Path(__file__).parent.parent
@@ -19,7 +19,10 @@ ROOT_DIR = Path(__file__).parent.parent
 @asynccontextmanager
 async def lifespan(settings: Settings, app: FastAPI):
     """Context manager to run startup and shutdown events."""
+    update_splash_screen("Initializing Whombat...")
     await whombat_init(settings, app)
+    update_splash_screen("Whombat is ready!")
+    close_splash_screen()
     yield
 
 
