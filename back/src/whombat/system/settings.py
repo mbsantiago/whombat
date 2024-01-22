@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     log_dir: Path = Path("logs")
     """Path to the directory where log files are stored relative to the project root."""
 
-    log_level: str = "INFO"
+    log_level: str = "info"
     """Log level for the application.
 
     Should be set to INFO in production.
