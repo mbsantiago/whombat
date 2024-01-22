@@ -1,3 +1,5 @@
+import webbrowser
+
 from colorama import Fore, Style, just_fix_windows_console
 from fastapi import FastAPI
 
@@ -80,9 +82,12 @@ async def whombat_init(settings: Settings, _: FastAPI):
         print_debug_message(settings)
 
     print("Please wait while the database is initialized...")
+
     await init_database(settings)
 
     if await is_first_run(settings):
         print_first_run_message(settings)
+        webbrowser.open(f"http://{settings.backend_host}:{settings.backend_port}/first")
     else:
         print_ready_message(settings)
+        webbrowser.open(f"http://{settings.backend_host}:{settings.backend_port}/")
