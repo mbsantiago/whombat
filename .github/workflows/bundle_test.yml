@@ -1,4 +1,5 @@
-name: Bundle App
+name: Test Bundle App
+
 on:
   workflow_dispatch:
 
