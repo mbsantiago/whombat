@@ -130,7 +130,7 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
             },
             "whombat": {
                 "handlers": ["whombat"],
-                "level": settings.log_level.upper(),
+                "level": settings.log_level.lower(),
                 "propagate": False,
             },
         },
@@ -188,7 +188,7 @@ def generate_dev_logging_config(settings) -> dict[str, Any]:
             },
             "whombat": {
                 "handlers": ["whombat"],
-                "level": settings.log_level.upper(),
+                "level": settings.log_level.lower(),
                 "propagate": False,
             },
         },
