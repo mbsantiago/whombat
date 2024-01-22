@@ -115,17 +115,17 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
         "loggers": {
             "uvicorn": {
                 "handlers": ["default"],
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
             },
             "uvicorn.error": {
                 "handlers": ["error"],
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
             },
             "uvicorn.access": {
                 "handlers": ["access"],
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
             },
             "whombat": {
@@ -173,17 +173,17 @@ def generate_dev_logging_config(settings) -> dict[str, Any]:
         "loggers": {
             "uvicorn": {
                 "handlers": ["default"],
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
             },
             "uvicorn.error": {
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
                 "handlers": ["error"],
             },
             "uvicorn.access": {
                 "handlers": ["access"],
-                "level": "INFO",
+                "level": "info",
                 "propagate": False,
             },
             "whombat": {
