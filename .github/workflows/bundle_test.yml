@@ -1,6 +1,11 @@
 name: Test Bundle App
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - workflows
+
 
 jobs:
   build-windows-test:
