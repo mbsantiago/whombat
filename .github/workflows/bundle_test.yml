@@ -1,7 +1,6 @@
 name: Bundle App
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -22,11 +21,11 @@ jobs:
         run: scripts/bundle_windows.ps1
       - run: |
           mkdir dist/
-          mv "back/dist/whombat.zip" "dist/whombat-windows-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
+          mv "back/dist/whombat.zip" "dist/whombat-windows.zip"
+      - uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-windows-${{ github.ref_name }}.zip"
+          name: "windows-build"
+          path: "dist/whombat-windows.zip"
 
   build-ubuntu:
     runs-on: ubuntu-20.04
@@ -44,11 +43,11 @@ jobs:
       - run: bash scripts/bundle_linux.sh
       - run: |
           mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
+          mv back/dist/whombat.zip "dist/whombat-ubuntu.zip"
+      - uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
+          name: "ubuntu-build"
+          path: "dist/whombat-ubuntu.zip"
 
   build-macos:
     runs-on: macos-11
@@ -65,8 +64,8 @@ jobs:
       - run: bash scripts/bundle_macos.sh
       - run: |
           mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-macos-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
+          mv back/dist/whombat.zip "dist/whombat-macos.zip"
+      - uses: actions/upload-artifact@v4
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-macos-${{ github.ref_name }}.zip"
+          name: "macos-build"
+          path: "dist/whombat-macos.zip"
