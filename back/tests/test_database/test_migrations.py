@@ -15,6 +15,7 @@ def test_can_detect_database_that_needs_creation(database_url: URL):
     the database file automatically, so we expect the database to need
     creation.
     """
+
     cfg = database.create_alembic_config(database_url, is_async=False)
     engine = database.create_sync_db_engine(database_url)
 

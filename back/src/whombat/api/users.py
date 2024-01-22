@@ -147,6 +147,7 @@ class UserAPI(
                 name=name,
                 is_active=is_active,
                 is_superuser=is_superuser,
+                is_verified=True,
             )
         )
         session.add(db_user)

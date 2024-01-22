@@ -1,8 +1,4 @@
-"""System module for Whombat.
-
-Functions:
-    create_app: Create a FastAPI app.
-"""
+"""System module for Whombat."""
 import functools
 from contextlib import asynccontextmanager
 from pathlib import Path

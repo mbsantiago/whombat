@@ -62,10 +62,5 @@ async def create_session(
     keyword.
     """
     engine = database.create_async_db_engine(db_url)
-    cfg = database.create_alembic_config(db_url, is_async=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(database.create_or_update_db, cfg)
-
-    engine = database.create_async_db_engine(db_url)
     async with database.get_async_session(engine) as session:
         yield session

@@ -15,9 +15,7 @@ from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, cache, schemas
-from whombat.routes import dependencies
-from whombat.app import app
-from whombat.system import get_database_url
+from whombat.system import get_database_url, init_database
 from whombat.system.settings import Settings
 
 # Avoid noisy logging during tests.
@@ -77,17 +75,13 @@ def settings(
     database_test: Path,
 ) -> Settings:
     """Fixture to return the settings."""
-    settings = Settings(
+    return Settings(
         db_dialect="sqlite",
         db_name=str(database_test.absolute().resolve()),
         app_name="Whombat",
         audio_dir=audio_dir,
-        admin_username="test_admin",
-        admin_password="test_password",
-        admin_email="test@whombat.com",
+        open_on_startup=False,
     )
-    app.dependency_overrides[dependencies.get_settings] = lambda: settings
-    return settings
 
 
 @pytest.fixture
@@ -168,7 +162,19 @@ def random_wav_factory(audio_dir: Path):
 
 
 @pytest.fixture
-async def session(database_url: URL) -> AsyncGenerator[AsyncSession, None]:
+async def database_init(
+    settings: Settings,
+) -> AsyncGenerator[None, None]:
+    """Create a session that uses an in-memory database."""
+    await init_database(settings)
+    yield
+
+
+@pytest.fixture
+async def session(
+    database_url: URL,
+    database_init,
+) -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
     async with api.create_session(db_url=database_url) as sess:
         yield sess
@@ -180,28 +186,28 @@ async def user(session: AsyncSession) -> schemas.SimpleUser:
     user = await api.users.create(
         session,
         username="test",
-        password="test",
+        password="password",
         email="test@whombat.com",
+        is_active=True,
     )
+    await session.commit()
     return user
 
 
 @pytest.fixture
 async def tag(session: AsyncSession) -> schemas.Tag:
     """Create a tag for testing."""
-    tag = await api.tags.create(
+    return await api.tags.create(
         session,
         key="test_key",
         value="test_value",
     )
-    return tag
 
 
 @pytest.fixture
 async def feature_name(session: AsyncSession) -> schemas.FeatureName:
     """Create a feature for testing."""
-    feature_name = await api.features.create(session, name="test_feature")
-    return feature_name
+    return await api.features.create(session, name="test_feature")
 
 
 @pytest.fixture

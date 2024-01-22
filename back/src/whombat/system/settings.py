@@ -91,6 +91,9 @@ class Settings(BaseSettings):
     ]
     """Allowed origins for CORS."""
 
+    open_on_startup: bool = True
+    """Open the application in the browser on startup."""
+
     @classmethod
     def settings_customise_sources(
         cls,
