@@ -111,7 +111,7 @@ export default function RecordingTable({
         filterDef={recordingFilterDefs}
       />
       <div className="w-full">
-        <div className="overflow-x-scroll overflow-y-scroll w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
+        <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
           <Table table={table} onCellKeyDown={handleKeyDown} />
         </div>
       </div>

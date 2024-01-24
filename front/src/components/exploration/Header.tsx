@@ -21,7 +21,7 @@ export default function ExplorationHeader() {
 
   return (
     <Header>
-      <div className="flex w-full flex-row space-x-4 overflow-x-scroll">
+      <div className="flex w-full flex-row space-x-4 overflow-x-auto">
         <H1>Explore</H1>
         <Tabs
           tabs={[

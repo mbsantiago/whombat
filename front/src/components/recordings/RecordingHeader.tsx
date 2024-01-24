@@ -36,7 +36,7 @@ export default function RecordingHeader({
   });
 
   return (
-    <div className="flex overflow-x-scroll flex-row gap-x-6 items-center w-full">
+    <div className="flex overflow-x-auto flex-row gap-x-6 items-center w-full">
       <div className="inline-flex items-center">
         <RecordingIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <H3 className="max-w-xl whitespace-nowrap">

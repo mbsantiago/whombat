@@ -22,8 +22,8 @@ export default function AnnotationProjectHeader({
 
   return (
     <Header>
-      <div className="flex overflow-x-scroll flex-row space-x-4 w-full">
-        <H1 className="overflow-scroll max-w-xl whitespace-nowrap">
+      <div className="flex overflow-x-auto flex-row space-x-4 w-full">
+        <H1 className="overflow-auto max-w-xl whitespace-nowrap">
           {annotationProject.name}
         </H1>
         <Tabs

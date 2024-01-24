@@ -33,7 +33,7 @@ export default function TableTags({
   const getTagColor = useStore((state) => state.getTagColor);
 
   return (
-    <div className="flex overflow-scroll flex-row flex-wrap gap-2 items-center px-1 m-0 w-full max-h-40">
+    <div className="flex overflow-auto flex-row flex-wrap gap-2 items-center px-1 m-0 w-full max-h-40">
       {/* Display the list of tags and allow users to remove a tag from */}
       {/* list by clicking on it*/}
       {tags.map((tag) => (

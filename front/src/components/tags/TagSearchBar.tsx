@@ -161,7 +161,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
               <ChevronUpDownIcon className="w-5 h-5" aria-hidden="true" />
             </Combobox.Button>
           </div>
-          <Combobox.Options className="overflow-y-scroll py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600">
+          <Combobox.Options className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600">
             {tags.items.length === 0 ? (
               <NoTagsFound />
             ) : (

@@ -29,7 +29,7 @@ export default function DatasetNavHeader({ dataset }: { dataset: Dataset }) {
 
   return (
     <Header>
-      <div className="flex overflow-x-scroll flex-row space-x-4 w-full">
+      <div className="flex overflow-x-auto flex-row space-x-4 w-full">
         <H1>{dataset.name}</H1>
         <Tabs
           tabs={[

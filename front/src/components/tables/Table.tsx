@@ -59,7 +59,7 @@ export default function Table<S>({
           >
             {headerGroup.headers.map((header) => (
               <th
-                className="overflow-x-scroll relative py-1 px-2 whitespace-nowrap border border-stone-400 dark:border-stone-500"
+                className="overflow-x-auto relative py-1 px-2 whitespace-nowrap border border-stone-400 dark:border-stone-500"
                 key={header.id}
                 colSpan={header.colSpan}
                 style={{

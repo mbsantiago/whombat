@@ -23,8 +23,8 @@ export default function EvaluationSetHeader({
 
   return (
     <Header>
-      <div className="flex w-full flex-row space-x-4 overflow-x-scroll">
-        <H1 className="max-w-xl whitespace-nowrap overflow-scroll">
+      <div className="flex w-full flex-row space-x-4 overflow-x-auto">
+        <H1 className="max-w-xl whitespace-nowrap overflow-auto">
           {evaluationSet.name}
         </H1>
         <Tabs

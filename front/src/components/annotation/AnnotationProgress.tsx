@@ -129,7 +129,7 @@ export default function AnnotationProgress({
             </>
           }
         />
-        <div className="overflow-x-scroll">
+        <div className="overflow-x-auto">
           <FilterBar
             withLabel={false}
             filter={filter}

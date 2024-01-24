@@ -129,19 +129,46 @@ export default function useAudio({
       cancelAnimationFrame(timer);
     };
 
+    const onError = () => {
+      cancelAnimationFrame(timer);
+    }
+
     current.addEventListener("play", onPlay);
     current.addEventListener("pause", onPause);
+    current.addEventListener("error", onError);
 
     return () => {
       cancelAnimationFrame(timer);
       current.removeEventListener("play", onPlay);
       current.removeEventListener("pause", onPause);
+      current.removeEventListener("error", onError);
     };
   }, [initialUrl, speed, startTime, loop, volume]);
 
+
+  // Some browsers return `Promise` on `.play()` and may throw errors
+  // if one tries to execute another `.play()` or `.pause()` while that
+  // promise is resolving. So we prevent that with this lock.
+  // See: https://bugs.chromium.org/p/chromium/issues/detail?id=593273
+  let lockPlay = useRef<boolean>(false);
+
   const handlePlay = useCallback(() => {
-    audio.current.play();
-    setIsPlaying(true);
+    if (lockPlay.current) return;
+    const promise = audio.current.play();
+
+    if (promise) {
+      lockPlay.current = true;
+      promise
+        .then(() => {
+          setIsPlaying(true);
+          lockPlay.current = false;
+        })
+        .catch(() => {
+          lockPlay.current = false;
+        });
+    } else {
+      setIsPlaying(true);
+    }
   }, []);
 
   const handlePause = useCallback(() => {
