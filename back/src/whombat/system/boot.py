@@ -106,7 +106,7 @@ async def whombat_init(settings: Settings, _: FastAPI):
     if await is_first_run(settings):
         print_first_run_message(settings)
 
-        if settings.open_on_startup:
+        if settings.open_on_startup and not settings.debug:
             webbrowser.open(
                 f"http://{settings.backend_host}:{settings.backend_port}/first/"
             )
@@ -114,7 +114,7 @@ async def whombat_init(settings: Settings, _: FastAPI):
 
     print_ready_message(settings)
 
-    if settings.open_on_startup:
+    if settings.open_on_startup and not settings.debug:
         webbrowser.open(
             f"http://{settings.backend_host}:{settings.backend_port}/"
         )

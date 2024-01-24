@@ -1,4 +1,6 @@
-from whombat.api.audio import load_clip_bytes
+import struct
+
+from whombat.api.audio import HEADER_FORMAT, CHUNK_SIZE, load_clip_bytes
 
 
 def test_load_clip_bytes(random_wav_factory):
@@ -104,3 +106,76 @@ def test_stream_a_whole_audio_file(random_wav_factory):
             break
 
     assert b"".join(parts) == full_bytes
+
+
+def test_stream_a_whole_audio_file_with_non_1_speed(random_wav_factory):
+    path = random_wav_factory(
+        duration=0.5,
+        samplerate=384_000,
+        channels=1,
+        bit_depth=32,
+    )
+
+    speed = 0.1
+
+    with open(path, "rb") as f:
+        full_bytes = f.read()
+
+    true_filesize = path.stat().st_size
+
+    start = 0
+    filesize = None
+    parts = []
+    while True:
+        end = start + CHUNK_SIZE
+
+        if filesize is not None and end > filesize:
+            end = filesize
+
+        part, start, end, filesize = load_clip_bytes(
+            path=path,
+            start=start,
+            end=end,
+            speed=speed,
+        )
+        parts.append(part)
+        start = end
+
+        assert filesize == true_filesize
+
+        if not part or start >= filesize:
+            break
+
+    streamed = b"".join(parts)
+
+    assert streamed[44:] == full_bytes[44:]
+
+    fields = [
+        "riff",
+        "size",
+        "wave",
+        "fmt ",
+        "fmt_size",
+        "format",
+        "channels",
+        "samplerate",
+        "byte_rate",
+        "block_align",
+        "bit_depth",
+        "data",
+        "data_size",
+    ]
+
+    orig_header = struct.unpack(HEADER_FORMAT, full_bytes[:44])
+    streamed_header = struct.unpack(HEADER_FORMAT, streamed[:44])
+
+    for (field, h1, h2) in zip(fields, orig_header, streamed_header):
+        if field == "samplerate":
+            assert int(h1 * speed) == h2
+            continue
+
+        if field == "byte_rate":
+            assert int(h1 * speed) == h2
+            continue
+
+        assert h1 == h2

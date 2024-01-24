@@ -12,7 +12,8 @@ __all__ = [
     "load_clip_bytes",
 ]
 
-CHUNK_SIZE = 1024 * 1024
+CHUNK_SIZE = 512 * 1024
+HEADER_FORMAT = "<4si4s4sihhiihh4si"
 
 
 def load_audio(
@@ -131,7 +132,6 @@ def load_clip_bytes(
             samplerate = sf_file.samplerate * time_expansion
             channels = sf_file.channels
             bit_depth = BIT_DEPTH_MAP.get(sf_file.subtype)
-            bytes_per_sample = channels * bit_depth // 8
 
             if bit_depth is None:
                 raise NotImplementedError(
@@ -152,35 +152,38 @@ def load_clip_bytes(
             end_position = f.tell()
 
             data_size = end_position - start_position
-            filesize = data_size + 44
+
+            header = generate_wav_header(
+                int(samplerate * speed),
+                channels,
+                data_size,
+                bit_depth,
+            )
+            header_size = len(header)
+            filesize = data_size + header_size
 
             bytes_to_load = end - start if end else CHUNK_SIZE
 
-            header = b""
-            if start < 44:
+            if start < header_size:
                 start = 0
-                bytes_to_load -= 44
-                header = generate_wav_header(
-                    int(samplerate * speed),
-                    channels,
-                    data_size,
-                    bit_depth,
-                )
+                bytes_to_load -= header_size
+            else:
+                header = b""
 
             if bytes_to_load < 0:
-                return header, 0, 44, filesize
+                return header, 0, header_size, filesize
 
-            start_sample = int(start_time * samplerate)
-            start_offset = max(int((start - 44) / bytes_per_sample), 0)
+            current_position = start_position + start - header_size
+            bytes_to_load = min(
+                bytes_to_load,
+                end_position - current_position,
+            )
 
-            sf_file.seek(start_sample + start_offset)
-            current_position = f.tell()
-
-            max_bytes_to_load = int(end_position - current_position)
-            audio_bytes = f.read(min(bytes_to_load, max_bytes_to_load))
+            f.seek(current_position)
+            audio_bytes = f.read(bytes_to_load)
 
             data = bytes(header + audio_bytes)
-            end = start + len(data)
+            end = start + len(data) - 1
             return data, start, end, filesize
 
 
@@ -219,7 +222,7 @@ def generate_wav_header(
     block_align = channels * bit_depth // 8
 
     return struct.pack(
-        "<4si4s4sihhiihh4si",  # Format string
+        HEADER_FORMAT,
         b"RIFF",  # RIFF chunk id
         data_size + 36,  # Size of the entire file minus 8 bytes
         b"WAVE",  # RIFF chunk id

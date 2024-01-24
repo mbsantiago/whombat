@@ -64,6 +64,7 @@ async def stream_recording_audio(
 
     headers = {
         "Content-Range": f"bytes {start}-{end}/{filesize}",
+        "Content-Length": f"{len(data)}",
         "Accept-Ranges": "bytes",
     }
     return Response(
