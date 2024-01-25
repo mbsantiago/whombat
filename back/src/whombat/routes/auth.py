@@ -1,7 +1,7 @@
 """Module containing the router for the Auth."""
 from fastapi import APIRouter
 
-from whombat.routes.dependencies.auth import get_users_api, get_auth_backend
+from whombat.routes.dependencies.auth import get_auth_backend, get_users_api
 from whombat.schemas.users import User, UserCreate
 from whombat.system.settings import Settings
 

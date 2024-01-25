@@ -11,7 +11,9 @@ from whombat.api.io.aoef.clip_predictions import get_clip_predictions
 from whombat.api.io.aoef.clips import get_clips
 from whombat.api.io.aoef.features import get_feature_names
 from whombat.api.io.aoef.recordings import get_recordings
-from whombat.api.io.aoef.sound_event_predictions import get_sound_event_predictions
+from whombat.api.io.aoef.sound_event_predictions import (
+    get_sound_event_predictions,
+)
 from whombat.api.io.aoef.sound_events import get_sound_events
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users

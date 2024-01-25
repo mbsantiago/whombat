@@ -11,9 +11,9 @@ from pydantic import DirectoryPath
 from soundevent.io.aoef import DatasetObject, to_aeof
 
 from whombat import api, schemas
-from whombat.routes.dependencies import Session, WhombatSettings
-from whombat.filters.datasets import DatasetFilter
 from whombat.api.io import aoef
+from whombat.filters.datasets import DatasetFilter
+from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
 
 __all__ = [

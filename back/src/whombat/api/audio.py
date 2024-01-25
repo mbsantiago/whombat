@@ -171,9 +171,9 @@ def load_clip_bytes(
                 header = b""
 
             if bytes_to_load < 0:
-                return header, 0, header_size, filesize
+                return header, 0, len(header), filesize
 
-            current_position = start_position + start - header_size
+            current_position = start_position + max(start - header_size, 0)
             bytes_to_load = min(
                 bytes_to_load,
                 end_position - current_position,

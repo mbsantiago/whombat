@@ -1,6 +1,6 @@
 import struct
 
-from whombat.api.audio import HEADER_FORMAT, CHUNK_SIZE, load_clip_bytes
+from whombat.api.audio import CHUNK_SIZE, HEADER_FORMAT, load_clip_bytes
 
 
 def test_load_clip_bytes(random_wav_factory):
@@ -35,7 +35,7 @@ def test_load_clip_bytes(random_wav_factory):
     assert len(loaded_bytes) == len(read_bytes)
     assert loaded_bytes == read_bytes
     assert start_ == start
-    assert end_ == end
+    assert end_ == end - 1
     assert filesize == path.stat().st_size
 
 
@@ -66,7 +66,7 @@ def test_load_clip_bytes_with_header(random_wav_factory):
 
     assert len(loaded_bytes) == len(read_bytes)
     assert start_ == start
-    assert end_ == end
+    assert end_ == end - 1
     assert filesize == path.stat().st_size
 
 
@@ -87,25 +87,21 @@ def test_stream_a_whole_audio_file(random_wav_factory):
     filesize = None
     parts = []
     while True:
-        end = start + 1024 * 1024
-
-        if filesize is not None and end > filesize:
-            end = filesize
-
-        part, start, end, filesize = load_clip_bytes(
+        part, start, _, filesize = load_clip_bytes(
             path=path,
             start=start,
-            end=end,
         )
         parts.append(part)
-        start = end
+        start = start + len(part)
 
         assert filesize == true_filesize
 
         if not part or start >= filesize:
             break
 
-    assert b"".join(parts) == full_bytes
+    streamed = b"".join(parts)
+    assert len(streamed) == len(full_bytes)
+    assert streamed == full_bytes
 
 
 def test_stream_a_whole_audio_file_with_non_1_speed(random_wav_factory):
@@ -127,19 +123,13 @@ def test_stream_a_whole_audio_file_with_non_1_speed(random_wav_factory):
     filesize = None
     parts = []
     while True:
-        end = start + CHUNK_SIZE
-
-        if filesize is not None and end > filesize:
-            end = filesize
-
-        part, start, end, filesize = load_clip_bytes(
+        part, start, _, filesize = load_clip_bytes(
             path=path,
             start=start,
-            end=end,
             speed=speed,
         )
         parts.append(part)
-        start = end
+        start = start + len(part)
 
         assert filesize == true_filesize
 
@@ -169,7 +159,7 @@ def test_stream_a_whole_audio_file_with_non_1_speed(random_wav_factory):
     orig_header = struct.unpack(HEADER_FORMAT, full_bytes[:44])
     streamed_header = struct.unpack(HEADER_FORMAT, streamed[:44])
 
-    for (field, h1, h2) in zip(fields, orig_header, streamed_header):
+    for field, h1, h2 in zip(fields, orig_header, streamed_header):
         if field == "samplerate":
             assert int(h1 * speed) == h2
             continue

@@ -107,14 +107,10 @@ async def whombat_init(settings: Settings, _: FastAPI):
         print_first_run_message(settings)
 
         if settings.open_on_startup and not settings.dev:
-            webbrowser.open(
-                f"http://{settings.host}:{settings.port}/first/"
-            )
+            webbrowser.open(f"http://{settings.host}:{settings.port}/first/")
         return
 
     print_ready_message(settings)
 
     if settings.open_on_startup and not settings.dev:
-        webbrowser.open(
-            f"http://{settings.host}:{settings.port}/"
-        )
+        webbrowser.open(f"http://{settings.host}:{settings.port}/")

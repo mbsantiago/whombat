@@ -31,7 +31,6 @@ from whombat.routes.spectrograms import spectrograms_router
 from whombat.routes.tags import tags_router
 from whombat.routes.user_runs import user_runs_router
 from whombat.routes.users import get_users_router
-
 from whombat.system.settings import Settings
 
 __all__ = [

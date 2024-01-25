@@ -2,10 +2,10 @@
 
 We are using pydantic to define our settings.
 """
+import warnings
 from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, Type
-import warnings
 
 from pydantic import ValidationError
 from pydantic_settings import (
@@ -79,7 +79,7 @@ class Settings(BaseSettings):
     port: int = 5000
     """Port on which the backend is running."""
 
-    domain: str = "http://localhost"
+    domain: str = "localhost"
     """Domain on which the backend is running."""
 
     log_config: Path = Path("logging.conf")

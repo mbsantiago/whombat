@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends
 from soundevent.data import AnnotationState
 
 from whombat import api, schemas
-from whombat.routes.dependencies import ActiveUser, Session
 from whombat.filters.annotation_tasks import AnnotationTaskFilter
 from whombat.filters.clips import UUIDFilter as ClipUUIDFilter
+from whombat.routes.dependencies import ActiveUser, Session
 from whombat.routes.types import Limit, Offset
 
 __all__ = [

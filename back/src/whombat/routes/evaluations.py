@@ -4,8 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.routes.dependencies import Session
 from whombat.filters.evaluations import EvaluationFilter
+from whombat.routes.dependencies import Session
 from whombat.routes.types import Limit, Offset
 
 evaluations_router = APIRouter()
