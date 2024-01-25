@@ -1,4 +1,5 @@
 """Whombat Data management."""
+import os
 import sys
 from pathlib import Path
 
@@ -27,8 +28,15 @@ def _get_macos_app_data_dir() -> Path:
 def get_app_data_dir() -> Path:
     """Get the application data directory.
 
-    This is platform dependent.
+    This is platform dependent. Can be set with the `WHOMBAT_DATA_DIR`
+    environment variable.
     """
+
+    if "WHOMBAT_DATA_DIR" in os.environ:
+        data_dir = Path(os.environ["WHOMBAT_DATA_DIR"])
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return data_dir
+
     platform = sys.platform
 
     if platform == "win32":

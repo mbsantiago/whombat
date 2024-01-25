@@ -5,8 +5,14 @@ We are using pydantic to define our settings.
 from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, Type
+import warnings
 
-from pydantic_settings import BaseSettings, PydanticBaseSettingsSource
+from pydantic import ValidationError
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
 
 from whombat.system.data import get_whombat_db_file, get_whombat_settings_file
 
@@ -19,10 +25,16 @@ __all__ = [
 class Settings(BaseSettings):
     """Settings for whombat."""
 
-    debug: bool = False
-    """Enable debug mode.
+    model_config = SettingsConfigDict(
+        env_prefix="WHOMBAT_",
+    )
 
-    Should be disabled in production.
+    dev: bool = False
+    """True if the application is running in development mode.
+
+    When running in development mode, the application will log to stdout
+    use a SQLite database in the project root and reload the application
+    when changes are made to the source code.
     """
 
     db_dialect: str = "sqlite"
@@ -61,16 +73,23 @@ class Settings(BaseSettings):
     outside of the audio directory.
     """
 
-    app_name: str = "Whombat"
-
-    backend_host: str = "localhost"
+    host: str = "localhost"
     """Host on which the backend is running."""
 
-    backend_port: int = 5000
+    port: int = 5000
     """Port on which the backend is running."""
+
+    domain: str = "http://localhost"
+    """Domain on which the backend is running."""
 
     log_config: Path = Path("logging.conf")
     """Path to the logging configuration file relative to the project root."""
+
+    log_to_file: bool = True
+    """Log to a file."""
+
+    log_to_stdout: bool = False
+    """Log to stdout."""
 
     log_dir: Path = Path("logs")
     """Path to the directory where log files are stored relative to the project root."""
@@ -122,12 +141,30 @@ def load_settings_from_file() -> Settings:
     settings_file = get_whombat_settings_file()
 
     if not settings_file.exists():
-        default_settings = Settings(
-            db_name=str(get_whombat_db_file()),
+        store_default_settings()
+
+    try:
+        return Settings.model_validate_json(settings_file.read_text())
+    except ValidationError:
+        # NOTE: This should only happen if the user has manually edited
+        # the settings file and made a mistake, or if the settings schema
+        # has changed. In both cases, we want to store the default settings
+        # to the file.
+        warnings.warn(
+            f"Settings file {settings_file} is invalid. "
+            "Storing default settings to file."
         )
-        write_settings_to_file(default_settings)
+        store_default_settings()
 
     return Settings.model_validate_json(settings_file.read_text())
+
+
+def store_default_settings() -> None:
+    """Store the default settings to a file."""
+    default_settings = Settings(
+        db_name=str(get_whombat_db_file()),
+    )
+    write_settings_to_file(default_settings)
 
 
 def write_settings_to_file(settings: Settings) -> None:

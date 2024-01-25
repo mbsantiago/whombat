@@ -23,8 +23,8 @@ def get_logging_config(settings: Settings) -> dict[str, Any]:
     dict[str, Any]
         The logging configuration.
     """
-    if settings.debug:
-        return generate_dev_logging_config(settings)
+    if settings.dev:
+        return generate_logging_config(settings)
 
     data_dir = get_app_data_dir()
     log_config_file = data_dir / settings.log_config
@@ -52,26 +52,59 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
 
     data_dir = get_app_data_dir()
     log_dir = data_dir / settings.log_dir
-
-    if not log_dir.exists():
-        log_dir.mkdir(parents=True)
-
-    default_log_file = log_dir / "default.log"
     whombat_log_file = log_dir / "whombat.log"
     access_log_file = log_dir / "access.log"
     error_log_file = log_dir / "error.log"
 
-    if not default_log_file.exists():
-        default_log_file.touch()
+    if settings.log_to_file:
+        log_dir.mkdir(parents=True, exist_ok=True)
+        whombat_log_file.touch(exist_ok=True)
+        access_log_file.touch(exist_ok=True)
+        error_log_file.touch(exist_ok=True)
 
-    if not whombat_log_file.exists():
-        whombat_log_file.touch()
+    file_handlers = {
+        "error": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "default",
+            "filename": str(error_log_file),
+            "backupCount": 10,
+            "maxBytes": 2 * 1024 * 1024,
+        },
+        "access": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "access",
+            "filename": str(access_log_file),
+            "backupCount": 10,
+            "maxBytes": 2 * 1024 * 1024,
+        },
+        "default": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "whombat",
+            "filename": str(whombat_log_file),
+            "backupCount": 10,
+            "maxBytes": 2 * 1024 * 1024,
+        },
+    }
 
-    if not access_log_file.exists():
-        access_log_file.touch()
+    console_handlers = {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "access",
+            "stream": "ext://sys.stdout",
+        },
+        "console.error": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "stream": "ext://sys.stderr",
+        },
+    }
 
-    if not error_log_file.exists():
-        error_log_file.touch()
+    handlers = {}
+    if settings.log_to_file:
+        handlers.update(file_handlers)
+
+    if settings.log_to_stdout:
+        handlers.update(console_handlers)
 
     return {
         "version": 1,
@@ -82,54 +115,25 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             },
         },
-        "handlers": {
-            "default": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "default",
-                "filename": str(default_log_file),
-                "backupCount": 10,
-                "maxBytes": 2 * 1024 * 1024,
-            },
-            "error": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "default",
-                "filename": str(error_log_file),
-                "backupCount": 10,
-                "maxBytes": 2 * 1024 * 1024,
-            },
-            "access": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "access",
-                "filename": str(access_log_file),
-                "backupCount": 10,
-                "maxBytes": 2 * 1024 * 1024,
-            },
-            "whombat": {
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "whombat",
-                "filename": str(whombat_log_file),
-                "backupCount": 10,
-                "maxBytes": 2 * 1024 * 1024,
-            },
-        },
+        "handlers": handlers,
         "loggers": {
             "uvicorn": {
-                "handlers": ["default"],
+                "handlers": _get_handlers("default", "console", settings),
                 "level": "INFO",
                 "propagate": False,
             },
             "uvicorn.error": {
-                "handlers": ["error"],
+                "handlers": _get_handlers("error", "console.error", settings),
                 "level": "INFO",
                 "propagate": False,
             },
             "uvicorn.access": {
-                "handlers": ["access"],
+                "handlers": _get_handlers("access", "console", settings),
                 "level": "INFO",
                 "propagate": False,
             },
             "whombat": {
-                "handlers": ["whombat"],
+                "handlers": _get_handlers("default", "console", settings),
                 "level": settings.log_level.upper(),
                 "propagate": False,
             },
@@ -137,59 +141,18 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
     }
 
 
-def generate_dev_logging_config(settings) -> dict[str, Any]:
-    """Generate logging config for the development environment."""
-    return {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            **LOGGING_CONFIG["formatters"],
-            "whombat": {
-                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            },
-        },
-        "handlers": {
-            "default": {
-                "formatter": "default",
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-            },
-            "error": {
-                "formatter": "default",
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stderr",
-            },
-            "access": {
-                "formatter": "access",
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-            },
-            "whombat": {
-                "formatter": "whombat",
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-            },
-        },
-        "loggers": {
-            "uvicorn": {
-                "handlers": ["default"],
-                "level": "INFO",
-                "propagate": False,
-            },
-            "uvicorn.error": {
-                "level": "INFO",
-                "propagate": False,
-                "handlers": ["error"],
-            },
-            "uvicorn.access": {
-                "handlers": ["access"],
-                "level": "INFO",
-                "propagate": False,
-            },
-            "whombat": {
-                "handlers": ["whombat"],
-                "level": settings.log_level.upper(),
-                "propagate": False,
-            },
-        },
-    }
+def _get_handlers(
+    file_handler: str,
+    console_handler: str,
+    settings: Settings,
+) -> list[str]:
+    if settings.log_to_file and settings.log_to_stdout:
+        return [file_handler, console_handler]
+
+    if settings.log_to_file:
+        return [file_handler]
+
+    if settings.log_to_stdout:
+        return [console_handler]
+
+    return []

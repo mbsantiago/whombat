@@ -16,8 +16,8 @@ just_fix_windows_console()
 
 
 def print_ready_message(settings: Settings):
-    host = settings.backend_host
-    port = settings.backend_port
+    host = settings.host
+    port = settings.port
 
     print(
         f"""
@@ -31,8 +31,8 @@ def print_ready_message(settings: Settings):
 
 
 def print_first_run_message(settings: Settings):
-    host = settings.backend_host
-    port = settings.backend_port
+    host = settings.host
+    port = settings.port
 
     print(
         f"""
@@ -58,7 +58,7 @@ async def is_first_run(settings: Settings) -> bool:
     return is_first_run
 
 
-def print_debug_message(settings: Settings):
+def print_dev_message(settings: Settings):
     database_url = get_database_url(settings)
     settings_str = settings.model_dump_json(
         indent=4,
@@ -66,7 +66,7 @@ def print_debug_message(settings: Settings):
     )
     print(
         f"""
-{Fore.RED}{Style.BRIGHT}Whombat is running in debug mode!{Style.RESET_ALL}
+{Fore.RED}{Style.BRIGHT}Whombat is running in development mode!{Style.RESET_ALL}
 
 {Fore.GREEN}{Style.BRIGHT}Database URL:{Style.RESET_ALL} {database_url}
 
@@ -77,7 +77,7 @@ def print_debug_message(settings: Settings):
 
 def update_splash_screen(message: str) -> None:
     try:
-        import pyi_splash
+        import pyi_splash  # type: ignore
 
         pyi_splash.update_text(message)
     except:
@@ -86,7 +86,7 @@ def update_splash_screen(message: str) -> None:
 
 def close_splash_screen() -> None:
     try:
-        import pyi_splash
+        import pyi_splash  # type: ignore
 
         pyi_splash.close()
     except:
@@ -96,8 +96,8 @@ def close_splash_screen() -> None:
 async def whombat_init(settings: Settings, _: FastAPI):
     """Run at initialization."""
 
-    if settings.debug:
-        print_debug_message(settings)
+    if settings.dev:
+        print_dev_message(settings)
 
     print("Please wait while the database is initialized...")
 
@@ -106,15 +106,15 @@ async def whombat_init(settings: Settings, _: FastAPI):
     if await is_first_run(settings):
         print_first_run_message(settings)
 
-        if settings.open_on_startup and not settings.debug:
+        if settings.open_on_startup and not settings.dev:
             webbrowser.open(
-                f"http://{settings.backend_host}:{settings.backend_port}/first/"
+                f"http://{settings.host}:{settings.port}/first/"
             )
         return
 
     print_ready_message(settings)
 
-    if settings.open_on_startup and not settings.debug:
+    if settings.open_on_startup and not settings.dev:
         webbrowser.open(
-            f"http://{settings.backend_host}:{settings.backend_port}/"
+            f"http://{settings.host}:{settings.port}/"
         )

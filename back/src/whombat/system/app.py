@@ -10,7 +10,11 @@ from fastapi.staticfiles import StaticFiles
 
 from whombat import exceptions
 from whombat.plugins import add_plugin_pages, add_plugin_routes, load_plugins
-from whombat.system.boot import whombat_init, update_splash_screen, close_splash_screen
+from whombat.system.boot import (
+    close_splash_screen,
+    update_splash_screen,
+    whombat_init,
+)
 from whombat.system.settings import Settings
 
 ROOT_DIR = Path(__file__).parent.parent
@@ -28,19 +32,25 @@ async def lifespan(settings: Settings, app: FastAPI):
 
 def create_app(settings: Settings) -> FastAPI:
     # NOTE: Import the routes here to avoid circular imports
-    from whombat.routes import main_router
+    from whombat.routes import get_main_router
 
     app = FastAPI(lifespan=functools.partial(lifespan, settings))
 
+    allowed_origins = [
+        f"http://{settings.host}:{settings.port}",
+        *settings.cors_origins,
+    ]
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_origins,
+        allow_origins=allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
     # Add default routes.
+    main_router = get_main_router(settings)
     app.include_router(main_router)
 
     # Load plugins.

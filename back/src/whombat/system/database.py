@@ -99,7 +99,7 @@ def get_database_url(
     URL
         The database url.
     """
-    if settings.debug:
+    if settings.dev:
         return make_url(
             "sqlite+aiosqlite:///whombat.db"
             if is_async

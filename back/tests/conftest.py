@@ -78,7 +78,6 @@ def settings(
     return Settings(
         db_dialect="sqlite",
         db_name=str(database_test.absolute().resolve()),
-        app_name="Whombat",
         audio_dir=audio_dir,
         open_on_startup=False,
     )

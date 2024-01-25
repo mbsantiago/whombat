@@ -12,10 +12,9 @@ if __name__ == "__main__":
     config = get_logging_config(settings)
     uvicorn.run(
         "whombat.app:app",
-        host=settings.backend_host,
-        port=settings.backend_port,
+        host=settings.host,
+        port=settings.port,
         log_level=settings.log_level,
-        reload=True if settings.debug else False,
-        access_log=True,
+        reload=settings.dev,
         log_config=config,
     )
