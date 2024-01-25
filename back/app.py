@@ -33,9 +33,9 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
     uvicorn.run(
         "app:app",
-        host=settings.backend_host,
+        host=settings.host,
         log_level=settings.log_level,
         log_config=config,
-        port=settings.backend_port,
-        reload=False,
+        port=settings.port,
+        reload=settings.dev,
     )
