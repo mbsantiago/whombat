@@ -283,7 +283,7 @@ the annotation interface, additional controls are available for creating
 annotations. These include Select, Create, and Delete options.
 
 - Use the **Select** option to hover over and choose a single annotated sound
-  event by clicking on it. Once selected, you can edit its RoI or view its
+  event by clicking on it. Once selected, you can **Edit** its RoI or view its
   details in the section below, including adding notes to this specific sound
   event (**Sound Event Detail**, labeled **G** in the figure).
 - The **Delete** mode allows you to hover over and select a single sound event
@@ -291,6 +291,15 @@ annotations. These include Select, Create, and Delete options.
 - Utilize the **Create** button to draw a RoI and generate a new sound event
   annotation. The dropdown menu in the annotation controls lets you choose the
   type of geometry to use.
+
+!!! tip "Copying Annotations"
+
+    In scenarios where multiple similar-looking sound events occur within a single
+    clip, you can efficiently annotate them by creating a single sound event,
+    adding all the relevant tags, and then copying the annotation to create clones.
+    To achieve this, select the desired annotation, press the Control key, and drag
+    a copy to the desired location. This feature streamlines the annotation process
+    for repetitive sound events.
 
 All annotations will be visible in the spectrogram alongside the current tags. A
 button next to the tags of a sound event annotation enables you to add more
@@ -382,6 +391,6 @@ models and user annotators, or exploring the data further using the tools in the
 [Exploration section](exploration.md), you have a solid foundation to make the
 most of your annotations.
 
-*[RoI]: Region of Interest
+\*[RoI]: Region of Interest
 
-*[ML]: Machine Learning
+\*[ML]: Machine Learning

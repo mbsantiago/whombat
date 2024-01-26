@@ -80,7 +80,7 @@ def update_splash_screen(message: str) -> None:
         import pyi_splash  # type: ignore
 
         pyi_splash.update_text(message)
-    except:
+    except ImportError:
         return
 
 
@@ -89,7 +89,7 @@ def close_splash_screen() -> None:
         import pyi_splash  # type: ignore
 
         pyi_splash.close()
-    except:
+    except ImportError:
         return
 
 

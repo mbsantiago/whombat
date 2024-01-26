@@ -15,7 +15,9 @@ to suit your preferences and needs.
 
 The simplest way to dive into Whombat is by downloading our pre-packaged
 executable file. We've tailored versions for Windows, Mac OS, and Ubuntu. Head
-over to our GitHub repository's [releases](https://github.com/mbsantiago/whombat/releases) section to get the latest version.
+over to our GitHub repository's
+[releases](https://github.com/mbsantiago/whombat/releases) section to get the
+latest version.
 
 ### Python Package
 
@@ -36,8 +38,8 @@ executable. This action spawns a new window that should resemble the following:
 
 ![boot](../assets/img/boot.png)
 
-After the window displays the "ready" message, open your preferred browser and
-navigate to:
+After the window displays the "ready" message a browser will be opened on
+Whombat, or open your preferred browser and navigate to:
 
     http://localhost:5000
 
@@ -47,20 +49,29 @@ navigate to:
 
         python -m whombat
 
+## First User
+
+If this is your initial encounter with Whombat, you'll be greeted with a screen
+to create your user profile. Please enter your details and set up your user
+account.
+
+!!! info "Your Information"
+
+    The details you provide here are stored locally on your computer and are
+    not shared with others. However, if you decide to download and share a dataset
+    or annotations, the information of the user who created them will be visible in
+    the exported files. Therefore, your data will only be shared with the people
+    you send these files to. If you wish to share your work, it is essential to
+    provide your information so that others can attribute you correctly and contact
+    you if needed.
+
 ## Login
 
-Whombat welcomes you with a login form. Input your username and password to
-access the home page. Whombat's user system allows for multiple users, keeping
-track of everyone's work.
+For returning users, Whombat welcomes you with a login form. Enter your username
+and password to access the home page. Whombat's user system supports multiple
+users, allowing for individual work tracking.
 
 ![login](../assets/img/login.png)
-
-!!! warning "First time"
-
-    If this is your inaugural run of Whombat, you won't have a username and
-    password. Not to worry, Whombat auto-generates a first user. Use the username
-    **admin** and password **admin** for your initial login. Afterward, you can
-    visit your profile to customize your username and password.
 
 ## Home Screen
 
