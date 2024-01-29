@@ -8,7 +8,7 @@ from whombat.system.settings import Settings, get_settings
 
 
 @pytest.fixture
-async def client(database_test: Path, settings: Settings):
+async def client(database_path: Path, settings: Settings):
     """Fixture to initialize the test database."""
     app = create_app(settings)
 
@@ -17,4 +17,4 @@ async def client(database_test: Path, settings: Settings):
     with TestClient(app) as client:
         yield client
 
-    database_test.unlink()
+    database_path.unlink()
