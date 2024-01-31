@@ -1,31 +1,32 @@
 name: Linting
-
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v3
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: pip install black ruff pyright
+        run: |
+          cd back
+          pdm install --dev
       - name: Check formatting
         run: |
           cd back
-          black --check src
-          black --check tests
+          pdm run black --check src
+          pdm run black --check tests
       - name: Check typing
         run: |
           cd back
-          pyright src
+          pdm run pyright src
       - name: Check for overall code issues
         run: |
           cd back
-          ruff src
+          pdm run ruff src
