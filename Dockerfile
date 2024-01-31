@@ -59,6 +59,7 @@ COPY back/app.py /code/app.py
 COPY back/pyproject.toml /code/pyproject.toml
 COPY back/alembic.ini /code/alembic.ini
 COPY back/README.md /code/README.md
+COPY back/LICENSE /code/LICENSE
 
 # Install Whombat
 RUN pip install --no-deps .
