@@ -17,7 +17,7 @@ jobs:
           cd back
           pip install -r guide_requirements.txt
       - name: Build Guide
-        run:
+        run: |
           cd back
           mkdocs build -d mkdocs-guide.yml -d site
       - name: Upload build

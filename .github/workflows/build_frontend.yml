@@ -19,7 +19,7 @@ jobs:
       - name: Build app
         run: |
           cd front
-          npm build
+          npm run build
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
