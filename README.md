@@ -1,5 +1,10 @@
 # Whombat
 
+![build](https://github.com/github/docs/actions/workflows/bundle.yml/badge.svg)
+![docs](https://github.com/github/docs/actions/workflows/docs.yml/badge.svg)
+![lint](https://github.com/github/docs/actions/workflows/lint.yml/badge.svg)
+![tests](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)
+
 **Whombat** is an open-source, web-based audio annotation tool designed to streamline audio data labeling and annotation, with a particular focus on supporting machine learning model development.
 
 ## Installation
