@@ -38,6 +38,7 @@ build/.venv/bin/pyinstaller \
 	--add-data "src/whombat/statics:whombat/statics" \
 	--add-data "src/whombat/user_guide:whombat/user_guide" \
 	--add-data "alembic.ini:." \
+    --recursive-copy-metadata "numpy" \
 	--name whombat \
 	--onefile \
     --splash "../assets/splash.png" \

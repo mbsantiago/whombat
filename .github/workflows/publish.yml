@@ -1,0 +1,108 @@
+name: Publish PyPI
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build-user-guide:
+    uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@dev
+
+  build-frontend:
+    uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@dev
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [build-user-guide, build-frontend]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend
+          path: back/src/whombat/statics/
+      - uses: actions/download-artifact@v4
+        with:
+          name: user_guide
+          path: back/src/whombat/user_guide/
+      - name: Install pypa/build
+        run: pip install build
+      - name: Build a binary wheel and source tarball
+        run: |
+          cd back
+          python -m build
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-package-distributions
+          path: back/dist/
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'release'
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/whombat
+
+    permissions:
+      id-token: write
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Upload to GitHub release
+    needs: [publish-to-pypi]
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'release'
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Download the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Upload artifact to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload '${{ github.ref_name }}' dist/** --repo '${{github.repository }}'
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'workflow_dispatch'
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/whombat
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v3
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
