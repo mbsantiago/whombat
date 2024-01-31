@@ -5,10 +5,10 @@ on:
 
 jobs:
   build-user-guide:
-    uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@main
+    uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@dev
 
   build-frontend:
-    uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@main
+    uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@dev
 
   build-windows:
     runs-on: windows-latest
