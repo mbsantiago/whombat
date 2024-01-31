@@ -166,12 +166,11 @@ front/src/old_hooks
 old
 
 site
+back/user_guide
 
 whombat.db
 .pdm-python
-back/src/whombat/statics
-back/src/whombat/statics
+back/src/whombat/statics/*
+back/src/whombat/user_guide/*
 back/.build_venv
-back/user_guide
-back/src/whombat/user_guide
 .bumpversion.cfg
