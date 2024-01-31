@@ -1,4 +1,5 @@
 """User dependencies."""
+
 from typing import AsyncGenerator
 
 from fastapi import Depends

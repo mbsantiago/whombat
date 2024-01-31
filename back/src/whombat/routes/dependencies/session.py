@@ -1,4 +1,5 @@
 """Common database session dependencies."""
+
 from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends

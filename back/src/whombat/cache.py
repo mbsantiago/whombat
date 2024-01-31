@@ -1,4 +1,5 @@
 """Cache functions."""
+
 from contextlib import AbstractContextManager
 from functools import wraps
 from typing import (

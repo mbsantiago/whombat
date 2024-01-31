@@ -1,4 +1,5 @@
 """Test suite for the notes Python API module."""
+
 from uuid import uuid4
 
 import pytest

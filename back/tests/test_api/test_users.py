@@ -1,4 +1,5 @@
 """Test the database API module."""
+
 import uuid
 
 import pytest

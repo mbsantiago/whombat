@@ -1,4 +1,5 @@
 """Evaluation set model."""
+
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -165,34 +166,34 @@ class EvaluationSet(Base):
     )
 
     # Secondary relationships
-    evaluation_set_annotations: orm.Mapped[
-        list["EvaluationSetAnnotation"]
-    ] = orm.relationship(
-        back_populates="evaluation_set",
-        default_factory=list,
-        cascade="all, delete-orphan",
+    evaluation_set_annotations: orm.Mapped[list["EvaluationSetAnnotation"]] = (
+        orm.relationship(
+            back_populates="evaluation_set",
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
-    evaluation_set_tags: orm.Mapped[
-        list["EvaluationSetTag"]
-    ] = orm.relationship(
-        lazy="joined",
-        default_factory=list,
-        cascade="all, delete-orphan",
+    evaluation_set_tags: orm.Mapped[list["EvaluationSetTag"]] = (
+        orm.relationship(
+            lazy="joined",
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
     """Set of tags to focus on for this evaluation set."""
-    evaluation_set_model_runs: orm.Mapped[
-        list["EvaluationSetModelRun"]
-    ] = orm.relationship(
-        back_populates="evaluation_set",
-        default_factory=list,
-        cascade="all, delete-orphan",
+    evaluation_set_model_runs: orm.Mapped[list["EvaluationSetModelRun"]] = (
+        orm.relationship(
+            back_populates="evaluation_set",
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
-    evaluation_set_user_runs: orm.Mapped[
-        list["EvaluationSetUserRun"]
-    ] = orm.relationship(
-        back_populates="evaluation_set",
-        default_factory=list,
-        cascade="all, delete-orphan",
+    evaluation_set_user_runs: orm.Mapped[list["EvaluationSetUserRun"]] = (
+        orm.relationship(
+            back_populates="evaluation_set",
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
 
 

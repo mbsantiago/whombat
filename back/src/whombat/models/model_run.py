@@ -86,19 +86,19 @@ class ModelRun(Base):
     )
 
     # Secondary relations
-    model_run_predictions: orm.Mapped[
-        list["ModelRunPrediction"]
-    ] = orm.relationship(
-        init=False,
-        repr=False,
-        cascade="all, delete-orphan",
+    model_run_predictions: orm.Mapped[list["ModelRunPrediction"]] = (
+        orm.relationship(
+            init=False,
+            repr=False,
+            cascade="all, delete-orphan",
+        )
     )
-    model_run_evaluations: orm.Mapped[
-        list["ModelRunEvaluation"]
-    ] = orm.relationship(
-        init=False,
-        repr=False,
-        cascade="all, delete-orphan",
+    model_run_evaluations: orm.Mapped[list["ModelRunEvaluation"]] = (
+        orm.relationship(
+            init=False,
+            repr=False,
+            cascade="all, delete-orphan",
+        )
     )
 
     # Backrefs
@@ -110,14 +110,14 @@ class ModelRun(Base):
         default_factory=list,
         viewonly=True,
     )
-    evaluation_set_model_runs: orm.Mapped[
-        list["EvaluationSetModelRun"]
-    ] = orm.relationship(
-        back_populates="model_run",
-        cascade="all, delete-orphan",
-        init=False,
-        repr=False,
-        default_factory=list,
+    evaluation_set_model_runs: orm.Mapped[list["EvaluationSetModelRun"]] = (
+        orm.relationship(
+            back_populates="model_run",
+            cascade="all, delete-orphan",
+            init=False,
+            repr=False,
+            default_factory=list,
+        )
     )
 
 

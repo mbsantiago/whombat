@@ -1,6 +1,5 @@
 """Schemas for handling Plugin information."""
 
-
 from pydantic import BaseModel, Field
 
 __all__ = [

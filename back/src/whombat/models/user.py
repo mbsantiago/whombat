@@ -12,6 +12,7 @@ information is a username, which is used to identify the user.
 Additional information can be added, such as a full name, email, and
 affiliation. This information is not required.
 """
+
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 

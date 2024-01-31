@@ -1,4 +1,5 @@
 """REST API routes for clip_annotations."""
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends

@@ -1,4 +1,5 @@
 """Filters for tags."""
+
 from uuid import UUID
 
 from sqlalchemy import Select

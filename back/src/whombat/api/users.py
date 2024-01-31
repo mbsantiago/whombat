@@ -1,4 +1,5 @@
 """Whombat Python API to interact with user objects in the database."""
+
 import secrets
 from uuid import UUID
 

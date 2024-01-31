@@ -1,4 +1,5 @@
 """Test suite for recording filters."""
+
 import datetime
 from pathlib import Path
 from typing import Callable

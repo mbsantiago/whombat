@@ -9,6 +9,7 @@ multiple tags associated with it, and each tag has its own probability
 score reflecting the confidence of the model that the tag is relevant to
 the event.
 """
+
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 

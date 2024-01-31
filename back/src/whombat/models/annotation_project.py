@@ -105,12 +105,12 @@ class AnnotationProject(Base):
     )
 
     # Secondary relationships
-    annotation_project_tags: orm.Mapped[
-        list["AnnotationProjectTag"]
-    ] = orm.relationship(
-        "AnnotationProjectTag",
-        default_factory=list,
-        cascade="all, delete-orphan",
+    annotation_project_tags: orm.Mapped[list["AnnotationProjectTag"]] = (
+        orm.relationship(
+            "AnnotationProjectTag",
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
 
 

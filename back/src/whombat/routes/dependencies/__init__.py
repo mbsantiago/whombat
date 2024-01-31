@@ -1,4 +1,5 @@
 """Common FastAPI dependencies for whombat."""
+
 from whombat.routes.dependencies.auth import ActiveUser
 from whombat.routes.dependencies.session import Session
 from whombat.routes.dependencies.settings import WhombatSettings

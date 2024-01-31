@@ -1,4 +1,5 @@
 """Test suite of Whombat core function to manage files."""
+
 from collections.abc import Callable
 from pathlib import Path
 

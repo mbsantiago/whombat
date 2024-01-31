@@ -1,4 +1,5 @@
 """REST API routes for sound_event_annotations."""
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends

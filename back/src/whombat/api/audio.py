@@ -1,4 +1,5 @@
 """API functions to load audio."""
+
 import struct
 from pathlib import Path
 

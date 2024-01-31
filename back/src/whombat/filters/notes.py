@@ -1,4 +1,5 @@
 """Filters for Notes."""
+
 from uuid import UUID
 
 from sqlalchemy import Select

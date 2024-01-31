@@ -1,4 +1,5 @@
 """REST API routes for clips."""
+
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends

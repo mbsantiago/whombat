@@ -1,4 +1,5 @@
 """Function to initialize the database."""
+
 import logging
 from contextlib import asynccontextmanager
 from enum import Enum

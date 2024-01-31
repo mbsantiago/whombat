@@ -1,4 +1,5 @@
 """Filters for Clip Predictions."""
+
 from uuid import UUID
 
 from sqlalchemy import Select, and_, select

@@ -1,4 +1,5 @@
 """Test suite for the notes Python API module."""
+
 import datetime
 import shutil
 from collections.abc import Callable

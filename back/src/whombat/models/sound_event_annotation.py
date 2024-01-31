@@ -1,4 +1,5 @@
 """Annotation model."""
+
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -166,12 +167,12 @@ class SoundEventAnnotationNote(Base):
         primary_key=True,
         nullable=False,
     )
-    sound_event_annotation: orm.Mapped[
-        SoundEventAnnotation
-    ] = orm.relationship(
-        back_populates="sound_event_annotation_notes",
-        init=False,
-        repr=False,
+    sound_event_annotation: orm.Mapped[SoundEventAnnotation] = (
+        orm.relationship(
+            back_populates="sound_event_annotation_notes",
+            init=False,
+            repr=False,
+        )
     )
     note: orm.Mapped[Note] = orm.relationship(
         back_populates="sound_event_annotation_note",
@@ -222,12 +223,12 @@ class SoundEventAnnotationTag(Base):
     )
 
     # Relationships
-    sound_event_annotation: orm.Mapped[
-        SoundEventAnnotation
-    ] = orm.relationship(
-        back_populates="sound_event_annotation_tags",
-        init=False,
-        repr=False,
+    sound_event_annotation: orm.Mapped[SoundEventAnnotation] = (
+        orm.relationship(
+            back_populates="sound_event_annotation_tags",
+            init=False,
+            repr=False,
+        )
     )
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="sound_event_annotation_tags",

@@ -1,4 +1,5 @@
 """REST API routes for tags."""
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas

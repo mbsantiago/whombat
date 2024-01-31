@@ -1,4 +1,5 @@
 """Authentication dependencies."""
+
 from fastapi_users.authentication import AuthenticationBackend, CookieTransport
 from fastapi_users.authentication.strategy.db import (
     AccessTokenDatabase,

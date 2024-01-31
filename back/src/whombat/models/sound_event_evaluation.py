@@ -167,10 +167,10 @@ class SoundEventEvaluationMetric(Base):
         repr=False,
         lazy="joined",
     )
-    sound_event_evaluation: orm.Mapped[
-        SoundEventEvaluation
-    ] = orm.relationship(
-        back_populates="metrics",
-        init=False,
-        repr=False,
+    sound_event_evaluation: orm.Mapped[SoundEventEvaluation] = (
+        orm.relationship(
+            back_populates="metrics",
+            init=False,
+            repr=False,
+        )
     )

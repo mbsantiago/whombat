@@ -204,14 +204,14 @@ class Recording(Base):
         cascade="all, delete-orphan",
         repr=False,
     )
-    recording_datasets: orm.Mapped[
-        list["DatasetRecording"]
-    ] = orm.relationship(
-        init=False,
-        repr=False,
-        cascade="all, delete-orphan",
-        back_populates="recording",
-        default_factory=list,
+    recording_datasets: orm.Mapped[list["DatasetRecording"]] = (
+        orm.relationship(
+            init=False,
+            repr=False,
+            cascade="all, delete-orphan",
+            back_populates="recording",
+            default_factory=list,
+        )
     )
 
 

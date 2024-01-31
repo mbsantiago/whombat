@@ -113,19 +113,19 @@ class SoundEvent(Base):
     )
 
     # Backrefs
-    sound_event_annotation: orm.Mapped[
-        Optional["SoundEventAnnotation"]
-    ] = orm.relationship(
-        back_populates="sound_event",
-        init=False,
-        repr=False,
+    sound_event_annotation: orm.Mapped[Optional["SoundEventAnnotation"]] = (
+        orm.relationship(
+            back_populates="sound_event",
+            init=False,
+            repr=False,
+        )
     )
-    sound_event_prediction: orm.Mapped[
-        Optional["SoundEventPrediction"]
-    ] = orm.relationship(
-        back_populates="sound_event",
-        init=False,
-        repr=False,
+    sound_event_prediction: orm.Mapped[Optional["SoundEventPrediction"]] = (
+        orm.relationship(
+            back_populates="sound_event",
+            init=False,
+            repr=False,
+        )
     )
 
 

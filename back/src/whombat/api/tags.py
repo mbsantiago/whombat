@@ -1,4 +1,5 @@
 """API functions to interact with tags."""
+
 from typing import Any, Sequence
 
 from soundevent import data

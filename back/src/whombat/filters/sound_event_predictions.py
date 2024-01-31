@@ -1,4 +1,5 @@
 """Filters for Predictions."""
+
 from uuid import UUID
 
 from sqlalchemy import Select, and_

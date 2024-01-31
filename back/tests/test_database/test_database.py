@@ -1,4 +1,5 @@
 """Test suite to check database integrity."""
+
 import inspect
 
 import sqlalchemy

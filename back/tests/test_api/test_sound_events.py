@@ -1,4 +1,5 @@
 """Test suit for the Sound Events Python API module."""
+
 from uuid import UUID
 
 from soundevent.data import geometries

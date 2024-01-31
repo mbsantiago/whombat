@@ -1,4 +1,5 @@
 """User Management."""
+
 from uuid import UUID
 
 from fastapi.security import OAuth2PasswordRequestForm

@@ -345,9 +345,11 @@ class SoundEventAPI(
         sound_event = sound_event.model_copy(
             update=dict(
                 features=[
-                    f
-                    if f.name not in feature_mapping
-                    else feature_mapping[f.name]
+                    (
+                        f
+                        if f.name not in feature_mapping
+                        else feature_mapping[f.name]
+                    )
                     for f in sound_event.features
                 ]
             )

@@ -1,4 +1,5 @@
 """Whombat REST API routes."""
+
 from fastapi import APIRouter
 
 from whombat.routes.annotation_projects import annotation_projects_router

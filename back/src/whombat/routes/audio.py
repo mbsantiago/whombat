@@ -1,4 +1,5 @@
 """REST API routes for audio."""
+
 from io import BytesIO
 from uuid import UUID
 
