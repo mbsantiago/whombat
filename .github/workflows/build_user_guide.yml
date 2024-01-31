@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd back
-          pip install -r guide_requirements
+          pip install -r guide_requirements.txt
       - name: Build Guide
         run:
           cd back
