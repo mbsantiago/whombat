@@ -22,7 +22,9 @@ jobs:
           cd back
           pdm run pytest --cov -n auto
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
+          files: back/.coverage
+          fail_ci_if_error: true
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
