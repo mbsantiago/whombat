@@ -4,20 +4,28 @@ on:
     types: [published]
 
 jobs:
+  build-user-guide:
+    - uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@main
+
+  build-frontend:
+    - uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@main
+
   build-windows:
     runs-on: windows-latest
+    needs: [build-user-guide, build-frontend]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 21
-      - shell: pwsh
-        run: scripts/update_front.ps1
-      - shell: pwsh
-        run: scripts/update_guide.ps1
+          name: frontend
+          path: back/src/whombat/statics/
+      - uses: actions/download-artifact@v4
+        with:
+          name: user_guide
+          path: back/src/whombat/user_guide/
       - shell: pwsh
         run: scripts/bundle_windows.ps1
       - run: |
@@ -30,17 +38,20 @@ jobs:
 
   build-ubuntu:
     runs-on: ubuntu-20.04
+    needs: [build-user-guide, build-frontend]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 21
-      - run: npm cache clean --force
-      - run: make build-frontend
-      - run: make build-guide
+          name: frontend
+          path: back/src/whombat/statics/
+      - uses: actions/download-artifact@v4
+        with:
+          name: user_guide
+          path: back/src/whombat/user_guide/
       - run: bash scripts/bundle_linux.sh
       - run: |
           mkdir dist/
@@ -52,16 +63,23 @@ jobs:
 
   build-macos:
     runs-on: macos-11
+    needs: [build-user-guide, build-frontend]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v4
         with:
-          node-version: 21
-      - run: make build-frontend
-      - run: make build-guide
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend
+          path: back/src/whombat/statics/
+      - uses: actions/download-artifact@v4
+        with:
+          name: user_guide
+          path: back/src/whombat/user_guide/
       - run: bash scripts/bundle_macos.sh
       - run: |
           mkdir dist/

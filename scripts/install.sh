@@ -3,8 +3,8 @@
 
 # Make sure you have python 3.11 installed
 if [[ ! $(python --version) =~ "3.11" ]]; then
-    echo "Please install python 3.11"
-    exit 1
+	echo "Please install python 3.11"
+	exit 1
 fi
 
 # Move to the root directory of the backend
