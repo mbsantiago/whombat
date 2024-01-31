@@ -17,7 +17,7 @@ jobs:
           cd front
           npm install
       - name: Build app
-        run:
+        run: |
           cd front
           npm build
       - name: Upload build
