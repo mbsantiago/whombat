@@ -84,4 +84,5 @@ dev = [
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.4.14",
     "mkdocstrings[python]>=0.24.0",
+    "pytest-cov>=4.1.0",
 ]
