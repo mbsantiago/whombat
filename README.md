@@ -8,6 +8,7 @@
 ![lint](https://github.com/mbsantiago/whombat/actions/workflows/lint.yml/badge.svg)
 ![docs](https://github.com/mbsantiago/whombat/actions/workflows/docs.yml/badge.svg)
 ![tests](https://github.com/mbsantiago/whombat/actions/workflows/test.yml/badge.svg)
+[![DOI](https://zenodo.org/badge/682458553.svg)](https://zenodo.org/doi/10.5281/zenodo.10604169)
 
 **Whombat** is an open-source, web-based audio annotation tool designed to streamline audio data labeling and annotation, with a particular focus on supporting machine learning model development.
 
@@ -15,9 +16,21 @@
 
 Visit the [Releases](https://github.com/mbsantiago/whombat/releases) section on GitHub to download the bundled version compatible with your operating system.
 
+If you prefer installing Whombat via Python, run the command
+
+```bash
+pip install whombat
+```
+
 For detailed installation instructions, refer to the [Installation](https://mbsantiago.github.io/whombat/user_guide/installation/) section of the documentation.
 
 ## Usage
+
+To run whombat either click on the bundled executable or run
+
+```bash
+python -m whombat
+```
 
 We have prepared a [User Guide](https://mbsantiago.github.io/whombat/user_guide/) to accompany you in your annotation work.
 There you will be able to see all the features provided by Whombat, as well as clear instructions on how to use them.
