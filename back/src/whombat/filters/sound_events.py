@@ -1,4 +1,5 @@
 """Filters for Sound Events."""
+
 from uuid import UUID
 
 from sqlalchemy import Select

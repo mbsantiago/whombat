@@ -2,6 +2,7 @@
 
 We are using pydantic to define our settings.
 """
+
 import warnings
 from functools import lru_cache
 from pathlib import Path

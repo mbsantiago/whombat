@@ -17,9 +17,9 @@ class SimpleUser(BaseSchema):
     username: str
     email: EmailStr | None = None
     name: str | None = None
-    is_active: bool
-    is_superuser: bool
-    is_verified: bool
+    is_active: bool | None = False
+    is_superuser: bool | None = False
+    is_verified: bool | None = False
 
 
 class User(schemas.BaseUser[uuid.UUID]):

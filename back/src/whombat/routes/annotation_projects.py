@@ -1,4 +1,5 @@
 """REST API routes for annotation projects."""
+
 import json
 from uuid import UUID
 

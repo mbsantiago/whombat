@@ -1,4 +1,5 @@
 """Filters for Annotation Tasks."""
+
 from uuid import UUID
 
 from soundevent import data

@@ -1,4 +1,5 @@
 """API functions to generate spectrograms."""
+
 from pathlib import Path
 
 import numpy as np

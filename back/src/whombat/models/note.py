@@ -119,15 +119,15 @@ class Note(Base):
         cascade="all, delete-orphan",
     )
 
-    sound_event_annotation: orm.Mapped[
-        Optional["SoundEventAnnotation"]
-    ] = orm.relationship(
-        "SoundEventAnnotation",
-        secondary="sound_event_annotation_note",
-        init=False,
-        repr=False,
-        viewonly=True,
-        back_populates="notes",
+    sound_event_annotation: orm.Mapped[Optional["SoundEventAnnotation"]] = (
+        orm.relationship(
+            "SoundEventAnnotation",
+            secondary="sound_event_annotation_note",
+            init=False,
+            repr=False,
+            viewonly=True,
+            back_populates="notes",
+        )
     )
 
     sound_event_annotation_note: orm.Mapped[
@@ -150,13 +150,13 @@ class Note(Base):
         back_populates="notes",
     )
 
-    clip_annotation_note: orm.Mapped[
-        Optional["ClipAnnotationNote"]
-    ] = orm.relationship(
-        "ClipAnnotationNote",
-        init=False,
-        repr=False,
-        back_populates="note",
-        single_parent=True,
-        cascade="all, delete-orphan",
+    clip_annotation_note: orm.Mapped[Optional["ClipAnnotationNote"]] = (
+        orm.relationship(
+            "ClipAnnotationNote",
+            init=False,
+            repr=False,
+            back_populates="note",
+            single_parent=True,
+            cascade="all, delete-orphan",
+        )
     )

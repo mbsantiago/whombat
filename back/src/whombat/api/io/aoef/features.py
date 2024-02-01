@@ -15,10 +15,12 @@ from whombat import models
 
 async def get_feature_names(
     session: AsyncSession,
-    obj: AnnotationSetObject
-    | EvaluationObject
-    | PredictionSetObject
-    | RecordingSetObject,
+    obj: (
+        AnnotationSetObject
+        | EvaluationObject
+        | PredictionSetObject
+        | RecordingSetObject
+    ),
 ) -> dict[str, int]:
     names: set[str] = set(feat.value for feat in GeometricFeature)
 

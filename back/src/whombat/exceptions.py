@@ -1,6 +1,5 @@
 """Custom exceptions for Whombat."""
 
-
 __all__ = [
     "NotFoundError",
     "DuplicateObjectError",

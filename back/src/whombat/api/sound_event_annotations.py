@@ -269,9 +269,11 @@ class SoundEventAnnotationAPI(
         return data.SoundEventAnnotation(
             uuid=annotation.uuid,
             created_on=annotation.created_on,
-            created_by=users.to_soundevent(annotation.created_by)
-            if annotation.created_by
-            else None,
+            created_by=(
+                users.to_soundevent(annotation.created_by)
+                if annotation.created_by
+                else None
+            ),
             sound_event=await sound_events.to_soundevent(
                 session,
                 annotation.sound_event,

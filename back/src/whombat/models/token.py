@@ -1,4 +1,5 @@
 """Module for defining the AccessToken Model."""
+
 import datetime
 from uuid import UUID
 

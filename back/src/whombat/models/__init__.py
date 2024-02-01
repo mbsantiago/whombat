@@ -6,6 +6,7 @@ allows us to keep the models organized, and also allows us to import the
 models into other modules without having to import the entire database
 module.
 """
+
 from whombat.models.annotation_project import (
     AnnotationProject,
     AnnotationProjectTag,

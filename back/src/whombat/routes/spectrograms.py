@@ -1,4 +1,5 @@
 """REST API routes for spectrograms."""
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response

@@ -1,4 +1,5 @@
 """Authentication dependencies."""
+
 from fastapi_users.authentication import AuthenticationBackend, CookieTransport
 from fastapi_users.authentication.strategy.db import (
     AccessTokenDatabase,
@@ -33,12 +34,8 @@ def get_database_strategy(
     )
 
 
-def get_auth_backend(
-    settings: Settings,
-    get_strategy,
-) -> AuthenticationBackend:
-    """Get the authentication backend."""
-    cookie_transport = CookieTransport(
+def get_cookie_transport(settings: Settings):
+    return CookieTransport(
         cookie_max_age=3600,
         cookie_name="whombatauth",
         cookie_secure=False,
@@ -46,6 +43,13 @@ def get_auth_backend(
         cookie_samesite="lax",
     )
 
+
+def get_auth_backend(
+    settings: Settings,
+    get_strategy,
+) -> AuthenticationBackend:
+    """Get the authentication backend."""
+    cookie_transport = get_cookie_transport(settings)
     return AuthenticationBackend(
         name="database",
         transport=cookie_transport,

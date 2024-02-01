@@ -17,10 +17,12 @@ from whombat.api.io.aoef.common import get_mapping
 
 async def get_clips(
     session: AsyncSession,
-    obj: AnnotationSetObject
-    | EvaluationObject
-    | PredictionSetObject
-    | AnnotationProjectObject,
+    obj: (
+        AnnotationSetObject
+        | EvaluationObject
+        | PredictionSetObject
+        | AnnotationProjectObject
+    ),
     recordings: dict[UUID, int],
     feature_names: dict[str, int],
     should_import: bool = True,

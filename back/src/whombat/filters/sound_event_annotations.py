@@ -1,4 +1,5 @@
 """Filters for Annotations."""
+
 from uuid import UUID
 
 from sqlalchemy import Select, select, tuple_

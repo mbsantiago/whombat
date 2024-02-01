@@ -94,15 +94,15 @@ class Dataset(Base):
     )
 
     # Secondary relations
-    dataset_recordings: orm.Mapped[
-        list["DatasetRecording"]
-    ] = orm.relationship(
-        "DatasetRecording",
-        init=False,
-        repr=False,
-        back_populates="dataset",
-        cascade="all, delete-orphan",
-        default_factory=list,
+    dataset_recordings: orm.Mapped[list["DatasetRecording"]] = (
+        orm.relationship(
+            "DatasetRecording",
+            init=False,
+            repr=False,
+            back_populates="dataset",
+            cascade="all, delete-orphan",
+            default_factory=list,
+        )
     )
 
 

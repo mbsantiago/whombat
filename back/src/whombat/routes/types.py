@@ -1,4 +1,5 @@
 """Common types for the API."""
+
 from typing import Annotated
 
 from fastapi import Query

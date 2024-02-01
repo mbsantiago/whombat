@@ -1,4 +1,5 @@
 """System module for Whombat."""
+
 import functools
 from contextlib import asynccontextmanager
 from pathlib import Path

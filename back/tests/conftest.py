@@ -312,10 +312,12 @@ async def clip_annotation(
     clip: schemas.Clip,
 ) -> schemas.ClipAnnotation:
     """Create a clip annotation for testing."""
-    return await api.clip_annotations.create(
+    ann = await api.clip_annotations.create(
         session,
         clip=clip,
     )
+    await session.commit()
+    return ann
 
 
 @pytest.fixture

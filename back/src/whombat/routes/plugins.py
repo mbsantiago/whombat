@@ -1,4 +1,5 @@
 """REST API routes for plugin discover."""
+
 from fastapi import APIRouter
 
 from whombat import plugins, schemas

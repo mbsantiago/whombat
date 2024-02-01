@@ -96,21 +96,21 @@ class ClipAnnotation(Base):
     )
 
     # Secondary relations
-    clip_annotation_notes: orm.Mapped[
-        list["ClipAnnotationNote"]
-    ] = orm.relationship(
-        default_factory=list,
-        cascade="all, delete-orphan",
-        repr=False,
-        init=False,
+    clip_annotation_notes: orm.Mapped[list["ClipAnnotationNote"]] = (
+        orm.relationship(
+            default_factory=list,
+            cascade="all, delete-orphan",
+            repr=False,
+            init=False,
+        )
     )
-    clip_annotation_tags: orm.Mapped[
-        list["ClipAnnotationTag"]
-    ] = orm.relationship(
-        default_factory=list,
-        cascade="all, delete-orphan",
-        repr=False,
-        init=False,
+    clip_annotation_tags: orm.Mapped[list["ClipAnnotationTag"]] = (
+        orm.relationship(
+            default_factory=list,
+            cascade="all, delete-orphan",
+            repr=False,
+            init=False,
+        )
     )
 
     # Backrefs
@@ -127,14 +127,14 @@ class ClipAnnotation(Base):
         default_factory=list,
         viewonly=True,
     )
-    evaluation_set_annotations: orm.Mapped[
-        list["EvaluationSetAnnotation"]
-    ] = orm.relationship(
-        back_populates="clip_annotation",
-        init=False,
-        repr=False,
-        default_factory=list,
-        cascade="all, delete-orphan",
+    evaluation_set_annotations: orm.Mapped[list["EvaluationSetAnnotation"]] = (
+        orm.relationship(
+            back_populates="clip_annotation",
+            init=False,
+            repr=False,
+            default_factory=list,
+            cascade="all, delete-orphan",
+        )
     )
 
 
