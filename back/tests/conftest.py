@@ -2,6 +2,7 @@
 import logging
 import os
 import random
+import shutil
 import string
 from collections.abc import Callable
 from pathlib import Path
@@ -63,23 +64,44 @@ def audio_dir(tmp_path: Path):
     return path
 
 
+@pytest.fixture(scope="session")
+async def database_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Create a database template for testing."""
+    tmp_path = tmp_path_factory.mktemp("template")
+    db_path = tmp_path / "template.db"
+    settings = Settings(
+        db_dialect="sqlite",
+        db_name=str(db_path),
+        audio_dir=tmp_path / "audio",
+    )
+    await init_database(settings)
+    return db_path
+
+
 @pytest.fixture
-def database_test(tmp_path: Path) -> Path:
-    """Fixture to create a temporary database."""
-    return tmp_path / "test.db"
+def database_path(tmp_path: Path, database_template: Path) -> Path:
+    """Create a database for testing.
+
+    Copies the database template to a temporary location.
+    """
+    path = tmp_path / "test.db"
+    shutil.copy(database_template, path)
+    return path
 
 
 @pytest.fixture(autouse=True)
 def settings(
     audio_dir: Path,
-    database_test: Path,
+    database_path: Path,
 ) -> Settings:
     """Fixture to return the settings."""
     return Settings(
         db_dialect="sqlite",
-        db_name=str(database_test.absolute().resolve()),
+        db_name=str(database_path),
         audio_dir=audio_dir,
         open_on_startup=False,
+        log_to_file=False,
+        log_to_stdout=True,
     )
 
 
@@ -161,18 +183,8 @@ def random_wav_factory(audio_dir: Path):
 
 
 @pytest.fixture
-async def database_init(
-    settings: Settings,
-) -> AsyncGenerator[None, None]:
-    """Create a session that uses an in-memory database."""
-    await init_database(settings)
-    yield
-
-
-@pytest.fixture
 async def session(
     database_url: URL,
-    database_init,
 ) -> AsyncGenerator[AsyncSession, None]:
     """Create a session that uses an in-memory database."""
     async with api.create_session(db_url=database_url) as sess:
@@ -300,10 +312,12 @@ async def clip_annotation(
     clip: schemas.Clip,
 ) -> schemas.ClipAnnotation:
     """Create a clip annotation for testing."""
-    return await api.clip_annotations.create(
+    ann = await api.clip_annotations.create(
         session,
         clip=clip,
     )
+    await session.commit()
+    return ann
 
 
 @pytest.fixture

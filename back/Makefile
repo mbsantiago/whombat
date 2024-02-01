@@ -27,10 +27,10 @@ export PRINT_HELP_PYSCRIPT
 
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
-help:
+help:  ## show this help message and exit
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test clean-docs
+clean: clean-build clean-pyc clean-test clean-docs  ## remove all build, test, coverage and Python artifacts
 
 clean-build:
 	rm -fr build/
@@ -73,35 +73,35 @@ lint/pyright:
 
 lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/pyright ## check style
 
-format:
+format:  ## format code
 	isort src tests
 	black src tests
 
-test:
+test:  ## Run all tests
 	pytest -n auto
 
-install: clean
+install: clean  ## install the package to the active Python's site-packages
 	pip install .
 
-coverage:
+coverage:  ## check code coverage
 	coverage run --source whombat -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-build-docs:
+build-docs:  ## build documentation
 	mkdocs build
 
-build-guide:
+build-guide:  ## build user guide
 	mkdocs build -f mkdocs-guide.yml -d src/whombat/user_guide
 
-serve-docs:
+serve-docs:  ## serve documentation
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 	@$(ENV_PREFIX)mkdocs serve
 
-serve-guide:
+serve-guide:  ## serve user guide
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
 	@$(ENV_PREFIX)mkdocs serve -f mkdocs-guide.yml
 
-serve-dev:
+serve-dev:  ## serve development backend
 	WHOMBAT_DEV=true python -m whombat

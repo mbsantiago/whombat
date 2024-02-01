@@ -11,3 +11,6 @@ build-guide:
 
 bundle-pyinstaller:
 	bash scripts/bundle_linux.sh
+
+publish:
+	bash scripts/publish_pypi.sh

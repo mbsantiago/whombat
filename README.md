@@ -1,5 +1,14 @@
 # Whombat
 
+![GitHub License](https://img.shields.io/github/license/mbsantiago/whombat)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fmbsantiago%2Fwhombat%2Fdev%2Fback%2Fpyproject.toml)
+![Static Badge](https://img.shields.io/badge/formatting-black-black)
+[![codecov](https://codecov.io/gh/mbsantiago/whombat/graph/badge.svg?token=WMzUfSXIyL)](https://codecov.io/gh/mbsantiago/whombat)
+![build](https://github.com/mbsantiago/whombat/actions/workflows/bundle.yml/badge.svg)
+![lint](https://github.com/mbsantiago/whombat/actions/workflows/lint.yml/badge.svg)
+![docs](https://github.com/mbsantiago/whombat/actions/workflows/docs.yml/badge.svg)
+![tests](https://github.com/mbsantiago/whombat/actions/workflows/test.yml/badge.svg)
+
 **Whombat** is an open-source, web-based audio annotation tool designed to streamline audio data labeling and annotation, with a particular focus on supporting machine learning model development.
 
 ## Installation
