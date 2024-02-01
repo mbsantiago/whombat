@@ -7,16 +7,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           cd back
@@ -24,9 +20,11 @@ jobs:
       - name: Run tests
         run: |
           cd back
-          pdm run pytest --cov -n auto
+          pdm run pytest --cov=src/whombat --cov-report=xml -n auto
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
+          files: back/coverage.xml
+          fail_ci_if_error: true
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
