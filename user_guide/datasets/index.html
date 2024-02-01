@@ -1,0 +1,1397 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mbsantiago.github.io/whombat/user_guide/datasets/">
+      
+      
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../annotation_projects/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
+    
+    
+      
+        <title>Datasets - Whombat</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Mulish";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/jquery.json-viewer.css">
+    
+      <link rel="stylesheet" href="../../css/mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#managing-datasets-and-recordings" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Whombat" class="md-header__button md-logo" aria-label="Whombat" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Whombat
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Datasets
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Whombat" class="md-nav__button md-logo" aria-label="Whombat" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Whombat
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Datasets
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Datasets
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#selecting-a-dataset-to-work-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      Selecting a Dataset to Work On
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Import a dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-home-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset Home Page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manage-the-recordings-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manage the Recordings Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-the-recording-spectrogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      See the Recording Spectrogram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-the-spectrogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      Navigating the Spectrogram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ready-to-start-annotating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ready to start annotating
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../annotation_projects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Annotation Projects
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exploration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Exploration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../developer_guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Developer Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Developer Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database Layer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/rest_api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTP REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/front_end/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Front End
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/schemas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    About the Project
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            About the Project
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTHORS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sponsors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sponsors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#selecting-a-dataset-to-work-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      Selecting a Dataset to Work On
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-a-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Import a dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-home-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset Home Page
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manage-the-recordings-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manage the Recordings Metadata
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-the-recording-spectrogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      See the Recording Spectrogram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-the-spectrogram" class="md-nav__link">
+    <span class="md-ellipsis">
+      Navigating the Spectrogram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ready-to-start-annotating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ready to start annotating
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="managing-datasets-and-recordings">Managing Datasets and Recordings<a class="headerlink" href="#managing-datasets-and-recordings" title="Permanent link">&para;</a></h1>
+<p>In Whombat, you have the flexibility to efficiently manage multiple recording
+datasets.</p>
+<div class="admonition info">
+<p class="admonition-title">What is a dataset?</p>
+<p>A dataset, simply put, is a collection of recordings. However, these
+recordings typically share a common context, whether it's from a single research
+project, a specific field season, or files downloaded from a particular website.
+While you can structure your datasets as you prefer, creating coherent datasets
+is generally considered good practice.</p>
+</div>
+<p>Navigate to the dataset list using the sidebar or the cards on the homepage.</p>
+<h2 id="selecting-a-dataset-to-work-on">Selecting a Dataset to Work On<a class="headerlink" href="#selecting-a-dataset-to-work-on" title="Permanent link">&para;</a></h2>
+<p>On the dataset list page, you'll find an overview of all available datasets.
+Clicking on the name of a dataset takes you to a dedicated page where you can
+explore its details and the recordings it contains.</p>
+<p><img alt="Dataset List" src="../../assets/img/dataset_list.png" /></p>
+<h2 id="create-a-dataset">Create a dataset<a class="headerlink" href="#create-a-dataset" title="Permanent link">&para;</a></h2>
+<p>To create a new dataset, click the <strong>+Create</strong> button. You'll be prompted to
+provide a name and a description for your dataset. Additionally, paste the full
+path of the folder containing the recordings you want to add. Whombat will scan
+the folder and automatically include all available audio files it can find.</p>
+<details class="info">
+<summary>Supported Audio Formats</summary>
+<p>Currently, Whombat exclusively supports WAV files. However, we're actively
+exploring the possibility of adding support for FLAC files.</p>
+</details>
+<div class="admonition tip">
+<p class="admonition-title">Audio file preparation</p>
+<p>Ensure that all dataset files are contained within the dataset folder.
+Prepare this folder before creating the dataset. While moving files, refrain
+from making any other modifications. Editing files may unintentionally erase
+crucial metadata associated with the recording.</p>
+</div>
+<details class="info">
+<summary>Whombat Audio Folder</summary>
+<p>Whombat can only detect files located in your home folder. If you're using
+an external hard drive, copy the recordings you wish to annotate into your home
+folder. If you wish to modify this configuration, feel free to reach out.</p>
+</details>
+<p>Whombat automatically extracts fundamental information from each discovered
+file, such as recording <strong>duration</strong>, <strong>sampling rate</strong>, and the number of
+<strong>audio channels</strong>. While Whombat can store additional details like date, time,
+and location of the recording, automatic extraction is not applied due to the
+diverse formats in which this information can be stored. Manual input is
+required for these specific details.</p>
+<h2 id="import-a-dataset">Import a dataset<a class="headerlink" href="#import-a-dataset" title="Permanent link">&para;</a></h2>
+<p>Whombat offers a convenient option to import all dataset information from a
+file. Currently, we support datasets in a JSON-based format known as AOEF. Refer
+to this <a href="https://mbsantiago.github.io/soundevent/">link</a> for comprehensive
+information about the AOEF format.</p>
+<p>To import a dataset, simply click the <strong>import</strong> button. Select the JSON file
+you want to upload and provide the path to the directory where the recordings
+are stored.</p>
+<details class="note">
+<summary>What path should I provide?</summary>
+<p>AOEF files contain information about recordings, with each recording's path
+stored relative to a <strong>dataset audio directory</strong>. This design ensures
+portability, allowing others to download all dataset audio files into a custom
+folder. You can then import the dataset file by pointing to this custom folder.</p>
+</details>
+<h2 id="dataset-home-page">Dataset Home Page<a class="headerlink" href="#dataset-home-page" title="Permanent link">&para;</a></h2>
+<p>Upon selecting or creating a dataset, you'll be directed to the dataset detail
+page, offering a comprehensive overview of your dataset. Here, you'll find key
+statistics, including the total number of recordings. Additionally, the page
+provides insights into potential issues with files or their metadata, along with
+a detailed breakdown of the recording count.</p>
+<p><img alt="Dataset Dashboard" src="../../assets/img/dataset_dashboard.png" /></p>
+<p>From this dashboard, you can easily handle your dataset in various ways. <strong>A)</strong>
+shows the total number of recordings, while <strong>B)</strong> points out any issues found
+for specific recordings. <strong>C)</strong> Highlights recordings that were initially
+registered but are currently missing from your files, offering essential
+visibility. <strong>D)</strong> Gives a breakdown of the recordings based on tags, helping
+you organize efficiently. <strong>E)</strong> Showcases the latest recording issues and
+notes. Lastly, <strong>F)</strong> provides detailed information about the dataset and allows
+for easy editing.</p>
+<div class="admonition warning">
+<p class="admonition-title">Deleting the dataset</p>
+<p>If you've made a mistake or need to remove a dataset for any reason,
+there's a delete button in the dashboard. Keep in mind that using this button
+will erase all recordings within the dataset, along with any work, including
+annotations, associated with those recordings. Please ensure you fully
+understand the consequences before proceeding.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Sharing your dataset</p>
+<p>The dashboard also provides a button to download the dataset, allowing you
+to obtain metadata for all recordings. You can choose between a CSV or JSON
+format. If you plan to share the dataset with others, we recommend using the
+JSON format. This file enables your partner to effortlessly import all
+information into Whombat, assuming they also possess the corresponding audio
+files.</p>
+</div>
+<h2 id="manage-the-recordings-metadata">Manage the Recordings Metadata<a class="headerlink" href="#manage-the-recordings-metadata" title="Permanent link">&para;</a></h2>
+<p>To access the table of recordings, simply click on the Recordings button in the
+navigation header. Within this table, you can conveniently edit the metadata of
+your recordings in a tabular format. This includes manually inputting the date
+and time of recording, specifying the location where the recording was made, and
+most importantly, adding any number of tags to your recordings.</p>
+<p><img alt="Recording Table" src="../../assets/img/recordings_table.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tag your recordings</p>
+<p>Whombat leverages tags throughout the system to improve data organization
+and provide additional context to associated objects. In Whombat, tags consist
+of a pair of text values referred to as <strong>key</strong> and <strong>value</strong>, giving each tag
+a unique meaning. The key specifies the category to which it belongs, while the
+value provides a specific meaning. For example, a tag's key could be "species"
+and its value could be "Myotis myotis". Feel free to create any tag with any
+key and value, allowing you the flexibility to organize your tags as needed.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Tags as Recording Context</p>
+<p>Tags serve a dual purpose by not only organizing and querying your dataset
+but also providing essential context. When attached to a recording, tags act as
+snippets of information, offering details about the where, how and when of a
+recording. Displayed in the annotation interface, these tags equip annotators
+with valuable context, aiding in the interpretation and identification of the
+sometimes enigmatic sounds.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Efficient Recording Search</p>
+<p>Easily find a recording using the search bar by entering a filename-related
+query. To further refine your view, apply filters through the
+<span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M3.9 54.9C10.5 40.9 24.5 32 40 32h432c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6v-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/></svg></span> filter menu. Identify your desired filters, set them
+up, and see them displayed in the filter bar. To remove a filter, just click on
+its badge. Simplify your recording navigation with these helpful search and
+filter features.</p>
+</div>
+<h2 id="see-the-recording-spectrogram">See the Recording Spectrogram<a class="headerlink" href="#see-the-recording-spectrogram" title="Permanent link">&para;</a></h2>
+<p>If you want to view the spectrogram of a recording, simply click on the path of
+the recording. This will lead you to a dedicated page where you can access all
+the recording information, visualize the spectrogram, and play the recording.
+Additionally, you have the option to edit the recording metadata directly from
+this page.</p>
+<p><img alt="Recording Detail" src="../../assets/img/recording_detail.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Adding Notes to the Recording</p>
+<p>On this page, you can view existing notes attached to the recording and add
+your own. Notes can include any information you find relevant. If you notice
+any issues with the recording or its metadata, adding a note and flagging it as
+an issue ensures that you or others can address the problem later.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Deleting a recording</p>
+<p>Deleting a recording is also possible, but exercise caution as it will
+erase any annotations associated with this recording.</p>
+</div>
+<h2 id="navigating-the-spectrogram">Navigating the Spectrogram<a class="headerlink" href="#navigating-the-spectrogram" title="Permanent link">&para;</a></h2>
+<p>Navigating a spectrogram might seem intricate, but Whombat simplifies the
+process with various tools tailored to customize the visualization according to
+your preferences.</p>
+<p><img alt="Spectrogram" src="../../assets/img/spectrogram.png" /></p>
+<p>Typically, you'll only view a segment of the entire spectrogram due to the
+length of some recordings. To address this, use the controls (labeled <strong>A</strong> in
+the figure):</p>
+<ul>
+<li>Activate the hand icon to move around by dragging inside the spectrogram
+  (default mode).</li>
+<li>Opt for the zoom icon to draw a box for a closer look.</li>
+<li>Click the home button to reset your view to the initial state.</li>
+</ul>
+<p>At the bottom of the spectrogram is the spectrogram bar (labeled <strong>B</strong>), acting
+like a scroll bar for swift navigation to distant parts of the spectrogram.</p>
+<details class="tip">
+<summary>Mastering Keyboard Shortcuts</summary>
+<p>Utilize <span class="keys"><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-scroll-lock">Scroll Lock</kbd></span> to move left and right, and <span class="keys"><kbd class="key-control">Ctrl</kbd><span>+</span><kbd class="key-scroll-lock">Scroll Lock</kbd></span> to zoom. Adding
+the <span class="keys"><kbd class="key-alt">Alt</kbd></span> key to scrolling transforms it into a zoom function. Press <span class="keys"><kbd class="key-z">Z</kbd></span> to enter
+zoom mode and <span class="keys"><kbd class="key-x">X</kbd></span> to return to drag mode.</p>
+</details>
+<p>Next, explore spectrogram settings (labeled <strong>C</strong>). Pressing this button reveals
+a side menu where you can modify spectrogram parameters to suit your specific
+recordings.</p>
+<div class="admonition tip">
+<p class="admonition-title">Saving Parameters</p>
+<p>Changes to parameters apply only to the current spectrogram. To keep these
+settings for all spectrograms, hit the save button on top.</p>
+</div>
+<p>Finally, there's the audio player (labeled <strong>D</strong>). Control playback, pause, seek
+to any moment, and adjust the playback speed. You can also commence playback by
+double-clicking the spectrogram at your desired starting point.</p>
+<h2 id="ready-to-start-annotating">Ready to start annotating<a class="headerlink" href="#ready-to-start-annotating" title="Permanent link">&para;</a></h2>
+<p>Now that you've registered a dataset and ensured its metadata is accurate,
+you're all set to begin annotating your audio material. Head to the next section
+to learn how to create and manage an annotation project.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tracking", "navigation.indexes", "navigation.top", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e1c3ead8.min.js"></script>
+      
+        <script src="../../javascripts/jquery-3.3.1.min.js"></script>
+      
+        <script src="../../javascripts/jquery.json-viewer.js"></script>
+      
+        <script src="../../javascripts/json-viewer.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1450 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mbsantiago.github.io/whombat/user_guide/evaluation/">
+      
+      
+        <link rel="prev" href="../annotation_projects/">
+      
+      
+        <link rel="next" href="../exploration/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
+    
+    
+      
+        <title>Evaluation - Whombat</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mulish:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Mulish";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/jquery.json-viewer.css">
+    
+      <link rel="stylesheet" href="../../css/mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#evaluation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Whombat" class="md-header__button md-logo" aria-label="Whombat" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Whombat
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Evaluation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Whombat" class="md-nav__button md-logo" aria-label="Whombat" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Whombat
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    User Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datasets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Datasets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../annotation_projects/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Annotation Projects
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Evaluation
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Evaluation
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Predictions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Sets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-or-importing-an-evaluation-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating or Importing an Evaluation Set
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-evaluation-set-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Evaluation Set Dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#selecting-evaluation-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Selecting Evaluation Tags
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#importing-a-model-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing a Model Run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluating-the-model-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating the Model Run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploring-the-predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exploring the Predictions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exploration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data Exploration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../developer_guide/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Developer Guide
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Developer Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database Layer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/rest_api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HTTP REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/front_end/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Front End
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CODE_OF_CONDUCT/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Python API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/schemas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    About the Project
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            About the Project
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AUTHORS/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sponsors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sponsors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Predictions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Sets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-or-importing-an-evaluation-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating or Importing an Evaluation Set
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-evaluation-set-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Evaluation Set Dashboard
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#selecting-evaluation-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      Selecting Evaluation Tags
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#importing-a-model-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Importing a Model Run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluating-the-model-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluating the Model Run
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploring-the-predictions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exploring the Predictions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="evaluation">Evaluation<a class="headerlink" href="#evaluation" title="Permanent link">&para;</a></h1>
+<p>While the primary focus of Whombat revolves around annotation work, we
+acknowledge that annotation is just one facet of the ML development workflow.
+Whombat aims to enhance this workflow by not only providing tools for generating
+annotations but also offering features to comprehend the performance of ML
+models trained with these annotations.</p>
+<p>In this section, we will delve into leveraging the annotations created through
+your efforts to evaluate and explore ML model and annotator predictions. The
+topics we will cover include:</p>
+<ol>
+<li><a href="#understanding-predictions">Understanding predictions</a></li>
+<li><a href="#evaluation-sets">Evaluation Sets</a></li>
+<li><a href="#creating-or-importing-an-evaluation-set">Creating or Importing an Evaluation Set</a></li>
+<li><a href="#selecting-evaluation-tags">Selecting Evaluation Tags</a></li>
+<li><a href="#adding-examples">Adding Examples to the Evaluation Set</a></li>
+<li><a href="#importing-a-model-run">Importing a Model Run</a></li>
+<li><a href="#evaluating-the-model-run">Evaluating the Model Run</a></li>
+<li><a href="#exploring-the-predictions">Exploring the Predictions</a></li>
+</ol>
+<h2 id="understanding-predictions">Understanding Predictions<a class="headerlink" href="#understanding-predictions" title="Permanent link">&para;</a></h2>
+<p>In Whombat, predictions share similarities with
+<a href="../annotation_projects/#understanding-annotation">annotations</a>. Like
+annotations, predictions exist in two forms: <strong>sound event</strong> and <strong>clip
+predictions</strong>. Predicted sound events encompass a Region of Interest (RoI)
+suspected to contain a relevant sound, along with associated tags. On the other
+hand, clip predictions consist of tags that potentially match the audio content
+of the clip, along with the predicted sound events within the clip. Noteworthy
+differences from regular annotations include a somewhat philosophical
+stance—predictions are generally considered less trustworthy than annotations.
+Additionally, predictions often come with a quantification of certainty.</p>
+<p>In Whombat, sound event predictions feature an accompanying <strong>confidence
+score</strong>, aiming to quantify the level of certainty the ML model or user has
+regarding the presence of that sound event. Predicted tags also carry a
+confidence score. For instance, a predicted sound event could be associated with
+two tags: "sound:Airplane" with a confidence score of 80% and "sound:Human" with
+a confidence score of 20%. Importantly, this combination doesn't create a
+contradiction; instead, it provides nuanced insights into the confidence levels
+associated with each predicted tag.</p>
+<p>Sets of predictions are organized into <strong>Model Runs</strong> or <strong>User Runs</strong>. These
+collections gather predictions created with the same model or by the same user,
+under identical configurations and singular conditions. These prediction sets
+can then be evaluated against the ground truth.</p>
+<h2 id="evaluation-sets">Evaluation Sets<a class="headerlink" href="#evaluation-sets" title="Permanent link">&para;</a></h2>
+<p>In the evaluation process, it's common to assess a model or user by comparing
+their predictions against a set of known examples. To facilitate this, Whombat
+has organized the entire evaluation module around the concept of <strong>evaluation
+sets</strong>.</p>
+<p>An evaluation set is essentially a curated collection of fully annotated audio
+clips. These clips serve as benchmark examples for comparing predictions.
+Evaluation sets can be sourced from existing annotation projects or directly
+imported from other sources. Similar to annotation sets, evaluation sets often
+concentrate on specific types of sounds. Therefore, an evaluation set is
+associated with a set of tags that define the focus areas for assessment.</p>
+<p>Each evaluation set should be tailored to a specific <strong>task</strong>—a particular
+problem in computer audition being evaluated. This determination not only
+defines the types of expected predictions but also, crucially, shapes the
+evaluation criteria for assessing these predictions.</p>
+<div class="admonition info">
+<p class="admonition-title">Supported Tasks</p>
+<p>In Whombat, we currently support four different types of computer audition tasks:</p>
+<ul>
+<li>
+<p><strong>Clip Classification</strong>: In this task, the user or model is expected to
+correctly predict the class to which an audio clip belongs. The true class is
+determined by the tag attached to the clip.</p>
+</li>
+<li>
+<p><strong>Clip Tagging</strong>: In this task, the user or model is
+expected to predict a set of tags attached to an audio clip.</p>
+</li>
+<li>
+<p><strong>Sound Event Classification</strong>: For this task, the user or model is
+expected to correctly predict the class to which each sound event in the
+evaluation set belongs. The true class is determined by the tag attached to the
+sound event. In this scenario, it is expected that the user/model is provided
+with the Region of Interest (RoI) of the sound event for inference.</p>
+</li>
+<li>
+<p><strong>Sound Event Detection</strong>: In this task, the user or model is expected to
+correctly locate each relevant sound event and predict the correct tag set for
+each sound event. This involves estimating the RoI and predicting the tag set,
+making it a simultaneous localization and classification problem.</p>
+</li>
+</ul>
+</div>
+<p><img alt="Side Bar" src="../../assets/img/side_bar.png" /></p>
+<p>To begin working with an evaluation set, click on the Evaluation button on the
+sidebar (labeled <strong>C</strong> in the figure) or use the navigation cards on the
+homepage. Here, you'll find a list of existing evaluation sets. You can search
+for a particular set using the search bar or create a new one. Clicking on a set
+provides detailed insights into its contents.</p>
+<p><img alt="Evaluation Set List" src="../../assets/img/evaluation_set_list.png" /></p>
+<h2 id="creating-or-importing-an-evaluation-set">Creating or Importing an Evaluation Set<a class="headerlink" href="#creating-or-importing-an-evaluation-set" title="Permanent link">&para;</a></h2>
+<p>To create a new evaluation set, click on the <strong>+Create</strong> button at the top
+right. You will be prompted to provide a <strong>name</strong>, a <strong>description</strong> and the
+<strong>task</strong> for the evaluation set.</p>
+<p>Alternatively, if you already have an evaluation set saved in an AOEF file, you
+can import it directly by clicking on the <strong>Import</strong> button and selecting the
+appropriate file.</p>
+<details class="tip">
+<summary>Creating AOEF files</summary>
+<p>For an efficient way to generate AOEF files with your own data, we
+recommend using the <a href="https://mbsantiago.github.io/soundevent/"><code>soundevent</code></a>
+package. This package offers user-friendly functions aligned with Whombat's
+data structure, facilitating a seamless integration process.</p>
+</details>
+<p>Once created or imported, you will be redirected to the Evaluation Set Dashboard
+for further management and exploration.</p>
+<h2 id="the-evaluation-set-dashboard">The Evaluation Set Dashboard<a class="headerlink" href="#the-evaluation-set-dashboard" title="Permanent link">&para;</a></h2>
+<p>The Evaluation Set Dashboard offers a concise summary of key information related
+to the evaluation set and its associated elements. The overview section provides
+a snapshot, displaying the count of registered examples, the number of tags
+utilized for evaluation, and the tally of model runs and user sessions imported
+for this specific evaluation set.</p>
+<p>Within the dashboard, you'll find details about the most recent model and user
+runs, along with insights into their respective evaluations. Additionally,
+information about the evaluation set, including its description and name, is
+readily accessible and editable.</p>
+<div class="admonition tip">
+<p class="admonition-title">Downloading the Evaluation Set</p>
+<p>Clicking the <strong>Download</strong> button in the dashboard allows you to download
+the evaluation set information. This download includes details about the
+contained clips and their corresponding ground truth annotations. This
+information proves valuable for extracting the corresponding audio material and
+running a model to create a Model Run.</p>
+</div>
+<details class="warning">
+<summary>Deleting the Evaluation Set</summary>
+<p>Exercise caution when using the <strong>Delete</strong> button, as it will permanently
+remove the evaluation set. This action includes the deletion of any associated
+model and user runs, along with their respective evaluations. Ensure you are
+certain about this decision or have appropriate backups in place.</p>
+</details>
+<h2 id="selecting-evaluation-tags">Selecting Evaluation Tags<a class="headerlink" href="#selecting-evaluation-tags" title="Permanent link">&para;</a></h2>
+<p>To manage evaluation tags for the current evaluation set, click on the <strong>Tags</strong>
+button in the navigation header. You'll be redirected to a page where you can
+easily handle evaluation tags. On the right column, you'll find all the
+currently registered evaluation tags. Click on a tag to remove it. Use the
+search bar on the left column to find registered tags, create new ones, and
+select a tag to add it to the evaluation set.</p>
+<p><img alt="Evaluation Tags" src="../../assets/img/evaluation_tags.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Selecting a Good set of Evaluation Tags</p>
+<p>Selecting evaluation tags is a crucial step in assessing predictions.
+Annotated data or predictions may have additional tags that aren't directly
+relevant to the evaluation task. These tags define which ones will be used for
+assessment.</p>
+<p>The usage of tags depends on the evaluation task. For instance, in the clip
+classification task, the tag set is considered the possible classes a clip can
+take. Ensure you choose a tag set aligned with your evaluation goals.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Updating the tag set</p>
+<p>It's recommended to select a comprehensive set of tags for evaluation from
+the beginning. Evaluations depend on the tag set, and assessments made with
+different tag sets aren't directly comparable. If you need to change the tag
+set, update all evaluations accordingly.</p>
+</div>
+<h2 id="adding-examples">Adding Examples<a class="headerlink" href="#adding-examples" title="Permanent link">&para;</a></h2>
+<p>To add examples to the evaluation set, click on the "Examples" button in the
+navigation header. Adding examples involves two steps. First, select an
+annotation project as the source for examples. The added examples are clip
+annotations from the chosen project. Then, precisely choose which clips to add
+from the selected project by applying filters to the annotations. For instance,
+it's recommended to add only annotations marked as fully annotated (completed).
+After reviewing the number of examples to add, click Add when satisfied.</p>
+<p><img alt="Evaluation Set Examples" src="../../assets/img/evaluation_set_examples.png" /></p>
+<h2 id="importing-a-model-run">Importing a Model Run<a class="headerlink" href="#importing-a-model-run" title="Permanent link">&para;</a></h2>
+<p>After completing the setup, you are ready to import and evaluate model runs to
+explore their predictions. Navigate to the "Model Runs" tab in the navigation
+header to view the list of all registered model runs. Click on the import button
+next to the search bar and select the file containing the model run predictions.</p>
+<div class="admonition info">
+<p class="admonition-title">Data Format</p>
+<p>Model runs are expected to be in AOEF format. For more information on this
+format, refer to <a href="https://mbsantiago.github.io/soundevent">soundevent</a>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Creating your Model Runs</p>
+<p>It's recommended to use the
+<a href="https://mbsantiago.github.io/soundevent"><code>soundevent</code></a> package to format your
+data. This package provides tools to structure your data in a way that closely
+resembles Whombat data and has handy functions to export the data directly into
+AOEF format.</p>
+</div>
+<h2 id="evaluating-the-model-run">Evaluating the Model Run<a class="headerlink" href="#evaluating-the-model-run" title="Permanent link">&para;</a></h2>
+<p>Upon selecting or importing a model run, you will be directed to the model run
+detail page. At the top of the page, you'll find information about the model run
+evaluation. Note that when a model run is created, it is not automatically
+evaluated. If the evaluation is missing, a message will be displayed, and you
+can initiate the evaluation process by clicking on the "Evaluate" button. If the
+evaluation has already been conducted, you can choose to "Update" it, especially
+if there have been changes in the evaluation tag set or refinements in the
+annotations of the evaluation set examples.</p>
+<p>The evaluation overview provides the overall score of the evaluation along with
+additional computed metrics for a comprehensive assessment.</p>
+<p><img alt="Evaluation Overview" src="../../assets/img/evaluation_overview.png" /></p>
+<h2 id="exploring-the-predictions">Exploring the Predictions<a class="headerlink" href="#exploring-the-predictions" title="Permanent link">&para;</a></h2>
+<p>Directly below the evaluation overview, you'll find the Evaluation Explorer—a
+powerful tool to delve into and compare predictions and annotations for each
+audio clip.</p>
+<p><img alt="Evaluation Explorer" src="../../assets/img/evaluation_explorer.png" /></p>
+<p>To focus on specific clips, utilize the filter menu (labeled <strong>A</strong> in the figure).
+Select a filter type and configure it according to your needs. All applied
+filters will be visible in the filter bar below; click on a filter badge to
+remove it.</p>
+<p>Fine-tune the visualization using the controls at <strong>B</strong>. Toggle between displaying
+predictions and annotations, and set the threshold range to select which
+predictions to visualize. Only predictions within this score threshold will be
+shown.</p>
+<p>Navigate effortlessly through different clips with the controls in section <strong>C</strong>.
+Move to the next or previous clip, or opt for a random selection by clicking the
+central button.</p>
+<p>The explorer presents the clip's spectrogram, showcasing predictions and
+annotations. Refer to the
+<a href="../datasets/#navigating-the-spectrogram">Navigating the Spectrogram</a> section for
+guidance on moving around the spectrogram.</p>
+<p>Individual clip scores and additional metrics are detailed in section <strong>E</strong>, while
+predicted and ground truth tags are displayed for easy comparison in section <strong>F</strong>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "navigation.tracking", "navigation.indexes", "navigation.top", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e1c3ead8.min.js"></script>
+      
+        <script src="../../javascripts/jquery-3.3.1.min.js"></script>
+      
+        <script src="../../javascripts/jquery.json-viewer.js"></script>
+      
+        <script src="../../javascripts/json-viewer.js"></script>
+      
+    
+  </body>
+</html>
