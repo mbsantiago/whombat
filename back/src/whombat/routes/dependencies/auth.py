@@ -1,13 +1,12 @@
 """Authentication dependencies."""
 
-from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import AuthenticationBackend
 
-from whombat import models, schemas
+from whombat import models
 from whombat.routes.dependencies.session import Session
 from whombat.routes.dependencies.settings import WhombatSettings
 from whombat.routes.dependencies.users import get_user_manager
