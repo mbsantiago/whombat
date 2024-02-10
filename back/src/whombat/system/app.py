@@ -42,6 +42,8 @@ def create_app(settings: Settings) -> FastAPI:
         *settings.cors_origins,
     ]
 
+    print(allowed_origins)
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,

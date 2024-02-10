@@ -6,7 +6,7 @@ We are using pydantic to define our settings.
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Type
+from typing import Literal, Tuple, Type
 
 from pydantic import ValidationError
 from pydantic_settings import (
@@ -23,11 +23,87 @@ __all__ = [
 ]
 
 
+class CookieSettings(BaseSettings):
+    """Settings for the authentication cookie."""
+
+    domain: str | None = None
+    """Domain on which the backend is running.
+
+    This is used for setting the domain of the authentication cookie.
+    If this is set to None, no domain will be set for the cookie.
+    """
+
+    same_site: Literal["lax"] | Literal["none"] | Literal["strict"] = "lax"
+    """SameSite attribute for the authentication cookie.
+
+    This can be set to "lax", "none" or "strict".
+    """
+
+    secure: bool = False
+    """Secure attribute for the authentication cookie.
+
+    If this is set to True, the cookie will only be sent over HTTPS.
+    """
+
+
+class DatabaseSettings(BaseSettings):
+    """Settings for the database."""
+
+    dialect: str = "sqlite"
+    """Database dialect."""
+
+    username: str | None = None
+
+    password: str | None = None
+
+    host: str | None = None
+
+    port: int | None = None
+
+    name: str = "whombat.db"
+    """Name of the database where all data is stored.
+
+    In case of SQLite, this is the path to the database file relative
+    to the project root.
+    """
+
+    url: str | None = None
+    """Database URL.
+
+    If this is set, it will override all other database settings.
+    Only use this if you know what you are doing.
+    """
+
+
+class LoggingSettings(BaseSettings):
+    """Settings for logging."""
+
+    config: Path = Path("logging.conf")
+    """Path to the logging configuration file relative to the project root."""
+
+    file: bool = True
+    """Log to a file."""
+
+    stdout: bool = False
+    """Log to stdout."""
+
+    dir: Path = Path("logs")
+    """Path to the directory where log files are stored relative to the project
+    root."""
+
+    level: str = "info"
+    """Log level for the application.
+
+    Should be set to INFO in production.
+    """
+
+
 class Settings(BaseSettings):
     """Settings for whombat."""
 
     model_config = SettingsConfigDict(
         env_prefix="WHOMBAT_",
+        env_nested_delimiter="__",
     )
 
     dev: bool = False
@@ -38,30 +114,8 @@ class Settings(BaseSettings):
     when changes are made to the source code.
     """
 
-    db_dialect: str = "sqlite"
-    """Database dialect."""
-
-    db_username: str | None = None
-
-    db_password: str | None = None
-
-    db_host: str | None = None
-
-    db_port: int | None = None
-
-    db_name: str = "whombat.db"
-    """Name of the database where all data is stored.
-
-    In case of SQLite, this is the path to the database file relative
-    to the project root.
-    """
-
-    db_url: str | None = None
-    """Database URL.
-
-    If this is set, it will override all other database settings.
-    Only use this if you know what you are doing.
-    """
+    db: DatabaseSettings = DatabaseSettings()
+    """Settings for the database."""
 
     audio_dir: Path = Path.home()
     """Directory where the all audio files are stored.
@@ -80,26 +134,11 @@ class Settings(BaseSettings):
     port: int = 5000
     """Port on which the backend is running."""
 
-    domain: str = "localhost"
-    """Domain on which the backend is running."""
+    cookie: CookieSettings = CookieSettings()
+    """Settings for the authentication cookie."""
 
-    log_config: Path = Path("logging.conf")
-    """Path to the logging configuration file relative to the project root."""
-
-    log_to_file: bool = True
-    """Log to a file."""
-
-    log_to_stdout: bool = False
-    """Log to stdout."""
-
-    log_dir: Path = Path("logs")
-    """Path to the directory where log files are stored relative to the project root."""
-
-    log_level: str = "info"
-    """Log level for the application.
-
-    Should be set to INFO in production.
-    """
+    log: LoggingSettings = LoggingSettings()
+    """Settings for logging."""
 
     cors_origins: list[str] = [
         "http://localhost",
@@ -163,7 +202,7 @@ def load_settings_from_file() -> Settings:
 def store_default_settings() -> None:
     """Store the default settings to a file."""
     default_settings = Settings(
-        db_name=str(get_whombat_db_file()),
+        db=DatabaseSettings(name=str(get_whombat_db_file())),
     )
     write_settings_to_file(default_settings)
 

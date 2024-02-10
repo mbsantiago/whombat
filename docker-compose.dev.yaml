@@ -1,0 +1,29 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: ./back
+    command: python -m whombat
+    environment:
+      - WHOMBAT_DEV=true
+      - WHOMBAT_LOG__FILE=false
+      - WHOMBAT_LOG__STDOUT=true
+      - WHOMBAT_CORS_ORIGINS=["http://localhost:3000"]
+      - WHOMBAT_PORT=5000
+      - WHOMBAT_HOST=0.0.0.0
+    ports:
+      - 5000:5000
+    volumes:
+      - ./back/src/whombat:/app/whombat
+  frontend:
+    build:
+      context: ./front
+    command: npm run dev
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_WHOMBAT_BACKEND_URL=http://localhost:5000/
+    ports:
+      - 3000:3000
+    volumes:
+      - ./front:/app

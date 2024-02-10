@@ -27,7 +27,7 @@ def get_logging_config(settings: Settings) -> dict[str, Any]:
         return generate_logging_config(settings)
 
     data_dir = get_app_data_dir()
-    log_config_file = data_dir / settings.log_config
+    log_config_file = data_dir / settings.log.config
 
     if not log_config_file.exists():
         config = generate_logging_config(settings)
@@ -51,12 +51,12 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
     """
 
     data_dir = get_app_data_dir()
-    log_dir = data_dir / settings.log_dir
+    log_dir = data_dir / settings.log.dir
     whombat_log_file = log_dir / "whombat.log"
     access_log_file = log_dir / "access.log"
     error_log_file = log_dir / "error.log"
 
-    if settings.log_to_file:
+    if settings.log.file:
         log_dir.mkdir(parents=True, exist_ok=True)
         whombat_log_file.touch(exist_ok=True)
         access_log_file.touch(exist_ok=True)
@@ -100,10 +100,10 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
     }
 
     handlers = {}
-    if settings.log_to_file:
+    if settings.log.file:
         handlers.update(file_handlers)
 
-    if settings.log_to_stdout:
+    if settings.log.stdout:
         handlers.update(console_handlers)
 
     return {
@@ -134,7 +134,7 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
             },
             "whombat": {
                 "handlers": _get_handlers("default", "console", settings),
-                "level": settings.log_level.upper(),
+                "level": settings.log.level.upper(),
                 "propagate": False,
             },
         },
@@ -146,13 +146,13 @@ def _get_handlers(
     console_handler: str,
     settings: Settings,
 ) -> list[str]:
-    if settings.log_to_file and settings.log_to_stdout:
+    if settings.log.file and settings.log.stdout:
         return [file_handler, console_handler]
 
-    if settings.log_to_file:
+    if settings.log.file:
         return [file_handler]
 
-    if settings.log_to_stdout:
+    if settings.log.stdout:
         return [console_handler]
 
     return []

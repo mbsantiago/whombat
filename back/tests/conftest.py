@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, cache, schemas
 from whombat.system import get_database_url, init_database
-from whombat.system.settings import Settings
+from whombat.system.settings import DatabaseSettings, LoggingSettings, Settings
 
 # Avoid noisy logging during tests.
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
@@ -70,8 +70,10 @@ async def database_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
     tmp_path = tmp_path_factory.mktemp("template")
     db_path = tmp_path / "template.db"
     settings = Settings(
-        db_dialect="sqlite",
-        db_name=str(db_path),
+        db=DatabaseSettings(
+            dialect="sqlite",
+            name=str(db_path),
+        ),
         audio_dir=tmp_path / "audio",
     )
     await init_database(settings)
@@ -96,12 +98,16 @@ def settings(
 ) -> Settings:
     """Fixture to return the settings."""
     return Settings(
-        db_dialect="sqlite",
-        db_name=str(database_path),
+        db=DatabaseSettings(
+            dialect="sqlite",
+            name=str(database_path),
+        ),
         audio_dir=audio_dir,
         open_on_startup=False,
-        log_to_file=False,
-        log_to_stdout=True,
+        log=LoggingSettings(
+            file=False,
+            stdout=True,
+        ),
     )
 
 

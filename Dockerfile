@@ -29,8 +29,6 @@ RUN npm run build
 # == Run the web server
 FROM python:3.11
 
-WORKDIR back/
-
 # Install libsndfile1
 RUN apt-get update && apt-get install -y \
     libsndfile1 \
@@ -44,25 +42,14 @@ WORKDIR /code
 # Copy the current directory contents into the container at /code
 
 # Copy the guide
-COPY --from=guide_builder /guide/ /code/src/whombat/user_guide/
+COPY --from=guide_builder /guide/ /code/whombat/user_guide/
 
 # Copy the statics
-COPY --from=web_builder /front/out/ /code/src/whombat/statics/
+COPY --from=web_builder /front/out/ /code/whombat/statics/
 
 # Install the Python dependencies
 COPY back/requirements.txt /code/requirements.txt
 RUN pip install -r requirements.txt
-
-# Copy the source code
-COPY back/src /code/src
-COPY back/app.py /code/app.py
-COPY back/pyproject.toml /code/pyproject.toml
-COPY back/alembic.ini /code/alembic.ini
-COPY back/README.md /code/README.md
-COPY back/LICENSE /code/LICENSE
-
-# Install Whombat
-RUN pip install --no-deps .
 
 # Create a directory for audio files
 RUN mkdir /audio
@@ -84,6 +71,15 @@ ENV WHOMBAT_DOMAIN "localhost"
 
 # Expose the port for the web server
 EXPOSE 5000
+
+# Copy the source code
+COPY back/app.py /code/app.py
+COPY back/pyproject.toml /code/pyproject.toml
+COPY back/LICENSE /code/LICENSE
+COPY back/README.md /code/README.md
+COPY back/src/whombat /code/src/whombat
+
+RUN pip install --no-deps -e .
 
 # Run the command to start the web server
 CMD ["python", "app.py"]

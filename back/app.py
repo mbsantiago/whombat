@@ -34,7 +34,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app:app",
         host=settings.host,
-        log_level=settings.log_level,
+        log_level=settings.log.level,
         log_config=config,
         port=settings.port,
         reload=settings.dev,

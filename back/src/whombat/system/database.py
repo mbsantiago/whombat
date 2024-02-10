@@ -107,16 +107,16 @@ def get_database_url(
             else "sqlite:///whombat.db"
         )
 
-    if settings.db_url:
-        return make_url(settings.db_url)
+    if settings.db.url:
+        return make_url(settings.db.url)
 
     url = URL.create(
-        drivername=settings.db_dialect,
-        username=settings.db_username,
-        password=settings.db_password,
-        host=settings.db_host,
-        port=settings.db_port,
-        database=settings.db_name,
+        drivername=settings.db.dialect,
+        username=settings.db.username,
+        password=settings.db.password,
+        host=settings.db.host,
+        port=settings.db.port,
+        database=settings.db.name,
     )
 
     return validate_database_url(url, is_async=is_async)

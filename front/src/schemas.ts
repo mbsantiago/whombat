@@ -17,6 +17,7 @@ export const UserSchema = z.object({
   username: z.string(),
   email: z.string().email().optional(),
   name: z.string().nullable().optional(),
+  is_superuser: z.boolean().default(false),
 });
 
 export const TagSchema = z.object({

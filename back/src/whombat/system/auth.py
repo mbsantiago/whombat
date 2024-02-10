@@ -39,8 +39,8 @@ def get_cookie_transport(settings: Settings):
         cookie_max_age=3600,
         cookie_name="whombatauth",
         cookie_secure=False,
-        cookie_domain=settings.domain,
-        cookie_samesite="lax",
+        cookie_domain=settings.cookie.domain,
+        cookie_samesite=settings.cookie.same_site,
     )
 
 

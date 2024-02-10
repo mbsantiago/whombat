@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy.engine import URL
 
 from whombat.system import database
-from whombat.system.settings import Settings
+from whombat.system.settings import DatabaseSettings, Settings
 
 
 @pytest.fixture
@@ -18,7 +18,11 @@ def db_path(tmp_path: Path) -> Path:
 @pytest.fixture
 def db_url(db_path: Path) -> URL:
     """Create a temporary settings file."""
-    settings = Settings(db_name=str(db_path))
+    settings = Settings(
+        db=DatabaseSettings(
+            name=str(db_path),
+        ),
+    )
     return database.get_database_url(settings)
 
 

@@ -14,7 +14,7 @@ if __name__ == "__main__":
         "whombat.app:app",
         host=settings.host,
         port=settings.port,
-        log_level=settings.log_level,
+        log_level=settings.log.level,
         reload=settings.dev,
         log_config=config,
     )

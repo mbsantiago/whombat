@@ -33,9 +33,9 @@ def get_users_router(settings: WhombatSettings) -> APIRouter:
                 detail="A first user has already been created.",
             )
 
-        # This is the first user, so make them an admin
-        data.is_superuser = True
-
-        return await user_manager.create(data, safe=True)
+        user = await user_manager.create(data, safe=True)
+        # Make the first user a superuser.
+        await user_manager.user_db.update(user, {"is_superuser": True})
+        return user
 
     return users_router

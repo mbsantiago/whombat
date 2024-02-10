@@ -6,6 +6,7 @@ const UserContext = createContext<User>({
   id: "",
   username: "",
   email: "",
+  is_superuser: false,
 });
 
 export default UserContext;

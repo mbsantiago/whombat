@@ -37,7 +37,7 @@ export default function Page() {
   );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8">
       <div className="flex flex-col max-w-prose gap-4">
         <div className="mb-4 flex flex-col items-center gap-4 text-center text-7xl">
           <WhombatIcon width={128} height={128} />
