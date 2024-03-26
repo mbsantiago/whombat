@@ -104,7 +104,7 @@ function getSegments(
   }
 
   const hop = duration * (1 - overlap);
-  const numSegments = Math.ceil((fullDuration - hop) / hop);
+  const numSegments = Math.ceil((fullDuration - (duration - hop)) / hop);
   return Array(numSegments)
     .fill(0)
     .map((_, index: number) => {
