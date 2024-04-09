@@ -133,15 +133,24 @@ export default function useAudio({
       cancelAnimationFrame(timer);
     }
 
+    const onEnded = () => {
+      cancelAnimationFrame(timer);
+      // set this explicitly to toggle button
+      setIsPlaying(false);
+      setTime(startTime);
+    }
+
     current.addEventListener("play", onPlay);
     current.addEventListener("pause", onPause);
     current.addEventListener("error", onError);
+    current.addEventListener("ended", onEnded);
 
     return () => {
       cancelAnimationFrame(timer);
       current.removeEventListener("play", onPlay);
       current.removeEventListener("pause", onPause);
       current.removeEventListener("error", onError);
+      current.removeEventListener("ended", onEnded);
     };
   }, [initialUrl, speed, startTime, loop, volume]);
 
