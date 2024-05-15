@@ -36,7 +36,7 @@ type APIConfig = {
 };
 
 const DEFAULT_CONFIG: APIConfig = {
-  baseURL: "http://localhost:5000",
+  baseURL: "",
   withCredentials: true,
 };
 

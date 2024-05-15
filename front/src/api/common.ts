@@ -2,7 +2,7 @@
 import axios from "axios";
 import { z } from "zod";
 
-const HOST = "http://localhost:5000";
+const HOST = "";
 const BASE_ROUTE = `/api/v1`;
 
 const instance = axios.create({
