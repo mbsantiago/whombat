@@ -11,7 +11,7 @@ import sqlalchemy.orm as orm
 import sqlalchemy.types as types
 from fastapi_users_db_sqlalchemy.generics import GUID
 from soundevent import data
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, DateTime
 from sqlalchemy.ext.asyncio import AsyncAttrs
 
 __all__ = [
@@ -64,8 +64,9 @@ class Base(AsyncAttrs, orm.MappedAsDataclass, orm.DeclarativeBase):
 
     created_on: orm.Mapped[datetime.datetime] = orm.mapped_column(
         name="created_on",
-        default_factory=datetime.datetime.utcnow,
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc),
         kw_only=True,
+        type_=DateTime(timezone=True),
     )
 
     # Add a type annotation map to allow for custom types.

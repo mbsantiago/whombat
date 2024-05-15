@@ -4,7 +4,7 @@ This script starts the Whombat application. It is used in conjunction with the
 pyinstaller package to create a standalone executable.
 """
 
-import multiprocessing
+import multiprocessing, asyncpg
 
 import uvicorn
 
