@@ -75,24 +75,6 @@ def print_dev_message(settings: Settings):
     )
 
 
-def update_splash_screen(message: str) -> None:
-    try:
-        import pyi_splash  # type: ignore
-
-        pyi_splash.update_text(message)
-    except ImportError:
-        return
-
-
-def close_splash_screen() -> None:
-    try:
-        import pyi_splash  # type: ignore
-
-        pyi_splash.close()
-    except ImportError:
-        return
-
-
 async def whombat_init(settings: Settings, _: FastAPI):
     """Run at initialization."""
 

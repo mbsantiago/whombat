@@ -41,7 +41,6 @@ build/.venv/bin/pyinstaller \
     --recursive-copy-metadata "numpy" \
 	--name whombat \
 	--onefile \
-    --splash "../assets/splash.png" \
 	app.py
 
 

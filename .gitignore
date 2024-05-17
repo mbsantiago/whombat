@@ -169,6 +169,7 @@ site
 back/user_guide
 
 whombat.db
+.ruff_cache/
 .pdm-python
 back/src/whombat/statics/*
 back/src/whombat/user_guide/*
