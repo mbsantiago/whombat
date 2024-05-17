@@ -69,14 +69,14 @@ def load_audio(
 
     # Resample audio.
     if audio_parameters.resample:
-        wav = audio.resample_audio(wav, audio_parameters.samplerate)
+        wav = audio.resample(wav, audio_parameters.samplerate)
 
     # Filter audio.
     if (
         audio_parameters.low_freq is not None
         or audio_parameters.high_freq is not None
     ):
-        wav = audio.filter_audio(
+        wav = audio.filter(
             wav,
             low_freq=audio_parameters.low_freq,
             high_freq=audio_parameters.high_freq,

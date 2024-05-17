@@ -3,6 +3,7 @@ SHELL := /bin/bash
 
 .DEFAULT_GOAL := help
 
+ENV_PREFIX=.venv/bin/
 WHOMBAT_BACKEND_DEV_PORT ?= 5000
 
 define BROWSER_PYSCRIPT
@@ -53,55 +54,43 @@ clean-test:
 clean-docs:
 	rm -fr site/
 
-lint/flake8:
-	flake8 src tests
-
-lint/black:
-	black --check src tests
-
-lint/pylint:
-	pylint src tests
-
-lint/pycodestyle:
-	pycodestyle src
-
-lint/pydocstyle:
-	pydocstyle src
+lint/ruff:
+	$(ENV_PREFIX)ruff check src tests
 
 lint/pyright:
-	pyright src
+	$(ENV_PREFIX)pyright src
 
-lint: lint/flake8 lint/black lint/pycodestyle lint/pydocstyle lint/pylint lint/pyright ## check style
+lint: lint/ruff lint/pyright
 
 format:  ## format code
-	isort src tests
-	black src tests
+	$(ENV_PREFIX)ruff format src tests
 
 test:  ## Run all tests
-	pytest -n auto
+	$(ENV_PREFIX)pytest -n auto
 
 install: clean  ## install the package to the active Python's site-packages
-	pip install .
+	python -m venv .venv
+	$(ENV_PREFIX)pip install .
 
 coverage:  ## check code coverage
-	coverage run --source whombat -m pytest
-	coverage report -m
-	coverage html
+	$(ENV_PREFIX)coverage run --source whombat -m pytest
+	$(ENV_PREFIX)coverage report -m
+	$(ENV_PREFIX)coverage html
 	$(BROWSER) htmlcov/index.html
 
 build-docs:  ## build documentation
-	mkdocs build
+	$(ENV_PREFIX)mkdocs build
 
 build-guide:  ## build user guide
-	mkdocs build -f mkdocs-guide.yml -d src/whombat/user_guide
+	$(ENV_PREFIX)mkdocs build -f mkdocs-guide.yml -d src/whombat/user_guide
 
 serve-docs:  ## serve documentation
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
-	@$(ENV_PREFIX)mkdocs serve
+	$(ENV_PREFIX)mkdocs serve
 
 serve-guide:  ## serve user guide
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
-	@$(ENV_PREFIX)mkdocs serve -f mkdocs-guide.yml
+	$(ENV_PREFIX)mkdocs serve -f mkdocs-guide.yml
 
 serve-dev:  ## serve development backend
-	WHOMBAT_DEV=true python -m whombat
+	WHOMBAT_DEV=true $(ENV_PREFIX)python -m whombat
