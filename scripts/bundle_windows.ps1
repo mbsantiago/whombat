@@ -39,7 +39,6 @@ build\.venv\Scripts\pyinstaller `
     --name whombat `
     --onefile `
     --console `
-    --splash "..\assets\splash.png" `
     app.py
 
 
