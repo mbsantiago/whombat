@@ -92,9 +92,9 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         limit: Limit = 10,
         offset: Offset = 0,
-        filter: SoundEventAnnotationFilter = Depends(
+        filter: SoundEventAnnotationFilter = Depends(  # type: ignore
             SoundEventAnnotationFilter
-        ),  # type: ignore
+        ),
         sort_by: str = "-created_on",
     ):
         """Get a page of annotation sound_event_annotations."""
@@ -267,9 +267,9 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         limit: Limit = 1000,
         offset: Offset = 0,
-        filter: SoundEventAnnotationFilter = Depends(
+        filter: SoundEventAnnotationFilter = Depends(  # type: ignore
             SoundEventAnnotationFilter
-        ),  # type: ignore
+        ),
     ):
         items, count = await get_scatterplot_data(
             session,
