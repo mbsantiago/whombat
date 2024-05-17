@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import numpy as np
-from soundevent import audio
+from soundevent import audio, arrays
 
 import whombat.api.audio as audio_api
 from whombat import schemas
@@ -72,17 +72,18 @@ def compute_spectrogram(
         spectrogram = audio.pcen(spectrogram)
 
     # Scale spectrogram.
-    spectrogram = audio.scale_amplitude(
+    spectrogram = arrays.to_db(
         spectrogram,
-        spectrogram_parameters.scale,
+        min_db=spectrogram_parameters.min_dB,
+        max_db=spectrogram_parameters.max_dB,
     )
 
-    # Clamp amplitude.
-    spectrogram = audio.clamp_amplitude(
-        spectrogram,
-        spectrogram_parameters.min_dB,
-        spectrogram_parameters.max_dB,
-    )
+    # # Clamp amplitude.
+    # spectrogram = audio.clamp_amplitude(
+    #     spectrogram,
+    #     spectrogram_parameters.min_dB,
+    #     spectrogram_parameters.max_dB,
+    # )
 
     # Scale to [0, 1]. If normalization is relative, the minimum and maximum
     # values are computed from the spectrogram, otherwise they are taken from

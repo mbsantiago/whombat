@@ -1,6 +1,6 @@
 import struct
 
-from whombat.api.audio import CHUNK_SIZE, HEADER_FORMAT, load_clip_bytes
+from whombat.api.audio import HEADER_FORMAT, load_clip_bytes
 
 
 def test_load_clip_bytes(random_wav_factory):

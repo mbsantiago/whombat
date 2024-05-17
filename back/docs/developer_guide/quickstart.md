@@ -9,9 +9,9 @@ following tools installed:
    version should be compatible. Download Python 3.11
    [here](https://www.python.org/downloads/release/python-3117/).
 
-2. **PDM**: PDM is a Python package dependency manager that we use to manage
-   dependencies for the Python part of Whombat. Download PDM
-   [here](https://pdm-project.org/latest/#installation).
+2. **rye**: Rye is a Python package dependency manager that we use to manage
+   dependencies for the Python part of Whombat. Download rye
+   [here](https://rye-up.com/).
 
 3. **Node.js**: We use Node.js to develop and bundle the final JavaScript code
    for the Whombat frontend. Download the latest version
@@ -32,7 +32,7 @@ git clone https://github.com/mbsantiago/whombat.git
 
 ```bash
 cd whombat/back
-pdm install --dev
+rye sync
 ```
 
 3. Move to the frontend directory and install all dependencies:
@@ -51,7 +51,7 @@ Once installed, you can start the backend server by navigating to the `back`
 directory and running:
 
 ```bash
-pdm run make serve-dev
+make serve-dev
 ```
 
 You can also start the frontend development server by navigating to the `front`

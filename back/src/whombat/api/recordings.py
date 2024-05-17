@@ -2,15 +2,16 @@
 
 import datetime
 import logging
+import soundfile as sf
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import NamedTuple, Sequence
+from typing import Sequence
 from uuid import UUID
 
 import cachetools
 from soundevent import data
-from soundevent.audio import compute_md5_checksum, get_media_info
+from soundevent.audio import compute_md5_checksum, get_media_info, MediaInfo
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,15 +32,6 @@ __all__ = [
 ]
 
 logger = logging.getLogger(__name__)
-
-
-class MediaInfo(NamedTuple):
-    path: Path
-    samplerate: int
-    duration: float
-    channels: int
-    bit_depth: int
-    bytes_per_sample: int
 
 
 class RecordingAPI(
@@ -74,16 +66,8 @@ class RecordingAPI(
         full_path = audio_dir / recording.path
 
         media_info = get_media_info(full_path)
-        obj = MediaInfo(
-            path=full_path,
-            samplerate=recording.samplerate,
-            duration=recording.duration,
-            bit_depth=media_info.bit_depth,
-            channels=media_info.channels,
-            bytes_per_sample=(media_info.bit_depth // 8) * media_info.channels,
-        )
-        self._media_info_cache[recording_uuid] = obj
-        return obj
+        self._media_info_cache[recording_uuid] = media_info
+        return media_info
 
     async def get_by_hash(
         self,
@@ -955,7 +939,7 @@ def _assemble_recording_data(
 
     try:
         info = files.get_file_info(data.path)
-    except (ValueError, KeyError) as e:
+    except (ValueError, KeyError, sf.LibsndfileError) as e:
         logger.warning(
             f"Could not get file info from file. {data.path} Skipping file.",
             exc_info=e,
