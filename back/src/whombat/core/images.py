@@ -3,7 +3,7 @@
 from io import BytesIO
 
 import numpy as np
-from matplotlib.cm import get_cmap
+from matplotlib import colormaps
 from PIL import Image as img
 from PIL.Image import Image
 
@@ -34,7 +34,7 @@ def array_to_image(array: np.ndarray, cmap: str) -> Image:
         raise ValueError("The array must be 2D.")
 
     # Get the colormap
-    colormap = get_cmap(cmap)
+    colormap = colormaps.get_cmap(cmap)
 
     # Flip the array vertically
     array = np.flipud(array)
