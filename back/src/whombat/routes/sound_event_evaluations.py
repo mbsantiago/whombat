@@ -1,5 +1,7 @@
 """REST API routes for Sound Event Predictions."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -20,9 +22,11 @@ __all__ = [
 )
 async def get_sound_event_evaluations(
     session: Session,
+    filter: Annotated[
+        SoundEventEvaluationFilter, Depends(SoundEventEvaluationFilter)  # type: ignore
+    ],
     offset: Offset = 0,
     limit: Limit = 100,
-    filter: SoundEventEvaluationFilter = Depends(SoundEventEvaluationFilter),  # type: ignore
 ) -> schemas.Page[schemas.SoundEventEvaluation]:
     """Get a page of sound event evaluations."""
     (

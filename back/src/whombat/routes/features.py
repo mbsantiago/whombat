@@ -1,5 +1,7 @@
 """REST API routes for features."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -18,9 +20,12 @@ features_router = APIRouter()
 @features_router.get("/", response_model=schemas.Page[str])
 async def get_features_names(
     session: Session,
+    filter: Annotated[
+        FeatureNameFilter,  # type: ignore
+        Depends(FeatureNameFilter),
+    ],
     limit: Limit = 100,
     offset: Offset = 0,
-    filter: FeatureNameFilter = Depends(FeatureNameFilter),  # type: ignore
 ) -> schemas.Page[str]:
     """Get list of features names."""
     feature_names, total = await api.features.get_many(

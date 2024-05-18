@@ -310,7 +310,8 @@ class DatasetAPI(
             if not recording.path.is_relative_to(obj.audio_dir):
                 warnings.warn(
                     "The recording is not part of the dataset audio "
-                    f"directory. \ndataset = {obj}\nrecording = {recording}"
+                    f"directory. \ndataset = {obj}\nrecording = {recording}",
+                    stacklevel=2,
                 )
                 continue
 

@@ -1,5 +1,6 @@
 """REST API routes for spectrograms."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Response
@@ -22,12 +23,13 @@ async def get_spectrogram(
     recording_uuid: UUID,
     start_time: float,
     end_time: float,
-    audio_parameters: schemas.AudioParameters = Depends(
-        schemas.AudioParameters
-    ),
-    spectrogram_parameters: schemas.SpectrogramParameters = Depends(
-        schemas.SpectrogramParameters
-    ),
+    audio_parameters: Annotated[
+        schemas.AudioParameters, Depends(schemas.AudioParameters)
+    ],
+    spectrogram_parameters: Annotated[
+        schemas.SpectrogramParameters,
+        Depends(schemas.SpectrogramParameters),
+    ],
 ) -> Response:
     """Get a spectrogram for a recording.
 

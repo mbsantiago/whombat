@@ -1,5 +1,7 @@
 """REST API routes for tags."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
@@ -14,10 +16,10 @@ tags_router = APIRouter()
 @tags_router.get("/", response_model=schemas.Page[schemas.Tag])
 async def get_tags(
     session: Session,
+    filter: Annotated[TagFilter, Depends(TagFilter)],  # type: ignore
     limit: Limit = 100,
     offset: Offset = 0,
     sort_by: str | None = "value",
-    filter: TagFilter = Depends(TagFilter),  # type: ignore
 ):
     """Get all tags."""
     tags, total = await api.tags.get_many(
@@ -40,10 +42,10 @@ async def get_tags(
 )
 async def get_recording_tags(
     session: Session,
+    filter: Annotated[RecordingTagFilter, Depends(RecordingTagFilter)],  # type: ignore
     limit: Limit = 100,
     offset: Offset = 0,
     sort_by: str | None = "recording_id",
-    filter: RecordingTagFilter = Depends(RecordingTagFilter),  # type: ignore
 ):
     """Get all recording tags."""
     tags, total = await api.tags.get_recording_tags(

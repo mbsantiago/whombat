@@ -404,7 +404,6 @@ class EvaluationSetAPI(
         data: data.EvaluationSet,
     ) -> schemas.EvaluationSet:
         """Update an evaluation set from an object in `soundevent` format."""
-
         _existing_tags = {(t.key, t.value) for t in obj.tags}
         for t in data.evaluation_tags:
             if (t.key, t.value) not in _existing_tags:

@@ -34,7 +34,9 @@ class ClipAnnotation(Base):
         The sound events annotated in the clip.
     tags
         The tags attached to the annotation.
-    notes
+
+    Notes
+    -----
         The notes attached to the annotation.
     clip
         The clip to which the annotation belongs.

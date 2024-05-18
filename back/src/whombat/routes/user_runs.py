@@ -1,5 +1,6 @@
 """REST API routes for model runs."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -17,7 +18,6 @@ __all__ = [
 
 def get_user_runs_router(settings: WhombatSettings) -> APIRouter:
     """Get the API router for model runs."""
-
     active_user = get_current_user_dependency(settings)
 
     user_runs_router = APIRouter()
@@ -25,9 +25,9 @@ def get_user_runs_router(settings: WhombatSettings) -> APIRouter:
     @user_runs_router.get("/", response_model=schemas.Page[schemas.UserRun])
     async def get_user_runs(
         session: Session,
+        filter: Annotated[UserRunFilter, Depends(UserRunFilter)],  # type: ignore
         limit: Limit = 100,
         offset: Offset = 0,
-        filter: UserRunFilter = Depends(UserRunFilter),  # type: ignore
     ) -> schemas.Page[schemas.UserRun]:
         """Get list of model runs."""
         user_runs, total = await api.user_runs.get_many(
@@ -46,7 +46,7 @@ def get_user_runs_router(settings: WhombatSettings) -> APIRouter:
     @user_runs_router.post("/", response_model=schemas.UserRun)
     async def create_user_run(
         session: Session,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ) -> schemas.UserRun:
         """Create model run."""
         user_run = await api.user_runs.create(

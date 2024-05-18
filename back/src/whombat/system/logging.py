@@ -108,7 +108,6 @@ def generate_logging_config(settings: Settings) -> dict[str, Any]:
     dict[str, Any]
         The logging configuration.
     """
-
     data_dir = get_app_data_dir()
     log_dir = data_dir / settings.log_dir
     whombat_log_file = log_dir / "whombat.log"

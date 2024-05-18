@@ -1,6 +1,6 @@
 """User dependencies."""
 
-from typing import AsyncGenerator
+from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends
 
@@ -20,7 +20,7 @@ async def get_user_db(session: Session) -> AsyncGenerator[UserDatabase, None]:
 
 
 async def get_user_manager(
-    user_database: UserDatabase = Depends(get_user_db),
+    user_database: Annotated[UserDatabase, Depends(get_user_db)],
 ) -> AsyncGenerator[UserManager, None]:
     """Get a UserManager context."""
     yield UserManager(user_database)

@@ -23,8 +23,8 @@ def load_audio(
     recording: schemas.Recording,
     start_time: float | None = None,
     end_time: float | None = None,
-    audio_dir: Path = Path.cwd(),
-    audio_parameters: schemas.AudioParameters = schemas.AudioParameters(),
+    audio_dir: Path | None = None,
+    audio_parameters: schemas.AudioParameters | None = None,
 ):
     """Load audio.
 
@@ -46,6 +46,12 @@ def load_audio(
     bytes
         Audio data.
     """
+    if audio_dir is None:
+        audio_dir = Path().cwd()
+
+    if audio_parameters is None:
+        audio_parameters = schemas.AudioParameters()
+
     # Set start and end times.
     if start_time is None:
         start_time = 0.0
@@ -233,7 +239,6 @@ def generate_wav_header(
     The structure of the WAV header is described in
     (WAV PCM soundfile format)[http://soundfile.sapp.org/doc/WaveFormat/].
     """
-
     byte_rate = samplerate * channels * bit_depth // 8
     block_align = channels * bit_depth // 8
 

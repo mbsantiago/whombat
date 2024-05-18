@@ -89,7 +89,9 @@ async def _create_annotation_tasks(
 
     missing = [
         (t, proj_uuid)
-        for (t, proj_uuid) in zip(annotation_tasks, annotation_project_uuids)
+        for (t, proj_uuid) in zip(
+            annotation_tasks, annotation_project_uuids, strict=False
+        )
         if t.uuid not in mapping
     ]
     if not missing:

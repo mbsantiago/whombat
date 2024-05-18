@@ -32,7 +32,6 @@ def get_app_data_dir() -> Path:
     This is platform dependent. Can be set with the `WHOMBAT_DATA_DIR`
     environment variable.
     """
-
     if "WHOMBAT_DATA_DIR" in os.environ:
         data_dir = Path(os.environ["WHOMBAT_DATA_DIR"])
         data_dir.mkdir(parents=True, exist_ok=True)

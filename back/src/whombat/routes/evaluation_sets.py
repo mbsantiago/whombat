@@ -28,9 +28,12 @@ evaluation_sets_router = APIRouter()
 )
 async def get_evaluation_sets(
     session: Session,
+    filter: Annotated[
+        EvaluationSetFilter,  # type: ignore
+        Depends(EvaluationSetFilter),
+    ],
     limit: Limit = 10,
     offset: Offset = 0,
-    filter: EvaluationSetFilter = Depends(EvaluationSetFilter),  # type: ignore
 ):
     """Get a page of evaluation sets."""
     projects, total = await api.evaluation_sets.get_many(

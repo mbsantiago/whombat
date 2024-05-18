@@ -112,7 +112,7 @@ class ClipAPI(
         clip_features = await self._create_clip_features(session, clips)
         return [
             clip.model_copy(update=dict(features=features))
-            for clip, features in zip(clips, clip_features)
+            for clip, features in zip(clips, clip_features, strict=False)
         ]
 
     async def add_feature(
@@ -298,7 +298,6 @@ class ClipAPI(
         list[list[schemas.Feature]]
             List of features created for each clip.
         """
-
         clip_features = [
             [
                 schemas.Feature(name=name, value=value)
@@ -309,7 +308,7 @@ class ClipAPI(
 
         create_values = [
             (clip.id, feature.name, feature.value)
-            for clip, features in zip(clips, clip_features)
+            for clip, features in zip(clips, clip_features, strict=False)
             for feature in features
         ]
 

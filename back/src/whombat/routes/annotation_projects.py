@@ -1,6 +1,7 @@
 """REST API routes for annotation projects."""
 
 import json
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
@@ -27,9 +28,11 @@ annotation_projects_router = APIRouter()
 )
 async def get_annotation_projects(
     session: Session,
+    filter: Annotated[
+        AnnotationProjectFilter, Depends(AnnotationProjectFilter)  # type: ignore
+    ],
     limit: Limit = 10,
     offset: Offset = 0,
-    filter: AnnotationProjectFilter = Depends(AnnotationProjectFilter),  # type: ignore
 ):
     """Get a page of annotation projects."""
     projects, total = await api.annotation_projects.get_many(

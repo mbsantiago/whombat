@@ -153,7 +153,8 @@ def load_settings_from_file() -> Settings:
         # to the file.
         warnings.warn(
             f"Settings file {settings_file} is invalid. "
-            "Storing default settings to file."
+            "Storing default settings to file.",
+            stacklevel=2,
         )
         store_default_settings()
 

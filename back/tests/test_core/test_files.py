@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from pathlib import Path
+
 import pytest
 
 from whombat.core import files

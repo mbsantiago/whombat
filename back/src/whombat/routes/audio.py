@@ -1,6 +1,7 @@
 """REST API routes for audio."""
 
 from io import BytesIO
+from typing import Annotated
 from uuid import UUID
 
 import soundfile as sf
@@ -79,11 +80,12 @@ async def download_recording_audio(
     session: Session,
     settings: WhombatSettings,
     recording_uuid: UUID,
+    audio_parameters: Annotated[
+        schemas.AudioParameters,  # type: ignore
+        Depends(schemas.AudioParameters),
+    ],
     start_time: float | None = None,
     end_time: float | None = None,
-    audio_parameters: schemas.AudioParameters = Depends(
-        schemas.AudioParameters
-    ),
 ) -> StreamingResponse:
     """Get audio for a recording.
 
