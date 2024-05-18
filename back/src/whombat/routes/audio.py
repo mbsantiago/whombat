@@ -49,14 +49,12 @@ async def stream_recording_audio(
         recording_uuid,
     )
 
-    start, end = range.replace("bytes=", "").split("-")
+    start, _ = range.replace("bytes=", "").split("-")
     start = int(start)
-    end = int(end) if end else start + CHUNK_SIZE
 
     data, start, end, filesize = api.load_clip_bytes(
         path=audio_dir / recording.path,
         start=start,
-        end=end,
         time_expansion=recording.time_expansion,
         speed=speed,
         start_time=start_time,
