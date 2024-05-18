@@ -24,7 +24,7 @@ def get_logging_config(settings: Settings) -> dict[str, Any]:
         The logging configuration.
     """
     if settings.dev:
-        return generate_logging_config(settings)
+        return generate_dev_logging_config()
 
     data_dir = get_app_data_dir()
     log_config_file = data_dir / settings.log_config
@@ -34,6 +34,65 @@ def get_logging_config(settings: Settings) -> dict[str, Any]:
         log_config_file.write_text(json.dumps(config, indent=4))
 
     return json.loads(log_config_file.read_text())
+
+
+def generate_dev_logging_config():
+    """Generate the logging configuration for development.
+
+    Returns
+    -------
+    dict[str, Any]
+        The logging configuration.
+    """
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            **LOGGING_CONFIG["formatters"],
+            "whombat": {
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            },
+        },
+        "handlers": {
+            "default": {
+                "class": "logging.StreamHandler",
+                "formatter": "whombat",
+                "stream": "ext://sys.stdout",
+            },
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "access",
+                "stream": "ext://sys.stdout",
+            },
+            "console.error": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "stream": "ext://sys.stderr",
+            },
+        },
+        "loggers": {
+            "uvicorn": {
+                "handlers": ["default", "console"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "uvicorn.error": {
+                "handlers": ["default", "console.error"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "uvicorn.access": {
+                "handlers": ["console"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            "whombat": {
+                "handlers": ["default", "console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        },
+    }
 
 
 def generate_logging_config(settings: Settings) -> dict[str, Any]:
