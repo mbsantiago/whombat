@@ -42,9 +42,12 @@ async def get_dataset(
 )
 async def get_datasets(
     session: Session,
+    filter: Annotated[
+        DatasetFilter,  # type: ignore
+        Depends(DatasetFilter),
+    ],
     limit: Limit = 10,
     offset: Offset = 0,
-    filter: DatasetFilter = Depends(DatasetFilter),  # type: ignore
 ):
     """Get a page of datasets."""
     datasets, total = await api.datasets.get_many(

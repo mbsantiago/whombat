@@ -99,7 +99,7 @@ async def import_dataset(
 
 
 def normalize_path(path: Path, dataset_dir: Path) -> Path:
-    """Normalize a path to a dataset directory"""
+    """Normalize a path to a dataset directory."""
     if path.is_absolute():
         return path.relative_to(dataset_dir)
     return path

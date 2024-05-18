@@ -61,7 +61,7 @@ async def import_recordings(
     users: dict[UUID, UUID],
     feature_names: dict[str, int],
     audio_dir: Path | None = None,
-    base_audio_dir: Path = Path.home(),
+    base_audio_dir: Path | None = None,
 ) -> dict[UUID, int]:
     """Import a set of recordings in AOEF format into the database.
 
@@ -73,6 +73,9 @@ async def import_recordings(
     """
     if not recordings:
         return {}
+
+    if base_audio_dir is None:
+        base_audio_dir = Path.home()
 
     if not audio_dir:
         # If no audio directory is given, assume that the paths are relative

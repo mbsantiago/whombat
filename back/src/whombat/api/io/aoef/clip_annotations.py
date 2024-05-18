@@ -136,7 +136,6 @@ async def _create_clip_annotation_notes(
     users: dict[UUID, UUID],
 ) -> None:
     """Create clip annotation notes."""
-
     notes = [
         note
         for annotation in clip_annotations

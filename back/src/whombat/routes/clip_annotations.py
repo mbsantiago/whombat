@@ -1,5 +1,6 @@
 """REST API routes for clip_annotations."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -17,7 +18,6 @@ __all__ = [
 
 def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
     """Get the API router for clip_annotations."""
-
     active_user = get_current_user_dependency(settings)
 
     clip_annotations_router = APIRouter()
@@ -45,9 +45,12 @@ def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
     )
     async def get_clip_annotations(
         session: Session,
+        filter: Annotated[
+            ClipAnnotationFilter,  # type: ignore
+            Depends(ClipAnnotationFilter),
+        ],
         limit: Limit = 10,
         offset: Offset = 0,
-        filter: ClipAnnotationFilter = Depends(ClipAnnotationFilter),  # type: ignore
         sort_by: str = "-created_on",
     ):
         """Get a page of annotation clip_annotations."""
@@ -112,7 +115,7 @@ def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
         clip_annotation_uuid: UUID,
         key: str,
         value: str,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Add a tag to an annotation annotation."""
         clip_annotation = await api.clip_annotations.get(
@@ -161,7 +164,7 @@ def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         clip_annotation_uuid: UUID,
         data: schemas.NoteCreate,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Create a note for an annotation annotation."""
         clip_annotation = await api.clip_annotations.get(

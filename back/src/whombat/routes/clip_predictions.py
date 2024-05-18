@@ -1,5 +1,6 @@
 """REST API routes for Clip Predictions."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -54,9 +55,12 @@ async def create_clip_prediction(
 )
 async def get_clip_predictions(
     session: Session,
+    filter: Annotated[
+        ClipPredictionFilter,  # type: ignore
+        Depends(ClipPredictionFilter),
+    ],
     limit: Limit = 10,
     offset: Offset = 0,
-    filter: ClipPredictionFilter = Depends(ClipPredictionFilter),  # type: ignore
     sort_by: str = "-created_on",
 ):
     """Get a page of clip predictions."""

@@ -1,13 +1,18 @@
-import struct
+from io import BytesIO
 
-from whombat.api.audio import HEADER_FORMAT, load_clip_bytes
+import pytest
+import soundfile as sf
+
+from whombat.api.audio import HEADER_SIZE, load_clip_bytes
 
 
 def test_load_clip_bytes(random_wav_factory):
     samplerate = 8_000
     duration = 1
     channels = 1
-    bit_depth = 32
+    bit_depth = 16
+    start = HEADER_SIZE
+    frames = 1024
 
     path = random_wav_factory(
         duration=duration,
@@ -15,27 +20,23 @@ def test_load_clip_bytes(random_wav_factory):
         channels=channels,
         bit_depth=bit_depth,
     )
-    start = 1024
-    end = 2048
-
-    with open(path, "rb") as f:
-        f.seek(start)
-        read_bytes = f.read(end - start)
 
     loaded_bytes, start_, end_, filesize = load_clip_bytes(
         path=path,
         start=start,
-        end=end,
+        frames=frames,
     )
 
+    assert len(loaded_bytes) == end_ - start_
+    assert end_ - start_ == frames * channels * bit_depth // 8
+
     with open(path, "rb") as f:
-        f.seek(start)
-        read_bytes = f.read(end - start)
+        f.seek(start_)
+        read_bytes = f.read(end_ - start_)
 
     assert len(loaded_bytes) == len(read_bytes)
     assert loaded_bytes == read_bytes
     assert start_ == start
-    assert end_ == end - 1
     assert filesize == path.stat().st_size
 
 
@@ -43,7 +44,8 @@ def test_load_clip_bytes_with_header(random_wav_factory):
     samplerate = 8_000
     duration = 1
     channels = 1
-    bit_depth = 32
+    bit_depth = 16
+    frames = 512
 
     path = random_wav_factory(
         duration=duration,
@@ -51,121 +53,129 @@ def test_load_clip_bytes_with_header(random_wav_factory):
         channels=channels,
         bit_depth=bit_depth,
     )
-    start = 0
-    end = 1024
-
-    with open(path, "rb") as f:
-        f.seek(start)
-        read_bytes = f.read(end - start)
 
     loaded_bytes, start_, end_, filesize = load_clip_bytes(
         path=path,
-        start=start,
-        end=end,
+        start=0,
+        frames=frames,
     )
 
+    with open(path, "rb") as f:
+        read_bytes = f.read(end_)
+
     assert len(loaded_bytes) == len(read_bytes)
-    assert start_ == start
-    assert end_ == end - 1
+    assert start_ == 0
     assert filesize == path.stat().st_size
 
 
-def test_stream_a_whole_audio_file(random_wav_factory):
+@pytest.mark.parametrize("fmt", ["wav", "flac", "mp3"])
+def test_stream_a_whole_audio_file(fmt: str, random_wav_factory):
+    """Test streaming a whole audio file.
+
+    This test is to ensure that the whole audio file is streamed and the
+    resulting audio file can be read by soundfile.
+    """
     path = random_wav_factory(
         duration=1,
         samplerate=8_000,
         channels=1,
-        bit_depth=32,
+        fmt=fmt,
     )
-
-    with open(path, "rb") as f:
-        full_bytes = f.read()
-
-    true_filesize = path.stat().st_size
 
     start = 0
     filesize = None
-    parts = []
+    buffer = BytesIO()
     while True:
         part, start, _, filesize = load_clip_bytes(
             path=path,
             start=start,
         )
-        parts.append(part)
+        buffer.write(part)
         start = start + len(part)
-
-        assert filesize == true_filesize
 
         if not part or start >= filesize:
             break
 
-    streamed = b"".join(parts)
-    assert len(streamed) == len(full_bytes)
-    assert streamed == full_bytes
+    buffer.seek(0)
+
+    with sf.SoundFile(buffer) as f:
+        assert f.samplerate == 8_000
+        assert f.channels == 1
+        assert f.frames == 8_000
 
 
-def test_stream_a_whole_audio_file_with_non_1_speed(random_wav_factory):
+@pytest.mark.parametrize("fmt", ["wav", "flac", "mp3"])
+def test_stream_a_whole_audio_file_with_non_1_speed(
+    fmt: str, random_wav_factory
+):
     path = random_wav_factory(
-        duration=0.5,
-        samplerate=384_000,
+        duration=1,
+        samplerate=8_000,
         channels=1,
-        bit_depth=32,
+        fmt=fmt,
     )
-
-    speed = 0.1
-
-    with open(path, "rb") as f:
-        full_bytes = f.read()
-
-    true_filesize = path.stat().st_size
 
     start = 0
     filesize = None
-    parts = []
+    buffer = BytesIO()
     while True:
         part, start, _, filesize = load_clip_bytes(
             path=path,
             start=start,
-            speed=speed,
+            speed=2,
         )
-        parts.append(part)
+        buffer.write(part)
         start = start + len(part)
-
-        assert filesize == true_filesize
 
         if not part or start >= filesize:
             break
 
-    streamed = b"".join(parts)
+    buffer.seek(0)
 
-    assert streamed[44:] == full_bytes[44:]
+    with sf.SoundFile(buffer) as f:
+        assert f.samplerate == 16_000
+        assert f.channels == 1
+        assert f.frames == 8_000
 
-    fields = [
-        "riff",
-        "size",
-        "wave",
-        "fmt ",
-        "fmt_size",
-        "format",
-        "channels",
-        "samplerate",
-        "byte_rate",
-        "block_align",
-        "bit_depth",
-        "data",
-        "data_size",
-    ]
 
-    orig_header = struct.unpack(HEADER_FORMAT, full_bytes[:44])
-    streamed_header = struct.unpack(HEADER_FORMAT, streamed[:44])
+@pytest.mark.parametrize("fmt", ["wav", "flac", "mp3"])
+def test_stream_an_audio_clip(fmt: str, random_wav_factory):
+    path = random_wav_factory(
+        duration=3,
+        samplerate=8_000,
+        channels=1,
+        fmt=fmt,
+    )
 
-    for field, h1, h2 in zip(fields, orig_header, streamed_header):
-        if field == "samplerate":
-            assert int(h1 * speed) == h2
-            continue
+    start = 0
+    filesize = None
+    buffer = BytesIO()
+    while True:
+        part, start, _, filesize = load_clip_bytes(
+            path=path,
+            start=start,
+            speed=2,
+            start_time=1,
+            end_time=2,
+        )
+        buffer.write(part)
+        start = start + len(part)
 
-        if field == "byte_rate":
-            assert int(h1 * speed) == h2
-            continue
+        if not part or start >= filesize:
+            break
 
-        assert h1 == h2
+    buffer.seek(0)
+
+    with sf.SoundFile(buffer) as f:
+        assert f.samplerate == 16_000
+        assert f.channels == 1
+        assert f.frames == 8_000
+        streamed_data = f.read()
+
+    # MP3 files are not guaranteed to be the same when streamed
+    # because of the compression.
+    if fmt != "mp3":
+        with sf.SoundFile(path) as f:
+            f.seek(8_000)
+            original_data = f.read(8_000)
+        assert (streamed_data == original_data).all()

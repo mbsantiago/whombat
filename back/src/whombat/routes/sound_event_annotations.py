@@ -1,5 +1,6 @@
 """REST API routes for sound_event_annotations."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -21,7 +22,6 @@ __all__ = [
 
 def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
     """Get the API router for sound_event_annotations."""
-
     active_user = get_current_user_dependency(settings)
 
     sound_event_annotations_router = APIRouter()
@@ -32,12 +32,11 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
     )
     async def create_annotation(
         session: Session,
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
         clip_annotation_uuid: UUID,
         data: schemas.SoundEventAnnotationCreate,
-        user: schemas.SimpleUser = Depends(active_user),
     ):
         """Create annotation."""
-
         clip_annotation = await api.clip_annotations.get(
             session,
             clip_annotation_uuid,
@@ -90,11 +89,12 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
     )
     async def get_sound_event_annotations(
         session: Session,
+        filter: Annotated[
+            SoundEventAnnotationFilter,  # type: ignore
+            Depends(SoundEventAnnotationFilter),
+        ],
         limit: Limit = 10,
         offset: Offset = 0,
-        filter: SoundEventAnnotationFilter = Depends(  # type: ignore
-            SoundEventAnnotationFilter
-        ),
         sort_by: str = "-created_on",
     ):
         """Get a page of annotation sound_event_annotations."""
@@ -166,7 +166,7 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         sound_event_annotation_uuid: UUID,
         key: str,
         value: str,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Add a tag to an annotation annotation."""
         sound_event_annotation = await api.sound_event_annotations.get(
@@ -215,7 +215,7 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         sound_event_annotation_uuid: UUID,
         data: schemas.NoteCreate,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Create a note for an annotation annotation."""
         sound_event_annotation = await api.sound_event_annotations.get(
@@ -265,11 +265,12 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
     )
     async def get_scatter_plot_data(
         session: Session,
+        filter: Annotated[
+            SoundEventAnnotationFilter,  # type: ignore
+            Depends(SoundEventAnnotationFilter),
+        ],
         limit: Limit = 1000,
         offset: Offset = 0,
-        filter: SoundEventAnnotationFilter = Depends(  # type: ignore
-            SoundEventAnnotationFilter
-        ),
     ):
         items, count = await get_scatterplot_data(
             session,

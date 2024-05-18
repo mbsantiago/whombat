@@ -5,6 +5,7 @@ from pathlib import Path
 
 import soundfile as sf
 from soundevent import audio, data
+from soundevent.audio.io import audio_to_bytes
 
 from whombat import schemas
 
@@ -15,14 +16,15 @@ __all__ = [
 
 CHUNK_SIZE = 512 * 1024
 HEADER_FORMAT = "<4si4s4sihhiihh4si"
+HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
 
 
 def load_audio(
     recording: schemas.Recording,
     start_time: float | None = None,
     end_time: float | None = None,
-    audio_dir: Path = Path.cwd(),
-    audio_parameters: schemas.AudioParameters = schemas.AudioParameters(),
+    audio_dir: Path | None = None,
+    audio_parameters: schemas.AudioParameters | None = None,
 ):
     """Load audio.
 
@@ -44,6 +46,12 @@ def load_audio(
     bytes
         Audio data.
     """
+    if audio_dir is None:
+        audio_dir = Path().cwd()
+
+    if audio_parameters is None:
+        audio_parameters = schemas.AudioParameters()
+
     # Set start and end times.
     if start_time is None:
         start_time = 0.0
@@ -65,25 +73,25 @@ def load_audio(
     )
 
     # Load audio.
-    wav = audio.load_clip(clip)
+    wave = audio.load_clip(clip)
 
     # Resample audio.
     if audio_parameters.resample:
-        wav = audio.resample(wav, audio_parameters.samplerate)
+        wave = audio.resample(wave, audio_parameters.samplerate)
 
     # Filter audio.
     if (
         audio_parameters.low_freq is not None
         or audio_parameters.high_freq is not None
     ):
-        wav = audio.filter(
-            wav,
+        wave = audio.filter(
+            wave,
             low_freq=audio_parameters.low_freq,
             high_freq=audio_parameters.high_freq,
             order=audio_parameters.filter_order,
         )
 
-    return wav
+    return wave
 
 
 BIT_DEPTH_MAP: dict[str, int] = {
@@ -100,11 +108,12 @@ BIT_DEPTH_MAP: dict[str, int] = {
 def load_clip_bytes(
     path: Path,
     start: int,
-    end: int | None = None,
     speed: float = 1,
+    frames: int = 8192,
     time_expansion: float = 1,
     start_time: float | None = None,
     end_time: float | None = None,
+    bit_depth: int = 16,
 ) -> tuple[bytes, int, int, int]:
     """Load audio.
 
@@ -112,10 +121,18 @@ def load_clip_bytes(
     ----------
     clip
         The clip to load audio from.
-    audio_dir
-        The directory where the audio files are stored.
-    audio_parameters
-        Audio parameters.
+    start
+        Start byte.
+    end
+        End byte.
+    speed
+        Speed of the audio.
+    time_expansion
+        Time expansion factor.
+    start_time
+        Start time in seconds.
+    end_time
+        End time in seconds.
 
     Returns
     -------
@@ -128,64 +145,68 @@ def load_clip_bytes(
     filesize
         Total size of clip in bytes.
     """
-    with open(path, "rb") as f:
-        with sf.SoundFile(f) as sf_file:
-            samplerate = sf_file.samplerate * time_expansion
-            channels = sf_file.channels
-            bit_depth = BIT_DEPTH_MAP.get(sf_file.subtype)
+    with sf.SoundFile(path) as sf_file:
+        samplerate = int(sf_file.samplerate * time_expansion)
+        channels = sf_file.channels
 
-            if bit_depth is None:
-                raise NotImplementedError(
-                    f"Unsupported audio subtype: {sf_file.subtype}"
-                )
+        # Calculate start and end frames based on start and end times
+        # to ensure that the requested piece of audio is loaded.
+        if start_time is None:
+            start_time = 0
+        start_frame = int(start_time * samplerate)
 
-            duration: float = sf_file.frames / samplerate
-            start_time = start_time if start_time else 0.0
-            end_time = end_time if end_time else duration
+        end_frame = sf_file.frames
+        if end_time is not None:
+            end_frame = int(end_time * samplerate)
 
-            start_frame = int(start_time * samplerate)
-            end_frame = min(int(end_time * samplerate), sf_file.frames)
+        # Calculate the total number of frames and the size of the audio
+        # data in bytes.
+        total_frames = end_frame - start_frame
+        bytes_per_frame = channels * bit_depth // 8
+        filesize = total_frames * bytes_per_frame
 
-            sf_file.seek(start_frame)
-            start_position = f.tell()
+        # Compute the offset, which is the frame at which to start reading
+        # the audio data.
+        offset = start_frame
+        if start != 0:
+            # When the start byte is not 0, calculate the offset in frames
+            # and add it to the start frame. Note that we need to
+            # remove the size of the header from the start byte to correctly
+            # calculate the offset in frames.
+            offset_frames = (start - HEADER_SIZE) // bytes_per_frame
+            offset += offset_frames
 
-            sf_file.seek(end_frame)
-            end_position = f.tell()
+        # Make sure that the number of frames to read is not greater than
+        # the number of frames requested.
+        frames = min(frames, end_frame - offset)
 
-            data_size = end_position - start_position
+        sf_file.seek(offset)
+        audio_data = sf_file.read(frames, fill_value=0, always_2d=True)
 
+        # Convert the audio data to raw bytes
+        audio_bytes = audio_to_bytes(
+            audio_data,
+            samplerate=samplerate,
+            bit_depth=bit_depth,
+        )
+
+        # Generate the WAV header if the start byte is 0 and
+        # append to the start of the audio data.
+        if start == 0:
             header = generate_wav_header(
-                int(samplerate * speed),
-                channels,
-                data_size,
-                bit_depth,
+                samplerate=int(samplerate * speed),
+                channels=channels,
+                data_size=filesize,
+                bit_depth=bit_depth,
             )
-            header_size = len(header)
-            filesize = data_size + header_size
+            audio_bytes = header + audio_bytes
 
-            bytes_to_load = end - start if end else CHUNK_SIZE
-
-            if start < header_size:
-                start = 0
-                bytes_to_load -= header_size
-            else:
-                header = b""
-
-            if bytes_to_load < 0:
-                return header, 0, len(header), filesize
-
-            current_position = start_position + max(start - header_size, 0)
-            bytes_to_load = min(
-                bytes_to_load,
-                end_position - current_position,
-            )
-
-            f.seek(current_position)
-            audio_bytes = f.read(bytes_to_load)
-
-            data = bytes(header + audio_bytes)
-            end = start + len(data) - 1
-            return data, start, end, filesize
+        return (
+            audio_bytes,
+            start,
+            start + len(audio_bytes),
+            filesize + HEADER_SIZE,
+        )
 
 
 def generate_wav_header(
@@ -218,7 +239,6 @@ def generate_wav_header(
     The structure of the WAV header is described in
     (WAV PCM soundfile format)[http://soundfile.sapp.org/doc/WaveFormat/].
     """
-
     byte_rate = samplerate * channels * bit_depth // 8
     block_align = channels * bit_depth // 8
 

@@ -92,7 +92,9 @@ async def _create_clip_evaluations(
 
     missing = [
         (clip_evals, eval_uuid)
-        for clip_evals, eval_uuid in zip(clip_evaluations, evaluations_uuids)
+        for clip_evals, eval_uuid in zip(
+            clip_evaluations, evaluations_uuids, strict=False
+        )
         if clip_evals.uuid not in mapping
     ]
     if not missing:

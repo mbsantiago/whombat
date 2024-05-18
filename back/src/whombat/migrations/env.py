@@ -86,8 +86,7 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 def run_migrations() -> None:
-    """In this scenario we need to create an Engine and associate a connection
-    with the context."""
+    """Run migrations synchronously."""
     configuration = get_configurations()
 
     connectable = engine_from_config(
@@ -102,8 +101,7 @@ def run_migrations() -> None:
 
 
 async def run_async_migrations() -> None:
-    """In this scenario we need to create an Engine and associate a connection
-    with the context."""
+    """Run migrations asynchronously."""
     configuration = get_configurations()
 
     connectable = async_engine_from_config(

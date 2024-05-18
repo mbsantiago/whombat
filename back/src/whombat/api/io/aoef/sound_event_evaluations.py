@@ -100,7 +100,9 @@ async def _create_sound_event_evaluations(
 
     missing = [
         (match, eval_uuid)
-        for match, eval_uuid in zip(matches, clip_evaluation_uuids)
+        for match, eval_uuid in zip(
+            matches, clip_evaluation_uuids, strict=False
+        )
         if match.uuid not in mapping
     ]
 

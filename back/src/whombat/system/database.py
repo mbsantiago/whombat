@@ -11,10 +11,10 @@ from alembic.config import Config
 from alembic.runtime import migration
 from sqlalchemy import Connection, Engine, create_engine
 from sqlalchemy.engine import URL, make_url
-from sqlalchemy.ext.asyncio import async_sessionmaker  # type: ignore
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
+    async_sessionmaker,  # type: ignore
     create_async_engine,
 )
 
@@ -233,7 +233,6 @@ def create_db(conn: Connection, cfg: Config) -> None:
 
 def create_or_update_db(conn: Connection, cfg: Config) -> None:
     """Create the database and tables."""
-
     state = get_db_state(conn, cfg)
 
     if state == DatabaseState.OK:

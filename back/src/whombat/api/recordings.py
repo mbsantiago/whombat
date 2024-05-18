@@ -2,7 +2,6 @@
 
 import datetime
 import logging
-import soundfile as sf
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
@@ -10,8 +9,9 @@ from typing import Sequence
 from uuid import UUID
 
 import cachetools
+import soundfile as sf
 from soundevent import data
-from soundevent.audio import compute_md5_checksum, get_media_info, MediaInfo
+from soundevent.audio import MediaInfo, compute_md5_checksum, get_media_info
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 

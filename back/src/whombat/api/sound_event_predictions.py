@@ -265,8 +265,7 @@ class SoundEventPredictionAPI(
         data: data.SoundEventPrediction,
         clip_prediction: schemas.ClipPrediction,
     ) -> schemas.SoundEventPrediction:
-        """Create a new Whombat sound event prediction from a sound event
-        prediction in soundevent format.
+        """Create a sound event prediction from one in soundevent format.
 
         Parameters
         ----------
