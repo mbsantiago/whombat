@@ -174,4 +174,3 @@ whombat.db
 back/src/whombat/statics/*
 back/src/whombat/user_guide/*
 back/.build_venv
-.bumpversion.cfg
