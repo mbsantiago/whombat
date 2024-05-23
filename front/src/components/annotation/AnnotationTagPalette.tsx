@@ -15,11 +15,13 @@ export default function AnnotationTagPalette({
   tagFilter,
   onClick,
   onAddTag,
+  onCreateTag,
   onRemoveTag,
   onClearTags,
 }: {
   tags: Tag[];
   tagFilter?: TagFilter;
+  onCreateTag?: (tag: Tag) => void;
   onClick?: (tag: Tag) => void;
   onAddTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
@@ -51,7 +53,7 @@ export default function AnnotationTagPalette({
         <div className="grow">
           <TagSearchBar
             onSelect={onAddTag}
-            onCreate={onAddTag}
+            onCreate={onCreateTag}
             initialFilter={tagFilter}
             placeholder="Add tags..."
           />

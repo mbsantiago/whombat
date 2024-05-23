@@ -46,6 +46,7 @@ export default function ClipAnnotationSpectrogram({
   onDeleteSoundEventAnnotation,
   onParameterSave,
   onSelectAnnotation,
+  onCreateTag,
 }: {
   clipAnnotation: ClipAnnotation;
   parameters?: SpectrogramParameters;
@@ -66,6 +67,7 @@ export default function ClipAnnotationSpectrogram({
   onDeleteSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
   onAddSoundEventTag?: (annotation: SoundEventAnnotation) => void;
   onRemoveSoundEventTag?: (annotation: SoundEventAnnotation) => void;
+  onCreateTag?: (tag: Tag) => void;
 }) {
   const [isAnnotating, setIsAnnotating] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -252,6 +254,7 @@ export default function ClipAnnotationSpectrogram({
           disabled={disabled}
           tags={annotate.tags}
           filter={tagFilter}
+          onCreate={onCreateTag}
         >
           <canvas
             ref={canvasRef}

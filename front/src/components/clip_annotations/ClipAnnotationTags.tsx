@@ -25,6 +25,7 @@ export default function ClipAnnotationTags({
   onRemoveTag,
   onClickTag,
   onClearTags,
+  onCreateTag,
   disabled = false,
 }: {
   clipAnnotation?: ClipAnnotation;
@@ -32,6 +33,7 @@ export default function ClipAnnotationTags({
   onAddTag?: (tag: Tag) => void;
   onClickTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
+  onCreateTag?: (tag: Tag) => void;
   onClearTags?: () => void;
   disabled?: boolean;
 }) {
@@ -68,6 +70,7 @@ export default function ClipAnnotationTags({
           <AddTagButton
             variant="primary"
             onAdd={onAddTag}
+            onCreate={onCreateTag}
             filter={tagFilter}
             text="Add tags"
             placeholder="Add tags..."

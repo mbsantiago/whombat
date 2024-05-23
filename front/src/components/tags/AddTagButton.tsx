@@ -11,11 +11,13 @@ import type { HTMLProps } from "react";
 
 function TagBarPopover({
   onClose,
+  onCreate,
   onAdd,
   filter,
   ...props
 }: {
   onClose?: () => void;
+  onCreate?: (tag: TagType) => void;
   filter?: TagFilter;
   onAdd?: (tag: TagType) => void;
 } & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
@@ -26,6 +28,7 @@ function TagBarPopover({
         onAdd?.(tag);
       }}
       onCreate={(tag) => {
+        onCreate?.(tag);
         onAdd?.(tag);
       }}
       autoFocus={true}
@@ -44,6 +47,7 @@ function TagBarPopover({
 
 export default function AddTagButton({
   onAdd,
+  onCreate,
   text = "add",
   variant = "secondary",
   filter,
@@ -52,6 +56,7 @@ export default function AddTagButton({
   text?: string;
   filter?: TagFilter;
   onAdd?: (tag: TagType) => void;
+  onCreate?: (tag: TagType) => void;
   variant?: "primary" | "secondary" | "danger";
 } & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
   return (
@@ -79,6 +84,7 @@ export default function AddTagButton({
             <TagBarPopover
               onClose={close}
               onAdd={onAdd}
+              onCreate={onCreate}
               filter={filter}
               {...props}
             />
