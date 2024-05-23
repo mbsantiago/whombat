@@ -348,6 +348,7 @@ async def annotation_project(
 async def annotation_task(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
+    clip_annotation: schemas.ClipAnnotation,
     clip: schemas.Clip,
 ) -> schemas.AnnotationTask:
     """Create a task for testing."""
@@ -355,6 +356,7 @@ async def annotation_task(
         session,
         annotation_project=annotation_project,
         clip=clip,
+        clip_annotation=clip_annotation,
     )
 
 

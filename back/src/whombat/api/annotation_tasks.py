@@ -6,6 +6,7 @@ from uuid import UUID
 from soundevent import data
 from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
@@ -87,6 +88,7 @@ class AnnotationTaskAPI(
         session: AsyncSession,
         annotation_project: schemas.AnnotationProject,
         clip: schemas.Clip,
+        clip_annotation: schemas.ClipAnnotation | None = None,
         **kwargs,
     ) -> schemas.AnnotationTask:
         """Create a task.
@@ -108,11 +110,51 @@ class AnnotationTaskAPI(
         schemas.AnnotationTask
             Created task.
         """
+        if clip_annotation is None:
+            clip_annotation = await clip_annotations.create(
+                session,
+                clip=clip,
+                annotation_project=annotation_project,
+            )
+
         return await self.create_from_data(
             session,
             annotation_project_id=annotation_project.id,
             clip_id=clip.id,
+            clip_annotation_id=clip_annotation.id,
             **kwargs,
+        )
+
+    async def get_project(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+    ) -> schemas.AnnotationProject:
+        """Get the project of a task.
+
+        Parameters
+        ----------
+        obj
+            The task.
+
+        Returns
+        -------
+        schemas.AnnotationProject
+            The project of the task.
+        """
+        query = (
+            select(models.AnnotationTask)
+            .where(models.AnnotationTask.uuid == obj.uuid)
+            .options(joinedload(models.AnnotationTask.annotation_project))
+        )
+        result = await session.execute(query)
+        db_obj = result.unique().scalar_one_or_none()
+
+        if db_obj is None:
+            raise exceptions.NotFoundError(f"Task {obj.uuid} not found")
+
+        return schemas.AnnotationProject.model_validate(
+            db_obj.annotation_project
         )
 
     async def add_status_badge(

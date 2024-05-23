@@ -3,7 +3,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from soundevent.data import AnnotationState
 
 from whombat import api, schemas
@@ -140,6 +140,50 @@ def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
         return await api.annotation_tasks.get_clip_annotation(
             session, annotation_task
         )
+
+    @annotation_tasks_router.post(
+        "/detail/clip_tags/",
+        response_model=schemas.ClipAnnotation,
+    )
+    async def add_clip_annotation_tag(
+        session: Session,
+        annotation_task_uuid: UUID,
+        clip_annotation_uuid: UUID,
+        key: str,
+        value: str,
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
+    ):
+        """Add a tag to an annotation annotation."""
+        annotation_task = await api.annotation_tasks.get(
+            session,
+            annotation_task_uuid,
+        )
+        annotation_project = await api.annotation_tasks.get_project(
+            session, annotation_task
+        )
+        tag = await api.tags.get(session, (key, value))
+
+        if tag not in annotation_project.tags:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Tag does not belong to the annotation project make"
+                    " sure to add the tag to the project first."
+                ),
+            )
+
+        clip_annotation = await api.clip_annotations.get(
+            session,
+            clip_annotation_uuid,
+        )
+        clip_annotation = await api.clip_annotations.add_tag(
+            session,
+            clip_annotation,
+            tag,
+            user,
+        )
+        await session.commit()
+        return clip_annotation
 
     @annotation_tasks_router.post(
         "/detail/badges/",

@@ -3,7 +3,7 @@ import { type AxiosError } from "axios";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
-import type { AnnotationTask } from "@/types";
+import type { AnnotationTask, AnnotationProject } from "@/types";
 
 export default function useAnnotationTask({
   uuid,
@@ -17,6 +17,7 @@ export default function useAnnotationTask({
 }: {
   uuid: string;
   annotationTask?: AnnotationTask;
+  annotationProject?: AnnotationProject;
   onDelete?: (task: AnnotationTask) => void;
   onAddBadge?: (task: AnnotationTask) => void;
   onRemoveBadge?: (task: AnnotationTask) => void;
@@ -39,7 +40,6 @@ export default function useAnnotationTask({
     queryFn: api.annotationTasks.getAnnotations,
     enabled: withAnnotations,
   });
-  if (annotationsQuery.error) console.error(annotationsQuery.error);
 
   const deleteTask = useDestruction({
     mutationFn: api.annotationTasks.delete,
