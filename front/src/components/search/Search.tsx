@@ -61,7 +61,7 @@ export default function Search<T extends object>({
   });
 
   const onSelectionChange = useCallback(
-    (key: string | number) => {
+    (key: string | number | null) => {
       const option = options.find((option) => getOptionKey(option) === key);
       if (option) {
         onSelect?.(option);

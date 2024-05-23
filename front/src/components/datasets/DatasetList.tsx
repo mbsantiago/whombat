@@ -55,7 +55,7 @@ export default function DatasetList(props: {
 
   return (
     <div className="flex flex-col p-8 space-y-2 w-full">
-      <div className96="flex flex-row space-x-4">
+      <div className="flex flex-row space-x-4">
         <div className="flex-grow">
           <Search
             label="Search"
