@@ -1,6 +1,6 @@
 [project]
 name = "Whombat"
-version = "0.5.0"
+version = "0.5.1"
 description = "Audio Annotation Tool"
 authors = [{ name = "Santiago Martinez", email = "santiago.mbal@gmail.com" }]
 dependencies = [
