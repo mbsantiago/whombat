@@ -58,17 +58,14 @@ export default function AnnotationProjectList({
           <Dialog
             mode="text"
             title="Create Annotation Project"
+            width="w-96"
             label={
               <>
                 <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
               </>
             }
           >
-            {() => (
-              <div className="w-max-prose">
-                <AnnotationProjectCreate onCreate={onCreate} />
-              </div>
-            )}
+            {() => <AnnotationProjectCreate onCreate={onCreate} />}
           </Dialog>
         </div>
         <div className="h-full">

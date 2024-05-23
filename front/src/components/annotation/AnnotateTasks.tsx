@@ -32,6 +32,7 @@ export default function AnnotateTasks({
   annotationTask,
   currentUser,
   instructions,
+  onCreateTag,
   onCreateSoundEventAnnotation,
   onUpdateSoundEventAnnotation,
   onAddSoundEventTag,
@@ -56,6 +57,7 @@ export default function AnnotateTasks({
   annotationTask?: AnnotationTask;
   /** The user who is annotating */
   currentUser: User;
+  onCreateTag?: (tag: Tag) => void;
   onCreateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
   onUpdateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
   onAddSoundEventTag?: (annotation: SoundEventAnnotation) => void;
@@ -178,6 +180,7 @@ export default function AnnotateTasks({
                 onParameterSave={onParameterSave}
                 onSelectAnnotation={setSelectedAnnotation}
                 tagFilter={tagFilter}
+                onCreateTag={onCreateTag}
                 onAddSoundEventTag={onAddSoundEventTag}
                 onRemoveSoundEventTag={onRemoveSoundEventTag}
                 onCreateSoundEventAnnotation={onCreateSoundEventAnnotation}
@@ -194,6 +197,7 @@ export default function AnnotateTasks({
                   tagFilter={tagFilter}
                   soundEventAnnotation={selectedAnnotation}
                   onAddTag={onAddSoundEventTag}
+                  onCreateTag={onCreateTag}
                   onRemoveTag={onRemoveSoundEventTag}
                 />
               )}
@@ -205,6 +209,7 @@ export default function AnnotateTasks({
             tags={tagPalette}
             tagFilter={tagFilter}
             onClick={addTag.mutate}
+            onCreateTag={onCreateTag}
             onAddTag={handleAddTagToPalette}
             onRemoveTag={handleRemoveTagFromPalette}
             onClearTags={handleClearTagPalette}
@@ -215,6 +220,7 @@ export default function AnnotateTasks({
             onAddTag={addTag.mutate}
             onRemoveTag={removeTag.mutate}
             onClearTags={onClearTags}
+            onCreateTag={onCreateTag}
           />
           <ClipAnnotationNotes
             onCreateNote={addNote.mutate}
