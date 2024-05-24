@@ -1,5 +1,6 @@
 """REST API routes for clips."""
 
+from typing import Annotated
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends
@@ -24,9 +25,12 @@ clips_router = APIRouter()
 )
 async def get_clips(
     session: Session,
+    filter: Annotated[
+        ClipFilter,  # type: ignore
+        Depends(ClipFilter),
+    ],
     limit: Limit = 10,
     offset: Offset = 0,
-    filter: ClipFilter = Depends(ClipFilter),  # type: ignore
     sort_by: str = "-created_on",
 ):
     """Get a page of clips."""

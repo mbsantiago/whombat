@@ -9,24 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v3
-        with:
-          python-version: "3.11"
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v3
       - name: Install dependencies
         run: |
           cd back
-          pdm install --dev
-      - name: Check formatting
+          rye sync
+      - name: Check formatting and typing
         run: |
           cd back
-          pdm run black --check src
-          pdm run black --check tests
-      - name: Check typing
-        run: |
-          cd back
-          pdm run pyright src
-      - name: Check for overall code issues
-        run: |
-          cd back
-          pdm run ruff src
+          make lint

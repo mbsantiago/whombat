@@ -54,9 +54,9 @@ docker run -p 5000:5000 whombat
 
 ### Development Environment
 
-We manage Whombat's development with `pdm`. 
+We manage Whombat's development with `rye`. 
 
-1. Follow the official [installation instructions](https://pdm-project.org/latest/#installation) to get `pdm` on your machine.
+1. Follow the official [installation instructions](https://rye-up.com/guide/installation/) to get `rye` on your machine.
 
 2. Clone the repository:
 
@@ -68,17 +68,17 @@ git clone https://github.com/mbsantiago/whombat.git
 
 ```bash
 cd whombat/back
-pdm install --dev
+rye sync
 ```
 
 4. Start the development server:
 
 ```bash
-pdm run make serve-dev
+make serve-dev
 ```
 
 or
 
 ```bash
-WHOMBAT_DEV=true pdm run python -m whombat
+WHOMBAT_DEV=true rye run python -m whombat
 ```

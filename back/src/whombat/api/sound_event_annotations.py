@@ -306,7 +306,6 @@ class SoundEventAnnotationAPI(
         schemas.SoundEventAnnotation
             The created annotation.
         """
-
         user = None
         if data.created_by is not None:
             user = await users.from_soundevent(session, data.created_by)

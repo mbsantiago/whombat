@@ -76,7 +76,9 @@ class Recording(Base):
         The time expansion factor of the recording.
     rights
         A string describing the usage rights of the recording.
-    notes
+
+    Notes
+    -----
         A list of notes associated with the recording.
     tags
         A list of tags associated with the recording.

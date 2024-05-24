@@ -35,11 +35,16 @@ def load_plugins() -> Generator[tuple[str, ModuleType], None, None]:
         module = importlib.import_module(name)
 
         if not hasattr(module, "__description__"):
-            warnings.warn(f"Plugin {name} has no __description__ attribute.")
+            warnings.warn(
+                f"Plugin {name} has no __description__ attribute.",
+                stacklevel=2,
+            )
             continue
 
         if not hasattr(module, "__version__"):
-            warnings.warn(f"Plugin {name} has no __version__ attribute.")
+            warnings.warn(
+                f"Plugin {name} has no __version__ attribute.", stacklevel=2
+            )
 
         yield name[8:], module
 

@@ -5,7 +5,7 @@ import SoundEventAnnotationTags from "@/components/sound_event_annotations/Sound
 import useSoundEventAnnotation from "@/hooks/api/useSoundEventAnnotation";
 
 import type { TagFilter } from "@/api/tags";
-import type { ClipAnnotation, SoundEventAnnotation } from "@/types";
+import type { ClipAnnotation, SoundEventAnnotation, Tag } from "@/types";
 
 export default function SelectedSoundEventAnnotation({
   soundEventAnnotation: data,
@@ -13,6 +13,7 @@ export default function SelectedSoundEventAnnotation({
   tagFilter,
   onAddTag,
   onRemoveTag,
+  onCreateTag,
 }: {
   //* The sound event annotation to display */
   soundEventAnnotation: SoundEventAnnotation;
@@ -22,6 +23,7 @@ export default function SelectedSoundEventAnnotation({
   tagFilter?: TagFilter;
   onAddTag?: (annotation: SoundEventAnnotation) => void;
   onRemoveTag?: (annotation: SoundEventAnnotation) => void;
+  onCreateTag?: (tag: Tag) => void;
 }) {
   const soundEventAnnotation = useSoundEventAnnotation({
     uuid: data.uuid,
@@ -43,6 +45,7 @@ export default function SelectedSoundEventAnnotation({
             soundEventAnnotation={soundEventAnnotation.data || data}
             onAddTag={soundEventAnnotation.addTag.mutate}
             onRemoveTag={soundEventAnnotation.removeTag.mutate}
+            onCreateTag={onCreateTag}
           />
         </div>
       </Card>

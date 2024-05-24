@@ -9,18 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v3
-        with:
-          python-version: "3.11"
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v3
       - name: Install dependencies
         run: |
           cd back
-          pdm install --dev
+          rye sync
       - name: Run tests
         run: |
           cd back
-          pdm run pytest --cov=src/whombat --cov-report=xml -n auto
+          rye run pytest --cov=src/whombat --cov-report=xml -n auto
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         env:

@@ -49,7 +49,6 @@ def print_first_run_message(settings: Settings):
 
 async def is_first_run(settings: Settings) -> bool:
     """Check if this is the first time the application is run."""
-
     db_url = get_database_url(settings)
     engine = create_async_db_engine(db_url)
     async with get_async_session(engine) as session:
@@ -75,27 +74,8 @@ def print_dev_message(settings: Settings):
     )
 
 
-def update_splash_screen(message: str) -> None:
-    try:
-        import pyi_splash  # type: ignore
-
-        pyi_splash.update_text(message)
-    except ImportError:
-        return
-
-
-def close_splash_screen() -> None:
-    try:
-        import pyi_splash  # type: ignore
-
-        pyi_splash.close()
-    except ImportError:
-        return
-
-
 async def whombat_init(settings: Settings, _: FastAPI):
     """Run at initialization."""
-
     if settings.dev:
         print_dev_message(settings)
 

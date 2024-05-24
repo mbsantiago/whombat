@@ -23,7 +23,6 @@ class RecordingTagFilter(base.Filter):
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-
         if self.key is None and self.value is None:
             return query
 

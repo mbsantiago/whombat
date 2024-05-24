@@ -1,6 +1,7 @@
 """REST API routes for model runs."""
 
 import json
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
@@ -22,9 +23,12 @@ model_runs_router = APIRouter()
 @model_runs_router.get("/", response_model=schemas.Page[schemas.ModelRun])
 async def get_model_runs(
     session: Session,
+    filter: Annotated[
+        ModelRunFilter,  # type: ignore
+        Depends(ModelRunFilter),
+    ],
     limit: Limit = 100,
     offset: Offset = 0,
-    filter: ModelRunFilter = Depends(ModelRunFilter),  # type: ignore
 ) -> schemas.Page[schemas.ModelRun]:
     """Get list of model runs."""
     model_runs, total = await api.model_runs.get_many(

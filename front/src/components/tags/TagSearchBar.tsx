@@ -148,6 +148,7 @@ export default forwardRef<HTMLInputElement, TagSearchBarProps>(
                       {
                         onSuccess: (tag) => {
                           onCreate?.(tag);
+                          onSelect?.(tag);
                         },
                       },
                     );

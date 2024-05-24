@@ -24,7 +24,6 @@ def db_url(db_path: Path) -> URL:
 
 def test_can_detect_database_that_needs_creation(db_path: Path, db_url: URL):
     """Test that we can detect a database that needs creation."""
-
     assert not db_path.exists()
 
     cfg = database.create_alembic_config(db_url, is_async=False)
@@ -39,7 +38,6 @@ def test_can_detect_database_that_needs_creation(db_path: Path, db_url: URL):
 
 def test_can_detect_database_is_ok(db_path: Path, db_url: URL):
     """Test that we can detect a database that needs creation."""
-
     assert not db_path.exists()
 
     cfg = database.create_alembic_config(db_url, is_async=False)
@@ -58,7 +56,6 @@ def test_can_create_database(
     db_path: Path,
 ):
     """Test that we can create a database."""
-
     assert not db_path.exists()
 
     cfg = database.create_alembic_config(db_url, is_async=False)

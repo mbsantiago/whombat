@@ -225,8 +225,7 @@ class AnnotationProjectAPI(
         session: AsyncSession,
         data: data.AnnotationProject,
     ) -> schemas.AnnotationProject:
-        """Convert a soundevent Annotation Project to a Whombat annotation
-        project.
+        """Convert a soundevent Annotation Project to a Whombat annotation project.
 
         Parameters
         ----------
@@ -263,8 +262,7 @@ class AnnotationProjectAPI(
         obj: schemas.AnnotationProject,
         audio_dir: Path | None = None,
     ) -> data.AnnotationProject:
-        """Convert a Whombat annotation project to a soundevent annotation
-        project.
+        """Convert a Whombat annotation project to a soundevent annotation project.
 
         Parameters
         ----------

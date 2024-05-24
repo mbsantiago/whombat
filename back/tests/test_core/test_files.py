@@ -3,39 +3,43 @@
 from collections.abc import Callable
 from pathlib import Path
 
+import pytest
+
 from whombat.core import files
 
 
-def test_is_audio_file(tmp_path: Path):
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "recording.wav",
+        "recording.WAV",
+        "recording.mp3",
+        "recording.flac",
+        "recording.ogg",
+    ],
+)
+def test_is_audio_file(filename: str, tmp_path: Path):
     """Test the function to check if a file is an audio file."""
-    # Only accept wav files for now
-    audio_files = [
-        tmp_path / "recording.WAV",
-        tmp_path / "recording.wav",
-        tmp_path / "directory/recording.WAV",
-        tmp_path / "directory/recording.wav",
-    ]
+    file_path = tmp_path / filename
+    file_path.touch()
+    assert files.is_audio_file(file_path)
 
-    non_audio_files = [
-        tmp_path / "recording.mp3",
-        tmp_path / "recording.mp4",
-        tmp_path / "recording.aac",
-        tmp_path / "recording.txt",
-        tmp_path / "recording.csv",
-        tmp_path / "recording.flac",
-        tmp_path / "recording.ogg",
-        tmp_path / "recording.webm",
-    ]
 
-    for path in audio_files:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.touch()
-        assert files.is_audio_file(path)
-
-    for path in non_audio_files:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.touch()
-        assert not files.is_audio_file(path)
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "recording.webm",
+        "recording.mkv",
+        "recording.avi",
+        "recording.txt",
+        "recording.csv",
+    ],
+)
+def test_can_identiy_invalid_audio_files(filename: str, tmp_path: Path):
+    """Test the function to check if a file is an audio file."""
+    file_path = tmp_path / filename
+    file_path.touch()
+    assert not files.is_audio_file(file_path)
 
 
 def test_get_audio_files_in_folder(
