@@ -13,3 +13,4 @@ bcrypt==4.0.1
 colorama==0.4.6
 asyncpg==0.29.0
 psycopg2==2.9.9
+matplotlib==3.7.5
