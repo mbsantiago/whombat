@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
     libsndfile1 \
     build-essential \
     libffi-dev \
+    libgdal-dev \
     python3-dev
 
 # Set the working directory to /code
