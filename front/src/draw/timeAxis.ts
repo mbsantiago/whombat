@@ -2,6 +2,7 @@ import {
   type AxisStyle,
   DEFAULT_AXIS_STYLE,
   MAYOR_TICK_STYLE,
+  MAYOR_TICK_STYLE_GRID,
   MINOR_TICK_STYLE,
   type TickStyle,
   setBorderStyle,
@@ -64,7 +65,12 @@ function drawTimeTick(
   });
   ctx.beginPath();
   ctx.moveTo(x, 0);
-  ctx.lineTo(x, length);
+  if (length == -1) {
+    ctx.setLineDash([3, 10])
+    ctx.lineTo(x, ctx.canvas.height)
+  } else {
+    ctx.lineTo(x, length);
+  }
   ctx.stroke();
   if (label != null) {
     setFontStyle(ctx, { fontColor: color, textBaseline: "bottom" });
@@ -96,6 +102,11 @@ export default function drawTimeAxis(
       ...MAYOR_TICK_STYLE,
     });
   });
+
+  mayorTicks.forEach((time) => {
+    const x = (width * (time - min)) / range;
+    drawTimeTick(ctx, x, {...style, ...MAYOR_TICK_STYLE_GRID})
+  })
 
   minorTicks.forEach((time) => {
     const x = (width * (time - min)) / range;

@@ -50,10 +50,22 @@ export const MINOR_TICK_STYLE = {
   length: 6,
 };
 
+export const MINOR_TICK_STYLE_GRID = {
+  width: 1,
+  length: -1,
+  alpha: 0.6
+}
+
 export const MAYOR_TICK_STYLE = {
   width: 3,
   length: 20,
 };
+
+export const MAYOR_TICK_STYLE_GRID = {
+  width: 1,
+  length: -1,
+  alpha: 0.7
+}
 
 export type Style = BorderStyle & FillStyle;
 

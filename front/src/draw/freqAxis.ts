@@ -2,7 +2,9 @@ import {
   type AxisStyle,
   DEFAULT_AXIS_STYLE,
   MAYOR_TICK_STYLE,
+  MAYOR_TICK_STYLE_GRID,
   MINOR_TICK_STYLE,
+  MINOR_TICK_STYLE_GRID,
   type TickStyle,
   setBorderStyle,
   setFontStyle,
@@ -32,7 +34,12 @@ function drawFreqTick(
   });
   ctx.beginPath();
   ctx.moveTo(0, y);
-  ctx.lineTo(length, y);
+  if (length == -1) {
+    ctx.setLineDash([3, 10])
+    ctx.lineTo(ctx.canvas.width, y)
+  } else {
+    ctx.lineTo(length, y);
+  }
   ctx.stroke();
   if (label != null) {
     ctx.save();
@@ -71,8 +78,18 @@ export default function drawTimeAxis(
     });
   });
 
+  mayorTicks.forEach((freq) => {
+    const y = (height * (max - freq)) / range;
+    drawFreqTick(ctx, y, {...style, ...MAYOR_TICK_STYLE_GRID})
+  })
+
   minorTicks.forEach((freq) => {
     const y = (height * (max - freq)) / range;
     drawFreqTick(ctx, y, { ...style, ...MINOR_TICK_STYLE });
+  });
+
+  minorTicks.forEach((freq) => {
+    const y = (height * (max - freq)) / range;
+    drawFreqTick(ctx, y, { ...style, ...MINOR_TICK_STYLE_GRID });
   });
 }
