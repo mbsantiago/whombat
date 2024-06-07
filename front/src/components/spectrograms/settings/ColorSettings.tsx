@@ -24,6 +24,7 @@ const SPECTROGRAM_COLORMAPS: Record<
   cool: { id: "cool", value: "cool", label: "Cool" },
   cubehelix: { id: "cubehelix", value: "cubehelix", label: "Cubehelix" },
   twilight: { id: "twilight", value: "twilight", label: "Twilight" },
+  brg: { id: "brg", value: "brg", label: "BRG" },
 };
 
 export default function ColorSettings({

@@ -81,7 +81,7 @@ export default function STFTSettings({
               onChange={field.onChange}
               minValue={constraints.hopSize.min}
               maxValue={constraints.hopSize.max}
-              step={0.05}
+              step={0.01}
             />
           </InputGroup>
         )}
