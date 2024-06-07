@@ -169,8 +169,8 @@ export default function STFTSettings({
         render={({ field, fieldState }) => (
           <InputGroup
             name="contrast"
-            label="Signal strength"
-            help="Set the minimum and maximum of the signal."
+            label="Contrast levels"
+            help="Set the levels for dark and bright parts."
           >
             <RangeSlider
               label="Filtering"
