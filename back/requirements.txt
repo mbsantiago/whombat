@@ -1,6 +1,7 @@
 uvicorn[standard]==0.20.0
 aiosqlite==0.18.0
 passlib==1.7.4
+soundevent[all]==2.0.0
 fastapi==0.101.0
 pydantic-settings==2.0.2
 fastapi-users[sqlalchemy]==12.1.1
