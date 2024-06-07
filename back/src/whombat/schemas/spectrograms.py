@@ -114,3 +114,12 @@ class SpectrogramParameters(STFTParameters, AmplitudeParameters):
 
     cmap: str = "gray"
     """Colormap to use for spectrogram."""
+
+    gamma: float = 1.0
+    """Gamma of the resulting spectrogram."""
+
+    low_signal: float = 0.0
+    """Signal strength to set as the minimum."""
+
+    high_signal: float = 1.0
+    """Signal strength to set as the maximun."""

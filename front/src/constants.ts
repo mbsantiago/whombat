@@ -10,7 +10,7 @@ export const DEFAULT_HOP_SIZE = 0.03125;
 export const DEFAULT_WINDOW = "blackmanharris";
 export const DEFAULT_SCALE = "dB";
 export const DEFAULT_FILTER_ORDER = 5;
-export const DEFAULT_CMAP = "brg";
+export const DEFAULT_CMAP = "plasma";
 
 /* Restrictions on the settings for the STFT computation
  * These are to prevent the user from setting parameters that

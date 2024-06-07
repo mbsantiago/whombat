@@ -26,6 +26,16 @@ export type ParameterConstraints = {
   };
   /* Samplerate of the displayed audio */
   samplerate: number;
+
+  /* Acceptable gamma settings for the spectrogram */
+  gamma: {
+    min: number;
+    max: number;
+  },
+  signalRange: {
+    min: number;
+    max: number;
+  }
 };
 
 /** Compute the constraints for the spectrogram parameters
@@ -48,6 +58,14 @@ export function computeConstraints(samplerate: number): ParameterConstraints {
       max: samplerate / 2, // Nyquist frequency
     },
     samplerate: samplerate,
+    gamma: {
+      min: 1.0,
+      max: 5.0,
+    },
+    signalRange: {
+      min: 0,
+      max: 1,
+    }
   };
 }
 
@@ -76,6 +94,11 @@ export function validateParameters(
 
   const windowSize = clamp(parameters.window_size, constraints.windowSize);
   const hopSize = clamp(parameters.hop_size, constraints.hopSize);
+  const gamma = clamp(parameters.gamma, constraints.gamma);
+
+  const lowSignal = clamp(parameters.low_signal, constraints.signalRange);
+
+  const highSignal = clamp(parameters.high_signal, constraints.signalRange);
 
   return {
     ...parameters,
@@ -84,5 +107,8 @@ export function validateParameters(
     high_freq: highFreq,
     window_size: windowSize,
     hop_size: hopSize,
+    gamma: gamma,
+    low_signal: lowSignal,
+    high_signal: highSignal,
   };
 }

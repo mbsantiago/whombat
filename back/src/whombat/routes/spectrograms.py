@@ -23,9 +23,7 @@ async def get_spectrogram(
     recording_uuid: UUID,
     start_time: float,
     end_time: float,
-    audio_parameters: Annotated[
-        schemas.AudioParameters, Depends(schemas.AudioParameters)
-    ],
+    audio_parameters: Annotated[schemas.AudioParameters, Depends(schemas.AudioParameters)],
     spectrogram_parameters: Annotated[
         schemas.SpectrogramParameters,
         Depends(schemas.SpectrogramParameters),
@@ -75,6 +73,9 @@ async def get_spectrogram(
     image = images.array_to_image(
         data,
         cmap=spectrogram_parameters.cmap,
+        gamma=spectrogram_parameters.gamma,
+        low_signal=spectrogram_parameters.low_signal,
+        high_signal=spectrogram_parameters.high_signal,
     )
 
     buffer = images.image_to_buffer(image)
