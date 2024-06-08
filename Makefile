@@ -1,5 +1,14 @@
 SHELL := /bin/bash
 
+dev-front:
+	cd front && npm run dev
+
+dev-back:
+	cd back && make serve-dev
+
+dev-docs:
+	cd back && make serve-docs
+
 install-dev:
 	bash scripts/install_dev.sh
 
