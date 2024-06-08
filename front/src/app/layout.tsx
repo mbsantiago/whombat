@@ -1,4 +1,5 @@
 import "./globals.css";
+import { StrictMode } from "react";
 import { Mulish } from "next/font/google";
 
 import { ClientProvider } from "@/app/client";
@@ -18,15 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${mulish.className} font-sans bg-stone-100 dark:bg-stone-900 text-stone-900 dark:text-stone-100 min-h-screen w-screen overflow-x-hidden`}
-      >
-        <ClientProvider>
-          {children}
-          <Notification />
-        </ClientProvider>
-      </body>
-    </html>
+    <StrictMode>
+      <html lang="en">
+        <body
+          className={`${mulish.className} font-sans bg-stone-100 dark:bg-stone-900 text-stone-900 dark:text-stone-100 min-h-screen w-screen overflow-x-hidden`}
+        >
+          <ClientProvider>
+            {children}
+            <Notification />
+          </ClientProvider>
+        </body>
+      </html>
+    </StrictMode>
   );
 }

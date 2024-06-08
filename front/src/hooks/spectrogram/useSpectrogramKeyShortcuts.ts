@@ -1,6 +1,4 @@
-import { useKeyPressEvent } from "react-use";
-
-import useKeyFilter from "@/hooks/utils/useKeyFilter";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
 
@@ -23,6 +21,6 @@ export default function useAnnotateClipKeyShortcuts(props: {
   enabled?: boolean;
 }) {
   const { onGoMove, onGoZoom, enabled = true } = props;
-  useKeyPressEvent(useKeyFilter({ enabled, key: "x" }), onGoMove);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "z" }), onGoZoom);
+  useHotkeys("x", onGoMove, { enabled });
+  useHotkeys("z", onGoZoom, { enabled });
 }

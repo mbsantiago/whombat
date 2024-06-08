@@ -1,6 +1,4 @@
-import { useKeyPressEvent } from "react-use";
-
-import useKeyFilter from "@/hooks/utils/useKeyFilter";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
 
@@ -33,11 +31,11 @@ export const ANNOTATE_TASKS_KEY_SHORTCUTS: KeyShortcut[] = [
 ];
 
 export default function useAnnotateTaskKeyShortcuts(props: {
-  onGoNext?: () => void;
-  onGoPrevious?: () => void;
-  onMarkCompleted?: () => void;
-  onMarkRejected?: () => void;
-  onMarkVerified?: () => void;
+  onGoNext: () => void;
+  onGoPrevious: () => void;
+  onMarkCompleted: () => void;
+  onMarkRejected: () => void;
+  onMarkVerified: () => void;
   enabled?: boolean;
 }) {
   const {
@@ -49,9 +47,9 @@ export default function useAnnotateTaskKeyShortcuts(props: {
     enabled = true,
   } = props;
 
-  useKeyPressEvent(useKeyFilter({ enabled, key: "n" }), onGoNext);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "p" }), onGoPrevious);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "g" }), onMarkCompleted);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "r" }), onMarkRejected);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "v" }), onMarkVerified);
+  useHotkeys("n", onGoNext, { enabled });
+  useHotkeys("p", onGoPrevious, { enabled });
+  useHotkeys("g", onMarkCompleted, { enabled });
+  useHotkeys("r", onMarkRejected, { enabled });
+  useHotkeys("v", onMarkVerified, { enabled });
 }

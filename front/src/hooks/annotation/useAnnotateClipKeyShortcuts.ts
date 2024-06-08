@@ -1,6 +1,4 @@
-import { useKeyPressEvent } from "react-use";
-
-import useKeyFilter from "@/hooks/utils/useKeyFilter";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
 
@@ -29,7 +27,7 @@ export default function useAnnotateClipKeyShortcuts(props: {
   enabled?: boolean;
 }) {
   const { onGoCreate, onGoSelect, onGoDelete, enabled = true } = props;
-  useKeyPressEvent(useKeyFilter({ enabled, key: "a" }), onGoCreate);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "s" }), onGoSelect);
-  useKeyPressEvent(useKeyFilter({ enabled, key: "d" }), onGoDelete);
+  useHotkeys("a", onGoCreate, { enabled });
+  useHotkeys("s", onGoSelect, { enabled });
+  useHotkeys("d", onGoDelete, { enabled });
 }
