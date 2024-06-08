@@ -11,7 +11,7 @@ import useCanvas from "@/hooks/draw/useCanvas";
 import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 
-import type { Recording, SpectrogramParameters } from "@/types";
+import type { Recording, SpectrogramParameters, Position } from "@/types";
 
 export default function RecordingSpectrogram({
   recording,
@@ -62,12 +62,22 @@ export default function RecordingSpectrogram({
     startTime: bounds.time.min,
   });
 
+  const { seek, play } = audio;
+  const handleDoubleClick = useCallback(
+    ({ position }: { position: Position }) => {
+      seek(position.time);
+      play();
+    },
+    [seek, play],
+  );
+
   const spectrogram = useSpectrogram({
     dimensions,
     recording,
     bounds,
     initial,
     parameters,
+    onDoubleClick: handleDoubleClick,
     enabled: !audio.isPlaying,
   });
 
