@@ -198,8 +198,8 @@ export default function useAudio({
   }, []);
 
   const handleSeek = useCallback((time: number) => {
-    audio.current.currentTime = time / speed;
-  }, [speed]);
+    audio.current.currentTime = (time - startTime) / speed;
+  }, [speed, startTime]);
 
   const handleTogglePlay = useCallback(() => {
     if (isPlaying) {
