@@ -122,7 +122,9 @@ async def _create_sound_event_annotations(
 
     missing = [
         (s, ca_uuid)
-        for s, ca_uuid in zip(sound_events_annotations, clip_annotation_uuids)
+        for s, ca_uuid in zip(
+            sound_events_annotations, clip_annotation_uuids, strict=False
+        )
         if s.uuid not in mapping
     ]
     if not missing:

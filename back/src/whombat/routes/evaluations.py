@@ -1,5 +1,6 @@
 """REST API routes for Sound Event Predictions."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -22,9 +23,12 @@ __all__ = [
 )
 async def get_evaluations(
     session: Session,
+    filter: Annotated[
+        EvaluationFilter,  # type: ignore
+        Depends(EvaluationFilter),
+    ],
     offset: Offset = 0,
     limit: Limit = 100,
-    filter: EvaluationFilter = Depends(EvaluationFilter),  # type: ignore
 ) -> schemas.Page[schemas.Evaluation]:
     """Get a page of evaluations."""
     (

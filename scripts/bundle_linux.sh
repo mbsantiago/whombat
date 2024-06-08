@@ -34,6 +34,13 @@ build/.venv/bin/pyinstaller \
 	--hidden-import "colorama" \
 	--hidden-import "logging.config" \
 	--hidden-import "passlib.handlers.bcrypt" \
+    --hidden-import "rasterio" \
+	--hidden-import "rasterio.sample" \
+    --hidden-import "rasterio._shim" \
+    --hidden-import "rasterio.control" \
+    --hidden-import "rasterio.crs" \
+    --hidden-import "rasterio.vrt" \
+    --hidden-import "rasterio._features" \
 	--add-data "src/whombat/migrations:whombat/migrations" \
 	--add-data "src/whombat/statics:whombat/statics" \
 	--add-data "src/whombat/user_guide:whombat/user_guide" \
@@ -41,7 +48,6 @@ build/.venv/bin/pyinstaller \
     --recursive-copy-metadata "numpy" \
 	--name whombat \
 	--onefile \
-    --splash "../assets/splash.png" \
 	app.py
 
 

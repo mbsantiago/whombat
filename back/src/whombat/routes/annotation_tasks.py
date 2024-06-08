@@ -1,5 +1,6 @@
 """REST API routes for annotation tasks."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -19,7 +20,6 @@ __all__ = [
 
 def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
     """Get the API router for annotation tasks."""
-
     active_user = get_current_user_dependency(settings)
 
     annotation_tasks_router = APIRouter()
@@ -73,9 +73,9 @@ def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
     )
     async def get_tasks(
         session: Session,
+        filter: Annotated[AnnotationTaskFilter, Depends(AnnotationTaskFilter)],  # type: ignore
         limit: Limit = 10,
         offset: Offset = 0,
-        filter: AnnotationTaskFilter = Depends(AnnotationTaskFilter),  # type: ignore
         sort_by: str = "-created_on",
     ):
         """Get a page of annotation tasks."""
@@ -149,7 +149,7 @@ def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         annotation_task_uuid: UUID,
         state: AnnotationState,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Add a badge to an annotation task."""
         annotation_task = await api.annotation_tasks.get(

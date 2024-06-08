@@ -30,7 +30,6 @@ def normalize_spectrogram(
     xr.DataArray
         Normalized array.
     """
-
     attrs = spectrogram.attrs
     min_val = attrs.get("min_dB")
     if min_val is None or relative:

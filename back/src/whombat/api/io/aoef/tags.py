@@ -11,7 +11,7 @@ async def import_tags(
     session: AsyncSession,
     tags: list[TagObject],
 ) -> dict[int, int]:
-    """Import tags from a list of dicts"""
+    """Import tags from a list of dicts."""
     if not tags:
         return {}
 

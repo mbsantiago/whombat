@@ -239,8 +239,7 @@ class ClipEvaluationAPI(
         audio_dir: Path | None = None,
         evaluations: Sequence[schemas.SoundEventEvaluation] | None = None,
     ) -> data.ClipEvaluation:
-        """Create a clip evaluation in soundevent format from a clip evaluation
-        in whombat format.
+        """Create a clip evaluation in soundevent format from a clip evaluation in whombat format.
 
         Parameters
         ----------

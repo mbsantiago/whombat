@@ -20,12 +20,14 @@ export default function SoundEventAnnotationTags({
   onAddTag,
   onRemoveTag,
   onClickTag,
+  onCreateTag,
 }: {
   soundEventAnnotation: SoundEventAnnotation;
   tagFilter?: TagFilter;
   onAddTag?: (tag: Tag) => void;
   onClickTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
+  onCreateTag?: (tag: Tag) => void;
 }) {
   const tags = useMemo(
     () => soundEventAnnotation.tags || [],
@@ -55,6 +57,7 @@ export default function SoundEventAnnotationTags({
         <AddTagButton
           variant="primary"
           onAdd={onAddTag}
+          onCreate={onCreateTag}
           filter={tagFilter}
           text="Add tags"
           placeholder="Add tags..."

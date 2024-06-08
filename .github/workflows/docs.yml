@@ -10,15 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup PDM
-        uses: pdm-project/setup-pdm@v3
-        with:
-          python-version: "3.11"
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v3
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - name: Install dependencies
         run: |
           cd back
-          pdm install --dev --group docs
+          rye sync
       - uses: actions/cache@v3
         with:
           key: mkdocs-material-${{ env.cache_id }}
@@ -27,4 +25,4 @@ jobs:
             mkdocs-material-
       - run: |
           cd back
-          pdm run mkdocs gh-deploy --force
+          rye run mkdocs gh-deploy --force

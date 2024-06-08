@@ -1,5 +1,6 @@
 """REST API routes for notes."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -22,10 +23,13 @@ notes_router = APIRouter()
 )
 async def get_notes(
     session: Session,
+    filter: Annotated[
+        NoteFilter,  # type: ignore
+        Depends(NoteFilter),
+    ],
     limit: Limit = 100,
     offset: Offset = 0,
     sort_by: str | None = "-created_on",
-    filter: NoteFilter = Depends(NoteFilter),  # type: ignore
 ):
     """Get all tags."""
     notes, total = await api.notes.get_many(

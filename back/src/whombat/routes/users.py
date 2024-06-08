@@ -1,5 +1,7 @@
 """Module containing the router for the Auth."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from whombat.routes.dependencies.auth import get_users_api
@@ -24,7 +26,7 @@ def get_users_router(settings: WhombatSettings) -> APIRouter:
     @users_router.post("/first/", response_model=User)
     async def create_first_user(
         data: UserCreate,
-        user_manager: UserManager = Depends(get_user_manager),
+        user_manager: Annotated[UserManager, Depends(get_user_manager)],
     ):
         """Create the first user."""
         if await user_manager.user_db.has_user():

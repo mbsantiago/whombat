@@ -56,11 +56,11 @@ Ready to contribute? Here's how to set up `whombat` for local development.
        git clone git@github.com:your_name_here/whombat.git
        ```
 
-3. We recommend the use of [pdm](https://pdm-project.org/latest/) to manage the
-   dev environment. Once pdm is installed
+3. We recommend the use of [rye](https://rye-up.com/) to manage the
+   dev environment. Once rye is installed
 
        ```{bash}
-       pdm install
+       rye sync
        ```
 
 4. Create a branch for local development
@@ -75,8 +75,8 @@ Ready to contribute? Here's how to set up `whombat` for local development.
    tests.
 
        ```{bash}
-       pdm run make test
-       pdm run make lint
+       make test
+       make lint
        ```
 
 6. Commit your changes and push your branch to GitHub
@@ -104,5 +104,5 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests
 
 ```{bash}
-pdm run pytest tests.test_api
+rye run pytest tests.test_api
 ```

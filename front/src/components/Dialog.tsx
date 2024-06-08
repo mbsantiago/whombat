@@ -11,11 +11,13 @@ export default function Dialog({
   children,
   label,
   open = false,
+  width = "max-w-md",
   ...rest
 }: {
   title?: ReactNode;
   label: ReactNode;
   open?: boolean;
+  width?: string;
   children: ({ close }: { close: () => void }) => ReactNode;
 } & Omit<ComponentProps<typeof Button>, "onClick" | "title" | "children">) {
   let [isOpen, setIsOpen] = useState(open);
@@ -25,11 +27,11 @@ export default function Dialog({
         {label}
       </Button>
       <DialogOverlay
-        title={<div className="max-w-md">{title}</div>}
+        title={<div>{title}</div>}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       >
-        {({ close }) => <div className="max-w-md">{children({ close })}</div>}
+        {({ close }) => <div className={width}>{children({ close })}</div>}
       </DialogOverlay>
     </>
   );

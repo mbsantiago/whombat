@@ -109,7 +109,9 @@ async def _create_sound_event_predictions(
 
     missing = [
         (s, ca_uuid)
-        for s, ca_uuid in zip(sound_events_predictions, clip_prediction_uuids)
+        for s, ca_uuid in zip(
+            sound_events_predictions, clip_prediction_uuids, strict=False
+        )
         if s.uuid not in mapping
     ]
     if not missing:

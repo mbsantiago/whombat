@@ -1,5 +1,6 @@
 """Authentication dependencies."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import Depends
@@ -21,7 +22,7 @@ def get_access_token_db(
 
 
 async def get_database_strategy(
-    token_db: auth.TokenDatabase = Depends(get_access_token_db),
+    token_db: Annotated[auth.TokenDatabase, Depends(get_access_token_db)],
 ):
     """Get the authentication strategy."""
     return auth.get_database_strategy(token_db)

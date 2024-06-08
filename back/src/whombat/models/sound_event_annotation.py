@@ -38,7 +38,9 @@ class SoundEventAnnotation(Base):
         The sound event annotated by the annotation.
     tags
         A list of tags associated with the annotation.
-    notes
+
+    Notes
+    -----
         A list of notes associated with the annotation.
     clip_annotation
         The clip annotation to which the annotation belongs.

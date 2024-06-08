@@ -47,8 +47,8 @@ export type SpectrogramState = {
 export type SpectrogramControls = {
   reset: () => void;
   zoom: (window: SpectrogramWindow) => void;
-  scale: ({ time = 1, freq = 1 }: { time?: number; freq?: number }) => void;
-  shift({ time = 0, freq = 0 }: { time?: number; freq?: number }): void;
+  scale: ({ time , freq }: { time?: number; freq?: number }) => void;
+  shift({ time , freq }: { time?: number; freq?: number }): void;
   centerOn: ({ time, freq }: { time?: number; freq?: number }) => void;
   setParameters: (parameters: SpectrogramParameters) => void;
   resetParameters: () => void;

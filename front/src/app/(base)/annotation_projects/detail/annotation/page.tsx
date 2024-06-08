@@ -1,6 +1,7 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import UserContext from "@/app/(base)/context";
@@ -12,7 +13,8 @@ import { changeURLParam } from "@/utils/url";
 
 import AnnotationProjectContext from "../context";
 
-import type { AnnotationTask, SpectrogramParameters } from "@/types";
+import api from "@/app/api";
+import type { AnnotationTask, SpectrogramParameters, Tag } from "@/types";
 
 export default function Page() {
   const search = useSearchParams();
@@ -39,6 +41,12 @@ export default function Page() {
     },
     [setParameters],
   );
+
+  const { mutate: handleTagCreate } = useMutation({
+    mutationFn: async (tag: Tag) => {
+      return await api.annotationProjects.addTag(project, tag);
+    },
+  });
 
   const onChangeTask = useCallback(
     (task: AnnotationTask) => {
@@ -89,6 +97,7 @@ export default function Page() {
       onCompleteTask={handleCompleteTask}
       onRejectTask={handleRejectTask}
       onVerifyTask={handleVerifyTask}
+      onCreateTag={handleTagCreate}
     />
   );
 }

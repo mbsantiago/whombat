@@ -1,5 +1,6 @@
 """REST API routes for sound events."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -35,10 +36,10 @@ async def get_sound_event_recording(
 )
 async def get_sound_events(
     session: Session,
+    filter: Annotated[SoundEventFilter, Depends(SoundEventFilter)],  # type: ignore
     limit: Limit = 10,
     offset: Offset = 0,
     sort_by: str = "-created_on",
-    filter: SoundEventFilter = Depends(SoundEventFilter),  # type: ignore
 ):
     """Get a page of sound events."""
     datasets, total = await api.sound_events.get_many(

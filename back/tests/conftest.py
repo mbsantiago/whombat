@@ -124,31 +124,19 @@ def random_string():
     return "".join(random.choice(options) for _ in range(10))
 
 
-def write_random_wav(
+def write_random_wave(
     path: Path,
     samplerate: int = 22100,
     duration: float = 0.1,
     channels: int = 1,
-    bit_depth: int = 16,
-) -> None:
-    """Write a random wav file to disk."""
+    fmt: str = "WAV",
+    subtype: Optional[str] = None,
+):
+    """Write a random wave file to disk."""
     frames = int(samplerate * duration)
     shape = (frames, channels)
-    wav = np.random.random(size=shape).astype(np.float32)
-
-    sub_type = "PCM_16"
-    if bit_depth == 16:
-        sub_type = "PCM_16"
-    elif bit_depth == 32:
-        sub_type = "PCM_32"
-    elif bit_depth == 24:
-        sub_type = "PCM_24"
-    elif bit_depth == 8:
-        sub_type = "PCM_S8"
-    else:
-        raise ValueError("Unsupported bit depth.")
-
-    sf.write(path, wav, samplerate, subtype=sub_type)
+    wav = np.random.random(size=shape)
+    sf.write(path, wav, samplerate, format=fmt, subtype=subtype)
 
 
 @pytest.fixture
@@ -160,7 +148,9 @@ def random_wav_factory(audio_dir: Path):
         samplerate: int = 22100,
         duration: float = 0.1,
         channels: int = 1,
-        bit_depth: int = 16,
+        bit_depth: Optional[int] = None,
+        fmt: str = "WAV",
+        subtype: Optional[str] = None,
     ) -> Path:
         if path is None:
             path = audio_dir / (random_string() + ".wav")
@@ -169,12 +159,17 @@ def random_wav_factory(audio_dir: Path):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        write_random_wav(
+        if bit_depth is not None:
+            fmt = "WAV"
+            subtype = f"PCM_{bit_depth}"
+
+        write_random_wave(
             path=path,
             samplerate=samplerate,
             duration=duration,
             channels=channels,
-            bit_depth=bit_depth,
+            fmt=fmt,
+            subtype=subtype,
         )
 
         return path

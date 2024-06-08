@@ -1,5 +1,6 @@
 """REST API routes for recordings."""
 
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -17,7 +18,6 @@ __all__ = [
 
 def get_recording_router(settings: WhombatSettings) -> APIRouter:
     """Get the API router for recordings."""
-
     active_user = get_current_user_dependency(settings)
 
     recording_router = APIRouter()
@@ -29,10 +29,13 @@ def get_recording_router(settings: WhombatSettings) -> APIRouter:
     )
     async def get_recordings(
         session: Session,
+        filter: Annotated[
+            RecordingFilter,  # type: ignore
+            Depends(RecordingFilter),
+        ],
         limit: Limit = 10,
         offset: Offset = 0,
         sort_by: str = "-created_on",
-        filter: RecordingFilter = Depends(RecordingFilter),  # type: ignore
     ):
         """Get a page of datasets."""
         datasets, total = await api.recordings.get_many(
@@ -122,7 +125,7 @@ def get_recording_router(settings: WhombatSettings) -> APIRouter:
         session: Session,
         recording_uuid: UUID,
         data: schemas.NoteCreate,
-        user: schemas.SimpleUser = Depends(active_user),
+        user: Annotated[schemas.SimpleUser, Depends(active_user)],
     ):
         """Add a note to a recording."""
         recording = await api.recordings.get(session, recording_uuid)

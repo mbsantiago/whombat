@@ -1,13 +1,13 @@
 [project]
 name = "Whombat"
-version = "0.4.1"
+version = "0.5.1"
 description = "Audio Annotation Tool"
 authors = [{ name = "Santiago Martinez", email = "santiago.mbal@gmail.com" }]
 dependencies = [
     "uvicorn[standard]>=0.20.0",
     "aiosqlite>=0.18.0",
     "passlib>=1.7.4",
-    "soundevent[all]>=1.3.5",
+    "soundevent[all]>=2.0",
     "fastapi>=0.101.0",
     "pydantic-settings>=2.0.2",
     "fastapi-users[sqlalchemy]>=12.1.1",
@@ -42,36 +42,36 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-artifacts = [
-    "src/whombat/migrations/versions/",
-    "src/whombat/statics/",
-]
-
-[tool.black]
-line-length = 79
+artifacts = ["src/whombat/migrations/versions/", "src/whombat/statics/"]
 
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
-include = ["src", "tests"]
-
-[tool.mypy]
-mypy_path = ".venv/lib/python3.11/site-packages"
+include = ["src"]
 
 [tool.pydocstyle]
 convention = "numpy"
-
-[tool.isort]
-profile = "black"
-line_length = 79
 
 [tool.ruff]
 line-length = 79
 target-version = "py311"
 
-[tool.pdm]
-[tool.pdm.dev-dependencies]
-dev = [
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 60
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "B", "Q", "I", "D"]
+ignore = ["D1"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.isort]
+known-local-folder = ["src", "whombat"]
+
+[tool.rye]
+dev-dependencies = [
     "pytest>=7.2.2",
     "coverage>=7.2.1",
     "black>=23.1.0",
@@ -79,7 +79,7 @@ dev = [
     "httpx>=0.23.3",
     "tox>=4.7.0",
     "flake8>=6.1.0",
-    "pyright>=1.1.320",
+    "pyright>=1.1.363",
     "ruff>=0.1.7",
     "icecream>=2.1.3",
     "pytest-xdist>=3.5.0",
