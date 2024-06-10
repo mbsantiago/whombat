@@ -3,7 +3,7 @@
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import Select
+from sqlalchemy import Select, or_
 
 from whombat import models
 from whombat.filters import base
@@ -12,6 +12,7 @@ __all__ = [
     "AnnotationProjectFilter",
     "DatasetFilter",
     "AnnotationTaskFilter",
+    "SearchRecordingsFilter",
 ]
 
 
@@ -118,6 +119,25 @@ class IsRejectedFilter(base.Filter):
         )
 
 
+class IsCompletedFilter(base.Filter):
+    """Filter for tasks if rejected."""
+
+    eq: bool | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if self.eq is None:
+            return query
+
+        return query.where(
+            models.AnnotationTask.status_badges.any(
+                models.AnnotationStatusBadge.state
+                == data.AnnotationState.completed,
+            )
+            == self.eq,
+        )
+
+
 class IsAssignedFilter(base.Filter):
     """Filter for tasks if assigned."""
 
@@ -206,11 +226,41 @@ class DatasetFilter(base.Filter):
         )
 
 
+class SearchRecordingsFilter(base.Filter):
+    """Filter recordings by the dataset they are in."""
+
+    search_recordings: str | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+
+        query = (
+            query.join(
+                models.ClipAnnotation,
+                models.AnnotationTask.clip_annotation_id == models.ClipAnnotation.id,
+            )
+            .join(
+                models.Clip,
+                models.ClipAnnotation.clip_id == models.Clip.id,
+            )
+            .join(
+                models.Recording,
+                models.Recording.id == models.Clip.recording_id,
+            )
+        )
+        fields = [models.Recording.path]
+
+        term = f"%{self.search_recordings}%"
+        return query.where(or_(*[field.ilike(term) for field in fields]))
+
+
 AnnotationTaskFilter = base.combine(
+    SearchRecordingsFilter,
     assigned_to=AssignedToFilter,
     pending=PendingFilter,
     verified=IsVerifiedFilter,
     rejected=IsRejectedFilter,
+    completed=IsCompletedFilter,
     assigned=IsAssignedFilter,
     annotation_project=AnnotationProjectFilter,
     dataset=DatasetFilter,
