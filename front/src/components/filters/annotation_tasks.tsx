@@ -27,7 +27,7 @@ const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
     ),
   },
       {
-    name: "Rejected",
+    name: "Needs Review",
     field: "rejected",
     selector: ({ setFilter }) => (
       <BooleanFilter

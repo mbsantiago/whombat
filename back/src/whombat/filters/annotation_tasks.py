@@ -233,7 +233,6 @@ class SearchRecordingsFilter(base.Filter):
 
     def filter(self, query: Select) -> Select:
         """Filter the query."""
-
         query = (
             query.join(
                 models.ClipAnnotation,
