@@ -207,6 +207,8 @@ export const AnnotationTaskSchema = z.object({
   uuid: z.string().uuid(),
   status_badges: z.array(AnnotationStatusBadgeSchema).nullish(),
   created_on: z.coerce.date(),
+  clip: ClipSchema.nullish(),
+  clip_annotation: ClipAnnotationSchema.nullish(),
 });
 
 export const AnnotationProjectSchema = z.object({

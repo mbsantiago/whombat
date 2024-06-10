@@ -100,12 +100,14 @@ class AnnotationTask(Base):
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
         repr=False,
+        lazy="joined",
     )
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="annotation_task",
         cascade="all, delete-orphan",
         init=False,
         single_parent=True,
+        lazy="joined",
     )
     status_badges: orm.Mapped[list["AnnotationStatusBadge"]] = (
         orm.relationship(
