@@ -115,12 +115,13 @@ export default function ClipAnnotationSpectrogram({
     [onSelectAnnotation],
   );
 
-  const { seek } = audio;
+  const { seek, play } = audio;
   const handleDoubleClick = useCallback(
     ({ position }: { position: Position }) => {
       seek(position.time);
+      play();
     },
-    [seek],
+    [seek, play],
   );
 
   const spectrogram = useSpectrogram({
@@ -249,7 +250,7 @@ export default function ClipAnnotationSpectrogram({
         )}
         {withPlayer && <Player {...audio} />}
       </div>
-      <div className="relative overflow-hidden rounded-md" style={{ height }}>
+      <div className="overflow-hidden relative rounded-md" style={{ height }}>
         <SpectrogramTags
           disabled={disabled}
           tags={annotate.tags}

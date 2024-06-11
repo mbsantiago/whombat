@@ -1,11 +1,9 @@
+import { useHotkeys } from "react-hotkeys-hook";
 import { useState } from "react";
 import { HelpIcon } from "@/components/icons";
 import { DialogOverlay } from "@/components/Dialog";
 import KeyboardKey from "@/components/KeyboardKey";
 import Button from "@/components/Button";
-import { useKeyPressEvent } from "react-use";
-
-import useKeyFilter from "@/hooks/utils/useKeyFilter";
 
 type Shortcut = {
   label: string;
@@ -19,7 +17,7 @@ export default function ShortcutHelper({
   shortcuts?: Shortcut[];
 } = {}) {
   const [show, setShow] = useState(false);
-  useKeyPressEvent(useKeyFilter({ key: "h" }), () => setShow((v) => !v));
+  useHotkeys("h", () => setShow((v) => !v));
 
   return (
     <>

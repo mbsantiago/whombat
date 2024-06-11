@@ -1,6 +1,4 @@
-import { useKeyPressEvent } from "react-use";
-
-import useKeyFilter from "@/hooks/utils/useKeyFilter";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
 
@@ -17,8 +15,5 @@ export default function useAnnotateClipKeyShortcuts(props: {
   enabled?: boolean;
 }) {
   const { onTogglePlay, enabled = true } = props;
-  useKeyPressEvent(
-    useKeyFilter({ enabled, key: " ", preventDefault: true }),
-    onTogglePlay,
-  );
+  useHotkeys(" ", onTogglePlay, { enabled });
 }
