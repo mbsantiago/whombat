@@ -32,7 +32,7 @@ export default function useViewportPosition({
 
   const positionProps = useMemo(() => {
     return {
-      onMouseMove: (e: React.MouseEvent) => {
+      onPointerMove: (e: React.PointerEvent) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;

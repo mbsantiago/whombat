@@ -7,8 +7,14 @@ import type {
   SpectrogramWindow,
 } from "@/types";
 
-// Size of the target initial spectrogram in pixels.
+/** Size of the target initial spectrogram in pixels. */
 const TARGET_INITIAL_SIZE = 512 * 1024;
+
+/** Minimum window bandwidth in Hz. */
+const MIN_WINDOW_BANDWIDTH = 0.1;
+
+/** Minimum window duration in seconds */
+const MIN_WINDOW_DURATION = 0.001;
 
 export function getInitialViewingWindow({
   startTime,
@@ -161,8 +167,8 @@ export function adjustWindowToBounds(
   window: SpectrogramWindow,
   bounds: SpectrogramWindow,
 ): SpectrogramWindow {
-  const duration = window.time.max - window.time.min;
-  const bandwidth = window.freq.max - window.freq.min;
+  let duration = window.time.max - window.time.min;
+  let bandwidth = window.freq.max - window.freq.min;
 
   const centerTime = (window.time.max + window.time.min) / 2;
   const centerFreq = (window.freq.max + window.freq.min) / 2;
@@ -176,6 +182,9 @@ export function adjustWindowToBounds(
     Math.max(centerFreq, bounds.freq.min + bandwidth / 2),
     bounds.freq.max - bandwidth / 2,
   );
+
+  duration = Math.max(duration, MIN_WINDOW_DURATION);
+  bandwidth = Math.max(bandwidth, MIN_WINDOW_BANDWIDTH);
 
   const adjustedWindow = {
     time: {
@@ -248,6 +257,22 @@ export function scaleWindow(
     freq: {
       min: freqCenter - height / 2,
       max: freqCenter + height / 2,
+    },
+  };
+}
+
+export function expandWindow(
+  window: SpectrogramWindow,
+  { time = 0, freq = 0 }: { time?: number; freq?: number } = {},
+): SpectrogramWindow {
+  return {
+    time: {
+      min: window.time.min - time,
+      max: window.time.max + time,
+    },
+    freq: {
+      min: window.freq.min - freq,
+      max: window.freq.max + freq,
     },
   };
 }

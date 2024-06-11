@@ -9,6 +9,10 @@ import useSpectrogramBar from "@/hooks/spectrogram/useSpectrogramBar";
 
 import type { SpectrogramWindow, Position, ScrollEvent } from "@/types";
 
+/**
+ * A draggable bar component used to interact with and navigate a spectrogram
+ * visualization.
+ */
 export default function SpectrogramBar({
   bounds,
   viewport,
@@ -18,10 +22,15 @@ export default function SpectrogramBar({
   onPress,
   onScroll,
 }: {
+  /** The boundaries within which the bar can move. */
   bounds: SpectrogramWindow;
+  /** The current viewport of the spectrogram. */
   viewport: SpectrogramWindow;
+  /** A callback function triggered when the bar starts moving. */
   onMoveStart?: (event: { position: Position } & MoveStartEvent) => void;
+  /** A callback function triggered when the bar finishes moving. */
   onMoveEnd?: (event: { position: Position } & MoveEndEvent) => void;
+  /** A callback function triggered as the bar is being moved. */
   onMove?: (
     event: {
       position: Position;
@@ -29,7 +38,9 @@ export default function SpectrogramBar({
       shift: Position;
     } & MoveMoveEvent,
   ) => void;
+  /** A callback function triggered when the bar is pressed. */
   onPress?: (event: { position: Position } & PressEvent) => void;
+  /** A callback function triggered when the bar is scrolled. */
   onScroll?: (event: ScrollEvent) => void;
 }) {
   const { ref, position, props } = useSpectrogramBar({

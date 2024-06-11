@@ -69,7 +69,7 @@ export default function useViewportMove({
         ...e,
       });
     },
-    [onMove], // eslint-disable-line
+    [onMove, cursorPosition.current], // eslint-disable-line
   );
 
   const handleMoveEnd = useCallback(

@@ -1,12 +1,16 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, SetStateAction } from "react";
 
 export interface QueueMethods<T> {
-  push: (item: T) => void;
-  pop: () => T | null;
-  replace: (item: T) => void;
-  clear: () => void;
+  push(item: T): void;
+  pop(): T | null;
+  replace(action: SetStateAction<T>): void;
+  clear(): void;
   current: T | null;
   size: number;
+}
+
+function isCallback<T>(action: SetStateAction<T>): action is (prev: T) => T {
+  return typeof action === "function";
 }
 
 export default function useLifoQueue<T>(
@@ -30,9 +34,15 @@ export default function useLifoQueue<T>(
     [maxSize],
   );
 
-  const replace = useCallback((item: T) => {
-    queue.current[queue.current.length - 1] = item;
-    setState({ current: item, size: queue.current.length });
+  const replace = useCallback((item: SetStateAction<T>) => {
+    if (isCallback(item)) {
+      let newItem: T = item(queue.current[queue.current.length - 1]);
+      queue.current[queue.current.length - 1] = newItem;
+      setState({ current: newItem, size: queue.current.length });
+    } else {
+      queue.current[queue.current.length - 1] = item;
+      setState({ current: item, size: queue.current.length });
+    }
   }, []);
 
   const pop = useCallback(() => {

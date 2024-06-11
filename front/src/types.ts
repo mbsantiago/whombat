@@ -171,8 +171,12 @@ export type IntegerFilter = z.input<typeof IntegerFilterSchema>;
 export type ScrollEvent = {
   shift: Position;
   type: "wheel";
+  deltaX: number;
+  deltaY: number;
   shiftKey: boolean;
   ctrlKey: boolean;
   metaKey: boolean;
   altKey: boolean;
+  preventDefault: () => void;
+  stopPropagation: () => void;
 };

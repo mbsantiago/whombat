@@ -9,6 +9,7 @@ import type {
 } from "react-aria";
 
 import { getViewportPosition } from "@/utils/windows";
+import useCaptureScroll from "@/hooks/utils/useCaptureScroll";
 import useElementSize from "@/hooks/utils/useElementSize";
 import useViewportMove from "@/hooks/interactions/useViewportMove";
 import useViewportPosition from "@/hooks/interactions/useViewportPosition";
@@ -47,10 +48,10 @@ export default function useSpectrogramBar({
   const { ref, size } = useElementSize<HTMLDivElement>();
 
   const { positionProps, cursorPosition } = useViewportPosition({
-    viewport,
+    viewport: bounds,
   });
 
-  const { pressProps: barPressProps } = useViewportPress({
+  const { pressProps } = useViewportPress({
     onPress,
     cursorPosition,
   });
@@ -60,7 +61,7 @@ export default function useSpectrogramBar({
     onScroll,
   });
 
-  const { moveProps: thumbProps } = useViewportMove({
+  const { moveProps } = useViewportMove({
     viewport: bounds,
     cursorPosition,
     onMoveStart,
@@ -77,12 +78,9 @@ export default function useSpectrogramBar({
     });
   }, [viewport, bounds, size]);
 
-  const props = mergeProps(
-    barPressProps,
-    positionProps,
-    scrollProps,
-    thumbProps,
-  );
+  const props = mergeProps(pressProps, moveProps, positionProps, scrollProps);
+
+  useCaptureScroll({ ref });
 
   return {
     position,
