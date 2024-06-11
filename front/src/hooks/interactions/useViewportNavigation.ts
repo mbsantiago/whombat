@@ -15,11 +15,24 @@ export default function useViewportNavigation({
   save,
 }: Pick<ViewportControler, "centerOn" | "expand" | "shift" | "save">) {
   const onScroll = useCallback(
-    ({ shift: { time, freq }, ctrlKey }: ScrollEvent) => {
+    ({
+      deltaX,
+      deltaY,
+      timeFrac,
+      freqFrac,
+      ctrlKey,
+      shiftKey,
+    }: ScrollEvent) => {
       if (ctrlKey) {
-        expand({ time, freq });
+        expand({
+          time: timeFrac * (shiftKey ? deltaX : deltaY),
+          freq: freqFrac * (shiftKey ? deltaY : deltaX),
+        });
       } else {
-        shift({ time, freq: -freq });
+        shift({
+          time: timeFrac * (shiftKey ? deltaY : deltaX),
+          freq: -freqFrac * (shiftKey ? deltaX : deltaY),
+        });
       }
     },
     [expand, shift],
