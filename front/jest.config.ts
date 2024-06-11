@@ -3,7 +3,7 @@
  * https://jestjs.io/docs/configuration
  */
 
-export default {
+const config = {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -144,7 +144,7 @@ export default {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-node",
+  testEnvironment: "jsdom",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -174,14 +174,7 @@ export default {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
-    // '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
-    "^.+\\.tsx?$": [
-      "ts-jest",
-      {
-        // ts-jest configuration goes here
-      },
-    ],
+    "^.+\\.tsx?$": ["ts-jest", {}],
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
@@ -202,3 +195,5 @@ export default {
   // Whether to use watchman for file crawling
   // watchman: true,
 };
+
+export default config;

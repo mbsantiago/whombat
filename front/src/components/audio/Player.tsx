@@ -43,9 +43,9 @@ const COMMON_BUTTON_CLASSES =
  * Player component represents the audio player.
  *
  * @component
- * @param {object} props - Component properties.
- * @param {PlayerState} props.state - The state of the audio player.
- * @param {PlayerControls} props.controls - The controls for the audio player.
+ * @param {object} positionProps - Component properties.
+ * @param {PlayerState} positionProps.state - The state of the audio player.
+ * @param {PlayerControls} positionProps.controls - The controls for the audio player.
  */
 export default function Player(props: PlayerState & PlayerControls) {
   const {

@@ -5,9 +5,7 @@
     "plugin:import/typescript",
     "plugin:storybook/recommended"
   ],
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "import/no-unresolved": "error"
   }

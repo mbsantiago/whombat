@@ -167,3 +167,12 @@ export type StringFilter = z.input<typeof StringFilterSchema>;
 export type PredictedTagFilter = z.input<typeof PredictedTagFilterSchema>;
 
 export type IntegerFilter = z.input<typeof IntegerFilterSchema>;
+
+export type ScrollEvent = {
+  shift: Position;
+  type: "wheel";
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  altKey: boolean;
+};
