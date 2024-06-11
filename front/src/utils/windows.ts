@@ -5,6 +5,7 @@ import type {
   Interval,
   SpectrogramParameters,
   SpectrogramWindow,
+  Position,
 } from "@/types";
 
 /** Size of the target initial spectrogram in pixels. */
@@ -273,6 +274,23 @@ export function expandWindow(
     freq: {
       min: window.freq.min - freq,
       max: window.freq.max + freq,
+    },
+  };
+}
+
+export function zoomWindowToPosition(
+  window: SpectrogramWindow,
+  position: Position,
+  factor: number = 1,
+): SpectrogramWindow {
+  return {
+    time: {
+      min: factor * window.time.min + (1 - factor) * position.time,
+      max: factor * window.time.max + (1 - factor) * position.time,
+    },
+    freq: {
+      min: factor * window.freq.min + (1 - factor) * position.freq,
+      max: factor * window.freq.max + (1 - factor) * position.freq,
     },
   };
 }

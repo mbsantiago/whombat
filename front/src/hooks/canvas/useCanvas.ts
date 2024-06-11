@@ -8,11 +8,15 @@ import type {
 } from "react-aria";
 
 import type { SpectrogramWindow, Position, ScrollEvent } from "@/types";
+import useCaptureScroll from "@/hooks/utils/useCaptureScroll";
 import useCanvasDraw from "@/hooks/draw/useCanvas";
 import useViewportMove from "@/hooks/interactions/useViewportMove";
 import useViewportPosition from "@/hooks/interactions/useViewportPosition";
 import useViewportPress from "@/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/hooks/interactions/useViewportScroll";
+import useViewportDoublePress, {
+  type DoublePressEvent,
+} from "@/hooks/interactions/useViewportDoublePress";
 
 /**
  * A comprehensive custom React hook for managing various interactions and
@@ -46,6 +50,7 @@ export default function useCanvas({
   onMove,
   onPress,
   onScroll,
+  onDoubleClick,
 }: {
   drawFn: (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => void;
   viewport: SpectrogramWindow;
@@ -61,6 +66,7 @@ export default function useCanvas({
   ) => void;
   onPress?: (event: { position: Position } & PressEvent) => void;
   onScroll?: (event: ScrollEvent) => void;
+  onDoubleClick?: (event: DoublePressEvent) => void;
 }): {
   ref: React.RefObject<HTMLCanvasElement>;
   props: React.DOMAttributes<HTMLCanvasElement>;
@@ -85,12 +91,24 @@ export default function useCanvas({
     cursorPosition,
   });
 
+  const { doublePressProps } = useViewportDoublePress({
+    onDoublePress: onDoubleClick,
+    cursorPosition,
+  });
+
   const { scrollProps } = useViewportScroll({
+    cursorPosition,
     viewport,
     onScroll,
   });
 
-  const props = mergeProps(moveProps, pressProps, scrollProps, positionProps);
+  const props = mergeProps(
+    moveProps,
+    pressProps,
+    scrollProps,
+    doublePressProps,
+    positionProps,
+  );
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
@@ -98,6 +116,8 @@ export default function useCanvas({
     },
     [drawFn, viewport],
   );
+
+  useCaptureScroll({ ref });
 
   useCanvasDraw({ ref, draw });
 

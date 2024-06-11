@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { Interval, SpectrogramWindow } from "@/types";
+import type { Interval, SpectrogramWindow, Position } from "@/types";
 import useLifoQueue from "@/hooks/utils/useLifoQueue";
 import {
   adjustWindowToBounds,
@@ -7,6 +7,7 @@ import {
   scaleWindow,
   shiftWindow,
   expandWindow,
+  zoomWindowToPosition,
 } from "@/utils/windows";
 
 /**
@@ -31,8 +32,15 @@ export type ViewportControler = {
   /** Shifts the viewport by the given amounts (time and/or frequency).*/
   shift({ time, freq }: { time?: number; freq?: number }): void;
   /** Centers the viewport on the specified time and/or frequency.*/
-  centerOn: ({ time, freq }: { time?: number; freq?: number }) => void;
+  centerOn({ time, freq }: { time?: number; freq?: number }): void;
   /** Resets the viewport to its initial position and dimensions.*/
+  zoomToPosition({
+    position,
+    factor,
+  }: {
+    position: Position;
+    factor: number;
+  }): void;
   reset(): void;
   /** Saves the current viewport position to the history stack.*/
   save(): void;
@@ -128,6 +136,18 @@ export default function useViewport({
     }
   }, [pop, size]);
 
+  const zoomToPosition = useCallback(
+    ({ position, factor }: { position: Position; factor: number }) => {
+      replace((prev) =>
+        adjustWindowToBounds(
+          zoomWindowToPosition(prev, position, factor),
+          bounds,
+        ),
+      );
+    },
+    [replace, bounds],
+  );
+
   const save = useCallback(() => {
     if (current != null) {
       push(current);
@@ -144,6 +164,7 @@ export default function useViewport({
     shift,
     expand,
     centerOn,
+    zoomToPosition,
     reset,
     back,
     save,

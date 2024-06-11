@@ -6,6 +6,7 @@ import type {
 } from "react-aria";
 
 import type { SpectrogramWindow, Position, ScrollEvent } from "@/types";
+import type { DoublePressEvent } from "@/hooks/interactions/useViewportDoublePress";
 import useCanvas from "@/hooks/canvas/useCanvas";
 
 /**
@@ -26,27 +27,36 @@ export default function Canvas({
   onMove,
   onPress,
   onScroll,
+  onDoubleClick,
 }: {
   /** The function to use for drawing on the canvas. */
   drawFn: (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => void;
   /** The current viewport of the spectrogram. */
   viewport: SpectrogramWindow;
   /** The height of the canvas. */
-  height: number;
+  height: number | string;
   /** A callback that is called when the cursor hovers over the canvas. */
   onHover?: (position: Position) => void;
-  /** A callback that is called when the user starts moving the cursor on the canvas. */
+  /** A callback that is called when the user starts moving the cursor on the
+   * canvas. */
   onMoveStart?: (event: { position: Position } & MoveStartEvent) => void;
-  /** A callback that is called when the user stops moving the cursor on the canvas. */
+  /** A callback that is called when the user stops moving the cursor on the
+   * canvas. */
   onMoveEnd?: (event: { position: Position } & MoveEndEvent) => void;
-  /** A callback that is called when the user moves the cursor on the canvas. */
+  /** A callback that is called when the user moves the cursor on the canvas.
+   * */
   onMove?: (
-    event: { position: Position; initial: Position } & MoveMoveEvent,
+    event: {
+      position: Position;
+      initial: Position;
+      shift: Position;
+    } & MoveMoveEvent,
   ) => void;
   /** A callback that is called when the user presses the canvas. */
   onPress?: (event: { position: Position } & PressEvent) => void;
   /** A callback that is called when the user scrolls the canvas. */
   onScroll?: (event: ScrollEvent) => void;
+  onDoubleClick?: (event: DoublePressEvent) => void;
 }) {
   const { ref, props } = useCanvas({
     drawFn,
@@ -57,6 +67,7 @@ export default function Canvas({
     onMove,
     onPress,
     onScroll,
+    onDoubleClick,
   });
   return (
     <div className="overflow-hidden rounded-md" style={{ height }}>

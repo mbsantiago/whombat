@@ -57,6 +57,7 @@ export default function useSpectrogramBar({
   });
 
   const { scrollProps } = useViewportScroll({
+    cursorPosition,
     viewport: bounds,
     onScroll,
   });

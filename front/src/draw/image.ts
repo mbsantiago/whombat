@@ -8,8 +8,7 @@ const COLORS = {
   FOREGROUND: "#212529",
 };
 
-/* Break a text into multiple lines of a given maximum width
- */
+/* Break a text into multiple lines of a given maximum width */
 export function getLines(
   ctx: CanvasRenderingContext2D,
   text: string,

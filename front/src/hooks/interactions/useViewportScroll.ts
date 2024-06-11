@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { SpectrogramWindow, ScrollEvent } from "@/types";
+import type { SpectrogramWindow, ScrollEvent, Position } from "@/types";
 
 /**
  * A custom React hook for handling scroll events on an HTML element.
@@ -19,19 +19,16 @@ import type { SpectrogramWindow, ScrollEvent } from "@/types";
  * return <canvas {...scrollProps} />
  */
 export default function useViewportScroll({
+  cursorPosition,
   viewport,
   onScroll,
-  ySensitivity = 0.01,
-  xSensitivity = 0.05,
 }: {
+  /** A mutable reference to the current cursor position. */
+  cursorPosition: React.MutableRefObject<Position>;
   /** The current spectrogram window being displayed in the canvas. */
   viewport: SpectrogramWindow;
   /** The callback function to handle scroll events. */
   onScroll?: (event: ScrollEvent) => void;
-  /** The sensitivity of the scroll event in the frequency direction. */
-  ySensitivity?: number;
-  /** The sensitivity of the scroll event in the time direction. */
-  xSensitivity?: number;
 }) {
   const props = useMemo(() => {
     const handleScroll = (e: React.WheelEvent) => {
@@ -41,14 +38,11 @@ export default function useViewportScroll({
       const height = rect.height;
       const duration = viewport.time.max - viewport.time.min;
       const bandwidth = viewport.freq.max - viewport.freq.min;
-      const deltaX = e.shiftKey ? e.deltaY : e.deltaX;
-      const deltaY = e.shiftKey ? e.deltaX : e.deltaY;
 
       onScroll({
-        shift: {
-          time: ((duration * deltaX) / width) * xSensitivity,
-          freq: ((bandwidth * deltaY) / height) * ySensitivity,
-        },
+        position: cursorPosition.current,
+        timeFrac: duration / width,
+        freqFrac: bandwidth / height,
         type: "wheel",
         deltaX: e.deltaX,
         deltaY: e.deltaY,
@@ -64,7 +58,8 @@ export default function useViewportScroll({
     return {
       onWheelCapture: handleScroll,
     };
-  }, [onScroll, viewport, ySensitivity, xSensitivity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onScroll, viewport]);
 
   return { scrollProps: props };
 }

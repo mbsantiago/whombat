@@ -169,7 +169,9 @@ export type PredictedTagFilter = z.input<typeof PredictedTagFilterSchema>;
 export type IntegerFilter = z.input<typeof IntegerFilterSchema>;
 
 export type ScrollEvent = {
-  shift: Position;
+  position: Position;
+  timeFrac: number;
+  freqFrac: number;
   type: "wheel";
   deltaX: number;
   deltaY: number;
