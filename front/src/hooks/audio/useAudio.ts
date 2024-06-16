@@ -1,5 +1,36 @@
 import { useCallback, useState, useRef, useEffect } from "react";
 
+export type AudioController = {
+  /** Starts or resumes playback of the audio. */
+  play: () => void;
+  /** Pauses playback of the audio. */
+  pause: () => void;
+  /** Stops playback of the audio and resets the current time to 0. */
+  stop: () => void;
+  /** Sets the current playback time to the specified time in seconds. */
+  seek: (time: number) => void;
+  /** Sets the volume of the audio (0.0 to 1.0). */
+  setVolume: (volume: number) => void;
+  /** Toggles whether the audio will loop when it reaches the end. */
+  toggleLoop: () => void;
+  /** Toggles the playback state (play/pause). */
+  togglePlay: () => void;
+  /** The current volume level (0.0 to 1.0). */
+  volume: number;
+  /** The current playback time in seconds. */
+  currentTime: number;
+  /** Indicates whether the audio is set to loop. */
+  loop: boolean;
+  /** Indicates whether the audio is currently playing. */
+  isPlaying: boolean;
+};
+
+/**
+ * A custom React hook that provides comprehensive controls for playing audio.
+ * It manages an HTMLAudioElement under the hood, handling playback, pausing,
+ * seeking, volume control, and looping. Additionally, it supports a wide range
+ * of event callbacks for granular control and customization.
+ */
 export default function useAudio({
   url,
   onPlay,
@@ -15,33 +46,37 @@ export default function useAudio({
   onCanPlay,
   onCanPlayThrough,
 }: {
+  /** The URL of the audio file to play. */
   url: string;
+  /** A callback that is called when the audio starts playing. */
   onPlay?: () => void;
+  /** A callback that is called when the audio is paused. */
   onPause?: () => void;
+  /** A callback that is called when the audio reaches the end. */
   onEnded?: () => void;
+  /** A callback that is called when the audio encounters an error. */
   onError?: () => void;
+  /** A callback that is called when the audio's current time is updated. */
   onTimeUpdate?: (time: number) => void;
+  /** A callback that is called when the audio's volume is changed. */
   onVolumeChange?: (volume: number) => void;
+  /** A callback that is called when the audio starts seeking. */
   onSeeking?: () => void;
+  /** A callback that is called when the audio is waiting for data. */
   onWaiting?: () => void;
+  /** Callback function called when the browser starts loading the audio. */
   onLoadStart?: () => void;
+  /** Callback function called when the first frame of the audio has finished
+   * loading. */
   onLoadedData?: () => void;
+  /** Callback function called when the browser can start playing the audio. */
   onCanPlay?: () => void;
+  /** Callback function called when the browser estimates it can play the audio
+   * without buffering. */
   onCanPlayThrough?: () => void;
+  /** Callback function called when the audio is aborted. */
   onAbort?: () => void;
-}): {
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  toggleLoop: () => void;
-  togglePlay: () => void;
-  volume: number;
-  currentTime: number;
-  loop: boolean;
-  isPlaying: boolean;
-} {
+}): AudioController {
   const audio = useRef<HTMLAudioElement>(new Audio());
 
   const [time, setTime] = useState<number>(0);
