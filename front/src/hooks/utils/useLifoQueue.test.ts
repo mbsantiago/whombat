@@ -31,10 +31,19 @@ describe("useLifoQueue Hook", () => {
       result.current.push("C");
     });
 
-    expect(result.current.pop()).toBe("C");
-    expect(result.current.pop()).toBe("B");
-    expect(result.current.pop()).toBe("A");
-    expect(result.current.pop()).toBe(null); // Check for null when empty
+    const poppedValues: (string | null)[] = [];
+
+    act(() => {
+      poppedValues.push(result.current.pop());
+      poppedValues.push(result.current.pop());
+      poppedValues.push(result.current.pop());
+      poppedValues.push(result.current.pop());
+    });
+
+    expect(poppedValues[0]).toBe("C");
+    expect(poppedValues[1]).toBe("B");
+    expect(poppedValues[2]).toBe("A");
+    expect(poppedValues[3]).toBe(null); // Check for null when empty
   });
 
   it("should clear the queue", () => {
@@ -62,11 +71,14 @@ describe("useLifoQueue Hook", () => {
     expect(result.current.current).toBe(4);
     expect(result.current.size).toBe(3);
 
-    const poppedValues = [
-      result.current.pop(),
-      result.current.pop(),
-      result.current.pop(),
-    ];
+    const poppedValues: (number | null)[] = [];
+
+    act(() => {
+      poppedValues.push(result.current.pop());
+      poppedValues.push(result.current.pop());
+      poppedValues.push(result.current.pop());
+    });
+
     expect(poppedValues).toEqual([4, 3, 2]);
   });
 });
