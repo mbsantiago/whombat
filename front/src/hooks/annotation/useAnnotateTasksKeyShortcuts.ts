@@ -1,8 +1,6 @@
 import { useHotkeys } from "react-hotkeys-hook";
 
-import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
-
-export const ANNOTATE_TASKS_KEY_SHORTCUTS: KeyShortcut[] = [
+export const ANNOTATE_TASKS_KEY_SHORTCUTS = [
   {
     label: "Next",
     shortcut: "n",
