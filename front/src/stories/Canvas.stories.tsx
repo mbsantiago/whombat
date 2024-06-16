@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
-import useViewport from "@/hooks/window/useWindow";
 
+import useViewport from "@/hooks/window/useWindow";
 import Canvas from "@/components/spectrograms/Canvas";
-import type { SpectrogramWindow, ScrollEvent, Position } from "@/types";
 import drawImage from "@/draw/image";
+import type { SpectrogramWindow, ScrollEvent, Position } from "@/types";
 
 const meta: Meta<typeof Canvas> = {
   title: "Canvas",
@@ -36,6 +36,7 @@ export const Primary: Story = {
 
 const CanvasWithHooks = () => {
   const image = new Image();
+
   image.src =
     "https://upload.wikimedia.org/wikipedia/commons/5/5f/Testbeeld_MK9.png";
 
@@ -43,6 +44,7 @@ const CanvasWithHooks = () => {
     time: { min: 0, max: 1 },
     freq: { min: 0, max: 1 },
   };
+
   const initial = {
     time: { min: 0, max: 0.2 },
     freq: { min: 0, max: 0.5 },

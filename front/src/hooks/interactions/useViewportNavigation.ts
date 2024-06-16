@@ -5,7 +5,7 @@ import type {
   MoveEndEvent,
 } from "react-aria";
 import { useCallback } from "react";
-import type { ViewportControler } from "@/hooks/window/useWindow";
+import type { ViewportController } from "@/hooks/window/useWindow";
 import type { Position, ScrollEvent } from "@/types";
 
 export default function useViewportNavigation({
@@ -13,7 +13,12 @@ export default function useViewportNavigation({
   expand,
   shift,
   save,
-}: Pick<ViewportControler, "centerOn" | "expand" | "shift" | "save">) {
+  timeSensitivity = 0.1,
+  freqSensitivity = 0.01,
+}: {
+  timeSensitivity?: number;
+  freqSensitivity?: number;
+} & Pick<ViewportController, "centerOn" | "expand" | "shift" | "save">) {
   const onScroll = useCallback(
     ({
       deltaX,
@@ -25,17 +30,17 @@ export default function useViewportNavigation({
     }: ScrollEvent) => {
       if (ctrlKey) {
         expand({
-          time: timeFrac * (shiftKey ? deltaX : deltaY),
-          freq: freqFrac * (shiftKey ? deltaY : deltaX),
+          time: timeSensitivity * timeFrac * (shiftKey ? deltaX : deltaY),
+          freq: freqSensitivity * freqFrac * (shiftKey ? deltaY : deltaX),
         });
       } else {
         shift({
-          time: timeFrac * (shiftKey ? deltaY : deltaX),
-          freq: -freqFrac * (shiftKey ? deltaX : deltaY),
+          time: timeSensitivity * timeFrac * (shiftKey ? deltaY : deltaX),
+          freq: -freqSensitivity * freqFrac * (shiftKey ? deltaX : deltaY),
         });
       }
     },
-    [expand, shift],
+    [expand, shift, timeSensitivity, freqSensitivity],
   );
 
   const onPress = useCallback(

@@ -1,159 +1,194 @@
-import { useCallback, useMemo, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 
-import api from "@/app/api";
-import useAudioKeyShortcuts from "@/hooks/audio/useAudioKeyShortcuts";
-
-import type { Recording } from "@/types";
-
-export type PlayerControls = {
+export default function useAudio({
+  url,
+  onPlay,
+  onPause,
+  onEnded,
+  onError,
+  onTimeUpdate,
+  onVolumeChange,
+  onSeeking,
+  onWaiting,
+  onLoadStart,
+  onLoadedData,
+  onCanPlay,
+  onCanPlayThrough,
+}: {
+  url: string;
+  onPlay?: () => void;
+  onPause?: () => void;
+  onEnded?: () => void;
+  onError?: () => void;
+  onTimeUpdate?: (time: number) => void;
+  onVolumeChange?: (volume: number) => void;
+  onSeeking?: () => void;
+  onWaiting?: () => void;
+  onLoadStart?: () => void;
+  onLoadedData?: () => void;
+  onCanPlay?: () => void;
+  onCanPlayThrough?: () => void;
+  onAbort?: () => void;
+}): {
   play: () => void;
   pause: () => void;
   stop: () => void;
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
-  setSpeed: (speed: number) => void;
   toggleLoop: () => void;
   togglePlay: () => void;
-};
-
-export type SpeedOption = {
-  label: string;
-  value: number;
-};
-
-export type PlayerState = {
-  startTime: number;
-  endTime: number;
   volume: number;
   currentTime: number;
-  speed: number;
   loop: boolean;
   isPlaying: boolean;
-  speedOptions: SpeedOption[];
-};
-
-const LOWEST_SAMPLE_RATE = 8000;
-const HIGHTEST_SAMPLE_RATE = 96000;
-
-const ALL_SPEED_OPTIONS: SpeedOption[] = [
-  { label: "1x", value: 1 },
-  { label: "0.1x", value: 0.1 },
-  { label: "0.25x", value: 0.25 },
-  { label: "0.5x", value: 0.5 },
-  { label: "0.75x", value: 0.75 },
-  { label: "1.2x", value: 1.2 },
-  { label: "1.5x", value: 1.5 },
-  { label: "1.75x", value: 1.75 },
-  { label: "2x", value: 2 },
-  { label: "3x", value: 3 },
-];
-
-function getSpeedOptions(recording: Recording): SpeedOption[] {
-  return ALL_SPEED_OPTIONS.filter((option) => {
-    const sampleRate = recording.samplerate;
-    const speed = option.value;
-    const newSampleRate = sampleRate * speed;
-    return (
-      newSampleRate >= LOWEST_SAMPLE_RATE &&
-      newSampleRate <= HIGHTEST_SAMPLE_RATE
-    );
-  });
-}
-
-function getDefaultSpeedOption(options: SpeedOption[]): SpeedOption {
-  return options.find((option) => option.value === 1) || options[0];
-}
-
-export default function useAudio({
-  recording,
-  endTime,
-  startTime = 0,
-  speed: initialSpeed,
-  withShortcuts = true,
-}: {
-  recording: Recording;
-  withShortcuts?: boolean;
-} & Partial<PlayerState>): PlayerState & PlayerControls {
+} {
   const audio = useRef<HTMLAudioElement>(new Audio());
 
-  const speedOptions = useMemo(() => getSpeedOptions(recording), [recording]);
-  const defaultSpeedOption = useMemo(
-    () => getDefaultSpeedOption(speedOptions),
-    [speedOptions],
-  );
-
-  // Store internal player state
-  const [speed, setSpeed] = useState<number>(
-    initialSpeed || defaultSpeedOption.value,
-  );
-  const [time, setTime] = useState<number>(startTime);
+  const [time, setTime] = useState<number>(0);
   const [loop, setLoop] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  const initialUrl = useMemo(() => {
-    return api.audio.getStreamUrl({
-      recording,
-      startTime,
-      endTime,
-      speed: speed,
-    });
-  }, [recording, startTime, endTime, speed]);
-
   useEffect(() => {
     const { current } = audio;
     current.preload = "none";
-    current.src = initialUrl;
-    current.loop = loop;
-    current.volume = volume;
+    current.src = url;
+    current.currentTime = 0;
 
     setIsPlaying(false);
-    setTime(startTime);
+    setTime(0);
 
     let timer: number;
 
     const updateTime = () => {
       if (current.paused) return;
-      const currentTime = current.currentTime * speed + startTime;
+      const currentTime = current.currentTime;
       setTime(currentTime);
       timer = requestAnimationFrame(updateTime);
     };
 
     timer = requestAnimationFrame(updateTime);
 
-    const onPlay = () => {
+    const handlePlay = () => {
       timer = requestAnimationFrame(updateTime);
     };
 
-    const onPause = () => {
+    const handlePause = () => {
       cancelAnimationFrame(timer);
     };
 
-    const onError = () => {
+    const handleError = () => {
       cancelAnimationFrame(timer);
-    }
+    };
 
-    const onEnded = () => {
+    const handleAbort = () => {
+      cancelAnimationFrame(timer);
+    };
+
+    const handleEnded = () => {
       cancelAnimationFrame(timer);
       // set this explicitly to toggle button
       setIsPlaying(false);
-      setTime(startTime);
-    }
+      setTime(0);
+    };
 
-    current.addEventListener("play", onPlay);
-    current.addEventListener("pause", onPause);
-    current.addEventListener("error", onError);
-    current.addEventListener("ended", onEnded);
+    current.addEventListener("play", handlePlay);
+    current.addEventListener("pause", handlePause);
+    current.addEventListener("error", handleError);
+    current.addEventListener("ended", handleEnded);
+    current.addEventListener("abort", handleAbort);
 
     return () => {
       cancelAnimationFrame(timer);
-      current.removeEventListener("play", onPlay);
-      current.removeEventListener("pause", onPause);
-      current.removeEventListener("error", onError);
-      current.removeEventListener("ended", onEnded);
+      current.removeEventListener("play", handlePlay);
+      current.removeEventListener("pause", handlePause);
+      current.removeEventListener("error", handleError);
+      current.removeEventListener("ended", handleEnded);
+      current.removeEventListener("abort", handleAbort);
     };
-  }, [initialUrl, speed, startTime, loop, volume]);
+  }, [url]);
 
+  useEffect(() => {
+    if (onEnded == null) return;
+    const { current } = audio;
+    const handleTimeUpdate = () => onEnded();
+    current.addEventListener("ended", handleTimeUpdate);
+    return () => current.removeEventListener("ended", handleTimeUpdate);
+  }, [onEnded]);
+
+  useEffect(() => {
+    if (onError == null) return;
+    const { current } = audio;
+    const handleError = () => onError();
+    current.addEventListener("error", handleError);
+    return () => current.removeEventListener("error", handleError);
+  }, [onError]);
+
+  useEffect(() => {
+    if (onTimeUpdate == null) return;
+    const { current } = audio;
+    const handleTimeUpdate = () => onTimeUpdate(current.currentTime);
+    current.addEventListener("timeupdate", handleTimeUpdate);
+    return () => current.removeEventListener("timeupdate", handleTimeUpdate);
+  }, [onTimeUpdate]);
+
+  useEffect(() => {
+    if (onVolumeChange == null) return;
+    const { current } = audio;
+    const handleVolumeChange = () => onVolumeChange(current.volume);
+    current.addEventListener("volumechange", handleVolumeChange);
+    return () =>
+      current.removeEventListener("volumechange", handleVolumeChange);
+  }, [onVolumeChange]);
+
+  useEffect(() => {
+    if (onSeeking == null) return;
+    const { current } = audio;
+    const handleSeeking = () => onSeeking();
+    current.addEventListener("seeking", handleSeeking);
+    return () => current.removeEventListener("seeking", handleSeeking);
+  }, [onSeeking]);
+
+  useEffect(() => {
+    if (onWaiting == null) return;
+    const { current } = audio;
+    const handleWaiting = () => onWaiting();
+    current.addEventListener("waiting", handleWaiting);
+    return () => current.removeEventListener("waiting", handleWaiting);
+  }, [onWaiting]);
+
+  useEffect(() => {
+    if (onLoadStart == null) return;
+    const { current } = audio;
+    const handleLoadStart = () => onLoadStart();
+    current.addEventListener("loadstart", handleLoadStart);
+    return () => current.removeEventListener("loadstart", handleLoadStart);
+  }, [onLoadStart]);
+
+  useEffect(() => {
+    if (onLoadedData == null) return;
+    const { current } = audio;
+    const handleLoadedData = () => onLoadedData();
+    current.addEventListener("loadeddata", handleLoadedData);
+    return () => current.removeEventListener("loadeddata", handleLoadedData);
+  }, [onLoadedData]);
+
+  useEffect(() => {
+    if (onCanPlay == null) return;
+    const { current } = audio;
+    const handleCanPlay = () => onCanPlay();
+    current.addEventListener("canplay", handleCanPlay);
+    return () => current.removeEventListener("canplay", handleCanPlay);
+  }, [onCanPlay]);
+
+  useEffect(() => {
+    if (onCanPlayThrough == null) return;
+    const { current } = audio;
+    const handleCanPlayThrough = () => onCanPlayThrough();
+    current.addEventListener("canplaythrough", handleCanPlayThrough);
+    return () =>
+      current.removeEventListener("canplaythrough", handleCanPlayThrough);
+  }, [onCanPlayThrough]);
 
   // Some browsers return `Promise` on `.play()` and may throw errors
   // if one tries to execute another `.play()` or `.pause()` while that
@@ -170,6 +205,7 @@ export default function useAudio({
       promise
         .then(() => {
           setIsPlaying(true);
+          onPlay?.();
           lockPlay.current = false;
         })
         .catch(() => {
@@ -177,29 +213,36 @@ export default function useAudio({
         });
     } else {
       setIsPlaying(true);
+      onPlay?.();
     }
-  }, []);
+  }, [onPlay]);
 
   const handlePause = useCallback(() => {
     audio.current.pause();
     setIsPlaying(false);
-  }, []);
+    onPause?.();
+  }, [onPause]);
 
   const handleStop = useCallback(() => {
     audio.current.pause();
     audio.current.currentTime = 0;
-    setTime(startTime);
+    setTime(0);
     setIsPlaying(false);
-  }, [startTime]);
+  }, []);
 
   const handleSetVolume = useCallback((volume: number) => {
     audio.current.volume = volume;
     setVolume(volume);
   }, []);
 
-  const handleSeek = useCallback((time: number) => {
-    audio.current.currentTime = (time - startTime) / speed;
-  }, [speed, startTime]);
+  const handleSeek = useCallback(
+    (time: number) => {
+      setTime(time);
+      onSeeking?.();
+      audio.current.currentTime = time;
+    },
+    [onSeeking],
+  );
 
   const handleTogglePlay = useCallback(() => {
     if (isPlaying) {
@@ -214,20 +257,11 @@ export default function useAudio({
     setLoop(audio.current.loop);
   }, []);
 
-  useAudioKeyShortcuts({
-    onTogglePlay: handleTogglePlay,
-    enabled: withShortcuts,
-  });
-
   return {
-    startTime,
-    endTime: endTime || recording.duration,
     volume,
     currentTime: time,
-    speed,
     loop,
     isPlaying,
-    speedOptions,
     togglePlay: handleTogglePlay,
     play: handlePlay,
     pause: handlePause,
@@ -235,6 +269,5 @@ export default function useAudio({
     setVolume: handleSetVolume,
     toggleLoop: handleToggleLoop,
     seek: handleSeek,
-    setSpeed,
   };
 }

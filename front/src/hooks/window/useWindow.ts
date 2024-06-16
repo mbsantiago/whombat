@@ -14,7 +14,7 @@ import {
  * Represents the state and functionality of a viewport within a spectrogram
  * display.
  */
-export type ViewportControler = {
+export type ViewportController = {
   /** The current position and dimensions of the viewport. */
   viewport: SpectrogramWindow;
   /** The maximum allowable boundaries for the viewport. */
@@ -60,7 +60,7 @@ export default function useViewport({
   initial: SpectrogramWindow;
   /** The maximum allowable boundaries for the viewport.*/
   bounds: SpectrogramWindow;
-}): ViewportControler {
+}): ViewportController {
   const { current, replace, clear, push, pop, size } =
     useLifoQueue<SpectrogramWindow>(initial);
 

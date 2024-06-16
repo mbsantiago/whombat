@@ -13,7 +13,7 @@ const TARGET_INITIAL_SIZE = 512 * 1024;
 
 /** Minimum window bandwidth in Hz. */
 const MIN_WINDOW_BANDWIDTH = 0.1;
-
+ 
 /** Minimum window duration in seconds */
 const MIN_WINDOW_DURATION = 0.001;
 
