@@ -33,7 +33,7 @@ export type ViewportController = {
   shift({ time, freq }: { time?: number; freq?: number }): void;
   /** Centers the viewport on the specified time and/or frequency.*/
   centerOn({ time, freq }: { time?: number; freq?: number }): void;
-  /** Resets the viewport to its initial position and dimensions.*/
+  /** Zooms the viewport to the specified position by some factor.*/
   zoomToPosition({
     position,
     factor,
@@ -41,6 +41,7 @@ export type ViewportController = {
     position: Position;
     factor: number;
   }): void;
+  /** Resets the viewport to its initial position and dimensions.*/
   reset(): void;
   /** Saves the current viewport position to the history stack.*/
   save(): void;
@@ -55,20 +56,34 @@ export type ViewportController = {
 export default function useViewport({
   initial,
   bounds,
+  onChange,
+  onSave,
+  onBack,
+  onReset,
 }: {
   /** The initial position and dimensions of the viewport. */
   initial: SpectrogramWindow;
   /** The maximum allowable boundaries for the viewport.*/
   bounds: SpectrogramWindow;
+  /** A callback function that is called whenever the viewport changes.*/
+  onChange?(viewport: SpectrogramWindow): void;
+  /** A callback function that is called whenever the viewport is saved.*/
+  onSave?(): void;
+  /** A callback function that is called whenever the viewport is reset.*/
+  onReset?(): void;
+  /** A callback function that is called whenever the viewport goes back.*/
+  onBack?(): void;
 }): ViewportController {
   const { current, replace, clear, push, pop, size } =
     useLifoQueue<SpectrogramWindow>(initial);
 
   const set = useCallback(
     (window: SpectrogramWindow) => {
-      replace(adjustWindowToBounds(window, bounds));
+      const adjusted = adjustWindowToBounds(window, bounds);
+      replace(adjusted);
+      onChange?.(adjusted);
     },
-    [bounds, replace],
+    [bounds, replace, onChange],
   );
 
   const setTimeInterval = useCallback(
@@ -128,13 +143,15 @@ export default function useViewport({
   const reset = useCallback(() => {
     clear();
     push(initial);
-  }, [initial, clear, push]);
+    onReset?.();
+  }, [initial, clear, push, onReset]);
 
   const back = useCallback(() => {
     if (size > 1) {
       pop();
+      onBack?.();
     }
-  }, [pop, size]);
+  }, [pop, size, onBack]);
 
   const zoomToPosition = useCallback(
     ({ position, factor }: { position: Position; factor: number }) => {
@@ -151,8 +168,9 @@ export default function useViewport({
   const save = useCallback(() => {
     if (current != null) {
       push(current);
+      onSave?.();
     }
-  }, [push, current]);
+  }, [push, current, onSave]);
 
   return {
     viewport: current ?? initial,
