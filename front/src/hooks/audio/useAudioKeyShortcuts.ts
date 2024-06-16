@@ -1,8 +1,6 @@
 import { useHotkeys } from "react-hotkeys-hook";
 
-import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
-
-export const AUDIO_KEY_SHORTCUTS: KeyShortcut[] = [
+export const AUDIO_KEY_SHORTCUTS = [
   {
     label: "Play/Pause",
     shortcut: " ",
