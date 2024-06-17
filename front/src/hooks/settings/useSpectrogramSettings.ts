@@ -53,43 +53,46 @@ export default function useSpectrogramSettings({
   const [settings, setSettings] =
     useState<SpectrogramSettings>(initialSettings);
 
-  const setWindowSize = useCallback(
-    (windowSize: number) =>
+  const updateSettings = useCallback(
+    (recipe: (draft: SpectrogramSettings) => void) => {
       setSettings((prev) => {
-        const next = produce(prev, (draft) => {
-          if (windowSize <= 0) {
-            onError?.(new Error("Window size must be greater than 0"));
-            return;
-          }
-
-          draft.window_size = windowSize;
-        });
+        const next = produce(prev, recipe);
         onChange?.(next);
         return next;
+      });
+    },
+    [onChange],
+  );
+
+  const setWindowSize = useCallback(
+    (windowSize: number) =>
+      updateSettings((draft) => {
+        if (windowSize <= 0) {
+          onError?.(new Error("Window size must be greater than 0"));
+          return;
+        }
+
+        draft.window_size = windowSize;
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const setOverlap = useCallback(
     (overlap: number) =>
-      setSettings((prev) => {
-        const next = produce(prev, (draft) => {
-          if (overlap <= 0 || overlap >= 1) {
-            onError?.(new Error("Overlap must be between 0 and 1"));
-            return;
-          }
+      updateSettings((draft) => {
+        if (overlap <= 0 || overlap >= 1) {
+          onError?.(new Error("Overlap must be between 0 and 1"));
+          return;
+        }
 
-          draft.hop_size = overlap;
-        });
-        onChange?.(next);
-        return next;
+        draft.hop_size = overlap;
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const setScale = useCallback(
     (scale: (typeof SCALES)[number]) =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         if (!SCALES.includes(scale)) {
           onError?.(
             new Error(
@@ -100,14 +103,13 @@ export default function useSpectrogramSettings({
         }
 
         draft.scale = scale;
-        onChange?.(draft);
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const setWindow = useCallback(
     (window: (typeof WINDOWS)[number]) =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         if (!WINDOWS.includes(window as any)) {
           onError?.(
             new Error(
@@ -117,28 +119,26 @@ export default function useSpectrogramSettings({
           return;
         }
         draft.window = window;
-        onChange?.(draft);
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const setDBRange = useCallback(
     ({ min = -80, max = 0 }: { min?: number; max?: number }) =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         if (min >= max) {
           onError?.(new Error("Minimum dB must be less than maximum dB"));
           return;
         }
         draft.min_dB = min;
         draft.max_dB = max;
-        onChange?.(draft);
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const setColormap = useCallback(
     (colormap: (typeof COLORMAPS)[number]) =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         if (!COLORMAPS.includes(colormap as any)) {
           onError?.(
             new Error(
@@ -148,33 +148,34 @@ export default function useSpectrogramSettings({
           return;
         }
         draft.cmap = colormap;
-        onChange?.(draft);
       }),
-    [onChange, setSettings, onError],
+    [updateSettings, onError],
   );
 
   const togglePCEN = useCallback(
     () =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         draft.pcen = !draft.pcen;
-        onChange?.(draft);
       }),
-    [onChange, setSettings],
+    [updateSettings],
   );
 
   const toggleNormalize = useCallback(
     () =>
-      setSettings((draft) => {
+      updateSettings((draft) => {
         draft.normalize = !draft.normalize;
-        onChange?.(draft);
       }),
-    [onChange, setSettings],
+    [updateSettings],
   );
 
-  const reset = useCallback(() => {
-    setSettings(() => initialSettings);
-    onReset?.();
-  }, [initialSettings, onReset, setSettings]);
+  const reset = useCallback(
+    () =>
+      updateSettings(() => {
+        onReset?.();
+        return initialSettings;
+      }),
+    [initialSettings, onReset, updateSettings],
+  );
 
   return {
     settings,
