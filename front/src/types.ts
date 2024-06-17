@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import {
+  SpectrogramSettingsSchema,
+  AudioSettingsSchema,
   AnnotationProjectSchema,
   AnnotationStatusBadgeSchema,
   AnnotationStatusSchema,
@@ -147,6 +149,10 @@ export type Interval = z.infer<typeof IntervalSchema>;
 export type SpectrogramWindow = z.infer<typeof SpectrogramWindowSchema>;
 
 export type SpectrogramParameters = z.infer<typeof SpectrogramParametersSchema>;
+
+export type AudioSettings = z.infer<typeof AudioSettingsSchema>;
+
+export type SpectrogramSettings = z.infer<typeof SpectrogramSettingsSchema>;
 
 export type JSONValue = string | number | boolean | JSONObject | JSONArray;
 
