@@ -13,7 +13,7 @@ describe("useAudioSettings Hook", () => {
 
   it("initializes with the correct initial settings", () => {
     const { result } = renderHook(() =>
-      useAudioSettings({ initialSettings, onSettingsChange: jest.fn() }),
+      useAudioSettings({ initialSettings, onChange: jest.fn() }),
     );
     expect(result.current.settings).toEqual(initialSettings);
   });
@@ -23,7 +23,7 @@ describe("useAudioSettings Hook", () => {
     const { result } = renderHook(() =>
       useAudioSettings({
         initialSettings,
-        onSettingsChange: onSettingsChangeMock,
+        onChange: onSettingsChangeMock,
       }),
     );
 
@@ -55,7 +55,7 @@ describe("useAudioSettings Hook", () => {
     const { result } = renderHook(() =>
       useAudioSettings({
         initialSettings,
-        onSettingsChange: jest.fn(),
+        onChange: jest.fn(),
         onReset: onResetMock,
       }),
     );
