@@ -5,7 +5,7 @@ import type {
   MoveEndEvent,
 } from "react-aria";
 import { useCallback } from "react";
-import type { ViewportController } from "@/hooks/window/useWindow";
+import type { ViewportController } from "@/hooks/window/useViewport";
 import type { Position, ScrollEvent } from "@/types";
 
 export default function useViewportNavigation({

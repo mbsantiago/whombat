@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import api from "@/app/api";
 import useAudio from "@/hooks/audio/useAudio";
@@ -129,6 +129,7 @@ export default function useRecordingAudio({
   const audio = useAudio({
     url,
     onTimeUpdate: handleTimeUpdate,
+    ...handlers,
   });
 
   const seek = useCallback(

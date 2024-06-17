@@ -6,7 +6,7 @@ import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
 import Canvas from "@/components/spectrograms/Canvas";
 import Player from "@/components/audio/Player";
 
-import useViewport from "@/hooks/window/useWindow";
+import useViewport from "@/hooks/window/useViewport";
 import drawOnset from "@/draw/onset";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";

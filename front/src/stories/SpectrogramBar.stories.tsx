@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
 
 import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import useViewport from "@/hooks/window/useWindow";
+import useViewport from "@/hooks/window/useViewport";
 import useViewportNavigation from "@/hooks/interactions/useViewportNavigation";
 
 const meta: Meta<typeof SpectrogramBar> = {
