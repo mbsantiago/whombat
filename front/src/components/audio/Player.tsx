@@ -28,11 +28,7 @@ import {
   SpeedIcon,
 } from "@/components/icons";
 
-import type {
-  PlayerControls,
-  PlayerState,
-  SpeedOption,
-} from "@/hooks/audio/useAudio";
+import type { SpeedOption } from "@/hooks/settings/useAudioSettings";
 import type { AriaSliderProps, AriaSliderThumbOptions } from "react-aria";
 import type { SliderState } from "react-stately";
 
@@ -47,21 +43,33 @@ const COMMON_BUTTON_CLASSES =
  * @param {PlayerState} positionProps.state - The state of the audio player.
  * @param {PlayerControls} positionProps.controls - The controls for the audio player.
  */
-export default function Player(props: PlayerState & PlayerControls) {
-  const {
-    currentTime,
-    startTime,
-    endTime,
-    isPlaying: playing,
-    loop,
-    speed,
-    speedOptions,
-    play,
-    pause,
-    seek,
-    toggleLoop,
-    setSpeed,
-  } = props;
+export default function Player({
+  currentTime,
+  startTime,
+  endTime,
+  isPlaying: playing,
+  loop,
+  speed,
+  speedOptions,
+  play,
+  pause,
+  seek,
+  toggleLoop,
+  setSpeed,
+}: {
+  currentTime: number;
+  startTime: number;
+  endTime: number;
+  isPlaying: boolean;
+  loop: boolean;
+  speed: number;
+  speedOptions: SpeedOption[];
+  play: () => void;
+  pause: () => void;
+  seek: (time: number) => void;
+  toggleLoop: () => void;
+  setSpeed: (speed: number) => void;
+}) {
   return (
     <div className="flex flex-row gap-2 items-center px-2 max-w-max rounded-md border border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700">
       <button
@@ -170,17 +178,19 @@ function SelectSpeed({
               key={option.value.toString()}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${active
-                  ? "bg-emerald-100 text-emerald-900"
-                  : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${
+                  active
+                    ? "bg-emerald-100 text-emerald-900"
+                    : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
-                      }`}
+                    className={`block truncate ${
+                      selected ? "text-emerald-500 font-medium" : "font-normal"
+                    }`}
                   >
                     {option.label}
                   </span>

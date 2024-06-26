@@ -1,6 +1,26 @@
 import { useState, useCallback } from "react";
 import { produce } from "immer";
-import type { AudioSettings } from "@/types";
+import type { AudioSettings, Recording } from "@/types";
+
+export type SpeedOption = {
+  label: string;
+  value: number;
+};
+
+const LOWEST_PLAYBACK_SAMPLERATE = 8000;
+const HIGHTEST_PLAYBACK_SAMPLERATE = 96000;
+const ALL_SPEED_OPTIONS: SpeedOption[] = [
+  { label: "1x", value: 1 },
+  { label: "1.2x", value: 1.2 },
+  { label: "1.5x", value: 1.5 },
+  { label: "1.75x", value: 1.75 },
+  { label: "2x", value: 2 },
+  { label: "3x", value: 3 },
+  { label: "0.75x", value: 0.75 },
+  { label: "0.5x", value: 0.5 },
+  { label: "0.25x", value: 0.25 },
+  { label: "0.1x", value: 0.1 },
+];
 
 export type AudioSettingsInterface = {
   /** The current audio settings. */
@@ -21,7 +41,24 @@ export type AudioSettingsInterface = {
   setChannel: (channel: number) => void;
   /** Resets all settings to their initial values. */
   reset: () => void;
+  /** Adjusts the settings for compatibility with a recording. */
+  adjustToRecording: (recording: Recording) => AudioSettings;
 };
+
+export function getSpeedOptions(samplerate: number): SpeedOption[] {
+  return ALL_SPEED_OPTIONS.filter((option) => {
+    const speed = option.value;
+    const newSampleRate = samplerate * speed;
+    return (
+      newSampleRate >= LOWEST_PLAYBACK_SAMPLERATE &&
+      newSampleRate <= HIGHTEST_PLAYBACK_SAMPLERATE
+    );
+  });
+}
+
+export function getDefaultSpeedOption(options: SpeedOption[]): SpeedOption {
+  return options.find((option) => option.value === 1) || options[0];
+}
 
 /**
  * A React hook for managing and updating audio settings.
@@ -182,6 +219,45 @@ export default function useAudioSettings({
     });
   }, [changeSettings]);
 
+  const adjustToRecording = useCallback(
+    (recording: Recording) => {
+      return produce(settings, (draft) => {
+        if (draft.samplerate == null) {
+          draft.samplerate = recording.samplerate;
+        }
+
+        const samplerate = draft.resample
+          ? draft.samplerate
+          : recording.samplerate;
+
+        // Make sure the low frequency is less than half the sample rate
+        if (draft.low_freq != null) {
+          draft.low_freq = Math.min(draft.low_freq, samplerate / 2);
+        }
+
+        // Make sure the high frequency is less than half the sample rate
+        if (draft.high_freq != null) {
+          draft.high_freq = Math.min(draft.high_freq, samplerate / 2);
+        }
+
+        // Make sure the high frequency is greater than the low frequency
+        if (draft.low_freq != null && draft.high_freq != null) {
+          if (draft.low_freq > draft.high_freq) {
+            draft.high_freq = draft.low_freq;
+          }
+        }
+
+        // Make sure the speed is within the valid range
+        const speedOptions = getSpeedOptions(samplerate);
+
+        if (!speedOptions.some((option) => option.value === draft.speed)) {
+          draft.speed = getDefaultSpeedOption(speedOptions).value;
+        }
+      });
+    },
+    [settings],
+  );
+
   return {
     settings,
     setSpeed,
@@ -190,5 +266,6 @@ export default function useAudioSettings({
     setChannel,
     reset,
     toggleResample,
+    adjustToRecording,
   };
 }
