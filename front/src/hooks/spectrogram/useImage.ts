@@ -1,29 +1,26 @@
-/** Hook to load an image and get its status
- *
- * This hook uses the browser's Image API to load an image and get its status.
- * This enables the browser to cache the image and avoid reloading it when it
- * is used multiple times.
- *
- * The hook exposes the image element, its loading status, and any error that
- * occurred.
- *
- * A timeout can be provided to fail if the image takes too long to load.
- *
+/**
+ * @module useImage
+ * A React hook for managing the loading state, errors, and timeouts of an
+ * image.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useEvent, useTimeoutFn, useUnmount } from "react-use";
+
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 // Default timeout in milliseconds
 const DEFAULT_TIMEOUT = 30_000;
 
 export type ImageStatus = {
-  image: HTMLImageElement;
+  /** The image element reference. */
+  image: RefObject<HTMLImageElement>;
+  /** Indicates if the image is currently loading. */
   isLoading: boolean;
-  isError: boolean;
-  error: string | null;
-  url: string;
+  /** The error object if an error occurred, otherwise null. */
+  error: Error | null;
 };
 
+/**
+ * A custom React hook to manage image loading.
+ */
 export default function useImage({
   url,
   timeout = DEFAULT_TIMEOUT,
@@ -31,70 +28,66 @@ export default function useImage({
   onError,
   onTimeout,
 }: {
+  /** The URL of the image to load. */
   url: string;
+  /** Optional timeout (in milliseconds) for image loading. Defaults to 30
+   * seconds. */
   timeout?: number;
+  /** Optional callback function to be executed when the image is loaded
+   * successfully. */
   onLoad?: () => void;
-  onError?: () => void;
+  /** Optional callback function to be executed if an error occurs during image
+   * loading. Receives the error object as an argument. */
+  onError?: (e: Error) => void;
+  /** Optional callback function to be executed if the image loading times out.
+   * */
   onTimeout?: () => void;
 }): ImageStatus {
-  const ref = useRef<HTMLImageElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const image = useRef<HTMLImageElement>(new Image());
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(true);
 
-  if (ref.current === null) {
-    // @ts-ignore
-    ref.current = new Image();
-  }
-
-  // Update the image when the url changes
   useEffect(() => {
-    if (ref.current != null) {
-      ref.current.src = url;
-      setLoading(true);
-      setError(null);
-    }
-  }, [url]);
+    const { current } = image;
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
-  // Timeout loading after a given time
-  const handleOnTimeout = useCallback(() => {
-    setError("Took too long to load");
-    setLoading(false);
-    onTimeout?.();
-  }, [onTimeout]);
-
-  const [_, cancel] = useTimeoutFn(handleOnTimeout, timeout);
-
-  // Handle loading events
-  const handleOnLoad = useCallback(() => {
-    setLoading(false);
+    current.src = url;
+    setLoading(true);
     setError(null);
-    cancel();
-    onLoad?.();
-  }, [cancel, onLoad]);
-  useEvent("load", handleOnLoad, ref.current);
 
-  // Handle error events
-  const handleOnError = useCallback(() => {
-    setLoading(false);
-    setError("Unknown error");
-    cancel();
-    onError?.();
-  }, [cancel, onError]);
-  useEvent("error", handleOnError, ref.current);
+    const handleLoad = () => {
+      setLoading(false);
+      if (timer) clearTimeout(timer);
+      onLoad?.();
+    };
 
-  // Cancel loading on unmount
-  useUnmount(() => {
-    cancel();
-    if (ref.current != null) {
-      ref.current.src = "";
-    }
-  });
+    const handleError = () => {
+      setLoading(false);
+      const error = new Error("Error loading image");
+      setError(error);
+      if (timer) clearTimeout(timer);
+      onError?.(error);
+    };
+
+    timer = setTimeout(() => {
+      setLoading(false);
+      setError(new Error("Image loading timed out"));
+      onTimeout?.();
+    }, timeout);
+
+    current.addEventListener("load", handleLoad);
+    current.addEventListener("error", handleError);
+
+    return () => {
+      current.removeEventListener("load", handleLoad);
+      current.removeEventListener("error", handleError);
+      if (timer) clearTimeout(timer);
+    };
+  }, [url, timeout, onTimeout, onError, onLoad]);
 
   return {
-    url,
-    image: ref.current,
-    isLoading: loading,
-    isError: error != null,
+    image,
+    isLoading,
     error,
   };
 }
