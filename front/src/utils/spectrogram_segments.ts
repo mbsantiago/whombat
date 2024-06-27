@@ -173,41 +173,33 @@ export function getWindowCenter(
  * settings.
  */
 export function calculateSpectrogramChunkIntervals({
-  recording,
-  audioSettings,
-  spectrogramSettings,
+  duration,
+  windowSize,
+  overlap,
+  samplerate,
   chunkSize = SPECTROGRAM_CHUNK_SIZE,
   chunkBuffer = SPECTROGRAM_CHUNK_BUFFER,
 }: {
-  /** The recording object. */
-  recording: Recording;
-  /** Audio settings for the spectrogram. */
-  audioSettings: AudioSettings;
-  /** Spectrogram settings. */
-  spectrogramSettings: SpectrogramSettings;
+  /** The duration of the recording in seconds. */
+  duration: number;
+  /** The duration of each STFT window in seconds. */
+  windowSize: number;
+  /** The overlap fraction between consecutive windows. */
+  overlap: number;
+  /** The audio sample rate in Hz. */
+  samplerate: number;
   /** The size of each spectrogram chunk in pixels. */
   chunkSize?: number;
   /** The overlap fraction between consecutive chunks. */
   chunkBuffer?: number;
 }): Interval[] {
-  const { window_size, hop_size } = spectrogramSettings;
-
-  const samplerate = !audioSettings.resample
-    ? recording.samplerate
-    : audioSettings.samplerate ?? recording.samplerate;
-
-  const approxSpecHeight = (window_size * samplerate) / 2;
+  const approxSpecHeight = (windowSize * samplerate) / 2;
   const approxSpecWidth = chunkSize / approxSpecHeight;
-
-  const chunkDuration = approxSpecWidth * (1 - hop_size) * window_size;
-
-  return Array.from(
-    { length: Math.ceil(recording.duration / chunkDuration) },
-    (_, i) => {
-      return {
-        min: i * chunkDuration - chunkBuffer,
-        max: (i + 1) * chunkDuration + chunkBuffer,
-      };
-    },
-  );
+  const chunkDuration = approxSpecWidth * (1 - overlap) * windowSize;
+  return Array.from({ length: Math.ceil(duration / chunkDuration) }, (_, i) => {
+    return {
+      min: i * chunkDuration - chunkBuffer,
+      max: (i + 1) * chunkDuration + chunkBuffer,
+    };
+  });
 }

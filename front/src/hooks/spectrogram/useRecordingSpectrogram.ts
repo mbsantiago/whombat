@@ -1,9 +1,10 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useMemo } from "react";
 import type {
   Recording,
   SpectrogramSettings,
   Interval,
   SpectrogramWindow,
+  SpectrogramParameters,
   AudioSettings,
 } from "@/types";
 
@@ -13,6 +14,8 @@ import {
   SPECTROGRAM_CHUNK_BUFFER,
   SPECTROGRAM_CHUNK_SIZE,
 } from "@/utils/spectrogram_segments";
+import drawTimeAxis from "@/draw/timeAxis";
+import drawFreqAxis from "@/draw/freqAxis";
 import { intervalIntersection, scaleInterval } from "@/utils/geometry";
 import useSegments, { type IntervalState } from "./useSegmentsState";
 
@@ -25,6 +28,68 @@ export type RecordingSpectrogramInterface = {
   segments: IntervalState[];
 };
 
+function useSpectrogramParameters({
+  audioSettings,
+  spectrogramSettings,
+}: {
+  audioSettings: AudioSettings;
+  spectrogramSettings: SpectrogramSettings;
+}): SpectrogramParameters {
+  const { channel, resample, samplerate, low_freq, high_freq, filter_order } =
+    audioSettings;
+  const {
+    window_size,
+    hop_size,
+    window,
+    scale,
+    cmap,
+    min_dB,
+    max_dB,
+    normalize,
+    pcen,
+    clamp,
+  } = spectrogramSettings;
+
+  return useMemo(
+    () => ({
+      channel,
+      resample,
+      samplerate,
+      low_freq,
+      high_freq,
+      filter_order,
+      window_size,
+      hop_size,
+      window,
+      scale,
+      cmap,
+      min_dB,
+      max_dB,
+      normalize,
+      pcen,
+      clamp,
+    }),
+    [
+      channel,
+      resample,
+      samplerate,
+      low_freq,
+      high_freq,
+      filter_order,
+      window_size,
+      hop_size,
+      window,
+      scale,
+      cmap,
+      min_dB,
+      max_dB,
+      normalize,
+      pcen,
+      clamp,
+    ],
+  );
+}
+
 /**
  * A custom React hook for managing the display of a recording's spectrogram.
  */
@@ -32,9 +97,9 @@ export default function useRecordingSpectrogram({
   recording,
   audioSettings,
   spectrogramSettings,
-  getImageUrl = api.spectrograms.getUrl,
   onLoad,
   onError,
+  getImageUrl = api.spectrograms.getUrl,
   chunkSize = SPECTROGRAM_CHUNK_SIZE,
   chunkBuffer = SPECTROGRAM_CHUNK_BUFFER,
 }: {
@@ -45,12 +110,12 @@ export default function useRecordingSpectrogram({
   /** Spectrogram settings (window size, hop size, etc.). */
   spectrogramSettings: SpectrogramSettings;
   /** A function to get the URL for fetching the spectrogram image. */
-  getImageUrl?: (props: {
-    recording: Recording;
-    interval: Interval;
-    audioSettings: AudioSettings;
-    spectrogramSettings: SpectrogramSettings;
-  }) => string;
+  getImageUrl?: (
+    props: {
+      recording: Recording;
+      interval: Interval;
+    } & SpectrogramParameters,
+  ) => string;
   /** Optional callback function to be executed when an image is loaded
    * successfully. */
   onLoad?: (args: {
@@ -76,11 +141,21 @@ export default function useRecordingSpectrogram({
     useSegments();
   const images = useRef<HTMLImageElement[]>([]);
 
+  const params = useSpectrogramParameters({
+    audioSettings,
+    spectrogramSettings,
+  });
+
   useEffect(() => {
+    const finalSamplerate = !params.resample
+      ? recording.samplerate
+      : params.samplerate ?? recording.samplerate;
+
     const chunks = calculateSpectrogramChunkIntervals({
-      recording,
-      audioSettings,
-      spectrogramSettings,
+      duration: recording.duration,
+      windowSize: params.window_size,
+      overlap: params.hop_size,
+      samplerate: finalSamplerate,
       chunkSize,
       chunkBuffer,
     });
@@ -93,8 +168,7 @@ export default function useRecordingSpectrogram({
       image.src = getImageUrl({
         recording,
         interval,
-        audioSettings,
-        spectrogramSettings,
+        ...params,
       });
       image.onload = () => {
         setReady(index);
@@ -113,8 +187,7 @@ export default function useRecordingSpectrogram({
     });
   }, [
     recording,
-    audioSettings,
-    spectrogramSettings,
+    params,
     getImageUrl,
     setSegments,
     setReady,
@@ -170,6 +243,9 @@ export default function useRecordingSpectrogram({
           error: isError,
         });
       });
+
+      drawTimeAxis(ctx, viewport.time);
+      drawFreqAxis(ctx, viewport.freq);
     },
     [segments, recording.samplerate, chunkBuffer, startLoading],
   );
