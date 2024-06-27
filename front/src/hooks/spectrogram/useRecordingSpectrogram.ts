@@ -8,56 +8,15 @@ import type {
 } from "@/types";
 
 import drawImage from "@/draw/image";
+import {
+  calculateSpectrogramChunkIntervals,
+  SPECTROGRAM_CHUNK_BUFFER,
+  SPECTROGRAM_CHUNK_SIZE,
+} from "@/utils/spectrogram_segments";
 import { intervalIntersection, scaleInterval } from "@/utils/geometry";
 import useSegments, { type IntervalState } from "./useSegmentsState";
 
 import api from "@/app/api";
-
-/**
- * The size in pixels of a spectrogram chunk.
- */
-const SPECTROGRAM_CHUNK_SIZE = 256 * 256;
-
-/**
- * The overlap fraction between consecutive spectrogram chunks.
- */
-const SPECTROGRAM_CHUNK_OVERLAP = 0.05;
-
-/**
- * Calculates the time intervals for spectrogram chunks based on recording and
- * settings.
- */
-function calculateSpectrogramChunkIntervals({
-  recording,
-  audioSettings,
-  spectrogramSettings,
-}: {
-  /** The recording object. */
-  recording: Recording;
-  /** Audio settings for the spectrogram. */
-  audioSettings: AudioSettings;
-  /** Spectrogram settings. */
-  spectrogramSettings: SpectrogramSettings;
-}): Interval[] {
-  const { window_size, hop_size } = spectrogramSettings;
-
-  const samplerate = !audioSettings.resample
-    ? recording.samplerate
-    : audioSettings.samplerate ?? recording.samplerate;
-
-  const approxSpecHeight = (window_size * samplerate) / 2;
-  const approxSpecWidth = SPECTROGRAM_CHUNK_SIZE / approxSpecHeight;
-
-  const chunkDuration = approxSpecWidth * (1 - hop_size) * window_size;
-  const chunkHop = chunkDuration * (1 - SPECTROGRAM_CHUNK_OVERLAP);
-
-  return Array.from(
-    { length: Math.ceil(recording.duration / chunkDuration) },
-    (_, i) => {
-      return { min: i * chunkHop, max: i * chunkHop + chunkDuration };
-    },
-  );
-}
 
 export type RecordingSpectrogramInterface = {
   /** A function to draw the spectrogram on a canvas. */
@@ -76,6 +35,8 @@ export default function useRecordingSpectrogram({
   getImageUrl = api.spectrograms.getUrl,
   onLoad,
   onError,
+  chunkSize = SPECTROGRAM_CHUNK_SIZE,
+  chunkBuffer = SPECTROGRAM_CHUNK_BUFFER,
 }: {
   /** The recording object to display the spectrogram for. */
   recording: Recording;
@@ -106,8 +67,13 @@ export default function useRecordingSpectrogram({
     interval: Interval;
     index: number;
   }) => void;
+  /** The size of each spectrogram chunk in pixels. */
+  chunkSize?: number;
+  /** The overlap fraction between consecutive chunks. */
+  chunkBuffer?: number;
 }): RecordingSpectrogramInterface {
-  const { segments, setSegments, setReady, setError } = useSegments();
+  const { segments, setSegments, setReady, setError, startLoading } =
+    useSegments();
   const images = useRef<HTMLImageElement[]>([]);
 
   useEffect(() => {
@@ -115,6 +81,8 @@ export default function useRecordingSpectrogram({
       recording,
       audioSettings,
       spectrogramSettings,
+      chunkSize,
+      chunkBuffer,
     });
 
     setSegments(chunks);
@@ -153,44 +121,57 @@ export default function useRecordingSpectrogram({
     setError,
     onLoad,
     onError,
+    chunkSize,
+    chunkBuffer,
   ]);
 
   const drawFn = useCallback(
     (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => {
       const { current } = images;
 
+      const shouldLoad = segments.filter(
+        ({ interval, isReady, isLoading, isError }) => {
+          if (isReady || isLoading || isError) return false;
+          // Should start loading if the interval is close to the viewport
+          return (
+            intervalIntersection(interval, scaleInterval(viewport.time, 4)) !=
+            null
+          );
+        },
+      );
+
+      if (shouldLoad.length > 0) {
+        const indices = shouldLoad.map(({ index }) => index);
+        startLoading(indices);
+        shouldLoad.forEach(({ index }) => {
+          const image = current[index];
+          if (!image) return;
+          image.loading = "eager";
+        });
+      }
+
       segments.forEach((state) => {
-        const { interval, index, isLoading, isError, isReady } = state;
-
-        if (isError || isLoading) return;
-
+        const { interval, index, isLoading, isError } = state;
         const image = current[index];
 
-        if (!image) return;
-
-        if (
-          !isReady &&
-          intervalIntersection(scaleInterval(interval, 3), viewport.time) !=
-            null
-        ) {
-          image.loading = "eager";
+        if (!image || intervalIntersection(interval, viewport.time) == null)
           return;
-        }
-
-        if (intervalIntersection(interval, viewport.time) == null) return;
 
         drawImage({
           ctx,
           image,
-          window: viewport,
-          bounds: {
+          viewport: viewport,
+          imageBounds: {
             time: interval,
             freq: { min: 0, max: recording.samplerate / 2 },
           },
+          overlap: chunkBuffer,
+          loading: isLoading,
+          error: isError,
         });
       });
     },
-    [segments, recording.samplerate],
+    [segments, recording.samplerate, chunkBuffer, startLoading],
   );
 
   return {

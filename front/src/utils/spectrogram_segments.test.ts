@@ -1,12 +1,20 @@
 import {
   getWindowDuration,
   getWindowCenter,
+  calculateSpectrogramChunkIntervals,
   MININUM_WINDOW_SIZE,
   MAXIMUM_WINDOW_SIZE,
   DESIRED_VIEWPORT_COVERAGE,
   WINDOW_SIZES,
+  SPECTROGRAM_CHUNK_OVERLAP,
+  SPECTROGRAM_CHUNK_SIZE,
 } from "./spectrogram_segments";
-import type { SpectrogramWindow } from "@/types";
+import type {
+  SpectrogramWindow,
+  Recording,
+  AudioSettings,
+  SpectrogramSettings,
+} from "@/types";
 
 describe("getWindowDuration", () => {
   it("covers the viewport when in range", () => {
@@ -127,5 +135,110 @@ describe("getWindowCenter", () => {
 
     // Viewport shifted, center should be adjusted accordingly
     expect(getWindowCenter(viewport, windowDuration, windowOverlap)).toBe(10);
+  });
+});
+
+describe("calculateSpectrogramChunkIntervals", () => {
+  const recording: Recording = {
+    duration: 10,
+    samplerate: 44100,
+    channels: 1,
+    time_expansion: 1,
+    created_on: new Date(),
+    path: "test-path",
+    hash: "test-hash",
+    uuid: "test-uuid",
+  };
+  const spectrogramSettings: SpectrogramSettings = {
+    window_size: 512,
+    hop_size: 0.5,
+    window: "hann",
+    clamp: false,
+    normalize: false,
+    cmap: "viridis",
+    pcen: false,
+    scale: "dB",
+    max_dB: 0,
+    min_dB: -80,
+  };
+  const audioSettings: AudioSettings = {
+    channel: 0,
+    resample: false,
+    filter_order: 4,
+    speed: 1,
+  };
+
+  it("generates intervals that cover the entire recording duration", () => {
+    const intervals = calculateSpectrogramChunkIntervals({
+      recording,
+      audioSettings,
+      spectrogramSettings,
+    });
+
+    // Check if the last interval's max value is greater than or equal to the recording duration
+    expect(intervals[intervals.length - 1].max).toBeGreaterThanOrEqual(
+      recording.duration,
+    );
+  });
+
+  it("maintains the correct overlap between consecutive intervals", () => {
+    const intervals = calculateSpectrogramChunkIntervals({
+      recording,
+      audioSettings,
+      spectrogramSettings,
+    });
+
+    for (let i = 1; i < intervals.length; i++) {
+      const currentInterval = intervals[i];
+      const previousInterval = intervals[i - 1];
+      const overlap = previousInterval.max - currentInterval.min;
+
+      // Check if the overlap matches the expected overlap based on SPECTROGRAM_CHUNK_OVERLAP
+      const expectedOverlap =
+        SPECTROGRAM_CHUNK_OVERLAP * (currentInterval.max - currentInterval.min);
+      expect(overlap).toBeCloseTo(expectedOverlap); // Use toBeCloseTo for floating-point comparison
+    }
+  });
+
+  it("handles resampling correctly", () => {
+    const audioSettingsTest: AudioSettings = {
+      ...audioSettings,
+      resample: true,
+      samplerate: 22050,
+    };
+
+    const intervals = calculateSpectrogramChunkIntervals({
+      recording,
+      audioSettings: audioSettingsTest,
+      spectrogramSettings,
+    });
+
+    // Adjust expected calculations based on the resampled samplerate
+    const approxSpecHeight =
+      (spectrogramSettings.window_size * audioSettingsTest.samplerate!) / 2;
+    const approxSpecWidth = SPECTROGRAM_CHUNK_SIZE / approxSpecHeight;
+    const chunkDuration =
+      approxSpecWidth *
+      (1 - spectrogramSettings.hop_size) *
+      spectrogramSettings.window_size;
+    const chunkHop = chunkDuration * (1 - SPECTROGRAM_CHUNK_OVERLAP);
+    const expectedIntervalCount = Math.ceil(recording.duration / chunkHop);
+
+    expect(intervals.length).toBe(expectedIntervalCount);
+  });
+
+  // Additional Test Cases
+  it("returns an empty array if recording duration is zero", () => {
+    const recordingTest: Recording = {
+      ...recording,
+      duration: 0,
+    };
+
+    const intervals = calculateSpectrogramChunkIntervals({
+      recording: recordingTest,
+      audioSettings,
+      spectrogramSettings,
+    });
+    expect(intervals).toEqual([]);
   });
 });

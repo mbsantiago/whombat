@@ -134,6 +134,10 @@ export default function useAudio({
     current.addEventListener("abort", handleAbort);
 
     return () => {
+      // Make sure to remove the audio source to stop audio playback
+      // and prevent memory leaks.
+      current.src = "";
+
       cancelAnimationFrame(timer);
       current.removeEventListener("play", handlePlay);
       current.removeEventListener("pause", handlePause);

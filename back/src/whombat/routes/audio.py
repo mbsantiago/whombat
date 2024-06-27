@@ -15,7 +15,7 @@ __all__ = ["audio_router"]
 
 audio_router = APIRouter()
 
-CHUNK_SIZE = 1024 * 124
+CHUNK_SIZE = 1024 * 512
 
 
 @audio_router.get("/stream/")
@@ -57,6 +57,7 @@ async def stream_recording_audio(
         path=audio_dir / recording.path,
         start=start,
         time_expansion=recording.time_expansion,
+        frames=CHUNK_SIZE,
         speed=speed,
         start_time=start_time,
         end_time=end_time,

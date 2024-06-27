@@ -59,8 +59,8 @@ export default function useSpectrogramWindow({
       drawImage({
         ctx,
         image,
-        window: view,
-        bounds: spectrogramWindow,
+        viewport: view,
+        imageBounds: spectrogramWindow,
       });
     },
     [image, spectrogramWindow, isLoading, isError],

@@ -54,7 +54,7 @@ const CanvasWithHooks = () => {
     ctx: CanvasRenderingContext2D,
     viewport: SpectrogramWindow,
   ) => {
-    drawImage({ ctx, image, window: viewport, bounds });
+    drawImage({ ctx, image, viewport: viewport, imageBounds: bounds });
   };
 
   const { viewport, expand, shift, zoomToPosition, centerOn } = useViewport({

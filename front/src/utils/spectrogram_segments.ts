@@ -1,6 +1,22 @@
-import type { SpectrogramWindow } from "@/types";
+import type {
+  SpectrogramWindow,
+  Recording,
+  AudioSettings,
+  SpectrogramSettings,
+  Interval,
+} from "@/types";
 
 const SAMPLE_HEIGHT = 128;
+
+/**
+ * The size in pixels of a spectrogram chunk.
+ */
+export const SPECTROGRAM_CHUNK_SIZE = 256 * 256;
+
+/**
+ * The overlap fraction between consecutive spectrogram chunks.
+ */
+export const SPECTROGRAM_CHUNK_BUFFER = 0.1;
 
 /**
  * The minimum size (in pixels) of a requested spectrogram window.
@@ -149,5 +165,49 @@ export function getWindowCenter(
   return (
     Math.max(0, Math.round((viewportCenter - offset) / hopSize) * hopSize) +
     offset
+  );
+}
+
+/**
+ * Calculates the time intervals for spectrogram chunks based on recording and
+ * settings.
+ */
+export function calculateSpectrogramChunkIntervals({
+  recording,
+  audioSettings,
+  spectrogramSettings,
+  chunkSize = SPECTROGRAM_CHUNK_SIZE,
+  chunkBuffer = SPECTROGRAM_CHUNK_BUFFER,
+}: {
+  /** The recording object. */
+  recording: Recording;
+  /** Audio settings for the spectrogram. */
+  audioSettings: AudioSettings;
+  /** Spectrogram settings. */
+  spectrogramSettings: SpectrogramSettings;
+  /** The size of each spectrogram chunk in pixels. */
+  chunkSize?: number;
+  /** The overlap fraction between consecutive chunks. */
+  chunkBuffer?: number;
+}): Interval[] {
+  const { window_size, hop_size } = spectrogramSettings;
+
+  const samplerate = !audioSettings.resample
+    ? recording.samplerate
+    : audioSettings.samplerate ?? recording.samplerate;
+
+  const approxSpecHeight = (window_size * samplerate) / 2;
+  const approxSpecWidth = chunkSize / approxSpecHeight;
+
+  const chunkDuration = approxSpecWidth * (1 - hop_size) * window_size;
+
+  return Array.from(
+    { length: Math.ceil(recording.duration / chunkDuration) },
+    (_, i) => {
+      return {
+        min: i * chunkDuration - chunkBuffer,
+        max: (i + 1) * chunkDuration + chunkBuffer,
+      };
+    },
   );
 }
