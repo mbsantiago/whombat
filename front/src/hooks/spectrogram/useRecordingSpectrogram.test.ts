@@ -1,133 +1,145 @@
+import { act, renderHook } from "@testing-library/react";
+
+import type {
+  SpectrogramWindow,
+  Recording,
+  AudioSettings,
+  SpectrogramSettings,
+} from "@/types";
+import useRecordingSpectrogram from "./useRecordingSpectrogram";
+import drawImg from "@/draw/image";
 import {
   getWindowDuration,
   getWindowCenter,
-  MININUM_WINDOW_SIZE,
-  MAXIMUM_WINDOW_SIZE,
-  WINDOW_OVERLAP,
-  DESIRED_VIEWPORT_COVERAGE,
-  WINDOW_SIZES,
-} from "./useRecordingSpectrogram";
-import type { SpectrogramWindow } from "@/types";
+} from "@/utils/spectrogram_segments";
 
-describe("getWindowDuration", () => {
-  it("covers the viewport when in range", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 10 },
-      freq: { min: 0, max: 22050 },
-    }; // 10 second viewport
-    const samplerate = 44100;
-    const windowSize = 512;
-    const overlap = 0.5;
+jest.mock("@/utils/spectrogram_segments", () => ({
+  getWindowDuration: jest.fn(),
+  getWindowCenter: jest.fn(),
+}));
 
-    const result = getWindowDuration(viewport, samplerate, windowSize, overlap);
-    expect(result).toBeGreaterThanOrEqual(DESIRED_VIEWPORT_COVERAGE * 10);
-    expect(result).toBeLessThanOrEqual(2 * DESIRED_VIEWPORT_COVERAGE * 10);
+jest.mock("@/draw/image", () => jest.fn());
+
+describe("useRecordingSpectrogram hook", () => {
+  // Sample data for testing
+  const recording: Recording = {
+    path: "test-path",
+    samplerate: 44100,
+    duration: 10,
+    channels: 1,
+    time_expansion: 1,
+    created_on: new Date(),
+    uuid: "test-uuid",
+    hash: "test-hash",
+  };
+  const audioSettings: AudioSettings = {
+    resample: false,
+    samplerate: 44100,
+    channel: 0,
+    speed: 1,
+    filter_order: 4,
+  };
+  const spectrogramSettings: SpectrogramSettings = {
+    window_size: 512,
+    hop_size: 256,
+    window: "hann",
+    pcen: false,
+    min_dB: -80,
+    max_dB: 0,
+    scale: "dB",
+    clamp: false,
+    normalize: false,
+    cmap: "viridis",
+  };
+  const viewport: SpectrogramWindow = {
+    time: { min: 0, max: 10 },
+    freq: { min: 0, max: 22050 },
+  };
+
+  // Mocked functions
+  const getImageUrl = jest.fn().mockReturnValue("test-url");
+
+  beforeEach(() => {
+    jest.useFakeTimers(); // Enable fake timers
   });
 
-  it("clamps the duration to the minimum when the target is too small", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 0.1 },
-      freq: { min: 0, max: 22050 },
-    }; // Very short viewport
-    const samplerate = 44100;
-    const windowSize = 512;
-    const overlap = 0.5;
-
-    const expectedDuration =
-      MININUM_WINDOW_SIZE /
-      ((samplerate * windowSize) / 2) /
-      (1 / (windowSize * (1 - overlap)));
-
-    const result = getWindowDuration(viewport, samplerate, windowSize, overlap);
-    expect(result).toBeCloseTo(expectedDuration);
+  afterEach(() => {
+    jest.clearAllMocks(); // Clear all mocks before each test
+    jest.clearAllTimers();
   });
 
-  it("clamps the duration to the maximum when the target is too large", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 1000 },
-      freq: { min: 0, max: 22050 },
-    }; // Very long viewport
-    const samplerate = 44100;
-    const windowSize = 512;
-    const overlap = 0.5;
+  test("calculates duration and center correctly", () => {
+    (getWindowDuration as jest.Mock).mockReturnValue(2);
+    (getWindowCenter as jest.Mock).mockReturnValue(5);
 
-    const expectedDuration =
-      MAXIMUM_WINDOW_SIZE /
-      ((samplerate * windowSize) / 2) /
-      (1 / (windowSize * (1 - overlap)));
+    const { result } = renderHook(() =>
+      useRecordingSpectrogram({
+        recording,
+        audioSettings,
+        spectrogramSettings,
+        viewport,
+        getImageUrl,
+      }),
+    );
 
-    const result = getWindowDuration(viewport, samplerate, windowSize, overlap);
-    expect(result).toBeCloseTo(expectedDuration);
+    expect(getWindowDuration).toHaveBeenCalledWith(
+      viewport,
+      recording.samplerate,
+      spectrogramSettings.window_size,
+      spectrogramSettings.hop_size,
+    );
+    expect(getWindowCenter).toHaveBeenCalledWith(viewport, 2);
+    expect(result.current.interval).toEqual({ min: 4, max: 6 });
   });
 
-  it("selects the next largest duration from WINDOW_SIZES", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 5 },
-      freq: { min: 0, max: 22050 },
-    };
-    const samplerate = 44100;
-    const windowSize = 512;
-    const overlap = 0.5;
+  test("generates the correct image URL", () => {
+    const { result } = renderHook(() =>
+      useRecordingSpectrogram({
+        recording,
+        audioSettings,
+        spectrogramSettings,
+        viewport,
+        getImageUrl,
+      }),
+    );
 
-    // Example targetSize falling between two sizes in WINDOW_SIZES
-    const targetSize = 256 * 3000;
-    const expectedSize = WINDOW_SIZES.find((d) => d >= targetSize)!; // Find the next largest size
-    const expectedDuration =
-      expectedSize /
-      ((samplerate * windowSize) / 2) /
-      (1 / (windowSize * (1 - overlap)));
-
-    const result = getWindowDuration(viewport, samplerate, windowSize, overlap);
-    expect(result).toBeCloseTo(expectedDuration);
-  });
-});
-
-describe("getWindowCenter", () => {
-  it("calculates the center time correctly when viewport center aligns with hop size", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 10 },
-      freq: { min: 0, max: 22050 },
-    };
-    const windowDuration = 2;
-    const windowOverlap = 0.5;
-
-    // Viewport center perfectly aligns with hop size multiple
-    expect(getWindowCenter(viewport, windowDuration, windowOverlap)).toBe(5);
+    expect(getImageUrl).toHaveBeenCalledWith({
+      recording,
+      interval: result.current.interval,
+      audioSettings,
+      spectrogramSettings,
+    });
   });
 
-  it("adjusts the center time to the nearest hop size multiple", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 10 },
-      freq: { min: 0, max: 22050 },
-    };
-    const windowDuration = 3;
-    const windowOverlap = 0.5;
+  test("calls drawImg with correct parameters on image load", async () => {
+    const { result } = renderHook(() =>
+      useRecordingSpectrogram({
+        recording,
+        audioSettings,
+        spectrogramSettings,
+        viewport,
+        getImageUrl,
+      }),
+    );
 
-    // Viewport center is between hop size multiples
-    expect(getWindowCenter(viewport, windowDuration, windowOverlap)).toBe(4.5);
+    act(() => {
+      result.current.image.current!.dispatchEvent(new Event("load"));
+    });
+
+    act(() => {
+      result.current.drawFn({} as CanvasRenderingContext2D, viewport);
+    });
+
+    expect(drawImg).toHaveBeenCalledWith({
+      ctx: {} as CanvasRenderingContext2D,
+      image: result.current.image.current,
+      window: viewport,
+      bounds: {
+        time: result.current.interval,
+        freq: { min: 0, max: recording.samplerate / 2 },
+      },
+    });
   });
 
-  it("ensures the window starts at the beginning of the recording", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 0, max: 1 },
-      freq: { min: 0, max: 22050 },
-    };
-    const windowDuration = 2;
-    const windowOverlap = 0.5;
-
-    // Viewport starts at 0, center should be half the window duration
-    expect(getWindowCenter(viewport, windowDuration, windowOverlap)).toBe(1);
-  });
-
-  it("handles viewports that do not start at zero", () => {
-    const viewport: SpectrogramWindow = {
-      time: { min: 5, max: 15 },
-      freq: { min: 0, max: 22050 },
-    };
-    const windowDuration = 2;
-    const windowOverlap = 0.5;
-
-    // Viewport shifted, center should be adjusted accordingly
-    expect(getWindowCenter(viewport, windowDuration, windowOverlap)).toBe(10);
-  });
+  // Add tests for error handling, timeout, viewport changes, etc.
 });

@@ -7,9 +7,19 @@ import {
   DEFAULT_WINDOW_SIZE,
   MIN_DB,
 } from "@/constants";
-import { IntervalSchema, SpectrogramParametersSchema } from "@/schemas";
+import {
+  IntervalSchema,
+  AudioSettingsSchema,
+  SpectrogramSettingsSchema,
+} from "@/schemas";
 
-import type { Interval, Recording, SpectrogramParameters } from "@/types";
+import type {
+  Interval,
+  Recording,
+  AudioSettings,
+  SpectrogramSettings,
+  SpectrogramParameters,
+} from "@/types";
 
 // NOTE: This duplication is temporary, while we update code to use the types
 // and schemas files
@@ -52,23 +62,28 @@ export function registerSpectrogramAPI({
 }) {
   function getUrl({
     recording,
-    segment,
-    parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+    interval,
+    audioSettings,
+    spectrogramSettings,
   }: {
     recording: Recording;
-    segment: Interval;
-    parameters?: SpectrogramParameters;
+    interval: Interval;
+    audioSettings: AudioSettings;
+    spectrogramSettings: SpectrogramSettings;
   }) {
     // Validate parameters
-    const parsed_params = SpectrogramParametersSchema.parse(parameters);
-    const parsed_segment = IntervalSchema.parse(segment);
+    const parsed_audio_params = AudioSettingsSchema.parse(audioSettings);
+    const parsed_spectrogram_params =
+      SpectrogramSettingsSchema.parse(spectrogramSettings);
+    const parsed_segment = IntervalSchema.parse(interval);
 
     // Construct query
     const query = {
       recording_uuid: recording.uuid,
       start_time: parsed_segment.min,
       end_time: parsed_segment.max,
-      ...parsed_params,
+      ...parsed_audio_params,
+      ...parsed_spectrogram_params,
     };
 
     const params = new URLSearchParams(

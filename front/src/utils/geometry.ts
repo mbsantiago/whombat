@@ -20,7 +20,20 @@ import type {
   SpectrogramWindow,
   TimeInterval,
   TimeStamp,
+  Interval,
 } from "@/types";
+
+export function intervalIntersection(
+  interval1: Interval,
+  interval2: Interval,
+): Interval | null {
+  const { min: start1, max: end1 } = interval1;
+  const { min: start2, max: end2 } = interval2;
+  const start = Math.max(start1, start2);
+  const end = Math.min(end1, end2);
+  if (start > end) return null;
+  return { min: start, max: end };
+}
 
 export function bboxIntersection(bbox1: Box, bbox2: Box): Box | null {
   const [left1, top1, right1, bottom1] = bbox1;
@@ -907,4 +920,13 @@ export function computeGeometryBBox(geometry: Geometry): Box {
         `Cannot compute bounding box of unknown geometry type ${type}`,
       );
   }
+}
+
+export function scaleInterval(interval: Interval, factor: number) {
+  const duration = interval.max - interval.min;
+  const center = (interval.max + interval.min) / 2;
+  return {
+    min: center - (duration / 2) * factor,
+    max: center + (duration / 2) * factor,
+  };
 }

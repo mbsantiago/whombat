@@ -311,9 +311,9 @@ export const AudioSettingsSchema = z
       .gte(MIN_SAMPLERATE)
       .lte(MAX_SAMPLERATE)
       .optional(),
-    channel: z.coerce.number().positive().int().default(0),
-    low_freq: z.coerce.number().positive().optional(),
-    high_freq: z.coerce.number().positive().optional(),
+    channel: z.coerce.number().nonnegative().int().default(0),
+    low_freq: z.coerce.number().nonnegative().optional(),
+    high_freq: z.coerce.number().nonnegative().optional(),
     filter_order: z.coerce
       .number()
       .positive()
