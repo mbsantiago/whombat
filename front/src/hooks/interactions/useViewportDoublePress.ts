@@ -1,24 +1,13 @@
 import { useMemo } from "react";
 
-import type { Position } from "@/types";
-
-export type DoublePressEvent = {
-  position: Position;
-  altKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  shiftKey: boolean;
-  type: "dblpress";
-  stopPropagation: () => void;
-  preventDefault: () => void;
-};
+import type { Position, DoublePressHandler } from "@/types";
 
 export default function useViewportDoublePress({
   cursorPosition,
   onDoublePress,
 }: {
   cursorPosition: React.MutableRefObject<Position>;
-  onDoublePress?: (event: DoublePressEvent) => void;
+  onDoublePress?: DoublePressHandler;
 }) {
   return useMemo(() => {
     const handleDoublePress = (e: React.MouseEvent) => {

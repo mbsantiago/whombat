@@ -1,10 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
-import drawBBox from "@/draw/bbox";
-import useWindowMotions from "@/hooks/window/useWindowMotions";
-import { scaleBBoxToViewport } from "@/utils/geometry";
-
-import type { Position, SpectrogramWindow } from "@/types";
+import type { SpectrogramWindow } from "@/types";
+import type { ViewportController } from "@/hooks/window/useViewport";
+import useSpectrogramBox from "@/hooks/spectrogram/useSpectrogramBBox";
 
 export const VALID_STYLE = {
   fillAlpha: 0.3,
@@ -35,88 +33,113 @@ function validateWindow(window: SpectrogramWindow) {
 
 export default function useSpectrogramZoom({
   viewport,
-  dimensions,
   onZoom,
-  enabled = true,
 }: {
-  viewport: SpectrogramWindow;
-  dimensions: { width: number; height: number };
+  viewport: ViewportController;
   onZoom?: (window: SpectrogramWindow) => void;
-  enabled?: boolean;
 }) {
-  const [isValid, setIsValid] = useState(false);
-  const [currentWindow, setCurrentWindow] = useState<SpectrogramWindow | null>(
-    null,
-  );
-
-  const handleMoveStart = useCallback(() => {
-    setCurrentWindow(null);
-  }, []);
-
-  const handleMove = useCallback(
-    ({ initial, shift }: { initial: Position; shift: Position }) => {
-      const window = {
-        time: {
-          min: Math.min(initial.time, initial.time + shift.time),
-          max: Math.max(initial.time, initial.time + shift.time),
-        },
-        freq: {
-          min: Math.min(initial.freq, initial.freq - shift.freq),
-          max: Math.max(initial.freq, initial.freq - shift.freq),
-        },
-      };
-      setCurrentWindow(window);
-      setIsValid(validateWindow(window));
+  const { set: setViewport, save } = viewport;
+  const handleZoom = useCallback(
+    (window: SpectrogramWindow) => {
+      save();
+      setViewport(window);
+      onZoom?.(window);
     },
-    [],
+    [setViewport, save, onZoom],
   );
 
-  const handleMoveEnd = useCallback(() => {
-    if (currentWindow == null) return;
-    if (isValid) {
-      onZoom?.(currentWindow);
-    }
-    setCurrentWindow(null);
-  }, [currentWindow, isValid, onZoom]);
-
-  const { props, isDragging } = useWindowMotions({
-    enabled,
+  const { onMove, onMoveStart, onMoveEnd, drawFn } = useSpectrogramBox({
     viewport,
-    dimensions,
-    onMoveStart: handleMoveStart,
-    onMove: handleMove,
-    onMoveEnd: handleMoveEnd,
+    onCreateBox: handleZoom,
   });
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      if (!enabled) return;
-
-      if (currentWindow == null) return;
-      ctx.canvas.style.cursor = "nwse-resize";
-
-      const dimensions = ctx.canvas.getBoundingClientRect();
-      const bbox = scaleBBoxToViewport(
-        dimensions,
-        [
-          currentWindow.time.min,
-          currentWindow.freq.min,
-          currentWindow.time.max,
-          currentWindow.freq.max,
-        ],
-        viewport,
-      );
-
-      const style = isValid ? VALID_STYLE : INVALID_STYLE;
-      drawBBox(ctx, bbox, style);
-    },
-    [enabled, currentWindow, viewport, isValid],
-  );
-
-  return {
-    zoomProps: props,
-    isDragging,
-    isValid,
-    draw,
-  };
+  return { onMove, onMoveStart, onMoveEnd, drawFn };
 }
+
+// export default function useSpectrogramZoom({
+//   viewport,
+//   dimensions,
+//   onZoom,
+//   enabled = true,
+// }: {
+//   viewport: SpectrogramWindow;
+//   dimensions: { width: number; height: number };
+//   onZoom?: (window: SpectrogramWindow) => void;
+//   enabled?: boolean;
+// }) {
+//   const [isValid, setIsValid] = useState(false);
+//   const [currentWindow, setCurrentWindow] = useState<SpectrogramWindow | null>(
+//     null,
+//   );
+//
+//   const handleMoveStart = useCallback(() => {
+//     setCurrentWindow(null);
+//   }, []);
+//
+//   const handleMove = useCallback(
+//     ({ initial, shift }: { initial: Position; shift: Position }) => {
+//       const window = {
+//         time: {
+//           min: Math.min(initial.time, initial.time + shift.time),
+//           max: Math.max(initial.time, initial.time + shift.time),
+//         },
+//         freq: {
+//           min: Math.min(initial.freq, initial.freq - shift.freq),
+//           max: Math.max(initial.freq, initial.freq - shift.freq),
+//         },
+//       };
+//       setCurrentWindow(window);
+//       setIsValid(validateWindow(window));
+//     },
+//     [],
+//   );
+//
+//   const handleMoveEnd = useCallback(() => {
+//     if (currentWindow == null) return;
+//     if (isValid) {
+//       onZoom?.(currentWindow);
+//     }
+//     setCurrentWindow(null);
+//   }, [currentWindow, isValid, onZoom]);
+//
+//   const { props, isDragging } = useWindowMotions({
+//     enabled,
+//     viewport,
+//     dimensions,
+//     onMoveStart: handleMoveStart,
+//     onMove: handleMove,
+//     onMoveEnd: handleMoveEnd,
+//   });
+//
+//   const draw = useCallback(
+//     (ctx: CanvasRenderingContext2D) => {
+//       if (!enabled) return;
+//
+//       if (currentWindow == null) return;
+//       ctx.canvas.style.cursor = "nwse-resize";
+//
+//       const dimensions = ctx.canvas.getBoundingClientRect();
+//       const bbox = scaleBBoxToViewport(
+//         dimensions,
+//         [
+//           currentWindow.time.min,
+//           currentWindow.freq.min,
+//           currentWindow.time.max,
+//           currentWindow.freq.max,
+//         ],
+//         viewport,
+//       );
+//
+//       const style = isValid ? VALID_STYLE : INVALID_STYLE;
+//       drawBBox(ctx, bbox, style);
+//     },
+//     [enabled, currentWindow, viewport, isValid],
+//   );
+//
+//   return {
+//     zoomProps: props,
+//     isDragging,
+//     isValid,
+//     draw,
+//   };
+// }

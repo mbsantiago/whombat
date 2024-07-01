@@ -5,17 +5,7 @@ import useAudio from "@/hooks/audio/useAudio";
 
 import type { Recording, AudioSettings } from "@/types";
 
-export type PlayerControls = {
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  toggleLoop: () => void;
-  togglePlay: () => void;
-};
-
-export type PlayerState = {
+export type AudioController = {
   startTime: number;
   endTime: number;
   volume: number;
@@ -23,6 +13,13 @@ export type PlayerState = {
   speed: number;
   loop: boolean;
   isPlaying: boolean;
+  play: () => void;
+  pause: () => void;
+  stop: () => void;
+  seek: (time: number) => void;
+  setVolume: (volume: number) => void;
+  toggleLoop: () => void;
+  togglePlay: () => void;
 };
 
 export default function useRecordingAudio({
@@ -57,7 +54,7 @@ export default function useRecordingAudio({
   onCanPlay?: () => void;
   onCanPlayThrough?: () => void;
   onAbort?: () => void;
-}) {
+}): AudioController {
   const { speed } = settings;
 
   const url = useMemo(

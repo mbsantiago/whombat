@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef, useMemo } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import type {
   Recording,
   SpectrogramSettings,
@@ -14,10 +14,11 @@ import {
   SPECTROGRAM_CHUNK_BUFFER,
   SPECTROGRAM_CHUNK_SIZE,
 } from "@/utils/spectrogram_segments";
+import useSpectrogramParameters from "./useSpectrogramParameters";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
-import { intervalIntersection, scaleInterval } from "@/utils/geometry";
 import useSegments, { type IntervalState } from "./useSegmentsState";
+import { intervalIntersection, scaleInterval } from "@/utils/geometry";
 
 import api from "@/app/api";
 
@@ -28,72 +29,10 @@ export type RecordingSpectrogramInterface = {
   segments: IntervalState[];
 };
 
-function useSpectrogramParameters({
-  audioSettings,
-  spectrogramSettings,
-}: {
-  audioSettings: AudioSettings;
-  spectrogramSettings: SpectrogramSettings;
-}): SpectrogramParameters {
-  const { channel, resample, samplerate, low_freq, high_freq, filter_order } =
-    audioSettings;
-  const {
-    window_size,
-    hop_size,
-    window,
-    scale,
-    cmap,
-    min_dB,
-    max_dB,
-    normalize,
-    pcen,
-    clamp,
-  } = spectrogramSettings;
-
-  return useMemo(
-    () => ({
-      channel,
-      resample,
-      samplerate,
-      low_freq,
-      high_freq,
-      filter_order,
-      window_size,
-      hop_size,
-      window,
-      scale,
-      cmap,
-      min_dB,
-      max_dB,
-      normalize,
-      pcen,
-      clamp,
-    }),
-    [
-      channel,
-      resample,
-      samplerate,
-      low_freq,
-      high_freq,
-      filter_order,
-      window_size,
-      hop_size,
-      window,
-      scale,
-      cmap,
-      min_dB,
-      max_dB,
-      normalize,
-      pcen,
-      clamp,
-    ],
-  );
-}
-
 /**
  * A custom React hook for managing the display of a recording's spectrogram.
  */
-export default function useRecordingSpectrogram({
+export default function useSpectrogramImages({
   recording,
   audioSettings,
   spectrogramSettings,

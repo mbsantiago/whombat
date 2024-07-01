@@ -1,6 +1,6 @@
 import { useRef, useMemo } from "react";
 
-import type { SpectrogramWindow, Position } from "@/types";
+import type { SpectrogramWindow, HoverHandler } from "@/types";
 
 /**
  * A custom React hook for managing cursor position and interaction on a HTML
@@ -13,7 +13,7 @@ import type { SpectrogramWindow, Position } from "@/types";
  * @example
  * const { positionProps, cursorPosition } = useViewportPosition({
  *   viewport: { time: { min: 0, max: 10 }, freq: { min: 0, max: 1000 } },
- *   onMove: (position) => console.log(position),
+ *   onMove: ({ position }) => console.log(position),
  * });
  *
  * return <canvas {...positionProps} />
@@ -23,7 +23,7 @@ export default function useViewportPosition({
   onMove,
 }: {
   viewport: SpectrogramWindow;
-  onMove?: (position: Position) => void;
+  onMove?: HoverHandler;
 }) {
   const cursorPosition = useRef<{ time: number; freq: number }>({
     time: 0,
@@ -44,7 +44,7 @@ export default function useViewportPosition({
             (1 - y / rect.height) * (viewport.freq.max - viewport.freq.min) +
             viewport.freq.min,
         };
-        onMove?.(cursorPosition.current);
+        onMove?.({ position: cursorPosition.current });
       },
     };
   }, [viewport, onMove]);

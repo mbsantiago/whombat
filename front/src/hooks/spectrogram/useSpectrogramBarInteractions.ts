@@ -8,17 +8,17 @@ import { useCallback } from "react";
 import type { ViewportController } from "@/hooks/window/useViewport";
 import type { Position, ScrollEvent } from "@/types";
 
-export default function useViewportNavigation({
-  centerOn,
-  expand,
-  shift,
-  save,
+export default function useSpectrogramBarInteractions({
+  viewport,
   timeSensitivity = 0.1,
   freqSensitivity = 0.01,
 }: {
+  viewport: ViewportController;
   timeSensitivity?: number;
   freqSensitivity?: number;
-} & Pick<ViewportController, "centerOn" | "expand" | "shift" | "save">) {
+}) {
+  const { centerOn, expand, shift, save } = viewport;
+
   const onScroll = useCallback(
     ({
       deltaX,

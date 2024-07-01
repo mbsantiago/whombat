@@ -1,11 +1,19 @@
 import { useCallback, useState } from "react";
 import { mergeProps } from "react-aria";
 
-import useSpectrogramDrag from "@/hooks/spectrogram/useSpectrogramDrag";
+// import useSpectrogramDrag from "@/hooks/spectrogram/useSpectrogramDrag";
 import useSpectrogramZoom from "@/hooks/spectrogram/useSpectrogramZoom";
 import useWindowScroll from "@/hooks/window/useWindowScroll";
 
-import type { Position, SpectrogramWindow } from "@/types";
+import type {
+  Position,
+  SpectrogramWindow,
+  CanvasHandlers,
+  ScrollEvent,
+  MoveHandler,
+  MoveStartHandler,
+} from "@/types";
+import type { ViewportController } from "@/hooks/window/useViewport";
 
 /**
  * The motion modes supported by the spectrogram motions.
@@ -69,15 +77,15 @@ export default function useSpectrogramMotions({
     enabled ? "drag" : "idle",
   );
 
-  const { dragProps } = useSpectrogramDrag({
-    viewport,
-    dimensions,
-    onDragStart,
-    onDrag,
-    onDragEnd,
-    onDoubleClick,
-    enabled: enabled && motionMode === "drag",
-  });
+  // const { dragProps } = useSpectrogramDrag({
+  //   viewport,
+  //   dimensions,
+  //   onDragStart,
+  //   onDrag,
+  //   onDragEnd,
+  //   onDoubleClick,
+  //   enabled: enabled && motionMode === "drag",
+  // });
 
   const handleOnZoom = useCallback(
     (next: SpectrogramWindow) => {
@@ -198,4 +206,71 @@ export default function useSpectrogramMotions({
     enableZoom: handleEnableZoom,
     disable: handleDisable,
   } as const;
+}
+
+export function useSpectrogramDrag({
+  viewport,
+}: {
+  viewport: ViewportController;
+}): {
+  onMove: MoveHandler;
+  onMoveStart: MoveStartHandler;
+} {
+  const { shift, save } = viewport;
+  const onMove = useCallback(
+    ({ shift: { time, freq } }: { shift: Position }) => {
+      shift({ time: -time, freq });
+    },
+    [shift],
+  );
+  const onMoveStart = useCallback(() => {
+    save();
+  }, [save]);
+  return {
+    onMove,
+    onMoveStart,
+  };
+}
+
+export function useSpectrogramScroll({
+  viewport,
+}: {
+  viewport: ViewportController;
+}): CanvasHandlers {
+  const { expand, shift, zoomToPosition } = viewport;
+
+  const onScroll = useCallback(
+    ({
+      position,
+      ctrlKey,
+      shiftKey,
+      altKey,
+      timeFrac,
+      freqFrac,
+      deltaX,
+      deltaY,
+    }: ScrollEvent) => {
+      if (altKey) {
+        zoomToPosition({
+          position,
+          factor: 1 + 4 * timeFrac * (shiftKey ? deltaX : deltaY),
+        });
+      } else if (ctrlKey) {
+        expand({
+          time: timeFrac * (shiftKey ? deltaX : deltaY),
+          freq: freqFrac * (shiftKey ? deltaY : deltaX),
+        });
+      } else {
+        shift({
+          time: timeFrac * (shiftKey ? deltaY : deltaX),
+          freq: -freqFrac * (shiftKey ? deltaX : deltaY),
+        });
+      }
+    },
+    [expand, shift, zoomToPosition],
+  );
+
+  return {
+    onScroll,
+  };
 }

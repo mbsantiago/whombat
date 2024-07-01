@@ -13,7 +13,7 @@ const TARGET_INITIAL_SIZE = 512 * 1024;
 
 /** Minimum window bandwidth in Hz. */
 const MIN_WINDOW_BANDWIDTH = 0.1;
- 
+
 /** Minimum window duration in seconds */
 const MIN_WINDOW_DURATION = 0.001;
 
@@ -296,7 +296,7 @@ export function zoomWindowToPosition(
 }
 
 function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(Math.round(value), min), max);
+  return Math.min(Math.max(value, min), max);
 }
 
 export function getViewportPosition({

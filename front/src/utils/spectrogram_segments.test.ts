@@ -6,15 +6,8 @@ import {
   MAXIMUM_WINDOW_SIZE,
   DESIRED_VIEWPORT_COVERAGE,
   WINDOW_SIZES,
-  SPECTROGRAM_CHUNK_OVERLAP,
-  SPECTROGRAM_CHUNK_SIZE,
 } from "./spectrogram_segments";
-import type {
-  SpectrogramWindow,
-  Recording,
-  AudioSettings,
-  SpectrogramSettings,
-} from "@/types";
+import type { SpectrogramWindow } from "@/types";
 
 describe("getWindowDuration", () => {
   it("covers the viewport when in range", () => {
@@ -139,105 +132,112 @@ describe("getWindowCenter", () => {
 });
 
 describe("calculateSpectrogramChunkIntervals", () => {
-  const recording: Recording = {
-    duration: 10,
-    samplerate: 44100,
-    channels: 1,
-    time_expansion: 1,
-    created_on: new Date(),
-    path: "test-path",
-    hash: "test-hash",
-    uuid: "test-uuid",
-  };
-  const spectrogramSettings: SpectrogramSettings = {
-    window_size: 512,
-    hop_size: 0.5,
-    window: "hann",
-    clamp: false,
-    normalize: false,
-    cmap: "viridis",
-    pcen: false,
-    scale: "dB",
-    max_dB: 0,
-    min_dB: -80,
-  };
-  const audioSettings: AudioSettings = {
-    channel: 0,
-    resample: false,
-    filter_order: 4,
-    speed: 1,
-  };
+  const duration = 10;
+  const samplerate = 44100;
+  const overlap = 0.5;
+  const windowSize = 0.02;
+  const chunkSize = 256 * 256;
+  const chunkBuffer = 0.1;
 
   it("generates intervals that cover the entire recording duration", () => {
     const intervals = calculateSpectrogramChunkIntervals({
-      recording,
-      audioSettings,
-      spectrogramSettings,
+      duration,
+      windowSize,
+      overlap,
+      samplerate,
+      chunkSize,
+      chunkBuffer,
     });
 
-    // Check if the last interval's max value is greater than or equal to the recording duration
     expect(intervals[intervals.length - 1].max).toBeGreaterThanOrEqual(
-      recording.duration,
+      duration,
     );
   });
 
-  it("maintains the correct overlap between consecutive intervals", () => {
+  it("generates intervals that are of the correct duration", () => {
+    const targetWidth = 100;
+    const targetHeight = 50;
+    const duration = 10000;
+
     const intervals = calculateSpectrogramChunkIntervals({
-      recording,
-      audioSettings,
-      spectrogramSettings,
+      duration,
+      windowSize: targetHeight * 2,
+      overlap,
+      samplerate: 1,
+      chunkSize: targetWidth * targetHeight,
+      chunkBuffer: 0,
     });
 
-    for (let i = 1; i < intervals.length; i++) {
-      const currentInterval = intervals[i];
-      const previousInterval = intervals[i - 1];
-      const overlap = previousInterval.max - currentInterval.min;
+    const secsPerBin = targetHeight * 2 * (1 - overlap);
+    const targetDuration = targetWidth * secsPerBin;
 
-      // Check if the overlap matches the expected overlap based on SPECTROGRAM_CHUNK_OVERLAP
-      const expectedOverlap =
-        SPECTROGRAM_CHUNK_OVERLAP * (currentInterval.max - currentInterval.min);
-      expect(overlap).toBeCloseTo(expectedOverlap); // Use toBeCloseTo for floating-point comparison
-    }
+    intervals.forEach((interval) => {
+      // Make sure that intervals are of the correct duration
+      expect(interval.max - interval.min).toBeCloseTo(targetDuration);
+    });
   });
 
-  it("handles resampling correctly", () => {
-    const audioSettingsTest: AudioSettings = {
-      ...audioSettings,
-      resample: true,
-      samplerate: 22050,
-    };
+  it("adds a buffer to the chunk size", () => {
+    const targetWidth = 100;
+    const targetHeight = 50;
+    const duration = 10000;
+    const chunkBuffer = 0.1;
 
     const intervals = calculateSpectrogramChunkIntervals({
-      recording,
-      audioSettings: audioSettingsTest,
-      spectrogramSettings,
+      duration,
+      windowSize: targetHeight * 2,
+      overlap,
+      samplerate: 1,
+      chunkSize: targetWidth * targetHeight,
+      chunkBuffer,
     });
 
-    // Adjust expected calculations based on the resampled samplerate
-    const approxSpecHeight =
-      (spectrogramSettings.window_size * audioSettingsTest.samplerate!) / 2;
-    const approxSpecWidth = SPECTROGRAM_CHUNK_SIZE / approxSpecHeight;
-    const chunkDuration =
-      approxSpecWidth *
-      (1 - spectrogramSettings.hop_size) *
-      spectrogramSettings.window_size;
-    const chunkHop = chunkDuration * (1 - SPECTROGRAM_CHUNK_OVERLAP);
-    const expectedIntervalCount = Math.ceil(recording.duration / chunkHop);
+    const secsPerBin = targetHeight * 2 * (1 - overlap);
+    const targetDuration = targetWidth * secsPerBin;
 
-    expect(intervals.length).toBe(expectedIntervalCount);
+    intervals.forEach((interval) => {
+      expect(interval.max - interval.min).toBeCloseTo(
+        targetDuration + 2 * chunkBuffer,
+      );
+    });
+  });
+
+  it("generates intervals that are aligned to the chunk size", () => {
+    const targetWidth = 100;
+    const targetHeight = 50;
+    const duration = 10000;
+
+    const intervals = calculateSpectrogramChunkIntervals({
+      duration,
+      windowSize: targetHeight * 2,
+      overlap,
+      samplerate: 1,
+      chunkSize: targetWidth * targetHeight,
+      chunkBuffer: 0,
+    });
+
+    const secsPerBin = targetHeight * 2 * (1 - overlap);
+    const targetDuration = targetWidth * secsPerBin;
+    const expectedChunks = duration / targetDuration;
+
+    // Check if the number of intervals is correct
+    expect(intervals.length).toBe(expectedChunks);
+
+    intervals.forEach((interval) => {
+      // Make sure that intervals are aligned to the target duration
+      expect(interval.min % targetDuration).toBeCloseTo(0);
+    });
   });
 
   // Additional Test Cases
   it("returns an empty array if recording duration is zero", () => {
-    const recordingTest: Recording = {
-      ...recording,
-      duration: 0,
-    };
-
     const intervals = calculateSpectrogramChunkIntervals({
-      recording: recordingTest,
-      audioSettings,
-      spectrogramSettings,
+      duration: 0,
+      windowSize,
+      overlap,
+      samplerate,
+      chunkSize,
+      chunkBuffer,
     });
     expect(intervals).toEqual([]);
   });

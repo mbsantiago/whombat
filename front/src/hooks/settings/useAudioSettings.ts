@@ -41,8 +41,6 @@ export type AudioSettingsInterface = {
   setChannel: (channel: number) => void;
   /** Resets all settings to their initial values. */
   reset: () => void;
-  /** Adjusts the settings for compatibility with a recording. */
-  adjustToRecording: (recording: Recording) => AudioSettings;
 };
 
 export function getSpeedOptions(samplerate: number): SpeedOption[] {
@@ -219,45 +217,6 @@ export default function useAudioSettings({
     });
   }, [changeSettings]);
 
-  const adjustToRecording = useCallback(
-    (recording: Recording) => {
-      return produce(settings, (draft) => {
-        if (draft.samplerate == null) {
-          draft.samplerate = recording.samplerate;
-        }
-
-        const samplerate = draft.resample
-          ? draft.samplerate
-          : recording.samplerate;
-
-        // Make sure the low frequency is less than half the sample rate
-        if (draft.low_freq != null) {
-          draft.low_freq = Math.min(draft.low_freq, samplerate / 2);
-        }
-
-        // Make sure the high frequency is less than half the sample rate
-        if (draft.high_freq != null) {
-          draft.high_freq = Math.min(draft.high_freq, samplerate / 2);
-        }
-
-        // Make sure the high frequency is greater than the low frequency
-        if (draft.low_freq != null && draft.high_freq != null) {
-          if (draft.low_freq > draft.high_freq) {
-            draft.high_freq = draft.low_freq;
-          }
-        }
-
-        // Make sure the speed is within the valid range
-        const speedOptions = getSpeedOptions(samplerate);
-
-        if (!speedOptions.some((option) => option.value === draft.speed)) {
-          draft.speed = getDefaultSpeedOption(speedOptions).value;
-        }
-      });
-    },
-    [settings],
-  );
-
   return {
     settings,
     setSpeed,
@@ -266,6 +225,42 @@ export default function useAudioSettings({
     setChannel,
     reset,
     toggleResample,
-    adjustToRecording,
   };
+}
+
+export function adjustToRecording(
+  settings: AudioSettings,
+  recording: Recording,
+): AudioSettings {
+  return produce(settings, (draft) => {
+    if (draft.samplerate == null) {
+      draft.samplerate = recording.samplerate;
+    }
+
+    const samplerate = draft.resample ? draft.samplerate : recording.samplerate;
+
+    // Make sure the low frequency is less than half the sample rate
+    if (draft.low_freq != null) {
+      draft.low_freq = Math.min(draft.low_freq, samplerate / 2);
+    }
+
+    // Make sure the high frequency is less than half the sample rate
+    if (draft.high_freq != null) {
+      draft.high_freq = Math.min(draft.high_freq, samplerate / 2);
+    }
+
+    // Make sure the high frequency is greater than the low frequency
+    if (draft.low_freq != null && draft.high_freq != null) {
+      if (draft.low_freq > draft.high_freq) {
+        draft.high_freq = draft.low_freq;
+      }
+    }
+
+    // Make sure the speed is within the valid range
+    const speedOptions = getSpeedOptions(samplerate);
+
+    if (!speedOptions.some((option) => option.value === draft.speed)) {
+      draft.speed = getDefaultSpeedOption(speedOptions).value;
+    }
+  });
 }

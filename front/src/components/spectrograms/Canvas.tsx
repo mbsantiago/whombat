@@ -1,12 +1,14 @@
 import type {
-  MoveStartEvent,
-  MoveMoveEvent,
-  MoveEndEvent,
-  PressEvent,
-} from "react-aria";
-
-import type { SpectrogramWindow, Position, ScrollEvent } from "@/types";
-import type { DoublePressEvent } from "@/hooks/interactions/useViewportDoublePress";
+  SpectrogramWindow,
+  DrawFn,
+  HoverHandler,
+  MoveStartHandler,
+  MoveEndHandler,
+  MoveHandler,
+  PressHandler,
+  ScrollHandler,
+  DoublePressHandler,
+} from "@/types";
 import useCanvas from "@/hooks/canvas/useCanvas";
 
 /**
@@ -30,33 +32,28 @@ export default function Canvas({
   onDoubleClick,
 }: {
   /** The function to use for drawing on the canvas. */
-  drawFn: (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => void;
+  drawFn: DrawFn;
   /** The current viewport of the spectrogram. */
   viewport: SpectrogramWindow;
   /** The height of the canvas. */
   height: number | string;
   /** A callback that is called when the cursor hovers over the canvas. */
-  onHover?: (position: Position) => void;
+  onHover?: HoverHandler;
   /** A callback that is called when the user starts moving the cursor on the
    * canvas. */
-  onMoveStart?: (event: { position: Position } & MoveStartEvent) => void;
+  onMoveStart?: MoveStartHandler;
   /** A callback that is called when the user stops moving the cursor on the
    * canvas. */
-  onMoveEnd?: (event: { position: Position } & MoveEndEvent) => void;
+  onMoveEnd?: MoveEndHandler;
   /** A callback that is called when the user moves the cursor on the canvas.
    * */
-  onMove?: (
-    event: {
-      position: Position;
-      initial: Position;
-      shift: Position;
-    } & MoveMoveEvent,
-  ) => void;
+  onMove?: MoveHandler;
   /** A callback that is called when the user presses the canvas. */
-  onPress?: (event: { position: Position } & PressEvent) => void;
+  onPress?: PressHandler;
   /** A callback that is called when the user scrolls the canvas. */
-  onScroll?: (event: ScrollEvent) => void;
-  onDoubleClick?: (event: DoublePressEvent) => void;
+  onScroll?: ScrollHandler;
+  /** A callback that is called when the user double clicks the canvas. */
+  onDoubleClick?: DoublePressHandler;
 }) {
   const { ref, props } = useCanvas({
     drawFn,

@@ -1,26 +1,31 @@
 import Button from "@/components/Button";
-import { DragIcon, HomeIcon, ZoomIcon } from "@/components/icons";
+import { DragIcon, HomeIcon, ZoomIcon, BackIcon } from "@/components/icons";
 import Tooltip from "@/components/Tooltip";
 import KeyboardKey from "@/components/KeyboardKey";
 
-export default function SpectrogramControls({
-  canDrag,
-  canZoom,
-  onDrag,
-  onZoom,
-  onReset,
+export default function ViewportToolbar({
+  state,
+  onDragClick,
+  onBackClick,
+  onZoomClick,
+  onResetClick,
 }: {
-  canDrag: boolean;
-  canZoom: boolean;
-  onReset?: () => void;
-  onDrag?: () => void;
-  onZoom?: () => void;
+  state: "panning" | "zooming" | "idle";
+  onResetClick?: () => void;
+  onBackClick?: () => void;
+  onDragClick?: () => void;
+  onZoomClick?: () => void;
 }) {
   return (
     <div className="flex space-x-2">
       <Tooltip tooltip="Reset view" placement="bottom">
-        <Button variant="secondary" onClick={onReset}>
+        <Button variant="secondary" onClick={onResetClick}>
           <HomeIcon className="w-5 h-5" />
+        </Button>
+      </Tooltip>
+      <Tooltip tooltip="Previous view" placement="bottom">
+        <Button variant="secondary" onClick={onBackClick}>
+          <BackIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
       <Tooltip
@@ -34,7 +39,10 @@ export default function SpectrogramControls({
         }
         placement="bottom"
       >
-        <Button variant={canDrag ? "primary" : "secondary"} onClick={onDrag}>
+        <Button
+          variant={state === "panning" ? "primary" : "secondary"}
+          onClick={onDragClick}
+        >
           <DragIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
@@ -49,7 +57,10 @@ export default function SpectrogramControls({
         }
         placement="bottom"
       >
-        <Button variant={canZoom ? "primary" : "secondary"} onClick={onZoom}>
+        <Button
+          variant={state === "zooming" ? "primary" : "secondary"}
+          onClick={onZoomClick}
+        >
           <ZoomIcon className="w-5 h-5" />
         </Button>
       </Tooltip>

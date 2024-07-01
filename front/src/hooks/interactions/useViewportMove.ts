@@ -2,7 +2,13 @@ import { useRef, useCallback } from "react";
 import { useMove } from "react-aria";
 import type { MoveStartEvent, MoveMoveEvent, MoveEndEvent } from "react-aria";
 
-import type { SpectrogramWindow, Position } from "@/types";
+import type {
+  SpectrogramWindow,
+  Position,
+  MoveHandler,
+  MoveEndHandler,
+  MoveStartHandler,
+} from "@/types";
 
 /**
  * A custom React hook for handling move interactions (start, move, end) on a
@@ -31,15 +37,9 @@ export default function useViewportMove({
 }: {
   viewport: SpectrogramWindow;
   cursorPosition: React.MutableRefObject<Position>;
-  onMoveStart?: (event: { position: Position } & MoveStartEvent) => void;
-  onMoveEnd?: (event: { position: Position } & MoveEndEvent) => void;
-  onMove?: (
-    event: {
-      position: Position;
-      initial: Position;
-      shift: Position;
-    } & MoveMoveEvent,
-  ) => void;
+  onMoveStart?: MoveStartHandler;
+  onMoveEnd?: MoveEndHandler;
+  onMove?: MoveHandler;
 }) {
   const initialPosition = useRef<Position | null>(null);
   const currentPosition = useRef<Position | null>(null);

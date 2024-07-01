@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { SpectrogramWindow, ScrollEvent, Position } from "@/types";
+import type { SpectrogramWindow, Position, ScrollHandler } from "@/types";
 
 /**
  * A custom React hook for handling scroll events on an HTML element.
@@ -28,7 +28,7 @@ export default function useViewportScroll({
   /** The current spectrogram window being displayed in the canvas. */
   viewport: SpectrogramWindow;
   /** The callback function to handle scroll events. */
-  onScroll?: (event: ScrollEvent) => void;
+  onScroll?: ScrollHandler;
 }) {
   const props = useMemo(() => {
     const handleScroll = (e: React.WheelEvent) => {

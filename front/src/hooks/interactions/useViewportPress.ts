@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { usePress } from "react-aria";
 import type { PressEvent } from "react-aria";
 
-import type { Position } from "@/types";
+import type { Position, PressHandler } from "@/types";
 
 /**
  * A custom React hook for handling press interactions (clicks/taps) on a
@@ -24,7 +24,7 @@ export default function useViewportPress({
   onPress,
   cursorPosition,
 }: {
-  onPress?: (event: { position: Position } & PressEvent) => void;
+  onPress?: PressHandler;
   cursorPosition: React.MutableRefObject<Position>;
 }) {
   const handlePress = useCallback(

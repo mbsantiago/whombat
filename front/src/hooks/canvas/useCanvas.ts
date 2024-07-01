@@ -1,22 +1,24 @@
 import { useRef, useCallback } from "react";
 import { mergeProps } from "react-aria";
-import type {
-  MoveStartEvent,
-  MoveMoveEvent,
-  MoveEndEvent,
-  PressEvent,
-} from "react-aria";
 
-import type { SpectrogramWindow, Position, ScrollEvent } from "@/types";
+import type {
+  SpectrogramWindow,
+  HoverHandler,
+  MoveStartHandler,
+  MoveEndHandler,
+  MoveHandler,
+  PressHandler,
+  ScrollHandler,
+  DoublePressHandler,
+  DrawFn,
+} from "@/types";
 import useCaptureScroll from "@/hooks/utils/useCaptureScroll";
 import useCanvasDraw from "@/hooks/draw/useCanvas";
 import useViewportMove from "@/hooks/interactions/useViewportMove";
 import useViewportPosition from "@/hooks/interactions/useViewportPosition";
 import useViewportPress from "@/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/hooks/interactions/useViewportScroll";
-import useViewportDoublePress, {
-  type DoublePressEvent,
-} from "@/hooks/interactions/useViewportDoublePress";
+import useViewportDoublePress from "@/hooks/interactions/useViewportDoublePress";
 
 /**
  * A comprehensive custom React hook for managing various interactions and
@@ -52,21 +54,15 @@ export default function useCanvas({
   onScroll,
   onDoubleClick,
 }: {
-  drawFn: (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => void;
+  drawFn: DrawFn;
   viewport: SpectrogramWindow;
-  onHover?: (position: Position) => void;
-  onMoveStart?: (event: { position: Position } & MoveStartEvent) => void;
-  onMoveEnd?: (event: { position: Position } & MoveEndEvent) => void;
-  onMove?: (
-    event: {
-      position: Position;
-      initial: Position;
-      shift: Position;
-    } & MoveMoveEvent,
-  ) => void;
-  onPress?: (event: { position: Position } & PressEvent) => void;
-  onScroll?: (event: ScrollEvent) => void;
-  onDoubleClick?: (event: DoublePressEvent) => void;
+  onHover?: HoverHandler;
+  onMoveStart?: MoveStartHandler;
+  onMoveEnd?: MoveEndHandler;
+  onMove?: MoveHandler;
+  onPress?: PressHandler;
+  onScroll?: ScrollHandler;
+  onDoubleClick?: DoublePressHandler;
 }): {
   ref: React.RefObject<HTMLCanvasElement>;
   props: React.DOMAttributes<HTMLCanvasElement>;

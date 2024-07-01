@@ -3,7 +3,7 @@ import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import Player from "@/components/audio/Player";
 import Card from "@/components/Card";
 import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import SpectrogramControls from "@/components/spectrograms/SpectrogramControls";
+import ViewportToolbar from "@/components/spectrograms/ViewportToolbar";
 import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
 import SpectrogramPredictedTags from "@/components/spectrograms/SpectrogramPredictedTags";
 import type {
@@ -157,12 +157,12 @@ export default function ClipPredictionSpectrogram(props: {
     <div>
       <Card>
         <div className="flex flex-row gap-4">
-          <SpectrogramControls
-            canDrag={spectrogram.canDrag}
-            canZoom={spectrogram.canZoom}
-            onReset={spectrogram.reset}
-            onDrag={spectrogram.enableDrag}
-            onZoom={spectrogram.enableZoom}
+          <ViewportToolbar
+            dragEnabled={spectrogram.canDrag}
+            zoomEnabled={spectrogram.canZoom}
+            onResetClick={spectrogram.reset}
+            onDragClick={spectrogram.enableDrag}
+            onZoomClick={spectrogram.enableZoom}
           />
           <SpectrogramSettings
             samplerate={recording.samplerate}
