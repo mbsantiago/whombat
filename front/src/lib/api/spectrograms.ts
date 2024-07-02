@@ -6,10 +6,10 @@ import {
   DEFAULT_WINDOW,
   DEFAULT_WINDOW_SIZE,
   MIN_DB,
-} from "@/constants";
+} from "@/lib/constants";
 import { IntervalSchema, SpectrogramParametersSchema } from "@/schemas";
 
-import type { Interval, Recording, SpectrogramParameters } from "@/types";
+import type { Interval, Recording, SpectrogramParameters } from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",

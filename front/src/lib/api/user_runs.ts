@@ -9,7 +9,7 @@ import {
   UserSchema,
 } from "@/schemas";
 
-import type { UserRun } from "@/types";
+import type { UserRun } from "@/lib/types";
 
 export const UserRunFilterSchema = z.object({
   user: UserSchema.optional(),

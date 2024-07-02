@@ -7,7 +7,7 @@ import AnnotationProjectDetail from "@/components/annotation_projects/Annotation
 
 import AnnotationProjectContext from "./context";
 
-import type { AnnotationProject } from "@/types";
+import type { AnnotationProject } from "@/lib/types";
 
 export default function Page() {
   const annotationProject = useContext(AnnotationProjectContext);

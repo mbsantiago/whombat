@@ -5,11 +5,11 @@ import toast from "react-hot-toast";
 
 import Loading from "@/components/Loading";
 import ModelRunDetail from "@/components/model_runs/ModelRunDetail";
-import useModelRun from "@/hooks/api/useModelRun";
+import useModelRun from "@/lib/hooks/api/useModelRun";
 import EvaluationSetContext from "../context";
 
 import type { AxiosError } from "axios";
-import type { ModelRun, Evaluation } from "@/types";
+import type { ModelRun, Evaluation } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

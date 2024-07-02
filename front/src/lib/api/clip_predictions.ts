@@ -12,7 +12,7 @@ import {
   PredictedTagFilterSchema
 } from "@/schemas";
 
-import type { ClipPrediction, Tag } from "@/types";
+import type { ClipPrediction, Tag } from "@/lib/types";
 
 export const ClipPredictionCreateSchema = z.object({
   tags: z.array(PredictionTagSchema).optional(),

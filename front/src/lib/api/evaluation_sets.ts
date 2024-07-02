@@ -10,7 +10,7 @@ import type {
   ModelRun,
   UserRun,
   Tag,
-} from "@/types";
+} from "@/lib/types";
 
 export const EvaluationSetFilterSchema = z.object({
   search: z.string().optional(),

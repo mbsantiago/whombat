@@ -11,7 +11,7 @@ import {
   UserRunSchema,
 } from "@/schemas";
 
-import type { Evaluation } from "@/types";
+import type { Evaluation } from "@/lib/types";
 
 export const EvaluationCreateSchema = z.object({
   task: z.string(),

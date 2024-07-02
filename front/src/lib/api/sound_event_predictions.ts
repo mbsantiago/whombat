@@ -14,7 +14,7 @@ import {
   UserRunSchema,
 } from "@/schemas";
 
-import type { ClipPrediction, SoundEventPrediction, Tag } from "@/types";
+import type { ClipPrediction, SoundEventPrediction, Tag } from "@/lib/types";
 
 export const SoundEventPredictionCreateSchema = z.object({
   geometry: GeometrySchema,

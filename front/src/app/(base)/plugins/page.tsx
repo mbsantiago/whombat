@@ -1,7 +1,7 @@
 "use client";
 import Hero from "@/components/Hero";
 import PluginInfo from "@/components/PluginInfo";
-import usePlugins from "@/hooks/api/usePlugins";
+import usePlugins from "@/lib/hooks/api/usePlugins";
 
 export default function Page() {
   const {

@@ -11,7 +11,7 @@ import {
 
 import { GetManySchema, Page } from "./common";
 
-import type { Clip } from "@/types";
+import type { Clip } from "@/lib/types";
 
 export const ClipCreateSchema = z
   .object({

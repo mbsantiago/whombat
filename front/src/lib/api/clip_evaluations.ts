@@ -13,7 +13,7 @@ import {
   TagSchema,
 } from "@/schemas";
 
-import type { ClipEvaluation } from "@/types";
+import type { ClipEvaluation } from "@/lib/types";
 
 export const ClipEvaluationPageSchema = Page(ClipEvaluationSchema);
 

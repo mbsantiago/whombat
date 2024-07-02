@@ -12,7 +12,7 @@ import { type ReactNode } from "react";
 import toast from "react-hot-toast";
 
 import Loading from "@/app/loading";
-import useDataset from "@/hooks/api/useDataset";
+import useDataset from "@/lib/hooks/api/useDataset";
 
 import DatasetContext from "./context";
 import DatasetNavHeader from "./nav";

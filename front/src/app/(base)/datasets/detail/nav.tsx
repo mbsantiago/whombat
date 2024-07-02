@@ -9,7 +9,7 @@ import { H1 } from "@/components/Headings";
 import { DatasetIcon, RecordingsIcon } from "@/components/icons";
 import Tabs from "@/components/Tabs";
 
-import type { Dataset } from "@/types";
+import type { Dataset } from "@/lib/types";
 
 /**
  * Navigation header component for the dataset pages.

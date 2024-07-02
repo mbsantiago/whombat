@@ -7,7 +7,7 @@ import EvaluationSetModelRuns from "@/components/evaluation_sets/EvaluationSetMo
 
 import EvaluationSetContext from "../context";
 
-import type { ModelRun } from "@/types";
+import type { ModelRun } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

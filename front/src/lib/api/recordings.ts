@@ -14,7 +14,7 @@ import {
 } from "@/schemas";
 
 import type { NoteCreate } from "@/lib/api/notes";
-import type { Feature, Note, Recording, Tag } from "@/types";
+import type { Feature, Note, Recording, Tag } from "@/lib/types";
 
 export const RecordingPageSchema = Page(RecordingSchema);
 

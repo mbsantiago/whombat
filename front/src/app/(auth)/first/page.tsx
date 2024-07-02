@@ -6,7 +6,7 @@ import { WhombatIcon } from "@/components/icons";
 import UserCreateForm from "@/components/users/UserCreateForm";
 import Info from "@/components/Info";
 
-import type { User } from "@/types";
+import type { User } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

@@ -15,7 +15,7 @@ import {
   TagSchema,
 } from "@/schemas";
 
-import type { Tag } from "@/types";
+import type { Tag } from "@/lib/types";
 
 export const TagPageSchema = Page(TagSchema);
 

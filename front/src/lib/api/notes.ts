@@ -11,7 +11,7 @@ import {
   UserSchema,
 } from "@/schemas";
 
-import type { Note } from "@/types";
+import type { Note } from "@/lib/types";
 
 export const NotePageSchema = Page(NoteSchema);
 

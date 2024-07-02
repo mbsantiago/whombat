@@ -10,7 +10,7 @@ import {
   EvaluationSchema,
 } from "@/schemas";
 
-import type { ModelRun, Evaluation, EvaluationSet } from "@/types";
+import type { ModelRun, Evaluation, EvaluationSet } from "@/lib/types";
 
 export const ModelRunFilterSchema = z.object({
   search: z.string().optional(),

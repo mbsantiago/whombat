@@ -6,7 +6,7 @@
  *
  * This module provides a set of reusable hooks that encapsulate complex logic
  * and state management specific to the needs of this application.  While the
- * hooks in `@/hooks` are more general-purpose and can be reused in different
+ * hooks in `@/lib/hooks` are more general-purpose and can be reused in different
  * contexts, the hooks here are tailored to leverage application-specific data,
  * services, and components.
  *
@@ -20,6 +20,6 @@
  * Within this module, you have full access to all Next.js-provided hooks,
  * storage mechanisms, and API hooks. However, to promote reusability,
  * testability, and better modularity, aim to implement most of your logic and
- * behavior in 'generic' hooks located in the `@/hooks/` folder. This module
+ * behavior in 'generic' hooks located in the `@/lib/hooks/` folder. This module
  * should primarily handle app-specific data processing and interactions.**
  */

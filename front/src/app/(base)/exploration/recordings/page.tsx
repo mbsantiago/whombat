@@ -5,7 +5,7 @@ import useStore from "@/app/store";
 
 import RecordingExplorer from "@/components/recordings/RecordingExplore";
 
-import type { SpectrogramParameters } from "@/types";
+import type { SpectrogramParameters } from "@/lib/types";
 
 export default function Page() {
   const parameters = useStore((state) => state.spectrogramSettings);

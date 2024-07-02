@@ -10,7 +10,7 @@ import {
   SoundEventSchema,
 } from "@/schemas";
 
-import type { Feature, Recording, SoundEvent } from "@/types";
+import type { Feature, Recording, SoundEvent } from "@/lib/types";
 
 export const SoundEventCreateSchema = z.object({
   geometry: GeometrySchema,

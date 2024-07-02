@@ -7,7 +7,7 @@ import EvaluationSetDetail from "@/components/evaluation_sets/EvaluationSetDetai
 
 import EvaluationSetContext from "./context";
 
-import type { EvaluationSet } from "@/types";
+import type { EvaluationSet } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

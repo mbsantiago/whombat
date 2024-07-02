@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import type { Dataset } from "@/types";
+import type { Dataset } from "@/lib/types";
 
 const DatasetContext = createContext<Dataset | null>(null);
 

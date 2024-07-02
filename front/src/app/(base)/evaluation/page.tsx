@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import EvaluationSetList from "@/components/evaluation_sets/EvaluationSetList";
 import Hero from "@/components/Hero";
 
-import type { EvaluationSet } from "@/types";
+import type { EvaluationSet } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

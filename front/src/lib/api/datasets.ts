@@ -5,7 +5,7 @@ import { DatasetSchema, RecordingStateSchema } from "@/schemas";
 
 import { GetManySchema, Page } from "./common";
 
-import type { Dataset, RecordingState } from "@/types";
+import type { Dataset, RecordingState } from "@/lib/types";
 
 export const DatasetFilterSchema = z.object({
   search: z.string().optional(),

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { UserSchema } from "@/schemas";
 
-import type { User } from "@/types";
+import type { User } from "@/lib/types";
 
 export const LoginSchema = z.object({
   username: z.string(),

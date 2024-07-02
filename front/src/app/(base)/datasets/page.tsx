@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 import DatasetList from "@/components/datasets/DatasetList";
 import Hero from "@/components/Hero";
 
-import type { Dataset } from "@/types";
+import type { Dataset } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

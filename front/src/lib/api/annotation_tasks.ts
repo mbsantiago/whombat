@@ -17,7 +17,7 @@ import type {
   AnnotationTask,
   Clip,
   ClipAnnotation,
-} from "@/types";
+} from "@/lib/types";
 
 export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
 

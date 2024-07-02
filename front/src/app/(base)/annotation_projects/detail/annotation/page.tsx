@@ -7,14 +7,14 @@ import toast from "react-hot-toast";
 import UserContext from "@/app/(base)/context";
 import AnnotateTasks from "@/components/annotation/AnnotateTasks";
 import Loading from "@/components/Loading";
-import useAnnotationTask from "@/hooks/api/useAnnotationTask";
+import useAnnotationTask from "@/lib/hooks/api/useAnnotationTask";
 import useStore from "@/app/store";
-import { changeURLParam } from "@/utils/url";
+import { changeURLParam } from "@/lib/utils/url";
 
 import AnnotationProjectContext from "../context";
 
 import api from "@/app/api";
-import type { AnnotationTask, SpectrogramParameters, Tag } from "@/types";
+import type { AnnotationTask, SpectrogramParameters, Tag } from "@/lib/types";
 
 export default function Page() {
   const search = useSearchParams();

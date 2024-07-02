@@ -5,7 +5,7 @@ import useStore from "@/app/store";
 
 import ClipAnnotationExplorer from "@/components/clip_annotations/ClipAnnotationExplore";
 
-import type { SpectrogramParameters } from "@/types";
+import type { SpectrogramParameters } from "@/lib/types";
 
 export default function Page() {
   const parameters = useStore((state) => state.spectrogramSettings);

@@ -7,7 +7,7 @@ import { DatasetRecordingsNav } from "@/components/datasets/DatasetRecordingsNav
 
 import DatasetContext from "../context";
 
-import type { Recording } from "@/types";
+import type { Recording } from "@/lib/types";
 
 import "./page.css";
 

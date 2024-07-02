@@ -4,7 +4,7 @@ import { z } from "zod";
 import { GetManySchema, Page } from "@/lib/api/common";
 import { AnnotationProjectSchema } from "@/schemas";
 
-import type { AnnotationProject, Tag } from "@/types";
+import type { AnnotationProject, Tag } from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/annotation_projects/",

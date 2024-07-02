@@ -6,12 +6,12 @@ import toast from "react-hot-toast";
 import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
 import RecordingDetail from "@/components/recordings/RecordingDetail";
-import useRecording from "@/hooks/api/useRecording";
+import useRecording from "@/lib/hooks/api/useRecording";
 import useStore from "@/app/store";
 import useSettings from "@/app/hooks/useSettings";
-import useRecordingSpectrogram from "@/hooks/recordings/useRecordingSpectrogram";
+import useRecordingSpectrogram from "@/lib/hooks/recordings/useRecordingSpectrogram";
 
-import type { SpectrogramParameters } from "@/types";
+import type { SpectrogramParameters } from "@/lib/types";
 import type { AxiosError } from "axios";
 
 export default function Page() {

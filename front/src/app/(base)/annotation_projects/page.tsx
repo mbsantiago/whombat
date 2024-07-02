@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import AnnotationProjectList from "@/components/annotation_projects/AnnotationProjectList";
 import Hero from "@/components/Hero";
 
-import type { AnnotationProject } from "@/types";
+import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjects() {
   const router = useRouter();

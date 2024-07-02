@@ -11,7 +11,7 @@ import {
   TagSchema,
 } from "@/schemas";
 
-import type { Clip, ClipAnnotation, Note, Tag } from "@/types";
+import type { Clip, ClipAnnotation, Note, Tag } from "@/lib/types";
 
 export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
 
