@@ -1,4 +1,4 @@
-import createEditHook from "@/lib/hooks/edit/createEditHook";
+import createEditHook from "@/lib/hooks/draw/createEditHook";
 import { shiftGeometry, shiftPolygon } from "@/lib/utils/geometry";
 
 import type { EditableElement } from "@/lib/draw/edit";

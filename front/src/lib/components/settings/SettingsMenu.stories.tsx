@@ -1,16 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withActions } from "@storybook/addon-actions/decorator";
 
 import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 
 const meta: Meta<typeof SettingsMenu> = {
-  title: "SettingsMenu",
-  parameters: {
-    actions: { argTypesRegex: "^on.*" },
-  },
-  tags: ["autodocs"],
+  title: "Settings/SettingsMenu",
   component: SettingsMenu,
-  decorators: [withActions],
 };
 
 export default meta;

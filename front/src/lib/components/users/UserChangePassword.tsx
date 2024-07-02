@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import type { User } from "@/lib/types";
-import useActiveUser from "@/lib/hooks/api/useActiveUser";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 import { useForm } from "react-hook-form";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
 

@@ -7,7 +7,7 @@ import {
 import Header from "@/lib/components/Header";
 import { H1 } from "@/lib/components/Headings";
 import { DatasetIcon, EditIcon, TagsIcon, TasksIcon } from "@/lib/components/icons";
-import Tabs from "@/lib/components/Tabs";
+import Tabs from "@/lib/components/navigation/SectionTabs";
 
 import type { AnnotationProject } from "@/lib/types";
 

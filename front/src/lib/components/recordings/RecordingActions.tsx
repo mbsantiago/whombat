@@ -7,7 +7,7 @@ import {
   WarningIcon,
 } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
-import useRecording from "@/lib/hooks/api/useRecording";
+import useRecording from "@/app/hooks/api/useRecording";
 
 import type { Recording } from "@/lib/types";
 

@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { withActions } from "@storybook/addon-actions/decorator";
 
 import useViewport from "@/lib/hooks/window/useViewport";
 import Canvas from "@/lib/components/spectrograms/Canvas";
@@ -8,12 +7,8 @@ import drawImage from "@/lib/draw/image";
 import type { SpectrogramWindow, ScrollEvent, Position } from "@/lib/types";
 
 const meta: Meta<typeof Canvas> = {
-  title: "Canvas",
-  parameters: {
-    actions: { argTypesRegex: "^on.*" },
-  },
+  title: "Spectrograms/Canvas",
   component: Canvas,
-  decorators: [withActions],
 };
 
 export default meta;
@@ -54,7 +49,13 @@ const CanvasWithHooks = () => {
     ctx: CanvasRenderingContext2D,
     viewport: SpectrogramWindow,
   ) => {
-    drawImage({ ctx, image, viewport: viewport, imageBounds: bounds });
+    drawImage({
+      ctx,
+      image,
+      viewport: viewport,
+      imageBounds: bounds,
+      buffer: bounds,
+    });
   };
 
   const { viewport, expand, shift, zoomToPosition, centerOn } = useViewport({

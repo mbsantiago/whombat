@@ -7,7 +7,7 @@ import {
   EditableDescriptionData,
 } from "@/lib/components/Description";
 import UserChangePassword from "@/lib/components/users/UserChangePassword";
-import useActiveUser from "@/lib/hooks/api/useActiveUser";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 
 export default function UserProfile(props: { user: User }) {
   const { user } = props;

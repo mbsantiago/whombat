@@ -20,9 +20,9 @@ import useCanvas from "@/lib/hooks/canvas/useCanvas";
  * logic (`drawFn`) and handle a wide range of events.
  */
 export default function Canvas({
-  drawFn,
   viewport,
   height = 400,
+  drawFn,
   onHover,
   onMoveStart,
   onMoveEnd,
@@ -32,7 +32,7 @@ export default function Canvas({
   onDoubleClick,
 }: {
   /** The function to use for drawing on the canvas. */
-  drawFn: DrawFn;
+  drawFn?: DrawFn;
   /** The current viewport of the spectrogram. */
   viewport: SpectrogramWindow;
   /** The height of the canvas. */

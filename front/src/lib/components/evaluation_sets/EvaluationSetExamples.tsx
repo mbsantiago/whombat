@@ -7,8 +7,8 @@ import { H2, H3 } from "@/lib/components/Headings";
 import { AddIcon, TasksIcon } from "@/lib/components/icons";
 import { InputGroup } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";
-import useAnnotationTasks from "@/lib/hooks/api/useAnnotationTasks";
-import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
+import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
 import type { AnnotationProject, AnnotationTask, EvaluationSet } from "@/lib/types";
 

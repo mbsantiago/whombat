@@ -14,7 +14,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { Input } from "@/lib/components/inputs/index";
 import KeyboardKey from "@/lib/components/KeyboardKey";
 import Tag from "@/lib/components/tags/Tag";
-import useTags from "@/lib/hooks/api/useTags";
+import useTags from "@/app/hooks/api/useTags";
 import useStore from "@/app/store";
 
 import type { TagCreate, TagFilter } from "@/lib/api/tags";

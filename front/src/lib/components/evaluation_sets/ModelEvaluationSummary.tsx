@@ -5,7 +5,7 @@ import Empty from "@/lib/components/Empty";
 import { H4 } from "@/lib/components/Headings";
 import { AddIcon, ModelIcon } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
-import useModelRuns from "@/lib/hooks/api/useModelRuns";
+import useModelRuns from "@/app/hooks/api/useModelRuns";
 
 import type { EvaluationSet } from "@/lib/types";
 

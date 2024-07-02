@@ -1,6 +1,6 @@
 import Card from "@/lib/components/Card";
 import Link from "@/lib/components/Link";
-import useDataset from "@/lib/hooks/api/useDataset";
+import useDataset from "@/app/hooks/api/useDataset";
 
 import type { Dataset } from "@/lib/types";
 

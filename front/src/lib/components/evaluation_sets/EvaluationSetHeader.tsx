@@ -9,7 +9,7 @@ import {
   TasksIcon,
   UserIcon,
 } from "@/lib/components/icons";
-import Tabs from "@/lib/components/Tabs";
+import Tabs from "@/lib/components/navigation/SectionTabs";
 
 import type { EvaluationSet } from "@/lib/types";
 

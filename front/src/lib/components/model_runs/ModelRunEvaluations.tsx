@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import api from "@/app/api";
-import useEvaluations from "@/lib/hooks/api/useEvaluations";
+import useEvaluations from "@/app/hooks/api/useEvaluations";
 import { H4 } from "@/lib/components/Headings";
 import Card from "@/lib/components/Card";
 import Loading from "@/lib/components/Loading";

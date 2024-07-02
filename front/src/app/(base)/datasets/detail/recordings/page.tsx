@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { useContext } from "react";
 
 import DatasetRecordings from "@/lib/components/datasets/DatasetRecordings";
-import { DatasetRecordingsNav } from "@/lib/components/datasets/DatasetRecordingsNav";
+import NavBar from "@/app/(base)/datasets/detail/components/NavBar";
 
 import DatasetContext from "../context";
 
@@ -24,7 +24,7 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      <DatasetRecordingsNav dataset={dataset} />
+      <NavBar dataset={dataset} />
       <DatasetRecordings
         dataset={dataset}
         getRecordingLink={getRecordingLink}

@@ -51,11 +51,11 @@ export default function Player({
   loop,
   speed,
   speedOptions,
-  play,
-  pause,
-  seek,
-  toggleLoop,
-  setSpeed,
+  onPlay,
+  onPause,
+  onSeek,
+  onToggleLoop,
+  onSpeedChange,
 }: {
   currentTime: number;
   startTime: number;
@@ -64,11 +64,11 @@ export default function Player({
   loop: boolean;
   speed: number;
   speedOptions: SpeedOption[];
-  play: () => void;
-  pause: () => void;
-  seek: (time: number) => void;
-  toggleLoop: () => void;
-  setSpeed: (speed: number) => void;
+  onPlay?: () => void;
+  onPause?: () => void;
+  onSeek?: (time: number) => void;
+  onToggleLoop?: () => void;
+  onSpeedChange?: (speed: number) => void;
 }) {
   return (
     <div className="flex flex-row gap-2 items-center px-2 max-w-max rounded-md border border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700">
@@ -79,8 +79,8 @@ export default function Player({
           COMMON_BUTTON_CLASSES,
         )}
         onClick={() => {
-          if (playing) return pause();
-          play();
+          if (playing) return onPause?.();
+          onPlay?.();
         }}
       >
         {playing ? (
@@ -97,7 +97,7 @@ export default function Player({
           "dark:text-stone-400 dark:hover:text-stone-200 text-stone-600 hover:text-stone-800":
             !loop,
         })}
-        onClick={() => toggleLoop()}
+        onClick={() => onToggleLoop?.()}
       >
         <LoopIcon className="w-5 h-5" />
       </button>
@@ -107,11 +107,11 @@ export default function Player({
         minValue={startTime}
         maxValue={endTime}
         step={0.01}
-        onChange={(value) => seek(value as number)}
+        onChange={(value) => onSeek?.(value as number)}
       />
       <SelectSpeed
         speed={speed}
-        onChange={(value) => setSpeed(value)}
+        onChange={(value) => onSpeedChange?.(value)}
         options={speedOptions}
       />
     </div>

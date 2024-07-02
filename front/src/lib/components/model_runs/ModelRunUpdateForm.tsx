@@ -8,7 +8,7 @@ import {
 } from "@/lib/components/Description";
 import { TextArea } from "@/lib/components/inputs/index";
 import DeleteModelRun from "@/lib/components/model_runs/ModelRunDelete";
-import useModelRun from "@/lib/hooks/api/useModelRun";
+import useModelRun from "@/app/hooks/api/useModelRun";
 
 import type { ModelRunUpdate } from "@/lib/api/model_runs";
 import type { ModelRun } from "@/lib/types";

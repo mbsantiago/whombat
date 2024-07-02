@@ -13,7 +13,7 @@ import {
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import StackedList from "@/lib/components/lists/StackedList";
-import useEvaluationSets from "@/lib/hooks/api/useEvaluationSets";
+import useEvaluationSets from "@/app/hooks/api/useEvaluationSets";
 
 import type { EvaluationSet } from "@/lib/types";
 

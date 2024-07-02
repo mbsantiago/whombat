@@ -44,8 +44,8 @@ import useViewportDoublePress from "@/lib/hooks/interactions/useViewportDoublePr
  * return <canvas ref={ref} {...props} />
  */
 export default function useCanvas({
-  drawFn,
   viewport,
+  drawFn,
   onHover,
   onMoveStart,
   onMoveEnd,
@@ -54,8 +54,8 @@ export default function useCanvas({
   onScroll,
   onDoubleClick,
 }: {
-  drawFn: DrawFn;
   viewport: SpectrogramWindow;
+  drawFn?: DrawFn;
   onHover?: HoverHandler;
   onMoveStart?: MoveStartHandler;
   onMoveEnd?: MoveEndHandler;
@@ -108,7 +108,7 @@ export default function useCanvas({
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      drawFn(ctx, viewport);
+      drawFn?.(ctx, viewport);
     },
     [drawFn, viewport],
   );

@@ -5,7 +5,7 @@ import { TagsIcon } from "@/lib/components/icons";
 import Info from "@/lib/components/Info";
 import TagList from "@/lib/components/tags/TagList";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
 import type { EvaluationSet } from "@/lib/types";
 

@@ -1,16 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withActions } from "@storybook/addon-actions/decorator";
 
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 
 const meta: Meta<typeof SpectrogramSettings> = {
-  title: "SpectrogramSettings",
-  parameters: {
-    actions: { argTypesRegex: "^on.*" },
-  },
-  tags: ["autodocs"],
+  title: "Settings/SpectrogramSettings",
   component: SpectrogramSettings,
-  decorators: [withActions],
 };
 
 export default meta;

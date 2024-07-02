@@ -12,7 +12,7 @@ import {
   RecordingIcon,
   SoundEventIcon,
 } from "@/lib/components/icons";
-import Tabs from "@/lib/components/Tabs";
+import Tabs from "@/lib/components/navigation/SectionTabs";
 
 export default function ExplorationHeader() {
   const router = useRouter();

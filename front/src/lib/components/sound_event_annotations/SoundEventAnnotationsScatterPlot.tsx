@@ -7,7 +7,7 @@ import Card from "@/lib/components/Card";
 import Loading from "@/lib/components/Loading";
 import Empty from "@/lib/components/Empty";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
-import useSoundEventAnnotation from "@/lib/hooks/api/useSoundEventAnnotation";
+import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 import useScatterPlot from "@/lib/hooks/useScatterPlot";
 

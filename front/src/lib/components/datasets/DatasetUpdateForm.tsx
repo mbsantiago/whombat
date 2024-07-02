@@ -6,7 +6,7 @@ import {
   EditableDescriptionData,
 } from "@/lib/components/Description";
 import { Input, TextArea } from "@/lib/components/inputs/index";
-import useDataset from "@/lib/hooks/api/useDataset";
+import useDataset from "@/app/hooks/api/useDataset";
 
 import type { Dataset } from "@/lib/types";
 

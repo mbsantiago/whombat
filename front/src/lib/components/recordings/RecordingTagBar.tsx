@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { TagIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
-import useRecording from "@/lib/hooks/api/useRecording";
+import useRecording from "@/app/hooks/api/useRecording";
 import useStore from "@/app/store";
 
 import type { Recording, Tag } from "@/lib/types";

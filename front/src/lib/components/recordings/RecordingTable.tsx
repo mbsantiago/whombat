@@ -11,7 +11,7 @@ import Pagination from "@/lib/components/lists/Pagination";
 import SelectedMenu from "@/lib/components/tables/SelectedMenu";
 import Table from "@/lib/components/tables/Table";
 import { parsePosition } from "@/lib/components/tables/TableMap";
-import useRecordings from "@/lib/hooks/api/useRecordings";
+import useRecordings from "@/app/hooks/api/useRecordings";
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
 import useStore from "@/app/store";
 

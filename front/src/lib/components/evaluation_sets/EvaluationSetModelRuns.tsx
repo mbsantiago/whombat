@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from "react";
 import ModelRunList from "@/lib/components/model_runs/ModelRunList";
 import type { EvaluationSet, ModelRun } from "@/lib/types";
-import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
 export default function EvaluationSetModelRuns(props: {
   evaluationSet: EvaluationSet;

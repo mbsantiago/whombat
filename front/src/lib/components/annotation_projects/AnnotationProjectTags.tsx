@@ -3,7 +3,7 @@ import { TagsIcon } from "@/lib/components/icons";
 import Info from "@/lib/components/Info";
 import TagList from "@/lib/components/tags/TagList";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
 

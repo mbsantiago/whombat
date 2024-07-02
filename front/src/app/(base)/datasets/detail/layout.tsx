@@ -12,10 +12,10 @@ import { type ReactNode } from "react";
 import toast from "react-hot-toast";
 
 import Loading from "@/app/loading";
-import useDataset from "@/lib/hooks/api/useDataset";
+import useDataset from "@/app/hooks/api/useDataset";
 
 import DatasetContext from "./context";
-import DatasetNavHeader from "./nav";
+import DatasetTabs from "./components/DatasetTabs";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <DatasetContext.Provider value={dataset.data}>
-      <DatasetNavHeader dataset={dataset.data} />
+      <DatasetTabs dataset={dataset.data} />
       <div className="py-4 px-8">{children}</div>
     </DatasetContext.Provider>
   );

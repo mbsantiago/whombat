@@ -12,7 +12,7 @@ import ClipAnnotationTags from "@/lib/components/clip_annotations/ClipAnnotation
 import Empty from "@/lib/components/Empty";
 import Loading from "@/lib/components/Loading";
 import useAnnotationTasks from "@/lib/hooks/annotation/useAnnotateTasks";
-import useClipAnnotation from "@/lib/hooks/api/useClipAnnotation";
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 
 import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import type { TagFilter } from "@/lib/api/tags";

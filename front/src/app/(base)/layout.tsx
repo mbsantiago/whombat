@@ -7,7 +7,7 @@ import Loading from "@/app/loading";
 import { WhombatIcon } from "@/lib/components/icons";
 import { NavBar } from "@/lib/components/navigation/NavBar";
 import { SideMenu } from "@/lib/components/navigation/SideMenu";
-import useActiveUser from "@/lib/hooks/api/useActiveUser";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 
 import UserContext from "./context";
 

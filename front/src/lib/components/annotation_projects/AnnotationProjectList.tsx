@@ -13,7 +13,7 @@ import {
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import StackedList from "@/lib/components/lists/StackedList";
-import useAnnotationProjects from "@/lib/hooks/api/useAnnotationProjects";
+import useAnnotationProjects from "@/app/hooks/api/useAnnotationProjects";
 
 import type { AnnotationProject } from "@/lib/types";
 

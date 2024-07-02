@@ -14,7 +14,7 @@ import {
 } from "@/lib/api/annotation_tasks";
 import api from "@/app/api";
 import useAnnotateTasksKeyShortcuts from "@/lib/hooks/annotation/useAnnotateTasksKeyShortcuts";
-import useAnnotationTasks from "@/lib/hooks/api/useAnnotationTasks";
+import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import { type Filter } from "@/lib/hooks/utils/useFilter";
 import { shuffleArray } from "@/lib/utils/arrays";
 

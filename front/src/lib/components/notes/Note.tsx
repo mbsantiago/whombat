@@ -3,7 +3,7 @@ import { type ReactNode } from "react";
 import Button from "@/lib/components/Button";
 import { DeleteIcon, IssueIcon, NoteIcon } from "@/lib/components/icons";
 import Loading from "@/lib/components/Loading";
-import useNote from "@/lib/hooks/api/useNote";
+import useNote from "@/app/hooks/api/useNote";
 
 import type { Note, User } from "@/lib/types";
 

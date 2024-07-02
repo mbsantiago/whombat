@@ -5,7 +5,7 @@ import Empty from "@/lib/components/Empty";
 import { H4 } from "@/lib/components/Headings";
 import { TrainIcon, UserIcon } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
-import useUserRuns from "@/lib/hooks/api/useUserRuns";
+import useUserRuns from "@/app/hooks/api/useUserRuns";
 
 import type { EvaluationSet } from "@/lib/types";
 

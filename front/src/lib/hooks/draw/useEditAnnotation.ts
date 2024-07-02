@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 import { type Style } from "@/lib/draw/styles";
-import useEditGeometry from "@/lib/hooks/edit/useEditGeometry";
+import useEditGeometry from "@/lib/hooks/draw/useEditGeometry";
 import {
   scaleGeometryToViewport,
   scaleGeometryToWindow,

@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { H3 } from "@/lib/components/Headings";
 import { RecordingIcon } from "@/lib/components/icons";
 import Tooltip from "@/lib/components/Tooltip";
-import useRecording from "@/lib/hooks/api/useRecording";
+import useRecording from "@/app/hooks/api/useRecording";
 
 import RecordingDate from "./RecordingDate";
 import RecordingLocation from "./RecordingLocation";

@@ -6,7 +6,7 @@ import DatasetDetail from "@/lib/components/datasets/DatasetDetail";
 
 import DatasetContext from "./context";
 
-export default function DatasetHome() {
+export default function Page() {
   const dataset = useContext(DatasetContext);
 
   if (dataset == null) {

@@ -1,18 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withActions } from "@storybook/addon-actions/decorator";
 
 import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
 import useViewport from "@/lib/hooks/window/useViewport";
 import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
 
 const meta: Meta<typeof SpectrogramBar> = {
-  title: "SpectrogramBar",
-  parameters: {
-    actions: { argTypesRegex: "^on.*" },
-  },
-  tags: ["autodocs"],
+  title: "Spectrograms/SpectrogramBar",
   component: SpectrogramBar,
-  decorators: [withActions],
 };
 
 export default meta;

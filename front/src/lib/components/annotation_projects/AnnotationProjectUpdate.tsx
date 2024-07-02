@@ -6,7 +6,7 @@ import {
 import { H3 } from "@/lib/components/Headings";
 import { Input, TextArea } from "@/lib/components/inputs/index";
 import Loading from "@/lib/components/Loading";
-import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
 

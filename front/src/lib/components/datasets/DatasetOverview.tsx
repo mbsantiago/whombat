@@ -11,8 +11,8 @@ import {
   WarningIcon,
 } from "@/lib/components/icons";
 import MetricBadge from "@/lib/components/MetricBadge";
-import useDataset from "@/lib/hooks/api/useDataset";
-import useNotes from "@/lib/hooks/api/useNotes";
+import useDataset from "@/app/hooks/api/useDataset";
+import useNotes from "@/app/hooks/api/useNotes";
 
 import type { Dataset } from "@/lib/types";
 

@@ -1,63 +1,22 @@
 "use client";
-import { notFound, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useContext } from "react";
-import toast from "react-hot-toast";
+import { notFound } from "next/navigation";
+import { useContext } from "react";
 
 import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
 import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
-import useRecording from "@/lib/hooks/api/useRecording";
-import useStore from "@/app/store";
-import useSettings from "@/app/hooks/useSettings";
-import useRecordingSpectrogram from "@/lib/hooks/recordings/useRecordingSpectrogram";
+import RecordingSpectrogram from "../components/RecordingSpectrogram";
 
-import type { SpectrogramParameters } from "@/lib/types";
-import type { AxiosError } from "axios";
+import useSettings from "@/app/hooks/useSettings";
+import useRecording from "../hooks/useRecording";
 
 export default function Page() {
   const user = useContext(UserContext);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const recordingUUID = searchParams.get("recording_uuid");
-  const datasetUUID = searchParams.get("dataset_uuid");
 
-  const parameters = useStore((state) => state.spectrogramSettings);
-  const setParameters = useStore((state) => state.setSpectrogramSettings);
+  const settings = useSettings();
+  const { recording, uuid, onDelete } = useRecording();
 
-  const returnToRecordings = useCallback(() => {
-    if (datasetUUID == null) router.push("/datasets/");
-    router.push(`/datasets/detail/recordings/?dataset_uuid=${datasetUUID}`);
-  }, [router, datasetUUID]);
-
-  const handleError = useCallback(
-    (error: AxiosError) => {
-      if (error.response?.status === 404) {
-        toast.error("Recording not found");
-        returnToRecordings();
-      }
-    },
-    [returnToRecordings],
-  );
-
-  const onParametersSave = useCallback(
-    (parameters: SpectrogramParameters) => {
-      toast.success("Parameters saved");
-      setParameters(parameters);
-    },
-    [setParameters],
-  );
-
-  const onDelete = useCallback(() => {
-    toast.success("Recording deleted");
-    returnToRecordings();
-  }, [returnToRecordings]);
-
-  const recording = useRecording({
-    uuid: recordingUUID ?? undefined,
-    onError: handleError,
-  });
-
-  if (recordingUUID == null) {
+  if (uuid == null) {
     notFound();
   }
 
@@ -75,6 +34,14 @@ export default function Page() {
       recording={recording.data}
       currentUser={user}
       onDelete={onDelete}
-    />
+    >
+      <RecordingSpectrogram
+        recording={recording.data}
+        audioSettings={settings.audioSettings}
+        spectrogramSettings={settings.spectrogramSettings}
+        onReset={settings.reset}
+        onSave={settings.save}
+      />
+    </RecordingDetail>
   );
 }

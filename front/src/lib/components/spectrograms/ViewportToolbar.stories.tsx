@@ -1,16 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withActions } from "@storybook/addon-actions/decorator";
 
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 
 const meta: Meta<typeof ViewportToolbar> = {
-  title: "ViewportToolbar",
-  parameters: {
-    actions: { argTypesRegex: "^on.*" },
-  },
-  tags: ["autodocs"],
+  title: "Spectrograms/ViewportToolbar",
   component: ViewportToolbar,
-  decorators: [withActions],
 };
 
 export default meta;

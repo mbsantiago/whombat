@@ -8,7 +8,7 @@ import {
   WarningIcon,
 } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
-import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
 import type { EvaluationSet } from "@/lib/types";
 

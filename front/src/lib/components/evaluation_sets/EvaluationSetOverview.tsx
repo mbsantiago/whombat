@@ -13,9 +13,9 @@ import {
 } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
 import MetricBadge from "@/lib/components/MetricBadge";
-import useClipAnnotations from "@/lib/hooks/api/useClipAnnotations";
-import useModelRuns from "@/lib/hooks/api/useModelRuns";
-import useUserRuns from "@/lib/hooks/api/useUserRuns";
+import useClipAnnotations from "@/app/hooks/api/useClipAnnotations";
+import useModelRuns from "@/app/hooks/api/useModelRuns";
+import useUserRuns from "@/app/hooks/api/useUserRuns";
 
 import type { EvaluationSet } from "@/lib/types";
 

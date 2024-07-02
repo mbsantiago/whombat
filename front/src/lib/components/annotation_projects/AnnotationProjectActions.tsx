@@ -9,7 +9,7 @@ import {
   WarningIcon,
 } from "@/lib/components/icons";
 import Link from "@/lib/components/Link";
-import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
 

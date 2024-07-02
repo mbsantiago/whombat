@@ -14,7 +14,7 @@ import Link from "@/lib/components/Link";
 import Loading from "@/lib/components/Loading";
 import MetricBadge from "@/lib/components/MetricBadge";
 import ProgressBar from "@/lib/components/ProgressBar";
-import useAnnotationTasks from "@/lib/hooks/api/useAnnotationTasks";
+import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 
 import type { AnnotationProject } from "@/lib/types";

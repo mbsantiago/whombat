@@ -2,7 +2,7 @@ import Card from "@/lib/components/Card";
 import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
 import SoundEventAnnotationNotes from "@/lib/components/sound_event_annotations/SoundEventAnnotationNotes";
 import SoundEventAnnotationTags from "@/lib/components/sound_event_annotations/SoundEventAnnotationTags";
-import useSoundEventAnnotation from "@/lib/hooks/api/useSoundEventAnnotation";
+import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
 
 import type { TagFilter } from "@/lib/api/tags";
 import type { ClipAnnotation, SoundEventAnnotation, Tag } from "@/lib/types";

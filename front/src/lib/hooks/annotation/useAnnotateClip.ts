@@ -5,7 +5,7 @@ import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
 import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
 import useAnnotationEdit from "@/lib/hooks/annotation/useAnnotationEdit";
 import useAnnotationSelect from "@/lib/hooks/annotation/useAnnotationSelect";
-import useClipAnnotation from "@/lib/hooks/api/useClipAnnotation";
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 import useSpectrogramTags from "@/lib/hooks/spectrogram/useSpectrogramTags";
 import useAnnotateClipKeyShortcuts from "@/lib/hooks/annotation/useAnnotateClipKeyShortcuts";
 

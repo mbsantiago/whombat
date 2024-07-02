@@ -11,8 +11,8 @@ import { H2, H3 } from "@/lib/components/Headings";
 import { FilterIcon, TasksIcon } from "@/lib/components/icons";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";
-import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
-import useRecordings from "@/lib/hooks/api/useRecordings";
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
+import useRecordings from "@/app/hooks/api/useRecordings";
 import { getRandomSubarray } from "@/lib/utils/arrays";
 import { type ClipExtraction, computeClips } from "@/lib/utils/clips";
 

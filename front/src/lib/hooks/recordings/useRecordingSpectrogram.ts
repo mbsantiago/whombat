@@ -48,7 +48,6 @@ export default function useRecordingSpectrogram({
 
   return {
     viewport,
-    bounds,
     audio,
     state,
     barProps,

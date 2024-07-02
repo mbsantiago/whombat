@@ -12,7 +12,7 @@ import StackedList from "@/lib/components/lists/StackedList";
 import Loading from "@/lib/components/Loading";
 import ModelRunComponent from "@/lib/components/model_runs/ModelRun";
 import ModelRunImport from "@/lib/components/model_runs/ModelRunImport";
-import useModelRuns from "@/lib/hooks/api/useModelRuns";
+import useModelRuns from "@/app/hooks/api/useModelRuns";
 
 import type { ModelRunFilter } from "@/lib/api/model_runs";
 import type { ModelRun } from "@/lib/types";

@@ -5,7 +5,7 @@ import Card from "@/lib/components/Card";
 import { H3 } from "@/lib/components/Headings";
 import { CheckIcon, NotesIcon } from "@/lib/components/icons";
 import NoteComponent from "@/lib/components/notes/Note";
-import useNotes from "@/lib/hooks/api/useNotes";
+import useNotes from "@/app/hooks/api/useNotes";
 
 import type { Dataset, Note } from "@/lib/types";
 

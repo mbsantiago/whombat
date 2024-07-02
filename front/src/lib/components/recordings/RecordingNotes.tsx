@@ -5,7 +5,7 @@ import { H3 } from "@/lib/components/Headings";
 import { NotesIcon } from "@/lib/components/icons";
 import CreateNote from "@/lib/components/notes/CreateNote";
 import Feed from "@/lib/components/notes/Feed";
-import useRecording from "@/lib/hooks/api/useRecording";
+import useRecording from "@/app/hooks/api/useRecording";
 
 import type { Note, Recording, User } from "@/lib/types";
 

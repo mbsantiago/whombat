@@ -76,19 +76,19 @@ export default function RecordingSpectrogram({
   audioCurrentTime?: number;
   audioIsPlaying?: boolean;
   audioLoop?: boolean;
-  onSpectrogramHover: HoverHandler;
-  onSpectrogramMoveStart: MoveStartHandler;
-  onSpectrogramMoveEnd: MoveEndHandler;
-  onSpectrogramMove: MoveHandler;
-  onSpectrogramPress: PressHandler;
-  onSpectrogramScroll: ScrollHandler;
-  onSpectrogramDoubleClick: DoublePressHandler;
-  spectrogramDrawFn: DrawFn;
-  onAudioPlay: () => void;
-  onAudioPause: () => void;
-  onAudioSeek: (time: number) => void;
-  onAudioLoopToggle: () => void;
-  onAudioSpeedChange: (speed: number) => void;
+  onSpectrogramHover?: HoverHandler;
+  onSpectrogramMoveStart?: MoveStartHandler;
+  onSpectrogramMoveEnd?: MoveEndHandler;
+  onSpectrogramMove?: MoveHandler;
+  onSpectrogramPress?: PressHandler;
+  onSpectrogramScroll?: ScrollHandler;
+  onSpectrogramDoubleClick?: DoublePressHandler;
+  spectrogramDrawFn?: DrawFn;
+  onAudioPlay?: () => void;
+  onAudioPause?: () => void;
+  onAudioSeek?: (time: number) => void;
+  onAudioLoopToggle?: () => void;
+  onAudioSpeedChange?: (speed: number) => void;
   onAudioSettingsChange?: (settings: AudioSettings) => void;
   onSpectrogramSettingsChange?: (settings: SpectrogramSettings) => void;
   onViewportReset?: () => void;
@@ -124,11 +124,11 @@ export default function RecordingSpectrogram({
           isPlaying={audioIsPlaying}
           loop={audioLoop}
           speed={audioSettings.speed}
-          play={onAudioPlay}
-          pause={onAudioPause}
-          seek={onAudioSeek}
-          toggleLoop={onAudioLoopToggle}
-          setSpeed={onAudioSpeedChange}
+          onPlay={onAudioPlay}
+          onPause={onAudioPause}
+          onSeek={onAudioSeek}
+          onToggleLoop={onAudioLoopToggle}
+          onSpeedChange={onAudioSpeedChange}
           speedOptions={speedOptions}
         />
         <SettingsMenu

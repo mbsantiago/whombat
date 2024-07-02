@@ -16,7 +16,7 @@ import {
 import Button from "@/lib/components/Button";
 import Link from "@/lib/components/Link";
 import Tooltip from "@/lib/components/Tooltip";
-import useActiveUser from "@/lib/hooks/api/useActiveUser";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 
 import type { User } from "@/lib/types";
 import type { ComponentProps } from "react";

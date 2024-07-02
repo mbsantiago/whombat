@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 import Loading from "@/lib/components/Loading";
 import ModelRunDetail from "@/lib/components/model_runs/ModelRunDetail";
-import useModelRun from "@/lib/hooks/api/useModelRun";
+import useModelRun from "@/app/hooks/api/useModelRun";
 import EvaluationSetContext from "../context";
 
 import type { AxiosError } from "axios";

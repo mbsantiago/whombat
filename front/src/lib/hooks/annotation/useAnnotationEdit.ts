@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import useEditAnnotationGeometry from "@/lib/hooks/edit/useEditAnnotation";
+import useEditAnnotationGeometry from "@/lib/hooks/draw/useEditAnnotation";
 
 import type {
   Dimensions,
