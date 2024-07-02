@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-import AnnotationProjectList from "@/components/annotation_projects/AnnotationProjectList";
-import Hero from "@/components/Hero";
+import AnnotationProjectList from "@/lib/components/annotation_projects/AnnotationProjectList";
+import Hero from "@/lib/components/Hero";
 
 import type { AnnotationProject } from "@/lib/types";
 

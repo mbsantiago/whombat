@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 
-import Button, { getButtonClassName } from "@/components/Button";
-import FilterBar from "@/components/filters/FilterBar";
-import FilterMenu from "@/components/filters/FilterMenu";
-import taskFilterDefs from "@/components/filters/tasks";
-import { FilterIcon, NextIcon, PreviousIcon } from "@/components/icons";
-import Toggle from "@/components/inputs/Toggle";
-import ProgressBar from "@/components/ProgressBar";
-import Tooltip from "@/components/Tooltip";
-import Dialog from "@/components/Dialog";
-import KeyboardKey from "@/components/KeyboardKey";
-import ShortcutHelper from "@/components/ShortcutHelper";
+import Button, { getButtonClassName } from "@/lib/components/Button";
+import FilterBar from "@/lib/components/filters/FilterBar";
+import FilterMenu from "@/lib/components/filters/FilterMenu";
+import taskFilterDefs from "@/lib/components/filters/tasks";
+import { FilterIcon, NextIcon, PreviousIcon } from "@/lib/components/icons";
+import Toggle from "@/lib/components/inputs/Toggle";
+import ProgressBar from "@/lib/components/ProgressBar";
+import Tooltip from "@/lib/components/Tooltip";
+import Dialog from "@/lib/components/Dialog";
+import KeyboardKey from "@/lib/components/KeyboardKey";
+import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 import { AUDIO_KEY_SHORTCUTS } from "@/lib/hooks/audio/useAudioKeyShortcuts";
 import { SPECTROGRAM_KEY_SHORTCUTS } from "@/lib/hooks/spectrogram/useSpectrogramKeyShortcuts";

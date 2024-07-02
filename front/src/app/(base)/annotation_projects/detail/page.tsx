@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import AnnotationProjectDetail from "@/components/annotation_projects/AnnotationProjectDetail";
+import AnnotationProjectDetail from "@/lib/components/annotation_projects/AnnotationProjectDetail";
 
 import AnnotationProjectContext from "./context";
 

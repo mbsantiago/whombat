@@ -1,9 +1,9 @@
 import FilterBadge, {
   NumberFilterBadge,
-} from "@/components/filters/FilterBadge";
-import { type FilterDef } from "@/components/filters/FilterMenu";
-import { FloatFilter, TagFilter } from "@/components/filters/Filters";
-import { TagIcon, ScoreIcon } from "@/components/icons";
+} from "@/lib/components/filters/FilterBadge";
+import { type FilterDef } from "@/lib/components/filters/FilterMenu";
+import { FloatFilter, TagFilter } from "@/lib/components/filters/Filters";
+import { TagIcon, ScoreIcon } from "@/lib/components/icons";
 
 import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 

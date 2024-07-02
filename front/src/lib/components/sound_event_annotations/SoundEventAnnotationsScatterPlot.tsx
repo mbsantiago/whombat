@@ -3,10 +3,10 @@ import Plot from "react-plotly.js";
 import { useMount } from "react-use";
 
 import api from "@/app/api";
-import Card from "@/components/Card";
-import Loading from "@/components/Loading";
-import Empty from "@/components/Empty";
-import SoundEventAnnotationSpectrogram from "@/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
+import Card from "@/lib/components/Card";
+import Loading from "@/lib/components/Loading";
+import Empty from "@/lib/components/Empty";
+import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import useSoundEventAnnotation from "@/lib/hooks/api/useSoundEventAnnotation";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 import useScatterPlot from "@/lib/hooks/useScatterPlot";

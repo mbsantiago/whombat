@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 
-import Card from "@/components/Card";
+import Card from "@/lib/components/Card";
 import {
   DescriptionData,
   DescriptionTerm,
   EditableDescriptionData,
-} from "@/components/Description";
-import { TextArea } from "@/components/inputs/index";
-import DeleteModelRun from "@/components/model_runs/ModelRunDelete";
+} from "@/lib/components/Description";
+import { TextArea } from "@/lib/components/inputs/index";
+import DeleteModelRun from "@/lib/components/model_runs/ModelRunDelete";
 import useModelRun from "@/lib/hooks/api/useModelRun";
 
 import type { ModelRunUpdate } from "@/lib/api/model_runs";

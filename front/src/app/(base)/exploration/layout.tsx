@@ -1,7 +1,7 @@
 "use client";
 import { type ReactNode } from "react";
 
-import ExplorationHeader from "@/components/exploration/Header";
+import ExplorationHeader from "@/lib/components/exploration/Header";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import ClipPredictionExplorer from "@/components/clip_predictions/ClipPredictionExplorer";
-import { H4 } from "@/components/Headings";
+import Card from "@/lib/components/Card";
+import ClipPredictionExplorer from "@/lib/components/clip_predictions/ClipPredictionExplorer";
+import { H4 } from "@/lib/components/Headings";
 
 import type { ModelRun } from "@/lib/types";
 

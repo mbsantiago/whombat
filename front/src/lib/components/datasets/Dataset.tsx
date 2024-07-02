@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 
-import { CalendarIcon, DatasetIcon, RecordingsIcon } from "@/components/icons";
+import { CalendarIcon, DatasetIcon, RecordingsIcon } from "@/lib/components/icons";
 
 import type { Dataset as DatasetType } from "@/lib/types";
 

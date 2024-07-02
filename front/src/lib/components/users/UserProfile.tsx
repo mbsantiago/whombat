@@ -1,12 +1,12 @@
 import type { User } from "@/lib/types";
-import Dialog from "@/components/Dialog";
-import { Input } from "@/components/inputs";
-import { UserIcon } from "@/components/icons";
+import Dialog from "@/lib/components/Dialog";
+import { Input } from "@/lib/components/inputs";
+import { UserIcon } from "@/lib/components/icons";
 import {
   DescriptionTerm,
   EditableDescriptionData,
-} from "@/components/Description";
-import UserChangePassword from "@/components/users/UserChangePassword";
+} from "@/lib/components/Description";
+import UserChangePassword from "@/lib/components/users/UserChangePassword";
 import useActiveUser from "@/lib/hooks/api/useActiveUser";
 
 export default function UserProfile(props: { user: User }) {

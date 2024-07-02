@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { useMemo } from "react";
 
 import useStore from "@/app/store";
-import { getTagClassNames } from "@/components/tags/Tag";
+import { getTagClassNames } from "@/lib/components/tags/Tag";
 
 import type { TagElement, TagGroup } from "@/lib/utils/tags";
 import type { Interval } from "@/lib/types";

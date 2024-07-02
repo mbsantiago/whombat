@@ -1,7 +1,7 @@
 import classnames from "classnames";
 import { usePathname } from "next/navigation";
 
-import { HorizontalDivider } from "@/components/Divider";
+import { HorizontalDivider } from "@/lib/components/Divider";
 import {
   AnnotationProjectIcon,
   DatasetsIcon,
@@ -12,10 +12,10 @@ import {
   PluginIcon,
   SettingsIcon,
   WhombatIcon,
-} from "@/components/icons";
-import Button from "@/components/Button";
-import Link from "@/components/Link";
-import Tooltip from "@/components/Tooltip";
+} from "@/lib/components/icons";
+import Button from "@/lib/components/Button";
+import Link from "@/lib/components/Link";
+import Tooltip from "@/lib/components/Tooltip";
 import useActiveUser from "@/lib/hooks/api/useActiveUser";
 
 import type { User } from "@/lib/types";

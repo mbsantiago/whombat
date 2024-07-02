@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/lib/api/common";
-import { EvaluationSetSchema } from "@/schemas";
+import { EvaluationSetSchema } from "@/lib/schemas";
 
 import type {
   AnnotationTask,

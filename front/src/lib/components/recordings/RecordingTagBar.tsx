@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { TagIcon } from "@/components/icons";
-import AddTagButton from "@/components/tags/AddTagButton";
-import TagComponent from "@/components/tags/Tag";
+import { TagIcon } from "@/lib/components/icons";
+import AddTagButton from "@/lib/components/tags/AddTagButton";
+import TagComponent from "@/lib/components/tags/Tag";
 import useRecording from "@/lib/hooks/api/useRecording";
 import useStore from "@/app/store";
 

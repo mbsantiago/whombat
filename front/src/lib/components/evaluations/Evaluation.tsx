@@ -1,6 +1,6 @@
 import type { Evaluation } from "@/lib/types";
-import MetricBadge from "@/components/MetricBadge";
-import { ScoreIcon } from "@/components/icons";
+import MetricBadge from "@/lib/components/MetricBadge";
+import { ScoreIcon } from "@/lib/components/icons";
 
 export default function Evaluation(props: { evaluation: Evaluation }) {
   return (

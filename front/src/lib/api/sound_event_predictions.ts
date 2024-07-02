@@ -12,7 +12,7 @@ import {
   SoundEventPredictionSchema,
   SoundEventSchema,
   UserRunSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { ClipPrediction, SoundEventPrediction, Tag } from "@/lib/types";
 

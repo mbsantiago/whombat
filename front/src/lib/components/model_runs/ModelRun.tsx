@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import Card from "@/components/Card";
+import Card from "@/lib/components/Card";
 import { useSearchParams } from "next/navigation";
 import type { ModelRun } from "@/lib/types";
-import Link from "@/components/Link";
-import { GoToIcon } from "@/components/icons";
+import Link from "@/lib/components/Link";
+import { GoToIcon } from "@/lib/components/icons";
 
 export default function ModelRun({ modelRun }: { modelRun: ModelRun }) {
   const params = useSearchParams();

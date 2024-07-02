@@ -1,19 +1,19 @@
 import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import Empty from "@/components/Empty";
-import { H3 } from "@/components/Headings";
+import Card from "@/lib/components/Card";
+import Empty from "@/lib/components/Empty";
+import { H3 } from "@/lib/components/Headings";
 import {
   AddIcon,
   CompleteIcon,
   EditIcon,
   NeedsReviewIcon,
   VerifiedIcon,
-} from "@/components/icons";
-import Link from "@/components/Link";
-import Loading from "@/components/Loading";
-import MetricBadge from "@/components/MetricBadge";
-import ProgressBar from "@/components/ProgressBar";
+} from "@/lib/components/icons";
+import Link from "@/lib/components/Link";
+import Loading from "@/lib/components/Loading";
+import MetricBadge from "@/lib/components/MetricBadge";
+import ProgressBar from "@/lib/components/ProgressBar";
 import useAnnotationTasks from "@/lib/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 

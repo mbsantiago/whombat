@@ -3,13 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import useEvaluations from "@/lib/hooks/api/useEvaluations";
-import { H4 } from "@/components/Headings";
-import Card from "@/components/Card";
-import Loading from "@/components/Loading";
-import Empty from "@/components/Empty";
-import Button from "@/components/Button";
-import EvaluationComponent from "@/components/evaluations/Evaluation";
-import ClipEvaluationExplorer from "@/components/clip_evaluations/ClipEvaluationExplorer";
+import { H4 } from "@/lib/components/Headings";
+import Card from "@/lib/components/Card";
+import Loading from "@/lib/components/Loading";
+import Empty from "@/lib/components/Empty";
+import Button from "@/lib/components/Button";
+import EvaluationComponent from "@/lib/components/evaluations/Evaluation";
+import ClipEvaluationExplorer from "@/lib/components/clip_evaluations/ClipEvaluationExplorer";
 
 import type { ModelRun, EvaluationSet, Evaluation } from "@/lib/types";
 

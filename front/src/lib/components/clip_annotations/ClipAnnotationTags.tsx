@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import Empty from "@/components/Empty";
-import { H4 } from "@/components/Headings";
-import { DeleteIcon, TagsIcon } from "@/components/icons";
-import AddTagButton from "@/components/tags/AddTagButton";
-import TagComponent from "@/components/tags/Tag";
+import Button from "@/lib/components/Button";
+import Card from "@/lib/components/Card";
+import Empty from "@/lib/components/Empty";
+import { H4 } from "@/lib/components/Headings";
+import { DeleteIcon, TagsIcon } from "@/lib/components/icons";
+import AddTagButton from "@/lib/components/tags/AddTagButton";
+import TagComponent from "@/lib/components/tags/Tag";
 import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";

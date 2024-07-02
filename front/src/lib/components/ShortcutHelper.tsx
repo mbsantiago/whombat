@@ -1,9 +1,9 @@
 import { useHotkeys } from "react-hotkeys-hook";
 import { useState } from "react";
-import { HelpIcon } from "@/components/icons";
-import { DialogOverlay } from "@/components/Dialog";
-import KeyboardKey from "@/components/KeyboardKey";
-import Button from "@/components/Button";
+import { HelpIcon } from "@/lib/components/icons";
+import { DialogOverlay } from "@/lib/components/Dialog";
+import KeyboardKey from "@/lib/components/KeyboardKey";
+import Button from "@/lib/components/Button";
 
 type Shortcut = {
   label: string;

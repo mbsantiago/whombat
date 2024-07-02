@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useState } from "react";
 
-import { EditIcon } from "@/components/icons";
+import { EditIcon } from "@/lib/components/icons";
 
 import type { FC, HTMLAttributes, ReactNode } from "react";
 

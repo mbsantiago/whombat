@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from "react";
 
-import Card from "@/components/Card";
-import { H3 } from "@/components/Headings";
-import { NotesIcon } from "@/components/icons";
-import CreateNote from "@/components/notes/CreateNote";
-import Feed from "@/components/notes/Feed";
+import Card from "@/lib/components/Card";
+import { H3 } from "@/lib/components/Headings";
+import { NotesIcon } from "@/lib/components/icons";
+import CreateNote from "@/lib/components/notes/CreateNote";
+import Feed from "@/lib/components/notes/Feed";
 import useRecording from "@/lib/hooks/api/useRecording";
 
 import type { Note, Recording, User } from "@/lib/types";

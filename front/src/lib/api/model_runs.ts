@@ -8,7 +8,7 @@ import {
   NumberFilterSchema,
   StringFilterSchema,
   EvaluationSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { ModelRun, Evaluation, EvaluationSet } from "@/lib/types";
 

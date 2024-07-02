@@ -9,7 +9,7 @@ import {
   DatasetSchema,
   TagSchema,
   UserSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type {
   AnnotationProject,

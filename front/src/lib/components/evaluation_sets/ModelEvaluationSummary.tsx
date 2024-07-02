@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
 import Loading from "@/app/loading";
-import Empty from "@/components/Empty";
-import { H4 } from "@/components/Headings";
-import { AddIcon, ModelIcon } from "@/components/icons";
-import Link from "@/components/Link";
+import Empty from "@/lib/components/Empty";
+import { H4 } from "@/lib/components/Headings";
+import { AddIcon, ModelIcon } from "@/lib/components/icons";
+import Link from "@/lib/components/Link";
 import useModelRuns from "@/lib/hooks/api/useModelRuns";
 
 import type { EvaluationSet } from "@/lib/types";

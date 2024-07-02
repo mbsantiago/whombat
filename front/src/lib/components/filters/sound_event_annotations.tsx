@@ -1,7 +1,7 @@
-import FilterBadge from "@/components/filters/FilterBadge";
-import { type FilterDef } from "@/components/filters/FilterMenu";
-import { TagFilter } from "@/components/filters/Filters";
-import { TagIcon } from "@/components/icons";
+import FilterBadge from "@/lib/components/filters/FilterBadge";
+import { type FilterDef } from "@/lib/components/filters/FilterMenu";
+import { TagFilter } from "@/lib/components/filters/Filters";
+import { TagIcon } from "@/lib/components/icons";
 
 import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 

@@ -2,9 +2,9 @@ import {
   DescriptionData,
   DescriptionTerm,
   EditableDescriptionData,
-} from "@/components/Description";
-import { H3 } from "@/components/Headings";
-import { Input, TextArea } from "@/components/inputs/index";
+} from "@/lib/components/Description";
+import { H3 } from "@/lib/components/Headings";
+import { Input, TextArea } from "@/lib/components/inputs/index";
 import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
 
 import type { EvaluationSet } from "@/lib/types";

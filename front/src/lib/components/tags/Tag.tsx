@@ -4,8 +4,8 @@
 import classnames from "classnames";
 import { type HTMLProps } from "react";
 
-import { ALL_COLORS } from "@/components/colors";
-import { CloseIcon } from "@/components/icons";
+import { ALL_COLORS } from "@/lib/components/colors";
+import { CloseIcon } from "@/lib/components/icons";
 
 import type { Tag } from "@/lib/types";
 

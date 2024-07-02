@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import Button from "@/components/Button";
+import Button from "@/lib/components/Button";
 import {
   AnnotationProjectIcon,
   BoundingBoxIcon,
@@ -10,10 +10,10 @@ import {
   SelectIcon,
   TimeIntervalIcon,
   TimeStampIcon,
-} from "@/components/icons";
-import KeyboardKey from "@/components/KeyboardKey";
-import Select from "@/components/inputs/Select";
-import Tooltip from "@/components/Tooltip";
+} from "@/lib/components/icons";
+import KeyboardKey from "@/lib/components/KeyboardKey";
+import Select from "@/lib/components/inputs/Select";
+import Tooltip from "@/lib/components/Tooltip";
 
 import type { GeometryType } from "@/lib/types";
 

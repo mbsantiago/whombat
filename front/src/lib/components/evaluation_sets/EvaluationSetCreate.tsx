@@ -14,9 +14,9 @@ import {
   InputGroup,
   Submit,
   TextArea,
-} from "@/components/inputs/index";
+} from "@/lib/components/inputs/index";
 
-import type { Option } from "@/components/inputs/Select";
+import type { Option } from "@/lib/components/inputs/Select";
 import type { EvaluationSet } from "@/lib/types";
 import type { AxiosError } from "axios";
 

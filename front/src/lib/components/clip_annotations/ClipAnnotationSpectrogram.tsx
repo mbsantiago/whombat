@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
-import AnnotationControls from "@/components/annotation/AnnotationControls";
-import Player from "@/components/audio/Player";
-import Card from "@/components/Card";
-import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import ViewportToolbar from "@/components/spectrograms/ViewportToolbar";
-import SpectrogramSettings from "@/components/spectrograms/SpectrogramSettings";
-import SpectrogramTags from "@/components/spectrograms/SpectrogramTags";
+import AnnotationControls from "@/lib/components/annotation/AnnotationControls";
+import Player from "@/lib/components/audio/Player";
+import Card from "@/lib/components/Card";
+import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
+import SpectrogramSettings from "@/lib/components/spectrograms/SpectrogramSettings";
+import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
 import useAnnotateClip from "@/lib/hooks/annotation/useAnnotateClip";
 import useAudio from "@/lib/hooks/audio/useAudio";
 import useCanvas from "@/lib/hooks/draw/useCanvas";

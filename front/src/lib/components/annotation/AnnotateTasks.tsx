@@ -1,16 +1,16 @@
 import { useCallback, useState } from "react";
 
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
-import AnnotationProgress from "@/components/annotation/AnnotationProgress";
-import AnnotationTagPalette from "@/components/annotation/AnnotationTagPalette";
-import RecordingAnnotationContext from "@/components/annotation/RecordingAnnotationContext";
-import SelectedSoundEventAnnotation from "@/components/annotation/SelectedSoundEventAnnotation";
-import AnnotationTaskStatus from "@/components/annotation_tasks/AnnotationTaskStatus";
-import ClipAnnotationNotes from "@/components/clip_annotations/ClipAnnotationNotes";
-import ClipAnnotationSpectrogram from "@/components/clip_annotations/ClipAnnotationSpectrogram";
-import ClipAnnotationTags from "@/components/clip_annotations/ClipAnnotationTags";
-import Empty from "@/components/Empty";
-import Loading from "@/components/Loading";
+import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
+import AnnotationTagPalette from "@/lib/components/annotation/AnnotationTagPalette";
+import RecordingAnnotationContext from "@/lib/components/annotation/RecordingAnnotationContext";
+import SelectedSoundEventAnnotation from "@/lib/components/annotation/SelectedSoundEventAnnotation";
+import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
+import ClipAnnotationNotes from "@/lib/components/clip_annotations/ClipAnnotationNotes";
+import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
+import ClipAnnotationTags from "@/lib/components/clip_annotations/ClipAnnotationTags";
+import Empty from "@/lib/components/Empty";
+import Loading from "@/lib/components/Loading";
 import useAnnotationTasks from "@/lib/hooks/annotation/useAnnotateTasks";
 import useClipAnnotation from "@/lib/hooks/api/useClipAnnotation";
 

@@ -1,15 +1,15 @@
 import dynamic from "next/dynamic";
 
-import Card from "@/components/Card";
-import { MapIcon } from "@/components/icons";
+import Card from "@/lib/components/Card";
+import { MapIcon } from "@/lib/components/icons";
 
 import type { Recording } from "@/lib/types";
 
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it
 // uses the `window` object which is not available on the server.
-const Map = dynamic(() => import("@/components/maps/Map"), { ssr: false });
-const Marker = dynamic(() => import("@/components/maps/DraggableMarker"), {
+const Map = dynamic(() => import("@/lib/components/maps/Map"), { ssr: false });
+const Marker = dynamic(() => import("@/lib/components/maps/DraggableMarker"), {
   ssr: false,
 });
 

@@ -1,7 +1,7 @@
-import recordingFilterDef from "@/components/filters/recordings";
-import RecordingGallery from "@/components/recordings/RecordingGallery";
-import { GalleryIcon } from "@/components/icons";
-import ExplorationLayout from "@/components/layouts/Exploration";
+import recordingFilterDef from "@/lib/components/filters/recordings";
+import RecordingGallery from "@/lib/components/recordings/RecordingGallery";
+import { GalleryIcon } from "@/lib/components/icons";
+import ExplorationLayout from "@/lib/components/layouts/Exploration";
 
 import type { RecordingFilter } from "@/lib/api/recordings";
 import type { SpectrogramParameters } from "@/lib/types";

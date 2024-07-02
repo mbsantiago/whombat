@@ -1,18 +1,18 @@
-import DatasetComponent from "@/components/datasets/Dataset";
-import DatasetCreate from "@/components/datasets/DatasetCreate";
-import DatasetImport from "@/components/datasets/DatasetImport";
-import Dialog from "@/components/Dialog";
-import Empty from "@/components/Empty";
+import DatasetComponent from "@/lib/components/datasets/Dataset";
+import DatasetCreate from "@/lib/components/datasets/DatasetCreate";
+import DatasetImport from "@/lib/components/datasets/DatasetImport";
+import Dialog from "@/lib/components/Dialog";
+import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
   DatasetIcon,
   UploadIcon,
   WarningIcon,
-} from "@/components/icons";
-import Search from "@/components/inputs/Search";
-import Pagination from "@/components/lists/Pagination";
-import StackedList from "@/components/lists/StackedList";
-import Loading from "@/components/Loading";
+} from "@/lib/components/icons";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/lib/components/lists/Pagination";
+import StackedList from "@/lib/components/lists/StackedList";
+import Loading from "@/lib/components/Loading";
 import useDatasets from "@/lib/hooks/api/useDatasets";
 
 import type { Dataset } from "@/lib/types";

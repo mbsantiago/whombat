@@ -1,17 +1,17 @@
-import FilterBadge from "@/components/filters/FilterBadge";
-import { type FilterDef } from "@/components/filters/FilterMenu";
+import FilterBadge from "@/lib/components/filters/FilterBadge";
+import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import {
   BooleanFilter,
   DatasetFilter,
   TagFilter,
-} from "@/components/filters/Filters";
+} from "@/lib/components/filters/Filters";
 import {
   DatasetIcon,
   EditIcon,
   NeedsReviewIcon,
   TagIcon,
   VerifiedIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
 import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 

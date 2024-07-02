@@ -1,8 +1,8 @@
 import { type Control, Controller } from "react-hook-form";
 
-import { InputGroup } from "@/components/inputs/index";
-import Select from "@/components/inputs/Select";
-import Toggle from "@/components/inputs/Toggle";
+import { InputGroup } from "@/lib/components/inputs/index";
+import Select from "@/lib/components/inputs/Select";
+import Toggle from "@/lib/components/inputs/Toggle";
 
 import SettingsSection from "./SettingsSection";
 

@@ -11,7 +11,7 @@ import {
   SoundEventEvaluationSchema,
   SoundEventPredictionSchema,
   TagSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 export const SoundEventEvaluationPageSchema = Page(SoundEventEvaluationSchema);
 

@@ -1,6 +1,6 @@
 "use client";
-import Hero from "@/components/Hero";
-import { WhombatIcon } from "@/components/icons";
+import Hero from "@/lib/components/Hero";
+import { WhombatIcon } from "@/lib/components/icons";
 
 export default function Page() {
   return (

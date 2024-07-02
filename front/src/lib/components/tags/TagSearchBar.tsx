@@ -11,9 +11,9 @@ import { Float } from "@headlessui-float/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { forwardRef, useEffect, useState } from "react";
 
-import { Input } from "@/components/inputs/index";
-import KeyboardKey from "@/components/KeyboardKey";
-import Tag from "@/components/tags/Tag";
+import { Input } from "@/lib/components/inputs/index";
+import KeyboardKey from "@/lib/components/KeyboardKey";
+import Tag from "@/lib/components/tags/Tag";
 import useTags from "@/lib/hooks/api/useTags";
 import useStore from "@/app/store";
 

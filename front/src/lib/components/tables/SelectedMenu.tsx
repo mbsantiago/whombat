@@ -1,7 +1,7 @@
-import Button from "@/components/Button";
-import { DeleteIcon, TagIcon } from "@/components/icons";
-import Popover from "@/components/Popover";
-import TagSearchBar from "@/components/tags/TagSearchBar";
+import Button from "@/lib/components/Button";
+import { DeleteIcon, TagIcon } from "@/lib/components/icons";
+import Popover from "@/lib/components/Popover";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 
 import type { Tag } from "@/lib/types";
 

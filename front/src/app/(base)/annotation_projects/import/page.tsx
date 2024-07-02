@@ -7,9 +7,9 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-import Hero from "@/components/Hero";
-import { UploadIcon } from "@/components/icons";
-import { Input, InputGroup, Submit } from "@/components/inputs/index";
+import Hero from "@/lib/components/Hero";
+import { UploadIcon } from "@/lib/components/icons";
+import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
 export default function Page() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
 
-import ViewportToolbar from "@/components/spectrograms/ViewportToolbar";
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 
 const meta: Meta<typeof ViewportToolbar> = {
   title: "ViewportToolbar",

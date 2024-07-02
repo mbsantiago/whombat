@@ -1,5 +1,5 @@
-import Card from "@/components/Card";
-import Link from "@/components/Link";
+import Card from "@/lib/components/Card";
+import Link from "@/lib/components/Link";
 import useDataset from "@/lib/hooks/api/useDataset";
 
 import type { Dataset } from "@/lib/types";

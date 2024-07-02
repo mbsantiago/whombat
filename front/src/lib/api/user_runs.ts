@@ -7,7 +7,7 @@ import {
   NumberFilterSchema,
   UserRunSchema,
   UserSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { UserRun } from "@/lib/types";
 

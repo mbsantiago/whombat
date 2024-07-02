@@ -1,8 +1,8 @@
 "use client";
-import { H2 } from "@/components/Headings";
-import { WarningIcon } from "@/components/icons";
-import Button from "@/components/Button";
-import Link from "@/components/Link";
+import { H2 } from "@/lib/components/Headings";
+import { WarningIcon } from "@/lib/components/icons";
+import Button from "@/lib/components/Button";
+import Link from "@/lib/components/Link";
 
 export default function Error({
   error,

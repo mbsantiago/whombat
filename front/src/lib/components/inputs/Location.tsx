@@ -4,15 +4,15 @@ import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Input, InputGroup } from "@/components/inputs";
+import { Input, InputGroup } from "@/lib/components/inputs";
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
 // NOTE: The use of dynamic imports is necessary to avoid
 // importing the leaflet library on the server side as it
 // uses the `window` object which is not available on the server.
-const Map = dynamic(() => import("@/components/maps/Map"), { ssr: false });
+const Map = dynamic(() => import("@/lib/components/maps/Map"), { ssr: false });
 const DraggableMarker = dynamic(
-  () => import("@/components/maps/DraggableMarker"),
+  () => import("@/lib/components/maps/DraggableMarker"),
   {
     ssr: false,
   },

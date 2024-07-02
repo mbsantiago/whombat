@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import DatasetDetail from "@/components/datasets/DatasetDetail";
+import DatasetDetail from "@/lib/components/datasets/DatasetDetail";
 
 import DatasetContext from "./context";
 

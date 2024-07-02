@@ -12,7 +12,7 @@ import {
   TagSchema,
   UserSchema,
   FeatureSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { ClipAnnotation, Note, SoundEventAnnotation, Tag } from "@/lib/types";
 

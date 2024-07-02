@@ -4,15 +4,15 @@ import {
   useSelectedLayoutSegment,
 } from "next/navigation";
 
-import Header from "@/components/Header";
-import { H1 } from "@/components/Headings";
+import Header from "@/lib/components/Header";
+import { H1 } from "@/lib/components/Headings";
 import {
   ClipsIcon,
   HomeIcon,
   RecordingIcon,
   SoundEventIcon,
-} from "@/components/icons";
-import Tabs from "@/components/Tabs";
+} from "@/lib/components/icons";
+import Tabs from "@/lib/components/Tabs";
 
 export default function ExplorationHeader() {
   const router = useRouter();

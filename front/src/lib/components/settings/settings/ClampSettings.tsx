@@ -1,7 +1,7 @@
 import { type Control, useController } from "react-hook-form";
 
-import { InputGroup } from "@/components/inputs/index";
-import RangeSlider from "@/components/inputs/RangeSlider";
+import { InputGroup } from "@/lib/components/inputs/index";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import { MIN_DB } from "@/lib/constants";
 
 import SettingsSection from "./SettingsSection";

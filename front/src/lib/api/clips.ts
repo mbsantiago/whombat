@@ -7,7 +7,7 @@ import {
   FeatureFilterSchema,
   NumberFilterSchema,
   RecordingSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import { GetManySchema, Page } from "./common";
 

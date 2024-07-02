@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { UserSchema } from "@/schemas";
+import { UserSchema } from "@/lib/schemas";
 
 import type { User } from "@/lib/types";
 

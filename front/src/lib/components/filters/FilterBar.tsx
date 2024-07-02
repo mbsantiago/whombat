@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import {  FilterIcon } from "@/components/icons";
+import {  FilterIcon } from "@/lib/components/icons";
 
-import type { FilterDef } from "@/components/filters/FilterMenu";
+import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 
 export default function FilterBar<T extends Object>({

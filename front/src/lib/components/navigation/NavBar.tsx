@@ -4,7 +4,7 @@ import classnames from "classnames";
 import { Fragment } from "react";
 import useActiveUser from "@/lib/hooks/api/useActiveUser";
 
-import { HorizontalDivider } from "@/components/Divider";
+import { HorizontalDivider } from "@/lib/components/Divider";
 
 import type { User } from "@/lib/types";
 

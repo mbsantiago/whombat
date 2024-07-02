@@ -1,4 +1,4 @@
-import DetailLayout from "@/components/layouts/Detail";
+import DetailLayout from "@/lib/components/layouts/Detail";
 
 import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetOverview from "./DatasetOverview";

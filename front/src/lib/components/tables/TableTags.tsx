@@ -3,8 +3,8 @@
  * table cell.
  */
 
-import AddTagButton from "@/components/tags/AddTagButton";
-import TagComponent from "@/components/tags/Tag";
+import AddTagButton from "@/lib/components/tags/AddTagButton";
+import TagComponent from "@/lib/components/tags/Tag";
 import useStore from "@/app/store";
 
 import type { Tag } from "@/lib/types";

@@ -1,11 +1,11 @@
-import Card from "@/components/Card";
-import DatasetActions from "@/components/datasets/DatasetActions";
+import Card from "@/lib/components/Card";
+import DatasetActions from "@/lib/components/datasets/DatasetActions";
 import {
   DescriptionData,
   DescriptionTerm,
   EditableDescriptionData,
-} from "@/components/Description";
-import { Input, TextArea } from "@/components/inputs/index";
+} from "@/lib/components/Description";
+import { Input, TextArea } from "@/lib/components/inputs/index";
 import useDataset from "@/lib/hooks/api/useDataset";
 
 import type { Dataset } from "@/lib/types";

@@ -4,10 +4,10 @@ import {
   useSelectedLayoutSegment,
 } from "next/navigation";
 
-import Header from "@/components/Header";
-import { H1 } from "@/components/Headings";
-import { DatasetIcon, RecordingsIcon } from "@/components/icons";
-import Tabs from "@/components/Tabs";
+import Header from "@/lib/components/Header";
+import { H1 } from "@/lib/components/Headings";
+import { DatasetIcon, RecordingsIcon } from "@/lib/components/icons";
+import Tabs from "@/lib/components/Tabs";
 
 import type { Dataset } from "@/lib/types";
 

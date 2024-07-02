@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { z } from "zod";
 
 import { GetManySchema, Page } from "@/lib/api/common";
-import { AnnotationProjectSchema } from "@/schemas";
+import { AnnotationProjectSchema } from "@/lib/schemas";
 
 import type { AnnotationProject, Tag } from "@/lib/types";
 

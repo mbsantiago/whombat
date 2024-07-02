@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import { H4 } from "@/components/Headings";
-import Empty from "@/components/Empty";
-import { TagsIcon } from "@/components/icons";
-import TagComponent from "@/components/tags/Tag";
+import { H4 } from "@/lib/components/Headings";
+import Empty from "@/lib/components/Empty";
+import { TagsIcon } from "@/lib/components/icons";
+import TagComponent from "@/lib/components/tags/Tag";
 import type { Tag, ClipEvaluation, Interval } from "@/lib/types";
 import useStore from "@/app/store";
 

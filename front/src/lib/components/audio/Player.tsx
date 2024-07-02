@@ -26,7 +26,7 @@ import {
   PauseIcon,
   PlayIcon,
   SpeedIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
 import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 import type { AriaSliderProps, AriaSliderThumbOptions } from "react-aria";

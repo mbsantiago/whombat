@@ -1,7 +1,7 @@
-import clipAnnotationFilterDef from "@/components/filters/clip_annotations";
-import AnnotationGallery from "@/components/clip_annotations/ClipAnnotationGallery";
-import { GalleryIcon } from "@/components/icons";
-import ExplorationLayout from "@/components/layouts/Exploration";
+import clipAnnotationFilterDef from "@/lib/components/filters/clip_annotations";
+import AnnotationGallery from "@/lib/components/clip_annotations/ClipAnnotationGallery";
+import { GalleryIcon } from "@/lib/components/icons";
+import ExplorationLayout from "@/lib/components/layouts/Exploration";
 
 import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import type { SpectrogramParameters } from "@/lib/types";

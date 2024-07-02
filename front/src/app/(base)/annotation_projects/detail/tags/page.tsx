@@ -2,8 +2,8 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import ProjectTags from "@/components/annotation_projects/AnnotationProjectTags";
-import Center from "@/components/layouts/Center";
+import ProjectTags from "@/lib/components/annotation_projects/AnnotationProjectTags";
+import Center from "@/lib/components/layouts/Center";
 
 import AnnotationProjectContext from "../context";
 

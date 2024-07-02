@@ -1,6 +1,6 @@
-import DetailLayout from "@/components/layouts/Detail";
-import ModelRunUpdateForm from "@/components/model_runs/ModelRunUpdateForm";
-import ModelRunEvaluation from "@/components/model_runs/ModelRunEvaluations";
+import DetailLayout from "@/lib/components/layouts/Detail";
+import ModelRunUpdateForm from "@/lib/components/model_runs/ModelRunUpdateForm";
+import ModelRunEvaluation from "@/lib/components/model_runs/ModelRunEvaluations";
 import type { ModelRun, EvaluationSet, Evaluation } from "@/lib/types";
 
 export default function ModelRunDetail(props: {

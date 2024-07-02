@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { DatasetSchema, RecordingStateSchema } from "@/schemas";
+import { DatasetSchema, RecordingStateSchema } from "@/lib/schemas";
 
 import { GetManySchema, Page } from "./common";
 

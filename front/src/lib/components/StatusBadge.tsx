@@ -6,7 +6,7 @@ import {
   NeedsReviewIcon,
   UserIcon,
   VerifiedIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
 import type { AnnotationStatusBadge } from "@/lib/types";
 

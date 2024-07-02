@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
 
 import useViewport from "@/lib/hooks/window/useViewport";
-import Canvas from "@/components/spectrograms/Canvas";
+import Canvas from "@/lib/components/spectrograms/Canvas";
 import drawImage from "@/lib/draw/image";
 import type { SpectrogramWindow, ScrollEvent, Position } from "@/lib/types";
 

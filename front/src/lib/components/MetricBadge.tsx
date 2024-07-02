@@ -1,4 +1,4 @@
-import Spinner from "@/components/Spinner";
+import Spinner from "@/lib/components/Spinner";
 
 import type { ReactNode } from "react";
 

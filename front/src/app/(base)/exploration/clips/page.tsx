@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import useStore from "@/app/store";
 
-import ClipAnnotationExplorer from "@/components/clip_annotations/ClipAnnotationExplore";
+import ClipAnnotationExplorer from "@/lib/components/clip_annotations/ClipAnnotationExplore";
 
 import type { SpectrogramParameters } from "@/lib/types";
 

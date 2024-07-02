@@ -1,17 +1,17 @@
-import Dialog from "@/components/Dialog";
-import Empty from "@/components/Empty";
+import Dialog from "@/lib/components/Dialog";
+import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
   ModelIcon,
   UploadIcon,
   WarningIcon,
-} from "@/components/icons";
-import Search from "@/components/inputs/Search";
-import Pagination from "@/components/lists/Pagination";
-import StackedList from "@/components/lists/StackedList";
-import Loading from "@/components/Loading";
-import ModelRunComponent from "@/components/model_runs/ModelRun";
-import ModelRunImport from "@/components/model_runs/ModelRunImport";
+} from "@/lib/components/icons";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/lib/components/lists/Pagination";
+import StackedList from "@/lib/components/lists/StackedList";
+import Loading from "@/lib/components/Loading";
+import ModelRunComponent from "@/lib/components/model_runs/ModelRun";
+import ModelRunImport from "@/lib/components/model_runs/ModelRunImport";
 import useModelRuns from "@/lib/hooks/api/useModelRuns";
 
 import type { ModelRunFilter } from "@/lib/api/model_runs";

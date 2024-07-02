@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import AnnotationProjectSearch from "@/components/annotation_projects/AnnotationProjectSearch";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import { H2, H3 } from "@/components/Headings";
-import { AddIcon, TasksIcon } from "@/components/icons";
-import { InputGroup } from "@/components/inputs/index";
-import Toggle from "@/components/inputs/Toggle";
+import AnnotationProjectSearch from "@/lib/components/annotation_projects/AnnotationProjectSearch";
+import Button from "@/lib/components/Button";
+import Card from "@/lib/components/Card";
+import { H2, H3 } from "@/lib/components/Headings";
+import { AddIcon, TasksIcon } from "@/lib/components/icons";
+import { InputGroup } from "@/lib/components/inputs/index";
+import Toggle from "@/lib/components/inputs/Toggle";
 import useAnnotationTasks from "@/lib/hooks/api/useAnnotationTasks";
 import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
 

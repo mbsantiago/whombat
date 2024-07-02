@@ -10,7 +10,7 @@ import {
   RecordingSchema,
   UserRunSchema,
   PredictedTagFilterSchema
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { ClipPrediction, Tag } from "@/lib/types";
 

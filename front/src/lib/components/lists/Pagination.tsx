@@ -1,7 +1,7 @@
-import Button from "@/components/Button";
-import * as icons from "@/components/icons";
-import { Input } from "@/components/inputs/index";
-import Select from "@/components/inputs/Select";
+import Button from "@/lib/components/Button";
+import * as icons from "@/lib/components/icons";
+import { Input } from "@/lib/components/inputs/index";
+import Select from "@/lib/components/inputs/Select";
 import { type Pagination as PaginationType } from "@/lib/hooks/utils/usePagedQuery";
 
 const pageSizeOptions = [1, 5, 10, 25, 50, 100];

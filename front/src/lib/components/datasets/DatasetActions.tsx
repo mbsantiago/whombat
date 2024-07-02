@@ -3,14 +3,14 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-import Alert from "@/components/Alert";
-import Button from "@/components/Button";
+import Alert from "@/lib/components/Alert";
+import Button from "@/lib/components/Button";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
 import type { Dataset } from "@/lib/types";
 

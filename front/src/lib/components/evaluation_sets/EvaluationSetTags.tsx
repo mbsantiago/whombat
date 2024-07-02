@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
-import { H2, H3 } from "@/components/Headings";
-import { TagsIcon } from "@/components/icons";
-import Info from "@/components/Info";
-import TagList from "@/components/tags/TagList";
-import TagSearchBar from "@/components/tags/TagSearchBar";
+import { H2, H3 } from "@/lib/components/Headings";
+import { TagsIcon } from "@/lib/components/icons";
+import Info from "@/lib/components/Info";
+import TagList from "@/lib/components/tags/TagList";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
 
 import type { EvaluationSet } from "@/lib/types";

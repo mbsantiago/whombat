@@ -11,7 +11,7 @@ import {
   TagSchema,
   TimeFilterSchema,
   TimeStringSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { NoteCreate } from "@/lib/api/notes";
 import type { Feature, Note, Recording, Tag } from "@/lib/types";

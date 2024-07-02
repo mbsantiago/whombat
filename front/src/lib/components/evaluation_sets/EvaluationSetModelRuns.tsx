@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from "react";
-import ModelRunList from "@/components/model_runs/ModelRunList";
+import ModelRunList from "@/lib/components/model_runs/ModelRunList";
 import type { EvaluationSet, ModelRun } from "@/lib/types";
 import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
 

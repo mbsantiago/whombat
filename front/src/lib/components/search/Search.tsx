@@ -11,9 +11,9 @@ import {
 } from "react-aria";
 import { type ComboBoxState, useComboBoxState } from "react-stately";
 
-import { SearchIcon } from "@/components/icons";
-import { Input } from "@/components/inputs";
-import Loading from "@/components/Loading";
+import { SearchIcon } from "@/lib/components/icons";
+import { Input } from "@/lib/components/inputs";
+import Loading from "@/lib/components/Loading";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
 import type { CollectionElement, Node } from "@react-types/shared";

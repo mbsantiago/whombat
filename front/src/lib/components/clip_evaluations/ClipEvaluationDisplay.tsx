@@ -1,6 +1,6 @@
 import type { ClipEvaluation, Interval } from "@/lib/types";
-import ClipEvaluationSpectrogram from "@/components/clip_evaluations/ClipEvaluationSpectrogram";
-import ClipEvaluationTags from "@/components/clip_evaluations/ClipEvaluationTags";
+import ClipEvaluationSpectrogram from "@/lib/components/clip_evaluations/ClipEvaluationSpectrogram";
+import ClipEvaluationTags from "@/lib/components/clip_evaluations/ClipEvaluationTags";
 
 export default function ClipEvaluationDisplay(props: {
   clipEvaluation: ClipEvaluation;

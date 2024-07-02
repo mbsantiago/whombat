@@ -1,19 +1,19 @@
-import Button from "@/components/Button";
-import FilterBar from "@/components/filters/FilterBar";
-import FilterMenu from "@/components/filters/FilterMenu";
-import Loading from "@/components/Loading";
-import Empty from "@/components/Empty";
-import RangeSlider from "@/components/inputs/RangeSlider";
-import Toggle from "@/components/inputs/Toggle";
+import Button from "@/lib/components/Button";
+import FilterBar from "@/lib/components/filters/FilterBar";
+import FilterMenu from "@/lib/components/filters/FilterMenu";
+import Loading from "@/lib/components/Loading";
+import Empty from "@/lib/components/Empty";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import Toggle from "@/lib/components/inputs/Toggle";
 import {
   FilterIcon,
   LoopIcon,
   NextIcon,
   PreviousIcon,
-} from "@/components/icons";
-import clipEvaluationFilterDef from "@/components/filters/clip_evaluations";
+} from "@/lib/components/icons";
+import clipEvaluationFilterDef from "@/lib/components/filters/clip_evaluations";
 import useExploreClipEvaluations from "@/lib/hooks/evaluation/useExploreClipEvaluations";
-import ClipEvaluationDisplay from "@/components/clip_evaluations/ClipEvaluationDisplay";
+import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
 
 import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import type { Filter } from "@/lib/hooks/utils/useFilter";

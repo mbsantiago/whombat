@@ -1,9 +1,9 @@
 import Loading from "@/app/loading";
-import Button from "@/components/Button";
-import { CheckIcon, CloseIcon, VerifiedIcon } from "@/components/icons";
-import StatusBadge from "@/components/StatusBadge";
-import Tooltip from "@/components/Tooltip";
-import KeyboardKey from "@/components/KeyboardKey";
+import Button from "@/lib/components/Button";
+import { CheckIcon, CloseIcon, VerifiedIcon } from "@/lib/components/icons";
+import StatusBadge from "@/lib/components/StatusBadge";
+import Tooltip from "@/lib/components/Tooltip";
+import KeyboardKey from "@/lib/components/KeyboardKey";
 
 import type { AnnotationStatus, AnnotationTask } from "@/lib/types";
 

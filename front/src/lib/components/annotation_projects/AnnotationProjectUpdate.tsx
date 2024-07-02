@@ -2,10 +2,10 @@ import {
   DescriptionData,
   DescriptionTerm,
   EditableDescriptionData,
-} from "@/components/Description";
-import { H3 } from "@/components/Headings";
-import { Input, TextArea } from "@/components/inputs/index";
-import Loading from "@/components/Loading";
+} from "@/lib/components/Description";
+import { H3 } from "@/lib/components/Headings";
+import { Input, TextArea } from "@/lib/components/inputs/index";
+import Loading from "@/lib/components/Loading";
 import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";

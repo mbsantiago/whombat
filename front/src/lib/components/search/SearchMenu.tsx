@@ -3,8 +3,8 @@ import { Float } from "@headlessui-float/react";
 import Fuse from "fuse.js";
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
 
-import Button from "@/components/Button";
-import Search from "@/components/inputs/Search";
+import Button from "@/lib/components/Button";
+import Search from "@/lib/components/inputs/Search";
 
 /** A search menu.
  * @component

@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 
-import Button from "@/components/Button";
-import DatasetSearch from "@/components/datasets/DatasetSearch";
-import { CheckIcon, CloseIcon } from "@/components/icons";
-import Checkbox from "@/components/tables/TableCheckbox";
-import TagSearchBar from "@/components/tags/TagSearchBar";
+import Button from "@/lib/components/Button";
+import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
+import { CheckIcon, CloseIcon } from "@/lib/components/icons";
+import Checkbox from "@/lib/components/tables/TableCheckbox";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 
 import type { Dataset, NumberFilter, Tag } from "@/lib/types";
 

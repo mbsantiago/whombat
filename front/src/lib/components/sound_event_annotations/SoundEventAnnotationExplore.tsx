@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
 
-import soundEventAnnotationFilterDef from "@/components/filters/sound_event_annotations";
-import AnnotationGallery from "@/components/sound_event_annotations/SoundEventAnnotationsGallery";
-import { GalleryIcon, PlotIcon } from "@/components/icons";
-import ExplorationLayout from "@/components/layouts/Exploration";
+import soundEventAnnotationFilterDef from "@/lib/components/filters/sound_event_annotations";
+import AnnotationGallery from "@/lib/components/sound_event_annotations/SoundEventAnnotationsGallery";
+import { GalleryIcon, PlotIcon } from "@/lib/components/icons";
+import ExplorationLayout from "@/lib/components/layouts/Exploration";
 
 import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import type { SpectrogramParameters } from "@/lib/types";
@@ -11,7 +11,7 @@ import type { SpectrogramParameters } from "@/lib/types";
 const AnnotationsScatterPlot = dynamic(
   () =>
     import(
-      "@/components/sound_event_annotations/SoundEventAnnotationsScatterPlot"
+      "@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot"
     ),
   {
     ssr: false,

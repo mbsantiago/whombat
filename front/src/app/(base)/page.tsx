@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import Card from "@/components/Card";
-import Link from "@/components/Link";
+import Card from "@/lib/components/Card";
+import Link from "@/lib/components/Link";
 
 export default function Page() {
   return (

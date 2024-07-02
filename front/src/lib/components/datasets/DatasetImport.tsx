@@ -4,8 +4,8 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 import api from "@/app/api";
-import { UploadIcon } from "@/components/icons";
-import { Input, InputGroup, Submit } from "@/components/inputs/index";
+import { UploadIcon } from "@/lib/components/icons";
+import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
 import type { Dataset } from "@/lib/types";
 

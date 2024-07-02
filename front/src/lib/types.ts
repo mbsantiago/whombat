@@ -55,7 +55,7 @@ import {
   TimeStampSchema,
   UserRunSchema,
   UserSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 export type User = z.infer<typeof UserSchema>;
 

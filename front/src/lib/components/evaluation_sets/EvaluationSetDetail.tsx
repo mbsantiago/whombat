@@ -1,9 +1,9 @@
-import Card from "@/components/Card";
-import EvaluationSetActions from "@/components/evaluation_sets/EvaluationSetActions";
-import EvaluationSetOverview from "@/components/evaluation_sets/EvaluationSetOverview";
-import EvaluationSetUpdateForm from "@/components/evaluation_sets/EvaluationSetUpdateForm";
-import ModelEvaluationSummary from "@/components/evaluation_sets/ModelEvaluationSummary";
-import UserEvaluationSummary from "@/components/evaluation_sets/UserEvaluationSummary";
+import Card from "@/lib/components/Card";
+import EvaluationSetActions from "@/lib/components/evaluation_sets/EvaluationSetActions";
+import EvaluationSetOverview from "@/lib/components/evaluation_sets/EvaluationSetOverview";
+import EvaluationSetUpdateForm from "@/lib/components/evaluation_sets/EvaluationSetUpdateForm";
+import ModelEvaluationSummary from "@/lib/components/evaluation_sets/ModelEvaluationSummary";
+import UserEvaluationSummary from "@/lib/components/evaluation_sets/UserEvaluationSummary";
 
 import type { EvaluationSet } from "@/lib/types";
 

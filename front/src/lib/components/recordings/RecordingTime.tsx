@@ -3,11 +3,11 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import { CloseIcon, TimeIcon } from "@/components/icons";
-import { Input, InputGroup } from "@/components/inputs";
-import Popover from "@/components/Popover";
+import Button from "@/lib/components/Button";
+import Card from "@/lib/components/Card";
+import { CloseIcon, TimeIcon } from "@/lib/components/icons";
+import { Input, InputGroup } from "@/lib/components/inputs";
+import Popover from "@/lib/components/Popover";
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
 function TimeButton({

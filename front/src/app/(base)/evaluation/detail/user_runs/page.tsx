@@ -1,5 +1,5 @@
 "use client";
-import Empty from "@/components/Empty";
+import Empty from "@/lib/components/Empty";
 
 export default function Page() {
   return (

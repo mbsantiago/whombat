@@ -1,13 +1,13 @@
-import { RecordingIcon } from "@/components/icons";
-import Link from "@/components/Link";
-import RecordingDate from "@/components/recordings/RecordingDate";
+import { RecordingIcon } from "@/lib/components/icons";
+import Link from "@/lib/components/Link";
+import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import {
   getBaseName,
   removeExtension,
-} from "@/components/recordings/RecordingHeader";
-import RecordingLocation from "@/components/recordings/RecordingLocation";
-import RecordingTagBar from "@/components/recordings/RecordingTagBar";
-import RecordingTime from "@/components/recordings/RecordingTime";
+} from "@/lib/components/recordings/RecordingHeader";
+import RecordingLocation from "@/lib/components/recordings/RecordingLocation";
+import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
+import RecordingTime from "@/lib/components/recordings/RecordingTime";
 
 import type { Recording, Tag } from "@/lib/types";
 

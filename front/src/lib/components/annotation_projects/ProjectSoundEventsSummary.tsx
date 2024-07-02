@@ -1,5 +1,5 @@
-import Card from "@/components/Card";
-import { H4 } from "@/components/Headings";
+import Card from "@/lib/components/Card";
+import { H4 } from "@/lib/components/Headings";
 
 export default function ProjectSoundEventsSummary({}: {}) {
   return (

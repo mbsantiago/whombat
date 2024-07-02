@@ -1,7 +1,7 @@
 import { type Control, Controller } from "react-hook-form";
 
-import { InputGroup } from "@/components/inputs/index";
-import Select from "@/components/inputs/Select";
+import { InputGroup } from "@/lib/components/inputs/index";
+import Select from "@/lib/components/inputs/Select";
 
 import SettingsSection from "./SettingsSection";
 

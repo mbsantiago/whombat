@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
 import api from "@/app/api";
-import Loading from "@/components/Loading";
-import Pagination from "@/components/lists/Pagination";
-import RecordingSpectrogram from "@/components/recordings/RecordingSpectrogram";
+import Loading from "@/lib/components/Loading";
+import Pagination from "@/lib/components/lists/Pagination";
+import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 import type { RecordingFilter } from "@/lib/api/recordings";
 import type { SpectrogramParameters, Recording } from "@/lib/types";

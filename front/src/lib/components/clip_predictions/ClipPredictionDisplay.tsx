@@ -1,6 +1,6 @@
 import type { ClipPrediction, Interval } from "@/lib/types";
-import ClipPredictionSpectrogram from "@/components/clip_predictions/ClipPredictionSpectrogram";
-import ClipPredictionTags from "@/components/clip_predictions/ClipPredictionTags";
+import ClipPredictionSpectrogram from "@/lib/components/clip_predictions/ClipPredictionSpectrogram";
+import ClipPredictionTags from "@/lib/components/clip_predictions/ClipPredictionTags";
 
 export default function ClipPredictionDisplay(props: {
   clipPrediction: ClipPrediction;

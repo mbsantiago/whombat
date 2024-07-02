@@ -1,5 +1,5 @@
-import Header from "@/components/Header";
-import { H1 } from "@/components/Headings";
+import Header from "@/lib/components/Header";
+import { H1 } from "@/lib/components/Headings";
 
 export default function Hero({ text }: { text: string }) {
   return (

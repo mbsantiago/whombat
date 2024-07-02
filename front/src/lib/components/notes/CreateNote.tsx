@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import Button from "@/components/Button";
-import { IssueIcon, NotesIcon } from "@/components/icons";
-import { InputGroup, TextArea } from "@/components/inputs/index";
+import Button from "@/lib/components/Button";
+import { IssueIcon, NotesIcon } from "@/lib/components/icons";
+import { InputGroup, TextArea } from "@/lib/components/inputs/index";
 
 import type { NoteCreate } from "@/lib/api/notes";
 

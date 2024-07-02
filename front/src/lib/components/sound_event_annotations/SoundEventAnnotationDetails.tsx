@@ -1,6 +1,6 @@
-import Card from "@/components/Card";
-import { DescriptionData, DescriptionTerm } from "@/components/Description";
-import { H4 } from "@/components/Headings";
+import Card from "@/lib/components/Card";
+import { DescriptionData, DescriptionTerm } from "@/lib/components/Description";
+import { H4 } from "@/lib/components/Headings";
 
 import type { SoundEventAnnotation } from "@/lib/types";
 

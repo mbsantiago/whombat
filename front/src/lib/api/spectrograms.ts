@@ -7,7 +7,7 @@ import {
   DEFAULT_WINDOW_SIZE,
   MIN_DB,
 } from "@/lib/constants";
-import { IntervalSchema, SpectrogramParametersSchema } from "@/schemas";
+import { IntervalSchema, SpectrogramParametersSchema } from "@/lib/schemas";
 
 import type { Interval, Recording, SpectrogramParameters } from "@/lib/types";
 

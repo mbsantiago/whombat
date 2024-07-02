@@ -1,10 +1,10 @@
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 
-import LocationInput, { formatLocation } from "@/components/inputs/Location";
-import { EditIcon } from "@/components/icons";
+import LocationInput, { formatLocation } from "@/lib/components/inputs/Location";
+import { EditIcon } from "@/lib/components/icons";
 
-import type { Location } from "@/components/inputs/Location";
+import type { Location } from "@/lib/components/inputs/Location";
 
 /* Parse a string into a position object.
  * @param {string} value - The string to parse.

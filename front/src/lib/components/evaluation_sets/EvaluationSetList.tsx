@@ -1,18 +1,18 @@
 import Loading from "@/app/loading";
-import Dialog from "@/components/Dialog";
-import Empty from "@/components/Empty";
-import EvaluationSetComponent from "@/components/evaluation_sets/EvaluationSet";
-import EvaluationSetCreate from "@/components/evaluation_sets/EvaluationSetCreate";
-import EvaluationSetImport from "@/components/evaluation_sets/EvaluationSetImport";
+import Dialog from "@/lib/components/Dialog";
+import Empty from "@/lib/components/Empty";
+import EvaluationSetComponent from "@/lib/components/evaluation_sets/EvaluationSet";
+import EvaluationSetCreate from "@/lib/components/evaluation_sets/EvaluationSetCreate";
+import EvaluationSetImport from "@/lib/components/evaluation_sets/EvaluationSetImport";
 import {
   AddIcon,
   TasksIcon,
   UploadIcon,
   WarningIcon,
-} from "@/components/icons";
-import Search from "@/components/inputs/Search";
-import Pagination from "@/components/lists/Pagination";
-import StackedList from "@/components/lists/StackedList";
+} from "@/lib/components/icons";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/lib/components/lists/Pagination";
+import StackedList from "@/lib/components/lists/StackedList";
 import useEvaluationSets from "@/lib/hooks/api/useEvaluationSets";
 
 import type { EvaluationSet } from "@/lib/types";

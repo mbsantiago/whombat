@@ -5,8 +5,8 @@ import classNames from "classnames";
 import { type HTMLProps, type ReactNode } from "react";
 import { useMemo } from "react";
 
-import { CloseIcon, TagIcon } from "@/components/icons";
-import TagSearchBar from "@/components/tags/TagSearchBar";
+import { CloseIcon, TagIcon } from "@/lib/components/icons";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";

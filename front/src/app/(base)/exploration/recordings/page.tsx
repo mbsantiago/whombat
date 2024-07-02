@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import useStore from "@/app/store";
 
-import RecordingExplorer from "@/components/recordings/RecordingExplore";
+import RecordingExplorer from "@/lib/components/recordings/RecordingExplore";
 
 import type { SpectrogramParameters } from "@/lib/types";
 

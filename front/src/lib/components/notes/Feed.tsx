@@ -1,6 +1,6 @@
 import React from "react";
 
-import NoteComponent from "@/components/notes/Note";
+import NoteComponent from "@/lib/components/notes/Note";
 
 import type { Note, User } from "@/lib/types";
 

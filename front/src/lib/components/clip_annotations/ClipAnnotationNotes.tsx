@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
 import { type NoteCreate } from "@/lib/api/notes";
-import Card from "@/components/Card";
-import Empty from "@/components/Empty";
-import { H4 } from "@/components/Headings";
-import { NotesIcon } from "@/components/icons";
-import CreateNote from "@/components/notes/CreateNote";
-import Feed from "@/components/notes/Feed";
+import Card from "@/lib/components/Card";
+import Empty from "@/lib/components/Empty";
+import { H4 } from "@/lib/components/Headings";
+import { NotesIcon } from "@/lib/components/icons";
+import CreateNote from "@/lib/components/notes/CreateNote";
+import Feed from "@/lib/components/notes/Feed";
 
 import type { ClipAnnotation, Note, User } from "@/lib/types";
 

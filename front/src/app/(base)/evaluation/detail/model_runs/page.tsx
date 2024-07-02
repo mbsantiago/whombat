@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import EvaluationSetModelRuns from "@/components/evaluation_sets/EvaluationSetModelRuns";
+import EvaluationSetModelRuns from "@/lib/components/evaluation_sets/EvaluationSetModelRuns";
 
 import EvaluationSetContext from "../context";
 

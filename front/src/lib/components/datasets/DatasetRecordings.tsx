@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 
-import RecordingTable from "@/components/recordings/RecordingTable";
+import RecordingTable from "@/lib/components/recordings/RecordingTable";
 
 import type { Dataset, Recording } from "@/lib/types";
 

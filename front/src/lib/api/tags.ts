@@ -13,7 +13,7 @@ import {
   SoundEventPredictionSchema,
   StringFilterSchema,
   TagSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { Tag } from "@/lib/types";
 

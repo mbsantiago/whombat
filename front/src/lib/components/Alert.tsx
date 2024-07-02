@@ -1,7 +1,7 @@
 import { type ComponentProps, type ReactNode } from "react";
 
-import Button from "@/components/Button";
-import Dialog from "@/components/Dialog";
+import Button from "@/lib/components/Button";
+import Dialog from "@/lib/components/Dialog";
 
 export default function Alert({
   children,

@@ -8,7 +8,7 @@ import {
   GeometrySchema,
   RecordingSchema,
   SoundEventSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { Feature, Recording, SoundEvent } from "@/lib/types";
 

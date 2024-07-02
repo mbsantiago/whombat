@@ -1,7 +1,7 @@
-import Button from "@/components/Button";
-import DatasetExport from "@/components/datasets/DatasetExport";
-import Dialog from "@/components/Dialog";
-import { DownloadIcon, RecordingsIcon, UploadIcon } from "@/components/icons";
+import Button from "@/lib/components/Button";
+import DatasetExport from "@/lib/components/datasets/DatasetExport";
+import Dialog from "@/lib/components/Dialog";
+import { DownloadIcon, RecordingsIcon, UploadIcon } from "@/lib/components/icons";
 
 import type { Dataset } from "@/lib/types";
 

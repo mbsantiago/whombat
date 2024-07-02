@@ -2,11 +2,11 @@ import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 import { type ReactNode, useState } from "react";
 
-import Button, { getButtonClassName } from "@/components/Button";
-import { BackIcon, FilterIcon } from "@/components/icons";
-import SearchMenu from "@/components/search/SearchMenu";
+import Button, { getButtonClassName } from "@/lib/components/Button";
+import { BackIcon, FilterIcon } from "@/lib/components/icons";
+import SearchMenu from "@/lib/components/search/SearchMenu";
 
-import type { SetFilter } from "@/components/filters/Filters";
+import type { SetFilter } from "@/lib/components/filters/Filters";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 
 export type FilterDef<T extends Object> = {

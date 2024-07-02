@@ -9,7 +9,7 @@ import {
   RecordingSchema,
   SoundEventSchema,
   UserSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { Note } from "@/lib/types";
 

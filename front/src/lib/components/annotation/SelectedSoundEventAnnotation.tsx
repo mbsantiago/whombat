@@ -1,7 +1,7 @@
-import Card from "@/components/Card";
-import SoundEventAnnotationDetails from "@/components/sound_event_annotations/SoundEventAnnotationDetails";
-import SoundEventAnnotationNotes from "@/components/sound_event_annotations/SoundEventAnnotationNotes";
-import SoundEventAnnotationTags from "@/components/sound_event_annotations/SoundEventAnnotationTags";
+import Card from "@/lib/components/Card";
+import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
+import SoundEventAnnotationNotes from "@/lib/components/sound_event_annotations/SoundEventAnnotationNotes";
+import SoundEventAnnotationTags from "@/lib/components/sound_event_annotations/SoundEventAnnotationTags";
 import useSoundEventAnnotation from "@/lib/hooks/api/useSoundEventAnnotation";
 
 import type { TagFilter } from "@/lib/api/tags";

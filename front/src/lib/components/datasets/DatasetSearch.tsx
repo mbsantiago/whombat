@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Item } from "react-stately";
 
-import Search from "@/components/search/Search";
+import Search from "@/lib/components/search/Search";
 import useDatasets from "@/lib/hooks/api/useDatasets";
 
 import type { Dataset } from "@/lib/types";

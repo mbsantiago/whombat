@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
 import api from "@/app/api";
-import Card from "@/components/Card";
-import Empty from "@/components/Empty";
-import Loading from "@/components/Loading";
-import Pagination from "@/components/lists/Pagination";
+import Card from "@/lib/components/Card";
+import Empty from "@/lib/components/Empty";
+import Loading from "@/lib/components/Loading";
+import Pagination from "@/lib/components/lists/Pagination";
 import useSoundEventAnnotation from "@/lib/hooks/api/useSoundEventAnnotation";
-import SoundEventAnnotationSpectrogram from "@/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
+import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import type { SpectrogramParameters, SoundEventAnnotation } from "@/lib/types";

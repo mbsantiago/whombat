@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import Card from "@/components/Card";
-import Empty from "@/components/Empty";
-import { H4 } from "@/components/Headings";
-import { CheckIcon, IssuesIcon } from "@/components/icons";
+import Card from "@/lib/components/Card";
+import Empty from "@/lib/components/Empty";
+import { H4 } from "@/lib/components/Headings";
+import { CheckIcon, IssuesIcon } from "@/lib/components/icons";
 
 import type { AnnotationProject } from "@/lib/types";
 

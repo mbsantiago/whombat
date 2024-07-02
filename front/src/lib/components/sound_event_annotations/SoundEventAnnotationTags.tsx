@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
-import Empty from "@/components/Empty";
-import { H4 } from "@/components/Headings";
-import { TagsIcon } from "@/components/icons";
-import AddTagButton from "@/components/tags/AddTagButton";
-import TagComponent from "@/components/tags/Tag";
+import Empty from "@/lib/components/Empty";
+import { H4 } from "@/lib/components/Headings";
+import { TagsIcon } from "@/lib/components/icons";
+import AddTagButton from "@/lib/components/tags/AddTagButton";
+import TagComponent from "@/lib/components/tags/Tag";
 import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";

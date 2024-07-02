@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
-import DatasetList from "@/components/datasets/DatasetList";
-import Hero from "@/components/Hero";
+import DatasetList from "@/lib/components/datasets/DatasetList";
+import Hero from "@/lib/components/Hero";
 
 import type { Dataset } from "@/lib/types";
 

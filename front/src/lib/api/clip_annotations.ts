@@ -9,7 +9,7 @@ import {
   ClipSchema,
   EvaluationSetSchema,
   TagSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { Clip, ClipAnnotation, Note, Tag } from "@/lib/types";
 

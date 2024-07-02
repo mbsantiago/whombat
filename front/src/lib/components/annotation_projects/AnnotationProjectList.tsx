@@ -1,18 +1,18 @@
 import Loading from "@/app/loading";
-import AnnotationProjectComponent from "@/components/annotation_projects/AnnotationProject";
-import AnnotationProjectCreate from "@/components/annotation_projects/AnnotationProjectCreate";
-import AnnotationProjectImport from "@/components/annotation_projects/AnnotationProjectImport";
-import Dialog from "@/components/Dialog";
-import Empty from "@/components/Empty";
+import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
+import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
+import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
+import Dialog from "@/lib/components/Dialog";
+import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
   DatasetIcon,
   UploadIcon,
   WarningIcon,
-} from "@/components/icons";
-import Search from "@/components/inputs/Search";
-import Pagination from "@/components/lists/Pagination";
-import StackedList from "@/components/lists/StackedList";
+} from "@/lib/components/icons";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/lib/components/lists/Pagination";
+import StackedList from "@/lib/components/lists/StackedList";
 import useAnnotationProjects from "@/lib/hooks/api/useAnnotationProjects";
 
 import type { AnnotationProject } from "@/lib/types";

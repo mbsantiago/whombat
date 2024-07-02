@@ -9,7 +9,7 @@ import {
   AnnotationProjectCreateSchema,
 } from "@/lib/api/annotation_projects";
 import api from "@/app/api";
-import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
+import { Input, InputGroup, Submit, TextArea } from "@/lib/components/inputs/index";
 
 import type { AnnotationProject } from "@/lib/types";
 

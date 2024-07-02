@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { type ClipCreateMany } from "@/lib/api/clips";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import DatasetSearch from "@/components/datasets/DatasetSearch";
-import FilterBar from "@/components/filters/FilterBar";
-import FilterMenu from "@/components/filters/FilterMenu";
-import recordingFilterDefs from "@/components/filters/recordings";
-import { H2, H3 } from "@/components/Headings";
-import { FilterIcon, TasksIcon } from "@/components/icons";
-import { Input, InputGroup } from "@/components/inputs/index";
-import Toggle from "@/components/inputs/Toggle";
+import Button from "@/lib/components/Button";
+import Card from "@/lib/components/Card";
+import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
+import FilterBar from "@/lib/components/filters/FilterBar";
+import FilterMenu from "@/lib/components/filters/FilterMenu";
+import recordingFilterDefs from "@/lib/components/filters/recordings";
+import { H2, H3 } from "@/lib/components/Headings";
+import { FilterIcon, TasksIcon } from "@/lib/components/icons";
+import { Input, InputGroup } from "@/lib/components/inputs/index";
+import Toggle from "@/lib/components/inputs/Toggle";
 import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
 import useRecordings from "@/lib/hooks/api/useRecordings";
 import { getRandomSubarray } from "@/lib/utils/arrays";

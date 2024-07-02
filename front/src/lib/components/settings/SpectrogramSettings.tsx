@@ -8,7 +8,7 @@ import ClampSettings from "./settings/ClampSettings";
 import ColorSettings from "./settings/ColorSettings";
 import DeNoiseSettings from "./settings/DeNoiseSettings";
 import STFTSettings from "./settings/STFTSettings";
-import { SpectrogramSettingsSchema } from "@/schemas";
+import { SpectrogramSettingsSchema } from "@/lib/schemas";
 
 import type { SpectrogramSettings } from "@/lib/types";
 

@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 
 import Loading from "@/app/loading";
-import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
+import EvaluationSetHeader from "@/lib/components/evaluation_sets/EvaluationSetHeader";
 import useEvaluationSet from "@/lib/hooks/api/useEvaluationSet";
 
 import EvaluationSetContext from "./context";

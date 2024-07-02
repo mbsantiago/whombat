@@ -1,6 +1,6 @@
 import { type HTMLProps, useEffect, useRef, useState } from "react";
 
-import TableCell from "@/components/tables/TableCell";
+import TableCell from "@/lib/components/tables/TableCell";
 
 export default function TableInput({
   value: initialValue,

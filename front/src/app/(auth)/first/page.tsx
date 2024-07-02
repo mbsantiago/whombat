@@ -2,9 +2,9 @@
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { WhombatIcon } from "@/components/icons";
-import UserCreateForm from "@/components/users/UserCreateForm";
-import Info from "@/components/Info";
+import { WhombatIcon } from "@/lib/components/icons";
+import UserCreateForm from "@/lib/components/users/UserCreateForm";
+import Info from "@/lib/components/Info";
 
 import type { User } from "@/lib/types";
 

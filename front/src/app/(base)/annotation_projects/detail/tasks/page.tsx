@@ -3,8 +3,8 @@ import { notFound, useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import AnnotationProjectTasks from "@/components/annotation_projects/AnnotationProjectTasks";
-import Center from "@/components/layouts/Center";
+import AnnotationProjectTasks from "@/lib/components/annotation_projects/AnnotationProjectTasks";
+import Center from "@/lib/components/layouts/Center";
 
 import AnnotationProjectContext from "../context";
 

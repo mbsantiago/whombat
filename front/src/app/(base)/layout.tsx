@@ -4,9 +4,9 @@ import { type ReactNode, useContext, useCallback } from "react";
 import toast from "react-hot-toast";
 
 import Loading from "@/app/loading";
-import { WhombatIcon } from "@/components/icons";
-import { NavBar } from "@/components/navigation/NavBar";
-import { SideMenu } from "@/components/navigation/SideMenu";
+import { WhombatIcon } from "@/lib/components/icons";
+import { NavBar } from "@/lib/components/navigation/NavBar";
+import { SideMenu } from "@/lib/components/navigation/SideMenu";
 import useActiveUser from "@/lib/hooks/api/useActiveUser";
 
 import UserContext from "./context";

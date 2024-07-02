@@ -1,10 +1,10 @@
-import Card from "@/components/Card";
+import Card from "@/lib/components/Card";
 import {
   ChannelsIcon,
   SampleRateIcon,
   TimeExpansionIcon,
   TimeIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
 import type { Recording } from "@/lib/types";
 

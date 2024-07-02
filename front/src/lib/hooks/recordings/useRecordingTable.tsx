@@ -13,13 +13,13 @@ import {
   SunIcon,
   TagIcon,
   TimeIcon,
-} from "@/components/icons";
-import TableCell from "@/components/tables/TableCell";
-import Checkbox from "@/components/tables/TableCheckbox";
-import TableHeader from "@/components/tables/TableHeader";
-import TableInput from "@/components/tables/TableInput";
-import TableMap from "@/components/tables/TableMap";
-import TableTags from "@/components/tables/TableTags";
+} from "@/lib/components/icons";
+import TableCell from "@/lib/components/tables/TableCell";
+import Checkbox from "@/lib/components/tables/TableCheckbox";
+import TableHeader from "@/lib/components/tables/TableHeader";
+import TableInput from "@/lib/components/tables/TableInput";
+import TableMap from "@/lib/components/tables/TableMap";
+import TableTags from "@/lib/components/tables/TableTags";
 
 import type { RecordingUpdate } from "@/lib/api/recordings";
 import type { Note, Recording, Tag } from "@/lib/types";

@@ -9,7 +9,7 @@ import {
   NumberFilterSchema,
   StringFilterSchema,
   UserRunSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { Evaluation } from "@/lib/types";
 

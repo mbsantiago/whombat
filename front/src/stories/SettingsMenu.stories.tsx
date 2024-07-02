@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
 
-import SettingsMenu from "@/components/settings/SettingsMenu";
+import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 
 const meta: Meta<typeof SettingsMenu> = {
   title: "SettingsMenu",

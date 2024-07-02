@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import Card from "@/components/Card";
-import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
-import ViewportToolbar from "@/components/spectrograms/ViewportToolbar";
-import SettingsMenu from "@/components/settings/SettingsMenu";
-import Canvas from "@/components/spectrograms/Canvas";
-import Player from "@/components/audio/Player";
+import Card from "@/lib/components/Card";
+import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
+import SettingsMenu from "@/lib/components/settings/SettingsMenu";
+import Canvas from "@/lib/components/spectrograms/Canvas";
+import Player from "@/lib/components/audio/Player";
 
 import { getSpeedOptions } from "@/lib/hooks/settings/useAudioSettings";
 import {

@@ -1,10 +1,10 @@
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import { H4 } from "@/components/Headings";
-import { DeleteIcon, ToolsIcon } from "@/components/icons";
-import TagComponent from "@/components/tags/Tag";
-import TagSearchBar from "@/components/tags/TagSearchBar";
-import Tooltip from "@/components/Tooltip";
+import Button from "@/lib/components/Button";
+import Card from "@/lib/components/Card";
+import { H4 } from "@/lib/components/Headings";
+import { DeleteIcon, ToolsIcon } from "@/lib/components/icons";
+import TagComponent from "@/lib/components/tags/Tag";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
+import Tooltip from "@/lib/components/Tooltip";
 import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";

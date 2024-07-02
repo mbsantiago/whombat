@@ -11,7 +11,7 @@ import {
   NumberFilterSchema,
   PredictedTagFilterSchema,
   TagSchema,
-} from "@/schemas";
+} from "@/lib/schemas";
 
 import type { ClipEvaluation } from "@/lib/types";
 

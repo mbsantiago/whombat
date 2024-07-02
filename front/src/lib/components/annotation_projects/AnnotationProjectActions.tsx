@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 
-import Alert from "@/components/Alert";
-import Button from "@/components/Button";
+import Alert from "@/lib/components/Alert";
+import Button from "@/lib/components/Button";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
-} from "@/components/icons";
-import Link from "@/components/Link";
+} from "@/lib/components/icons";
+import Link from "@/lib/components/Link";
 import useAnnotationProject from "@/lib/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";

@@ -1,9 +1,9 @@
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 
-import Button from "@/components/Button";
-import { AddIcon } from "@/components/icons";
-import TagSearchBar from "@/components/tags/TagSearchBar";
+import Button from "@/lib/components/Button";
+import { AddIcon } from "@/lib/components/icons";
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 
 import type { TagFilter } from "@/lib/api/tags";
 import type { Tag as TagType } from "@/lib/types";

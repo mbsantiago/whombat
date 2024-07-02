@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react";
 import { type Control, useController } from "react-hook-form";
 
-import { InputGroup } from "@/components/inputs";
-import RangeSlider from "@/components/inputs/RangeSlider";
+import { InputGroup } from "@/lib/components/inputs";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
 
 import SettingsSection from "./SettingsSection";
 

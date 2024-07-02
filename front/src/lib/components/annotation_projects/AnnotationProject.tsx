@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
 
-import { AnnotationProjectIcon, CalendarIcon } from "@/components/icons";
+import { AnnotationProjectIcon, CalendarIcon } from "@/lib/components/icons";
 
 import type { AnnotationProject as AnnotationProjectType } from "@/lib/types";
 

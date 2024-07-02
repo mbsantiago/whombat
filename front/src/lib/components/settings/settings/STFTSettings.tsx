@@ -1,9 +1,9 @@
 import { type Control, Controller } from "react-hook-form";
 
-import Select from "@/components/inputs/Select";
-import Slider from "@/components/inputs/Slider";
+import Select from "@/lib/components/inputs/Select";
+import Slider from "@/lib/components/inputs/Slider";
 import SettingsSection from "./SettingsSection";
-import { InputGroup } from "@/components/inputs/index";
+import { InputGroup } from "@/lib/components/inputs/index";
 
 import type { SpectrogramSettings } from "@/lib/types";
 import {

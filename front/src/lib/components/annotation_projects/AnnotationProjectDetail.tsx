@@ -1,4 +1,4 @@
-import Card from "@/components/Card";
+import Card from "@/lib/components/Card";
 
 import AnnotationProjectActions from "./AnnotationProjectActions";
 import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";

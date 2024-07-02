@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { produce } from "immer";
 import type { SpectrogramSettings } from "@/lib/types";
-import { SCALES, WINDOWS, COLORMAPS } from "@/schemas";
+import { SCALES, WINDOWS, COLORMAPS } from "@/lib/schemas";
 
 export type SpectrogramSettingsInterface = {
   /** The current spectrogram settings. */

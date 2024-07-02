@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { Atom } from "@/components/datasets/Dataset";
-import { CalendarIcon, TasksIcon } from "@/components/icons";
+import { Atom } from "@/lib/components/datasets/Dataset";
+import { CalendarIcon, TasksIcon } from "@/lib/components/icons";
 
 import type { EvaluationSet as EvaluationSetType } from "@/lib/types";
 
