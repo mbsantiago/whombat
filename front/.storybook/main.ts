@@ -5,8 +5,8 @@ const config: StorybookConfig = {
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
     "@storybook/addon-interactions",
+    "@chromatic-com/storybook",
   ],
   framework: {
     name: "@storybook/nextjs",
@@ -14,8 +14,9 @@ const config: StorybookConfig = {
   },
   staticDirs: ["../public"],
   typescript: {
-    reactDocgen: 'react-docgen',
+    reactDocgen: "react-docgen",
     check: false,
   },
 };
+
 export default config;

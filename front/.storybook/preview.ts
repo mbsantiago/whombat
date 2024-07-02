@@ -1,28 +1,13 @@
 import type { Preview } from "@storybook/react";
-import { withThemeByDataAttribute } from "@storybook/addon-themes";
-import { withThemeByClassName } from "@storybook/addon-themes";
-import 'tailwindcss/tailwind.css';
-
-export const decorators = [
-  withThemeByClassName({
-    themes: {
-      light: "light",
-      dark: "dark",
-    },
-    defaultTheme: "light",
-  }),
-  withThemeByDataAttribute({
-    themes: {
-      light: "light",
-      dark: "dark",
-    },
-    defaultTheme: "light",
-    attributeName: "data-mode",
-  }),
-];
+import { withActions } from "@storybook/addon-actions/decorator";
+import "@/app/globals.css";
 
 const preview: Preview = {
+  decorators: [
+    withActions,
+  ],
   parameters: {
+    actions: { argTypesRegex: "^on.*" },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -33,7 +18,7 @@ const preview: Preview = {
       toc: true,
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default preview;
