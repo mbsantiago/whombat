@@ -1,4 +1,4 @@
-import { type SoundEventAnnotationFilter } from "@/api/sound_event_annotations";
+import { type SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

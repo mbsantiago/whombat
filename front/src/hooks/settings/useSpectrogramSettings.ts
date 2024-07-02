@@ -6,6 +6,8 @@ import { SCALES, WINDOWS, COLORMAPS } from "@/schemas";
 export type SpectrogramSettingsInterface = {
   /** The current spectrogram settings. */
   settings: SpectrogramSettings;
+  /** Sets the spectrogram settings. */
+  set: (settings: SpectrogramSettings) => void;
   /** Sets the window size for the spectrogram calculation. */
   setWindowSize: (windowSize: number) => void;
   /** Sets the overlap between consecutive windows. */
@@ -85,7 +87,7 @@ export default function useSpectrogramSettings({
           return;
         }
 
-        draft.hop_size = overlap;
+        draft.overlap = overlap;
       }),
     [updateSettings, onError],
   );
@@ -177,6 +179,11 @@ export default function useSpectrogramSettings({
     [initialSettings, onReset, updateSettings],
   );
 
+  const setAll = useCallback(
+    (settings: SpectrogramSettings) => updateSettings(() => settings),
+    [updateSettings],
+  );
+
   return {
     settings,
     setWindowSize,
@@ -188,5 +195,6 @@ export default function useSpectrogramSettings({
     togglePCEN,
     toggleNormalize,
     reset,
+    set: setAll,
   };
 }

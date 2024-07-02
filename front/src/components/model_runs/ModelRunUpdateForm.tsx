@@ -10,7 +10,7 @@ import { TextArea } from "@/components/inputs/index";
 import DeleteModelRun from "@/components/model_runs/ModelRunDelete";
 import useModelRun from "@/hooks/api/useModelRun";
 
-import type { ModelRunUpdate } from "@/api/model_runs";
+import type { ModelRunUpdate } from "@/lib/api/model_runs";
 import type { ModelRun } from "@/types";
 
 export default function ModelRunUpdateForm(props: {

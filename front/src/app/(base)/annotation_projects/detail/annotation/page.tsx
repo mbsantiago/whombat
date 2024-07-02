@@ -8,7 +8,7 @@ import UserContext from "@/app/(base)/context";
 import AnnotateTasks from "@/components/annotation/AnnotateTasks";
 import Loading from "@/components/Loading";
 import useAnnotationTask from "@/hooks/api/useAnnotationTask";
-import useStore from "@/store";
+import useStore from "@/app/store";
 import { changeURLParam } from "@/utils/url";
 
 import AnnotationProjectContext from "../context";

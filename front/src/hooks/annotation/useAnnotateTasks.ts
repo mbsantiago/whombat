@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AnnotationTaskFilter,
   type AnnotationTaskPage,
-} from "@/api/annotation_tasks";
+} from "@/lib/api/annotation_tasks";
 import api from "@/app/api";
 import useAnnotateTasksKeyShortcuts from "@/hooks/annotation/useAnnotateTasksKeyShortcuts";
 import useAnnotationTasks from "@/hooks/api/useAnnotationTasks";

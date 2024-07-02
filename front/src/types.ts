@@ -152,6 +152,14 @@ export type Dimensions = {
 
 export type Interval = z.infer<typeof IntervalSchema>;
 
+/** A chunk of the spectrogram. */
+export type Chunk = {
+  /** The interval of the chunk in seconds. */
+  interval: Interval;
+  /** A buffered interval for the chunk. */
+  buffer: Interval;
+};
+
 export type SpectrogramWindow = z.infer<typeof SpectrogramWindowSchema>;
 
 export type SpectrogramParameters = z.infer<typeof SpectrogramParametersSchema>;
@@ -252,3 +260,5 @@ export type CanvasHandlers = {
   onScroll?: ScrollHandler;
   onDoubleClick?: DoublePressHandler;
 };
+
+export type SpectrogramState = "panning" | "zooming" | "idle";

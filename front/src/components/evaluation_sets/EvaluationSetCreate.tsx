@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import {
   type EvaluationSetCreate,
   EvaluationSetCreateSchema,
-} from "@/api/evaluation_sets";
+} from "@/lib/api/evaluation_sets";
 import api from "@/app/api";
 import {
   Input,

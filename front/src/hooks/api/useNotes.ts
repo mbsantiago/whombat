@@ -1,4 +1,4 @@
-import { type NoteFilter } from "@/api/notes";
+import { type NoteFilter } from "@/lib/api/notes";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

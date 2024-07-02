@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { type NoteCreate } from "@/api/notes";
+import { type NoteCreate } from "@/lib/api/notes";
 import Card from "@/components/Card";
 import Empty from "@/components/Empty";
 import { H4 } from "@/components/Headings";

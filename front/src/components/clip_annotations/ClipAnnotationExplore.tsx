@@ -3,7 +3,7 @@ import AnnotationGallery from "@/components/clip_annotations/ClipAnnotationGalle
 import { GalleryIcon } from "@/components/icons";
 import ExplorationLayout from "@/components/layouts/Exploration";
 
-import type { ClipAnnotationFilter } from "@/api/clip_annotations";
+import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import type { SpectrogramParameters } from "@/types";
 
 const tabs = [

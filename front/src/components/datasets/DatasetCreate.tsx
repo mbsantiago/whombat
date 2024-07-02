@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
-import { type DatasetCreate, DatasetCreateSchema } from "@/api/datasets";
+import { type DatasetCreate, DatasetCreateSchema } from "@/lib/api/datasets";
 import api from "@/app/api";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
 

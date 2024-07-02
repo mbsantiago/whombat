@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
-import type { DatasetUpdate } from "@/api/datasets";
+import type { DatasetUpdate } from "@/lib/api/datasets";
 import type { Dataset } from "@/types";
 import type { AxiosError } from "axios";
 

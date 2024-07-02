@@ -175,3 +175,4 @@ back/src/whombat/statics/*
 back/src/whombat/user_guide/*
 back/.build_venv
 front/tests-examples
+!front/src/lib

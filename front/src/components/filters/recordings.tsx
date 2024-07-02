@@ -18,7 +18,7 @@ import {
   TimeIcon,
 } from "@/components/icons";
 
-import type { RecordingFilter } from "@/api/recordings";
+import type { RecordingFilter } from "@/lib/api/recordings";
 import type { FilterDef } from "@/components/filters/FilterMenu";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values

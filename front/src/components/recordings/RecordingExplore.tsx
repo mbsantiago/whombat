@@ -3,7 +3,7 @@ import RecordingGallery from "@/components/recordings/RecordingGallery";
 import { GalleryIcon } from "@/components/icons";
 import ExplorationLayout from "@/components/layouts/Exploration";
 
-import type { RecordingFilter } from "@/api/recordings";
+import type { RecordingFilter } from "@/lib/api/recordings";
 import type { SpectrogramParameters } from "@/types";
 
 const tabs = [

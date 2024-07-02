@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import useClipEvaluations from "@/hooks/api/useClipEvaluations";
 
-import type { ClipEvaluationFilter } from "@/api/clip_evaluations";
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import type { Filter } from "@/hooks/utils/useFilter";
 import type { ClipEvaluation, Interval } from "@/types";
 

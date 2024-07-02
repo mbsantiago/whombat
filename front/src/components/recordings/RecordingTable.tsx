@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { type KeyboardEvent } from "react";
 
-import { type RecordingFilter, type RecordingUpdate } from "@/api/recordings";
+import { type RecordingFilter, type RecordingUpdate } from "@/lib/api/recordings";
 import Loading from "@/app/loading";
 import FilterBar from "@/components/filters/FilterBar";
 import FilterPopover from "@/components/filters/FilterMenu";
@@ -12,8 +12,8 @@ import SelectedMenu from "@/components/tables/SelectedMenu";
 import Table from "@/components/tables/Table";
 import { parsePosition } from "@/components/tables/TableMap";
 import useRecordings from "@/hooks/api/useRecordings";
-import useRecordingTable from "@/hooks/useRecordingTable";
-import useStore from "@/store";
+import useRecordingTable from "@/hooks/recordings/useRecordingTable";
+import useStore from "@/app/store";
 
 import type { Recording, Tag } from "@/types";
 

@@ -5,7 +5,7 @@ import Button from "@/components/Button";
 import { AddIcon } from "@/components/icons";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 
-import type { TagFilter } from "@/api/tags";
+import type { TagFilter } from "@/lib/api/tags";
 import type { Tag as TagType } from "@/types";
 import type { HTMLProps } from "react";
 

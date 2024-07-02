@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import api from "@/app/api";
 import type { User } from "@/types";
 import type { AxiosError } from "axios";
-import { UserCreateSchema, type UserCreate } from "@/api/user";
+import { UserCreateSchema, type UserCreate } from "@/lib/api/user";
 
 export default function UserCreateForm(props: {
   onCreate?: (user: Promise<User>) => void;

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import {
   type AnnotationProjectCreate,
   AnnotationProjectCreateSchema,
-} from "@/api/annotation_projects";
+} from "@/lib/api/annotation_projects";
 import api from "@/app/api";
 import { Input, InputGroup, Submit, TextArea } from "@/components/inputs/index";
 

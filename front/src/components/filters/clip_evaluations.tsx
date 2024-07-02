@@ -5,7 +5,7 @@ import { type FilterDef } from "@/components/filters/FilterMenu";
 import { FloatFilter, TagFilter } from "@/components/filters/Filters";
 import { TagIcon, ScoreIcon } from "@/components/icons";
 
-import type { ClipEvaluationFilter } from "@/api/clip_evaluations";
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 
 const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
   {

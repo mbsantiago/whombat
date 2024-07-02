@@ -5,7 +5,7 @@ import AnnotationGallery from "@/components/sound_event_annotations/SoundEventAn
 import { GalleryIcon, PlotIcon } from "@/components/icons";
 import ExplorationLayout from "@/components/layouts/Exploration";
 
-import type { SoundEventAnnotationFilter } from "@/api/sound_event_annotations";
+import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import type { SpectrogramParameters } from "@/types";
 
 const AnnotationsScatterPlot = dynamic(

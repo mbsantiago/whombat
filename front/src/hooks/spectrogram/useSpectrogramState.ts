@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
-
-export type SpectrogramState = "panning" | "zooming" | "idle";
+import { SpectrogramState } from "@/types";
 
 export default function useSpectrogramState({
   state: initialState = "panning",

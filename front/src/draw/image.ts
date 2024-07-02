@@ -1,9 +1,5 @@
 import type { SpectrogramWindow } from "@/types";
-import {
-  intersectWindows,
-  getViewportPosition,
-  extendWindow,
-} from "@/utils/windows";
+import { intersectWindows, getViewportPosition } from "@/utils/windows";
 
 const FONT_SIZE = 30;
 const FONT_FAMILY = "system-ui";
@@ -111,14 +107,9 @@ export function drawImageOnCanvas(
   image: HTMLImageElement,
   viewport: SpectrogramWindow,
   imageBounds: SpectrogramWindow,
-  overlap: number = 0.05,
+  buffer: SpectrogramWindow,
 ) {
-  const duration = imageBounds.time.max - imageBounds.time.min;
-  const offset = (duration * overlap) / 2;
-  const intersection = intersectWindows(
-    viewport,
-    extendWindow(imageBounds, { time: -offset, freq: 0 }),
-  );
+  const intersection = intersectWindows(viewport, imageBounds);
 
   if (!intersection) {
     return;
@@ -128,7 +119,7 @@ export function drawImageOnCanvas(
     width: image.width,
     height: image.height,
     viewport: intersection,
-    bounds: imageBounds,
+    bounds: buffer,
   });
 
   const destination = getViewportPosition({
@@ -143,11 +134,11 @@ export function drawImageOnCanvas(
     image,
     source.left,
     source.top,
-    source.width,
+    source.width + 1,
     source.height,
     destination.left,
     destination.top,
-    destination.width,
+    destination.width + 1,
     destination.height,
   );
 }
@@ -178,7 +169,6 @@ export function drawLoadingImage({
   ctx.fillRect(position.left, position.top, position.width, position.height);
 }
 
-
 export function drawErroredImage({
   ctx,
   viewport,
@@ -205,12 +195,12 @@ export function drawErroredImage({
   ctx.fillRect(position.left, position.top, position.width, position.height);
 }
 
-
 export interface DrawImageProps {
   ctx: CanvasRenderingContext2D;
   image: HTMLImageElement;
   viewport: SpectrogramWindow;
   imageBounds: SpectrogramWindow;
+  buffer: SpectrogramWindow;
   loading?: boolean;
   error?: boolean;
   overlap?: number;
@@ -221,7 +211,7 @@ export default function drawImage({
   image,
   viewport,
   imageBounds,
-  overlap = 0.1,
+  buffer,
   loading = false,
   error = false,
 }: DrawImageProps) {
@@ -235,5 +225,5 @@ export default function drawImage({
     return;
   }
 
-  drawImageOnCanvas(ctx, image, viewport, imageBounds, overlap);
+  drawImageOnCanvas(ctx, image, viewport, imageBounds, buffer);
 }

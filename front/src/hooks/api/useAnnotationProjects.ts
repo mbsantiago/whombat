@@ -1,4 +1,4 @@
-import { type AnnotationProjectFilter } from "@/api/annotation_projects";
+import { type AnnotationProjectFilter } from "@/lib/api/annotation_projects";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

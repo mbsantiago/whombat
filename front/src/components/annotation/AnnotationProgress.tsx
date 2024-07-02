@@ -16,7 +16,7 @@ import { AUDIO_KEY_SHORTCUTS } from "@/hooks/audio/useAudioKeyShortcuts";
 import { SPECTROGRAM_KEY_SHORTCUTS } from "@/hooks/spectrogram/useSpectrogramKeyShortcuts";
 import { ANNOTATION_KEY_SHORTCUTS } from "@/hooks/annotation/useAnnotateClipKeyShortcuts";
 
-import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import type { Filter } from "@/hooks/utils/useFilter";
 import type { AnnotationTask } from "@/types";
 

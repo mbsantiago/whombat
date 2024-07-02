@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   DEFAULT_CMAP,
   DEFAULT_FILTER_ORDER,
-  DEFAULT_HOP_SIZE,
+  DEFAULT_OVERLAP,
   DEFAULT_SCALE,
   DEFAULT_WINDOW,
   DEFAULT_WINDOW_SIZE,
@@ -310,10 +310,10 @@ export const AudioSettingsSchema = z
       .int()
       .gte(MIN_SAMPLERATE)
       .lte(MAX_SAMPLERATE)
-      .optional(),
+      .nullish(),
     channel: z.coerce.number().nonnegative().int().default(0),
-    low_freq: z.coerce.number().nonnegative().optional(),
-    high_freq: z.coerce.number().nonnegative().optional(),
+    low_freq: z.coerce.number().nonnegative().nullish(),
+    high_freq: z.coerce.number().nonnegative().nullish(),
     filter_order: z.coerce
       .number()
       .positive()
@@ -329,28 +329,33 @@ export const AudioSettingsSchema = z
     },
     {
       message: "low_freq must be less than high_freq",
+      path: ["low_freq"],
     },
   )
   .refine(
     // check that if samplerate is defined that low_freq is less
     // than nyquist frequency
     (data) => {
-      if (data.samplerate == null || data.low_freq == null) return true;
-      return data.low_freq < data.samplerate / 2;
+      if (data.samplerate == null || data.low_freq == null || !data.resample)
+        return true;
+      return data.low_freq <= data.samplerate / 2;
     },
     {
       message: "low_freq must be less than half the samplerate",
+      path: ["low_freq"],
     },
   )
   .refine(
     // check that if samplerate is defined that high_freq is less
     // than nyquist frequency
     (data) => {
-      if (data.samplerate == null || data.high_freq == null) return true;
-      return data.high_freq < data.samplerate / 2;
+      if (data.samplerate == null || data.high_freq == null || !data.resample)
+        return true;
+      return data.high_freq <= data.samplerate / 2;
     },
     {
       message: "high_freq must be less than half the samplerate",
+      path: ["high_freq"],
     },
   );
 
@@ -384,7 +389,7 @@ export const COLORMAPS = [
 
 export const SpectrogramSettingsSchema = z.object({
   window_size: z.coerce.number().positive().default(DEFAULT_WINDOW_SIZE),
-  hop_size: z.coerce.number().positive().gt(0).lte(1).default(DEFAULT_HOP_SIZE),
+  overlap: z.coerce.number().positive().gt(0).lte(1).default(DEFAULT_OVERLAP),
   window: z.enum(WINDOWS).default(DEFAULT_WINDOW),
   scale: z.enum(SCALES).default(DEFAULT_SCALE),
   clamp: z.boolean().default(true),
@@ -404,21 +409,21 @@ export const SpectrogramParametersSchema = z
       .int()
       .gte(MIN_SAMPLERATE)
       .lte(MAX_SAMPLERATE)
-      .optional(),
-    low_freq: z.coerce.number().positive().optional(),
-    high_freq: z.coerce.number().positive().optional(),
+      .nullish(),
+    low_freq: z.coerce.number().positive().nullish(),
+    high_freq: z.coerce.number().positive().nullish(),
     filter_order: z.coerce
       .number()
       .positive()
       .int()
       .default(DEFAULT_FILTER_ORDER),
     window_size: z.coerce.number().positive().default(DEFAULT_WINDOW_SIZE),
-    hop_size: z.coerce
+    overlap: z.coerce
       .number()
       .positive()
       .gt(0)
       .lte(1)
-      .default(DEFAULT_HOP_SIZE),
+      .default(DEFAULT_OVERLAP),
     window: z.string().default(DEFAULT_WINDOW),
     scale: z.enum(["amplitude", "power", "dB"]).default(DEFAULT_SCALE),
     clamp: z.boolean().default(true),
@@ -432,7 +437,7 @@ export const SpectrogramParametersSchema = z
   .refine(
     (data) => {
       if (data.low_freq == null || data.high_freq == null) return true;
-      return data.low_freq < data.high_freq;
+      return data.low_freq <= data.high_freq;
     },
     {
       message: "low_freq must be less than high_freq",

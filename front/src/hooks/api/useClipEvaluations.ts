@@ -1,4 +1,4 @@
-import { type ClipEvaluationFilter } from "@/api/clip_evaluations";
+import { type ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

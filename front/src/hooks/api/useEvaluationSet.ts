@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
-import type { EvaluationSetUpdate } from "@/api/evaluation_sets";
+import type { EvaluationSetUpdate } from "@/lib/api/evaluation_sets";
 import type { EvaluationSet } from "@/types";
 import type { AxiosError } from "axios";
 

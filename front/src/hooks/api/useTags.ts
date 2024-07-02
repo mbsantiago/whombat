@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { type TagFilter } from "@/api/tags";
+import { type TagFilter } from "@/lib/api/tags";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

@@ -13,7 +13,7 @@ import {
   VerifiedIcon,
 } from "@/components/icons";
 
-import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 
 const tasksFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
   {

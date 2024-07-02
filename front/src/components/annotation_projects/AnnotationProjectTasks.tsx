@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { type ClipCreateMany } from "@/api/clips";
+import { type ClipCreateMany } from "@/lib/api/clips";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import DatasetSearch from "@/components/datasets/DatasetSearch";

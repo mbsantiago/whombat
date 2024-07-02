@@ -5,7 +5,6 @@ import useSpectrogramAudio from "@/hooks/spectrogram/useSpectrogramAudio";
 import useSpectrogramImages from "@/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramState from "@/hooks/spectrogram/useSpectrogramState";
 import useSpectrogramBarInteractions from "@/hooks/spectrogram/useSpectrogramBarInteractions";
-import useSpectrogramParameters from "@/hooks/spectrogram/useSpectrogramParameters";
 import useSpectrogramInteractions from "@/hooks/spectrogram/useSpectrogramInteractions";
 
 import drawOnset from "@/draw/onset";
@@ -30,11 +29,6 @@ export default function useSpectrogram({
   audioSettings: AudioSettings;
   spectrogramSettings: SpectrogramSettings;
 }) {
-  const parameters = useSpectrogramParameters({
-    audioSettings,
-    spectrogramSettings,
-  });
-
   const state = useSpectrogramState();
 
   const viewport = useViewport({
@@ -42,7 +36,8 @@ export default function useSpectrogram({
       startTime: bounds.time.min,
       endTime: bounds.time.max,
       samplerate: recording.samplerate,
-      parameters,
+      windowSize: spectrogramSettings.window_size,
+      overlap: spectrogramSettings.overlap,
     }),
     bounds,
   });

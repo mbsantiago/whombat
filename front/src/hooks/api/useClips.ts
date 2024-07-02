@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { type ClipFilter } from "@/api/clips";
+import { type ClipFilter } from "@/lib/api/clips";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

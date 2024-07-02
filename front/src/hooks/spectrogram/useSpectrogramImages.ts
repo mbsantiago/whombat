@@ -13,11 +13,13 @@ import {
   calculateSpectrogramChunkIntervals,
   SPECTROGRAM_CHUNK_BUFFER,
   SPECTROGRAM_CHUNK_SIZE,
-} from "@/utils/spectrogram_segments";
+} from "@/utils/chunks";
 import useSpectrogramParameters from "./useSpectrogramParameters";
 import drawTimeAxis from "@/draw/timeAxis";
 import drawFreqAxis from "@/draw/freqAxis";
-import useSegments, { type IntervalState } from "./useSegmentsState";
+import useSpectrogramChunksState, {
+  type ChunkState,
+} from "./useSpectrogramChunksState";
 import { intervalIntersection, scaleInterval } from "@/utils/geometry";
 
 import api from "@/app/api";
@@ -26,7 +28,7 @@ export type RecordingSpectrogramInterface = {
   /** A function to draw the spectrogram on a canvas. */
   drawFn: (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => void;
   /** The state of the spectrogram segments. */
-  segments: IntervalState[];
+  segments: ChunkState[];
 };
 
 /**
@@ -76,8 +78,13 @@ export default function useSpectrogramImages({
   /** The overlap fraction between consecutive chunks. */
   chunkBuffer?: number;
 }): RecordingSpectrogramInterface {
-  const { segments, setSegments, setReady, setError, startLoading } =
-    useSegments();
+  const {
+    chunks,
+    setChunks,
+    setReady,
+    setError,
+    startLoading,
+  } = useSpectrogramChunksState();
   const images = useRef<HTMLImageElement[]>([]);
 
   const params = useSpectrogramParameters({
@@ -93,20 +100,22 @@ export default function useSpectrogramImages({
     const chunks = calculateSpectrogramChunkIntervals({
       duration: recording.duration,
       windowSize: params.window_size,
-      overlap: params.hop_size,
+      overlap: params.overlap,
       samplerate: finalSamplerate,
       chunkSize,
       chunkBuffer,
     });
 
-    setSegments(chunks);
+    console.log("Chunks", chunks);
 
-    images.current = chunks.map((interval, index) => {
+    setChunks(chunks);
+
+    images.current = chunks.map(({ interval, buffer }, index) => {
       const image = new Image();
       image.loading = "lazy";
       image.src = getImageUrl({
         recording,
-        interval,
+        interval: buffer,
         ...params,
       });
       image.onload = () => {
@@ -128,7 +137,7 @@ export default function useSpectrogramImages({
     recording,
     params,
     getImageUrl,
-    setSegments,
+    setChunks,
     setReady,
     setError,
     onLoad,
@@ -141,7 +150,7 @@ export default function useSpectrogramImages({
     (ctx: CanvasRenderingContext2D, viewport: SpectrogramWindow) => {
       const { current } = images;
 
-      const shouldLoad = segments.filter(
+      const shouldLoad = chunks.filter(
         ({ interval, isReady, isLoading, isError }) => {
           if (isReady || isLoading || isError) return false;
           // Should start loading if the interval is close to the viewport
@@ -162,8 +171,7 @@ export default function useSpectrogramImages({
         });
       }
 
-      segments.forEach((state) => {
-        const { interval, index, isLoading, isError } = state;
+      chunks.forEach(({ interval, buffer, index, isLoading, isError }) => {
         const image = current[index];
 
         if (!image || intervalIntersection(interval, viewport.time) == null)
@@ -177,7 +185,10 @@ export default function useSpectrogramImages({
             time: interval,
             freq: { min: 0, max: recording.samplerate / 2 },
           },
-          overlap: chunkBuffer,
+          buffer: {
+            time: buffer,
+            freq: { min: 0, max: recording.samplerate / 2 },
+          },
           loading: isLoading,
           error: isError,
         });
@@ -186,11 +197,11 @@ export default function useSpectrogramImages({
       drawTimeAxis(ctx, viewport.time);
       drawFreqAxis(ctx, viewport.freq);
     },
-    [segments, recording.samplerate, chunkBuffer, startLoading],
+    [chunks, recording.samplerate, startLoading],
   );
 
   return {
     drawFn,
-    segments,
+    segments: chunks,
   };
 }

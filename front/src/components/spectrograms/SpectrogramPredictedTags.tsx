@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { type ReactNode } from "react";
 import { useMemo } from "react";
 
-import useStore from "@/store";
+import useStore from "@/app/store";
 import { getTagClassNames } from "@/components/tags/Tag";
 
 import type { TagElement, TagGroup } from "@/utils/tags";

@@ -8,7 +8,7 @@ import type {
   RecordingFilter,
   RecordingUpdate,
   RecordingPage,
-} from "@/api/recordings";
+} from "@/lib/api/recordings";
 import type { Recording, Tag } from "@/types";
 
 const emptyFilter: RecordingFilter = {};

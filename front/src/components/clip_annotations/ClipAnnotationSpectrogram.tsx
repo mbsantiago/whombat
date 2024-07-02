@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import AnnotationControls from "@/components/annotation/AnnotationControls";
 import Player from "@/components/audio/Player";
 import Card from "@/components/Card";
@@ -15,7 +15,7 @@ import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
 import useSpectrogramTrackAudio from "@/hooks/spectrogram/useSpectrogramTrackAudio";
 import { getInitialViewingWindow } from "@/utils/windows";
 
-import type { TagFilter } from "@/api/tags";
+import type { TagFilter } from "@/lib/api/tags";
 import type { AnnotateMode } from "@/hooks/annotation/useAnnotateClip";
 import type { MotionMode as SpectrogramMode } from "@/hooks/spectrogram/useSpectrogramMotions";
 import type {

@@ -15,7 +15,7 @@ import clipEvaluationFilterDef from "@/components/filters/clip_evaluations";
 import useExploreClipEvaluations from "@/hooks/evaluation/useExploreClipEvaluations";
 import ClipEvaluationDisplay from "@/components/clip_evaluations/ClipEvaluationDisplay";
 
-import type { ClipEvaluationFilter } from "@/api/clip_evaluations";
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import type { Filter } from "@/hooks/utils/useFilter";
 import type { ClipEvaluation, Interval } from "@/types";
 

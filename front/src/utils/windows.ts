@@ -1,5 +1,5 @@
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
-import { DEFAULT_HOP_SIZE, DEFAULT_WINDOW_SIZE } from "@/constants";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
+import { DEFAULT_OVERLAP, DEFAULT_WINDOW_SIZE } from "@/constants";
 
 import type {
   Interval,
@@ -21,18 +21,20 @@ export function getInitialViewingWindow({
   startTime,
   endTime,
   samplerate,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  windowSize,
+  overlap,
 }: {
   startTime: number;
   endTime: number;
   samplerate: number;
-  parameters?: SpectrogramParameters;
+  windowSize: number;
+  overlap: number;
 }): SpectrogramWindow {
   const duration = getInitialDuration({
     interval: { min: startTime, max: endTime },
     samplerate,
-    window_size: parameters.window_size,
-    hop_size: parameters.hop_size,
+    windowSize: windowSize,
+    overlap,
   });
   return {
     time: { min: startTime, max: startTime + duration },
@@ -58,8 +60,8 @@ export function getCenteredViewingWindow({
       max: endTime,
     },
     samplerate,
-    window_size: parameters.window_size,
-    hop_size: parameters.hop_size,
+    windowSize: parameters.window_size,
+    overlap: parameters.overlap,
   });
   return {
     time: { min: center - duration / 2, max: center + duration / 2 },
@@ -79,19 +81,19 @@ export function getCenteredViewingWindow({
 export function getInitialDuration({
   interval,
   samplerate,
-  window_size = DEFAULT_WINDOW_SIZE,
-  hop_size = DEFAULT_HOP_SIZE,
+  windowSize = DEFAULT_WINDOW_SIZE,
+  overlap = DEFAULT_OVERLAP,
 }: {
   interval: Interval;
   samplerate: number;
-  window_size?: number;
-  hop_size?: number;
+  windowSize?: number;
+  overlap?: number;
 }) {
   const duration = interval.max - interval.min;
-  const n_fft = Math.floor(window_size * samplerate);
+  const n_fft = Math.floor(windowSize * samplerate);
   const specHeight = Math.floor(n_fft / 2) + 1;
   const specWidth = TARGET_INITIAL_SIZE / specHeight;
-  const hopDuration = window_size * hop_size;
+  const hopDuration = windowSize * (1 - overlap);
   const windowWidth = specWidth * hopDuration;
   return Math.min(duration, windowWidth);
 }

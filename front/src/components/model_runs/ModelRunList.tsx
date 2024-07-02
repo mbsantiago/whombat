@@ -14,7 +14,7 @@ import ModelRunComponent from "@/components/model_runs/ModelRun";
 import ModelRunImport from "@/components/model_runs/ModelRunImport";
 import useModelRuns from "@/hooks/api/useModelRuns";
 
-import type { ModelRunFilter } from "@/api/model_runs";
+import type { ModelRunFilter } from "@/lib/api/model_runs";
 import type { ModelRun } from "@/types";
 
 function NoModelRuns() {

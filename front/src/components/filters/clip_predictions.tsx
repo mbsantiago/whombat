@@ -3,7 +3,7 @@ import { type FilterDef } from "@/components/filters/FilterMenu";
 import { TagFilter } from "@/components/filters/Filters";
 import { TagIcon } from "@/components/icons";
 
-import type { ClipPredictionFilter } from "@/api/clip_predictions";
+import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 
 const clipPredictionFilterDef: FilterDef<ClipPredictionFilter>[] = [
   {

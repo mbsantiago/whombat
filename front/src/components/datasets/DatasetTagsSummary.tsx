@@ -11,9 +11,9 @@ import Select from "@/components/inputs/Select";
 import Search from "@/components/inputs/Search";
 import useListWithSearch from "@/hooks/lists/useListWithSearch";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
-import type { RecordingTag } from "@/api/tags";
+import type { RecordingTag } from "@/lib/api/tags";
 import type { Dataset, Tag } from "@/types";
 
 /**

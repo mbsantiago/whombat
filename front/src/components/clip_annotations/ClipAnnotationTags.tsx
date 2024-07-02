@@ -7,9 +7,9 @@ import { H4 } from "@/components/Headings";
 import { DeleteIcon, TagsIcon } from "@/components/icons";
 import AddTagButton from "@/components/tags/AddTagButton";
 import TagComponent from "@/components/tags/Tag";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
-import type { TagFilter } from "@/api/tags";
+import type { TagFilter } from "@/lib/api/tags";
 import type { ClipAnnotation, Tag } from "@/types";
 
 function NoTags() {

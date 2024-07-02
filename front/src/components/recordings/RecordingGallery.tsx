@@ -5,7 +5,7 @@ import Loading from "@/components/Loading";
 import Pagination from "@/components/lists/Pagination";
 import RecordingSpectrogram from "@/components/recordings/RecordingSpectrogram";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
-import type { RecordingFilter } from "@/api/recordings";
+import type { RecordingFilter } from "@/lib/api/recordings";
 import type { SpectrogramParameters, Recording } from "@/types";
 
 const empty = {};

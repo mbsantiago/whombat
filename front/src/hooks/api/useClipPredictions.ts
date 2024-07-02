@@ -1,4 +1,4 @@
-import { type ClipPredictionFilter } from "@/api/clip_predictions";
+import { type ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

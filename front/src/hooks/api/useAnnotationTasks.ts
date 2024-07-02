@@ -1,4 +1,4 @@
-import { type AnnotationTaskFilter } from "@/api/annotation_tasks";
+import { type AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

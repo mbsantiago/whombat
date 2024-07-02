@@ -4,7 +4,7 @@ import { TagIcon } from "@/components/icons";
 import AddTagButton from "@/components/tags/AddTagButton";
 import TagComponent from "@/components/tags/Tag";
 import useRecording from "@/hooks/api/useRecording";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
 import type { Recording, Tag } from "@/types";
 

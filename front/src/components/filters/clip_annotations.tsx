@@ -3,7 +3,7 @@ import { type FilterDef } from "@/components/filters/FilterMenu";
 import { TagFilter } from "@/components/filters/Filters";
 import { TagIcon } from "@/components/icons";
 
-import type { ClipAnnotationFilter } from "@/api/clip_annotations";
+import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 
 const clipAnnotationFilterDef: FilterDef<ClipAnnotationFilter>[] = [
   {

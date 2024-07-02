@@ -4,7 +4,7 @@ import SoundEventAnnotationNotes from "@/components/sound_event_annotations/Soun
 import SoundEventAnnotationTags from "@/components/sound_event_annotations/SoundEventAnnotationTags";
 import useSoundEventAnnotation from "@/hooks/api/useSoundEventAnnotation";
 
-import type { TagFilter } from "@/api/tags";
+import type { TagFilter } from "@/lib/api/tags";
 import type { ClipAnnotation, SoundEventAnnotation, Tag } from "@/types";
 
 export default function SelectedSoundEventAnnotation({

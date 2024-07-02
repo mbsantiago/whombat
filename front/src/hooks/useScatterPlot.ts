@@ -8,7 +8,7 @@ import { useCallback, useMemo } from "react";
 
 import useTheme from "@/hooks/useTheme";
 
-import type { ScatterPlotData } from "@/api/sound_event_annotations";
+import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
 
 type GroupKey = string;
 

@@ -14,7 +14,7 @@ import useScatterPlot from "@/hooks/useScatterPlot";
 import type {
   SoundEventAnnotationFilter,
   ScatterPlotData,
-} from "@/api/sound_event_annotations";
+} from "@/lib/api/sound_event_annotations";
 import type { SpectrogramParameters } from "@/types";
 
 export default function AnnotationsScatterPlot(props: {

@@ -1,4 +1,4 @@
-import { type EvaluationSetFilter } from "@/api/evaluation_sets";
+import { type EvaluationSetFilter } from "@/lib/api/evaluation_sets";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

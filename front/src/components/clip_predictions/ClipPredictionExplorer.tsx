@@ -14,7 +14,7 @@ import clipPredictionFilterDef from "@/components/filters/clip_predictions";
 import useExploreClipPredictions from "@/hooks/prediction/useExploreClipPredictions";
 import ClipPredictionDisplay from "@/components/clip_predictions/ClipPredictionDisplay";
 
-import type { ClipPredictionFilter } from "@/api/clip_predictions";
+import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import type { Filter } from "@/hooks/utils/useFilter";
 import type { ClipPrediction, Interval } from "@/types";
 

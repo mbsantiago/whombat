@@ -1,11 +1,8 @@
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
-
 import RecordingActions from "./RecordingActions";
 import RecordingHeader from "./RecordingHeader";
 import RecordingMap from "./RecordingMap";
 import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingNotes from "./RecordingNotes";
-import RecordingSpectrogram from "./RecordingSpectrogram";
 import RecordingTagBar from "./RecordingTagBar";
 
 import type { Recording, SpectrogramParameters, User } from "@/types";
@@ -13,15 +10,14 @@ import type { Recording, SpectrogramParameters, User } from "@/types";
 export default function RecordingDetail({
   recording,
   currentUser,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
-  onParameterSave,
   onDelete,
+  children,
 }: {
   recording: Recording;
   currentUser?: User;
   parameters?: SpectrogramParameters;
-  onParameterSave?: (params: SpectrogramParameters) => void;
   onDelete?: () => void;
+  children?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-4 pb-4">
@@ -33,11 +29,7 @@ export default function RecordingDetail({
               <RecordingTagBar recording={recording} />
             </div>
             <div className="col-span-2">
-              <RecordingSpectrogram
-                parameters={parameters}
-                onParameterSave={onParameterSave}
-                recording={recording}
-              />
+              {children}
             </div>
             <div className="col-span-2">
               <RecordingNotes recording={recording} currentUser={currentUser} />

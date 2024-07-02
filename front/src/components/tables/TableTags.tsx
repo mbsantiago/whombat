@@ -5,7 +5,7 @@
 
 import AddTagButton from "@/components/tags/AddTagButton";
 import TagComponent from "@/components/tags/Tag";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
 import type { Tag } from "@/types";
 import type { HTMLProps } from "react";

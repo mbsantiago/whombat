@@ -4,7 +4,7 @@ import Button from "@/components/Button";
 import { IssueIcon, NotesIcon } from "@/components/icons";
 import { InputGroup, TextArea } from "@/components/inputs/index";
 
-import type { NoteCreate } from "@/api/notes";
+import type { NoteCreate } from "@/lib/api/notes";
 
 export default function CreateNoteForm({
   onCreate,

@@ -1,70 +1,108 @@
 import { useMemo } from "react";
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
 import Card from "@/components/Card";
 import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";
 import ViewportToolbar from "@/components/spectrograms/ViewportToolbar";
+import SettingsMenu from "@/components/settings/SettingsMenu";
 import Canvas from "@/components/spectrograms/Canvas";
 import Player from "@/components/audio/Player";
 
-import useAudioSettings, {
-  getSpeedOptions,
-} from "@/hooks/settings/useAudioSettings";
-import useSpectrogramSettings from "@/hooks/settings/useSpectrogramSettings";
-import useSpectrogram from "@/hooks/spectrogram/useSpectrogram";
-import type { Recording, SpectrogramParameters } from "@/types";
+import { getSpeedOptions } from "@/hooks/settings/useAudioSettings";
+import {
+  DEFAULT_AUDIO_SETTINGS,
+  DEFAULT_SPECTROGRAM_SETTINGS,
+} from "@/constants";
+
+import type {
+  Recording,
+  AudioSettings,
+  SpectrogramSettings,
+  SpectrogramState,
+  SpectrogramWindow,
+  DrawFn,
+  HoverHandler,
+  MoveStartHandler,
+  MoveEndHandler,
+  MoveHandler,
+  PressHandler,
+  ScrollHandler,
+  DoublePressHandler,
+} from "@/types";
 
 export default function RecordingSpectrogram({
   recording,
+  viewport,
+  bounds,
   height = 384,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  spectrogramState = "panning",
+  audioSettings = DEFAULT_AUDIO_SETTINGS,
+  spectrogramSettings = DEFAULT_SPECTROGRAM_SETTINGS,
+  audioCurrentTime = 0,
+  audioIsPlaying = false,
+  audioLoop = false,
+  onAudioPlay,
+  onAudioPause,
+  onAudioSeek,
+  onAudioLoopToggle,
+  onAudioSpeedChange,
+  onAudioSettingsChange,
+  onSpectrogramSettingsChange,
+  onViewportReset,
+  onViewportBack,
+  onViewportEnablePanning,
+  onViewportEnableZooming,
+  onSpectrogramHover,
+  onSpectrogramMoveStart,
+  onSpectrogramMoveEnd,
+  onSpectrogramMove,
+  onSpectrogramPress,
+  onSpectrogramScroll,
+  onSpectrogramDoubleClick,
+  onBarMoveStart,
+  onBarMoveEnd,
+  onBarMove,
+  onBarPress,
+  onBarScroll,
+  onSettingsReset,
+  onSettingsSave,
+  spectrogramDrawFn,
 }: {
   recording: Recording;
+  viewport: SpectrogramWindow;
+  bounds: SpectrogramWindow;
   height?: number;
-  parameters?: SpectrogramParameters;
+  audioSettings?: AudioSettings;
+  spectrogramSettings?: SpectrogramSettings;
+  spectrogramState?: SpectrogramState;
+  audioCurrentTime?: number;
+  audioIsPlaying?: boolean;
+  audioLoop?: boolean;
+  onSpectrogramHover: HoverHandler;
+  onSpectrogramMoveStart: MoveStartHandler;
+  onSpectrogramMoveEnd: MoveEndHandler;
+  onSpectrogramMove: MoveHandler;
+  onSpectrogramPress: PressHandler;
+  onSpectrogramScroll: ScrollHandler;
+  onSpectrogramDoubleClick: DoublePressHandler;
+  spectrogramDrawFn: DrawFn;
+  onAudioPlay: () => void;
+  onAudioPause: () => void;
+  onAudioSeek: (time: number) => void;
+  onAudioLoopToggle: () => void;
+  onAudioSpeedChange: (speed: number) => void;
+  onAudioSettingsChange?: (settings: AudioSettings) => void;
+  onSpectrogramSettingsChange?: (settings: SpectrogramSettings) => void;
+  onViewportReset?: () => void;
+  onViewportBack?: () => void;
+  onViewportEnablePanning?: () => void;
+  onViewportEnableZooming?: () => void;
+  onSettingsReset?: () => void;
+  onSettingsSave?: () => void;
+  onBarMoveStart?: MoveStartHandler;
+  onBarMoveEnd?: MoveEndHandler;
+  onBarMove?: MoveHandler;
+  onBarPress?: PressHandler;
+  onBarScroll?: ScrollHandler;
 }) {
-  const { settings: audioSettings, setSpeed } = useAudioSettings({
-    initialSettings: {
-      samplerate: recording.samplerate,
-      channel: 0,
-      speed: 1,
-      filter_order: 1,
-      resample: false,
-    },
-  });
-
-  const { settings: spectrogramSettings } = useSpectrogramSettings({
-    initialSettings: {
-      window_size: parameters.window_size,
-      hop_size: parameters.hop_size,
-      window: parameters.window as any,
-      scale: parameters.scale,
-      clamp: parameters.clamp,
-      min_dB: parameters.min_dB,
-      max_dB: parameters.max_dB,
-      normalize: parameters.normalize,
-      pcen: parameters.pcen,
-      cmap: parameters.cmap as any,
-    },
-  });
-
-  const bounds = useMemo(
-    () => ({
-      time: { min: 0, max: recording.duration },
-      freq: { min: 0, max: recording.samplerate / 2 },
-    }),
-    [recording.duration, recording.samplerate],
-  );
-
-  const { viewport, audio, state, barProps, canvasProps } =
-    useSpectrogram({
-      recording,
-      audioSettings,
-      spectrogramSettings,
-      bounds,
-    });
-
-  const { viewport: current, reset, back } = viewport;
-
   const speedOptions = useMemo(() => {
     return getSpeedOptions(recording.samplerate);
   }, [recording.samplerate]);
@@ -73,16 +111,57 @@ export default function RecordingSpectrogram({
     <Card>
       <div className="flex flex-row gap-4">
         <ViewportToolbar
-          state={state.state}
-          onResetClick={reset}
-          onBackClick={back}
-          onDragClick={state.enablePanning}
-          onZoomClick={state.enableZooming}
+          state={spectrogramState}
+          onResetClick={onViewportReset}
+          onBackClick={onViewportBack}
+          onDragClick={onViewportEnablePanning}
+          onZoomClick={onViewportEnableZooming}
         />
-        <Player {...audio} setSpeed={setSpeed} speedOptions={speedOptions} />
+        <Player
+          currentTime={audioCurrentTime}
+          startTime={bounds.time.min}
+          endTime={bounds.time.max}
+          isPlaying={audioIsPlaying}
+          loop={audioLoop}
+          speed={audioSettings.speed}
+          play={onAudioPlay}
+          pause={onAudioPause}
+          seek={onAudioSeek}
+          toggleLoop={onAudioLoopToggle}
+          setSpeed={onAudioSpeedChange}
+          speedOptions={speedOptions}
+        />
+        <SettingsMenu
+          audioSettings={audioSettings}
+          spectrogramSettings={spectrogramSettings}
+          samplerate={recording.samplerate}
+          onAudioSettingsChange={onAudioSettingsChange}
+          onSpectrogramSettingsChange={onSpectrogramSettingsChange}
+          onResetClick={onSettingsReset}
+          onSaveClick={onSettingsSave}
+        />
       </div>
-      <Canvas height={height} viewport={current} {...canvasProps} />
-      <SpectrogramBar bounds={bounds} viewport={current} {...barProps} />
+      <Canvas
+        height={height}
+        viewport={viewport}
+        onHover={onSpectrogramHover}
+        onMoveStart={onSpectrogramMoveStart}
+        onMoveEnd={onSpectrogramMoveEnd}
+        onMove={onSpectrogramMove}
+        onPress={onSpectrogramPress}
+        onScroll={onSpectrogramScroll}
+        onDoubleClick={onSpectrogramDoubleClick}
+        drawFn={spectrogramDrawFn}
+      />
+      <SpectrogramBar
+        bounds={bounds}
+        viewport={viewport}
+        onMoveStart={onBarMoveStart}
+        onMoveEnd={onBarMoveEnd}
+        onMove={onBarMove}
+        onPress={onBarPress}
+        onScroll={onBarScroll}
+      />
     </Card>
   );
 }

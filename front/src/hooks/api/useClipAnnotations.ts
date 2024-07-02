@@ -1,4 +1,4 @@
-import { type ClipAnnotationFilter } from "@/api/clip_annotations";
+import { type ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

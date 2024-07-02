@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import api from "@/app/api";
 
-import type { UserUpdate } from "@/api/user";
+import type { UserUpdate } from "@/lib/api/user";
 import type { User } from "@/types";
 import type { AxiosError } from "axios";
 

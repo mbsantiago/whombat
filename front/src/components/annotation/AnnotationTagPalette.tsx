@@ -5,9 +5,9 @@ import { DeleteIcon, ToolsIcon } from "@/components/icons";
 import TagComponent from "@/components/tags/Tag";
 import TagSearchBar from "@/components/tags/TagSearchBar";
 import Tooltip from "@/components/Tooltip";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
-import type { TagFilter } from "@/api/tags";
+import type { TagFilter } from "@/lib/api/tags";
 import type { Tag } from "@/types";
 
 export default function AnnotationTagPalette({

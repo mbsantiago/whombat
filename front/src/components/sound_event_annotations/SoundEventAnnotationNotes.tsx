@@ -7,7 +7,7 @@ import { NotesIcon } from "@/components/icons";
 import CreateNote from "@/components/notes/CreateNote";
 import Feed from "@/components/notes/Feed";
 
-import type { NoteCreate } from "@/api/notes";
+import type { NoteCreate } from "@/lib/api/notes";
 import type { Note, SoundEventAnnotation, User } from "@/types";
 
 function NoNotes() {

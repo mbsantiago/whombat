@@ -1,4 +1,4 @@
-import { type ModelRunFilter } from "@/api/model_runs";
+import { type ModelRunFilter } from "@/lib/api/model_runs";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

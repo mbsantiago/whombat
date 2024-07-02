@@ -1,7 +1,7 @@
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 
-import type { ModelRunUpdate } from "@/api/model_runs";
+import type { ModelRunUpdate } from "@/lib/api/model_runs";
 import type { ModelRun, EvaluationSet, Evaluation } from "@/types";
 import type { AxiosError } from "axios";
 

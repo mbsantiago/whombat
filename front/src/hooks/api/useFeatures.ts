@@ -1,4 +1,4 @@
-import { type FeatureFilter } from "@/api/features";
+import { type FeatureFilter } from "@/lib/api/features";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

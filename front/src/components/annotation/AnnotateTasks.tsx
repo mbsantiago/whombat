@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import AnnotationProgress from "@/components/annotation/AnnotationProgress";
 import AnnotationTagPalette from "@/components/annotation/AnnotationTagPalette";
 import RecordingAnnotationContext from "@/components/annotation/RecordingAnnotationContext";
@@ -14,8 +14,8 @@ import Loading from "@/components/Loading";
 import useAnnotationTasks from "@/hooks/annotation/useAnnotateTasks";
 import useClipAnnotation from "@/hooks/api/useClipAnnotation";
 
-import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
-import type { TagFilter } from "@/api/tags";
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
+import type { TagFilter } from "@/lib/api/tags";
 import type {
   AnnotationTask,
   ClipAnnotation,

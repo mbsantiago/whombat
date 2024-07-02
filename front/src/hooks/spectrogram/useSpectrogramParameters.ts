@@ -16,7 +16,7 @@ export default function useSpectrogramParameters({
     audioSettings;
   const {
     window_size,
-    hop_size,
+    overlap,
     window,
     scale,
     cmap,
@@ -27,6 +27,11 @@ export default function useSpectrogramParameters({
     clamp,
   } = spectrogramSettings;
 
+  console.log({
+    overlap,
+    msg:"overlap from useSpectrogramParameters.ts"
+  })
+
   return useMemo(
     () => ({
       channel,
@@ -36,7 +41,7 @@ export default function useSpectrogramParameters({
       high_freq,
       filter_order,
       window_size,
-      hop_size,
+      overlap,
       window,
       scale,
       cmap,
@@ -54,7 +59,7 @@ export default function useSpectrogramParameters({
       high_freq,
       filter_order,
       window_size,
-      hop_size,
+      overlap,
       window,
       scale,
       cmap,

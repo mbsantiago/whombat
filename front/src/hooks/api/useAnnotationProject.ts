@@ -2,7 +2,7 @@ import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { useCallback, useMemo } from "react";
 
-import { type ClipCreateMany } from "@/api/clips";
+import { type ClipCreateMany } from "@/lib/api/clips";
 import api from "@/app/api";
 import useObject from "@/hooks/utils/useObject";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
 import SoundEventAnnotationExplorer from "@/components/sound_event_annotations/SoundEventAnnotationExplore";
 

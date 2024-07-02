@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { type DatasetFilter } from "@/api/datasets";
+import { type DatasetFilter } from "@/lib/api/datasets";
 import api from "@/app/api";
 import useFilter from "@/hooks/utils/useFilter";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";

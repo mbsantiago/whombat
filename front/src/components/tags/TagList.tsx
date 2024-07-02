@@ -2,7 +2,7 @@ import Button from "@/components/Button";
 import Search from "@/components/inputs/Search";
 import TagComponent from "@/components/tags/Tag";
 import useListWithSearch from "@/hooks/lists/useListWithSearch";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
 import type { Tag } from "@/types";
 

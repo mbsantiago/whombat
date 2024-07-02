@@ -3,7 +3,7 @@ import { type FilterDef } from "@/components/filters/FilterMenu";
 import { TagFilter } from "@/components/filters/Filters";
 import { TagIcon } from "@/components/icons";
 
-import type { SoundEventAnnotationFilter } from "@/api/sound_event_annotations";
+import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 
 const soundEventAnnotationFilterDef: FilterDef<SoundEventAnnotationFilter>[] = [
   {

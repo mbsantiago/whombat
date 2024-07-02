@@ -7,7 +7,9 @@ import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
 import RecordingDetail from "@/components/recordings/RecordingDetail";
 import useRecording from "@/hooks/api/useRecording";
-import useStore from "@/store";
+import useStore from "@/app/store";
+import useSettings from "@/app/hooks/useSettings";
+import useRecordingSpectrogram from "@/hooks/recordings/useRecordingSpectrogram";
 
 import type { SpectrogramParameters } from "@/types";
 import type { AxiosError } from "axios";
@@ -18,6 +20,7 @@ export default function Page() {
   const searchParams = useSearchParams();
   const recordingUUID = searchParams.get("recording_uuid");
   const datasetUUID = searchParams.get("dataset_uuid");
+
   const parameters = useStore((state) => state.spectrogramSettings);
   const setParameters = useStore((state) => state.setSpectrogramSettings);
 
@@ -49,14 +52,14 @@ export default function Page() {
     returnToRecordings();
   }, [returnToRecordings]);
 
+  const recording = useRecording({
+    uuid: recordingUUID ?? undefined,
+    onError: handleError,
+  });
+
   if (recordingUUID == null) {
     notFound();
   }
-
-  const recording = useRecording({
-    uuid: recordingUUID,
-    onError: handleError,
-  });
 
   if (recording.isLoading) {
     return <Loading />;
@@ -72,8 +75,6 @@ export default function Page() {
       recording={recording.data}
       currentUser={user}
       onDelete={onDelete}
-      parameters={parameters}
-      onParameterSave={onParametersSave}
     />
   );
 }

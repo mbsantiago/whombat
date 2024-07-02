@@ -1,5 +1,5 @@
 import { useRef, useMemo, useCallback } from "react";
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/api/spectrograms";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import Player from "@/components/audio/Player";
 import Card from "@/components/Card";
 import SpectrogramBar from "@/components/spectrograms/SpectrogramBar";

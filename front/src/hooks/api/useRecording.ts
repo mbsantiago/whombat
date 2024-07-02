@@ -20,7 +20,7 @@ export default function useRecording({
   onUpdateFeature,
   onError,
 }: {
-  uuid: string;
+  uuid?: string;
   recording?: Recording;
   enabled?: boolean;
   onUpdate?: (recording: Recording) => void;

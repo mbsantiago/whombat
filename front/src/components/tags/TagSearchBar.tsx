@@ -15,9 +15,9 @@ import { Input } from "@/components/inputs/index";
 import KeyboardKey from "@/components/KeyboardKey";
 import Tag from "@/components/tags/Tag";
 import useTags from "@/hooks/api/useTags";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
-import type { TagCreate, TagFilter } from "@/api/tags";
+import type { TagCreate, TagFilter } from "@/lib/api/tags";
 import type { Tag as TagType } from "@/types";
 import type { InputHTMLAttributes, KeyboardEvent } from "react";
 

@@ -5,7 +5,7 @@ import type { SpectrogramSettings } from "@/types";
 describe("useSpectrogramSettings Hook", () => {
   const initialSettings: SpectrogramSettings = {
     window_size: 512,
-    hop_size: 0.5,
+    overlap: 0.5,
     scale: "dB",
     window: "hann",
     min_dB: -80,
@@ -43,7 +43,7 @@ describe("useSpectrogramSettings Hook", () => {
     expect(onChange).toHaveBeenCalledTimes(8);
     expect(result.current.settings).toEqual({
       window_size: 1024,
-      hop_size: 0.25,
+      overlap: 0.25,
       scale: "power",
       window: "hamming",
       min_dB: -60,

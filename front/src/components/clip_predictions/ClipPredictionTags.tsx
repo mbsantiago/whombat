@@ -5,7 +5,7 @@ import Empty from "@/components/Empty";
 import { TagsIcon } from "@/components/icons";
 import TagComponent from "@/components/tags/Tag";
 import type { Tag, ClipPrediction, Interval } from "@/types";
-import useStore from "@/store";
+import useStore from "@/app/store";
 
 const DEFAULT_THRESHOLD: Interval = { min: 0.5, max: 1 };
 

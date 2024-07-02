@@ -8,7 +8,7 @@ import Pagination from "@/components/lists/Pagination";
 import useSoundEventAnnotation from "@/hooks/api/useSoundEventAnnotation";
 import SoundEventAnnotationSpectrogram from "@/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import usePagedQuery from "@/hooks/utils/usePagedQuery";
-import type { SoundEventAnnotationFilter } from "@/api/sound_event_annotations";
+import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import type { SpectrogramParameters, SoundEventAnnotation } from "@/types";
 
 const empty = {};

@@ -25,6 +25,8 @@ const ALL_SPEED_OPTIONS: SpeedOption[] = [
 export type AudioSettingsInterface = {
   /** The current audio settings. */
   settings: AudioSettings;
+  /** Set settings for the audio. */
+  set: (settings: AudioSettings) => void;
   /** Sets the playback speed of the audio. */
   setSpeed: (speed: number) => void;
   /** Toggles audio resampling on or off. */
@@ -100,25 +102,13 @@ export default function useAudioSettings({
 
   const setSpeed = useCallback(
     (speed: number) =>
-      changeSettings((draft) => {
-        if (speed <= 0) {
-          onError?.(new Error("Speed must be greater than 0"));
-          return;
-        }
-        draft.speed = speed;
-      }),
+      changeSettings((draft) => updateSpeed(draft, speed, onError)),
     [changeSettings, onError],
   );
 
   const setSamplerate = useCallback(
     (samplerate: number) =>
-      changeSettings((draft) => {
-        if (samplerate <= 0) {
-          onError?.(new Error("Sample rate must be greater than 0"));
-          return;
-        }
-        draft.samplerate = samplerate;
-      }),
+      changeSettings((draft) => updateSamplerate(draft, samplerate, onError)),
     [changeSettings, onError],
   );
 
@@ -132,75 +122,15 @@ export default function useAudioSettings({
       highFreq?: number;
       order?: number;
     }) =>
-      changeSettings((draft) => {
-        if (lowFreq != null) {
-          if (lowFreq < 0) {
-            onError?.(new Error("Low frequency must be greater than 0"));
-            return;
-          }
-
-          if (
-            draft.resample &&
-            draft.samplerate != null &&
-            lowFreq > draft.samplerate / 2
-          ) {
-            onError?.(
-              new Error("Low frequency must be less than half the sample rate"),
-            );
-            return;
-          }
-
-          draft.low_freq = lowFreq;
-        }
-
-        if (highFreq != null) {
-          if (highFreq < 0) {
-            onError?.(new Error("High frequency must be greater than 0"));
-            return;
-          }
-
-          if (
-            draft.resample &&
-            draft.samplerate != null &&
-            highFreq > draft.samplerate / 2
-          ) {
-            onError?.(
-              new Error(
-                "High frequency must be less than half the sample rate",
-              ),
-            );
-            return;
-          }
-
-          if (draft.low_freq != null && highFreq < draft.low_freq) {
-            onError?.(
-              new Error("High frequency must be greater than low frequency"),
-            );
-            return;
-          }
-
-          draft.high_freq = highFreq;
-        }
-
-        if (order <= 0) {
-          onError?.(new Error("Filter order must be greater than 0"));
-          return;
-        }
-
-        draft.filter_order = order;
-      }),
+      changeSettings((draft) =>
+        updateFilter(draft, { lowFreq, highFreq, order }, onError),
+      ),
     [changeSettings, onError],
   );
 
   const setChannel = useCallback(
     (channel: number) =>
-      changeSettings((draft) => {
-        if (channel < 0) {
-          onError?.(new Error("Channel must be greater than 0"));
-          return;
-        }
-        draft.channel = channel;
-      }),
+      changeSettings((draft) => updateChannel(draft, channel, onError)),
     [changeSettings, onError],
   );
 
@@ -217,7 +147,36 @@ export default function useAudioSettings({
     });
   }, [changeSettings]);
 
+  const setAll = useCallback(
+    (settings: AudioSettings) => {
+      changeSettings((draft) => {
+        updateSpeed(draft, settings.speed, onError);
+        draft.resample = settings.resample;
+        if (settings.samplerate != null) {
+          updateSamplerate(draft, settings.samplerate, onError);
+        }
+        if (
+          settings.low_freq !== undefined ||
+          settings.high_freq !== undefined
+        ) {
+          updateFilter(
+            draft,
+            {
+              lowFreq: settings.low_freq,
+              highFreq: settings.high_freq,
+              order: settings.filter_order,
+            },
+            onError,
+          );
+        }
+        updateChannel(draft, settings.channel, onError);
+      });
+    },
+    [changeSettings, onError],
+  );
+
   return {
+    set: setAll,
     settings,
     setSpeed,
     setSamplerate,
@@ -263,4 +222,113 @@ export function adjustToRecording(
       draft.speed = getDefaultSpeedOption(speedOptions).value;
     }
   });
+}
+
+function updateChannel(
+  draft: AudioSettings,
+  channel: number,
+  onError?: (error: Error) => void,
+) {
+  if (channel < 0) {
+    onError?.(new Error("Channel must be greater than 0"));
+    return;
+  }
+  draft.channel = channel;
+}
+
+function updateFilter(
+  draft: AudioSettings,
+  {
+    lowFreq,
+    highFreq,
+    order,
+  }: {
+    lowFreq?: number | null;
+    highFreq?: number | null;
+    order?: number;
+  },
+  onError?: (error: Error) => void,
+) {
+  if (lowFreq !== undefined) {
+    if (lowFreq != null && lowFreq < 0) {
+      onError?.(new Error("Low frequency must be greater than 0"));
+      return;
+    }
+
+    if (
+      lowFreq != null &&
+      draft.resample &&
+      draft.samplerate != null &&
+      lowFreq > draft.samplerate / 2
+    ) {
+      onError?.(
+        new Error("Low frequency must be less than half the sample rate"),
+      );
+      return;
+    }
+    draft.low_freq = lowFreq;
+  }
+
+  if (highFreq !== undefined) {
+    if (highFreq != null && highFreq < 0) {
+      onError?.(new Error("High frequency must be greater than 0"));
+      return;
+    }
+
+    if (
+      highFreq != null &&
+      draft.resample &&
+      draft.samplerate != null &&
+      highFreq > draft.samplerate / 2
+    ) {
+      onError?.(
+        new Error("High frequency must be less than half the sample rate"),
+      );
+      return;
+    }
+
+    if (
+      highFreq != null &&
+      draft.low_freq != null &&
+      highFreq < draft.low_freq
+    ) {
+      onError?.(new Error("High frequency must be greater than low frequency"));
+      return;
+    }
+
+    draft.high_freq = highFreq;
+  }
+
+  if (order != null) {
+    if (order <= 0) {
+      onError?.(new Error("Filter order must be greater than 0"));
+      return;
+    }
+
+    draft.filter_order = order;
+  }
+}
+
+function updateSamplerate(
+  draft: AudioSettings,
+  samplerate: number,
+  onError?: (error: Error) => void,
+) {
+  if (samplerate <= 0) {
+    onError?.(new Error("Sample rate must be greater than 0"));
+    return;
+  }
+  draft.samplerate = samplerate;
+}
+
+function updateSpeed(
+  draft: AudioSettings,
+  speed: number,
+  onError?: (error: Error) => void,
+) {
+  if (speed <= 0) {
+    onError?.(new Error("Speed must be greater than 0"));
+    return;
+  }
+  draft.speed = speed;
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDebounce } from "react-use";
 
-import { type AnnotationProjectFilter } from "@/api/annotation_projects";
+import { type AnnotationProjectFilter } from "@/lib/api/annotation_projects";
 import SearchMenu from "@/components/search/SearchMenu";
 import useAnnotationProjects from "@/hooks/api/useAnnotationProjects";
 

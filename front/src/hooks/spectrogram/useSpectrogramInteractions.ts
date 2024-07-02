@@ -2,14 +2,13 @@ import useSpectrogramZoom from "@/hooks/spectrogram/useSpectrogramZoom";
 import useSpectrogramSeek from "@/hooks/spectrogram/useSpectrogramSeek";
 import type { AudioController } from "@/hooks/audio/useRecordingAudio";
 import type { ViewportController } from "@/hooks/window/useViewport";
-import type { SpectrogramWindow } from "@/types";
-import type { SpectrogramState } from "@/hooks/spectrogram/useSpectrogramState";
+import type { SpectrogramWindow, SpectrogramState } from "@/types";
 import {
   useSpectrogramDrag,
   useSpectrogramScroll,
 } from "@/hooks/spectrogram/useSpectrogramMotions";
 
-const nullFn = () => { };
+const nullFn = () => {};
 
 export default function useSpectrogramInteractions({
   viewport,
