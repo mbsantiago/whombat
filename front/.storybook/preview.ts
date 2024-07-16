@@ -1,5 +1,6 @@
 import type { Preview } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
+import { themes } from '@storybook/theming';
 import "@/app/globals.css";
 
 const preview: Preview = {
@@ -16,6 +17,7 @@ const preview: Preview = {
     },
     docs: {
       toc: true,
+      theme: themes.dark,
     },
   },
   tags: ["autodocs"],
