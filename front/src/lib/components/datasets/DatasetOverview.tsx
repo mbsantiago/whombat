@@ -2,15 +2,15 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
-import Card from "@/lib/components/Card";
-import { H3 } from "@/lib/components/Headings";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import {
   IssueIcon,
   NewRecordingIcon,
   RecordingsIcon,
   WarningIcon,
 } from "@/lib/components/icons";
-import MetricBadge from "@/lib/components/MetricBadge";
+import MetricBadge from "@/lib/components/ui/MetricBadge";
 import useDataset from "@/app/hooks/api/useDataset";
 import useNotes from "@/app/hooks/api/useNotes";
 

@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import { H3 } from "@/lib/components/Headings";
+import { H3 } from "@/lib/components/ui/Headings";
 import SpectrogramSettingsComponent from "@/lib/components/settings/SpectrogramSettings";
 import AudioSettingsComponent from "@/lib/components/settings/AudioSettings";
-import Button from "@/lib/components/Button";
-import SlideOver from "@/lib/components/SlideOver";
-import Tooltip from "@/lib/components/Tooltip";
+import Button from "@/lib/components/ui/Button";
+import SlideOver from "@/lib/components/ui/SlideOver";
+import Tooltip from "@/lib/components/ui/Tooltip";
 import { SettingsIcon } from "@/lib/components/icons";
 
 import type { SpectrogramSettings, AudioSettings } from "@/lib/types";

@@ -1,11 +1,11 @@
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
 import { CloseIcon, LocationIcon } from "@/lib/components/icons";
 import LocationInput, {
   type Location,
   formatLocation,
 } from "@/lib/components/inputs/Location";
-import Popover from "@/lib/components/Popover";
+import Popover from "@/lib/components/ui/Popover";
 
 function LocationButton({
   latitude,
@@ -53,7 +53,7 @@ export default function RecordingLocation({
       button={<LocationButton latitude={latitude} longitude={longitude} />}
     >
       {() => (
-        <Card className="bg-stone-800 w-80">
+        <Card className="bg-stone-100 dark:bg-stone-800 w-80">
           <LocationInput
             value={{ latitude, longitude }}
             onChange={onChange}

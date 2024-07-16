@@ -37,11 +37,11 @@ export default function useDataset({
   }
 
   const { query, useMutation } = useObject<Dataset>({
-    uuid,
-    initial: dataset,
+    id: uuid,
+    initialData: dataset,
     name: "dataset",
     enabled,
-    getFn: api.datasets.get,
+    queryFn: api.datasets.get,
     onError,
   });
 

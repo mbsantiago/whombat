@@ -27,11 +27,6 @@ export default function useSpectrogramParameters({
     clamp,
   } = spectrogramSettings;
 
-  console.log({
-    overlap,
-    msg:"overlap from useSpectrogramParameters.ts"
-  })
-
   return useMemo(
     () => ({
       channel,

@@ -1,20 +1,24 @@
 import dynamic from "next/dynamic";
 
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import { MapIcon } from "@/lib/components/icons";
 
-import type { Recording } from "@/lib/types";
-
-// NOTE: The use of dynamic imports is necessary to avoid
-// importing the leaflet library on the server side as it
-// uses the `window` object which is not available on the server.
+// NOTE: The use of dynamic imports is necessary to avoid importing the leaflet
+// library on the server side as it uses the `window` object which is not
+// available on the server.
 const Map = dynamic(() => import("@/lib/components/maps/Map"), { ssr: false });
 const Marker = dynamic(() => import("@/lib/components/maps/DraggableMarker"), {
   ssr: false,
 });
 
-export default function RecordingMap({ recording }: { recording: Recording }) {
-  const hasLocation = recording.latitude != null && recording.longitude != null;
+export default function RecordingMap({
+  latitude,
+  longitude,
+}: {
+  latitude?: number | null;
+  longitude?: number | null;
+}) {
+  const hasLocation = latitude != null && longitude != null;
 
   return (
     <Card>
@@ -31,8 +35,8 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
           <Map
             className="h-64"
             center={{
-              lat: recording.latitude ?? 0,
-              lng: recording.longitude ?? 0,
+              lat: latitude ?? 0,
+              lng: longitude ?? 0,
             }}
             scrollWheelZoom={true}
             zoom={14}
@@ -41,8 +45,8 @@ export default function RecordingMap({ recording }: { recording: Recording }) {
               draggable={false}
               updateOnChange
               center={{
-                lat: recording.latitude ?? 0,
-                lng: recording.longitude ?? 0,
+                lat: latitude ?? 0,
+                lng: longitude ?? 0,
               }}
             />
           </Map>

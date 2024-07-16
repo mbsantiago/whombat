@@ -1,5 +1,5 @@
 import Loading from "@/app/loading";
-import Dialog from "@/lib/components/Dialog";
+import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
 import EvaluationSetComponent from "@/lib/components/evaluation_sets/EvaluationSet";
 import EvaluationSetCreate from "@/lib/components/evaluation_sets/EvaluationSetCreate";

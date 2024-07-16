@@ -28,11 +28,11 @@ export default function useModelRun({
   }
 
   const { query, useMutation, useDestruction } = useObject<ModelRun>({
-    uuid,
-    initial: modelRun,
+    id: uuid,
+    initialData: modelRun,
     name: "model_run",
     enabled,
-    getFn: api.modelRuns.get,
+    queryFn: api.modelRuns.get,
     onError,
   });
 

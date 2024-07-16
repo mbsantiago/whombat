@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import Loading from "@/app/loading";
-import Card from "@/lib/components/Card";
-import { H3 } from "@/lib/components/Headings";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import { CheckIcon, NotesIcon } from "@/lib/components/icons";
 import NoteComponent from "@/lib/components/notes/Note";
 import useNotes from "@/app/hooks/api/useNotes";

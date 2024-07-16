@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import api from "@/app/api";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import Pagination from "@/lib/components/lists/Pagination";
 import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";

@@ -19,11 +19,11 @@ export default function useEvaluation({
   onError?: (error: AxiosError) => void;
 }) {
   const { query, useDestruction } = useObject<Evaluation>({
-    uuid,
-    initial: evaluation,
+    id: uuid,
+    initialData: evaluation,
     name: "evaluation",
     enabled,
-    getFn: api.evaluations.get,
+    queryFn: api.evaluations.get,
     onError,
   });
 

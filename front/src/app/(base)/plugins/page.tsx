@@ -1,5 +1,5 @@
 "use client";
-import Hero from "@/lib/components/Hero";
+import Hero from "@/lib/components/ui/Hero";
 import PluginInfo from "@/lib/components/PluginInfo";
 import usePlugins from "@/app/hooks/api/usePlugins";
 

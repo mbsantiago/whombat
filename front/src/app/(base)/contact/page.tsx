@@ -1,6 +1,6 @@
 "use client";
-import Hero from "@/lib/components/Hero";
-import Link from "@/lib/components/Link";
+import Hero from "@/lib/components/ui/Hero";
+import Link from "@/lib/components/ui/Link";
 
 export default function Page() {
   return (

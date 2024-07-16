@@ -10,7 +10,7 @@ import ClipAnnotationNotes from "@/lib/components/clip_annotations/ClipAnnotatio
 import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
 import ClipAnnotationTags from "@/lib/components/clip_annotations/ClipAnnotationTags";
 import Empty from "@/lib/components/Empty";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import useAnnotationTasks from "@/lib/hooks/annotation/useAnnotateTasks";
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 

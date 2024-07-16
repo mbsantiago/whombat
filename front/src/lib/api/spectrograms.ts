@@ -9,7 +9,7 @@ import {
 } from "@/lib/constants";
 import { IntervalSchema, SpectrogramParametersSchema } from "@/lib/schemas";
 
-import type { Interval, Recording, SpectrogramParameters } from "@/lib/types";
+import type { Interval, SpectrogramParameters } from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",
@@ -39,18 +39,18 @@ export function registerSpectrogramAPI({
   baseUrl?: string;
 }) {
   function getUrl({
-    recording,
+    uuid,
     interval,
     ...rest
   }: {
-    recording: Recording;
+    uuid: string;
     interval: Interval;
   } & SpectrogramParameters) {
     const parsed_params = SpectrogramParametersSchema.parse(rest);
     const parsed_segment = IntervalSchema.parse(interval);
 
     const query = {
-      recording_uuid: recording.uuid,
+      recording_uuid: uuid,
       start_time: parsed_segment.min,
       end_time: parsed_segment.max,
       ...parsed_params,

@@ -1,11 +1,7 @@
 import type { User } from "@/lib/types";
-import Dialog from "@/lib/components/Dialog";
-import { Input } from "@/lib/components/inputs";
+import Dialog from "@/lib/components/ui/Dialog";
 import { UserIcon } from "@/lib/components/icons";
-import {
-  DescriptionTerm,
-  EditableDescriptionData,
-} from "@/lib/components/Description";
+import Description from "@/lib/components/ui/Description";
 import UserChangePassword from "@/lib/components/users/UserChangePassword";
 import useActiveUser from "@/app/hooks/api/useActiveUser";
 
@@ -18,7 +14,7 @@ export default function UserProfile(props: { user: User }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="px-4 sm:px-0 inline-flex items-end">
+      <div className="inline-flex items-end px-4 sm:px-0">
         <UserIcon className="w-12 h-12 text-stone-500" />
         <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-200">
           Your Profile
@@ -32,37 +28,31 @@ export default function UserProfile(props: { user: User }) {
       <div className="mt-6 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Username</DescriptionTerm>
-            <EditableDescriptionData
+            <Description
+              name="Username"
               value={user.username}
               onChange={(username) => updateUser({ username })}
-              Input={Input}
-              autoFocus
-            >
-              {user.username}
-            </EditableDescriptionData>
+              type="text"
+              editable
+            />
           </div>
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Name</DescriptionTerm>
-            <EditableDescriptionData
-              value={user.name}
-              onChange={(name) => updateUser({ name: name as string })}
-              Input={Input}
-              autoFocus
-            >
-              {user.name}
-            </EditableDescriptionData>
+            <Description
+              name="Name"
+              value={user.name ?? ""}
+              onChange={(name) => updateUser({ name })}
+              type="text"
+              editable
+            />
           </div>
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Email</DescriptionTerm>
-            <EditableDescriptionData
+            <Description
+              name="Email"
               value={user.email}
-              onChange={(email) => updateUser({ email: email })}
-              Input={Input}
-              autoFocus
-            >
-              {user.email}
-            </EditableDescriptionData>
+              onChange={(email) => updateUser({ email })}
+              type="text"
+              editable
+            />
           </div>
         </dl>
         <Dialog mode="text" title="Change Password" label={"Change password"}>

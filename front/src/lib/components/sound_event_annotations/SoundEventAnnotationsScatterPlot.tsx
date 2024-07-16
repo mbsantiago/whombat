@@ -3,8 +3,8 @@ import Plot from "react-plotly.js";
 import { useMount } from "react-use";
 
 import api from "@/app/api";
-import Card from "@/lib/components/Card";
-import Loading from "@/lib/components/Loading";
+import Card from "@/lib/components/ui/Card";
+import Loading from "@/lib/components/ui/Loading";
 import Empty from "@/lib/components/Empty";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";

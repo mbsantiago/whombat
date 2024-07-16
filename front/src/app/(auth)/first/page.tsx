@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { WhombatIcon } from "@/lib/components/icons";
 import UserCreateForm from "@/lib/components/users/UserCreateForm";
-import Info from "@/lib/components/Info";
+import Info from "@/lib/components/ui/Info";
 
 import type { User } from "@/lib/types";
 

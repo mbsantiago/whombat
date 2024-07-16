@@ -1,10 +1,5 @@
-import {
-  DescriptionData,
-  DescriptionTerm,
-  EditableDescriptionData,
-} from "@/lib/components/Description";
-import { H3 } from "@/lib/components/Headings";
-import { Input, TextArea } from "@/lib/components/inputs/index";
+import Description from "@/lib/components/ui/Description";
+import { H3 } from "@/lib/components/ui/Headings";
 import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
 import type { EvaluationSet } from "@/lib/types";
@@ -32,36 +27,30 @@ export default function EvaluationSetUpdateForm({
       </div>
       <div className="mt-4 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Name</DescriptionTerm>
-            <EditableDescriptionData
-              value={evaluationSet?.name}
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <Description
+              name="Name"
+              value={evaluationSet?.name ?? ""}
               onChange={(name) => updateEvaluationSet({ name })}
-              Input={Input}
-              autoFocus
-            >
-              {evaluationSet?.name}
-            </EditableDescriptionData>
+              type="text"
+              editable
+            />
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Description</DescriptionTerm>
-            <EditableDescriptionData
-              value={evaluationSet?.description}
-              onChange={(description) =>
-                updateEvaluationSet({ description: description || undefined })
-              }
-              rows={6}
-              Input={TextArea}
-              autoFocus
-            >
-              {evaluationSet?.description}
-            </EditableDescriptionData>
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <Description
+              name="Description"
+              value={evaluationSet?.description ?? ""}
+              onChange={(description) => updateEvaluationSet({ description })}
+              type="textarea"
+              editable
+            />
           </div>
-          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <DescriptionTerm>Created On</DescriptionTerm>
-            <DescriptionData>
-              {evaluationSet?.created_on.toLocaleString()}
-            </DescriptionData>
+          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <Description
+              name="Created On"
+              value={evaluationSet?.created_on}
+              type="date"
+            />
           </div>
         </dl>
       </div>

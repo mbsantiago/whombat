@@ -1,7 +1,7 @@
 import DatasetComponent from "@/lib/components/datasets/Dataset";
 import DatasetCreate from "@/lib/components/datasets/DatasetCreate";
 import DatasetImport from "@/lib/components/datasets/DatasetImport";
-import Dialog from "@/lib/components/Dialog";
+import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
@@ -12,7 +12,7 @@ import {
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import StackedList from "@/lib/components/lists/StackedList";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import useDatasets from "@/app/hooks/api/useDatasets";
 
 import type { Dataset } from "@/lib/types";

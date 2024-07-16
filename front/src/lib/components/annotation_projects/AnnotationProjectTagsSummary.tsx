@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H4 } from "@/lib/components/Headings";
+import { H4 } from "@/lib/components/ui/Headings";
 import { AddIcon, TagsIcon } from "@/lib/components/icons";
 
 import type { AnnotationProject } from "@/lib/types";

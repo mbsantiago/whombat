@@ -4,7 +4,7 @@ import { Mulish } from "next/font/google";
 
 import { ClientProvider } from "@/app/client";
 import type { Metadata } from "next";
-import Notification from "@/lib/components/Notification";
+import Notification from "@/lib/components/ui/Notification";
 
 const mulish = Mulish({ subsets: ["latin"] });
 

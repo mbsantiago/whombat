@@ -1,4 +1,4 @@
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import {
   ChannelsIcon,
   SampleRateIcon,
@@ -6,10 +6,8 @@ import {
   TimeIcon,
 } from "@/lib/components/icons";
 
-import type { Recording } from "@/lib/types";
-
 function Label({ label }: { label: string }) {
-  return <div className="font-thin text-sm text-stone-500 mr-2">{label}</div>;
+  return <div className="mr-2 text-sm font-thin text-stone-500">{label}</div>;
 }
 
 function Units({ units }: { units: string }) {
@@ -17,33 +15,39 @@ function Units({ units }: { units: string }) {
 }
 
 export default function RecordingMediaInfo({
-  recording,
+  duration,
+  channels,
+  samplerate,
+  time_expansion = 1,
 }: {
-  recording: Recording;
+  duration: number;
+  channels: number;
+  samplerate: number;
+  time_expansion?: number;
 }) {
   return (
     <Card>
       <div className="inline-flex items-center">
-        <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+        <TimeIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Duration" />
-        {recording.duration.toFixed(3)}
+        {duration.toFixed(3)}
         <Units units="s" />
       </div>
       <div className="inline-flex items-center">
-        <ChannelsIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+        <ChannelsIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Channels" />
-        {recording.channels}
+        {channels}
       </div>
       <div className="inline-flex items-center">
-        <SampleRateIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+        <SampleRateIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Sample rate" />
-        {recording.samplerate.toLocaleString()}
+        {samplerate.toLocaleString()}
         <Units units="Hz" />
       </div>
       <div className="inline-flex items-center">
-        <TimeExpansionIcon className="h-5 w-5 inline-block text-stone-500 mr-1" />
+        <TimeExpansionIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Time expansion" />
-        {recording.time_expansion}
+        {time_expansion}
       </div>
     </Card>
   );

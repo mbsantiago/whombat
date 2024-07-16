@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-import Alert from "@/lib/components/Alert";
-import Button from "@/lib/components/Button";
+import Alert from "@/lib/components/ui/Alert";
+import Button from "@/lib/components/ui/Button";
 import {
   CloseIcon,
   DeleteIcon,

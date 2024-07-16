@@ -1,4 +1,4 @@
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import * as icons from "@/lib/components/icons";
 import { Input } from "@/lib/components/inputs/index";
 import Select from "@/lib/components/inputs/Select";

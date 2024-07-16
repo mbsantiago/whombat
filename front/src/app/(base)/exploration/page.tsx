@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
-import { H3 } from "@/lib/components/Headings";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 
 export default function Page() {
   return (

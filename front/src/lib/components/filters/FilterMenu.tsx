@@ -2,7 +2,7 @@ import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 import { type ReactNode, useState } from "react";
 
-import Button, { getButtonClassName } from "@/lib/components/Button";
+import Button, { getButtonClassName } from "@/lib/components/ui/Button";
 import { BackIcon, FilterIcon } from "@/lib/components/icons";
 import SearchMenu from "@/lib/components/search/SearchMenu";
 

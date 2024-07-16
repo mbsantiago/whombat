@@ -1,18 +1,5 @@
-import type { LabelHTMLAttributes, ReactNode } from "react";
-
-/**
-/* Label for an input element.
-/* @param props The props for the label.
-/* @returns A label for an input.
-*/
-export function InputLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label
-      className="block mb-2 font-medium text-stone-600 dark:text-stone-400"
-      {...props}
-    />
-  );
-}
+import type { ReactNode } from "react";
+import InputLabel from "./InputLabel";
 
 export function InputError({ message }: { message: string }) {
   return <p className="mt-2 text-xs italic text-red-500">{message}</p>;

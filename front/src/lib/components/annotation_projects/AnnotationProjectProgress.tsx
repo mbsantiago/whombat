@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H3 } from "@/lib/components/Headings";
+import { H3 } from "@/lib/components/ui/Headings";
 import {
   AddIcon,
   CompleteIcon,
@@ -10,10 +10,10 @@ import {
   NeedsReviewIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-import Link from "@/lib/components/Link";
-import Loading from "@/lib/components/Loading";
-import MetricBadge from "@/lib/components/MetricBadge";
-import ProgressBar from "@/lib/components/ProgressBar";
+import Link from "@/lib/components/ui/Link";
+import Loading from "@/lib/components/ui/Loading";
+import MetricBadge from "@/lib/components/ui/MetricBadge";
+import ProgressBar from "@/lib/components/ui/ProgressBar";
 import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 

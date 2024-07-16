@@ -2,13 +2,23 @@ import classNames from "classnames";
 
 import type { ReactNode } from "react";
 
+/**
+ * An informational alert component used to display messages to the user.
+ *
+ * This component is styled to visually convey non-critical information, such
+ * as tips, hints, or additional details. It includes an info icon, a visually
+ * hidden label for screen readers, and a content area for your message.
+ */
 export default function Info({
   title,
   className,
   children,
 }: {
   title?: string;
+  /** The content of the alert message. This is what will be displayed to the
+   * user. */
   children: ReactNode;
+  /** Additional CSS classes to customize the appearance of the alert. */
   className?: string;
 }) {
   return (
@@ -20,7 +30,7 @@ export default function Info({
       role="alert"
     >
       <svg
-        className="flex-shrink-0 inline w-4 h-4 mr-3"
+        className="inline flex-shrink-0 mr-3 w-4 h-4"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         fill="currentColor"

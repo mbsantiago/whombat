@@ -1,11 +1,6 @@
-import {
-  DescriptionData,
-  DescriptionTerm,
-  EditableDescriptionData,
-} from "@/lib/components/Description";
-import { H3 } from "@/lib/components/Headings";
-import { Input, TextArea } from "@/lib/components/inputs/index";
-import Loading from "@/lib/components/Loading";
+import Description from "@/lib/components/ui/Description";
+import { H3 } from "@/lib/components/ui/Headings";
+import Loading from "@/lib/components/ui/Loading";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
@@ -38,49 +33,40 @@ export default function ProjectUpdateForm({
         ) : (
           <dl className="divide-y divide-stone-500">
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Name</DescriptionTerm>
-              <EditableDescriptionData
+              <Description
+                name="Name"
                 value={project.name}
                 onChange={(name) => update.mutate({ name })}
-                Input={Input}
-                autoFocus
-              >
-                {project.name}
-              </EditableDescriptionData>
+                type="text"
+                editable
+              />
             </div>
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Description</DescriptionTerm>
-              <EditableDescriptionData
+              <Description
+                name="Description"
                 value={project.description}
                 onChange={(description) => update.mutate({ description })}
-                rows={6}
-                Input={TextArea}
-                autoFocus
-              >
-                {project.description}
-              </EditableDescriptionData>
+                type="textarea"
+                editable
+              />
             </div>
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Annotation Instructions</DescriptionTerm>
-              <EditableDescriptionData
-                value={project.annotation_instructions}
+              <Description
+                name="Annotation Instructions"
+                value={project.annotation_instructions ?? ""}
                 onChange={(annotation_instructions) =>
-                  update.mutate({
-                    annotation_instructions: annotation_instructions || "",
-                  })
+                  update.mutate({ annotation_instructions })
                 }
-                rows={6}
-                Input={TextArea}
-                autoFocus
-              >
-                {project.annotation_instructions}
-              </EditableDescriptionData>
+                type="textarea"
+                editable
+              />
             </div>
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Created On</DescriptionTerm>
-              <DescriptionData>
-                {project.created_on.toLocaleString()}
-              </DescriptionData>
+              <Description
+                name="Created On"
+                value={project.created_on}
+                type="text"
+              />
             </div>
           </dl>
         )}

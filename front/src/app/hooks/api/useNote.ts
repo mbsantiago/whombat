@@ -21,11 +21,11 @@ export default function useNote({
   }
 
   const { query, useMutation } = useObject({
-    uuid,
-    initial: note,
+    id: uuid,
+    initialData: note,
     name: "note",
     enabled,
-    getFn: api.notes.get,
+    queryFn: api.notes.get,
   });
 
   const update = useMutation({

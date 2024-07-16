@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import AnnotationControls from "@/lib/components/annotation/AnnotationControls";
 import Player from "@/lib/components/audio/Player";
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import SpectrogramSettings from "@/lib/components/spectrograms/SpectrogramSettings";

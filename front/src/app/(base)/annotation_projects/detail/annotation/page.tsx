@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 import UserContext from "@/app/(base)/context";
 import AnnotateTasks from "@/lib/components/annotation/AnnotateTasks";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
 import useStore from "@/app/store";
 import { changeURLParam } from "@/lib/utils/url";

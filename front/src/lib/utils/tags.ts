@@ -16,6 +16,38 @@ import type {
   TimeStamp,
 } from "@/lib/types";
 
+export const COLOR_NAMES = [
+  "slate",
+  "gray",
+  "zinc",
+  "neutral",
+  "stone",
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+];
+
+export const LEVELS = [1, 2, 3, 4, 5, 6];
+
+export type Color = {
+  color: string;
+  level: number;
+};
+
 export type TagElement = {
   tag: Tag;
   score?: number;
@@ -265,4 +297,27 @@ export function getLabelPosition(
         placement: "right",
       };
   }
+}
+
+const COLOR_STORE: Record<string, Color> = {};
+
+export function getTagKey(tag: Tag): string {
+  return `${tag.key}-${tag.value}`;
+}
+
+export function getRandomColor(): Color {
+  const name = COLOR_NAMES[Math.floor(Math.random() * COLOR_NAMES.length)];
+  const level = LEVELS[Math.floor(Math.random() * LEVELS.length)];
+  return { color: name, level };
+}
+
+export function getTagColor(tag: Tag): Color {
+  const key = getTagKey(tag);
+  if (COLOR_STORE[key]) {
+    return COLOR_STORE[key];
+  }
+
+  const color = getRandomColor();
+  COLOR_STORE[key] = color;
+  return color;
 }

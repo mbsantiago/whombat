@@ -1,13 +1,11 @@
-import { useCallback, useMemo } from "react";
-
-import Card from "@/lib/components/Card";
-import { H3 } from "@/lib/components/Headings";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import { NotesIcon } from "@/lib/components/icons";
 import CreateNote from "@/lib/components/notes/CreateNote";
 import Feed from "@/lib/components/notes/Feed";
-import useRecording from "@/app/hooks/api/useRecording";
 
-import type { Note, Recording, User } from "@/lib/types";
+import type { NoteCreate } from "@/lib/api/notes";
+import type { Note, User } from "@/lib/types";
 
 function NoNotes() {
   return (
@@ -25,53 +23,18 @@ function NoNotes() {
 }
 
 export default function RecordingNotes({
-  recording: data,
+  notes,
   currentUser,
+  onNoteCreate,
+  onNoteUpdate,
+  onNoteDelete,
 }: {
-  recording: Recording;
+  notes: Note[];
   currentUser?: User;
+  onNoteCreate?: (note: NoteCreate) => void;
+  onNoteUpdate?: (note: Note, data: Partial<Note>) => void;
+  onNoteDelete?: (note: Note) => void;
 }) {
-  const {
-    data: recording,
-    addNote,
-    set,
-  } = useRecording({
-    uuid: data.uuid,
-    recording: data,
-    enabled: false,
-  });
-
-  const onUpdate = useCallback(
-    (note: Note) => {
-      if (recording == null) return;
-      set({
-        ...recording,
-        notes: recording.notes?.map((n) => {
-          if (n.uuid === note.uuid) {
-            return note;
-          }
-          return n;
-        }),
-      });
-    },
-    [recording, set],
-  );
-
-  const onDelete = useCallback(
-    (note: Note) => {
-      if (recording == null) return;
-      set({
-        ...recording,
-        notes: recording.notes?.filter((n) => n.uuid !== note.uuid),
-      });
-    },
-    [recording, set],
-  );
-
-  const notes = useMemo(() => {
-    return data.notes || [];
-  }, [data.notes]);
-
   return (
     <Card>
       <H3>
@@ -84,11 +47,11 @@ export default function RecordingNotes({
         <Feed
           notes={notes}
           currentUser={currentUser}
-          onUpdate={onUpdate}
-          onDelete={onDelete}
+          onUpdate={onNoteUpdate}
+          onDelete={onNoteDelete}
         />
       )}
-      <CreateNote onCreate={addNote.mutate} />
+      <CreateNote onCreate={onNoteCreate} />
     </Card>
   );
 }

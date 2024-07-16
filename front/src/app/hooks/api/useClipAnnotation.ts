@@ -50,10 +50,10 @@ export default function useClipAnnotation({
   const { query, useMutation, useDestruction, setData, client } =
     useObject<ClipAnnotation>({
       name: "clip_annotation",
-      uuid,
-      initial: clipAnnotation,
+      id: uuid,
+      initialData: clipAnnotation,
       enabled,
-      getFn: api.clipAnnotations.get,
+      queryFn: api.clipAnnotations.get,
       onError,
     });
 

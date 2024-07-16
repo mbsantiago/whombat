@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 

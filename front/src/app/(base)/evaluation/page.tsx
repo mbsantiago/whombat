@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import EvaluationSetList from "@/lib/components/evaluation_sets/EvaluationSetList";
-import Hero from "@/lib/components/Hero";
+import Hero from "@/lib/components/ui/Hero";
 
 import type { EvaluationSet } from "@/lib/types";
 

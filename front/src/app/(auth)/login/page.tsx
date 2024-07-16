@@ -7,8 +7,8 @@ import { z } from "zod";
 import api from "@/app/api";
 import { WhombatIcon } from "@/lib/components/icons";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
-import Link from "@/lib/components/Link";
-import Info from "@/lib/components/Info";
+import Link from "@/lib/components/ui/Link";
+import Info from "@/lib/components/ui/Info";
 
 const schema = z.object({
   username: z.string(),

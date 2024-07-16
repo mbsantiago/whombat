@@ -13,7 +13,7 @@ import { type ComboBoxState, useComboBoxState } from "react-stately";
 
 import { SearchIcon } from "@/lib/components/icons";
 import { Input } from "@/lib/components/inputs";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
 import type { CollectionElement, Node } from "@react-types/shared";

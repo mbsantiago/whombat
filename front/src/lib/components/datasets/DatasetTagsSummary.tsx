@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import api from "@/app/api";
 import Loading from "@/app/loading";
-import Card from "@/lib/components/Card";
-import { H3 } from "@/lib/components/Headings";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import { TagsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
 import InputGroup from "@/lib/components/inputs/InputGroup";

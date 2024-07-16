@@ -1,11 +1,6 @@
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import DatasetActions from "@/lib/components/datasets/DatasetActions";
-import {
-  DescriptionData,
-  DescriptionTerm,
-  EditableDescriptionData,
-} from "@/lib/components/Description";
-import { Input, TextArea } from "@/lib/components/inputs/index";
+import Description from "@/lib/components/ui/Description";
 import useDataset from "@/app/hooks/api/useDataset";
 
 import type { Dataset } from "@/lib/types";
@@ -36,34 +31,31 @@ export default function DatasetUpdateForm({
         <div className="mt-6 border-t border-stone-300 dark:border-stone-700">
           <dl className="divide-y divide-stone-500">
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Name</DescriptionTerm>
-              <EditableDescriptionData
+              <Description
+                name="Name"
                 value={data.name}
-                onChange={(value) => dataset.update.mutate({ name: value })}
-                Input={Input}
-                autoFocus
-              >
-                {data.name}
-              </EditableDescriptionData>
+                onChange={(name) => dataset.update.mutate({ name })}
+                type="text"
+                editable
+              />
             </div>
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Description</DescriptionTerm>
-              <EditableDescriptionData
+              <Description
+                name="Description"
                 value={data.description}
-                onChange={(value) =>
-                  dataset.update.mutate({ description: value })
+                onChange={(description) =>
+                  dataset.update.mutate({ description })
                 }
-                Input={TextArea}
-                autoFocus
-              >
-                {data.description}
-              </EditableDescriptionData>
+                type="textarea"
+                editable
+              />
             </div>
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <DescriptionTerm>Created On</DescriptionTerm>
-              <DescriptionData>
-                {data.created_on.toLocaleString()}
-              </DescriptionData>
+              <Description
+                name="Created On"
+                value={data.created_on}
+                type="date"
+              />
             </div>
           </dl>
         </div>

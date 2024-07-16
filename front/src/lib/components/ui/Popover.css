@@ -1,0 +1,19 @@
+.arrow[data-placement="top"] {
+  top: 100%;
+  transform: translateX(-50%);
+}
+
+.arrow[data-placement="bottom"] {
+  bottom: 100%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.arrow[data-placement="left"] {
+  left: 100%;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.arrow[data-placement="right"] {
+  right: 100%;
+  transform: translateY(-50%) rotate(90deg);
+}

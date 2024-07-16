@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import Card from "@/lib/components/Card";
+import { useMemo, memo } from "react";
+import Card from "@/lib/components/ui/Card";
 import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import SettingsMenu from "@/lib/components/settings/SettingsMenu";
@@ -13,7 +13,6 @@ import {
 } from "@/lib/constants";
 
 import type {
-  Recording,
   AudioSettings,
   SpectrogramSettings,
   SpectrogramState,
@@ -28,8 +27,8 @@ import type {
   DoublePressHandler,
 } from "@/lib/types";
 
-export default function RecordingSpectrogram({
-  recording,
+const RecordingSpectrogram = memo(function RecordingSpectrogram({
+  samplerate,
   viewport,
   bounds,
   height = 384,
@@ -66,7 +65,7 @@ export default function RecordingSpectrogram({
   onSettingsSave,
   spectrogramDrawFn,
 }: {
-  recording: Recording;
+  samplerate: number;
   viewport: SpectrogramWindow;
   bounds: SpectrogramWindow;
   height?: number;
@@ -104,8 +103,8 @@ export default function RecordingSpectrogram({
   onBarScroll?: ScrollHandler;
 }) {
   const speedOptions = useMemo(() => {
-    return getSpeedOptions(recording.samplerate);
-  }, [recording.samplerate]);
+    return getSpeedOptions(samplerate);
+  }, [samplerate]);
 
   return (
     <Card>
@@ -134,7 +133,7 @@ export default function RecordingSpectrogram({
         <SettingsMenu
           audioSettings={audioSettings}
           spectrogramSettings={spectrogramSettings}
-          samplerate={recording.samplerate}
+          samplerate={samplerate}
           onAudioSettingsChange={onAudioSettingsChange}
           onSpectrogramSettingsChange={onSpectrogramSettingsChange}
           onResetClick={onSettingsReset}
@@ -164,4 +163,6 @@ export default function RecordingSpectrogram({
       />
     </Card>
   );
-}
+})
+
+export default RecordingSpectrogram;

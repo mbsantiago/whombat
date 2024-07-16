@@ -1,7 +1,7 @@
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import { DragIcon, HomeIcon, ZoomIcon, BackIcon } from "@/lib/components/icons";
-import Tooltip from "@/lib/components/Tooltip";
-import KeyboardKey from "@/lib/components/KeyboardKey";
+import Tooltip from "@/lib/components/ui/Tooltip";
+import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 
 export default function ViewportToolbar({
   state,

@@ -25,11 +25,13 @@ export default function RecordingSpectrogramWrapper({
 
   return (
     <RecordingSpectrogram
-      recording={recording}
+      samplerate={recording.samplerate}
       viewport={spectrogram.viewport.viewport}
       bounds={spectrogram.viewport.bounds}
       spectrogramDrawFn={spectrogram.canvasProps.drawFn}
       spectrogramState={spectrogram.state.state}
+      audioSettings={audioSettings.settings}
+      spectrogramSettings={spectrogramSettings.settings}
       audioCurrentTime={spectrogram.audio.currentTime}
       audioIsPlaying={spectrogram.audio.isPlaying}
       audioLoop={spectrogram.audio.loop}

@@ -53,7 +53,7 @@ export default function useSpectrogramImages({
   /** A function to get the URL for fetching the spectrogram image. */
   getImageUrl?: (
     props: {
-      recording: Recording;
+      uuid: string;
       interval: Interval;
     } & SpectrogramParameters,
   ) => string;
@@ -78,14 +78,12 @@ export default function useSpectrogramImages({
   /** The overlap fraction between consecutive chunks. */
   chunkBuffer?: number;
 }): RecordingSpectrogramInterface {
-  const {
-    chunks,
-    setChunks,
-    setReady,
-    setError,
-    startLoading,
-  } = useSpectrogramChunksState();
+  const { chunks, setChunks, setReady, setError, startLoading } =
+    useSpectrogramChunksState();
+
   const images = useRef<HTMLImageElement[]>([]);
+
+  const { samplerate, duration, uuid } = recording;
 
   const params = useSpectrogramParameters({
     audioSettings,
@@ -94,11 +92,11 @@ export default function useSpectrogramImages({
 
   useEffect(() => {
     const finalSamplerate = !params.resample
-      ? recording.samplerate
-      : params.samplerate ?? recording.samplerate;
+      ? samplerate
+      : params.samplerate ?? samplerate;
 
     const chunks = calculateSpectrogramChunkIntervals({
-      duration: recording.duration,
+      duration: duration,
       windowSize: params.window_size,
       overlap: params.overlap,
       samplerate: finalSamplerate,
@@ -106,15 +104,13 @@ export default function useSpectrogramImages({
       chunkBuffer,
     });
 
-    console.log("Chunks", chunks);
-
     setChunks(chunks);
 
     images.current = chunks.map(({ interval, buffer }, index) => {
       const image = new Image();
       image.loading = "lazy";
       image.src = getImageUrl({
-        recording,
+        uuid,
         interval: buffer,
         ...params,
       });
@@ -134,7 +130,9 @@ export default function useSpectrogramImages({
       return image;
     });
   }, [
-    recording,
+    uuid,
+    duration,
+    samplerate,
     params,
     getImageUrl,
     setChunks,

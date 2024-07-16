@@ -30,11 +30,11 @@ export default function useAnnotationProject({
   enabled?: boolean;
 }) {
   const { query, useMutation, client } = useObject<AnnotationProject>({
-    uuid,
-    initial: annotationProject,
+    id: uuid,
+    initialData: annotationProject,
     name: "annotation_project",
     enabled,
-    getFn: api.annotationProjects.get,
+    queryFn: api.annotationProjects.get,
     onError,
   });
 

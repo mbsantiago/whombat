@@ -26,11 +26,11 @@ export default function useAnnotationTask({
 }) {
   const { query, useMutation, useQuery, useDestruction } =
     useObject<AnnotationTask>({
-      uuid,
-      initial: annotationTask,
+      id: uuid,
+      initialData: annotationTask,
       name: "annotation_task",
       enabled,
-      getFn: api.annotationTasks.get,
+      queryFn: api.annotationTasks.get,
       onError,
     });
 

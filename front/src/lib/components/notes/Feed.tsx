@@ -12,7 +12,7 @@ export default function Feed({
 }: {
   notes: Note[];
   currentUser?: User;
-  onUpdate?: (note: Note) => void;
+  onUpdate?: (note: Note, data: Partial<Note>) => void;
   onDelete?: (note: Note) => void;
 }) {
   return (
@@ -25,9 +25,9 @@ export default function Feed({
         <NoteComponent
           key={note.uuid}
           note={note}
-          currentUser={currentUser}
-          onUpdate={onUpdate}
-          onDelete={onDelete}
+          canDelete={currentUser?.id === note.created_by?.id}
+          onUpdate={(data) => onUpdate?.(note, data)}
+          onDelete={() => onDelete?.(note)}
         />
       ))}
     </ul>

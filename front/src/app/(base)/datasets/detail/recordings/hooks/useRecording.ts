@@ -3,14 +3,12 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import type { AxiosError } from "axios";
 
-import useRecordingHook from "@/app/hooks/api/useRecording";
+import useRecordingHook from "@/app/hooks/useRecording";
 
 export default function useRecording() {
-  const searchParams = useSearchParams();
   const router = useRouter();
 
   const datasetUUID = searchParams.get("dataset_uuid");
-  const recordingUUID = searchParams.get("recording_uuid");
 
   const back = useCallback(() => {
     if (datasetUUID == null) router.push("/datasets/");

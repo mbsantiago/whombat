@@ -2,11 +2,11 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
 import { CloseIcon, DateIcon } from "@/lib/components/icons";
 import { Input, InputGroup } from "@/lib/components/inputs";
-import Popover from "@/lib/components/Popover";
+import Popover from "@/lib/components/ui/Popover";
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
 function DateButton({
@@ -75,7 +75,7 @@ export default function RecordingDate({
   return (
     <Popover button={<DateButton date={date} />}>
       {() => (
-        <Card className="bg-stone-800">
+        <Card className="bg-stone-100 dark:bg-stone-800">
           <InputGroup
             name="date"
             label="Date"

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import { IssueIcon, NotesIcon } from "@/lib/components/icons";
 import { InputGroup, TextArea } from "@/lib/components/inputs/index";
 

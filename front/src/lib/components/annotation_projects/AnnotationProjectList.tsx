@@ -2,7 +2,7 @@ import Loading from "@/app/loading";
 import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
-import Dialog from "@/lib/components/Dialog";
+import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,

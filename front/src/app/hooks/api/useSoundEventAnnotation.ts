@@ -37,10 +37,10 @@ export default function useSoundEventAnnotation({
   const { query, useQuery, useMutation, useDestruction, client } =
     useObject<SoundEventAnnotation>({
       name: "sound_event_annotation",
-      uuid,
-      initial: soundEventAnnotation,
+      id: uuid,
+      initialData: soundEventAnnotation,
       enabled,
-      getFn: api.soundEventAnnotations.get,
+      queryFn: api.soundEventAnnotations.get,
       onError,
     });
 

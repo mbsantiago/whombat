@@ -1,5 +1,5 @@
-import { H1 } from "@/lib/components/Headings";
-import Header from "@/lib/components/Header";
+import { H1 } from "@/lib/components/ui/Headings";
+import Header from "@/lib/components/ui/Header";
 import type { ReactNode } from "react";
 
 /**

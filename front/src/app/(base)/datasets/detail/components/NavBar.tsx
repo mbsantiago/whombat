@@ -1,6 +1,6 @@
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import DatasetExport from "@/lib/components/datasets/DatasetExport";
-import Dialog from "@/lib/components/Dialog";
+import Dialog from "@/lib/components/ui/Dialog";
 import {
   DownloadIcon,
   RecordingsIcon,

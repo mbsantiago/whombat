@@ -6,7 +6,7 @@ import {
 
 import { DatasetIcon, RecordingsIcon } from "@/lib/components/icons";
 import SectionTabs from "@/lib/components/navigation/SectionTabs";
-import Tab from "@/lib/components/Tab";
+import Tab from "@/lib/components/ui/Tab";
 
 import type { Dataset } from "@/lib/types";
 

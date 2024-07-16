@@ -1,38 +1,7 @@
 import { StateCreator } from "zustand";
 
 import type { Tag } from "@/lib/types";
-
-const COLOR_NAMES = [
-  "slate",
-  "gray",
-  "zinc",
-  "neutral",
-  "stone",
-  "red",
-  "orange",
-  "amber",
-  "yellow",
-  "lime",
-  "green",
-  "emerald",
-  "teal",
-  "cyan",
-  "sky",
-  "blue",
-  "indigo",
-  "violet",
-  "purple",
-  "fuchsia",
-  "pink",
-  "rose",
-];
-
-const LEVELS = [1, 2, 3, 4, 5, 6];
-
-type Color = {
-  color: string;
-  level: number;
-};
+import { getTagKey, getRandomColor, type Color } from "@/lib/utils/tags";
 
 export type ColorsSlice = {
   colors: {
@@ -42,10 +11,6 @@ export type ColorsSlice = {
   getTagColor: (tag: Tag) => Color;
   clearTagColors: () => void;
 };
-
-function getTagKey(tag: Tag): string {
-  return `${tag.key}-${tag.value}`;
-}
 
 export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
   colors: {
@@ -67,9 +32,7 @@ export const createColorsSlice: StateCreator<ColorsSlice> = (set, get) => ({
     if (tags[key]) {
       return tags[key];
     } else {
-      const name = COLOR_NAMES[Math.floor(Math.random() * COLOR_NAMES.length)];
-      const level = LEVELS[Math.floor(Math.random() * LEVELS.length)];
-      const color = { color: name, level };
+      const color = getRandomColor();
       set((state) => ({
         colors: {
           tags: {

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-import Hero from "@/lib/components/Hero";
+import Hero from "@/lib/components/ui/Hero";
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 

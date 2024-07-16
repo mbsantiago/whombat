@@ -1,7 +1,7 @@
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import { AddIcon } from "@/lib/components/icons";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 

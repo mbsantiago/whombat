@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H3 } from "@/lib/components/Headings";
+import { H3 } from "@/lib/components/ui/Headings";
 import {
   AddIcon,
   ModelIcon,
@@ -11,8 +11,8 @@ import {
   UserIcon,
   TrophyIcon,
 } from "@/lib/components/icons";
-import Link from "@/lib/components/Link";
-import MetricBadge from "@/lib/components/MetricBadge";
+import Link from "@/lib/components/ui/Link";
+import MetricBadge from "@/lib/components/ui/MetricBadge";
 import useClipAnnotations from "@/app/hooks/api/useClipAnnotations";
 import useModelRuns from "@/app/hooks/api/useModelRuns";
 import useUserRuns from "@/app/hooks/api/useUserRuns";

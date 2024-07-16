@@ -1,5 +1,5 @@
-import Alert from "@/lib/components/Alert";
-import Button from "@/lib/components/Button";
+import Alert from "@/lib/components/ui/Alert";
+import Button from "@/lib/components/ui/Button";
 import { CloseIcon, DeleteIcon, WarningIcon } from "@/lib/components/icons";
 
 export default function DeleteModelRun({

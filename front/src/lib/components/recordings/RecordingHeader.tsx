@@ -1,9 +1,6 @@
-import toast from "react-hot-toast";
-
-import { H3 } from "@/lib/components/Headings";
+import { H3 } from "@/lib/components/ui/Headings";
 import { RecordingIcon } from "@/lib/components/icons";
-import Tooltip from "@/lib/components/Tooltip";
-import useRecording from "@/app/hooks/api/useRecording";
+import Tooltip from "@/lib/components/ui/Tooltip";
 
 import RecordingDate from "./RecordingDate";
 import RecordingLocation from "./RecordingLocation";
@@ -22,18 +19,22 @@ export function removeExtension(path: string) {
   return path.split(".").slice(0, -1).join(".");
 }
 
+export function getExtension(path: string) {
+  return path.split(".").pop();
+}
+
 export default function RecordingHeader({
   recording,
+  onRecordingUpdate,
+  onRecordingClick,
 }: {
   recording: Recording;
+  onRecordingUpdate?: (data: Partial<Recording>) => void;
+  onRecordingClick?: () => void;
 }) {
   const { path } = recording;
   const baseName = removeExtension(getBaseName(path) ?? "");
-  const { data, update: updateRecording } = useRecording({
-    uuid: recording.uuid,
-    recording,
-    enabled: true,
-  });
+  const extension = getExtension(path);
 
   return (
     <div className="flex overflow-x-auto flex-row gap-x-6 items-center w-full">
@@ -52,24 +53,23 @@ export default function RecordingHeader({
             <button
               type="button"
               className="overflow-hidden w-full text-ellipsis"
-              onClick={() => {
-                navigator.clipboard.writeText(path);
-                toast.success("Copied full path to clipboard");
-              }}
+              onClick={onRecordingClick}
             >
               {baseName}
-              <span className="text-sm text-stone-500">.WAV</span>
+              <span className="text-sm text-stone-500">
+                .{extension?.toUpperCase()}
+              </span>
             </button>
           </Tooltip>
         </H3>
       </div>
       <RecordingLocation
-        latitude={data?.latitude}
-        longitude={data?.longitude}
-        onChange={updateRecording.mutate}
+        latitude={recording.latitude}
+        longitude={recording.longitude}
+        onChange={onRecordingUpdate}
       />
-      <RecordingTime time={data?.time} onChange={updateRecording.mutate} />
-      <RecordingDate date={data?.date} onChange={updateRecording.mutate} />
+      <RecordingTime time={recording.time} onChange={onRecordingUpdate} />
+      <RecordingDate date={recording.date} onChange={onRecordingUpdate} />
     </div>
   );
 }

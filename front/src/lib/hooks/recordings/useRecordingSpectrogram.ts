@@ -40,7 +40,8 @@ export default function useRecordingSpectrogram({
       }),
     );
   }, [
-    recording,
+    recording.samplerate,
+    recording.uuid,
     spectrogramSettings.window_size,
     spectrogramSettings.overlap,
     setViewport,

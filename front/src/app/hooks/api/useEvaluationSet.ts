@@ -33,11 +33,11 @@ export default function useEvaluationSet({
   onError?: (error: AxiosError) => void;
 }) {
   const { query, useMutation, useDestruction } = useObject<EvaluationSet>({
-    uuid,
-    initial: evaluationSet,
+    id: uuid,
+    initialData: evaluationSet,
     name: "evaluation_set",
     enabled,
-    getFn: api.evaluationSets.get,
+    queryFn: api.evaluationSets.get,
     onError,
   });
 

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import Empty from "@/lib/components/Empty";
-import { H4 } from "@/lib/components/Headings";
+import { H4 } from "@/lib/components/ui/Headings";
 import { TagsIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";

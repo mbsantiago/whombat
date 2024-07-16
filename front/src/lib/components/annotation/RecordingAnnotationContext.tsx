@@ -1,5 +1,5 @@
 import { RecordingIcon } from "@/lib/components/icons";
-import Link from "@/lib/components/Link";
+import Link from "@/lib/components/ui/Link";
 import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import {
   getBaseName,

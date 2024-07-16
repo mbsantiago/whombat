@@ -1,7 +1,9 @@
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import Search from "@/lib/components/inputs/Search";
 import TagComponent from "@/lib/components/tags/Tag";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
+
+// TODO: Remove this import
 import useStore from "@/app/store";
 
 import type { Tag } from "@/lib/types";
@@ -27,6 +29,10 @@ export default function TagList({
     <div className="flex flex-col gap-4">
       <Search onChange={(value) => setSearch(value as string)} />
       <div className="flex overflow-hidden flex-col gap-2 w-full">
+        {tags.length === 0 && <p className="text-stone-500">No tags</p>}
+        {items.length === 0 && tags.length > 0 && (
+          <p className="text-stone-500">No tags found</p>
+        )}
         {items.map((tag) => (
           <TagComponent
             key={`${tag.key}-${tag.value}`}

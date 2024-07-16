@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { type ClipCreateMany } from "@/lib/api/clips";
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
 import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
-import { H2, H3 } from "@/lib/components/Headings";
+import { H2, H3 } from "@/lib/components/ui/Headings";
 import { FilterIcon, TasksIcon } from "@/lib/components/icons";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";

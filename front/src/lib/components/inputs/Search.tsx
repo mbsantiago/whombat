@@ -2,9 +2,9 @@ import { ReactElement, useRef } from "react";
 import { VisuallyHidden, useSearchField } from "react-aria";
 import { type SearchFieldProps, useSearchFieldState } from "react-stately";
 
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import { CloseIcon, SearchIcon } from "@/lib/components/icons";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 
 import Input from "./Input";
 

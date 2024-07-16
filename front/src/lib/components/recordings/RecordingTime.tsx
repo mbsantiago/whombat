@@ -3,11 +3,11 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import Button from "@/lib/components/Button";
-import Card from "@/lib/components/Card";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
 import { CloseIcon, TimeIcon } from "@/lib/components/icons";
 import { Input, InputGroup } from "@/lib/components/inputs";
-import Popover from "@/lib/components/Popover";
+import Popover from "@/lib/components/ui/Popover";
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
 function TimeButton({
@@ -80,7 +80,7 @@ export default function RecordingTime({
   return (
     <Popover button={<TimeButton time={time} />}>
       {() => (
-        <Card className="bg-stone-800">
+        <Card className="bg-stone-100 dark:bg-stone-800">
           <InputGroup name="time" label="Time" error={errors.time?.message}>
             <Input
               type="text"

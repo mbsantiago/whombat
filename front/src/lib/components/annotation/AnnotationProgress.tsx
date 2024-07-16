@@ -1,15 +1,15 @@
 import { useMemo } from "react";
 
-import Button, { getButtonClassName } from "@/lib/components/Button";
+import Button, { getButtonClassName } from "@/lib/components/ui/Button";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import taskFilterDefs from "@/lib/components/filters/tasks";
 import { FilterIcon, NextIcon, PreviousIcon } from "@/lib/components/icons";
 import Toggle from "@/lib/components/inputs/Toggle";
-import ProgressBar from "@/lib/components/ProgressBar";
-import Tooltip from "@/lib/components/Tooltip";
-import Dialog from "@/lib/components/Dialog";
-import KeyboardKey from "@/lib/components/KeyboardKey";
+import ProgressBar from "@/lib/components/ui/ProgressBar";
+import Tooltip from "@/lib/components/ui/Tooltip";
+import Dialog from "@/lib/components/ui/Dialog";
+import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 import { AUDIO_KEY_SHORTCUTS } from "@/lib/hooks/audio/useAudioKeyShortcuts";

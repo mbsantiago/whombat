@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
 import { CheckIcon, CloseIcon } from "@/lib/components/icons";
 import Checkbox from "@/lib/components/tables/TableCheckbox";

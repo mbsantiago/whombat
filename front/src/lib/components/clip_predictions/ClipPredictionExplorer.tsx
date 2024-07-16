@@ -1,7 +1,7 @@
-import Button from "@/lib/components/Button";
+import Button from "@/lib/components/ui/Button";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import Empty from "@/lib/components/Empty";
 import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import {

@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
 import api from "@/app/api";
-import Card from "@/lib/components/Card";
+import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import Loading from "@/lib/components/Loading";
+import Loading from "@/lib/components/ui/Loading";
 import Pagination from "@/lib/components/lists/Pagination";
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
