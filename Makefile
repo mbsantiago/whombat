@@ -23,3 +23,6 @@ bundle-pyinstaller:
 
 publish:
 	bash scripts/publish_pypi.sh
+
+storybook:
+	cd front && npm run storybook
