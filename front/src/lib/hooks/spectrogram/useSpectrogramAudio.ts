@@ -10,14 +10,15 @@ import { adjustToRecording } from "@/lib/hooks/settings/useAudioSettings";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import type { Recording, SpectrogramWindow, AudioSettings } from "@/lib/types";
 
-/**
- * A custom React hook to manage audio playback synchronized with a spectrogram viewport.
+/** A custom React hook to manage audio playback synchronized with a
+ * spectrogram viewport.
  */
 export default function useSpectrogramAudio({
   recording,
   bounds,
   viewport,
   audioSettings,
+  ...handlers
 }: {
   /** The viewport controller. */
   viewport: ViewportController;
@@ -27,6 +28,26 @@ export default function useSpectrogramAudio({
   bounds: SpectrogramWindow;
   /** The audio settings. */
   audioSettings: AudioSettings;
+  urlFn?: (args: {
+    recording: Recording;
+    startTime?: number;
+    endTime?: number;
+    settings?: AudioSettings;
+  }) => string;
+  onPlay?: () => void;
+  onPause?: () => void;
+  onEnded?: () => void;
+  onError?: () => void;
+  onTimeUpdate?: (time: number) => void;
+  onVolumeChange?: (volume: number) => void;
+  onSeek?: (time: number) => void;
+  onSeeking?: () => void;
+  onWaiting?: () => void;
+  onLoadStart?: () => void;
+  onLoadedData?: () => void;
+  onCanPlay?: () => void;
+  onCanPlayThrough?: () => void;
+  onAbort?: () => void;
 }) {
   const { viewport: current, centerOn } = viewport;
 
@@ -51,11 +72,18 @@ export default function useSpectrogramAudio({
     return adjustToRecording(audioSettings, recording);
   }, [audioSettings, recording]);
 
+  const handleSeek = useCallback(
+    (time: number) => centerOn({ time }),
+    [centerOn],
+  );
+
   return useRecordingAudio({
     recording,
     startTime: bounds.time.min,
     endTime: bounds.time.max,
     settings: adjustedAudioSettings,
     onTimeUpdate,
+    onSeek: handleSeek,
+    ...handlers,
   });
 }

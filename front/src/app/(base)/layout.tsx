@@ -2,6 +2,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useContext, useCallback } from "react";
 import toast from "react-hot-toast";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 import Loading from "@/app/loading";
 import { WhombatIcon } from "@/lib/components/icons";
@@ -77,8 +78,10 @@ function Contents({ children }: { children: ReactNode }) {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <WithLogIn>
-      <Contents>{children}</Contents>
-    </WithLogIn>
+    <HotkeysProvider>
+      <WithLogIn>
+        <Contents>{children}</Contents>
+      </WithLogIn>
+    </HotkeysProvider>
   );
 }

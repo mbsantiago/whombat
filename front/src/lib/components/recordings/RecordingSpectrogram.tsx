@@ -38,32 +38,32 @@ const RecordingSpectrogram = memo(function RecordingSpectrogram({
   audioCurrentTime = 0,
   audioIsPlaying = false,
   audioLoop = false,
-  onAudioPlay,
-  onAudioPause,
-  onAudioSeek,
+  spectrogramDrawFn,
   onAudioLoopToggle,
-  onAudioSpeedChange,
+  onAudioPause,
+  onAudioPlay,
+  onAudioSeek,
   onAudioSettingsChange,
-  onSpectrogramSettingsChange,
-  onViewportReset,
-  onViewportBack,
-  onViewportEnablePanning,
-  onViewportEnableZooming,
-  onSpectrogramHover,
-  onSpectrogramMoveStart,
-  onSpectrogramMoveEnd,
-  onSpectrogramMove,
-  onSpectrogramPress,
-  onSpectrogramScroll,
-  onSpectrogramDoubleClick,
-  onBarMoveStart,
-  onBarMoveEnd,
+  onAudioSpeedChange,
   onBarMove,
+  onBarMoveEnd,
+  onBarMoveStart,
   onBarPress,
   onBarScroll,
   onSettingsReset,
   onSettingsSave,
-  spectrogramDrawFn,
+  onSpectrogramDoubleClick,
+  onSpectrogramHover,
+  onSpectrogramMove,
+  onSpectrogramMoveEnd,
+  onSpectrogramMoveStart,
+  onSpectrogramPress,
+  onSpectrogramScroll,
+  onSpectrogramSettingsChange,
+  onViewportBack,
+  onViewportEnablePanning,
+  onViewportEnableZooming,
+  onViewportReset,
 }: {
   samplerate: number;
   viewport: SpectrogramWindow;
@@ -75,32 +75,32 @@ const RecordingSpectrogram = memo(function RecordingSpectrogram({
   audioCurrentTime?: number;
   audioIsPlaying?: boolean;
   audioLoop?: boolean;
+  spectrogramDrawFn?: DrawFn;
+  onAudioLoopToggle?: () => void;
+  onAudioPause?: () => void;
+  onAudioPlay?: () => void;
+  onAudioSeek?: (time: number) => void;
+  onAudioSettingsChange?: (settings: AudioSettings) => void;
+  onAudioSpeedChange?: (speed: number) => void;
+  onBarMove?: MoveHandler;
+  onBarMoveEnd?: MoveEndHandler;
+  onBarMoveStart?: MoveStartHandler;
+  onBarPress?: PressHandler;
+  onBarScroll?: ScrollHandler;
+  onSettingsReset?: () => void;
+  onSettingsSave?: () => void;
+  onSpectrogramDoubleClick?: DoublePressHandler;
   onSpectrogramHover?: HoverHandler;
-  onSpectrogramMoveStart?: MoveStartHandler;
-  onSpectrogramMoveEnd?: MoveEndHandler;
   onSpectrogramMove?: MoveHandler;
+  onSpectrogramMoveEnd?: MoveEndHandler;
+  onSpectrogramMoveStart?: MoveStartHandler;
   onSpectrogramPress?: PressHandler;
   onSpectrogramScroll?: ScrollHandler;
-  onSpectrogramDoubleClick?: DoublePressHandler;
-  spectrogramDrawFn?: DrawFn;
-  onAudioPlay?: () => void;
-  onAudioPause?: () => void;
-  onAudioSeek?: (time: number) => void;
-  onAudioLoopToggle?: () => void;
-  onAudioSpeedChange?: (speed: number) => void;
-  onAudioSettingsChange?: (settings: AudioSettings) => void;
   onSpectrogramSettingsChange?: (settings: SpectrogramSettings) => void;
-  onViewportReset?: () => void;
   onViewportBack?: () => void;
   onViewportEnablePanning?: () => void;
   onViewportEnableZooming?: () => void;
-  onSettingsReset?: () => void;
-  onSettingsSave?: () => void;
-  onBarMoveStart?: MoveStartHandler;
-  onBarMoveEnd?: MoveEndHandler;
-  onBarMove?: MoveHandler;
-  onBarPress?: PressHandler;
-  onBarScroll?: ScrollHandler;
+  onViewportReset?: () => void;
 }) {
   const speedOptions = useMemo(() => {
     return getSpeedOptions(samplerate);

@@ -1,4 +1,5 @@
 import useRecordingSpectrogram from "@/lib/hooks/recordings/useRecordingSpectrogram";
+import { useHotkeys } from "react-hotkeys-hook";
 import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
 import type { AudioSettingsInterface } from "@/lib/hooks/settings/useAudioSettings";
 import type { SpectrogramSettingsInterface } from "@/lib/hooks/settings/useSpectrogramSettings";
@@ -23,6 +24,20 @@ export default function RecordingSpectrogramWrapper({
     spectrogramSettings: spectrogramSettings.settings,
   });
 
+  useHotkeys("space", spectrogram.audio.togglePlay, {
+    preventDefault: true,
+    description: "Toggle playing",
+  });
+  useHotkeys("z", spectrogram.state.enableZooming, {
+    description: "Enable spectrogram zooming",
+  });
+  useHotkeys("x", spectrogram.state.enablePanning, {
+    description: "Enable spectrogram panning",
+  });
+  useHotkeys("b", spectrogram.viewport.back, {
+    description: "Go back to previous view",
+  });
+
   return (
     <RecordingSpectrogram
       samplerate={recording.samplerate}
@@ -35,25 +50,29 @@ export default function RecordingSpectrogramWrapper({
       audioCurrentTime={spectrogram.audio.currentTime}
       audioIsPlaying={spectrogram.audio.isPlaying}
       audioLoop={spectrogram.audio.loop}
-      onSpectrogramMoveStart={spectrogram.canvasProps.onMoveStart}
-      onSpectrogramMoveEnd={spectrogram.canvasProps.onMoveEnd}
-      onSpectrogramMove={spectrogram.canvasProps.onMove}
-      onSpectrogramScroll={spectrogram.canvasProps.onScroll}
-      onSpectrogramDoubleClick={spectrogram.canvasProps.onDoubleClick}
-      onAudioPlay={spectrogram.audio.play}
-      onAudioPause={spectrogram.audio.pause}
-      onAudioSeek={spectrogram.audio.seek}
       onAudioLoopToggle={spectrogram.audio.toggleLoop}
+      onAudioPause={spectrogram.audio.pause}
+      onAudioPlay={spectrogram.audio.play}
+      onAudioSeek={spectrogram.audio.seek}
       onAudioSettingsChange={audioSettings.set}
-      onSpectrogramSettingsChange={spectrogramSettings.set}
       onAudioSpeedChange={audioSettings.setSpeed}
-      onSettingsReset={onReset}
-      onSettingsSave={onSave}
-      onBarMoveStart={spectrogram.barProps.onMoveStart}
-      onBarMoveEnd={spectrogram.barProps.onMoveEnd}
       onBarMove={spectrogram.barProps.onMove}
+      onBarMoveEnd={spectrogram.barProps.onMoveEnd}
+      onBarMoveStart={spectrogram.barProps.onMoveStart}
       onBarPress={spectrogram.barProps.onPress}
       onBarScroll={spectrogram.barProps.onScroll}
+      onSettingsReset={onReset}
+      onSettingsSave={onSave}
+      onSpectrogramDoubleClick={spectrogram.canvasProps.onDoubleClick}
+      onSpectrogramMove={spectrogram.canvasProps.onMove}
+      onSpectrogramMoveEnd={spectrogram.canvasProps.onMoveEnd}
+      onSpectrogramMoveStart={spectrogram.canvasProps.onMoveStart}
+      onSpectrogramScroll={spectrogram.canvasProps.onScroll}
+      onSpectrogramSettingsChange={spectrogramSettings.set}
+      onViewportBack={spectrogram.viewport.back}
+      onViewportEnablePanning={spectrogram.state.enablePanning}
+      onViewportEnableZooming={spectrogram.state.enableZooming}
+      onViewportReset={spectrogram.viewport.reset}
     />
   );
 }

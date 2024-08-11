@@ -73,12 +73,12 @@ export default function RecordingActions({
   downloadURL,
   onDelete,
 }: {
-  downloadURL: string;
+  downloadURL?: string;
   onDelete?: () => void;
 }) {
   return (
     <div className="flex flex-row gap-2 justify-center">
-      <Link mode="text" variant="primary" href={downloadURL}>
+      <Link mode="text" variant="primary" href={downloadURL || ""}>
         <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
       </Link>
       <DeleteRecording onDelete={onDelete} />

@@ -4,6 +4,7 @@ nav:
   - user_guide/index.md
   - Installation: user_guide/installation.md
   - Datasets: user_guide/datasets.md
+  - Spectrogram Display: user_guide/spectrogram_display.md
   - Annotation Projects: user_guide/annotation_projects.md
   - Evaluation: user_guide/evaluation.md
   - Data Exploration: user_guide/exploration.md

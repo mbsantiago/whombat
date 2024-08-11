@@ -31,14 +31,16 @@ export default function useSpectrogram({
 }) {
   const state = useSpectrogramState();
 
+  const initial = getInitialViewingWindow({
+    startTime: bounds.time.min,
+    endTime: bounds.time.max,
+    samplerate: recording.samplerate,
+    windowSize: spectrogramSettings.window_size,
+    overlap: spectrogramSettings.overlap,
+  });
+
   const viewport = useViewport({
-    initial: getInitialViewingWindow({
-      startTime: bounds.time.min,
-      endTime: bounds.time.max,
-      samplerate: recording.samplerate,
-      windowSize: spectrogramSettings.window_size,
-      overlap: spectrogramSettings.overlap,
-    }),
+    initial,
     bounds,
   });
 

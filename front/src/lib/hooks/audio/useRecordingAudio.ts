@@ -29,6 +29,7 @@ export default function useRecordingAudio({
   settings,
   urlFn = api.audio.getStreamUrl,
   onTimeUpdate,
+  onSeek,
   ...handlers
 }: {
   recording: Recording;
@@ -41,6 +42,7 @@ export default function useRecordingAudio({
     endTime?: number;
     settings?: AudioSettings;
   }) => string;
+  onSeek?: (time: number) => void;
   onPlay?: () => void;
   onPause?: () => void;
   onEnded?: () => void;
@@ -83,9 +85,11 @@ export default function useRecordingAudio({
 
   const seek = useCallback(
     (time: number) => {
-      audio.seek((time - startTime) / speed);
+      let adjustedTime = (time - startTime) / speed;
+      audio.seek(adjustedTime);
+      onSeek?.(adjustedTime);
     },
-    [audio, speed, startTime],
+    [audio, speed, startTime, onSeek],
   );
 
   return {
