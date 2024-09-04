@@ -57,7 +57,7 @@ plugins:
         python:
           paths: ["src"]
           import:
-            - https://docs.python.org/3.11/objects.inv
+            - https://docs.python.org/3.12/objects.inv
             - https://docs.pydantic.dev/latest/objects.inv
             - https://mbsantiago.github.io/soundevent/objects.inv
             - https://docs.sqlalchemy.org/en/20/objects.inv
