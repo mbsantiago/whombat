@@ -6,6 +6,9 @@ on:
     branches: ["main"]
 jobs:
   test:
+    env:
+      UV_CACHE_DIR: /tmp/.uv-cache
+
     strategy:
       fail-fast: false
       matrix:
@@ -15,7 +18,9 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+
     runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v4
 
