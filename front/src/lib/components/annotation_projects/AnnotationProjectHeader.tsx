@@ -40,6 +40,17 @@ export default function AnnotationProjectHeader({
               },
             },
             {
+              id: "clips",
+              title: "Clips",
+              isActive: selectedLayoutSegment === "clips",
+              icon: <ClipsIcon className="w-5 h-5 align-middle" />,
+              onClick: () => {
+                router.push(
+                  `/annotation_projects/detail/clips/?${params.toString()}`,
+                );
+              },
+            },
+            {
               id: "annotate",
               title: "Annotate",
               isActive: selectedLayoutSegment === "annotation",

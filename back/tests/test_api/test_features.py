@@ -1,5 +1,7 @@
 """Test suite for the features API module."""
 
+import datetime
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -151,10 +153,12 @@ async def test_get_feature_names(
     # Arrange.
     # Create the features.
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
-    for name in names:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for index, name in enumerate(names):
         await features.create(
             session,
             name=name,
+            created_on=now + datetime.timedelta(seconds=index),
         )
 
     # Act.
@@ -191,10 +195,12 @@ async def test_get_feature_names_with_offset(
     # Arrange.
     # Create the features.
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
-    for name in names:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for index, name in enumerate(names):
         await features.create(
             session,
             name=name,
+            created_on=now + datetime.timedelta(seconds=index),
         )
 
     # Act.
@@ -211,10 +217,12 @@ async def test_get_features_with_return_all(
     # Arrange.
     # Create the features.
     names = ["test_feature_1", "test_feature_2", "test_feature_3"]
-    for name in names:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for index, name in enumerate(names):
         await features.create(
             session,
             name=name,
+            created_on=now + datetime.timedelta(seconds=index),
         )
 
     # Act.

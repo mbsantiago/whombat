@@ -48,7 +48,7 @@ export default function ModelEvaluationSummary({
               <div className="inline-flex gap-2 items-baseline">
                 <Link
                   mode="text"
-                    padding="p-0"
+                  padding="p-0"
                   href={`/evaluation/detail/model_run/?evaluation_set_uuid=${evaluationSet.uuid}&model_run_uuid=${modelRun.uuid}`}
                 >
                   {modelRun.name}

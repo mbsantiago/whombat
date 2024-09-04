@@ -125,9 +125,7 @@ export default function useScatterPlot({
   const onClick = useCallback(
     (datum: Readonly<PlotMouseEvent>) => {
       const annotation = datum.points[0].customdata;
-      onSoundEventAnnotationClick?.(
-        annotation as unknown as ScatterPlotData,
-      );
+      onSoundEventAnnotationClick?.(annotation as unknown as ScatterPlotData);
     },
     [onSoundEventAnnotationClick],
   );

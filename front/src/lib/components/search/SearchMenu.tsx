@@ -159,9 +159,10 @@ function MenuOption<T>({
   return (
     <Combobox.Option
       className={({ active }) =>
-        `relative cursor-default select-none p-2 rounded-md ${active
-          ? "bg-stone-200 dark:bg-stone-800 text-emerald-600 dark:text-emerald-500"
-          : ""
+        `relative cursor-default select-none p-2 rounded-md ${
+          active
+            ? "bg-stone-200 dark:bg-stone-800 text-emerald-600 dark:text-emerald-500"
+            : ""
         }`
       }
       value={option}

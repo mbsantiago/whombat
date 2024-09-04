@@ -33,6 +33,7 @@ class TagAPI(
         session: AsyncSession,
         key: str,
         value: str,
+        **kwargs,
     ) -> schemas.Tag:
         """Create a tag.
 
@@ -56,6 +57,7 @@ class TagAPI(
                 key=key,
                 value=value,
             ),
+            **kwargs,
         )
 
     async def get_or_create(

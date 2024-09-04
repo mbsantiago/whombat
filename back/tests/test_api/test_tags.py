@@ -1,5 +1,7 @@
 """Test suite for the tags Python API."""
 
+import datetime
+
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -263,20 +265,27 @@ async def test_get_tags_with_offset(
     session: AsyncSession,
 ):
     """Test getting tags with an offset."""
+    # NOTE: We need to make sure the time difference is
+    # sufficiently large else sqlite might not know the difference
+    # making the test flaky
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.tags.create(
         session,
         key="test_key1",
         value="test_value1",
+        created_on=now,
     )
     await api.tags.create(
         session,
         key="test_key2",
         value="test_value2",
+        created_on=now + datetime.timedelta(seconds=1),
     )
     await api.tags.create(
         session,
         key="test_key3",
         value="test_value3",
+        created_on=now + datetime.timedelta(seconds=2),
     )
     retrieved_tags, _ = await api.tags.get_many(
         session=session,
@@ -294,20 +303,24 @@ async def test_get_tags_with_limit(
     session: AsyncSession,
 ):
     """Test getting tags with a limit."""
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.tags.create(
         session,
         key="test_key1",
         value="test_value1",
+        created_on=now,
     )
     await api.tags.create(
         session,
         key="test_key2",
         value="test_value2",
+        created_on=now + datetime.timedelta(seconds=1),
     )
     await api.tags.create(
         session,
         key="test_key3",
         value="test_value3",
+        created_on=now + datetime.timedelta(seconds=2),
     )
     retrieved_tags, _ = await api.tags.get_many(
         session=session,

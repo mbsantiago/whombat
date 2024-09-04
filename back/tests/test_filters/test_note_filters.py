@@ -50,11 +50,14 @@ async def notes(
     user3: schemas.SimpleUser,
 ) -> list[schemas.Note]:
     """Create some notes for testing."""
+    now = datetime.datetime.now(datetime.timezone.utc)
+
     note1 = await api.notes.create(
         session,
         message="note1 - a",
         created_by=user1,
         is_issue=False,
+        created_on=now,
     )
 
     note2 = await api.notes.create(
@@ -69,12 +72,14 @@ async def notes(
         session,
         message="note3 - b",
         created_by=user2,
+        created_on=now + datetime.timedelta(seconds=1),
     )
 
     note4 = await api.notes.create(
         session,
         message="note4 - b",
         created_by=user3,
+        created_on=now + datetime.timedelta(seconds=2),
     )
 
     return [note1, note2, note3, note4]

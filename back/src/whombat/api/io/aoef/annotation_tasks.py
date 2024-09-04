@@ -124,7 +124,8 @@ async def _create_annotation_tasks(
                 "annotation_project_id": proj_db_id,
                 "clip_annotation_id": clip_annotation_db_id,
                 "clip_id": clip_db_id,
-                "created_on": task.created_on or datetime.datetime.utcnow(),
+                "created_on": task.created_on
+                or datetime.datetime.now(datetime.timezone.utc),
             }
         )
 

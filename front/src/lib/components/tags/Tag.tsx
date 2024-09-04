@@ -38,15 +38,17 @@ const LEVELS = [1, 2, 3, 4, 5, 6];
 
 export function getTagClassNames(color: string, level: number) {
   const background = `bg-${color}-${level}00 dark:bg-${color}-${10 - level}00`;
-  const border = `border-${color}-${level + 2}00 dark:border-${color}-${10 - level - 2
-    }00`;
-  const text = `text-${color}-${level + 3}00 dark:text-${color}-${10 - level - 3
-    }00`;
-  return  {
+  const border = `border-${color}-${level + 2}00 dark:border-${color}-${
+    10 - level - 2
+  }00`;
+  const text = `text-${color}-${level + 3}00 dark:text-${color}-${
+    10 - level - 3
+  }00`;
+  return {
     background,
     border,
     text,
-  }
+  };
 }
 
 /** A Tag.

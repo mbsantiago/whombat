@@ -28,13 +28,10 @@ export default function Page() {
     [router],
   );
 
-  const handleAuthenticationError = useCallback(
-    () => {
-      toast.error("This is not your first time here, is it?");
-      router.push("/login");
-    },
-    [router],
-  );
+  const handleAuthenticationError = useCallback(() => {
+    toast.error("This is not your first time here, is it?");
+    router.push("/login");
+  }, [router]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

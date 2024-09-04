@@ -21,7 +21,7 @@ import type { FuseOptionKey } from "fuse.js";
 import type { ReactElement, ReactNode } from "react";
 import type { AriaListBoxOptions, AriaPopoverProps } from "react-aria";
 
-function EmptyMessage({ }: { state: ComboBoxState<any> }) {
+function EmptyMessage({}: { state: ComboBoxState<any> }) {
   return <div className="p-2">No results</div>;
 }
 
@@ -167,8 +167,8 @@ function ListBox<T>({
         {state.collection.size === 0
           ? emptyMessage({ state })
           : Array.from(state.collection).map((item) => (
-            <Option key={item.key} item={item} state={state} />
-          ))}
+              <Option key={item.key} item={item} state={state} />
+            ))}
       </ul>
     </div>
   );

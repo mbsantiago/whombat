@@ -30,7 +30,7 @@ export default function useClipEvaluations({
     enabled,
   });
 
-  if (query.error != null) console.error(query.error)
+  if (query.error != null) console.error(query.error);
 
   return {
     ...query,

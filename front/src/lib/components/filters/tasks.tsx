@@ -82,7 +82,9 @@ const tasksFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
       />
     ),
     selector: ({ setFilter }) => (
-      <TagFilter onChange={(val) => setFilter("sound_event_annotation_tag", val)} />
+      <TagFilter
+        onChange={(val) => setFilter("sound_event_annotation_tag", val)}
+      />
     ),
     description: "Select task that contain a sound event with a specific tag",
     icon: (
