@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import AnnotationTaskTable from "@/components/annotation_tasks/AnnotationTaskTable";
 
-import type {AnnotationProject, AnnotationTask} from "@/types";
+import type { AnnotationProject, AnnotationTask } from "@/types";
 
 export default function AnnotationProjectTaskClips({
   annotationProject,
@@ -11,7 +11,6 @@ export default function AnnotationProjectTaskClips({
   annotationProject: AnnotationProject;
   getAnnotationTaskLink?: (annotationTask: AnnotationTask) => string;
 }) {
-
   const getAnnotationTaskLink = useMemo(() => {
     if (getAnnotationTaskLinkFn == null) return undefined;
 
@@ -20,7 +19,10 @@ export default function AnnotationProjectTaskClips({
       return `${url}&annotation_project_uuid=${annotationProject.uuid}`;
     };
   }, [getAnnotationTaskLinkFn, annotationProject.uuid]);
-  const filter = useMemo(() => ({ annotation_project: annotationProject }), [annotationProject]);
+  const filter = useMemo(
+    () => ({ annotation_project: annotationProject }),
+    [annotationProject],
+  );
 
   return (
     <AnnotationTaskTable

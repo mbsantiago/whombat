@@ -131,14 +131,14 @@ export default function useAudio({
 
     const onError = () => {
       cancelAnimationFrame(timer);
-    }
+    };
 
     const onEnded = () => {
       cancelAnimationFrame(timer);
       // set this explicitly to toggle button
       setIsPlaying(false);
       setTime(startTime);
-    }
+    };
 
     current.addEventListener("play", onPlay);
     current.addEventListener("pause", onPause);
@@ -153,7 +153,6 @@ export default function useAudio({
       current.removeEventListener("ended", onEnded);
     };
   }, [initialUrl, speed, startTime, loop, volume]);
-
 
   // Some browsers return `Promise` on `.play()` and may throw errors
   // if one tries to execute another `.play()` or `.pause()` while that
@@ -197,9 +196,12 @@ export default function useAudio({
     setVolume(volume);
   }, []);
 
-  const handleSeek = useCallback((time: number) => {
-    audio.current.currentTime = (time - startTime) / speed;
-  }, [speed, startTime]);
+  const handleSeek = useCallback(
+    (time: number) => {
+      audio.current.currentTime = (time - startTime) / speed;
+    },
+    [speed, startTime],
+  );
 
   const handleTogglePlay = useCallback(() => {
     if (isPlaying) {

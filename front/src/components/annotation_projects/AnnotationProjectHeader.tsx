@@ -6,7 +6,13 @@ import {
 
 import Header from "@/components/Header";
 import { H1 } from "@/components/Headings";
-import { DatasetIcon, EditIcon, ClipsIcon, TagsIcon, TasksIcon } from "@/components/icons";
+import {
+  DatasetIcon,
+  EditIcon,
+  ClipsIcon,
+  TagsIcon,
+  TasksIcon,
+} from "@/components/icons";
 import Tabs from "@/components/Tabs";
 
 import type { AnnotationProject } from "@/types";
@@ -43,7 +49,7 @@ export default function AnnotationProjectHeader({
               id: "clips",
               title: "Clips",
               isActive: selectedLayoutSegment === "clips",
-              icon: <ClipsIcon className="w-5 h-5 align-middle"/>,
+              icon: <ClipsIcon className="w-5 h-5 align-middle" />,
               onClick: () => {
                 router.push(
                   `/annotation_projects/detail/clips/?${params.toString()}`,

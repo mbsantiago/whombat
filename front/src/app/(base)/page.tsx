@@ -8,9 +8,7 @@ export default function Page() {
     <div className="container mx-auto p-16">
       <div className="flex flex-col gap-4">
         <h1 className="text-center text-7xl">
-          <span className="text-6xl font-thin">
-            Welcome to
-          </span>
+          <span className="text-6xl font-thin">Welcome to</span>
           <br />
           <Image
             src="/whombat.svg"

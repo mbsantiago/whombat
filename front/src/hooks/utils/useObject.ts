@@ -31,7 +31,7 @@ export function useObjectDestruction<T>({
     if (status === "pending") {
       throw new Error(
         `No data for object of type ${name} (uuid=${uuid}). ` +
-        "Either the query is not enabled or the query is still loading.",
+          "Either the query is not enabled or the query is still loading.",
       );
     }
 
@@ -86,7 +86,7 @@ export function useObjectMutation<T, K, J = T>({
       if (status === "pending") {
         throw new Error(
           `No data for object of type ${name} (uuid=${uuid}). ` +
-          "Either the query is not enabled or the query is still loading.",
+            "Either the query is not enabled or the query is still loading.",
         );
       }
 
@@ -134,7 +134,7 @@ export function useObjectQuery<T, K>({
     if (status === "pending") {
       throw new Error(
         `No data for object of type ${name} (uuid=${uuid}). ` +
-        "Either the query is not enabled or the query is still loading.",
+          "Either the query is not enabled or the query is still loading.",
       );
     }
 

@@ -170,17 +170,19 @@ function SelectSpeed({
               key={option.value.toString()}
               value={option.value}
               className={({ active }) =>
-                `relative cursor-default select-none p-1 ${active
-                  ? "bg-emerald-100 text-emerald-900"
-                  : "text-stone-900 dark:text-stone-300"
+                `relative cursor-default select-none p-1 ${
+                  active
+                    ? "bg-emerald-100 text-emerald-900"
+                    : "text-stone-900 dark:text-stone-300"
                 }`
               }
             >
               {({ selected }) => (
                 <>
                   <span
-                    className={`block truncate ${selected ? "text-emerald-500 font-medium" : "font-normal"
-                      }`}
+                    className={`block truncate ${
+                      selected ? "text-emerald-500 font-medium" : "font-normal"
+                    }`}
                   >
                     {option.label}
                   </span>

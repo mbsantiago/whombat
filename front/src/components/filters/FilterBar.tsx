@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import {  FilterIcon } from "@/components/icons";
+import { FilterIcon } from "@/components/icons";
 
 import type { FilterDef } from "@/components/filters/FilterMenu";
 import type { Filter } from "@/hooks/utils/useFilter";

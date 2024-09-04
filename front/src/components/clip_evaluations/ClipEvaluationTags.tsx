@@ -62,9 +62,7 @@ export default function ClipEvaluationTags(props: {
               {...getTagColor(tag)}
             />
           ))}
-          {predictedTags.length === 0 && (
-            <Empty padding="p-0">No tags.</Empty>
-          )}
+          {predictedTags.length === 0 && <Empty padding="p-0">No tags.</Empty>}
         </div>
       </div>
     </div>

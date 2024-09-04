@@ -11,7 +11,7 @@ export default function Page() {
       <div className="flex flex-col gap-4">
         <h1 className="text-center text-5xl">Exploration Tools</h1>
         <h2 className="text-center text-3xl text-stone-500 dark:text-stone-500">
-            Utilize the provided tools to delve into your data
+          Utilize the provided tools to delve into your data
         </h2>
       </div>
       <div className="flex flex-row gap-8 w-full justify-center">

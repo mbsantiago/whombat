@@ -26,14 +26,14 @@ export default function AnnotationTaskTable({
   const table = useAnnotationTaskTable({
     data: annotationTasks.items,
     getAnnotationTaskLink: getAnnotationTaskLink,
-    pathFormatter
+    pathFormatter,
   });
 
   if (annotationTasks.isLoading || annotationTasks.data == null) {
     return <Loading />;
   }
 
-    return (
+  return (
     <div className="flex flex-col gap-y-4">
       <div className="flex flex-row justify-between space-x-4">
         <div className="flex flex-row space-x-3 basis-1/2">
@@ -60,7 +60,7 @@ export default function AnnotationTaskTable({
       />
       <div className="w-full">
         <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
-          <Table table={table}/>
+          <Table table={table} />
         </div>
       </div>
       <Pagination {...annotationTasks.pagination} />

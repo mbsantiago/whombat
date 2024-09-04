@@ -92,7 +92,8 @@ export function registerAnnotationTasksAPI(
         recording_tag__key: params.recording_tag?.key,
         recording_tag__value: params.recording_tag?.value,
         sound_event_annotation_tag__key: params.sound_event_annotation_tag?.key,
-        sound_event_annotation_tag__value: params.sound_event_annotation_tag?.value,
+        sound_event_annotation_tag__value:
+          params.sound_event_annotation_tag?.value,
         pending__eq: params.pending,
         assigned__eq: params.assigned,
         verified__eq: params.verified,
