@@ -1586,6 +1586,6 @@ const ALL_COLORS_DARK = [
   "dark:outline-rose-700",
   "dark:outline-rose-800",
   "dark:outline-rose-900",
-]
+];
 
 export { ALL_COLORS, ALL_COLORS_DARK };

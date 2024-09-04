@@ -2,7 +2,11 @@ import { useCallback } from "react";
 import drawGeometry from "@/draw/geometry";
 import { ORANGE } from "@/draw/styles";
 import { scaleGeometryToViewport } from "@/utils/geometry";
-import type { SoundEventPrediction, SpectrogramWindow, Interval } from "@/types";
+import type {
+  SoundEventPrediction,
+  SpectrogramWindow,
+  Interval,
+} from "@/types";
 
 const IDLE_STYLE = {
   borderColor: ORANGE,
@@ -14,7 +18,7 @@ const IDLE_STYLE = {
 const DEFAULT_INTERVAL = {
   min: 0.5,
   max: 1,
-}
+};
 
 export default function usePredictionDraw(props: {
   viewport: SpectrogramWindow;
