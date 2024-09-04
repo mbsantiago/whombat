@@ -53,7 +53,7 @@ jobs:
       - name: Check types
         run: |
           cd back
-          uv pyright src
+          uv run pyright src
 
       - name: Run tests
         run: |
