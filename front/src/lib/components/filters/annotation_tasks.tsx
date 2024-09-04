@@ -1,14 +1,14 @@
-import FilterBadge from "@/components/filters/FilterBadge";
-import { BooleanFilter } from "@/components/filters/Filters";
+import FilterBadge from "@/lib/components/filters/FilterBadge";
+import { BooleanFilter } from "@/lib/components/filters/Filters";
 import {
   CompleteIcon,
   EditIcon,
   NeedsReviewIcon,
   VerifiedIcon,
-} from "@/components/icons";
+} from "@/lib/components/icons";
 
-import type { AnnotationTaskFilter } from "@/api/annotation_tasks";
-import type { FilterDef } from "@/components/filters/FilterMenu";
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
+import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values
 const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
@@ -27,7 +27,7 @@ const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
     ),
     description: "Select only verified annotation tasks.",
     icon: (
-      <VerifiedIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <VerifiedIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -45,7 +45,7 @@ const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
     ),
     description: "Select only annotation tasks that need review.",
     icon: (
-      <NeedsReviewIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <NeedsReviewIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -63,7 +63,7 @@ const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
     ),
     description: "Select only pending annotation tasks.",
     icon: (
-      <EditIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <EditIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -81,7 +81,7 @@ const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
     ),
     description: "Select only verified annotation tasks.",
     icon: (
-      <CompleteIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <CompleteIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
 ];

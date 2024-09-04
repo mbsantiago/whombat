@@ -4,19 +4,19 @@ import type {
   Note,
   Recording,
   Tag,
-} from "@/types";
+} from "@/lib/types";
 import { useMemo } from "react";
 import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import TableHeader from "@/components/tables/TableHeader";
-import TableCell from "@/components/tables/TableCell";
-import StatusBadge from "@/components/StatusBadge";
-import TagComponent from "@/components/tags/Tag";
-import useStore from "@/store";
-import { SunIcon } from "@/components/icons";
+import TableHeader from "@/lib/components/tables/TableHeader";
+import TableCell from "@/lib/components/tables/TableCell";
+import StatusBadge from "@/lib/components/annotation_tasks/StatusBadge";
+import TagComponent from "@/lib/components/tags/Tag";
+import useStore from "@/app/store";
+import { SunIcon } from "@/lib/components/icons";
 import Link from "next/link";
 
 const defaultPathFormatter = (path: string) => path;
@@ -70,7 +70,7 @@ export default function useAnnotationTaskTable({
 
           return (
             <span className="ms-2">
-              <SunIcon className="inline-block mr-2 w-5 h-5 text-stone-500 align-middle" />
+              <SunIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               {rec_notes.length} notes
             </span>
           );
@@ -135,7 +135,7 @@ export default function useAnnotationTaskTable({
 
           return (
             <span className="ms-2">
-              <SunIcon className="inline-block mr-2 w-5 h-5 text-stone-500 align-middle" />
+              <SunIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
               {clip_anno_notes.length} notes
             </span>
           );

@@ -5,9 +5,15 @@ import {
 } from "next/navigation";
 
 import Header from "@/lib/components/ui/Header";
-import { H1 } from "@/lib/components/ui/Headings";
-import { DatasetIcon, EditIcon, TagsIcon, TasksIcon } from "@/lib/components/icons";
-import Tabs from "@/lib/components/navigation/SectionTabs";
+import {
+  DatasetIcon,
+  EditIcon,
+  TagsIcon,
+  TasksIcon,
+  ClipsIcon,
+} from "@/lib/components/icons";
+import SectionTabs from "@/lib/components/navigation/SectionTabs";
+import Tab from "@/lib/components/ui/Tab";
 
 import type { AnnotationProject } from "@/lib/types";
 
@@ -23,66 +29,69 @@ export default function AnnotationProjectHeader({
   return (
     <Header>
       <div className="flex overflow-x-auto flex-row space-x-4 w-full">
-        <H1 className="overflow-auto max-w-xl whitespace-nowrap">
-          {annotationProject.name}
-        </H1>
-        <Tabs
+        <SectionTabs
+          title={annotationProject.name}
           tabs={[
-            {
-              id: "overview",
-              title: "Overview",
-              isActive: selectedLayoutSegment === null,
-              icon: <DatasetIcon className="w-5 h-5 align-middle" />,
-              onClick: () => {
+            <Tab
+              key="overview"
+              active={selectedLayoutSegment === null}
+              onClick={() => {
                 router.push(
                   `/annotation_projects/detail/?${params.toString()}`,
                 );
-              },
-            },
-            {
-              id: "clips",
-              title: "Clips",
-              isActive: selectedLayoutSegment === "clips",
-              icon: <ClipsIcon className="w-5 h-5 align-middle" />,
-              onClick: () => {
+              }}
+            >
+              <DatasetIcon className="w-5 h-5 align-middle" />
+              Overview
+            </Tab>,
+            <Tab
+              key="clips"
+              active={selectedLayoutSegment === "clips"}
+              onClick={() => {
                 router.push(
                   `/annotation_projects/detail/clips/?${params.toString()}`,
                 );
-              },
-            },
-            {
-              id: "annotate",
-              title: "Annotate",
-              isActive: selectedLayoutSegment === "annotation",
-              icon: <EditIcon className="w-5 h-5 align-middle" />,
-              onClick: () => {
+              }}
+            >
+              <ClipsIcon className="w-5 h-5 align-middle" />
+              Clips
+            </Tab>,
+            <Tab
+              key="annotate"
+              active={selectedLayoutSegment === "annotation"}
+              onClick={() => {
                 router.push(
                   `/annotation_projects/detail/annotation/?${params.toString()}`,
                 );
-              },
-            },
-            {
-              id: "tasks",
-              title: "Tasks",
-              isActive: selectedLayoutSegment === "tasks",
-              icon: <TasksIcon className="w-5 h-5 align-middle" />,
-              onClick: () => {
+              }}
+            >
+              <EditIcon className="w-5 h-5 align-middle" />
+              Annotate
+            </Tab>,
+            <Tab
+              key="tasks"
+              active={selectedLayoutSegment === "tasks"}
+              onClick={() => {
                 router.push(
                   `/annotation_projects/detail/tasks/?${params.toString()}`,
                 );
-              },
-            },
-            {
-              id: "tags",
-              title: "Tags",
-              isActive: selectedLayoutSegment === "tags",
-              icon: <TagsIcon className="w-5 h-5 align-middle" />,
-              onClick: () => {
+              }}
+            >
+              <TasksIcon className="w-5 h-5 align-middle" />
+              Tasks
+            </Tab>,
+            <Tab
+              key="tags"
+              active={selectedLayoutSegment === "tags"}
+              onClick={() => {
                 router.push(
                   `/annotation_projects/detail/tags/?${params.toString()}`,
                 );
-              },
-            },
+              }}
+            >
+              <TagsIcon className="w-5 h-5 align-middle" />
+              Tags
+            </Tab>,
           ]}
         />
       </div>
