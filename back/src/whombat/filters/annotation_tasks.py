@@ -236,7 +236,8 @@ class SearchRecordingsFilter(base.Filter):
         query = (
             query.join(
                 models.ClipAnnotation,
-                models.AnnotationTask.clip_annotation_id == models.ClipAnnotation.id,
+                models.AnnotationTask.clip_annotation_id
+                == models.ClipAnnotation.id,
             )
             .join(
                 models.Clip,
@@ -253,6 +254,57 @@ class SearchRecordingsFilter(base.Filter):
         return query.where(or_(*[field.ilike(term) for field in fields]))
 
 
+class SoundEventAnnotationTagFilter(base.Filter):
+    """Filter for tasks by sound event annotation tag."""
+
+    key: str | None = None
+    value: str | None = None
+
+    def filter(self, query: Select) -> Select:
+        """Filter the query."""
+        if self.key is None and self.value is None:
+            return query
+
+        query = (
+            query.join(
+                models.Clip,
+                models.Clip.id == models.AnnotationTask.clip_id,
+            )
+            .join(
+                models.ClipAnnotation,
+                models.ClipAnnotation.clip_id == models.Clip.id,
+            )
+            .join(
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.clip_annotation_id
+                == models.ClipAnnotation.id,
+            )
+            .join(
+                models.SoundEventAnnotationTag,
+                models.SoundEventAnnotationTag.sound_event_annotation_id
+                == models.SoundEventAnnotation.id,
+            )
+            .join(
+                models.Tag,
+                models.Tag.id == models.SoundEventAnnotationTag.tag_id,
+            )
+        )
+        if self.key is None:
+            return query.where(
+                models.Tag.value == self.value,
+            )
+
+        if self.value is None:
+            return query.where(
+                models.Tag.key == self.key,
+            )
+
+        return query.where(
+            models.Tag.key == self.key,
+            models.Tag.value == self.value,
+        )
+
+
 AnnotationTaskFilter = base.combine(
     SearchRecordingsFilter,
     assigned_to=AssignedToFilter,
@@ -264,4 +316,5 @@ AnnotationTaskFilter = base.combine(
     annotation_project=AnnotationProjectFilter,
     dataset=DatasetFilter,
     recording_tag=RecordingTagFilter,
+    sound_event_annotation_tag=SoundEventAnnotationTagFilter,
 )

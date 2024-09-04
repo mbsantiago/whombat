@@ -21,7 +21,12 @@ export default function ShortcutHelper({
 
   return (
     <>
-      <Button mode="text" variant="info" type="button" onClick={() => setShow(true)}>
+      <Button
+        mode="text"
+        variant="info"
+        type="button"
+        onClick={() => setShow(true)}
+      >
         <HelpIcon className="inline-block w-4 h-4 align-middle" />
       </Button>
       <DialogOverlay
@@ -30,39 +35,39 @@ export default function ShortcutHelper({
         onClose={() => setShow(false)}
       >
         {() => (
-          <table className="border-collapse border border-stone-500 table-auto">
+          <table className="border border-collapse table-auto border-stone-500">
             <thead>
               <tr>
-                <th className="p-1 border border-stone-500 text-center">Key</th>
-                <th className="p-1 border border-stone-500 text-center">
+                <th className="p-1 text-center border border-stone-500">Key</th>
+                <th className="p-1 text-center border border-stone-500">
                   Action
                 </th>
-                <th className="p-1 border border-stone-500 text-center">
+                <th className="p-1 text-center border border-stone-500">
                   Description
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="p-2 border border-stone-500 text-center">
+                <td className="p-2 text-center border border-stone-500">
                   <KeyboardKey code={"h"} />
                 </td>
-                <td className="p-2 border border-stone-500 text-center font-bold">
+                <td className="p-2 font-bold text-center border border-stone-500">
                   Help
                 </td>
-                <td className="p-2 border border-stone-500 text-left">
+                <td className="p-2 text-left border border-stone-500">
                   Show this help.
                 </td>
               </tr>
               {shortcuts?.map((shortcut) => (
                 <tr key={shortcut.shortcut}>
-                  <td className="p-2 border border-stone-500 text-center">
+                  <td className="p-2 text-center border border-stone-500">
                     <KeyboardKey code={shortcut.shortcut.trim() || "Space"} />
                   </td>
-                  <td className="p-2 border border-stone-500 text-center font-bold">
+                  <td className="p-2 font-bold text-center border border-stone-500">
                     {shortcut.label}
                   </td>
-                  <td className="p-2 border border-stone-500 text-left">
+                  <td className="p-2 text-left border border-stone-500">
                     {shortcut.description}
                   </td>
                 </tr>

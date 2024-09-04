@@ -1,4 +1,5 @@
 name: Publish PyPI
+
 on:
   workflow_dispatch:
   release:
@@ -16,23 +17,31 @@ jobs:
     needs: [build-user-guide, build-frontend]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
+          python-version: "3.12"
+
+      - name: Retrieve built frontend
+        uses: actions/download-artifact@v4
         with:
           name: frontend
           path: back/src/whombat/statics/
-      - uses: actions/download-artifact@v4
+
+      - name: Retrieve built user guide
+        uses: actions/download-artifact@v4
         with:
           name: user_guide
           path: back/src/whombat/user_guide/
+
       - name: Install pypa/build
         run: pip install build
+
       - name: Build a binary wheel and source tarball
         run: |
           cd back
           python -m build
+
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
@@ -52,12 +61,14 @@ jobs:
 
     permissions:
       id-token: write
+
     steps:
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
+
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -78,6 +89,7 @@ jobs:
         with:
           name: python-package-distributions
           path: dist/
+
       - name: Upload artifact to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -104,6 +116,7 @@ jobs:
         with:
           name: python-package-distributions
           path: dist/
+
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

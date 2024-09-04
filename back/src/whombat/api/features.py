@@ -34,6 +34,7 @@ class FeatureNameAPI(
         self,
         session: AsyncSession,
         name: str,
+        **kwargs,
     ) -> schemas.FeatureName:
         """Create a feature name.
 
@@ -52,6 +53,7 @@ class FeatureNameAPI(
         return await self.create_from_data(
             session=session,
             data=schemas.FeatureNameCreate(name=name),
+            **kwargs,
         )
 
     async def get_or_create(

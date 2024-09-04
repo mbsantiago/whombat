@@ -43,7 +43,11 @@ class GeometryType(types.TypeDecorator):
     def process_bind_param(self, value: data.Geometry, _) -> str:  # type: ignore
         return value.model_dump_json()
 
-    def process_result_value(self, value: str, _) -> data.Geometry:  # type: ignore
+    def process_result_value(
+        self,
+        value: str | None,
+        dialect,
+    ) -> data.Geometry | None:
         if value is None:
             return value
         return data.geometry_validate(value, mode="json")
@@ -64,7 +68,7 @@ class Base(AsyncAttrs, orm.MappedAsDataclass, orm.DeclarativeBase):
 
     created_on: orm.Mapped[datetime.datetime] = orm.mapped_column(
         name="created_on",
-        default_factory=datetime.datetime.utcnow,
+        default_factory=lambda: datetime.datetime.now(datetime.timezone.utc),
         kw_only=True,
     )
 

@@ -1,8 +1,6 @@
 import { useHotkeys } from "react-hotkeys-hook";
 
-import type { KeyShortcut } from "@/hooks/utils/useKeyFilter";
-
-export const SPECTROGRAM_KEY_SHORTCUTS: KeyShortcut[] = [
+export const SPECTROGRAM_KEY_SHORTCUTS = [
   {
     label: "Move",
     shortcut: "x",
