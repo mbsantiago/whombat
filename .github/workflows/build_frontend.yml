@@ -6,20 +6,28 @@ on:
 jobs:
   build-frontend:
     name: Build Frontend
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
-          node-version: 21
-      - name: Install dependencies
+          node-version: 22
+
+      - name: Install frontend dependencies
         run: |
           cd front
           npm install
-      - name: Build app
+
+      - name: Build frontend app
         run: |
           cd front
           npm run build
+
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:

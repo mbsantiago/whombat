@@ -6,23 +6,64 @@ on:
     branches: ["main"]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install the latest version of rye
-        uses: eifinger/setup-rye@v3
-      - name: Install dependencies
+
+      - name: Set up uv
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Set up uv
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: irm https://astral.sh/uv/install.ps1 | iex
+        shell: powershell
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Restore uv cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.uv-cache
+          key: uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
+            uv-${{ runner.os }}
+
+      - name: Install the project dependencies
         run: |
           cd back
-          rye sync
+          uv sync --all-extras --dev
+
+      - name: Lint
+        run: |
+          cd back
+          uv run ruff check src tests
+
+      - name: Check types
+        run: |
+          cd back
+          uv pyright src
+
       - name: Run tests
         run: |
           cd back
-          rye run pytest --cov=src/whombat --cov-report=xml -n auto
+          uv run pytest --cov=src/whombat --cov-report=xml -n auto
+
       - name: Upload coverage reports to Codecov
+        if: ${{ matrix.os == "ubuntu-latest" }}
         uses: codecov/codecov-action@v4
         env:
           files: back/coverage.xml
           fail_ci_if_error: true
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-

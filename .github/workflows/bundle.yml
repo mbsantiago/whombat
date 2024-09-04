@@ -1,4 +1,5 @@
 name: Bundle App
+
 on:
   release:
     types: [published]
@@ -10,81 +11,67 @@ jobs:
   build-frontend:
     uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@dev
 
-  build-windows:
-    runs-on: windows-latest
-    needs: [build-user-guide, build-frontend]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
-        with:
-          name: frontend
-          path: back/src/whombat/statics/
-      - uses: actions/download-artifact@v4
-        with:
-          name: user_guide
-          path: back/src/whombat/user_guide/
-      - shell: pwsh
-        run: scripts/bundle_windows.ps1
-      - run: |
-          mkdir dist/
-          mv "back/dist/whombat.zip" "dist/whombat-windows-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-windows-${{ github.ref_name }}.zip"
+  build-app:
+    name: "Bundle App"
 
-  build-ubuntu:
-    runs-on: ubuntu-20.04
     needs: [build-user-guide, build-frontend]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
-        with:
-          name: frontend
-          path: back/src/whombat/statics/
-      - uses: actions/download-artifact@v4
-        with:
-          name: user_guide
-          path: back/src/whombat/user_guide/
-      - run: bash scripts/bundle_linux.sh
-      - run: |
-          mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-ubuntu-${{ github.ref_name }}.zip"
 
-  build-macos:
-    runs-on: macos-11
-    needs: [build-user-guide, build-frontend]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-11
+
+    runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - uses: actions/download-artifact@v4
+          python-version: ${{ matrix.python-version }}
+
+      - name: Retrieve built frontend
+        uses: actions/download-artifact@v4
         with:
           name: frontend
           path: back/src/whombat/statics/
-      - uses: actions/download-artifact@v4
+
+      - name: Retrieve built user guide
+        uses: actions/download-artifact@v4
         with:
           name: user_guide
           path: back/src/whombat/user_guide/
-      - run: bash scripts/bundle_macos.sh
-      - run: |
+
+      - name: Bundle app (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          scripts/bundle_windows.ps1
           mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-macos-${{ github.ref_name }}.zip"
-      - uses: shogo82148/actions-upload-release-asset@v1
+          mv "back/dist/whombat.zip" "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
+
+      - name: Bundle app (Linux)
+        if: ${{ matrix.os == 'linux-latest' }}
+        run: |
+          bash scripts/bundle_linux.sh
+          mkdir dist/
+          mv back/dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
+
+      - name: Bundle app (macOS)
+        if: ${{ matrix.os == 'macos-11' }}
+        run: |
+          bash scripts/bundle_macos.sh
+          mkdir dist/
+          mv back/dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
+
+      - name: Upload release
+        uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/whombat-macos-${{ github.ref_name }}.zip"
+          asset_path: "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
