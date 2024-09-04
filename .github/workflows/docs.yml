@@ -45,7 +45,9 @@ jobs:
             uv-${{ runner.os }}
 
       - name: Install the project dependencies
-        run: uv sync --all-extras --dev
+        run: |
+          cd back
+          uv sync --all-extras --dev
 
       - name: Build and Deploy Docs
         run: |
