@@ -778,8 +778,10 @@ async def test_create_dataset_registers_all_recordings(
 
     dataset_recordings, _ = await api.datasets.get_recordings(session, dataset)
     assert len(dataset_recordings) == 2
-    assert dataset_recordings[0].path == audio_file_2.relative_to(audio_dir)
-    assert dataset_recordings[1].path == audio_file_1.relative_to(audio_dir)
+    assert {rec.path for rec in dataset_recordings} == {
+        audio_file_1.relative_to(audio_dir),
+        audio_file_2.relative_to(audio_dir),
+    }
 
     all_recordings, _ = await api.recordings.get_many(session)
     assert len(all_recordings) == 2

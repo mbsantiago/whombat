@@ -226,6 +226,7 @@ async def test_get_clips_with_offset(
     recording: schemas.Recording,
 ):
     """Test getting clips with an offset."""
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.clips.create_many_without_duplicates(
         session,
         data=[
@@ -233,11 +234,13 @@ async def test_get_clips_with_offset(
                 recording_id=recording.id,
                 start_time=0.0,
                 end_time=0.5,
+                created_on=now,
             ),
             dict(
                 recording_id=recording.id,
                 start_time=0.5,
                 end_time=1.0,
+                created_on=now + datetime.timedelta(seconds=1),
             ),
         ],
     )

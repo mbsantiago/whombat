@@ -228,11 +228,13 @@ class SoundEventAnnotationTagFilter(base.Filter):
             )
             .join(
                 models.SoundEventAnnotation,
-                models.SoundEventAnnotation.clip_annotation_id == models.ClipAnnotation.id,
+                models.SoundEventAnnotation.clip_annotation_id
+                == models.ClipAnnotation.id,
             )
             .join(
                 models.SoundEventAnnotationTag,
-                models.SoundEventAnnotationTag.sound_event_annotation_id == models.SoundEventAnnotation.id,
+                models.SoundEventAnnotationTag.sound_event_annotation_id
+                == models.SoundEventAnnotation.id,
             )
             .join(
                 models.Tag,

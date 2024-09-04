@@ -55,10 +55,13 @@ jobs:
           cd back
           uv run ruff check src tests
 
+      - run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
+
       - name: Check types
-        run: |
-          cd back
-          uv run pyright src
+        uses: jakebailey/pyright-action@v2
+        with:
+          working-directory: back/
+          extra-args: src
 
       - name: Run tests
         run: |
