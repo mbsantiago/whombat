@@ -219,7 +219,6 @@ async def test_get_clips_with_limit(
     assert db_clips[0].recording == recording
     assert db_clips[0].start_time == 0.5
     assert db_clips[0].end_time == 1.0
-    assert False
 
 
 async def test_get_clips_with_offset(
