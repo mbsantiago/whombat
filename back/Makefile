@@ -66,7 +66,7 @@ format:  ## format code
 	$(ENV_PREFIX)ruff format src tests
 
 test:  ## Run all tests
-	$(ENV_PREFIX)pytest
+	$(ENV_PREFIX)pytest -n auto
 
 install: clean  ## install the package to the active Python's site-packages
 	python -m venv .venv
