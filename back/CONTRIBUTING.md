@@ -56,11 +56,11 @@ Ready to contribute? Here's how to set up `whombat` for local development.
        git clone git@github.com:your_name_here/whombat.git
        ```
 
-3. We recommend the use of [rye](https://rye-up.com/) to manage the
-   dev environment. Once rye is installed
+3. We recommend the use of [uv](https://docs.astral.sh/uv/#highlights) to manage the
+   dev environment. Once uv is installed
 
        ```{bash}
-       rye sync
+       uv sync
        ```
 
 4. Create a branch for local development
@@ -104,5 +104,5 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests
 
 ```{bash}
-rye run pytest tests.test_api
+uv run pytest tests.test_api
 ```
