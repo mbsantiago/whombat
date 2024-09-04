@@ -175,3 +175,5 @@ back/src/whombat/statics/*
 back/src/whombat/user_guide/*
 back/.build_venv
 front/tests-examples
+front/playwright-report
+front/test-results

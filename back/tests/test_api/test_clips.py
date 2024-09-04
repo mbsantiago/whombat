@@ -1,5 +1,6 @@
 """Test suite for API clip functions."""
 
+import datetime
 from uuid import uuid4
 
 import pytest
@@ -186,11 +187,24 @@ async def test_get_clips_with_limit(
 ):
     """Test getting clips with a limit."""
     # Arrange
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.clips.create_many_without_duplicates(
         session,
         data=[
-            dict(recording_id=recording.id, start_time=0.0, end_time=0.5),
-            dict(recording_id=recording.id, start_time=0.5, end_time=1.0),
+            dict(
+                recording_id=recording.id,
+                start_time=0.0,
+                end_time=0.5,
+                created_on=now,
+            ),
+            dict(
+                recording_id=recording.id,
+                start_time=0.5,
+                end_time=1.0,
+                # NOTE: Need to be explicit with time creation
+                # since sqlite is not very precise with time.
+                created_on=now + datetime.timedelta(seconds=1),
+            ),
         ],
     )
 
@@ -212,6 +226,7 @@ async def test_get_clips_with_offset(
     recording: schemas.Recording,
 ):
     """Test getting clips with an offset."""
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.clips.create_many_without_duplicates(
         session,
         data=[
@@ -219,11 +234,13 @@ async def test_get_clips_with_offset(
                 recording_id=recording.id,
                 start_time=0.0,
                 end_time=0.5,
+                created_on=now,
             ),
             dict(
                 recording_id=recording.id,
                 start_time=0.5,
                 end_time=1.0,
+                created_on=now + datetime.timedelta(seconds=1),
             ),
         ],
     )

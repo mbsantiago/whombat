@@ -1,5 +1,6 @@
 """Test suit for the Sound Events Python API module."""
 
+import datetime
 from uuid import UUID
 
 from soundevent.data import geometries
@@ -178,6 +179,7 @@ async def test_create_sound_events_with_different_geometries(
         geometries.Point(coordinates=[0.5, 0.6]),
     ]
 
+    now = datetime.datetime.now(datetime.timezone.utc)
     await api.sound_events.create_many(
         session,
         data=[
@@ -185,8 +187,12 @@ async def test_create_sound_events_with_different_geometries(
                 recording_id=recording.id,
                 geometry=g,
                 geometry_type=g.type,
+                # NOTE: We need to make sure the time difference is
+                # sufficiently large else sqlite might not know the difference
+                # making the test flaky
+                created_on=now + datetime.timedelta(seconds=index),
             )
-            for g in geometries_to_create
+            for index, g in enumerate(geometries_to_create)
         ],
     )
 

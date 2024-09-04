@@ -1,19 +1,17 @@
 # == Build User Guide
-FROM python:3.11 as guide_builder
+
+FROM python:3.12 as guide_builder
 
 RUN mkdir /guide
-
 WORKDIR /back/
-
 COPY back/docs /back/docs
 COPY back/guide_requirements.txt /back/guide_requirements.txt
 COPY back/mkdocs-guide.yml /back/mkdocs-guide.yml
-
 RUN pip install -r guide_requirements.txt
-
 RUN mkdocs build -f mkdocs-guide.yml -d /guide
 
 # == Build Front End
+
 FROM node:latest as web_builder
 
 RUN mkdir /statics
@@ -27,7 +25,8 @@ RUN npm install
 RUN npm run build
 
 # == Run the web server
-FROM python:3.11
+
+FROM python:3.12
 
 WORKDIR back/
 

@@ -29,7 +29,7 @@ def get_database_strategy(
 ) -> DatabaseStrategy:
     """Get the database strategy."""
     return DatabaseStrategy(
-        access_token_db,
+        access_token_db,  # type: ignore
         lifetime_seconds=3600,
     )
 

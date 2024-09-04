@@ -56,11 +56,11 @@ Ready to contribute? Here's how to set up `whombat` for local development.
        git clone git@github.com:your_name_here/whombat.git
        ```
 
-3. We recommend the use of [rye](https://rye-up.com/) to manage the
-   dev environment. Once rye is installed
+3. We recommend the use of [uv](https://docs.astral.sh/uv/#highlights) to manage the
+   dev environment. Once uv is installed
 
        ```{bash}
-       rye sync
+       uv sync
        ```
 
 4. Create a branch for local development
@@ -97,12 +97,12 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put your
    new functionality into a function with a docstring, and add the feature to
    the list in README.rst.
-3. The pull request should work for Python 3.11.
+3. The pull request should work for Python 3.12.
 
 ## Tips
 
 To run a subset of tests
 
 ```{bash}
-rye run pytest tests.test_api
+uv run pytest tests.test_api
 ```

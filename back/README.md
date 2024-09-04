@@ -1,21 +1,17 @@
 # Whombat - Python Backend
 
-**whombat** is an open-source web-based audio annotation tool designed to
-facilitate audio data labeling and annotation, with a special focus on aiding
-machine learning model development.
+**whombat** is an open-source web-based audio annotation tool designed to facilitate audio data labeling and annotation, with a special focus on aiding machine learning model development.
 
-For additional details on installing the entire application and its usage, refer
-to the main [README](https://github.com/mbsantiago/whombat).
+For additional details on installing the entire application and its usage, refer to the main [README](https://github.com/mbsantiago/whombat).
 
-For the latest updates and detailed documentation, check out the official
-[documentation](https://mbsantiago.github.io/whombat/).
+For the latest updates and detailed documentation, check out the official [documentation](https://mbsantiago.github.io/whombat/).
 
 ## Installation
 
 ### With Pip
 
-The most straightforward method to set up the backend and Whombat Python API is
-using pip. Execute the following command:
+The most straightforward method to set up the backend and Whombat Python API is using pip.
+Execute the following command:
 
 ```bash
 pip install whombat
@@ -38,8 +34,8 @@ pip install .
 
 ### With Docker
 
-Run Whombat inside a Docker container. Build the container by cloning the repository and executing:
-
+Run Whombat inside a Docker container.
+Build the container by cloning the repository and executing:
 
 ```bash
 git clone https://github.com/mbsantiago/whombat.git
@@ -54,9 +50,9 @@ docker run -p 5000:5000 whombat
 
 ### Development Environment
 
-We manage Whombat's development with `rye`. 
+We manage Whombat's development with `uv`.
 
-1. Follow the official [installation instructions](https://rye-up.com/guide/installation/) to get `rye` on your machine.
+1. Follow the official [installation instructions](https://docs.astral.sh/uv/#highlights) to get `uv` on your machine.
 
 2. Clone the repository:
 
@@ -68,7 +64,7 @@ git clone https://github.com/mbsantiago/whombat.git
 
 ```bash
 cd whombat/back
-rye sync
+uv sync
 ```
 
 4. Start the development server:
@@ -80,5 +76,5 @@ make serve-dev
 or
 
 ```bash
-WHOMBAT_DEV=true rye run python -m whombat
+WHOMBAT_DEV=true uv run python -m whombat
 ```

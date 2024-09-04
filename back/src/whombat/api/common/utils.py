@@ -1072,7 +1072,7 @@ def _get_defaults(model: type[A]):
 
         elif (
             field.default_factory is not MISSING
-            and field.default_factory != list
+            and field.default_factory is not list
         ):
             default_factories[field.name] = field.default_factory
 
