@@ -30,7 +30,7 @@ export default function ClipEvaluationExplorer(props: {
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row gap-4 items-center">
         <h4 className="text-lg font-bold text-stone-500">Clip Explorer</h4>
         <p className="text-sm text-stone-500">
           Explore each of the evaluated clip.
@@ -88,14 +88,16 @@ function ExplorerControls(props: {
 }) {
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row items-center gap-2 justify-between">
+      <div className="flex flex-row gap-2 justify-between items-center">
         <NavigationState index={props.index} total={props.total} />
         <FilterControls {...props} />
         <NavigationControls {...props} />
       </div>
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <FilterBar
-          filter={props.filter}
+          filter={props.filter.filter}
+          onClearFilterField={props.filter.clear}
+          fixedFilterFields={props.filter.fixed}
           filterDef={clipEvaluationFilterDef}
           showIfEmpty
         />
@@ -107,7 +109,7 @@ function ExplorerControls(props: {
 function NavigationState(props: { index?: number | null; total?: number }) {
   return (
     <div className="inline-flex gap-2">
-      <p className="text-sm text-blue-500 font-bold">#{props.index ?? 0}</p>
+      <p className="text-sm font-bold text-blue-500">#{props.index ?? 0}</p>
       <p className="text-sm text-stone-500">{props.total ?? 0} clips</p>
     </div>
   );
@@ -123,9 +125,9 @@ function FilterControls(props: {
   onTogglePredictions?: () => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-2">
+    <div className="inline-flex gap-2 items-center">
       <FilterMenu
-        filter={props.filter}
+        onSetFilterField={props.filter.set}
         filterDef={clipEvaluationFilterDef}
         mode="text"
         button={
@@ -134,7 +136,7 @@ function FilterControls(props: {
           </>
         }
       />
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <span className="inline-block text-sm text-stone-500">
           Annotations:
         </span>
@@ -144,7 +146,7 @@ function FilterControls(props: {
           onChange={props.onToggleAnnotations}
         />
       </div>
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <span className="inline-block text-sm text-stone-500">
           Predictions:
         </span>
@@ -154,7 +156,7 @@ function FilterControls(props: {
           onChange={props.onTogglePredictions}
         />
       </div>
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <span className="inline-block text-sm text-stone-500">Threshold:</span>
         <div className="w-40">
           <RangeSlider

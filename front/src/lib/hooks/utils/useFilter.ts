@@ -38,6 +38,7 @@ export type Filter<T extends Object> = {
    * @returns True if the key is fixed, false otherwise.
    */
   isFixed: <K extends keyof T>(key: K) => boolean;
+  fixed: (keyof T)[];
   /** The count of non-fixed keys in the filter state. */
   size: number;
 };
@@ -134,5 +135,6 @@ export default function useFilter<T extends Object>({
     submit,
     size,
     isFixed,
+    fixed,
   };
 }

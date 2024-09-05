@@ -120,7 +120,7 @@ function SelectRecordings({
     maxRecordings: 5000,
   });
 
-  const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
+  const filter = useMemo(() => ({ dataset }), [dataset]);
 
   const recordings = useRecordings({
     pageSize: 10000,
@@ -157,12 +157,13 @@ function SelectRecordings({
             <div className="grow">
               <FilterBar
                 showIfEmpty
-                filter={recordings.filter}
+                filter={recordings.filter.filter}
+                fixedFilterFields={recordings.filter.fixed}
                 filterDef={recordingFilterDefs}
               />
             </div>
             <FilterMenu
-              filter={recordings.filter}
+              onSetFilterField={recordings.filter.set}
               filterDef={recordingFilterDefs}
               mode="text"
               button={

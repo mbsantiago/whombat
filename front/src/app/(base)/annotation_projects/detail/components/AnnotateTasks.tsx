@@ -1,9 +1,8 @@
 import { useCallback, useState } from "react";
 
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
 import AnnotationTagPalette from "@/lib/components/annotation/AnnotationTagPalette";
-import RecordingAnnotationContext from "@/lib/components/annotation/RecordingAnnotationContext";
+import AnnotationContext from "@/lib/components/annotation/AnnotationContext";
 import SelectedSoundEventAnnotation from "@/lib/components/annotation/SelectedSoundEventAnnotation";
 import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
 import ClipAnnotationNotes from "@/lib/components/clip_annotations/ClipAnnotationNotes";
@@ -20,15 +19,19 @@ import type {
   AnnotationTask,
   ClipAnnotation,
   SoundEventAnnotation,
-  SpectrogramParameters,
+  SpectrogramSettings,
   Tag,
   User,
 } from "@/lib/types";
+import {
+  DEFAULT_AUDIO_SETTINGS,
+  DEFAULT_SPECTROGRAM_SETTINGS,
+} from "@/lib/constants";
 
 export default function AnnotateTasks({
   taskFilter,
   tagFilter,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  spectrogramSettings = DEFAULT_SPECTROGRAM_SETTINGS,
   annotationTask,
   currentUser,
   instructions,
@@ -41,7 +44,7 @@ export default function AnnotateTasks({
   onChangeTask,
   onAddClipTag,
   onRemoveClipTag,
-  onParameterSave,
+  onSpectrogramSettingsChange,
   onCompleteTask,
   onRejectTask,
   onVerifyTask,
@@ -52,7 +55,7 @@ export default function AnnotateTasks({
   /** Filter to select which tags are to be used for annotation */
   tagFilter?: TagFilter;
   /** Parameters to use for spectrogram rendering */
-  parameters?: SpectrogramParameters;
+  spectrogramSettings?: SpectrogramSettings;
   /** An optional annotation task to use initially */
   annotationTask?: AnnotationTask;
   /** The user who is annotating */
@@ -68,7 +71,7 @@ export default function AnnotateTasks({
   onRemoveClipTag?: (annotation: ClipAnnotation) => void;
   onAddStatusBadge?: (task: AnnotationTask) => void;
   onRemoveStatusBadge?: (task: AnnotationTask) => void;
-  onParameterSave?: (parameters: SpectrogramParameters) => void;
+  onSpectrogramSettingsChange?: (parameters: SpectrogramSettings) => void;
   onCompleteTask?: () => void;
   onRejectTask?: () => void;
   onVerifyTask?: () => void;
@@ -137,8 +140,8 @@ export default function AnnotateTasks({
   }
 
   return (
-    <div className="w-full flex flex-col gap-3">
-      <div className="flex flex-row justify-between gap-8">
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex flex-row gap-8 justify-between">
         <div className="grow">
           <AnnotationProgress
             current={tasks.current}
@@ -149,7 +152,7 @@ export default function AnnotateTasks({
             onPrevious={tasks.prevTask}
           />
         </div>
-        <div className="w-[30rem] flex-none">
+        <div className="flex-none w-[30rem]">
           {tasks.task != null && (
             <AnnotationTaskStatus
               task={tasks.task}
@@ -161,31 +164,31 @@ export default function AnnotateTasks({
           )}
         </div>
       </div>
-      <div className="flex flex-row w-full gap-8">
-        <div className="grow flex flex-col gap-2">
+      <div className="flex flex-row gap-8 w-full">
+        <div className="flex flex-col gap-2 grow">
           {isLoadingClipAnnotation ? (
             <Loading />
           ) : data == null ? (
             <NoClipSelected />
           ) : (
             <>
-              <RecordingAnnotationContext
+              <AnnotationContext
                 recording={data.clip.recording}
                 onTagClick={handleAddTagToPalette}
               />
               <ClipAnnotationSpectrogram
-                parameters={parameters}
-                clipAnnotation={data}
-                defaultTags={tagPalette}
-                onParameterSave={onParameterSave}
-                onSelectAnnotation={setSelectedAnnotation}
-                tagFilter={tagFilter}
-                onCreateTag={onCreateTag}
-                onAddSoundEventTag={onAddSoundEventTag}
-                onRemoveSoundEventTag={onRemoveSoundEventTag}
-                onCreateSoundEventAnnotation={onCreateSoundEventAnnotation}
-                onUpdateSoundEventAnnotation={onUpdateSoundEventAnnotation}
-                onDeleteSoundEventAnnotation={onDeleteSoundEventAnnotation}
+                samplerate={data.clip.recording.samplerate}
+                bounds={{
+                  time: { min: data.clip.start_time, max: data.clip.end_time },
+                  // TODO: Fix this
+                  freq: { min: 0, max: 44100 },
+                }}
+                viewport={{
+                  time: { min: data.clip.start_time, max: data.clip.end_time },
+                  freq: { min: 0, max: 44100 },
+                }}
+                spectrogramSettings={spectrogramSettings}
+                onSpectrogramSettingsChange={onSpectrogramSettingsChange}
               />
               {selectedAnnotation == null ? (
                 <Empty>
@@ -204,7 +207,7 @@ export default function AnnotateTasks({
             </>
           )}
         </div>
-        <div className="w-[30rem] flex-none flex flex-col gap-4">
+        <div className="flex flex-col flex-none gap-4 w-[30rem]">
           <AnnotationTagPalette
             tags={tagPalette}
             tagFilter={tagFilter}

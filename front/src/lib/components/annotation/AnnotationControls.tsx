@@ -47,54 +47,28 @@ const geometryTypes: Record<GeometryType, Node> = {
   },
 };
 
+export type AnnotationMode =
+  | "drawing"
+  | "selecting"
+  | "editing"
+  | "deleting"
+  | "none";
+
 export default function AnnotationControls({
-  isDrawing,
-  isDeleting,
-  isSelecting,
-  isEditing,
   geometryType,
-  disabled = false,
+  mode = "selecting",
   onDraw,
   onDelete,
   onSelect,
   onSelectGeometryType,
 }: {
-  isDrawing: boolean;
-  isDeleting: boolean;
-  isSelecting: boolean;
-  isEditing: boolean;
+  mode?: AnnotationMode;
   geometryType: GeometryType;
-  disabled?: boolean;
   onDraw?: () => void;
   onDelete?: () => void;
   onSelect?: () => void;
   onSelectGeometryType?: (type: GeometryType) => void;
 }) {
-  if (disabled)
-    return (
-      <div className="flex space-x-2">
-        <Tooltip
-          tooltip={
-            <div className="inline-flex gap-1">
-              Select
-              <span className="text-xs">
-                <KeyboardKey code="s" />
-              </span>
-            </div>
-          }
-          placement="bottom"
-          autoPlacement={false}
-        >
-          <Button
-            variant={isSelecting ? "primary" : "secondary"}
-            onClick={onSelect}
-          >
-            <SelectIcon className="w-5 h-5" />
-          </Button>
-        </Tooltip>
-      </div>
-    );
-
   return (
     <div className="flex space-x-2">
       <Tooltip
@@ -102,24 +76,27 @@ export default function AnnotationControls({
           <div className="inline-flex gap-1">
             Create
             <span className="text-xs">
-              <KeyboardKey code="a" />
+              <KeyboardKey keys={["a"]} />
             </span>
           </div>
         }
         placement="bottom"
         autoPlacement={false}
       >
-        <Button variant={isDrawing ? "primary" : "secondary"} onClick={onDraw}>
+        <Button
+          variant={mode === "drawing" ? "primary" : "secondary"}
+          onClick={onDraw}
+        >
           <AnnotationProjectIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
-      {!isEditing ? (
+      {!(mode === "editing") ? (
         <Tooltip
           tooltip={
             <div className="inline-flex gap-1">
               Select
               <span className="text-xs">
-                <KeyboardKey code="s" />
+                <KeyboardKey keys={["s"]} />
               </span>
             </div>
           }
@@ -127,7 +104,7 @@ export default function AnnotationControls({
           autoPlacement={false}
         >
           <Button
-            variant={isSelecting ? "primary" : "secondary"}
+            variant={mode == "selecting" ? "primary" : "secondary"}
             onClick={onSelect}
           >
             <SelectIcon className="w-5 h-5" />
@@ -143,7 +120,7 @@ export default function AnnotationControls({
           <div className="inline-flex gap-1">
             Delete
             <span className="text-xs">
-              <KeyboardKey code="d" />
+              <KeyboardKey keys={["d"]} />
             </span>
           </div>
         }
@@ -151,7 +128,7 @@ export default function AnnotationControls({
         autoPlacement={false}
       >
         <Button
-          variant={isDeleting ? "danger" : "secondary"}
+          variant={mode === "deleting" ? "danger" : "secondary"}
           onClick={onDelete}
         >
           <DeleteIcon className="w-5 h-5" />

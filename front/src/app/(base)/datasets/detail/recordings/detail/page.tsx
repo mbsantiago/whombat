@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, notFound } from "next/navigation";
-import { useHotkeysContext } from 'react-hotkeys-hook';
+import { useHotkeysContext } from "react-hotkeys-hook";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 
@@ -20,10 +20,6 @@ export default function Page() {
   const settings = useSettings();
   const recording = useRecording({ uuid: recordingUUID });
   const { hotkeys } = useHotkeysContext();
-
-  console.log({
-    hotkeys,
-  })
 
   if (recordingUUID == null) {
     notFound();

@@ -4,13 +4,13 @@ import Tooltip from "@/lib/components/ui/Tooltip";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 
 export default function ViewportToolbar({
-  state,
+  mode,
   onDragClick,
   onBackClick,
   onZoomClick,
   onResetClick,
 }: {
-  state: "panning" | "zooming" | "idle";
+  mode: "panning" | "zooming" | "idle" | "none";
   onResetClick?: () => void;
   onBackClick?: () => void;
   onDragClick?: () => void;
@@ -33,14 +33,14 @@ export default function ViewportToolbar({
           <div className="inline-flex gap-2 items-center">
             Drag spectrogram
             <div className="text-xs">
-              <KeyboardKey code="x" />
+              <KeyboardKey keys={["x"]} />
             </div>
           </div>
         }
         placement="bottom"
       >
         <Button
-          variant={state === "panning" ? "primary" : "secondary"}
+          variant={mode === "panning" ? "primary" : "secondary"}
           onClick={onDragClick}
         >
           <DragIcon className="w-5 h-5" />
@@ -51,14 +51,14 @@ export default function ViewportToolbar({
           <div className="inline-flex gap-2 items-center">
             Zoom to selection
             <div className="text-xs">
-              <KeyboardKey code="z" />
+              <KeyboardKey keys={["z"]} />
             </div>
           </div>
         }
         placement="bottom"
       >
         <Button
-          variant={state === "zooming" ? "primary" : "secondary"}
+          variant={mode === "zooming" ? "primary" : "secondary"}
           onClick={onZoomClick}
         >
           <ZoomIcon className="w-5 h-5" />

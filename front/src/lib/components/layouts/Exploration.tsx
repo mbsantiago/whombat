@@ -49,7 +49,7 @@ export default function ExplorationLayout<T extends Object>(props: {
     <div className="flex flex-col gap-2 p-2">
       <div>
         <div className="flex flex-row justify-center">
-          <p className="text-stone-500 text-sm max-w-prose text-center">
+          <p className="max-w-prose text-sm text-center text-stone-500">
             {props.description}
           </p>
         </div>
@@ -73,10 +73,10 @@ function FilterControls<T extends Object>({
   filterDef: FilterDef<T>[];
 }) {
   return (
-    <div className="flex flex-row items-center gap-2 px-2">
+    <div className="flex flex-row gap-2 items-center px-2">
       <FilterMenu
         mode="text"
-        filter={filter}
+        onSetFilterField={filter.set}
         filterDef={filterDef}
         button={
           <>
@@ -85,7 +85,9 @@ function FilterControls<T extends Object>({
         }
       />
       <FilterBar
-        filter={filter}
+        filter={filter.filter}
+        onClearFilterField={filter.clear}
+        fixedFilterFields={filter.fixed}
         filterDef={filterDef}
         showIfEmpty
         withLabel={false}

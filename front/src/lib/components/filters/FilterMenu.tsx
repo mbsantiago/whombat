@@ -7,7 +7,6 @@ import { BackIcon, FilterIcon } from "@/lib/components/icons";
 import SearchMenu from "@/lib/components/search/SearchMenu";
 
 import type { SetFilter } from "@/lib/components/filters/Filters";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
 
 export type FilterDef<T extends Object> = {
   field: keyof T;
@@ -27,7 +26,7 @@ function FilterCombobox<T extends Object>({
 }) {
   return (
     <>
-      <div className="mb-2 text-stone-700 dark:text-stone-300 underline underline-offset-2 decoration-amber-500 decoration-2">
+      <div className="mb-2 underline text-stone-700 underline-offset-2 decoration-amber-500 decoration-2 dark:text-stone-300">
         Apply Filter
       </div>
       <SearchMenu
@@ -44,7 +43,7 @@ function FilterCombobox<T extends Object>({
         getOptionKey={(filter) => filter.name}
         onSelect={onChange}
         empty={
-          <div className="text-stone-500 text-center w-full">
+          <div className="w-full text-center text-stone-500">
             No filters found
           </div>
         }
@@ -55,11 +54,11 @@ function FilterCombobox<T extends Object>({
 }
 
 function FilterPanel<T extends Object>({
-  filter,
   filterDefs,
+  onSetFilterField,
 }: {
-  filter: Filter<T>;
   filterDefs: FilterDef<T>[];
+  onSetFilterField?: <K extends keyof T>(name: K, value: T[K]) => void;
 }) {
   const [selectedFilter, setSelectedFilter] = useState<FilterDef<T> | null>(
     null,
@@ -76,10 +75,10 @@ function FilterPanel<T extends Object>({
 
   return (
     <>
-      <div className="mb-2 flex flex-row items-center justify-between">
+      <div className="flex flex-row justify-between items-center mb-2">
         <div>
-          <span className="text-stone-500 mr-2">Filter by</span>
-          <span className="text-stone-700 dark:text-stone-300 underline underline-offset-2 decoration-amber-500 decoration-2">
+          <span className="mr-2 text-stone-500">Filter by</span>
+          <span className="underline text-stone-700 underline-offset-2 decoration-amber-500 decoration-2 dark:text-stone-300">
             {selectedFilter.name}
           </span>
         </div>
@@ -93,7 +92,7 @@ function FilterPanel<T extends Object>({
       </div>
       {selectedFilter.description != null ? (
         <div className="mb-4">
-          <span className="text-sm dark:text-stone-400 text-stone-600">
+          <span className="text-sm text-stone-600 dark:text-stone-400">
             {selectedFilter.description}
           </span>
         </div>
@@ -101,7 +100,7 @@ function FilterPanel<T extends Object>({
       <div className="flex flex-row space-x-2">
         {selectedFilter.selector({
           setFilter: (name, value) => {
-            filter.set(name, value);
+            onSetFilterField?.(name, value);
             setSelectedFilter(null);
           },
         })}
@@ -111,14 +110,14 @@ function FilterPanel<T extends Object>({
 }
 
 export default function FilterPopover<T extends Object>({
-  filter,
   filterDef,
+  onSetFilterField,
   button,
   mode = "filled",
   variant = "primary",
   className,
 }: {
-  filter: Filter<T>;
+  onSetFilterField?: <K extends keyof T>(name: K, value: T[K]) => void;
   filterDef: FilterDef<T>[];
   button?: ReactNode;
   mode?: "filled" | "outline" | "text";
@@ -130,7 +129,7 @@ export default function FilterPopover<T extends Object>({
   }
 
   return (
-    <Popover as="div" className="relative inline-block text-left">
+    <Popover as="div" className="inline-block relative text-left">
       <Float
         autoPlacement
         portal={true}
@@ -146,15 +145,18 @@ export default function FilterPopover<T extends Object>({
           {button != null ? (
             button
           ) : (
-            <FilterIcon className="h-4 w-4 stroke-2" />
+            <FilterIcon className="w-4 h-4 stroke-2" />
           )}
         </Popover.Button>
         <Popover.Panel
           unmount
-          className="w-96 divide-y divide-stone-100 rounded-md bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-500 shadow-md dark:shadow-stone-800 ring-1 ring-stone-900 ring-opacity-5 focus:outline-none z-50"
+          className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-none divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800"
         >
           <div className="p-4">
-            <FilterPanel filter={filter} filterDefs={filterDef} />
+            <FilterPanel
+              onSetFilterField={onSetFilterField}
+              filterDefs={filterDef}
+            />
           </div>
         </Popover.Panel>
       </Float>

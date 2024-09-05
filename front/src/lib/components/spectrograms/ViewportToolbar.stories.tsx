@@ -13,18 +13,18 @@ type Story = StoryObj<typeof ViewportToolbar>;
 
 export const Primary: Story = {
   args: {
-    state: "idle",
+    mode: "idle",
   },
 };
 
 export const Panning: Story = {
   args: {
-    state: "panning",
+    mode: "panning",
   },
 };
 
 export const Zooming: Story = {
   args: {
-    state: "zooming",
+    mode: "zooming",
   },
 };

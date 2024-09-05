@@ -26,9 +26,11 @@ import type { Dataset, Tag } from "@/lib/types";
 export default function DatasetTagsSummary({
   dataset,
   topK = 5,
+  onTagClick,
 }: {
   dataset: Dataset;
   topK?: number;
+  onTagClick?: (tag: Tag) => void;
 }) {
   const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
 
@@ -60,7 +62,7 @@ export default function DatasetTagsSummary({
       ) : tagCount.length === 0 ? (
         <NoTagsRecorded />
       ) : (
-        <TagCount tagCount={tagCount} />
+        <TagCount tagCount={tagCount} onTagClick={onTagClick} />
       )}
     </Card>
   );
@@ -122,9 +124,11 @@ function NoTagsRecorded() {
 function TagCount({
   tagCount,
   showMax: initialShowMax = 5,
+  onTagClick,
 }: {
   tagCount: { tag: Tag; count: number }[];
   showMax?: number;
+  onTagClick?: (tag: Tag) => void;
 }) {
   const { items, setSearch, setLimit, limit } = useListWithSearch({
     options: tagCount,
@@ -141,7 +145,7 @@ function TagCount({
         Use the search bar to find a specific tag and discover how many
         recordings have been associated with it.
       </p>
-      <div className="inline-flex justify-between gap-2 items-center">
+      <div className="inline-flex gap-2 justify-between items-center">
         <div className="grow">
           <InputGroup name="search" label="Search">
             <Search onChange={(value) => setSearch(value as string)} />
@@ -166,7 +170,12 @@ function TagCount({
           <>
             <div key={`${tag.key}-${tag.value}-tag`}>
               <div className="flex flex-row justify-end">
-                <TagComponent tag={tag} disabled {...getTagColor(tag)} />
+                <TagComponent
+                  tag={tag}
+                  disabled
+                  {...getTagColor(tag)}
+                  onClick={() => onTagClick?.(tag)}
+                />
               </div>
             </div>
             <div

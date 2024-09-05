@@ -50,7 +50,7 @@ export default function ShortcutHelper({
             <tbody>
               <tr>
                 <td className="p-2 text-center border border-stone-500">
-                  <KeyboardKey code={"h"} />
+                  <KeyboardKey keys={["h"]} />
                 </td>
                 <td className="p-2 font-bold text-center border border-stone-500">
                   Help
@@ -62,7 +62,7 @@ export default function ShortcutHelper({
               {shortcuts?.map((shortcut) => (
                 <tr key={shortcut.shortcut}>
                   <td className="p-2 text-center border border-stone-500">
-                    <KeyboardKey code={shortcut.shortcut.trim() || "Space"} />
+                    <KeyboardKey keys={[shortcut.shortcut.trim() || "Space"]} />
                   </td>
                   <td className="p-2 font-bold text-center border border-stone-500">
                     {shortcut.label}

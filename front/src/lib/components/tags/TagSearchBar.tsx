@@ -15,11 +15,13 @@ import Loading from "@/lib/components/ui/Loading";
 import { Input } from "@/lib/components/inputs/index";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tag from "@/lib/components/tags/Tag";
-import { getTagColor } from "@/lib/utils/tags";
+import {
+  getTagColor as getTagColorDefault,
+  type Color,
+} from "@/lib/utils/tags";
 
 // TODO: Remove this
 import useTags from "@/app/hooks/api/useTags";
-import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";
 import type { Tag as TagType } from "@/lib/types";
@@ -40,7 +42,7 @@ function CreateNewTag({ key, value }: { key?: string; value?: string }) {
         <div className="relative py-2 px-4 cursor-default select-none">
           To create a new tag, type the tag in the format{" "}
           <code className="text-emerald-500">key:value</code> and press{" "}
-          <KeyboardKey code="Shift" />+<KeyboardKey code="Enter" />
+          <KeyboardKey keys={["Shift", "Enter"]} />
         </div>
       </ComboBoxSection>
     );
@@ -51,7 +53,7 @@ function CreateNewTag({ key, value }: { key?: string; value?: string }) {
       <div className="relative py-2 px-4 cursor-default select-none">
         Create the tag{" "}
         <Tag disabled tag={{ key, value }} color="blue" level={3} /> by pressing{" "}
-        <KeyboardKey code="Shift" />+<KeyboardKey code="Enter" />
+        <KeyboardKey keys={["Shift", "Enter"]} />
       </div>
     </ComboBoxSection>
   );
@@ -72,6 +74,7 @@ type TagSearchBarProps = {
   onBlur?: () => void;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
   onCreate?: (tag: TagType) => void;
+  getTagColor?: (tag: TagType) => Color;
   initialFilter?: TagFilter;
   canCreate?: boolean;
 } & Omit<
@@ -137,7 +140,7 @@ export function TagSearchBarComponent({
   onSelect,
   onCreate,
   onChange,
-  getColorFn = getTagColor,
+  getTagColor = getTagColorDefault,
 }: {
   autoFocus?: boolean;
   canCreate?: boolean;
@@ -147,7 +150,7 @@ export function TagSearchBarComponent({
   onSelect?: (tag: TagType) => void;
   onCreate?: (tag: TagType) => void;
   onChange?: (query: { s: string; key?: string; value?: string }) => void;
-  getColorFn?: (tag: TagType) => { color: string; level: number };
+  getTagColor?: (tag: TagType) => { color: string; level: number };
 }) {
   const [query, setQuery] = useState("");
 
@@ -206,7 +209,7 @@ export function TagSearchBarComponent({
           <SearchBarResults
             isLoading={isLoading}
             tags={tags}
-            getColorFn={getColorFn}
+            getColorFn={getTagColor}
             canCreate={canCreate}
             key={key}
             value={value}
@@ -227,6 +230,7 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
       onCreate,
       autoFocus = true,
       canCreate = true,
+      getTagColor = getTagColorDefault,
       ...props
     },
     ref,
@@ -234,7 +238,6 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
     const [query, setQuery] = useState("");
 
     const tags = useTags({ filter: initialFilter });
-    const getTagColor = useStore((state) => state.getTagColor);
 
     const key = query.split(":")[0];
     const value = query.split(":")[1];

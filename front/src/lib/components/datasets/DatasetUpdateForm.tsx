@@ -1,5 +1,5 @@
 import Card from "@/lib/components/ui/Card";
-import DatasetActions from "@/lib/components/datasets/DatasetActions";
+import DatasetActions from "@/app/(base)/datasets/detail/components/DatasetActions";
 import Description from "@/lib/components/ui/Description";
 import useDataset from "@/app/hooks/api/useDataset";
 

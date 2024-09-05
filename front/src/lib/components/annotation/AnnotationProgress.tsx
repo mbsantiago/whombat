@@ -17,7 +17,6 @@ import { SPECTROGRAM_KEY_SHORTCUTS } from "@/lib/hooks/spectrogram/useSpectrogra
 import { ANNOTATION_KEY_SHORTCUTS } from "@/lib/hooks/annotation/useAnnotateClipKeyShortcuts";
 
 import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { AnnotationTask } from "@/lib/types";
 
 const SHORTCUTS = [
@@ -31,13 +30,22 @@ export default function AnnotationProgress({
   instructions,
   tasks,
   filter,
+  fixedFilterFields,
   onNext,
   onPrevious,
+  onSetFilterField,
+  onClearFilterField,
 }: {
-  current?: number | null;
   instructions: string;
   tasks: AnnotationTask[];
-  filter: Filter<AnnotationTaskFilter>;
+  filter: AnnotationTaskFilter;
+  fixedFilterFields?: (keyof AnnotationTaskFilter)[];
+  onSetFilterField?: <K extends keyof AnnotationTaskFilter>(
+    key: K,
+    value: AnnotationTaskFilter[K],
+  ) => void;
+  onClearFilterField?: (field: keyof AnnotationTaskFilter) => void;
+  current?: number | null;
   onNext?: () => void;
   onPrevious?: () => void;
 }) {
@@ -50,13 +58,13 @@ export default function AnnotationProgress({
   } = useMemo(() => computeAnnotationTasksProgress(tasks), [tasks]);
 
   return (
-    <div className="inline-flex gap-1 items-center h-full w-full">
+    <div className="inline-flex gap-1 items-center w-full h-full">
       <Tooltip
         tooltip={
           <div className="inline-flex gap-2 items-center">
             Previous Task
             <div className="text-xs">
-              <KeyboardKey code="p" />
+              <KeyboardKey keys={["p"]} />
             </div>
           </div>
         }
@@ -81,7 +89,7 @@ export default function AnnotationProgress({
             <span className="text-stone-500">#:</span>
             <span className="font-bold text-blue-500">{current}</span>
           </span>
-          <span className="text-sm inline-flex gap-1 items-center whitespace-nowrap">
+          <span className="inline-flex gap-1 items-center text-sm whitespace-nowrap">
             <span className="text-stone-500">Progress:</span>
             <div className="w-36">
               <ProgressBar
@@ -94,7 +102,7 @@ export default function AnnotationProgress({
             </div>
           </span>
         </div>
-        <span className="text-sm inline-flex gap-1 items-center whitespace-nowrap text-stone-500">
+        <span className="inline-flex gap-1 items-center text-sm whitespace-nowrap text-stone-500">
           <span>Remaining:</span>
           <span className="font-medium text-blue-500">{pending}</span>/{total}
         </span>
@@ -102,19 +110,19 @@ export default function AnnotationProgress({
           <span className="text-sm text-stone-500">Pending:</span>
           <Toggle
             label="Only Pending"
-            isSelected={filter.get("pending") ?? false}
+            isSelected={filter.pending ?? false}
             onChange={(checked) => {
               if (checked) {
-                filter.set("pending", checked, true);
+                onSetFilterField?.("pending", checked);
               } else {
-                filter.clear("pending", true);
+                onSetFilterField?.("pending", true);
               }
             }}
           />
         </div>
         <FilterMenu
-          filter={filter}
           filterDef={taskFilterDefs}
+          onSetFilterField={onSetFilterField}
           className={getButtonClassName({
             variant: "info",
             mode: "text",
@@ -124,16 +132,18 @@ export default function AnnotationProgress({
             <>
               <FilterIcon className="inline-block mr-1 w-5 h-5" />
               <span className="text-sm align-middle whitespace-nowrap">
-                Filters
+                Filters:
               </span>
             </>
           }
         />
         <div className="overflow-x-auto">
           <FilterBar
-            withLabel={false}
             filter={filter}
+            withLabel={false}
             filterDef={taskFilterDefs}
+            fixedFilterFields={fixedFilterFields ?? []}
+            onClearFilterField={onClearFilterField}
           />
         </div>
       </div>
@@ -142,7 +152,7 @@ export default function AnnotationProgress({
           <div className="inline-flex gap-2 items-center">
             Next Task
             <div className="text-xs">
-              <KeyboardKey code="n" />
+              <KeyboardKey keys={["n"]} />
             </div>
           </div>
         }

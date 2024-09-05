@@ -5,9 +5,12 @@ import { DeleteIcon, ToolsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
-import useStore from "@/app/store";
 
 import type { TagFilter } from "@/lib/api/tags";
+import {
+  getTagColor as getTagColorDefault,
+  type Color,
+} from "@/lib/utils/tags";
 import type { Tag } from "@/lib/types";
 
 export default function AnnotationTagPalette({
@@ -18,6 +21,7 @@ export default function AnnotationTagPalette({
   onCreateTag,
   onRemoveTag,
   onClearTags,
+  getTagColor = getTagColorDefault,
 }: {
   tags: Tag[];
   tagFilter?: TagFilter;
@@ -26,8 +30,8 @@ export default function AnnotationTagPalette({
   onAddTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
   onClearTags?: () => void;
+  getTagColor?: (tag: Tag) => Color;
 }) {
-  const getTagColor = useStore((state) => state.getTagColor);
   return (
     <Card>
       <H4 className="text-center">
@@ -40,7 +44,7 @@ export default function AnnotationTagPalette({
           }
           placement="top"
         >
-          <ToolsIcon className="inline-block w-5 h-5 mr-1" />
+          <ToolsIcon className="inline-block mr-1 w-5 h-5" />
           <span className="cursor-help">Tag Palette</span>
         </Tooltip>
       </H4>

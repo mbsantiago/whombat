@@ -1,22 +1,21 @@
-import { useRef, type ReactNode } from "react";
-import { useButton, useComboBox, useFilter } from "react-aria";
+import { useRef } from "react";
+import { AriaComboBoxOptions, useComboBox, useFilter } from "react-aria";
 import { useComboBoxState } from "react-stately";
+import type { CollectionChildren } from "@react-types/shared";
 
 import Input from "@/lib/components/inputs/Input";
 import InputLabel from "@/lib/components/inputs/InputLabel";
 import ListBox from "@/lib/components/ui/ListBox";
 import { Popover } from "@/lib/components/ui/Popover2";
 
-export default function ComboBox({
-  label,
-  children,
-  ...props
-}: {
-  label: string;
-  children: ReactNode;
-}) {
+export default function ComboBox<T extends object>(
+  props: Omit<
+    AriaComboBoxOptions<T>,
+    "inputRef" | "listBoxRef" | "popoverRef"
+  > & { children: CollectionChildren<T> },
+) {
   let { contains } = useFilter({ sensitivity: "base" });
-  let state = useComboBoxState({ ...props, defaultFilter: contains });
+  let state = useComboBoxState<T>({ ...props, defaultFilter: contains });
 
   let buttonRef = useRef(null);
   let inputRef = useRef(null);
@@ -27,16 +26,16 @@ export default function ComboBox({
     {
       ...props,
       inputRef,
-      buttonRef,
       listBoxRef,
       popoverRef,
+      buttonRef,
     },
     state,
   );
 
   return (
     <div style={{ display: "inline-flex", flexDirection: "column" }}>
-      <InputLabel {...labelProps}>{label}</InputLabel>
+      <InputLabel {...labelProps}>{props.label}</InputLabel>
       <div>
         <Input {...inputProps} ref={inputRef} />
         {state.isOpen && (
@@ -47,7 +46,11 @@ export default function ComboBox({
             isNonModal
             placement="bottom start"
           >
-            <ListBox {...listBoxProps} listBoxRef={listBoxRef} state={state} />
+            <ListBox
+              {...listBoxProps}
+              listBoxRef={listBoxRef}
+              listState={state}
+            />
           </Popover>
         )}
       </div>

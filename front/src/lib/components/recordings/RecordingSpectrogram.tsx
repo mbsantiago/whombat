@@ -110,7 +110,7 @@ const RecordingSpectrogram = memo(function RecordingSpectrogram({
     <Card>
       <div className="flex flex-row gap-4">
         <ViewportToolbar
-          state={spectrogramState}
+          mode={spectrogramState}
           onResetClick={onViewportReset}
           onBackClick={onViewportBack}
           onDragClick={onViewportEnablePanning}
@@ -163,6 +163,6 @@ const RecordingSpectrogram = memo(function RecordingSpectrogram({
       />
     </Card>
   );
-})
+});
 
 export default RecordingSpectrogram;

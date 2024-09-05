@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import UserContext from "@/app/(base)/context";
-import AnnotateTasks from "@/lib/components/annotation/AnnotateTasks";
+import AnnotateTasks from "@/app/(base)/annotation_projects/detail/components/AnnotateTasks";
 import Loading from "@/lib/components/ui/Loading";
 import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
 import useStore from "@/app/store";
@@ -14,7 +14,7 @@ import { changeURLParam } from "@/lib/utils/url";
 import AnnotationProjectContext from "../context";
 
 import api from "@/app/api";
-import type { AnnotationTask, SpectrogramParameters, Tag } from "@/lib/types";
+import type { AnnotationTask, SpectrogramSettings, Tag } from "@/lib/types";
 
 export default function Page() {
   const search = useSearchParams();
@@ -31,11 +31,11 @@ export default function Page() {
     enabled: !!annotationTaskUUID,
   });
 
-  const parameters = useStore((state) => state.spectrogramSettings);
+  const spectrogramSettings = useStore((state) => state.spectrogramSettings);
   const setParameters = useStore((state) => state.setSpectrogramSettings);
 
-  const onParameterSave = useCallback(
-    (parameters: SpectrogramParameters) => {
+  const onSpectrogramSettingsChange = useCallback(
+    (parameters: SpectrogramSettings) => {
       toast.success("Spectrogram settings saved.");
       setParameters(parameters);
     },
@@ -90,10 +90,10 @@ export default function Page() {
       taskFilter={filter}
       tagFilter={filter}
       annotationTask={annotationTask.data}
-      parameters={parameters}
+      spectrogramSettings={spectrogramSettings}
       onChangeTask={onChangeTask}
       currentUser={user}
-      onParameterSave={onParameterSave}
+      onSpectrogramSettingsChange={onSpectrogramSettingsChange}
       onCompleteTask={handleCompleteTask}
       onRejectTask={handleRejectTask}
       onVerifyTask={handleVerifyTask}

@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from "react";
 import { type KeyboardEvent } from "react";
 
-import { type RecordingFilter, type RecordingUpdate } from "@/lib/api/recordings";
+import {
+  type RecordingFilter,
+  type RecordingUpdate,
+} from "@/lib/api/recordings";
 import Loading from "@/app/loading";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
@@ -95,7 +98,7 @@ export default function RecordingTable({
             />
           </div>
           <FilterPopover
-            filter={recordings.filter}
+            onSetFilterField={recordings.filter.set}
             filterDef={recordingFilterDefs}
           />
         </div>
@@ -106,7 +109,9 @@ export default function RecordingTable({
         />
       </div>
       <FilterBar
-        filter={recordings.filter}
+        filter={recordings.filter.filter}
+        onClearFilterField={recordings.filter.clear}
+        fixedFilterFields={recordings.filter.fixed}
         total={recordings.total}
         filterDef={recordingFilterDefs}
       />

@@ -1,25 +1,28 @@
 import { useMemo } from "react";
 
-import {  FilterIcon } from "@/lib/components/icons";
+import { FilterIcon } from "@/lib/components/icons";
 
 import type { FilterDef } from "@/lib/components/filters/FilterMenu";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
 
 export default function FilterBar<T extends Object>({
   filter,
+  fixedFilterFields,
   filterDef,
   total,
   showIfEmpty = false,
   withLabel = true,
+  onClearFilterField,
 }: {
-  filter: Filter<T>;
+  filter: T;
   filterDef: FilterDef<T>[];
+  fixedFilterFields: (keyof T)[];
   total?: number;
   showIfEmpty?: boolean;
   withLabel?: boolean;
+  onClearFilterField?: (key: keyof T) => void;
 }) {
-  const activeFilters = Object.keys(filter.filter).filter(
-    (key) => !filter.isFixed(key as keyof T),
+  const activeFilters = Object.keys(filter).filter(
+    (key) => !(key in (fixedFilterFields || [])),
   ).length;
 
   const filterDefMapping = useMemo(() => {
@@ -42,12 +45,12 @@ export default function FilterBar<T extends Object>({
       <div className="flex flex-row items-center space-x-2">
         {withLabel && (
           <span className="mr-2 text-blue-200">
-            <FilterIcon className="inline-block h-5 w-5 mr-1" />
+            <FilterIcon className="inline-block mr-1 w-5 h-5" />
             filters:
           </span>
         )}
-        {Object.entries(filter.filter)
-          .filter(([key, _]) => !filter.isFixed(key as keyof T))
+        {Object.entries(filter)
+          .filter(([key, _]) => !(key in (fixedFilterFields || [])))
           .filter(([key, _]) => key in filterDefMapping)
           .map(([key, value]) => {
             const filterDef = filterDefMapping[key];
@@ -55,7 +58,7 @@ export default function FilterBar<T extends Object>({
               <div key={key}>
                 {filterDef.render({
                   value,
-                  clear: () => filter.clear(key as keyof T),
+                  clear: () => onClearFilterField?.(key as keyof T),
                 })}
               </div>
             );

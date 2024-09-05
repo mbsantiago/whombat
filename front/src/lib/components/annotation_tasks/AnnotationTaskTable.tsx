@@ -48,13 +48,15 @@ export default function AnnotationTaskTable({
             />
           </div>
           <FilterPopover
-            filter={annotationTasks.filter}
+            onSetFilterField={annotationTasks.filter.set}
             filterDef={annotationTaskFilterDefs}
           />
         </div>
       </div>
       <FilterBar
-        filter={annotationTasks.filter}
+        filter={annotationTasks.filter.filter}
+        onClearFilterField={annotationTasks.filter.clear}
+        fixedFilterFields={annotationTasks.filter.fixed}
         total={annotationTasks.total}
         filterDef={annotationTaskFilterDefs}
       />

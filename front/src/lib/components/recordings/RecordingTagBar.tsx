@@ -19,7 +19,7 @@ export default function RecordingTagBar({
   onTagAdd?: (tag: Tag) => void;
   onTagClick?: (tag: Tag) => void;
   onTagRemove?: (tag: Tag) => void;
-  colorFn: (tag: Tag) => Color;
+  colorFn?: (tag: Tag) => Color;
   disabled?: boolean;
 }) {
   return (

@@ -8,17 +8,16 @@ import {
 import classNames from "classnames";
 import { type ListState, useListState, type Node } from "react-stately";
 
-import { useObjectRef } from "react-aria";
-
-export default function ListBox<T extends object>({
-  listBoxRef,
-  ...props
-}: {
-  listBoxRef?: RefObject<HTMLUListElement>;
-} & AriaListBoxProps<T>) {
-  listBoxRef = useObjectRef(listBoxRef);
+export default function ListBox<T extends object>(
+  props: {
+    listState?: ListState<T>;
+    listBoxRef?: RefObject<HTMLUListElement>;
+  } & Omit<AriaListBoxProps<T>, "children">,
+) {
+  let ref = useRef(null);
   let state = useListState(props);
-  let { listBoxProps } = useListBox(props, state, listBoxRef);
+  let { listBoxRef = ref, listState = state } = props;
+  let { listBoxProps } = useListBox(props, listState, listBoxRef);
 
   return (
     <ul
@@ -26,11 +25,11 @@ export default function ListBox<T extends object>({
       className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none text-stone-800 divide-stone-200 bg-stone-50 ring-stone-300 dark:text-stone-200 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600"
       ref={listBoxRef}
     >
-      {Array.from(state.collection, (item) =>
+      {Array.from(listState.collection, (item) =>
         item.type === "section" ? (
-          <ListBoxSection key={item.key} section={item} state={state} />
+          <ListBoxSection key={item.key} section={item} state={listState} />
         ) : (
-          <Option key={item.key} item={item} state={state} />
+          <Option key={item.key} item={item} state={listState} />
         ),
       )}
     </ul>
@@ -81,7 +80,7 @@ function ListBoxSection<T>({
     <>
       <li {...itemProps} className="py-2">
         {section.rendered && (
-          <span {...headingProps} className="py-4 px-1 font-bold text-base">
+          <span {...headingProps} className="py-4 px-1 text-base font-bold">
             {section.rendered}
           </span>
         )}

@@ -23,7 +23,7 @@ export type AnnotateMode = "select" | "draw" | "edit" | "delete" | "idle";
 
 type DrawFunction = (ctx: CanvasRenderingContext2D) => void;
 
-export type AnnotateClipState = {
+export type AnnotationState = {
   mode: AnnotateMode;
   geometryType: GeometryType;
   selectedAnnotation: SoundEventAnnotation | null;
@@ -32,9 +32,6 @@ export type AnnotateClipState = {
   isDrawing: boolean;
   isEditing: boolean;
   isDeleting: boolean;
-};
-
-export type AnnotateClipActions = {
   setMode: (mode: AnnotateMode) => void;
   focusOnAnnotation: (annotation: SoundEventAnnotation) => void;
   selectAnnotation: (annotation: SoundEventAnnotation) => void;
