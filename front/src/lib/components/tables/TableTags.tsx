@@ -5,10 +5,10 @@
 
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
-import useStore from "@/app/store";
 
 import type { Tag } from "@/lib/types";
-import type { HTMLProps } from "react";
+import { getTagColor } from "@/lib/utils/tags";
+import type { ComponentProps } from "react";
 
 /** A table cell that displays a list of tags.
  *
@@ -18,34 +18,38 @@ import type { HTMLProps } from "react";
  */
 export default function TableTags({
   tags,
-  onAdd,
-  onRemove,
-  onClick,
+  variant = "primary",
+  availableTags,
+  tagColorFn = getTagColor,
+  onAddTag,
+  onDeleteTag,
+  onClickTag,
   ...props
 }: {
   tags: Tag[];
-  onAdd?: (tag: Tag) => void;
-  onClick?: (tag: Tag) => void;
-  onRemove?: (tag: Tag) => void;
-} & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
-  // Get each tag color from the store to provide a consistent color
-  // experience across the app
-  const getTagColor = useStore((state) => state.getTagColor);
-
+  availableTags?: Tag[];
+  onAddTag?: (tag: Tag) => void;
+  onClickTag?: (tag: Tag) => void;
+  onDeleteTag?: (tag: Tag) => void;
+} & Omit<ComponentProps<typeof AddTagButton>, "tags" | "onSelectTag">) {
   return (
     <div className="flex overflow-auto flex-row flex-wrap gap-2 items-center px-1 m-0 w-full max-h-40">
-      {/* Display the list of tags and allow users to remove a tag from */}
-      {/* list by clicking on it*/}
       {tags.map((tag) => (
         <TagComponent
           key={`${tag.key}:${tag.value}`}
           tag={tag}
-          {...getTagColor(tag)}
-          onClick={() => onClick?.(tag)}
-          onClose={() => onRemove?.(tag)}
+          {...tagColorFn(tag)}
+          onClick={() => onClickTag?.(tag)}
+          onClose={() => onDeleteTag?.(tag)}
         />
       ))}
-      <AddTagButton variant="primary" onAdd={onAdd} {...props} />
+      <AddTagButton
+        tags={availableTags}
+        tagColorFn={tagColorFn}
+        variant={variant}
+        onSelectTag={onAddTag}
+        {...props}
+      />
     </div>
   );
 }

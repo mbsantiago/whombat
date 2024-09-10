@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import RecordingNotes from "@/lib/components/recordings/RecordingNotes";
 
 const meta: Meta<typeof RecordingNotes> = {
-  title: "Recordings/RecordingNotes",
+  title: "Recordings/Notes",
   component: RecordingNotes,
 };
 

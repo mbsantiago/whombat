@@ -10,6 +10,10 @@ import Input from "./Input";
 
 import type { InputHTMLAttributes } from "react";
 
+/**
+ * Search component that provides a search input field with optional loading
+ * and clear button functionality.
+ */
 export default function Search({
   label = "Search",
   placeholder = "Search...",
@@ -17,11 +21,14 @@ export default function Search({
   icon,
   ...props
 }: {
+  /** The label for the search field. */
   placeholder?: string;
+  /** Flag to indicate if the search is in a loading state. */
   isLoading?: boolean;
+  /** Optional icon to display in the search input. */
   icon?: ReactElement;
 } & SearchFieldProps &
-  InputHTMLAttributes<HTMLInputElement>) {
+  Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) {
   const state = useSearchFieldState({ label, ...props });
   const ref = useRef(null);
 

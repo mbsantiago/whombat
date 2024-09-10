@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import RecordingMap from "@/lib/components/recordings/RecordingMap";
 
 const meta: Meta<typeof RecordingMap> = {
-  title: "Recordings/RecordingMap",
+  title: "Recordings/Map",
   component: RecordingMap,
 };
 

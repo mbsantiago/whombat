@@ -4,8 +4,10 @@ import { FilterIcon } from "@/lib/components/icons";
 
 import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 
+const _emptyFilter = {};
+
 export default function FilterBar<T extends Object>({
-  filter,
+  filter = _emptyFilter as T,
   fixedFilterFields,
   filterDef,
   total,
@@ -13,9 +15,9 @@ export default function FilterBar<T extends Object>({
   withLabel = true,
   onClearFilterField,
 }: {
-  filter: T;
+  filter?: T;
   filterDef: FilterDef<T>[];
-  fixedFilterFields: (keyof T)[];
+  fixedFilterFields?: (keyof T)[];
   total?: number;
   showIfEmpty?: boolean;
   withLabel?: boolean;

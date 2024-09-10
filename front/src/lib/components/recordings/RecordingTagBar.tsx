@@ -43,7 +43,7 @@ export default function RecordingTagBar({
             No tags
           </span>
         )}
-        {!disabled && <AddTagButton variant="primary" onAdd={onTagAdd} />}
+        {!disabled && <AddTagButton variant="primary" onSelectTag={onTagAdd} />}
       </div>
     </div>
   );

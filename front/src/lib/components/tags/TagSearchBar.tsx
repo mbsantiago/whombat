@@ -13,18 +13,16 @@ import {
   type ChangeEvent,
   type InputHTMLAttributes,
   type KeyboardEvent,
+  ComponentProps,
 } from "react";
 import { Combobox } from "@headlessui/react";
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Float } from "@headlessui-float/react";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 import { Input } from "@/lib/components/inputs/index";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tag from "@/lib/components/tags/Tag";
-import {
-  getTagColor as getTagColorDefault,
-  type Color,
-} from "@/lib/utils/tags";
+import { getTagColor, type Color } from "@/lib/utils/tags";
 
 import type { Tag as TagType } from "@/lib/types";
 
@@ -107,11 +105,11 @@ type Query = {
 
 type TagSearchBarProps = {
   /** List of tags to display in the dropdown menu. */
-  tags: TagType[];
+  tags?: TagType[];
   /** Flag indicating if new tags can be created. */
   canCreate?: boolean;
   /** Function to get the color of a tag. */
-  getTagColor?: (tag: TagType) => Color;
+  tagColorFn?: (tag: TagType) => Color;
   /** Callback function for blur event. */
   onBlur?: () => void;
   /** Callback function for key down event. */
@@ -121,26 +119,40 @@ type TagSearchBarProps = {
   /** Callback function for selecting a tag. */
   onSelectTag?: (tag: TagType) => void;
   /** Callback function for change event. */
-  onQueryChange?: (query: Query) => void;
+  onChangeQuery?: (query: Query) => void;
+  placement?: ComponentProps<typeof Float>["placement"];
+  autoPlacement?: ComponentProps<typeof Float>["autoPlacement"];
 } & Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "onSelect" | "onChange" | "onKeyDown" | "onBlur"
 >;
+
+const _empty: TagType[] = [];
 
 /**
  * TagSearchBar component allows users to search and select tags, and
  * optionally create new tags.
  */
 const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
-  function TagSearchBar(props, ref) {
-    const { getTagColor = getTagColorDefault } = props;
+  function TagSearchBar(
+    {
+      tags = _empty,
+      tagColorFn = getTagColor,
+      canCreate = true,
+      onSelectTag,
+      onChangeQuery,
+      onKeyDown,
+      onCreateTag,
+      placement = "bottom",
+      ...props
+    },
+    ref,
+  ) {
     const [query, setQuery] = useState<Query>({
       q: "",
       key: null,
       value: null,
     });
-
-    const { onQueryChange, onKeyDown, onCreateTag, canCreate } = props;
 
     const handleQueryChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
@@ -149,28 +161,31 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
         const newQuery =
           value == null ? { q, key, value: null } : { q, key, value };
         setQuery(newQuery);
-        onQueryChange?.(newQuery);
+        onChangeQuery?.(newQuery);
       },
-      [onQueryChange],
+      [onChangeQuery],
     );
 
     const handleKeyDown = useCallback(
       (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter" && event.shiftKey && canCreate) {
           event.preventDefault();
-          if (query.key && query.value)
+
+          if (query.key && query.value) {
             onCreateTag?.({
               key: query.key,
               value: query.value,
             });
+          }
         }
+
         onKeyDown?.(event);
       },
       [onKeyDown, canCreate, onCreateTag, query.key, query.value],
     );
 
     return (
-      <Combobox onChange={(tag: TagType) => props.onSelectTag?.(tag)}>
+      <Combobox onChange={(tag: TagType) => onSelectTag?.(tag)}>
         <Float
           offset={8}
           enter="transition duration-200 ease-out"
@@ -179,8 +194,8 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
           leave="transition duration-150 ease-in"
           leaveFrom="scale-100 opacity-100"
           leaveTo="scale-95 opacity-0"
-          placement="bottom"
-          autoPlacement
+          placement={placement}
+          autoPlacement={props.autoPlacement}
           portal={true}
         >
           <div className="relative w-full text-left cursor-default">
@@ -197,11 +212,11 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
             </Combobox.Button>
           </div>
           <Combobox.Options className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600">
-            {props.tags.length === 0 ? (
+            {tags.length === 0 ? (
               <NoTagsFound />
             ) : (
               <ComboBoxSection>
-                {props.tags.map((tag) => (
+                {tags.map((tag) => (
                   <Combobox.Option
                     key={`${tag.key}:${tag.value}`}
                     className={({ active }) =>
@@ -215,13 +230,13 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
                       disabled
                       className="pointer-events-none"
                       tag={tag}
-                      {...getTagColor(tag)}
+                      {...tagColorFn(tag)}
                     />
                   </Combobox.Option>
                 ))}
               </ComboBoxSection>
             )}
-            {props.canCreate && (
+            {canCreate && (
               <CreateNewTag tag={{ key: query.key, value: query.value }} />
             )}
           </Combobox.Options>

@@ -56,8 +56,8 @@ export default function SoundEventAnnotationTags({
       <div className="flex flex-row justify-center gap-4 items-center">
         <AddTagButton
           variant="primary"
-          onAdd={onAddTag}
-          onCreate={onCreateTag}
+          onSelectTag={onAddTag}
+          onCreateTag={onCreateTag}
           filter={tagFilter}
           text="Add tags"
           placeholder="Add tags..."

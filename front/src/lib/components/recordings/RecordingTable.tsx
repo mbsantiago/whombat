@@ -1,11 +1,6 @@
-import { useCallback, useMemo } from "react";
-import { type KeyboardEvent } from "react";
+import { type ComponentProps, useCallback } from "react";
 
-import {
-  type RecordingFilter,
-  type RecordingUpdate,
-} from "@/lib/api/recordings";
-import Loading from "@/app/loading";
+import { type RecordingFilter } from "@/lib/api/recordings";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
@@ -13,75 +8,92 @@ import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import SelectedMenu from "@/lib/components/tables/SelectedMenu";
 import Table from "@/lib/components/tables/Table";
-import { parsePosition } from "@/lib/components/tables/TableMap";
-import useRecordings from "@/app/hooks/api/useRecordings";
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
-import useStore from "@/app/store";
 
 import type { Recording, Tag } from "@/lib/types";
 
-const EDITABLE_COLUMNS = ["date", "time", "location", "tags"];
-
 export default function RecordingTable({
+  recordings,
   filter,
-  fixed,
-  getRecordingLink,
+  numSelected = 0,
+  numRecordings,
+  fixedFilterFields,
+  availableTags,
   pathFormatter,
+  onClickRecording,
+  onSearchChange,
+  onFilterFieldSet,
+  onClearFilterField,
+  onCellKeyDown,
+  onUpdateRecording,
+  onAddRecordingTag,
+  onDeleteRecordingTag,
+  onDeleteRecording,
+  ...props
 }: {
-  filter: RecordingFilter;
-  fixed?: (keyof RecordingFilter)[];
-  getRecordingLink?: (recording: Recording) => string;
+  recordings: Recording[];
+  filter?: RecordingFilter;
+  numRecordings?: number;
+  numSelected?: number;
+  fixedFilterFields?: (keyof RecordingFilter)[];
+  availableTags?: Tag[];
   pathFormatter?: (path: string) => string;
-}) {
-  const recordings = useRecordings({ filter, fixed });
-
+  onSearchChange?: (value: string) => void;
+  onFilterFieldSet?: <T extends keyof RecordingFilter>(
+    key: T,
+    value: RecordingFilter[T],
+  ) => void;
+  onClearFilterField?: (key: keyof RecordingFilter) => void;
+  onCellKeyDown?: ComponentProps<typeof Table>["onCellKeyDown"];
+  onClickRecording?: (recording: Recording) => void;
+  onDeleteRecordingTag?: Parameters<
+    typeof useRecordingTable
+  >[0]["onDeleteRecordingTag"];
+  onAddRecordingTag?: Parameters<
+    typeof useRecordingTable
+  >[0]["onAddRecordingTag"];
+  onUpdateRecording?: Parameters<
+    typeof useRecordingTable
+  >[0]["onUpdateRecording"];
+  onDeleteRecording?: (data: { recording: Recording; index: number }) => void;
+} & Pick<
+  ComponentProps<typeof SelectedMenu>,
+  "tagColorFn" | "tags" | "canCreateTag" | "onChangeTagQuery" | "onCreateTag"
+> &
+  ComponentProps<typeof Pagination>) {
   const table = useRecordingTable({
-    data: recordings.items,
-    getRecordingLink,
+    data: recordings,
     pathFormatter,
-    onUpdate: recordings.updateRecording.mutate,
-    onAddTag: recordings.addTag.mutate,
-    onRemoveTag: recordings.removeTag.mutate,
+    availableTags,
+    onCreateTag: props.onCreateTag,
+    onChangeTagQuery: props.onChangeTagQuery,
+    tagColorFn: props.tagColorFn,
+    onClickRecording,
+    onUpdateRecording,
+    onAddRecordingTag,
+    onDeleteRecordingTag,
   });
 
-  const handleKeyDown = useRecordingTableKeyShortcuts({
-    onUpdate: recordings.updateRecording.mutate,
-    onAddTag: recordings.addTag.mutate,
-    onRemoveTag: recordings.removeTag.mutate,
-  });
+  const rowSelection = table.getState().rowSelection;
 
-  const { rowSelection } = table.options.state;
   const handleTagSelected = useCallback(
-    async (tag: Tag) => {
-      if (rowSelection == null) return;
-      for (const index of Object.keys(rowSelection)) {
-        if (!rowSelection[index]) continue;
-        const recording = recordings.items[Number(index)];
-        await recordings.addTag.mutateAsync({
-          recording,
-          tag,
-          index: Number(index),
-        });
-      }
+    (tag: Tag) => {
+      Object.values(rowSelection).forEach((isSelected, index) => {
+        if (!isSelected) return;
+        const recording = recordings[index];
+        onAddRecordingTag?.({ recording, tag, index });
+      });
     },
-    [rowSelection, recordings.addTag, recordings.items],
+    [rowSelection, onAddRecordingTag, recordings],
   );
 
-  const handleDeleteSelected = useCallback(async () => {
-    if (rowSelection == null) return;
-    for (const index of Object.keys(rowSelection)) {
-      if (!rowSelection[index]) continue;
-      const recording = recordings.items[Number(index)];
-      await recordings.deleteRecording.mutateAsync({
-        recording,
-        index: Number(index),
-      });
-    }
-  }, [rowSelection, recordings.items, recordings.deleteRecording]);
-
-  if (recordings.isLoading || recordings.data == null) {
-    return <Loading />;
-  }
+  const handleDeleteSelected = useCallback(() => {
+    Object.values(rowSelection).forEach((isSelected, index) => {
+      if (!isSelected) return;
+      const recording = recordings[index];
+      onDeleteRecording?.({ recording, index });
+    });
+  }, [rowSelection, onDeleteRecording, recordings]);
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -91,178 +103,48 @@ export default function RecordingTable({
             <Search
               label="Search"
               placeholder="Search recordings..."
-              value={recordings.filter.get("search") ?? ""}
-              onChange={(value) =>
-                recordings.filter.set("search", value as string)
-              }
+              onChange={onSearchChange}
             />
           </div>
           <FilterPopover
-            onSetFilterField={recordings.filter.set}
+            onSetFilterField={onFilterFieldSet}
             filterDef={recordingFilterDefs}
           />
         </div>
         <SelectedMenu
-          selected={Object.keys(rowSelection ?? {}).length}
-          onTag={handleTagSelected}
-          onDelete={handleDeleteSelected}
+          numSelected={Object.keys(rowSelection).length}
+          tags={availableTags}
+          canCreateTag={props.canCreateTag}
+          tagColorFn={props.tagColorFn}
+          onCreateTag={props.onCreateTag}
+          onChangeTagQuery={props.onChangeTagQuery}
+          onTagSelected={handleTagSelected}
+          onDeleteSelected={handleDeleteSelected}
         />
       </div>
       <FilterBar
-        filter={recordings.filter.filter}
-        onClearFilterField={recordings.filter.clear}
-        fixedFilterFields={recordings.filter.fixed}
-        total={recordings.total}
+        filter={filter}
+        total={numRecordings}
+        fixedFilterFields={fixedFilterFields}
         filterDef={recordingFilterDefs}
+        onClearFilterField={onClearFilterField}
       />
       <div className="w-full">
         <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
-          <Table table={table} onCellKeyDown={handleKeyDown} />
+          <Table table={table} onCellKeyDown={onCellKeyDown} />
         </div>
       </div>
-      <Pagination {...recordings.pagination} />
+      <Pagination
+        page={props.page}
+        numPages={props.numPages}
+        nextPage={props.nextPage}
+        hasNextPage={props.hasNextPage}
+        hasPrevPage={props.hasPrevPage}
+        prevPage={props.prevPage}
+        setPage={props.setPage}
+        pageSize={props.pageSize}
+        setPageSize={props.setPageSize}
+      />
     </div>
   );
-}
-
-function useRecordingTableKeyShortcuts({
-  onUpdate,
-  onAddTag,
-  onRemoveTag,
-}: {
-  onUpdate: (data: {
-    recording: Recording;
-    data: RecordingUpdate;
-    index: number;
-  }) => void;
-  onAddTag: (data: { recording: Recording; tag: Tag; index: number }) => void;
-  onRemoveTag: (data: {
-    recording: Recording;
-    tag: Tag;
-    index: number;
-  }) => void;
-}) {
-  const clipboard = useStore((state) => state.clipboard);
-  const copy = useStore((state) => state.copy);
-
-  const handleKeyDown = useMemo(() => {
-    // Handle for copying a value from a table cell
-    const handleCopy = (column: string, value: any) => {
-      copy({ context: "recordings_table", column, value });
-    };
-
-    // Handle for pasting a value into a table cell
-    const handlePaste = ({
-      recording,
-      column,
-      value,
-      row,
-    }: {
-      recording: Recording;
-      column: string;
-      value: any;
-      row: number;
-    }) => {
-      // Handle special cases
-      if (column === "location") {
-        const { position, isComplete } = parsePosition(value);
-        if (!isComplete) return;
-
-        const data = {
-          latitude: position.lat,
-          longitude: position.lng,
-        };
-        onUpdate({ recording, data, index: row });
-        return;
-      }
-
-      if (column === "tags") {
-        try {
-          (value as Tag[]).forEach((tag: Tag) => {
-            onAddTag({ recording, tag, index: row });
-          });
-        } catch {
-          return;
-        }
-      }
-
-      // Handle default case
-      const data = { [column]: value };
-      onUpdate({ recording, data, index: row });
-    };
-
-    // Handle for deleting a value from a table cell
-    const handleDelete = ({
-      recording,
-      column,
-      row,
-    }: {
-      recording: Recording;
-      column: string;
-      row: number;
-    }) => {
-      // Handle special cases
-      if (column === "location") {
-        let data = { latitude: null, longitude: null };
-        onUpdate({ recording, data, index: row });
-        return;
-      }
-
-      if (column === "time_expansion") {
-        let data = { time_expansion: 1 };
-        onUpdate({ recording, data, index: row });
-        return;
-      }
-
-      if (column === "tags") {
-        let currentTags = recording.tags || [];
-        currentTags.forEach((tag: Tag) => {
-          onRemoveTag({ recording, tag, index: row });
-        });
-      }
-
-      // Handle default case
-      let data = { [column]: null };
-      onUpdate({ recording, data, index: row });
-    };
-
-    return ({
-      event,
-      data,
-      value,
-      column,
-      row,
-    }: {
-      event: KeyboardEvent;
-      data: Recording;
-      row: number;
-      value: any;
-      column: string;
-    }) => {
-      if (!EDITABLE_COLUMNS.includes(column)) return;
-
-      // Copy value on ctrl+c
-      if (event.key === "c" && event.ctrlKey) {
-        handleCopy(column, value);
-        navigator.clipboard.writeText(value);
-      }
-
-      // Paste value on ctrl+v
-      if (event.key === "v" && event.ctrlKey) {
-        if (clipboard == null) return;
-        if (typeof clipboard !== "object") return;
-        if (clipboard.context !== "recordings_table") return;
-        if (clipboard.column !== column) return;
-        const value = clipboard.value;
-        handlePaste({ recording: data, column, value, row });
-      }
-
-      // Delete value on delete or backspace
-      if (event.key === "Delete" || event.key === "Backspace") {
-        handleDelete({ recording: data, column, row });
-      }
-    };
-  }, [clipboard, onUpdate, onAddTag, onRemoveTag, copy]);
-
-  return handleKeyDown;
 }

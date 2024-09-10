@@ -3,8 +3,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentProps } from "react";
 
 import {
   DateIcon,
@@ -14,6 +13,7 @@ import {
   TagIcon,
   TimeIcon,
 } from "@/lib/components/icons";
+import Button from "@/lib/components/ui/Button";
 import TableCell from "@/lib/components/tables/TableCell";
 import Checkbox from "@/lib/components/tables/TableCheckbox";
 import TableHeader from "@/lib/components/tables/TableHeader";
@@ -28,16 +28,25 @@ const defaultPathFormatter = (path: string) => path;
 
 export default function useRecordingTable({
   data,
+  availableTags,
+  canCreateTag = true,
+  tagColorFn,
   pathFormatter = defaultPathFormatter,
-  getRecordingLink,
-  onUpdate,
-  onAddTag,
-  onRemoveTag,
+  onCreateTag,
+  onChangeTagQuery,
+  onClickRecording,
+  onUpdateRecording,
+  onAddRecordingTag,
+  onDeleteRecordingTag,
 }: {
   data: Recording[];
   pathFormatter?: (path: string) => string;
-  getRecordingLink?: (recording: Recording) => string;
-  onUpdate: ({
+  availableTags?: Tag[];
+  canCreateTag?: boolean;
+  tagColorFn?: ComponentProps<typeof TableTags>["tagColorFn"];
+  onCreateTag?: ComponentProps<typeof TableTags>["onCreateTag"];
+  onChangeTagQuery?: ComponentProps<typeof TableTags>["onChangeQuery"];
+  onUpdateRecording?: ({
     recording,
     data,
     index,
@@ -46,7 +55,8 @@ export default function useRecordingTable({
     data: RecordingUpdate;
     index: number;
   }) => void;
-  onAddTag: ({
+  onClickRecording?: (recording: Recording) => void;
+  onAddRecordingTag?: ({
     recording,
     tag,
     index,
@@ -55,7 +65,7 @@ export default function useRecordingTable({
     tag: Tag;
     index: number;
   }) => void;
-  onRemoveTag: ({
+  onDeleteRecordingTag?: ({
     recording,
     tag,
     index,
@@ -107,12 +117,12 @@ export default function useRecordingTable({
           const path = row.getValue("path") as string;
           return (
             <TableCell>
-              <Link
-                className="hover:font-bold hover:text-emerald-500 focus:ring focus:ring-emerald-500 focus:outline-none"
-                href={getRecordingLink?.(row.original) || "#"}
+              <Button
+                mode="text"
+                onClick={() => onClickRecording?.(row.original)}
               >
                 {pathFormatter(path)}
-              </Link>
+              </Button>
             </TableCell>
           );
         },
@@ -153,7 +163,7 @@ export default function useRecordingTable({
             <TableInput
               onChange={(value) => {
                 if (value === null) return;
-                onUpdate({
+                onUpdateRecording?.({
                   recording: row.original,
                   data: { time_expansion: parseFloat(value) },
                   index: row.index,
@@ -183,7 +193,7 @@ export default function useRecordingTable({
             <TableInput
               onChange={(value) => {
                 if (value === null) return;
-                onUpdate({
+                onUpdateRecording?.({
                   recording: row.original,
                   data: { date: new Date(value) },
                   index: row.index,
@@ -214,7 +224,7 @@ export default function useRecordingTable({
             <TableInput
               onChange={(value) => {
                 if (value === null) return;
-                onUpdate({
+                onUpdateRecording?.({
                   recording: row.original,
                   data: { time: value },
                   index: row.index,
@@ -252,7 +262,7 @@ export default function useRecordingTable({
             <TableMap
               onChange={(value) => {
                 if (value === null) return;
-                onUpdate({
+                onUpdateRecording?.({
                   recording: row.original,
                   data: value,
                   index: row.index,
@@ -279,16 +289,21 @@ export default function useRecordingTable({
           const tags = row.getValue("tags") as Tag[];
           return (
             <TableTags
-              tags={tags}
-              onAdd={(tag) =>
-                onAddTag({
+              tags={tags || []}
+              availableTags={availableTags}
+              canCreate={canCreateTag}
+              tagColorFn={tagColorFn}
+              onChangeQuery={onChangeTagQuery}
+              onCreateTag={onCreateTag}
+              onAddTag={(tag) =>
+                onAddRecordingTag?.({
                   recording: row.original,
                   tag,
                   index: row.index,
                 })
               }
-              onRemove={(tag) =>
-                onRemoveTag({
+              onDeleteTag={(tag) =>
+                onDeleteRecordingTag?.({
                   recording: row.original,
                   tag,
                   index: row.index,
@@ -323,10 +338,21 @@ export default function useRecordingTable({
         },
       },
     ],
-    [onAddTag, onRemoveTag, onUpdate, getRecordingLink, pathFormatter],
+    [
+      availableTags,
+      canCreateTag,
+      pathFormatter,
+      onAddRecordingTag,
+      onDeleteRecordingTag,
+      onUpdateRecording,
+      onClickRecording,
+      onCreateTag,
+      onChangeTagQuery,
+      tagColorFn,
+    ],
   );
 
-  const table = useReactTable<Recording>({
+  return useReactTable<Recording>({
     data,
     columns,
     state: { rowSelection },
@@ -335,6 +361,4 @@ export default function useRecordingTable({
     columnResizeMode: "onChange",
     getCoreRowModel: getCoreRowModel(),
   });
-
-  return table;
 }

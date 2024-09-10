@@ -69,8 +69,8 @@ export default function ClipAnnotationTags({
           </Button>
           <AddTagButton
             variant="primary"
-            onAdd={onAddTag}
-            onCreate={onCreateTag}
+            onSelectTag={onAddTag}
+            onCreateTag={onCreateTag}
             filter={tagFilter}
             text="Add tags"
             placeholder="Add tags..."

@@ -5,65 +5,25 @@ import Button from "@/lib/components/ui/Button";
 import { AddIcon } from "@/lib/components/icons";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 
-import type { TagFilter } from "@/lib/api/tags";
-import type { Tag as TagType } from "@/lib/types";
-import type { HTMLProps } from "react";
-
-function TagBarPopover({
-  onClose,
-  onCreate,
-  onAdd,
-  filter,
-  ...props
-}: {
-  onClose?: () => void;
-  onCreate?: (tag: TagType) => void;
-  filter?: TagFilter;
-  onAdd?: (tag: TagType) => void;
-} & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
-  return (
-    <TagSearchBar
-      // @ts-ignore
-      onSelectTag={(tag) => {
-        onAdd?.(tag);
-      }}
-      onCreateTag={(tag) => {
-        onCreate?.(tag);
-        onAdd?.(tag);
-      }}
-      autoFocus={true}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          onClose?.();
-        } else if (e.key === "Enter") {
-          onClose?.();
-        }
-      }}
-      initialFilter={filter}
-      {...props}
-    />
-  );
-}
+import type { ComponentProps } from "react";
 
 export default function AddTagButton({
-  onAdd,
-  onCreate,
   text = "add",
   variant = "secondary",
-  filter,
+  placement = "bottom-start",
+  autoFocus = true,
+  onKeyDown,
   ...props
 }: {
   text?: string;
-  filter?: TagFilter;
-  onAdd?: (tag: TagType) => void;
-  onCreate?: (tag: TagType) => void;
+  placement?: ComponentProps<typeof Float>["placement"];
   variant?: "primary" | "secondary" | "danger";
-} & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
+} & ComponentProps<typeof TagSearchBar>) {
   return (
     <Popover as="div" className="inline-block text-left">
       <Float
         zIndex={20}
-        placement="bottom"
+        placement={placement}
         offset={4}
         enter="transition duration-200 ease-out"
         enterFrom="scale-95 opacity-0"
@@ -81,11 +41,17 @@ export default function AddTagButton({
         </Popover.Button>
         <Popover.Panel className="w-72" focus unmount>
           {({ close }) => (
-            <TagBarPopover
-              onClose={close}
-              onAdd={onAdd}
-              onCreate={onCreate}
-              filter={filter}
+            <TagSearchBar
+              autoFocus={autoFocus}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  close();
+                } else if (e.key === "Enter") {
+                  close();
+                }
+
+                onKeyDown?.(e);
+              }}
               {...props}
             />
           )}

@@ -111,18 +111,18 @@ function FilterPanel<T extends Object>({
 
 export default function FilterPopover<T extends Object>({
   filterDef,
-  onSetFilterField,
   button,
   mode = "filled",
   variant = "primary",
   className,
+  onSetFilterField,
 }: {
-  onSetFilterField?: <K extends keyof T>(name: K, value: T[K]) => void;
   filterDef: FilterDef<T>[];
   button?: ReactNode;
   mode?: "filled" | "outline" | "text";
   variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";
   className?: string;
+  onSetFilterField?: <K extends keyof T>(name: K, value: T[K]) => void;
 }) {
   if (className == null) {
     className = getButtonClassName({ mode, variant });

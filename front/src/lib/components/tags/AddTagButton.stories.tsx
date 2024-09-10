@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import TagSearchBar from "./TagSearchBar";
+import AddTagButton from "./AddTagButton";
 import type { Tag } from "@/lib/types";
 
-const meta: Meta<typeof TagSearchBar> = {
-  title: "Tags/TagSearchBar",
-  component: TagSearchBar,
+const meta: Meta<typeof AddTagButton> = {
+  title: "Tags/AddTagButton",
+  component: AddTagButton,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof TagSearchBar>;
+type Story = StoryObj<typeof AddTagButton>;
 
 export const Primary: Story = {
   args: {
@@ -24,5 +24,6 @@ export const Primary: Story = {
     onCreateTag: fn(),
     onChangeQuery: fn(),
     canCreate: true,
+    placement: "bottom-start",
   },
 };
