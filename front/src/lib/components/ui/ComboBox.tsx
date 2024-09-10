@@ -12,12 +12,11 @@ export default function ComboBox<T extends object>(
   props: Omit<
     AriaComboBoxOptions<T>,
     "inputRef" | "listBoxRef" | "popoverRef"
-  > & { children: CollectionChildren<T> },
+  > & { children: CollectionChildren<T>; showLabel?: boolean },
 ) {
   let { contains } = useFilter({ sensitivity: "base" });
   let state = useComboBoxState<T>({ ...props, defaultFilter: contains });
 
-  let buttonRef = useRef(null);
   let inputRef = useRef(null);
   let listBoxRef = useRef(null);
   let popoverRef = useRef(null);
@@ -28,14 +27,19 @@ export default function ComboBox<T extends object>(
       inputRef,
       listBoxRef,
       popoverRef,
-      buttonRef,
     },
     state,
   );
 
   return (
     <div style={{ display: "inline-flex", flexDirection: "column" }}>
-      <InputLabel {...labelProps}>{props.label}</InputLabel>
+      <InputLabel
+        {...labelProps}
+        hidden={!(props.showLabel ?? true)}
+        aria-hidden={!(props.showLabel ?? true)}
+      >
+        {props.label}
+      </InputLabel>
       <div>
         <Input {...inputProps} ref={inputRef} />
         {state.isOpen && (

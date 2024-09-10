@@ -214,7 +214,7 @@ export function BooleanFilter({
 export function TagFilter({ onChange }: { onChange: (tag: Tag) => void }) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <TagSearchBar onSelect={(tag) => onChange(tag)} />
+      <TagSearchBar onSelectTag={(tag) => onChange(tag)} />
     </div>
   );
 }

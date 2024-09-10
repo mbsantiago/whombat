@@ -1,32 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from '@storybook/test';
+import { fn } from "@storybook/test";
 
-import { TagSearchBarComponent } from "./TagSearchBar";
+import TagSearchBar from "./TagSearchBar";
+import type { Tag } from "@/lib/types";
 
-const meta: Meta<typeof TagSearchBarComponent> = {
+const meta: Meta<typeof TagSearchBar> = {
   title: "Tags/TagSearchBar",
-  component: TagSearchBarComponent,
+  component: TagSearchBar,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof TagSearchBarComponent>;
+type Story = StoryObj<typeof TagSearchBar>;
 
 export const Primary: Story = {
   args: {
-    onSelect: fn(),
-    onCreate: fn(),
-    onChange: fn(),
+    tags: [
+      { key: "species", value: "Tadarida brasiliensis" },
+      { key: "species", value: "Myotis myotis" },
+      { key: "event", value: "Echolocation" },
+    ] as Tag[],
+    onSelectTag: fn(),
+    onCreateTag: fn(),
+    onQueryChange: fn(),
     canCreate: true,
-  },
-};
-
-export const Loading: Story = {
-  args: {
-    onSelect: fn(),
-    onCreate: fn(),
-    onChange: fn(),
-    canCreate: true,
-    isLoading: true,
   },
 };

@@ -55,7 +55,7 @@ export default function EvaluationSetTags({
             evaluation on. Select as many tags as you want.
           </small>
           <div className="py-2 mb-3">
-            <TagSearchBar autoFocus={false} onSelect={project.addTag.mutate} />
+            <TagSearchBar autoFocus={false} onSelectTag={project.addTag.mutate} />
           </div>
         </div>
         <div className="flex flex-col col-span-2 md:col-span-1 gap-2">

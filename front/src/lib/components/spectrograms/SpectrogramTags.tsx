@@ -28,10 +28,10 @@ function TagBarPopover({
   return (
     <TagSearchBar
       // @ts-ignore
-      onSelect={(tag) => {
+      onSelectTag={(tag) => {
         onAdd?.(tag);
       }}
-      onCreate={onCreate}
+      onCreateTag={onCreate}
       autoFocus={true}
       onKeyDown={(e) => {
         if (e.key === "Escape") {

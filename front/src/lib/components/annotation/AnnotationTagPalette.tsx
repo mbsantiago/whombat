@@ -56,8 +56,8 @@ export default function AnnotationTagPalette({
         </Tooltip>
         <div className="grow">
           <TagSearchBar
-            onSelect={onAddTag}
-            onCreate={onCreateTag}
+            onSelectTag={onAddTag}
+            onCreateTag={onCreateTag}
             initialFilter={tagFilter}
             placeholder="Add tags..."
           />

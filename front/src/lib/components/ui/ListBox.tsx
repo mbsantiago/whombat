@@ -1,4 +1,5 @@
 import { useRef, type RefObject } from "react";
+import type { CollectionChildren } from "@react-types/shared";
 import {
   useListBox,
   useOption,
@@ -12,6 +13,8 @@ export default function ListBox<T extends object>(
   props: {
     listState?: ListState<T>;
     listBoxRef?: RefObject<HTMLUListElement>;
+    children?: CollectionChildren<T>;
+    renderEmptyState?: () => JSX.Element;
   } & Omit<AriaListBoxProps<T>, "children">,
 ) {
   let ref = useRef(null);
@@ -32,11 +35,12 @@ export default function ListBox<T extends object>(
           <Option key={item.key} item={item} state={listState} />
         ),
       )}
+      {listState.collection.size === 0 ? props.renderEmptyState?.() : null}
     </ul>
   );
 }
 
-function Option<T>({ item, state }: { item: Node<T>; state: ListState<T> }) {
+export function Option<T>({ item, state }: { item: Node<T>; state: ListState<T> }) {
   let ref = useRef(null);
   let { optionProps, isSelected, isFocused, isDisabled } = useOption(
     { key: item.key },

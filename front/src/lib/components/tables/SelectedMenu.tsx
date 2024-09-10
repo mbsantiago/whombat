@@ -39,7 +39,7 @@ export default function SelectedMenu({
             </Button>
           }
         >
-          {() => <TagSearchBar onSelect={onTag} />}
+          {() => <TagSearchBar onSelectTag={onTag} />}
         </Popover>
       </li>
     </ul>

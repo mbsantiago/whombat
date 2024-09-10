@@ -24,10 +24,10 @@ function TagBarPopover({
   return (
     <TagSearchBar
       // @ts-ignore
-      onSelect={(tag) => {
+      onSelectTag={(tag) => {
         onAdd?.(tag);
       }}
-      onCreate={(tag) => {
+      onCreateTag={(tag) => {
         onCreate?.(tag);
         onAdd?.(tag);
       }}
