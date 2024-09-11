@@ -1,31 +1,49 @@
-import { type ComponentProps } from "react";
+import { type FC } from "react";
 
 import Button from "@/lib/components/ui/Button";
 import { DeleteIcon, TagIcon } from "@/lib/components/icons";
 import Popover from "@/lib/components/ui/Popover";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
+import TagSearchBarBase, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
+import { type Tag } from "@/lib/types";
 
-import type { Tag } from "@/lib/types";
-
+/**
+ * SelectedMenu Component
+ *
+ * This component renders a menu for actions that can be performed on selected
+ * items in a table. It displays the number of selected items and provides
+ * buttons for deleting or tagging the selected items.
+ *
+ * Example usage:
+ *
+ * ```tsx
+ * <SelectedMenu
+ *   numSelected={5}
+ *   onDeleteSelected={() => console.log('Delete selected')}
+ *   onTagSelected={(tag) => console.log('Tag selected', tag)}
+ * />
+ * ```
+ */
 export default function SelectedMenu({
   numSelected,
-  tags,
-  canCreateTag,
-  tagColorFn,
   onDeleteSelected,
   onTagSelected,
-  onChangeTagQuery,
-  onCreateTag,
+  TagSearchBar = TagSearchBarBase,
+  canCreateTag = true,
+  ...props
 }: {
+  /** The number of selected items. */
   numSelected: number;
-  tags?: Tag[];
-  canCreateTag?: boolean;
-  tagColorFn?: ComponentProps<typeof TagSearchBar>["tagColorFn"];
-  onChangeTagQuery?: ComponentProps<typeof TagSearchBar>["onChangeQuery"];
-  onCreateTag?: ComponentProps<typeof TagSearchBar>["onCreateTag"];
+  /** Callback function to handle deleting the selected items. */
   onDeleteSelected?: () => void;
+  /** Callback function to handle tagging the selected items. */
   onTagSelected?: (tag: Tag) => void;
-}) {
+  /** If true, allows the creation of new tags in the tag search bar. Default is true. */
+  canCreateTag?: boolean;
+  /** The tag search bar component to render inside the tag button popover. Default is `TagSearchBarBase`. */
+  TagSearchBar?: FC<TagSearchBarProps>;
+} & Omit<TagSearchBarProps, "canCreate" | "onTagSelected">) {
   if (numSelected === 0) {
     return null;
   }
@@ -54,13 +72,10 @@ export default function SelectedMenu({
         >
           {() => (
             <TagSearchBar
-              tags={tags}
-              placement="bottom-end"
               canCreate={canCreateTag}
-              tagColorFn={tagColorFn}
-              onCreateTag={onCreateTag}
               onSelectTag={onTagSelected}
-              onChangeQuery={onChangeTagQuery}
+              placement="bottom-end"
+              {...props}
             />
           )}
         </Popover>

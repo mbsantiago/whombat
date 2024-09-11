@@ -1,6 +1,5 @@
 "use client";
 import { useSearchParams, notFound } from "next/navigation";
-import { useHotkeysContext } from "react-hotkeys-hook";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 
@@ -8,6 +7,7 @@ import UserContext from "@/app/(base)/context";
 import Loading from "@/app/loading";
 import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
 import RecordingSpectrogram from "../components/RecordingSpectrogram";
+import TagSearchBar from "@/app/components/TagSearchBar";
 
 import useSettings from "@/app/hooks/useSettings";
 import useRecording from "@/app/hooks/useRecording";
@@ -19,7 +19,6 @@ export default function Page() {
 
   const settings = useSettings();
   const recording = useRecording({ uuid: recordingUUID });
-  const { hotkeys } = useHotkeysContext();
 
   if (recordingUUID == null) {
     notFound();
@@ -51,6 +50,7 @@ export default function Page() {
       onNoteUpdate={(note, data) => recording.updateNote({ note, data })}
       onNoteDelete={recording.removeNote}
       downloadUrl={recording.downloadUrl}
+      TagSearchBar={TagSearchBar}
     >
       <RecordingSpectrogram
         recording={recording.data}

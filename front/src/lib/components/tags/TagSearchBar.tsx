@@ -123,10 +123,10 @@ export type TagSearchBarProps = {
 type TagSearchBarExpandedProps = TagSearchBarProps & {
   /** List of tags to display in the dropdown menu. */
   tags?: TagType[];
-  /** Function to get the color of a tag. */
-  tagColorFn?: (tag: TagType) => Color;
   /** Callback function for change event. */
   onChangeQuery?: (query: Query) => void;
+  /** Function to get the color of a tag. */
+  tagColorFn?: (tag: TagType) => Color;
 } & Omit<
     InputHTMLAttributes<HTMLInputElement>,
     "onSelect" | "onChange" | "onKeyDown" | "onBlur"
@@ -164,7 +164,7 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
         const q = event.target.value;
         const [key, value] = q.split(":", 2);
         const newQuery =
-          value == null ? { q, key, value: null } : { q, key, value };
+          value == null ? { q, key: null, value: null } : { q, key, value };
         setQuery(newQuery);
         onChangeQuery?.(newQuery);
       },

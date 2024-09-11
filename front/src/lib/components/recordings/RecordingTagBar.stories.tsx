@@ -2,10 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
 import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
+import TagSearchBar, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
 
 const meta: Meta<typeof RecordingTagBar> = {
-  title: "Recordings/RecordingTagBar",
+  title: "Recordings/TagBar",
   component: RecordingTagBar,
 };
 
@@ -23,41 +25,27 @@ const tags = [
   { key: "tag1", value: "value7" },
 ];
 
+const props = {
+  onSelectTag: fn(),
+  onCreateTag: fn(),
+  onClickTag: fn(),
+  onDeleteTag: fn(),
+  TagSearchBar: (props: TagSearchBarProps) => (
+    <TagSearchBar tags={tags} {...props} />
+  ),
+};
+
 export const Primary: Story = {
   args: {
     tags: [{ key: "tag1", value: "value1" }],
-    onAddTag: fn(),
-    onCreateTag: fn(),
-    TagSearchBar: ({ close, ...props }) => (
-      <TagSearchBar
-        tags={tags}
-        onKeyDown={(event) => {
-          if (event.code == "Escape") {
-            close();
-          }
-        }}
-        {...props}
-      />
-    ),
+    ...props,
   },
 };
 
 export const NoTags: Story = {
   args: {
     tags: [],
-    onAddTag: fn(),
-    onCreateTag: fn(),
-    TagSearchBar: ({ close, ...props }) => (
-      <TagSearchBar
-        tags={tags}
-        onKeyDown={(event) => {
-          if (event.code == "Escape") {
-            close();
-          }
-        }}
-        {...props}
-      />
-    ),
+    ...props,
   },
 };
 
@@ -72,18 +60,6 @@ export const ManyTags: Story = {
       { key: "tag1", value: "value6" },
       { key: "tag1", value: "value7" },
     ],
-    onAddTag: fn(),
-    onCreateTag: fn(),
-    TagSearchBar: ({ close, ...props }) => (
-      <TagSearchBar
-        tags={tags}
-        onKeyDown={(event) => {
-          if (event.code == "Escape") {
-            close();
-          }
-        }}
-        {...props}
-      />
-    ),
+    ...props,
   },
 };

@@ -4,12 +4,36 @@ import { EditIcon } from "@/lib/components/icons";
 
 import type { HTMLProps, ReactNode } from "react";
 
+/**
+ * TableCell Component
+ *
+ * This component renders a table cell that can optionally be editable.
+ * It displays the provided children and, if editable, shows an edit icon.
+ *
+ * If the cell is editable and no `tabIndex` is provided in the props, a
+ * `tabIndex` of 0 is added to make the cell focusable.
+ *
+ * Example usage:
+ *
+ * ```tsx
+ * <TableCell editable={true} className="custom-class">
+ *   Cell Content
+ * </TableCell>
+ * ```
+ */
 export default function TableCell({
   children,
   editable = false,
   className,
   ...props
-}: { children: ReactNode; editable?: boolean } & HTMLProps<HTMLDivElement>) {
+}: {
+  /** The content to display inside the table cell. */
+  children: ReactNode;
+  /** If true, the cell is editable and an edit icon is displayed. Default is
+   * false.
+   **/
+  editable?: boolean;
+} & HTMLProps<HTMLDivElement>) {
   if (!("tabIndex" in props) && editable) {
     props.tabIndex = 0;
   }
@@ -21,9 +45,9 @@ export default function TableCell({
         className,
       )}
     >
-      <span className="grow overflow-x-auto">{children}</span>
+      <span className="overflow-x-auto grow">{children}</span>
       {!editable ? null : (
-        <EditIcon className="inline-block h-5 w-5 text-stone-500" />
+        <EditIcon className="inline-block w-5 h-5 text-stone-500" />
       )}
     </div>
   );

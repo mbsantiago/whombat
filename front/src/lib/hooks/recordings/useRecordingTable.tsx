@@ -3,7 +3,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState, useMemo, type ComponentProps } from "react";
+import { useState, useMemo, type FC } from "react";
 
 import {
   DateIcon,
@@ -13,6 +13,7 @@ import {
   TagIcon,
   TimeIcon,
 } from "@/lib/components/icons";
+import { type Color } from "@/lib/utils/tags";
 import Button from "@/lib/components/ui/Button";
 import TableCell from "@/lib/components/tables/TableCell";
 import Checkbox from "@/lib/components/tables/TableCheckbox";
@@ -20,6 +21,9 @@ import TableHeader from "@/lib/components/tables/TableHeader";
 import TableInput from "@/lib/components/tables/TableInput";
 import TableMap from "@/lib/components/tables/TableMap";
 import TableTags from "@/lib/components/tables/TableTags";
+import TagSearchBarBase, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
 
 import type { RecordingUpdate } from "@/lib/api/recordings";
 import type { Note, Recording, Tag } from "@/lib/types";
@@ -28,24 +32,21 @@ const defaultPathFormatter = (path: string) => path;
 
 export default function useRecordingTable({
   data,
-  availableTags,
   canCreateTag = true,
-  tagColorFn,
   pathFormatter = defaultPathFormatter,
-  onCreateTag,
-  onChangeTagQuery,
+  TagSearchBar = TagSearchBarBase,
   onClickRecording,
+  onCreateTag,
   onUpdateRecording,
   onAddRecordingTag,
   onDeleteRecordingTag,
+  onClickTag,
+  tagColorFn,
 }: {
   data: Recording[];
   pathFormatter?: (path: string) => string;
-  availableTags?: Tag[];
   canCreateTag?: boolean;
-  tagColorFn?: ComponentProps<typeof TableTags>["tagColorFn"];
-  onCreateTag?: ComponentProps<typeof TableTags>["onCreateTag"];
-  onChangeTagQuery?: ComponentProps<typeof TableTags>["onChangeQuery"];
+  TagSearchBar?: FC<TagSearchBarProps>;
   onUpdateRecording?: ({
     recording,
     data,
@@ -74,7 +75,9 @@ export default function useRecordingTable({
     tag: Tag;
     index: number;
   }) => void;
-}) {
+  onClickTag?: (tag: Tag) => void;
+  tagColorFn?: (tag: Tag) => Color;
+} & Omit<TagSearchBarProps, "onSelectTag" | "canCreate">) {
   const [rowSelection, setRowSelection] = useState({});
 
   const tagRow: ColumnDef<Recording> = useMemo(
@@ -93,12 +96,12 @@ export default function useRecordingTable({
         return (
           <TableTags
             tags={tags}
-            availableTags={availableTags}
             canCreate={canCreateTag}
             tagColorFn={tagColorFn}
-            onChangeQuery={onChangeTagQuery}
+            TagSearchBar={TagSearchBar}
+            onClickTag={onClickTag}
             onCreateTag={onCreateTag}
-            onAddTag={(tag) =>
+            onSelectTag={(tag) =>
               onAddRecordingTag?.({
                 recording: row.original,
                 tag,
@@ -117,13 +120,13 @@ export default function useRecordingTable({
       },
     }),
     [
-      availableTags,
+      tagColorFn,
+      TagSearchBar,
       canCreateTag,
       onAddRecordingTag,
-      onDeleteRecordingTag,
-      onChangeTagQuery,
+      onClickTag,
       onCreateTag,
-      tagColorFn,
+      onDeleteRecordingTag,
     ],
   );
 

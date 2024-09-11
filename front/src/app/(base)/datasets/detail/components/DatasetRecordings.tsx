@@ -1,13 +1,13 @@
 import { useRouter } from "next/navigation";
-import { use, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { parsePosition } from "@/lib/components/tables/TableMap";
 import useRecordings from "@/app/hooks/api/useRecordings";
 import useStore from "@/app/store";
-import useTags from "@/app/hooks/api/useTags";
 
 import Loading from "@/app/loading";
 import RecordingTable from "@/lib/components/recordings/RecordingTable";
 
+import TagSearchBar from "@/app/components/TagSearchBar";
 import { type RecordingUpdate } from "@/lib/api/recordings";
 import type { Recording, Tag, Dataset } from "@/lib/types";
 import type { KeyboardEvent } from "react";
@@ -157,18 +157,10 @@ function useRecordingTableKeyShortcuts({
   return handleKeyDown;
 }
 
-export default function DatasetRecordings({
-  dataset,
-  getRecordingLink: getRecordingLinkFn,
-}: {
-  dataset: Dataset;
-  getRecordingLink?: (recording: Recording) => string;
-}) {
+export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
   const router = useRouter();
 
   const tagColorFn = useStore((state) => state.getTagColor);
-
-  const tags = useTags();
 
   const pathFormatter = useCallback(
     (path: string) => {
@@ -184,15 +176,13 @@ export default function DatasetRecordings({
 
   const onClickRecording = useCallback(
     (recording: Recording) => {
-      if (getRecordingLinkFn == null) return undefined;
-      const url = getRecordingLinkFn(recording);
+      const url = `detail/?recording_uuid=${recording.uuid}`;
       router.push(`${url}&dataset_uuid=${dataset.uuid}`);
     },
-    [getRecordingLinkFn, dataset.uuid, router],
+    [dataset.uuid, router],
   );
 
   const filter = useMemo(() => ({ dataset }), [dataset]);
-
   const recordings = useRecordings({ filter, fixed: ["dataset"] });
 
   const handleKeyDown = useRecordingTableKeyShortcuts({
@@ -200,46 +190,6 @@ export default function DatasetRecordings({
     onAddTag: recordings.addTag.mutate,
     onRemoveTag: recordings.removeTag.mutate,
   });
-
-  const handleSearchChange = useCallback(
-    (q: string) => recordings.filter.set("search", q),
-    [recordings.filter],
-  );
-
-  const handleSetFilterField = useCallback(
-    (field, value) => recordings.filter.set(field, value),
-    [recordings.filter],
-  );
-
-  const handleClearFilterField = useCallback(
-    (field) => recordings.filter.clear(field),
-    [recordings.filter],
-  );
-
-  const handleDeleteRecordingTag = useCallback(
-    (data) => recordings.removeTag.mutate(data),
-    [recordings.removeTag],
-  );
-
-  const handleAddRecordingTag = useCallback(
-    (data) => recordings.addTag.mutate(data),
-    [recordings.addTag],
-  );
-
-  const handleUpdateRecording = useCallback(
-    (data) => recordings.updateRecording.mutate(data),
-    [recordings.updateRecording],
-  );
-
-  const handleDeleteRecording = useCallback(
-    (data) => recordings.deleteRecording.mutate(data),
-    [recordings.deleteRecording],
-  );
-
-  const handleChangeTagQuery = useCallback(
-    (query) => tags.filter.set("search", query.q),
-    [tags.filter],
-  );
 
   if (recordings.isLoading || recordings.data == null) {
     return <Loading />;
@@ -252,19 +202,17 @@ export default function DatasetRecordings({
       numRecordings={recordings.total}
       fixedFilterFields={recordings.filter.fixed}
       pathFormatter={pathFormatter}
-      onSearchChange={handleSearchChange}
-      onSetFilterField={handleSetFilterField}
-      onClearFilterField={handleClearFilterField}
+      onSearchChange={(q) => recordings.filter.set("search", q)}
+      onSetFilterField={(field, value) => recordings.filter.set(field, value)}
+      onClearFilterField={(field) => recordings.filter.clear(field)}
       onCellKeyDown={handleKeyDown}
       onClickRecording={onClickRecording}
-      onDeleteRecordingTag={handleDeleteRecordingTag}
-      onAddRecordingTag={handleAddRecordingTag}
-      onUpdateRecording={handleUpdateRecording}
-      onDeleteRecording={handleDeleteRecording}
       tagColorFn={tagColorFn}
-      availableTags={tags.items}
-      canCreateTag={true}
-      onChangeTagQuery={handleChangeTagQuery}
+      onDeleteRecordingTag={(data) => recordings.removeTag.mutate(data)}
+      onAddRecordingTag={(data) => recordings.addTag.mutate(data)}
+      onUpdateRecording={(data) => recordings.updateRecording.mutate(data)}
+      onDeleteRecording={(data) => recordings.deleteRecording.mutate(data)}
+      TagSearchBar={TagSearchBar}
       {...recordings.pagination}
     />
   );

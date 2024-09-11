@@ -4,9 +4,13 @@ import RecordingMap from "./RecordingMap";
 import RecordingMediaInfo from "./RecordingMediaInfo";
 import RecordingNotes from "./RecordingNotes";
 import RecordingTagBar from "./RecordingTagBar";
+import TagSearchBarBase, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
 
 import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
 import { getTagColor, type Color } from "@/lib/utils/tags";
+import { type FC } from "react";
 
 import type {
   Note,
@@ -31,6 +35,7 @@ export default function RecordingDetail({
   onNoteUpdate,
   onNoteDelete,
   colorFn = getTagColor,
+  TagSearchBar = TagSearchBarBase,
 }: {
   recording: Recording;
   currentUser?: User;
@@ -47,6 +52,7 @@ export default function RecordingDetail({
   onNoteUpdate?: (note: Note, data: NoteUpdate) => void;
   onNoteDelete?: (note: Note) => void;
   children?: React.ReactNode;
+  TagSearchBar?: FC<TagSearchBarProps>;
 }) {
   return (
     <div className="flex flex-col gap-4 pb-4">
@@ -61,10 +67,11 @@ export default function RecordingDetail({
             <div className="col-span-2">
               <RecordingTagBar
                 tags={recording.tags ?? []}
-                onAddTag={onTagAdd}
+                onSelectTag={onTagAdd}
                 onClickTag={onTagClick}
                 onDeleteTag={onTagRemove}
                 colorFn={colorFn}
+                TagSearchBar={TagSearchBar}
               />
             </div>
             <div className="col-span-2">{children}</div>

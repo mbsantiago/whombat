@@ -79,7 +79,7 @@ export default function TableMap({
           unmount
           className="absolute left-1/2 z-40 px-4 mt-3 transform -translate-x-1/2 sm:px-0 lg:max-w-3xl"
         >
-          <div className="dark:bg-stone-800 bg-stone-200 w-80 border border-stone-300 dark:border-stone-700 border-1 p-2 rounded-md">
+          <div className="p-2 w-80 rounded-md border bg-stone-200 border-stone-300 border-1 dark:bg-stone-800 dark:border-stone-700">
             <LocationInput value={initialValue} onChange={onChange} />
           </div>
         </Popover.Panel>
