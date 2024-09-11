@@ -1,14 +1,16 @@
-import { useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { use, useCallback, useMemo } from "react";
 import { parsePosition } from "@/lib/components/tables/TableMap";
 import useRecordings from "@/app/hooks/api/useRecordings";
-import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
 import useStore from "@/app/store";
+import useTags from "@/app/hooks/api/useTags";
 
 import Loading from "@/app/loading";
 import RecordingTable from "@/lib/components/recordings/RecordingTable";
 
 import { type RecordingUpdate } from "@/lib/api/recordings";
 import type { Recording, Tag, Dataset } from "@/lib/types";
+import type { KeyboardEvent } from "react";
 
 const EDITABLE_COLUMNS = ["date", "time", "location", "tags"];
 
@@ -30,6 +32,7 @@ function useRecordingTableKeyShortcuts({
   }) => void;
 }) {
   const clipboard = useStore((state) => state.clipboard);
+
   const copy = useStore((state) => state.copy);
 
   const handleKeyDown = useMemo(() => {
@@ -120,8 +123,8 @@ function useRecordingTableKeyShortcuts({
       column,
       row,
     }: {
-      event: KeyboardEvent;
-      data: Recording;
+      event: KeyboardEvent<Element>;
+      data: unknown;
       row: number;
       value: any;
       column: string;
@@ -141,12 +144,12 @@ function useRecordingTableKeyShortcuts({
         if (clipboard.context !== "recordings_table") return;
         if (clipboard.column !== column) return;
         const value = clipboard.value;
-        handlePaste({ recording: data, column, value, row });
+        handlePaste({ recording: data as Recording, column, value, row });
       }
 
       // Delete value on delete or backspace
       if (event.key === "Delete" || event.key === "Backspace") {
-        handleDelete({ recording: data, column, row });
+        handleDelete({ recording: data as Recording, column, row });
       }
     };
   }, [clipboard, onUpdate, onAddTag, onRemoveTag, copy]);
@@ -161,6 +164,12 @@ export default function DatasetRecordings({
   dataset: Dataset;
   getRecordingLink?: (recording: Recording) => string;
 }) {
+  const router = useRouter();
+
+  const tagColorFn = useStore((state) => state.getTagColor);
+
+  const tags = useTags();
+
   const pathFormatter = useCallback(
     (path: string) => {
       const prefix = dataset.audio_dir;
@@ -173,14 +182,14 @@ export default function DatasetRecordings({
     [dataset.audio_dir],
   );
 
-  const getRecordingLink = useMemo(() => {
-    if (getRecordingLinkFn == null) return undefined;
-
-    return (recording: Recording) => {
+  const onClickRecording = useCallback(
+    (recording: Recording) => {
+      if (getRecordingLinkFn == null) return undefined;
       const url = getRecordingLinkFn(recording);
-      return `${url}&dataset_uuid=${dataset.uuid}`;
-    };
-  }, [getRecordingLinkFn, dataset.uuid]);
+      router.push(`${url}&dataset_uuid=${dataset.uuid}`);
+    },
+    [getRecordingLinkFn, dataset.uuid, router],
+  );
 
   const filter = useMemo(() => ({ dataset }), [dataset]);
 
@@ -192,34 +201,45 @@ export default function DatasetRecordings({
     onRemoveTag: recordings.removeTag.mutate,
   });
 
-  const { rowSelection } = table.options.state;
-  const handleTagSelected = useCallback(
-    async (tag: Tag) => {
-      if (rowSelection == null) return;
-      for (const index of Object.keys(rowSelection)) {
-        if (!rowSelection[index]) continue;
-        const recording = recordings.items[Number(index)];
-        await recordings.addTag.mutateAsync({
-          recording,
-          tag,
-          index: Number(index),
-        });
-      }
-    },
-    [rowSelection, recordings.addTag, recordings.items],
+  const handleSearchChange = useCallback(
+    (q: string) => recordings.filter.set("search", q),
+    [recordings.filter],
   );
 
-  const handleDeleteSelected = useCallback(async () => {
-    if (rowSelection == null) return;
-    for (const index of Object.keys(rowSelection)) {
-      if (!rowSelection[index]) continue;
-      const recording = recordings.items[Number(index)];
-      await recordings.deleteRecording.mutateAsync({
-        recording,
-        index: Number(index),
-      });
-    }
-  }, [rowSelection, recordings.items, recordings.deleteRecording]);
+  const handleSetFilterField = useCallback(
+    (field, value) => recordings.filter.set(field, value),
+    [recordings.filter],
+  );
+
+  const handleClearFilterField = useCallback(
+    (field) => recordings.filter.clear(field),
+    [recordings.filter],
+  );
+
+  const handleDeleteRecordingTag = useCallback(
+    (data) => recordings.removeTag.mutate(data),
+    [recordings.removeTag],
+  );
+
+  const handleAddRecordingTag = useCallback(
+    (data) => recordings.addTag.mutate(data),
+    [recordings.addTag],
+  );
+
+  const handleUpdateRecording = useCallback(
+    (data) => recordings.updateRecording.mutate(data),
+    [recordings.updateRecording],
+  );
+
+  const handleDeleteRecording = useCallback(
+    (data) => recordings.deleteRecording.mutate(data),
+    [recordings.deleteRecording],
+  );
+
+  const handleChangeTagQuery = useCallback(
+    (query) => tags.filter.set("search", query.q),
+    [tags.filter],
+  );
 
   if (recordings.isLoading || recordings.data == null) {
     return <Loading />;
@@ -227,10 +247,25 @@ export default function DatasetRecordings({
 
   return (
     <RecordingTable
-      filter={filter}
-      fixed={["dataset"]}
-      getRecordingLink={getRecordingLink}
+      recordings={recordings.items}
+      filter={recordings.filter.filter}
+      numRecordings={recordings.total}
+      fixedFilterFields={recordings.filter.fixed}
       pathFormatter={pathFormatter}
+      onSearchChange={handleSearchChange}
+      onSetFilterField={handleSetFilterField}
+      onClearFilterField={handleClearFilterField}
+      onCellKeyDown={handleKeyDown}
+      onClickRecording={onClickRecording}
+      onDeleteRecordingTag={handleDeleteRecordingTag}
+      onAddRecordingTag={handleAddRecordingTag}
+      onUpdateRecording={handleUpdateRecording}
+      onDeleteRecording={handleDeleteRecording}
+      tagColorFn={tagColorFn}
+      availableTags={tags.items}
+      canCreateTag={true}
+      onChangeTagQuery={handleChangeTagQuery}
+      {...recordings.pagination}
     />
   );
 }

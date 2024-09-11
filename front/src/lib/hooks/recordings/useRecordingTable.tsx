@@ -3,7 +3,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState, type ComponentProps } from "react";
+import { useState, useMemo, type ComponentProps } from "react";
 
 import {
   DateIcon,
@@ -77,278 +77,334 @@ export default function useRecordingTable({
 }) {
   const [rowSelection, setRowSelection] = useState({});
 
-  // Column definitions
-  const columns = useMemo<ColumnDef<Recording>[]>(
-    () => [
-      {
-        id: "select",
-        maxSize: 33,
-        enableResizing: false,
-        header: ({ table }) => (
-          <Checkbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
+  const tagRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "tags",
+      enableResizing: true,
+      header: () => (
+        <TableHeader>
+          <TagIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+          Tags
+        </TableHeader>
+      ),
+      accessorFn: (row) => row.tags,
+      cell: ({ row }) => {
+        const tags = row.getValue("tags") as Tag[];
+        return (
+          <TableTags
+            tags={tags}
+            availableTags={availableTags}
+            canCreate={canCreateTag}
+            tagColorFn={tagColorFn}
+            onChangeQuery={onChangeTagQuery}
+            onCreateTag={onCreateTag}
+            onAddTag={(tag) =>
+              onAddRecordingTag?.({
+                recording: row.original,
+                tag,
+                index: row.index,
+              })
+            }
+            onDeleteTag={(tag) =>
+              onDeleteRecordingTag?.({
+                recording: row.original,
+                tag,
+                index: row.index,
+              })
+            }
           />
-        ),
-        cell: ({ row }) => (
-          <div className="flex justify-center px-1">
-            <Checkbox
-              {...{
-                checked: row.getIsSelected(),
-                disabled: !row.getCanSelect(),
-                indeterminate: row.getIsSomeSelected(),
-                onChange: row.getToggleSelectedHandler(),
-              }}
-            />
-          </div>
-        ),
+        );
       },
-      {
-        accessorFn: (row) => row.path,
-        id: "path",
-        header: () => <TableHeader>Path</TableHeader>,
-        size: 200,
-        enableResizing: true,
-        footer: (props) => props.column.id,
-        cell: ({ row }) => {
-          const path = row.getValue("path") as string;
-          return (
-            <TableCell>
-              <Button
-                mode="text"
-                onClick={() => onClickRecording?.(row.original)}
-              >
-                {pathFormatter(path)}
-              </Button>
-            </TableCell>
-          );
-        },
-      },
-      {
-        id: "duration",
-        header: () => <TableHeader>Duration</TableHeader>,
-        enableResizing: true,
-        size: 100,
-        accessorFn: (row) => row.duration.toFixed(2),
-        cell: ({ row }) => {
-          const duration = row.getValue("duration") as string;
-          return <TableCell>{duration}</TableCell>;
-        },
-      },
-      {
-        id: "samplerate",
-        accessorKey: "samplerate",
-        header: () => <TableHeader>Sample Rate</TableHeader>,
-        enableResizing: true,
-        size: 120,
-        footer: (props) => props.column.id,
-        cell: ({ row }) => {
-          const samplerate = row.getValue("samplerate") as string;
-          return <TableCell>{samplerate}</TableCell>;
-        },
-      },
-      {
-        id: "time_expansion",
-        accessorKey: "time_expansion",
-        header: () => <TableHeader>Time Expansion</TableHeader>,
-        enableResizing: true,
-        size: 120,
-        footer: (props) => props.column.id,
-        cell: ({ row }) => {
-          const value = row.getValue("time_expansion") as string;
-          return (
-            <TableInput
-              onChange={(value) => {
-                if (value === null) return;
-                onUpdateRecording?.({
-                  recording: row.original,
-                  data: { time_expansion: parseFloat(value) },
-                  index: row.index,
-                });
-              }}
-              type="number"
-              value={value}
-            />
-          );
-        },
-      },
-      {
-        id: "date",
-        enableResizing: true,
-        size: 140,
-        header: () => {
-          return (
-            <TableHeader>
-              <DateIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
-              Date
-            </TableHeader>
-          );
-        },
-        cell: ({ row }) => {
-          const date = row.getValue("date") as string;
-          return (
-            <TableInput
-              onChange={(value) => {
-                if (value === null) return;
-                onUpdateRecording?.({
-                  recording: row.original,
-                  data: { date: new Date(value) },
-                  index: row.index,
-                });
-              }}
-              type="date"
-              value={date}
-            />
-          );
-        },
-        accessorFn: (row) => row.date?.toLocaleDateString("en-CA"),
-      },
-      {
-        id: "time",
-        enableResizing: true,
-        size: 120,
-        header: () => {
-          return (
-            <TableHeader>
-              <TimeIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
-              Time
-            </TableHeader>
-          );
-        },
-        cell: ({ row }) => {
-          const time = row.getValue("time") as string;
-          return (
-            <TableInput
-              onChange={(value) => {
-                if (value === null) return;
-                onUpdateRecording?.({
-                  recording: row.original,
-                  data: { time: value },
-                  index: row.index,
-                });
-              }}
-              type="time"
-              value={time}
-              step="1"
-            />
-          );
-        },
-        accessorFn: (row) => row.time,
-      },
-      {
-        id: "location",
-        enableResizing: true,
-        header: () => {
-          return (
-            <TableHeader>
-              <LocationIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
-              Location
-            </TableHeader>
-          );
-        },
-        accessorFn: (row) => ({
-          latitude: row.latitude,
-          longitude: row.longitude,
-        }),
-        cell: ({ row }) => {
-          const location = row.getValue("location") as {
-            latitude: number | null;
-            longitude: number | null;
-          };
-          return (
-            <TableMap
-              onChange={(value) => {
-                if (value === null) return;
-                onUpdateRecording?.({
-                  recording: row.original,
-                  data: value,
-                  index: row.index,
-                });
-              }}
-              value={location}
-            />
-          );
-        },
-      },
-      {
-        id: "tags",
-        enableResizing: true,
-        header: () => {
-          return (
-            <TableHeader>
-              <TagIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
-              Tags
-            </TableHeader>
-          );
-        },
-        accessorFn: (row) => row.tags,
-        cell: ({ row }) => {
-          const tags = row.getValue("tags") as Tag[];
-          return (
-            <TableTags
-              tags={tags || []}
-              availableTags={availableTags}
-              canCreate={canCreateTag}
-              tagColorFn={tagColorFn}
-              onChangeQuery={onChangeTagQuery}
-              onCreateTag={onCreateTag}
-              onAddTag={(tag) =>
-                onAddRecordingTag?.({
-                  recording: row.original,
-                  tag,
-                  index: row.index,
-                })
-              }
-              onDeleteTag={(tag) =>
-                onDeleteRecordingTag?.({
-                  recording: row.original,
-                  tag,
-                  index: row.index,
-                })
-              }
-            />
-          );
-        },
-      },
-      {
-        id: "notes",
-        enableResizing: true,
-        header: () => {
-          return (
-            <TableHeader>
-              <NotesIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
-              Notes
-            </TableHeader>
-          );
-        },
-        accessorFn: (row) => row.notes,
-        cell: ({ row }) => {
-          const notes = row.getValue("notes") as Note[];
-          if ((notes || []).length == 0) return null;
-
-          return (
-            <span className="ms-2">
-              <SunIcon className="inline-block mr-2 w-5 h-5 text-blue-500 align-middle" />
-              {notes.length} notes
-            </span>
-          );
-        },
-      },
-    ],
+    }),
     [
       availableTags,
       canCreateTag,
-      pathFormatter,
       onAddRecordingTag,
       onDeleteRecordingTag,
-      onUpdateRecording,
-      onClickRecording,
-      onCreateTag,
       onChangeTagQuery,
+      onCreateTag,
       tagColorFn,
+    ],
+  );
+
+  const selectRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "select",
+      maxSize: 33,
+      enableResizing: false,
+      header: ({ table }) => (
+        <Checkbox
+          {...{
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler(),
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="flex justify-center px-1">
+          <Checkbox
+            {...{
+              checked: row.getIsSelected(),
+              disabled: !row.getCanSelect(),
+              indeterminate: row.getIsSomeSelected(),
+              onChange: row.getToggleSelectedHandler(),
+            }}
+          />
+        </div>
+      ),
+    }),
+    [],
+  );
+
+  const pathRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      accessorFn: (row) => row.path,
+      id: "path",
+      header: () => <TableHeader>Path</TableHeader>,
+      size: 200,
+      enableResizing: true,
+      footer: (props) => props.column.id,
+      cell: ({ row }) => {
+        const path = row.getValue("path") as string;
+        return (
+          <TableCell>
+            <Button
+              mode="text"
+              onClick={() => onClickRecording?.(row.original)}
+            >
+              {pathFormatter(path)}
+            </Button>
+          </TableCell>
+        );
+      },
+    }),
+    [onClickRecording, pathFormatter],
+  );
+
+  const durationRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "duration",
+      header: () => <TableHeader>Duration</TableHeader>,
+      enableResizing: true,
+      size: 100,
+      accessorFn: (row) => row.duration.toFixed(2),
+      cell: ({ row }) => {
+        const duration = row.getValue("duration") as string;
+        return <TableCell>{duration}</TableCell>;
+      },
+    }),
+    [],
+  );
+
+  const samplerateRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "samplerate",
+      accessorKey: "samplerate",
+      header: () => <TableHeader>Sample Rate</TableHeader>,
+      enableResizing: true,
+      size: 120,
+      footer: (props) => props.column.id,
+      cell: ({ row }) => {
+        const samplerate = row.getValue("samplerate") as string;
+        return <TableCell>{samplerate}</TableCell>;
+      },
+    }),
+    [],
+  );
+
+  const timeExpansionRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "time_expansion",
+      accessorKey: "time_expansion",
+      header: () => <TableHeader>Time Expansion</TableHeader>,
+      enableResizing: true,
+      size: 120,
+      footer: (props) => props.column.id,
+      cell: ({ row }) => {
+        const value = row.getValue("time_expansion") as string;
+        return (
+          <TableInput
+            onChange={(value) => {
+              if (value === null) return;
+              onUpdateRecording?.({
+                recording: row.original,
+                data: { time_expansion: parseFloat(value) },
+                index: row.index,
+              });
+            }}
+            type="number"
+            value={value}
+          />
+        );
+      },
+    }),
+    [onUpdateRecording],
+  );
+
+  const dateRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "date",
+      enableResizing: true,
+      size: 140,
+      header: () => {
+        return (
+          <TableHeader>
+            <DateIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+            Date
+          </TableHeader>
+        );
+      },
+      cell: ({ row }) => {
+        const date = row.getValue("date") as string;
+        return (
+          <TableInput
+            onChange={(value) => {
+              if (value === null) return;
+              onUpdateRecording?.({
+                recording: row.original,
+                data: { date: new Date(value) },
+                index: row.index,
+              });
+            }}
+            type="date"
+            value={date}
+          />
+        );
+      },
+      accessorFn: (row) => row.date?.toLocaleDateString("en-CA"),
+    }),
+    [onUpdateRecording],
+  );
+
+  const timeRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "time",
+      enableResizing: true,
+      size: 120,
+      header: () => {
+        return (
+          <TableHeader>
+            <TimeIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+            Time
+          </TableHeader>
+        );
+      },
+      cell: ({ row }) => {
+        const time = row.getValue("time") as string;
+        return (
+          <TableInput
+            onChange={(value) => {
+              if (value === null) return;
+              onUpdateRecording?.({
+                recording: row.original,
+                data: { time: value },
+                index: row.index,
+              });
+            }}
+            type="time"
+            value={time}
+            step="1"
+          />
+        );
+      },
+      accessorFn: (row) => row.time,
+    }),
+    [onUpdateRecording],
+  );
+
+  const locationRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "location",
+      enableResizing: true,
+      header: () => {
+        return (
+          <TableHeader>
+            <LocationIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+            Location
+          </TableHeader>
+        );
+      },
+      accessorFn: (row) => ({
+        latitude: row.latitude,
+        longitude: row.longitude,
+      }),
+      cell: ({ row }) => {
+        const location = row.getValue("location") as {
+          latitude: number | null;
+          longitude: number | null;
+        };
+        return (
+          <TableMap
+            onChange={(value) => {
+              if (value === null) return;
+              onUpdateRecording?.({
+                recording: row.original,
+                data: value,
+                index: row.index,
+              });
+            }}
+            value={location}
+          />
+        );
+      },
+    }),
+    [onUpdateRecording],
+  );
+
+  const notesRow: ColumnDef<Recording> = useMemo(
+    () => ({
+      id: "notes",
+      enableResizing: true,
+      header: () => {
+        return (
+          <TableHeader>
+            <NotesIcon className="inline-block mr-2 w-5 h-5 align-middle text-stone-500" />
+            Notes
+          </TableHeader>
+        );
+      },
+      accessorFn: (row) => row.notes,
+      cell: ({ row }) => {
+        const notes = row.getValue("notes") as Note[];
+        if ((notes || []).length == 0) return null;
+
+        return (
+          <span className="ms-2">
+            <SunIcon className="inline-block mr-2 w-5 h-5 text-blue-500 align-middle" />
+            {notes.length} notes
+          </span>
+        );
+      },
+    }),
+    [],
+  );
+
+  // Column definitions
+  const columns: ColumnDef<Recording>[] = useMemo(
+    () => [
+      selectRow,
+      pathRow,
+      durationRow,
+      samplerateRow,
+      timeExpansionRow,
+      dateRow,
+      timeRow,
+      locationRow,
+      tagRow,
+      notesRow,
+    ],
+    [
+      selectRow,
+      pathRow,
+      durationRow,
+      samplerateRow,
+      timeExpansionRow,
+      dateRow,
+      timeRow,
+      locationRow,
+      tagRow,
+      notesRow,
     ],
   );
 

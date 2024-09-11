@@ -15,14 +15,13 @@ import type { Recording, Tag } from "@/lib/types";
 export default function RecordingTable({
   recordings,
   filter,
-  numSelected = 0,
   numRecordings,
   fixedFilterFields,
   availableTags,
   pathFormatter,
   onClickRecording,
   onSearchChange,
-  onFilterFieldSet,
+  onSetFilterField,
   onClearFilterField,
   onCellKeyDown,
   onUpdateRecording,
@@ -34,12 +33,11 @@ export default function RecordingTable({
   recordings: Recording[];
   filter?: RecordingFilter;
   numRecordings?: number;
-  numSelected?: number;
   fixedFilterFields?: (keyof RecordingFilter)[];
   availableTags?: Tag[];
   pathFormatter?: (path: string) => string;
   onSearchChange?: (value: string) => void;
-  onFilterFieldSet?: <T extends keyof RecordingFilter>(
+  onSetFilterField?: <T extends keyof RecordingFilter>(
     key: T,
     value: RecordingFilter[T],
   ) => void;
@@ -107,7 +105,7 @@ export default function RecordingTable({
             />
           </div>
           <FilterPopover
-            onSetFilterField={onFilterFieldSet}
+            onSetFilterField={onSetFilterField}
             filterDef={recordingFilterDefs}
           />
         </div>

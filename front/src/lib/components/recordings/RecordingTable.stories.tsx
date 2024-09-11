@@ -25,6 +25,10 @@ export const Primary: Story = {
     onUpdateRecording: fn(),
     onCreateTag: fn(),
     onChangeTagQuery: fn(),
+    setPageSize: fn(),
+    nextPage: fn(),
+    prevPage: fn(),
+    setPage: fn(),
     recordings: [
       {
         uuid: "1",
@@ -107,7 +111,8 @@ export const Primary: Story = {
     ] as Recording[],
     page: 0,
     availableTags: [],
-    numPages: 1,
+    numPages: 2,
+    hasNextPage: true,
     pageSize: 10,
   },
 };

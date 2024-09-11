@@ -3,6 +3,7 @@
  * table cell.
  */
 
+import { memo } from "react";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
 
@@ -16,7 +17,7 @@ import type { ComponentProps } from "react";
  * a search bar that allows the user to search for tags and select them.
  * @component
  */
-export default function TableTags({
+const TableTags = memo(function TableTags({
   tags,
   variant = "primary",
   availableTags,
@@ -52,4 +53,6 @@ export default function TableTags({
       />
     </div>
   );
-}
+});
+
+export default TableTags;

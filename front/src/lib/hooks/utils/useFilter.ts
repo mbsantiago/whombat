@@ -15,6 +15,11 @@ export type Filter<T extends Object> = {
    */
   set: <K extends keyof T>(key: K, value: T[K], force?: boolean) => void;
   /**
+   * Updates the filter state with a partial object.
+   * @param value - The partial object to update the filter state with.
+   * */
+  update: (value: Partial<T>) => void;
+  /**
    * Gets the value for a specific key in the filter state.
    * @param key - The key to get.
    * @returns The value for the specified key.
@@ -107,7 +112,12 @@ export default function useFilter<T extends Object>({
     },
     [isFixed],
   );
+
   const reset = useCallback(() => setState(defaults), [defaults]);
+
+  const update = useCallback((value: Partial<T>) => {
+    setState((prev) => ({ ...prev, ...value }));
+  }, []);
 
   useDebounce(
     () => {
@@ -128,6 +138,7 @@ export default function useFilter<T extends Object>({
 
   return {
     filter: debouncedState,
+    update,
     set,
     get,
     clear,

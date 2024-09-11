@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 
@@ -7,7 +8,7 @@ import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 
 import type { ComponentProps } from "react";
 
-export default function AddTagButton({
+const AddTagButton = memo(function AddTagButton({
   text = "add",
   variant = "secondary",
   placement = "bottom-start",
@@ -39,7 +40,7 @@ export default function AddTagButton({
             {text}
           </Button>
         </Popover.Button>
-        <Popover.Panel className="w-72" focus unmount>
+        <Popover.Panel className="w-72" focus>
           {({ close }) => (
             <TagSearchBar
               autoFocus={autoFocus}
@@ -59,4 +60,6 @@ export default function AddTagButton({
       </Float>
     </Popover>
   );
-}
+});
+
+export default AddTagButton;
