@@ -103,13 +103,9 @@ type Query = {
   value: string | null;
 };
 
-type TagSearchBarProps = {
-  /** List of tags to display in the dropdown menu. */
-  tags?: TagType[];
+export type TagSearchBarProps = {
   /** Flag indicating if new tags can be created. */
   canCreate?: boolean;
-  /** Function to get the color of a tag. */
-  tagColorFn?: (tag: TagType) => Color;
   /** Callback function for blur event. */
   onBlur?: () => void;
   /** Callback function for key down event. */
@@ -118,14 +114,23 @@ type TagSearchBarProps = {
   onCreateTag?: (tag: TagType) => void;
   /** Callback function for selecting a tag. */
   onSelectTag?: (tag: TagType) => void;
+  /** Placement of the dropdown menu. */
+  placement?: ComponentProps<typeof Float>["placement"];
+  /** Flag indicating if the placement should be automatically adjusted. */
+  autoPlacement?: ComponentProps<typeof Float>["autoPlacement"];
+};
+
+type TagSearchBarExpandedProps = TagSearchBarProps & {
+  /** List of tags to display in the dropdown menu. */
+  tags?: TagType[];
+  /** Function to get the color of a tag. */
+  tagColorFn?: (tag: TagType) => Color;
   /** Callback function for change event. */
   onChangeQuery?: (query: Query) => void;
-  placement?: ComponentProps<typeof Float>["placement"];
-  autoPlacement?: ComponentProps<typeof Float>["autoPlacement"];
 } & Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "onSelect" | "onChange" | "onKeyDown" | "onBlur"
->;
+    InputHTMLAttributes<HTMLInputElement>,
+    "onSelect" | "onChange" | "onKeyDown" | "onBlur"
+  >;
 
 const _empty: TagType[] = [];
 
@@ -133,7 +138,7 @@ const _empty: TagType[] = [];
  * TagSearchBar component allows users to search and select tags, and
  * optionally create new tags.
  */
-const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
+const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
   function TagSearchBar(
     {
       tags = _empty,
@@ -143,7 +148,7 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarProps>(
       onChangeQuery,
       onKeyDown,
       onCreateTag,
-      placement = "bottom",
+      placement = "bottom-start",
       ...props
     },
     ref,

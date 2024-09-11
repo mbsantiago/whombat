@@ -1,12 +1,10 @@
 import type { Preview } from "@storybook/react";
 import { withActions } from "@storybook/addon-actions/decorator";
-import { themes } from '@storybook/theming';
+import { themes } from "@storybook/theming";
 import "@/app/globals.css";
 
 const preview: Preview = {
-  decorators: [
-    withActions,
-  ],
+  decorators: [withActions],
   parameters: {
     actions: { argTypesRegex: "^on.*" },
     controls: {

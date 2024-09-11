@@ -14,7 +14,12 @@ import {
   FeatureSchema,
 } from "@/lib/schemas";
 
-import type { ClipAnnotation, Note, SoundEventAnnotation, Tag } from "@/lib/types";
+import type {
+  ClipAnnotation,
+  Note,
+  SoundEventAnnotation,
+  Tag,
+} from "@/lib/types";
 
 export const SoundEventAnnotationCreateSchema = z.object({
   geometry: GeometrySchema,

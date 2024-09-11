@@ -93,7 +93,7 @@ export default function useSpectrogramImages({
   useEffect(() => {
     const finalSamplerate = !params.resample
       ? samplerate
-      : params.samplerate ?? samplerate;
+      : (params.samplerate ?? samplerate);
 
     const chunks = calculateSpectrogramChunkIntervals({
       duration: duration,

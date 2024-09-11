@@ -3,7 +3,11 @@ import { useCallback, useMemo } from "react";
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
 
-import type { ClipAnnotation, SoundEventAnnotation, Recording } from "@/lib/types";
+import type {
+  ClipAnnotation,
+  SoundEventAnnotation,
+  Recording,
+} from "@/lib/types";
 import type { AxiosError } from "axios";
 
 /**

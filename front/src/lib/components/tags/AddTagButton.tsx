@@ -1,25 +1,26 @@
-import { memo } from "react";
+import { memo, type ComponentProps, type FC } from "react";
 import { Popover } from "@headlessui/react";
 import { Float } from "@headlessui-float/react";
 
 import Button from "@/lib/components/ui/Button";
 import { AddIcon } from "@/lib/components/icons";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-
-import type { ComponentProps } from "react";
+import TagSearchBarBase, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
 
 const AddTagButton = memo(function AddTagButton({
   text = "add",
   variant = "secondary",
   placement = "bottom-start",
-  autoFocus = true,
   onKeyDown,
+  TagSearchBar = TagSearchBarBase,
   ...props
 }: {
   text?: string;
   placement?: ComponentProps<typeof Float>["placement"];
   variant?: "primary" | "secondary" | "danger";
-} & ComponentProps<typeof TagSearchBar>) {
+  TagSearchBar?: FC<TagSearchBarProps>;
+} & TagSearchBarProps) {
   return (
     <Popover as="div" className="inline-block text-left">
       <Float
@@ -43,15 +44,12 @@ const AddTagButton = memo(function AddTagButton({
         <Popover.Panel className="w-72" focus>
           {({ close }) => (
             <TagSearchBar
-              autoFocus={autoFocus}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
                   close();
-                } else if (e.key === "Enter") {
-                  close();
+                  return;
                 }
-
-                onKeyDown?.(e);
+                onKeyDown?.(event);
               }}
               {...props}
             />

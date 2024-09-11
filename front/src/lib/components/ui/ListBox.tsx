@@ -40,7 +40,13 @@ export default function ListBox<T extends object>(
   );
 }
 
-export function Option<T>({ item, state }: { item: Node<T>; state: ListState<T> }) {
+export function Option<T>({
+  item,
+  state,
+}: {
+  item: Node<T>;
+  state: ListState<T>;
+}) {
   let ref = useRef(null);
   let { optionProps, isSelected, isFocused, isDisabled } = useOption(
     { key: item.key },

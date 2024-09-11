@@ -38,7 +38,6 @@ export default function AudioSettings({
     return () => subscription.unsubscribe();
   }, [watch, handleSubmit, onChange, debounceTime]);
 
-
   return (
     <div className="flex flex-col gap-2">
       <ResamplingSettings samplerate={samplerate} control={control} />

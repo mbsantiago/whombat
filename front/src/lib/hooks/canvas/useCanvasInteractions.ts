@@ -11,7 +11,9 @@ import type { SpectrogramWindow, Position } from "@/lib/types";
 import useViewportMove from "../interactions/useViewportMove";
 import useViewportPosition from "../interactions/useViewportPosition";
 import useViewportPress from "../interactions/useViewportPress";
-import useViewportScroll, { type ScrollEvent } from "../interactions/useViewportScroll";
+import useViewportScroll, {
+  type ScrollEvent,
+} from "../interactions/useViewportScroll";
 
 export default function useCanvasInteractions({
   viewport,
@@ -31,5 +33,4 @@ export default function useCanvasInteractions({
   ) => void;
   onPress?: (event: { position: Position } & PressEvent) => void;
   onScroll?: (event: ScrollEvent) => void;
-}): DOMAttributes<HTMLCanvasElement> {
-}
+}): DOMAttributes<HTMLCanvasElement> {}

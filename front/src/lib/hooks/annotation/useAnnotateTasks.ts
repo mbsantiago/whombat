@@ -18,7 +18,11 @@ import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import { type Filter } from "@/lib/hooks/utils/useFilter";
 import { shuffleArray } from "@/lib/utils/arrays";
 
-import type { AnnotationStatus, AnnotationTask, ClipAnnotation } from "@/lib/types";
+import type {
+  AnnotationStatus,
+  AnnotationTask,
+  ClipAnnotation,
+} from "@/lib/types";
 
 type AnnotationState = {
   /** Currently selected annotation task index */

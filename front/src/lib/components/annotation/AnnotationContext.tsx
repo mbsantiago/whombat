@@ -74,7 +74,7 @@ export default function AnnotationContext({
       <RecordingTagBar
         label="Recording Tags"
         tags={recording.tags ?? []}
-        onTagClick={onTagClick}
+        onClickTag={onTagClick}
         disabled
       />
     </div>

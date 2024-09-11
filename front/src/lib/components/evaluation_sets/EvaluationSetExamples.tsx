@@ -10,7 +10,11 @@ import Toggle from "@/lib/components/inputs/Toggle";
 import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 
-import type { AnnotationProject, AnnotationTask, EvaluationSet } from "@/lib/types";
+import type {
+  AnnotationProject,
+  AnnotationTask,
+  EvaluationSet,
+} from "@/lib/types";
 
 function SelectAnnotationProject({
   selected,

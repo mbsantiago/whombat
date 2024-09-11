@@ -8,10 +8,10 @@ const meta: Meta<typeof PopoverTrigger> = {
   argTypes: {
     children: {
       table: {
-        disable: true
-        }
-    }
-  }
+        disable: true,
+      },
+    },
+  },
 };
 
 export default meta;

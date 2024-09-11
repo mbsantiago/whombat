@@ -69,7 +69,11 @@ export const Text: Story = {
 
 export const WithIcon: Story = {
   args: {
-    children: <><CheckIcon className="w-4 h-4" /> With Icon</>,
+    children: (
+      <>
+        <CheckIcon className="w-4 h-4" /> With Icon
+      </>
+    ),
     mode: "text",
   },
 };

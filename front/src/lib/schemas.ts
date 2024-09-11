@@ -420,12 +420,7 @@ export const SpectrogramParametersSchema = z
       .int()
       .default(DEFAULT_FILTER_ORDER),
     window_size: z.coerce.number().positive().default(DEFAULT_WINDOW_SIZE),
-    overlap: z.coerce
-      .number()
-      .positive()
-      .gt(0)
-      .lte(1)
-      .default(DEFAULT_OVERLAP),
+    overlap: z.coerce.number().positive().gt(0).lte(1).default(DEFAULT_OVERLAP),
     window: z.string().default(DEFAULT_WINDOW),
     scale: z.enum(["amplitude", "power", "dB"]).default(DEFAULT_SCALE),
     clamp: z.boolean().default(true),

@@ -16,7 +16,6 @@ import type {
   User,
 } from "@/lib/types";
 
-
 export default function RecordingDetail({
   recording,
   currentUser,
@@ -62,9 +61,9 @@ export default function RecordingDetail({
             <div className="col-span-2">
               <RecordingTagBar
                 tags={recording.tags ?? []}
-                onTagAdd={onTagAdd}
-                onTagClick={onTagClick}
-                onTagRemove={onTagRemove}
+                onAddTag={onTagAdd}
+                onClickTag={onTagClick}
+                onDeleteTag={onTagRemove}
                 colorFn={colorFn}
               />
             </div>

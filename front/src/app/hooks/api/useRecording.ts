@@ -31,5 +31,4 @@ export default function useRecording({
   onRemoveFeature?: (recording: Recording) => void;
   onUpdateFeature?: (recording: Recording) => void;
   onError?: (error: AxiosError) => void;
-}) {
-}
+}) {}

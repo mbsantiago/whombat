@@ -4,7 +4,12 @@ import { useForm, Controller } from "react-hook-form";
 
 import api from "@/app/api";
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, Select, InputGroup, Submit } from "@/lib/components/inputs/index";
+import {
+  Input,
+  Select,
+  InputGroup,
+  Submit,
+} from "@/lib/components/inputs/index";
 import { EVALUATION_OPTIONS } from "@/lib/components/evaluation_sets/EvaluationSetCreate";
 
 import type { EvaluationSet } from "@/lib/types";

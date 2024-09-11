@@ -91,7 +91,7 @@ export function drawArea<T>(
     { type: "Polygon", coordinates: area.coords },
     {
       fillAlpha: isHovering ? AREA_FILL_HOVER : fillAlpha,
-      fillColor: isHovering ? GREEN : fillColor ?? borderColor,
+      fillColor: isHovering ? GREEN : (fillColor ?? borderColor),
       borderWidth: 0,
       borderAlpha: 0,
     },
