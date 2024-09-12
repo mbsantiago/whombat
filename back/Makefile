@@ -85,8 +85,7 @@ build-guide:  ## build user guide
 	$(ENV_PREFIX)mkdocs build -f mkdocs-guide.yml -d src/whombat/user_guide
 
 serve-docs:  ## serve documentation
-	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL
-	$(ENV_PREFIX)mkdocs serve
+	$(ENV_PREFIX)mkdocs serve --open
 
 serve-guide:  ## serve user guide
 	URL="http://localhost:8000/whombat/"; xdg-open $$URL || sensible-browser $$URL || x-www-browser $$URL || gnome-open $$URL

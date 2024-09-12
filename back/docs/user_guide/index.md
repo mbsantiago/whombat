@@ -17,6 +17,7 @@ work and make best use of this tool.
 3. [Creating Annotation Projects](annotation_projects.md)
 4. [Visualizing and Evaluating Model Predictions](evaluation.md)
 5. [Exploration of Data](exploration.md)
+6. [Export Annotations for ML Development](export.md)
 
 Feel free to use the handy search bar above to quickly locate the information
 you need. Additionally, we've curated a [FAQ section](faq.md) to address common

@@ -7,6 +7,7 @@ nav:
   - Annotation Projects: user_guide/annotation_projects.md
   - Evaluation: user_guide/evaluation.md
   - Data Exploration: user_guide/exploration.md
+  - Data Export: user_guide/export.md
   - FAQ: user_guide/faq.md
   - About the Project:
       - Authors: AUTHORS.md
