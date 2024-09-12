@@ -191,6 +191,48 @@ export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
     onRemoveTag: recordings.removeTag.mutate,
   });
 
+  const handleClickTag = useCallback(
+    (tag: Tag) => {
+      recordings.filter.set("tag", tag);
+    },
+    [recordings.filter],
+  );
+
+  const handleSearchChange = useCallback(
+    (q) => recordings.filter.set("search", q),
+    [recordings.filter],
+  );
+
+  const handleSetFilterField = useCallback(
+    (field, value) => recordings.filter.set(field, value),
+    [recordings.filter],
+  );
+
+  const handleClearFilterField = useCallback(
+    (field) => recordings.filter.clear(field),
+    [recordings.filter],
+  );
+
+  const handleDeleteRecordingTag = useCallback(
+    (data) => recordings.removeTag.mutate(data),
+    [recordings.removeTag],
+  );
+
+  const handleAddRecordingTag = useCallback(
+    (data) => recordings.addTag.mutate(data),
+    [recordings.addTag],
+  );
+
+  const handleUpdateRecording = useCallback(
+    (data) => recordings.updateRecording.mutate(data),
+    [recordings.updateRecording],
+  );
+
+  const handleDeleteRecording = useCallback(
+    (data) => recordings.deleteRecording.mutate(data),
+    [recordings.deleteRecording],
+  );
+
   if (recordings.isLoading || recordings.data == null) {
     return <Loading />;
   }
@@ -202,16 +244,17 @@ export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
       numRecordings={recordings.total}
       fixedFilterFields={recordings.filter.fixed}
       pathFormatter={pathFormatter}
-      onSearchChange={(q) => recordings.filter.set("search", q)}
-      onSetFilterField={(field, value) => recordings.filter.set(field, value)}
-      onClearFilterField={(field) => recordings.filter.clear(field)}
+      onSearchChange={handleSearchChange}
+      onSetFilterField={handleSetFilterField}
+      onClearFilterField={handleClearFilterField}
       onCellKeyDown={handleKeyDown}
       onClickRecording={onClickRecording}
       tagColorFn={tagColorFn}
-      onDeleteRecordingTag={(data) => recordings.removeTag.mutate(data)}
-      onAddRecordingTag={(data) => recordings.addTag.mutate(data)}
-      onUpdateRecording={(data) => recordings.updateRecording.mutate(data)}
-      onDeleteRecording={(data) => recordings.deleteRecording.mutate(data)}
+      onDeleteRecordingTag={handleDeleteRecordingTag}
+      onAddRecordingTag={handleAddRecordingTag}
+      onUpdateRecording={handleUpdateRecording}
+      onDeleteRecording={handleDeleteRecording}
+      onClickTag={handleClickTag}
       TagSearchBar={TagSearchBar}
       {...recordings.pagination}
     />

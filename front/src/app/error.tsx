@@ -8,15 +8,15 @@ export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+  error?: Error & { digest?: string };
+  reset?: () => void;
+} = {}) {
   return (
-    <div className="w-screen h-screen flex flex-row justify-center items-center">
-      <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-row justify-center items-center w-screen h-screen">
+      <div className="flex flex-col gap-2 items-center">
         <WarningIcon className="w-32 h-32 text-red-500" />
         <H2 className="font-bold">Oops! Something went wrong.</H2>
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex gap-2 items-center">
           <Button mode="text" variant="warning" onClick={reset}>
             Try Again
           </Button>
@@ -24,14 +24,14 @@ export default function Error({
             Go Home
           </Link>
         </div>
-        <div className="flex flex-col items-center max-w-prose p-6">
-          <p className="dark:text-stone-300 text-stone-700 text-center">
+        <div className="flex flex-col items-center p-6 max-w-prose">
+          <p className="text-center text-stone-700 dark:text-stone-300">
             We encountered an issue. Please reach out to our developers and
             provide details on what you were doing. Include the following error
             message for assistance:
           </p>
-          <span className="max-w-prose whitespace-pre-wrap text-red-500 p-4">
-            {error.message}
+          <span className="p-4 max-w-prose text-red-500 whitespace-pre-wrap">
+            {error?.message}
           </span>
         </div>
       </div>
