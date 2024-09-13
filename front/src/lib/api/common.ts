@@ -2,30 +2,30 @@
 import axios from "axios";
 import { z } from "zod";
 
-const HOST = "http://localhost:5000";
-const BASE_ROUTE = `/api/v1`;
+export const HOST = "http://localhost:5000";
+export const BASE_ROUTE = `/api/v1`;
 
-const instance = axios.create({
+export const instance = axios.create({
   withCredentials: true,
   baseURL: HOST,
 });
 
-const GetManySchema = z.object({
+export const GetManySchema = z.object({
   limit: z.number().int().gte(-1).optional(),
   offset: z.number().int().gte(0).optional(),
   sort_by: z.string().optional(),
 });
 
-type GetManyQuery = z.infer<typeof GetManySchema>;
+export type GetManyQuery = z.infer<typeof GetManySchema>;
 
-type Paginated<T> = {
+export type Paginated<T> = {
   items: T[];
   total: number;
   limit: number;
   offset: number;
 };
 
-const Page = <T extends z.ZodTypeAny>(schema: T) =>
+export const Page = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({
     items: z.array(schema),
     total: z.number().int(),
@@ -33,12 +33,16 @@ const Page = <T extends z.ZodTypeAny>(schema: T) =>
     offset: z.number().int(),
   });
 
-export {
-  instance,
-  HOST,
-  BASE_ROUTE,
-  GetManySchema,
-  type GetManyQuery,
-  Page,
-  type Paginated,
-};
+export function downloadContent(data: any, filename: string, filetype: string) {
+  const href = URL.createObjectURL(new Blob([data], { type: filetype }));
+
+  const link = document.createElement("a");
+  link.href = href;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(href);
+}

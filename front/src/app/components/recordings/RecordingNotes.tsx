@@ -1,16 +1,19 @@
-import RecordingNotesBase from "@/lib/components/recordings/RecordingNotes";
+import { useContext } from "react";
 import useRecording from "@/app/hooks/useRecording";
-import type { Recording, User } from "@/lib/types";
+import RecordingNotesBase from "@/lib/components/recordings/RecordingNotes";
 import Loading from "@/app/loading";
 import Error from "@/app/error";
+import UserContext from "@/app/(base)/context";
+
+import type { Recording } from "@/lib/types";
 
 export default function RecordingNotes({
   recording,
-  currentUser,
 }: {
   recording: Recording;
-  currentUser: User;
 }) {
+  const currentUser = useContext(UserContext);
+
   const { data, isLoading, isError, error, addNote, updateNote, removeNote } =
     useRecording({ uuid: recording.uuid });
 

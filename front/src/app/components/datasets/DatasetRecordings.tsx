@@ -7,7 +7,7 @@ import useStore from "@/app/store";
 import Loading from "@/app/loading";
 import RecordingTable from "@/lib/components/recordings/RecordingTable";
 
-import TagSearchBar from "@/app/components/TagSearchBar";
+import TagSearchBar from "@/app/components/tags/TagSearchBar";
 import { type RecordingUpdate } from "@/lib/api/recordings";
 import type { Recording, Tag, Dataset } from "@/lib/types";
 import type { KeyboardEvent } from "react";

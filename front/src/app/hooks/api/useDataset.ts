@@ -94,5 +94,3 @@ export default function useDataset({
     },
   };
 }
-
-export type DatasetContextType = ReturnType<typeof useDataset>;

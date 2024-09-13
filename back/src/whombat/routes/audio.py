@@ -124,7 +124,7 @@ async def download_recording_audio(
     )
 
     # Get the samplerate and recording ID.
-    samplerate = audio.attrs["samplerate"]
+    samplerate = int(1 / audio.time.attrs["step"])
     id = audio.attrs["recording_id"]
 
     # Write the audio to a buffer.

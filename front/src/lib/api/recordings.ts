@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
+import { GetManySchema, Page, downloadContent } from "@/lib/api/common";
 import {
   DatasetSchema,
   DateFilterSchema,
@@ -59,6 +59,7 @@ const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/recordings/",
   get: "/api/v1/recordings/detail/",
   update: "/api/v1/recordings/detail/",
+  download: "/api/v1/audio/download/",
   delete: "/api/v1/recordings/detail/",
   addTag: "/api/v1/recordings/detail/tags/",
   removeTag: "/api/v1/recordings/detail/tags/",
@@ -231,11 +232,19 @@ export function registerRecordingAPI(
     return RecordingSchema.parse(data);
   }
 
+  async function downloadRecording(uuid: string) {
+    const { data } = await instance.get(endpoints.download, {
+      params: { recording_uuid: uuid },
+    });
+    downloadContent(data, `${uuid}.wav`, "audio/wav");
+  }
+
   return {
     getMany,
     get,
     update,
     delete: deleteRecording,
+    download: downloadRecording,
     addTag,
     removeTag,
     addNote,

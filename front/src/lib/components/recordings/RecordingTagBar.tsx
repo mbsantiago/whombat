@@ -8,6 +8,8 @@ import TagSearchBarBase, {
 import type { Tag } from "@/lib/types";
 import { type FC } from "react";
 
+const _emptyTags: Tag[] = [];
+
 /**
  * RecordingTagBar Component
  *
@@ -28,7 +30,7 @@ import { type FC } from "react";
  * ```
  */
 export default function RecordingTagBar({
-  tags,
+  tags = _emptyTags,
   label = "Tags",
   onClickTag,
   onDeleteTag,
@@ -38,7 +40,7 @@ export default function RecordingTagBar({
   ...props
 }: {
   /** The list of tags associated with the recording. */
-  tags: Tag[];
+  tags?: Tag[];
   /** The label to display next to the tag icon. */
   label?: string;
   /** Callback function to handle clicking on a tag. */

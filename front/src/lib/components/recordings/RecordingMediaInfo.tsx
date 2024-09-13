@@ -6,6 +6,8 @@ import {
   TimeIcon,
 } from "@/lib/components/icons";
 
+import type { Recording } from "@/lib/types";
+
 function Label({ label }: { label: string }) {
   return <div className="mr-2 text-sm font-thin text-stone-500">{label}</div>;
 }
@@ -15,39 +17,33 @@ function Units({ units }: { units: string }) {
 }
 
 export default function RecordingMediaInfo({
-  duration,
-  channels,
-  samplerate,
-  time_expansion = 1,
+  recording,
 }: {
-  duration: number;
-  channels: number;
-  samplerate: number;
-  time_expansion?: number;
+  recording: Recording;
 }) {
   return (
     <Card>
       <div className="inline-flex items-center">
         <TimeIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Duration" />
-        {duration.toFixed(3)}
+        {recording.duration.toFixed(3)}
         <Units units="s" />
       </div>
       <div className="inline-flex items-center">
         <ChannelsIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Channels" />
-        {channels}
+        {recording.channels}
       </div>
       <div className="inline-flex items-center">
         <SampleRateIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Sample rate" />
-        {samplerate.toLocaleString()}
+        {recording.samplerate.toLocaleString()}
         <Units units="Hz" />
       </div>
       <div className="inline-flex items-center">
         <TimeExpansionIcon className="inline-block mr-1 w-5 h-5 text-stone-500" />
         <Label label="Time expansion" />
-        {time_expansion}
+        {recording.time_expansion}
       </div>
     </Card>
   );

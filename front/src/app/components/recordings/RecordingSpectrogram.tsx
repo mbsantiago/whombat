@@ -1,23 +1,17 @@
 import useRecordingSpectrogram from "@/lib/hooks/recordings/useRecordingSpectrogram";
 import { useHotkeys } from "react-hotkeys-hook";
-import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
-import type { AudioSettingsInterface } from "@/lib/hooks/settings/useAudioSettings";
-import type { SpectrogramSettingsInterface } from "@/lib/hooks/settings/useSpectrogramSettings";
+import useSettings from "@/app/hooks/useSettings";
+
+import RecordingSpectrogramBase from "@/lib/components/recordings/RecordingSpectrogram";
 import type { Recording } from "@/lib/types";
 
-export default function RecordingSpectrogramWrapper({
+export default function RecordingSpectrogram({
   recording,
-  audioSettings,
-  spectrogramSettings,
-  onReset,
-  onSave,
 }: {
   recording: Recording;
-  audioSettings: AudioSettingsInterface;
-  spectrogramSettings: SpectrogramSettingsInterface;
-  onReset?: () => void;
-  onSave?: () => void;
 }) {
+  const { audioSettings, spectrogramSettings, reset, save } = useSettings();
+
   const spectrogram = useRecordingSpectrogram({
     recording,
     audioSettings: audioSettings.settings,
@@ -28,18 +22,21 @@ export default function RecordingSpectrogramWrapper({
     preventDefault: true,
     description: "Toggle playing",
   });
+
   useHotkeys("z", spectrogram.state.enableZooming, {
     description: "Enable spectrogram zooming",
   });
+
   useHotkeys("x", spectrogram.state.enablePanning, {
     description: "Enable spectrogram panning",
   });
+
   useHotkeys("b", spectrogram.viewport.back, {
     description: "Go back to previous view",
   });
 
   return (
-    <RecordingSpectrogram
+    <RecordingSpectrogramBase
       samplerate={recording.samplerate}
       viewport={spectrogram.viewport.viewport}
       bounds={spectrogram.viewport.bounds}
@@ -61,8 +58,8 @@ export default function RecordingSpectrogramWrapper({
       onBarMoveStart={spectrogram.barProps.onMoveStart}
       onBarPress={spectrogram.barProps.onPress}
       onBarScroll={spectrogram.barProps.onScroll}
-      onSettingsReset={onReset}
-      onSettingsSave={onSave}
+      onSettingsReset={reset}
+      onSettingsSave={save}
       onSpectrogramDoubleClick={spectrogram.canvasProps.onDoubleClick}
       onSpectrogramMove={spectrogram.canvasProps.onMove}
       onSpectrogramMoveEnd={spectrogram.canvasProps.onMoveEnd}

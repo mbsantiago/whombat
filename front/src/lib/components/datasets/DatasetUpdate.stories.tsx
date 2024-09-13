@@ -4,7 +4,7 @@ import { fn } from "@storybook/test";
 import DatasetUpdateComponent from "./DatasetUpdate";
 
 const meta: Meta<typeof DatasetUpdateComponent> = {
-  title: "Dataset/UpdateForm",
+  title: "Dataset/Update",
   component: DatasetUpdateComponent,
 };
 

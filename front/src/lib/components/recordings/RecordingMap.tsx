@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 
 import Card from "@/lib/components/ui/Card";
 import { MapIcon } from "@/lib/components/icons";
+import type { Recording } from "@/lib/types";
 
 // NOTE: The use of dynamic imports is necessary to avoid importing the leaflet
 // library on the server side as it uses the `window` object which is not
@@ -12,11 +13,9 @@ const Marker = dynamic(() => import("@/lib/components/maps/DraggableMarker"), {
 });
 
 export default function RecordingMap({
-  latitude,
-  longitude,
+  recording: { latitude, longitude },
 }: {
-  latitude?: number | null;
-  longitude?: number | null;
+  recording: Recording;
 }) {
   const hasLocation = latitude != null && longitude != null;
 

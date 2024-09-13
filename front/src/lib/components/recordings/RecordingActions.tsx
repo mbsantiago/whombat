@@ -8,6 +8,24 @@ import {
   WarningIcon,
 } from "@/lib/components/icons";
 
+export default function RecordingActions({
+  onDeleteRecording,
+  onDownloadRecording,
+}: {
+  downloadURL?: string;
+  onDeleteRecording?: () => void;
+  onDownloadRecording?: () => void;
+}) {
+  return (
+    <div className="flex flex-row gap-2 justify-center">
+      <Button mode="text" variant="primary" onClick={onDownloadRecording}>
+        <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
+      </Button>
+      <DeleteRecording onDelete={onDeleteRecording} />
+    </div>
+  );
+}
+
 function DeleteRecording({ onDelete }: { onDelete?: () => void }) {
   return (
     <Alert
@@ -66,22 +84,5 @@ function DeleteRecording({ onDelete }: { onDelete?: () => void }) {
         );
       }}
     </Alert>
-  );
-}
-
-export default function RecordingActions({
-  downloadURL,
-  onDelete,
-}: {
-  downloadURL?: string;
-  onDelete?: () => void;
-}) {
-  return (
-    <div className="flex flex-row gap-2 justify-center">
-      <Link mode="text" variant="primary" href={downloadURL || ""}>
-        <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
-      </Link>
-      <DeleteRecording onDelete={onDelete} />
-    </div>
   );
 }

@@ -1,23 +1,14 @@
 "use client";
 import { useSearchParams, notFound } from "next/navigation";
-import { useContext } from "react";
-import toast from "react-hot-toast";
 
-import UserContext from "@/app/(base)/context";
+import Error from "@/app/error";
 import Loading from "@/app/loading";
-import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
-import RecordingSpectrogram from "../components/RecordingSpectrogram";
-import TagSearchBar from "@/app/components/TagSearchBar";
-
-import useSettings from "@/app/hooks/useSettings";
+import RecordingDetail from "@/app/components/recordings/RecordingDetail";
 import useRecording from "@/app/hooks/useRecording";
 
 export default function Page() {
-  const user = useContext(UserContext);
   const searchParams = useSearchParams();
   const recordingUUID = searchParams.get("recording_uuid") ?? "recording_uuid";
-
-  const settings = useSettings();
   const recording = useRecording({ uuid: recordingUUID });
 
   if (recordingUUID == null) {
@@ -30,35 +21,8 @@ export default function Page() {
 
   if (recording.isError || recording.data == null) {
     // @ts-ignore
-    return handleError(recording.error);
+    return <Error error={recording.error} />;
   }
 
-  return (
-    <RecordingDetail
-      recording={recording.data}
-      currentUser={user}
-      onRecordingClick={() => {
-        if (recording.data == null) return;
-        navigator.clipboard.writeText(recording.data.path);
-        toast.success("Copied full path to clipboard");
-      }}
-      onDelete={recording.deleteRecording}
-      onRecordingUpdate={recording.updateRecording}
-      onTagAdd={recording.addTag}
-      onTagRemove={recording.removeTag}
-      onNoteCreate={recording.addNote}
-      onNoteUpdate={(note, data) => recording.updateNote({ note, data })}
-      onNoteDelete={recording.removeNote}
-      downloadUrl={recording.downloadUrl}
-      TagSearchBar={TagSearchBar}
-    >
-      <RecordingSpectrogram
-        recording={recording.data}
-        audioSettings={settings.audioSettings}
-        spectrogramSettings={settings.spectrogramSettings}
-        onReset={settings.reset}
-        onSave={settings.save}
-      />
-    </RecordingDetail>
-  );
+  return <RecordingDetail recording={recording.data} />;
 }
