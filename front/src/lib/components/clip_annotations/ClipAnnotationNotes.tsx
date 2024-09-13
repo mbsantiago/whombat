@@ -35,7 +35,7 @@ export default function ClipAnnotationNotes({
         <NotesIcon className="inline-block mr-1 w-5 h-5" />
         Clip Notes
       </H4>
-      <CreateNote onCreate={onCreateNote} />
+      <CreateNote onCreateNote={onCreateNote} />
       {notes.length === 0 ? (
         <NoNotes />
       ) : (

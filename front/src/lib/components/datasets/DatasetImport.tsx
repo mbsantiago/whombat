@@ -1,13 +1,17 @@
-import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { useCallback } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 
-import api from "@/app/api";
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
-import type { Dataset } from "@/lib/types";
+const DatasetImportSchema = z.object({
+  dataset: z.instanceof(FileList),
+  audio_dir: z.string().optional(),
+});
+
+type DatasetImport = z.infer<typeof DatasetImportSchema>;
 
 /**
  * Component for importing a dataset.
@@ -17,60 +21,49 @@ import type { Dataset } from "@/lib/types";
  * @returns JSX element containing a form for importing a dataset.
  */
 export default function DatasetImport({
-  onCreate,
+  onImportDataset,
 }: {
-  onCreate?: (dataset: Promise<Dataset>) => void;
+  onImportDataset?: (dataset: DatasetImport) => void;
 }) {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<DatasetImport>({
+    resolver: zodResolver(DatasetImportSchema),
     mode: "onChange",
   });
 
-  const { mutateAsync: importDataset } = useMutation({
-    mutationFn: api.datasets.import,
-    onError: (error: AxiosError) => {
-      if (error.response?.status === 422) {
-        // @ts-ignore
-        error.response.data.detail.forEach((error: any) => {
-          setError(error.loc[1], { message: error.msg });
-        });
-      }
+  const handleOnCreate = useCallback(
+    (data: DatasetImport) => {
+      onImportDataset?.(data);
     },
-  });
-
-  // @ts-ignore
-  const onSubmit = useCallback(
-    async (data: any) => {
-      const formData = new FormData();
-      const file = data.dataset[0];
-      formData.append("dataset", file);
-      formData.append("audio_dir", data.audio_dir);
-      const promise = importDataset(formData);
-      onCreate?.(promise);
-    },
-    [importDataset, onCreate],
+    [onImportDataset],
   );
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={handleSubmit(handleOnCreate)}
+    >
       <InputGroup
         name="dataset"
         label="Select a dataset file to import"
         help="The file must be in AOEF format"
-        // @ts-ignore
-        error={errors.file?.message}
+        error={errors.dataset?.message}
       >
-        <Input type="file" {...register("dataset")} required />
+        <Input
+          type="file"
+          {...register("dataset")}
+          required
+          multiple={false}
+          accept="application/json"
+        />
       </InputGroup>
       <InputGroup
         name="audio_dir"
         label="Audio directory"
         help="Folder where all the dataset recordings are stored"
-        // @ts-ignore
         error={errors.audio_dir?.message}
       >
         <Input
@@ -79,7 +72,6 @@ export default function DatasetImport({
           required
         />
       </InputGroup>
-
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import

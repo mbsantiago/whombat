@@ -7,9 +7,9 @@ import { InputGroup, TextArea } from "@/lib/components/inputs/index";
 import type { NoteCreate } from "@/lib/api/notes";
 
 export default function CreateNoteForm({
-  onCreate,
+  onCreateNote,
 }: {
-  onCreate?: (note: NoteCreate) => void;
+  onCreateNote?: (note: NoteCreate) => void;
 }) {
   const [message, setMessage] = useState("");
 
@@ -32,11 +32,11 @@ export default function CreateNoteForm({
           variant="danger"
           mode="text"
           onClick={() => {
-            setMessage("");
-            onCreate?.({
+            onCreateNote?.({
               message,
               is_issue: true,
             });
+            setMessage("");
           }}
         >
           <IssueIcon className="inline-block mr-1 w-5 h-5" />
@@ -46,11 +46,11 @@ export default function CreateNoteForm({
           variant="primary"
           mode="text"
           onClick={() => {
-            setMessage("");
-            onCreate?.({
+            onCreateNote?.({
               message,
               is_issue: false,
             });
+            setMessage("");
           }}
         >
           <NotesIcon className="inline-block mr-1 w-5 h-5" />

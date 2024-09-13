@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import toast from "react-hot-toast";
 
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
@@ -20,16 +21,16 @@ export default function useDataset({
   dataset,
   enabled = true,
   withState = false,
-  onUpdate,
-  onDelete,
+  onUpdateDataset,
+  onDeleteDataset,
   onError,
 }: {
   uuid: string;
   dataset?: Dataset;
   enabled?: boolean;
   withState?: boolean;
-  onUpdate?: (updated: Dataset) => void;
-  onDelete?: (deleted: Dataset) => void;
+  onUpdateDataset?: (updated: Dataset) => void;
+  onDeleteDataset?: (deleted: Dataset) => void;
   onError?: (error: AxiosError) => void;
 }) {
   if (dataset !== undefined && dataset.uuid !== uuid) {
@@ -47,12 +48,18 @@ export default function useDataset({
 
   const update = useMutation<DatasetUpdate>({
     mutationFn: api.datasets.update,
-    onSuccess: onUpdate,
+    onSuccess: (data) => {
+      toast.success("Dataset updated");
+      onUpdateDataset?.(data);
+    },
   });
 
   const delete_ = useMutation({
     mutationFn: api.datasets.delete,
-    onSuccess: onDelete,
+    onSuccess: (data) => {
+      toast.success("Dataset deleted");
+      onDeleteDataset?.(data);
+    },
   });
 
   const state = useQuery({

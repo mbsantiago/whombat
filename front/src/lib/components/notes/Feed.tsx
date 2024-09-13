@@ -26,8 +26,8 @@ export default function Feed({
           key={note.uuid}
           note={note}
           canDelete={currentUser?.id === note.created_by?.id}
-          onUpdate={(data) => onUpdate?.(note, data)}
-          onDelete={() => onDelete?.(note)}
+          onResolveNote={(data) => onUpdate?.(note, data)}
+          onDeleteNote={() => onDelete?.(note)}
         />
       ))}
     </ul>

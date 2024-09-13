@@ -2,7 +2,7 @@
 import { notFound, useRouter } from "next/navigation";
 import { useContext } from "react";
 
-import DatasetDetail from "@/lib/components/datasets/DatasetDetail";
+import DatasetDetail from "@/app/components/datasets/DatasetDetail";
 
 import DatasetContext from "./context";
 
@@ -17,7 +17,7 @@ export default function Page() {
   return (
     <DatasetDetail
       dataset={dataset}
-      onTagClick={(tag) =>
+      onClickDatasetTag={(tag) =>
         router.push(`recordings/?dataset_uuid=${dataset.uuid}`)
       }
     />

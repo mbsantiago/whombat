@@ -5,7 +5,7 @@ import TagSearchBar from "./TagSearchBar";
 import type { Tag } from "@/lib/types";
 
 const meta: Meta<typeof TagSearchBar> = {
-  title: "Tags/TagSearchBar",
+  title: "Tags/Search",
   component: TagSearchBar,
 };
 

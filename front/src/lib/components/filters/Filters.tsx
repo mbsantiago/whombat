@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import Button from "@/lib/components/ui/Button";
-import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
+import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import { CheckIcon, CloseIcon } from "@/lib/components/icons";
 import Checkbox from "@/lib/components/tables/TableCheckbox";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";

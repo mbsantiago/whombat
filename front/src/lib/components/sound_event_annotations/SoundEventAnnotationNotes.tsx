@@ -38,7 +38,7 @@ export default function SoundEventAnnotationNotes({
         <NotesIcon className="inline-block mr-1 w-5 h-5" />
         Sound Event Notes
       </H4>
-      {onCreateNote != null && <CreateNote onCreate={onCreateNote} />}
+      {onCreateNote != null && <CreateNote onCreateNote={onCreateNote} />}
       {notes.length === 0 ? (
         <NoNotes />
       ) : (

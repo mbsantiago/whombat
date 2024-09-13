@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const dataset = useDataset({
     uuid: uuid,
-    onDelete: () => {
+    onDeleteDataset: () => {
       toast.success("Dataset deleted");
       router.push("/datasets/");
     },

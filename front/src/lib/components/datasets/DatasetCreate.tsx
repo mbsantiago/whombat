@@ -1,10 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 import { type DatasetCreate, DatasetCreateSchema } from "@/lib/api/datasets";
-import api from "@/app/api";
 import {
   Input,
   InputGroup,
@@ -12,25 +10,14 @@ import {
   TextArea,
 } from "@/lib/components/inputs/index";
 
-import type { Dataset } from "@/lib/types";
-
 /**
  * Component for creating a new dataset.
- *
- * @param onCreate - Callback function triggered when the dataset is
- * successfully created.
- * @returns JSX element containing a form for creating a
- * new dataset.
  */
 export default function CreateDataset({
-  onCreate,
+  onCreateDataset,
 }: {
-  onCreate?: (dataset: Promise<Dataset>) => void;
+  onCreateDataset?: (dataset: DatasetCreate) => void;
 }) {
-  const { mutateAsync: createDataset } = useMutation({
-    mutationFn: api.datasets.create,
-  });
-
   const {
     register,
     handleSubmit,
@@ -41,11 +28,10 @@ export default function CreateDataset({
   });
 
   const onSubmit = useCallback(
-    async (data: DatasetCreate) => {
-      const promise = createDataset(data);
-      onCreate?.(promise);
+    (data: DatasetCreate) => {
+      onCreateDataset?.(data);
     },
-    [createDataset, onCreate],
+    [onCreateDataset],
   );
 
   return (

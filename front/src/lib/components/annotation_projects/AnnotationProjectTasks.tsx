@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { type ClipCreateMany } from "@/lib/api/clips";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
-import DatasetSearch from "@/lib/components/datasets/DatasetSearch";
+import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";

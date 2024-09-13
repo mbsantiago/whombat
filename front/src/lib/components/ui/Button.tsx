@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef } from "react";
-import classnames from "classnames";
+import classNames from "classnames";
 
 import type { Mode, Variant } from "@/lib/components/common";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
@@ -45,7 +45,7 @@ const CLASS_NAMES = {
       "text-yellow-500 stroke-yellow-500 hover:stroke-yellow-300 dark:hover:stroke-yellow-800",
     info: "text-blue-500 stroke-blue-500 hover:stroke-blue-300 dark:hover:stroke-blue-800",
     common:
-      "bg-transparent hover:underline hover:decoration-solid hover:decoration-2 hover:underline-offset-2 hover:font-extrabold disabled:no-underline disabled:font-medium stroke-2 hover:stroke-4 disabled:stroke-1",
+      "bg-transparent hover:underline hover:decoration-solid hover:decoration-2 hover:underline-offset-2 disabled:no-underline disabled:font-medium stroke-2 hover:stroke-4 disabled:stroke-1",
   },
 };
 
@@ -58,7 +58,7 @@ export function getButtonClassName({
   mode?: Mode;
   padding?: string;
 }) {
-  return classnames(
+  return classNames(
     CLASS_NAMES[mode][variant],
     CLASS_NAMES[mode]["common"],
     FOCUS_STYLE,
@@ -85,7 +85,7 @@ const Button = forwardRef(function Button(
 ) {
   const baseClass = getButtonClassName({ variant, mode, padding });
   return (
-    <button className={classnames(baseClass, className)} {...props} ref={ref}>
+    <button className={classNames(baseClass, className)} {...props} ref={ref}>
       {children}
     </button>
   );

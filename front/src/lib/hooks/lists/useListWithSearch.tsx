@@ -1,17 +1,16 @@
-import Fuse, { type FuseOptionKey } from "fuse.js";
+import Fuse, { type FuseOptionKey, type IFuseOptions } from "fuse.js";
 import { useMemo, useState } from "react";
 
 export default function useListWithSearch<T extends Object>({
   options,
   fields,
   limit: initialLimit = 20,
-  shouldSort = true,
+  ...props
 }: {
   options: T[];
   fields: FuseOptionKey<T>[];
   limit?: number;
-  shouldSort?: boolean;
-}) {
+} & IFuseOptions<T>) {
   const [limit, setLimit] = useState(initialLimit);
   const [search, setSearch] = useState("");
 
@@ -20,11 +19,11 @@ export default function useListWithSearch<T extends Object>({
       new Fuse(options, {
         keys: fields,
         threshold: 0.3,
-        shouldSort: shouldSort,
         includeMatches: false,
         includeScore: false,
+        ...props,
       }),
-    [options, fields, shouldSort],
+    [options, fields, props],
   );
 
   const filteredOptions = useMemo(() => {

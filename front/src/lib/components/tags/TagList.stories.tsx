@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import TagList from "./TagList";
 
 const meta: Meta<typeof TagList> = {
-  title: "Tags/TagList",
+  title: "Tags/List",
   component: TagList,
 };
 

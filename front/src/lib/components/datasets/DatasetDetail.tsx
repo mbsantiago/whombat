@@ -1,38 +1,30 @@
 import DetailLayout from "@/lib/components/layouts/Detail";
 
-import DatasetNotesSummary from "./DatasetNotesSummary";
-import DatasetOverview from "./DatasetOverview";
-import DatasetTagsSummary from "./DatasetTagsSummary";
-import DatasetUpdate from "./DatasetUpdateForm";
-
-import type { Dataset, Tag } from "@/lib/types";
-
 /**
- * Component to display detailed information about a dataset, including overview,
- * tags summary, notes summary, and an update section.
- *
- * @param dataset - The dataset for which to display detailed information.
- * @returns JSX element displaying the dataset details.
- */
+  * DatasetDetail component renders the detailed view of a dataset.
+  * It uses the DetailLayout component to structure the layout.
+1 */
 export default function DatasetDetail({
-  dataset,
-  onTagClick,
+  DatasetUpdate,
+  DatasetOverview,
+  DatasetTagsSummary,
+  DatasetNotesSummary,
 }: {
-  dataset: Dataset;
-  onTagClick?: (tag: Tag) => void;
+  /** The component for updating the dataset. */
+  DatasetUpdate: JSX.Element;
+  /** The component for displaying the dataset overview. */
+  DatasetOverview: JSX.Element;
+  /** The component for displaying the dataset tags summary. */
+  DatasetTagsSummary: JSX.Element;
+  /** The component for displaying the dataset notes summary. */
+  DatasetNotesSummary: JSX.Element;
 }) {
   return (
-    <DetailLayout sideBar={<DatasetUpdate dataset={dataset} />}>
+    <DetailLayout sideBar={DatasetUpdate}>
       <div className="grid grid-cols-2 gap-8">
-        <div className="col-span-2">
-          <DatasetOverview dataset={dataset} />
-        </div>
-        <div className="col-span-2 xl:col-span-1">
-          <DatasetTagsSummary dataset={dataset} onTagClick={onTagClick} />
-        </div>
-        <div className="col-span-2 xl:col-span-1">
-          <DatasetNotesSummary dataset={dataset} />
-        </div>
+        <div className="col-span-2">{DatasetOverview}</div>
+        <div className="col-span-2 xl:col-span-1">{DatasetTagsSummary}</div>
+        <div className="col-span-2 xl:col-span-1">{DatasetNotesSummary}</div>
       </div>
     </DetailLayout>
   );

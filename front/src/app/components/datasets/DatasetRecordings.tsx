@@ -256,7 +256,15 @@ export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
       onDeleteRecording={handleDeleteRecording}
       onClickTag={handleClickTag}
       TagSearchBar={TagSearchBar}
-      {...recordings.pagination}
+      page={recordings.pagination.page}
+      numPages={recordings.pagination.numPages}
+      pageSize={recordings.pagination.pageSize}
+      hasNextPage={recordings.pagination.hasNextPage}
+      hasPrevPage={recordings.pagination.hasPrevPage}
+      onSetPageSize={recordings.pagination.setPageSize}
+      onSetPage={recordings.pagination.setPage}
+      onPrevPage={recordings.pagination.prevPage}
+      onNextPage={recordings.pagination.nextPage}
     />
   );
 }

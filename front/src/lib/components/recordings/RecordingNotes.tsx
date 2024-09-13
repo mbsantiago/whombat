@@ -51,7 +51,7 @@ export default function RecordingNotes({
           onDelete={onNoteDelete}
         />
       )}
-      <CreateNote onCreate={onNoteCreate} />
+      <CreateNote onCreateNote={onNoteCreate} />
     </Card>
   );
 }

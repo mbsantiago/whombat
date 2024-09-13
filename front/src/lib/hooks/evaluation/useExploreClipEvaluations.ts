@@ -51,7 +51,7 @@ export default function useExploreClipEvaluations(props: {
     filter,
     isLoading,
     isError,
-    pagination: { setPage, pageSize, page },
+    pagination: { onSetPage: setPage, pageSize, page },
   } = useClipEvaluations({
     pageSize: 10,
     filter: props.filter,

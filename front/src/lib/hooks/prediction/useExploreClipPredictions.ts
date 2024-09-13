@@ -45,7 +45,7 @@ export default function useExploreClipPredictions(props: {
     filter,
     isLoading,
     isError,
-    pagination: { setPage, pageSize, page },
+    pagination: { onSetPage: setPage, pageSize, page },
   } = useClipPredictions({
     pageSize: 10,
     filter: props.filter,

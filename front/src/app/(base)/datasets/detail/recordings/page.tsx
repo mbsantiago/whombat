@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import DatasetRecordings from "@/app/(base)/datasets/detail/components/DatasetRecordings";
+import DatasetRecordings from "@/app/components/datasets/DatasetRecordings";
 import NavBar from "@/app/(base)/datasets/detail/components/NavBar";
 
 import DatasetContext from "../context";

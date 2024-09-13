@@ -1,7 +1,12 @@
 import { type ReactNode } from "react";
 
 import Button from "@/lib/components/ui/Button";
-import { DeleteIcon, IssueIcon, NoteIcon } from "@/lib/components/icons";
+import {
+  DeleteIcon,
+  IssueIcon,
+  NoteIcon,
+  GoToIcon,
+} from "@/lib/components/icons";
 
 import type { Note } from "@/lib/types";
 
@@ -9,14 +14,18 @@ export default function Note({
   note,
   actions,
   canDelete = false,
-  onUpdate,
-  onDelete,
+  canResolve = true,
+  onClickNote,
+  onResolveNote,
+  onDeleteNote,
 }: {
   note: Note;
   actions?: ReactNode;
   canDelete?: boolean;
-  onUpdate?: (data: Partial<Note>) => void;
-  onDelete?: () => void;
+  canResolve?: boolean;
+  onClickNote?: () => void;
+  onResolveNote?: () => void;
+  onDeleteNote?: () => void;
 }) {
   return (
     <li role="article" className="relative p-2 pl-6">
@@ -40,12 +49,18 @@ export default function Note({
         <p className="text-sm text-stone-500">{note.message}</p>
         <div className="flex flex-row gap-4 justify-end">
           {actions}
-          {note.is_issue && (
+          {onClickNote == null ? null : (
+            <Button mode="text" onClick={onClickNote}>
+              <GoToIcon className="inline-block mr-1 w-4 h-4 text-emerald-500" />{" "}
+              See
+            </Button>
+          )}
+          {note.is_issue && canResolve && (
             <Button
               mode="text"
               variant="warning"
               className="text-xs"
-              onClick={() => onUpdate?.({ is_issue: false })}
+              onClick={onResolveNote}
             >
               <IssueIcon className="inline-block mr-1 w-4 h-4" />
               Resolve
@@ -57,7 +72,7 @@ export default function Note({
                 mode="text"
                 variant="danger"
                 className="text-xs"
-                onClick={() => onDelete?.()}
+                onClick={onDeleteNote}
               >
                 <DeleteIcon className="inline-block mr-1 w-4 h-4" />
                 Remove

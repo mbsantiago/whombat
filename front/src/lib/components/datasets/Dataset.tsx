@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
 
 import {
@@ -6,6 +5,7 @@ import {
   DatasetIcon,
   RecordingsIcon,
 } from "@/lib/components/icons";
+import Button from "@/lib/components/ui/Button";
 
 import type { Dataset as DatasetType } from "@/lib/types";
 
@@ -18,7 +18,13 @@ export function Atom({ label, value }: { label: ReactNode; value: string }) {
   );
 }
 
-export default function Dataset({ dataset }: { dataset: DatasetType }) {
+export default function Dataset({
+  dataset,
+  onClickDataset,
+}: {
+  dataset: DatasetType;
+  onClickDataset?: () => void;
+}) {
   return (
     <div className="w-full">
       <div className="px-4 sm:px-0">
@@ -26,15 +32,14 @@ export default function Dataset({ dataset }: { dataset: DatasetType }) {
           <span className="inline-block w-6 h-6 align-middle text-stone-500">
             <DatasetIcon />
           </span>{" "}
-          <Link
-            className="hover:font-bold hover:text-emerald-500"
-            href={{
-              pathname: "/datasets/detail/",
-              query: { dataset_uuid: dataset.uuid },
-            }}
+          <Button
+            className="inline-flex"
+            padding="p-0"
+            mode="text"
+            onClick={onClickDataset}
           >
             {dataset.name}
-          </Link>
+          </Button>
         </h3>
         <p className="mt-1 w-full text-sm leading-5 text-stone-600 dark:text-stone-400">
           {dataset.description}

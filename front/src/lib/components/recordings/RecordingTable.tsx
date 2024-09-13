@@ -159,13 +159,13 @@ export default function RecordingTable({
       <Pagination
         page={props.page}
         numPages={props.numPages}
-        nextPage={props.nextPage}
+        onNextPage={props.onNextPage}
         hasNextPage={props.hasNextPage}
         hasPrevPage={props.hasPrevPage}
-        prevPage={props.prevPage}
-        setPage={props.setPage}
+        onPrevPage={props.onPrevPage}
+        onSetPage={props.onSetPage}
         pageSize={props.pageSize}
-        setPageSize={props.setPageSize}
+        onSetPageSize={props.onSetPageSize}
       />
     </div>
   );
