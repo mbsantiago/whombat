@@ -4,6 +4,8 @@ import { flexRender } from "@tanstack/react-table";
 import type { Table } from "@tanstack/react-table";
 import type { KeyboardEvent } from "react";
 
+import "./Table.css";
+
 /** A Table component.
  * Will display a table.
  * We use the `@tanstack/react-table` library to manage the table state.
@@ -51,7 +53,7 @@ export default function Table<S>({
         },
       }}
     >
-      <thead className="z-10 sticky top-0">
+      <thead className="sticky top-0 z-10">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             key={headerGroup.id}
@@ -89,13 +91,13 @@ export default function Table<S>({
           return (
             <tr
               key={row.id}
-              className="hover:dark:bg-stone-800 hover:bg-stone-200 max-h-40 h-min"
+              className="max-h-40 h-min hover:dark:bg-stone-800 hover:bg-stone-200"
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
                     role="gridcell"
-                    className="border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600 max-h-40"
+                    className="max-h-40 border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {

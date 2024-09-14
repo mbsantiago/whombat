@@ -59,6 +59,14 @@ export type GetAnnotationProjectsQuery = z.input<
   typeof GetAnnotationProjectsQuerySchema
 >;
 
+export const AnnotationProjectImportSchema = z.object({
+  annotation_project: z.instanceof(FileList),
+});
+
+export type AnnotationProjectImport = z.infer<
+  typeof AnnotationProjectImportSchema
+>;
+
 export function registerAnnotationProjectAPI(
   instance: AxiosInstance,
   {
@@ -152,8 +160,13 @@ export function registerAnnotationProjectAPI(
     return `${baseUrl}${endpoints.download}?annotation_project_uuid=${annotationProject.uuid}`;
   }
 
-  async function importProject(data: FormData): Promise<AnnotationProject> {
-    const { data: res } = await instance.post(endpoints.import, data);
+  async function importProject(
+    data: AnnotationProjectImport,
+  ): Promise<AnnotationProject> {
+    const formData = new FormData();
+    const file = data.annotation_project[0];
+    formData.append("annotation_project", file);
+    const { data: res } = await instance.post(endpoints.import, formData);
     return AnnotationProjectSchema.parse(res);
   }
 

@@ -7,8 +7,6 @@ import DatasetRecordingSummary from "@/app/components/datasets/DatasetRecordings
 
 import DatasetContext from "../context";
 
-import "./page.css";
-
 export default function Page() {
   const dataset = useContext(DatasetContext);
 

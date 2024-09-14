@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 import api from "@/app/api";
 import DatasetTagsSummaryBase from "@/lib/components/datasets/DatasetTagsSummary";
@@ -13,6 +14,8 @@ import type { Dataset } from "@/lib/types";
  * @param dataset - The dataset for which to display tag summary.
  */
 export default function DatasetTagsSummary({ dataset }: { dataset: Dataset }) {
+  const router = useRouter();
+
   const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
   const tagColorFn = useStore((state) => state.getTagColor);
 
@@ -31,6 +34,11 @@ export default function DatasetTagsSummary({ dataset }: { dataset: Dataset }) {
       tags={tags}
       isLoading={isLoading}
       tagColorFn={tagColorFn}
+      onTagClick={(tag) =>
+        router.push(
+          `recordings/?dataset_uuid=${dataset.uuid}&tag__key=${tag.key}&tag__value=${tag.value}`,
+        )
+      }
     />
   );
 }

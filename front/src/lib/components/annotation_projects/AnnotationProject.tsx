@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { type ReactNode } from "react";
 
+import Button from "@/lib/components/ui/Button";
 import { AnnotationProjectIcon, CalendarIcon } from "@/lib/components/icons";
 
 import type { AnnotationProject as AnnotationProjectType } from "@/lib/types";
@@ -16,25 +16,26 @@ function Atom({ label, value }: { label: ReactNode; value: string }) {
 
 export default function AnnotationProject({
   annotationProject,
+  onClickAnnotationProject,
 }: {
   annotationProject: AnnotationProjectType;
+  onClickAnnotationProject?: () => void;
 }) {
   return (
     <div className="w-full">
       <div className="px-4 sm:px-0">
-        <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-100">
+        <h3 className="inline-flex items-center text-base font-semibold leading-7 text-stone-900 dark:text-stone-100">
           <span className="inline-block w-6 h-6 align-middle text-stone-500">
             <AnnotationProjectIcon />
           </span>{" "}
-          <Link
-            className="hover:font-bold hover:text-emerald-500"
-            href={{
-              pathname: "/annotation_projects/detail/",
-              query: { annotation_project_uuid: annotationProject.uuid },
-            }}
+          <Button
+            mode="text"
+            align="text-left"
+            className="inline-block"
+            onClick={onClickAnnotationProject}
           >
             {annotationProject.name}
-          </Link>
+          </Button>
         </h3>
         <p className="mt-1 w-full text-sm leading-5 text-stone-600 dark:text-stone-400">
           {annotationProject.description}

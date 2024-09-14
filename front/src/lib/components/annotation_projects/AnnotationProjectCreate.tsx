@@ -1,6 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { type AxiosError } from "axios";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +6,6 @@ import {
   type AnnotationProjectCreate,
   AnnotationProjectCreateSchema,
 } from "@/lib/api/annotation_projects";
-import api from "@/app/api";
 import {
   Input,
   InputGroup,
@@ -19,46 +16,33 @@ import {
 import type { AnnotationProject } from "@/lib/types";
 
 export default function CreateProject({
-  onCreate,
-  onError,
+  onCreateAnnotationProject,
 }: {
-  onCreate?: (project: Promise<AnnotationProject>) => void;
-  onError?: (error: AxiosError) => void;
+  onCreateAnnotationProject?: (project: AnnotationProjectCreate) => void;
 }) {
-  const form = useForm<AnnotationProject>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AnnotationProject>({
     resolver: zodResolver(AnnotationProjectCreateSchema),
     mode: "onChange",
   });
 
-  const { errors } = form.formState;
-
-  const { mutateAsync: createAnnotationProject } = useMutation({
-    mutationFn: api.annotationProjects.create,
-    onError: onError,
-  });
-
   const onSubmit = useCallback(
-    async (data: AnnotationProjectCreate) => {
-      const project = createAnnotationProject(data);
-      if (onCreate) {
-        onCreate(project);
-      }
-    },
-    [createAnnotationProject, onCreate],
+    (data: AnnotationProjectCreate) => onCreateAnnotationProject?.(data),
+    [onCreateAnnotationProject],
   );
 
   return (
-    <form
-      className="flex flex-col gap-4"
-      onSubmit={form.handleSubmit(onSubmit)}
-    >
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <InputGroup
         label="Name"
         name="name"
         help="Please provide a name for the Annotation Project."
         error={errors.name?.message}
       >
-        <Input {...form.register("name")} />
+        <Input {...register("name")} />
       </InputGroup>
       <InputGroup
         label="Description"
@@ -66,7 +50,7 @@ export default function CreateProject({
         help="Describe the purpose of the project"
         error={errors.description?.message}
       >
-        <TextArea rows={6} {...form.register("description")} />
+        <TextArea rows={6} {...register("description")} />
       </InputGroup>
       <InputGroup
         label="Instructions"
@@ -74,7 +58,7 @@ export default function CreateProject({
         help="Write instructions for annotators."
         error={errors.annotation_instructions?.message}
       >
-        <TextArea rows={10} {...form.register("annotation_instructions")} />
+        <TextArea rows={10} {...register("annotation_instructions")} />
       </InputGroup>
       <Submit>Create Project</Submit>
     </form>

@@ -1,54 +1,36 @@
-import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import api from "@/app/api";
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
-import type { AnnotationProject } from "@/lib/types";
-import type { AxiosError } from "axios";
+const AnnotationProjectImportSchema = z.object({
+  annotation_project: z.instanceof(FileList),
+});
+
+type AnnotationProjectImport = z.infer<typeof AnnotationProjectImportSchema>;
 
 export default function AnnotationProjectImport({
-  onCreate,
+  onImportAnnotationProject,
 }: {
-  onCreate?: (data: Promise<AnnotationProject>) => void;
+  onImportAnnotationProject?: (data: AnnotationProjectImport) => void;
 }) {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm({
+  } = useForm<AnnotationProjectImport>({
+    resolver: zodResolver(AnnotationProjectImportSchema),
     mode: "onChange",
   });
 
-  const { mutateAsync: importAnnotationProject } = useMutation<
-    AnnotationProject,
-    AxiosError,
-    FormData
-  >({
-    mutationFn: api.annotationProjects.import,
-    onError: (error) => {
-      if (error.response?.status === 422) {
-        // @ts-ignore
-        error.response.data.detail.forEach((error: any) => {
-          setError(error.loc[1], { message: error.msg });
-        });
-      }
-    },
-  });
-
   const onSubmit = useCallback(
-    // @ts-ignore
-    async (data) => {
-      const formData = new FormData();
-      const file = data.annotation_project[0];
-      formData.append("annotation_project", file);
-      const promise = importAnnotationProject(formData);
-      onCreate?.(promise);
+    (data: AnnotationProjectImport) => {
+      onImportAnnotationProject?.(data);
     },
-    [importAnnotationProject, onCreate],
+    [onImportAnnotationProject],
   );
 
   return (
@@ -57,13 +39,12 @@ export default function AnnotationProjectImport({
         name="annotation_project"
         label="Select a project file to import"
         help="The file must be in AOEF format"
-        // @ts-ignore
-        error={errors.file?.message}
+        error={errors.annotation_project?.message}
       >
         <Input type="file" {...register("annotation_project")} required />
       </InputGroup>
       <Submit>
-        <UploadIcon className="inline-block h-6 w-6 align-middle mr-2" />
+        <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import
       </Submit>
     </form>
