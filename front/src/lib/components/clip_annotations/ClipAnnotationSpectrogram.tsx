@@ -1,6 +1,6 @@
 import { useMemo, memo } from "react";
 import Card from "@/lib/components/ui/Card";
-import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
+import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import AnnotationControls, {
   type AnnotationMode,
 } from "@/lib/components/annotation/AnnotationControls";

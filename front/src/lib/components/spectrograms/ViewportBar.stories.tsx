@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
+import ViewportBar from "@/lib/components/spectrograms/ViewportBar";
 import useViewport from "@/lib/hooks/window/useViewport";
 import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
 
-const meta: Meta<typeof SpectrogramBar> = {
+const meta: Meta<typeof ViewportBar> = {
   title: "Spectrograms/SpectrogramBar",
-  component: SpectrogramBar,
+  component: ViewportBar,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof SpectrogramBar>;
+type Story = StoryObj<typeof ViewportBar>;
 
 const SpectrogramBarWithHooks = () => {
   const bounds = {
@@ -31,7 +31,7 @@ const SpectrogramBarWithHooks = () => {
   const props = useSpectrogramBarInteractions({ viewport });
 
   return (
-    <SpectrogramBar viewport={viewport.viewport} bounds={bounds} {...props} />
+    <ViewportBar viewport={viewport.viewport} bounds={bounds} {...props} />
   );
 };
 

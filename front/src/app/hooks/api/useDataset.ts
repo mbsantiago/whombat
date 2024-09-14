@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
@@ -68,29 +68,22 @@ export default function useDataset({
     enabled: withState,
   });
 
-  const { data } = query;
-  const downloadLinkJSON = useMemo(() => {
-    if (data == null) {
-      return undefined;
-    }
-    return api.datasets.getDownloadUrl(data, "json");
-  }, [data]);
-
-  const downloadLinkCSV = useMemo(() => {
-    if (data == null) {
-      return undefined;
-    }
-    return api.datasets.getDownloadUrl(data, "csv");
-  }, [data]);
+  const download = useCallback(
+    async (format: "csv" | "json") => {
+      await toast.promise(api.datasets.download(uuid, format), {
+        loading: "Downloading...",
+        success: "Download complete",
+        error: "Failed to download dataset",
+      });
+    },
+    [uuid],
+  );
 
   return {
     ...query,
     update,
     delete: delete_,
     state,
-    download: {
-      json: downloadLinkJSON,
-      csv: downloadLinkCSV,
-    },
+    download,
   };
 }

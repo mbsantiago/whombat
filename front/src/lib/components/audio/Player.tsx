@@ -37,20 +37,15 @@ const COMMON_BUTTON_CLASSES =
 
 /**
  * Player component represents the audio player.
- *
- * @component
- * @param {object} positionProps - Component properties.
- * @param {PlayerState} positionProps.state - The state of the audio player.
- * @param {PlayerControls} positionProps.controls - The controls for the audio player.
  */
 export default function Player({
   currentTime,
-  startTime,
-  endTime,
-  isPlaying: playing,
-  loop,
-  speed,
   speedOptions,
+  endTime,
+  startTime = 0,
+  isPlaying = false,
+  loop = false,
+  speed = 1,
   onPlay,
   onPause,
   onSeek,
@@ -58,11 +53,11 @@ export default function Player({
   onSpeedChange,
 }: {
   currentTime: number;
-  startTime: number;
+  startTime?: number;
   endTime: number;
-  isPlaying: boolean;
-  loop: boolean;
-  speed: number;
+  isPlaying?: boolean;
+  loop?: boolean;
+  speed?: number;
   speedOptions: SpeedOption[];
   onPlay?: () => void;
   onPause?: () => void;
@@ -79,11 +74,11 @@ export default function Player({
           COMMON_BUTTON_CLASSES,
         )}
         onClick={() => {
-          if (playing) return onPause?.();
+          if (isPlaying) return onPause?.();
           onPlay?.();
         }}
       >
-        {playing ? (
+        {isPlaying ? (
           <PauseIcon className="w-5 h-5" />
         ) : (
           <PlayIcon className="w-5 h-5" />

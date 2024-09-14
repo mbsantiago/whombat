@@ -13,9 +13,15 @@ type Story = StoryObj<typeof RecordingMediaInfo>;
 
 export const Primary: Story = {
   args: {
-    duration: 10,
-    samplerate: 44100,
-    channels: 1,
-    time_expansion: 1,
+    recording: {
+      uuid: "uuid",
+      hash: "hash",
+      path: "path.wav",
+      duration: 10,
+      samplerate: 44100,
+      channels: 1,
+      time_expansion: 1,
+      created_on: new Date(),
+    },
   },
 };

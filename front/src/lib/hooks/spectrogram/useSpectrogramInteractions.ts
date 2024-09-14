@@ -1,6 +1,6 @@
 import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
 import useSpectrogramSeek from "@/lib/hooks/spectrogram/useSpectrogramSeek";
-import type { AudioController } from "@/lib/hooks/audio/useRecordingAudio";
+import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import type { SpectrogramWindow, SpectrogramState } from "@/lib/types";
 import {

@@ -53,17 +53,20 @@ export function getButtonClassName({
   variant = "primary",
   mode = "filled",
   padding = "p-2.5",
+  align = "text-center",
 }: {
   variant?: Variant;
   mode?: Mode;
   padding?: string;
+  align?: "text-center" | "text-left" | "text-right";
 }) {
   return classNames(
     CLASS_NAMES[mode][variant],
     CLASS_NAMES[mode]["common"],
     FOCUS_STYLE,
     padding,
-    "group flex flex-row items-center rounded-lg text-center text-sm font-medium",
+    align,
+    "group flex flex-row items-center rounded-lg text-sm font-medium",
   );
 }
 
@@ -73,17 +76,19 @@ const Button = forwardRef(function Button(
     variant = "primary",
     mode = "filled",
     padding = "p-2.5",
+    align = "text-center",
     className,
     ...props
   }: {
     children: ReactNode;
     variant?: Variant;
     padding?: string;
+    align?: "text-center" | "text-left" | "text-right";
     mode?: Mode;
   } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "ref">,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const baseClass = getButtonClassName({ variant, mode, padding });
+  const baseClass = getButtonClassName({ variant, mode, padding, align });
   return (
     <button className={classNames(baseClass, className)} {...props} ref={ref}>
       {children}

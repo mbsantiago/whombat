@@ -1,16 +1,15 @@
-import Button from "@/lib/components/ui/Button";
 import DatasetExport from "@/lib/components/datasets/DatasetExport";
 import Dialog from "@/lib/components/ui/Dialog";
-import {
-  DownloadIcon,
-  RecordingsIcon,
-  UploadIcon,
-} from "@/lib/components/icons";
+import { DownloadIcon, RecordingsIcon } from "@/lib/components/icons";
 
 import SecondaryNavBar from "@/lib/components/navigation/SecondaryNavBar";
 import type { Dataset } from "@/lib/types";
+import { ComponentProps } from "react";
 
-export default function NavBar({ dataset }: { dataset: Dataset }) {
+export default function DatasetRecordingSummary({
+  dataset,
+  ...props
+}: { dataset: Dataset } & ComponentProps<typeof DatasetExport>) {
   return (
     <SecondaryNavBar
       title="Recordings"
@@ -23,10 +22,6 @@ export default function NavBar({ dataset }: { dataset: Dataset }) {
         </>
       }
       buttons={[
-        <Button key="import" mode="text" variant="secondary">
-          <UploadIcon className="inline-block mr-1 w-5 h-5 text-emerald-500 align-middle" />
-          import
-        </Button>,
         <Dialog
           key="export"
           title="Export Recording Metadata"
@@ -39,7 +34,7 @@ export default function NavBar({ dataset }: { dataset: Dataset }) {
             </>
           }
         >
-          {() => <DatasetExport dataset={dataset} />}
+          {() => <DatasetExport {...props} />}
         </Dialog>,
       ]}
     />

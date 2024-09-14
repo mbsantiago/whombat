@@ -3,10 +3,11 @@ import toast from "react-hot-toast";
 
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
+import { useMutation as useReactQueryMutation } from "@tanstack/react-query";
 
 import type { AxiosError } from "axios";
 import type { RecordingUpdate } from "@/lib/api/recordings";
-import type { NoteCreate } from "@/lib/api/notes";
+import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
 import type { Recording, Tag, Note, Feature } from "@/lib/types";
 
 export default function useRecording({
@@ -17,6 +18,7 @@ export default function useRecording({
   onDeleteRecording,
   onAddRecordingTag,
   onDeleteRecordingTag,
+  onUpdateRecordingNote,
   onAddRecordingNote,
   onDeleteRecordingNote,
   onAddRecordingFeature,
@@ -31,6 +33,7 @@ export default function useRecording({
   onDeleteRecording?: (recording: Recording) => void;
   onAddRecordingTag?: (recording: Recording, tag: Tag) => void;
   onDeleteRecordingTag?: (recording: Recording, tag: Tag) => void;
+  onUpdateRecordingNote?: (recording: Recording, note: NoteUpdate) => void;
   onAddRecordingNote?: (recording: Recording, note: NoteCreate) => void;
   onDeleteRecordingNote?: (recording: Recording, note: Note) => void;
   onAddRecordingFeature?: (recording: Recording, feature: Feature) => void;
@@ -80,6 +83,16 @@ export default function useRecording({
     onSuccess: (data, note) => {
       toast.success("Note added");
       onAddRecordingNote?.(data, note);
+    },
+  });
+
+  const updateNote = useReactQueryMutation({
+    mutationFn: ({ note, data }: { note: Note; data: NoteUpdate }) =>
+      api.notes.update(note, data),
+    onSuccess: (note) => {
+      toast.success("Note updated");
+      query.refetch();
+      onUpdateRecordingNote?.(query.data!, note);
     },
   });
 
@@ -137,6 +150,7 @@ export default function useRecording({
     addFeature,
     updateFeature,
     removeFeature,
+    updateNote,
     download,
     delete: delete_,
   };

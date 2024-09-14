@@ -15,7 +15,7 @@ import Loading from "@/app/loading";
 import useDataset from "@/app/hooks/api/useDataset";
 
 import DatasetContext from "./context";
-import DatasetTabs from "./components/DatasetTabs";
+import DatasetTabs from "../../../components/datasets/DatasetTabs";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();

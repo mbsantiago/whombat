@@ -10,15 +10,7 @@ import {
   zoomWindowToPosition,
 } from "@/lib/utils/windows";
 
-/**
- * Represents the state and functionality of a viewport within a spectrogram
- * display.
- */
-export type ViewportController = {
-  /** The current position and dimensions of the viewport. */
-  viewport: SpectrogramWindow;
-  /** The maximum allowable boundaries for the viewport. */
-  bounds: SpectrogramWindow;
+export type ViewportControls = {
   /** Sets the viewport to a new position and dimensions.*/
   set(window: SpectrogramWindow): void;
   /** Sets the time interval of the viewport.*/
@@ -47,6 +39,17 @@ export type ViewportController = {
   save(): void;
   /** Goes back to the previous viewport position in the history stack.*/
   back(): void;
+};
+
+/**
+ * Represents the state and functionality of a viewport within a spectrogram
+ * display.
+ */
+export type ViewportController = ViewportControls & {
+  /** The current position and dimensions of the viewport. */
+  viewport: SpectrogramWindow;
+  /** The maximum allowable boundaries for the viewport. */
+  bounds: SpectrogramWindow;
 };
 
 /**

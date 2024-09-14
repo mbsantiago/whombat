@@ -89,16 +89,6 @@ export default function useRecording({
     },
   });
 
-  const { mutate: updateNote } = useReactQueryMutation({
-    mutationFn: ({ note, data }: { note: Note; data: NoteUpdate }) =>
-      api.notes.update(note, data),
-    onSuccess: (note) => {
-      toast.success("Note updated");
-      query.refetch();
-      onUpdateNote?.(query.data!, note);
-    },
-  });
-
   const { mutate: removeNote } = useMutation({
     mutationFn: api.recordings.removeNote,
     onSuccess: (recording, note) => {

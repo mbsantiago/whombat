@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { DatasetSchema, RecordingStateSchema } from "@/lib/schemas";
 
-import { GetManySchema, Page } from "./common";
+import { GetManySchema, Page, downloadContent } from "./common";
 
 import type { Dataset, RecordingState } from "@/lib/types";
 
@@ -55,11 +55,9 @@ const DEFAULT_ENDPOINTS = {
 export function registerDatasetAPI({
   instance,
   endpoints = DEFAULT_ENDPOINTS,
-  baseUrl = "",
 }: {
   instance: AxiosInstance;
   endpoints?: typeof DEFAULT_ENDPOINTS;
-  baseUrl?: string;
 }) {
   async function getMany(query: GetDatasetsQuery): Promise<DatasetPage> {
     const params = GetDatasetsQuerySchema.parse(query);
@@ -105,12 +103,14 @@ export function registerDatasetAPI({
     return DatasetSchema.parse(data);
   }
 
-  function getDownloadUrl(dataset: Dataset, format: "json" | "csv"): string {
-    if (format === "json") {
-      return `${baseUrl}${endpoints.downloadJson}?dataset_uuid=${dataset.uuid}`;
-    } else {
-      return `${baseUrl}${endpoints.downloadCsv}?dataset_uuid=${dataset.uuid}`;
-    }
+  async function downloadDataset(uuid: string, format: "json" | "csv") {
+    let endpoint =
+      format === "csv" ? endpoints.downloadCsv : endpoints.downloadJson;
+    const { data } = await instance.get(endpoint, {
+      params: { dataset_uuid: uuid },
+    });
+    let filetype = format === "csv" ? "text/csv" : "application/json";
+    downloadContent(data, `${uuid}.${format}`, filetype);
   }
 
   async function importDataset(data: FormData): Promise<Dataset> {
@@ -125,7 +125,7 @@ export function registerDatasetAPI({
     getState: getDatasetState,
     update: updateDataset,
     delete: deleteDataset,
-    getDownloadUrl,
+    download: downloadDataset,
     import: importDataset,
   } as const;
 }

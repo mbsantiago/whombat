@@ -1,6 +1,6 @@
 import useRecordingSpectrogram from "@/lib/hooks/recordings/useRecordingSpectrogram";
 import { useHotkeys } from "react-hotkeys-hook";
-import useSettings from "@/app/hooks/useSettings";
+import useSettings from "@/app/hooks/settings/useSettings";
 
 import RecordingSpectrogramBase from "@/lib/components/recordings/RecordingSpectrogram";
 import type { Recording } from "@/lib/types";

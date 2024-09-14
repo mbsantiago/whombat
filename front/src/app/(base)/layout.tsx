@@ -10,7 +10,7 @@ import { NavBar } from "@/lib/components/navigation/NavBar";
 import { SideMenu } from "@/lib/components/navigation/SideMenu";
 import useActiveUser from "@/app/hooks/api/useActiveUser";
 
-import UserContext from "./context";
+import UserContext from "../contexts/user";
 
 function WithLogIn({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

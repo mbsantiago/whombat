@@ -4,7 +4,7 @@
  */
 import { useCallback, useMemo } from "react";
 
-import useRecordingAudio from "@/lib/hooks/audio/useRecordingAudio";
+import useRecordingAudio from "@/app/hooks/audio/useRecordingAudio";
 import { adjustToRecording } from "@/lib/hooks/settings/useAudioSettings";
 
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
@@ -81,7 +81,7 @@ export default function useSpectrogramAudio({
     recording,
     startTime: bounds.time.min,
     endTime: bounds.time.max,
-    settings: adjustedAudioSettings,
+    audioSettings: adjustedAudioSettings,
     onTimeUpdate,
     onSeek: handleSeek,
     ...handlers,

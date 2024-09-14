@@ -4,7 +4,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import UserContext from "@/app/(base)/context";
+import UserContext from "@/app/contexts/user";
 import AnnotateTasks from "@/app/(base)/annotation_projects/detail/components/AnnotateTasks";
 import Loading from "@/lib/components/ui/Loading";
 import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";

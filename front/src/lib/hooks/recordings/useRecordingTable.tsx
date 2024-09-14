@@ -174,6 +174,7 @@ export default function useRecordingTable({
           <TableCell>
             <Button
               mode="text"
+              align="text-left"
               onClick={() => onClickRecording?.(row.original)}
             >
               {pathFormatter(path)}

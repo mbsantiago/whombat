@@ -3,7 +3,7 @@ import { useContext } from "react";
 import Card from "@/lib/components/ui/Card";
 import Hero from "@/lib/components/ui/Hero";
 import Center from "@/lib/components/layouts/Center";
-import UserContext from "../context";
+import UserContext from "../../contexts/user";
 import UserProfile from "@/lib/components/users/UserProfile";
 
 export default function Page() {

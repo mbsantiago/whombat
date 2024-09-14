@@ -1,30 +1,5 @@
 import { useCallback, useState, useRef, useEffect } from "react";
 
-export type AudioController = {
-  /** Starts or resumes playback of the audio. */
-  play: () => void;
-  /** Pauses playback of the audio. */
-  pause: () => void;
-  /** Stops playback of the audio and resets the current time to 0. */
-  stop: () => void;
-  /** Sets the current playback time to the specified time in seconds. */
-  seek: (time: number) => void;
-  /** Sets the volume of the audio (0.0 to 1.0). */
-  setVolume: (volume: number) => void;
-  /** Toggles whether the audio will loop when it reaches the end. */
-  toggleLoop: () => void;
-  /** Toggles the playback state (play/pause). */
-  togglePlay: () => void;
-  /** The current volume level (0.0 to 1.0). */
-  volume: number;
-  /** The current playback time in seconds. */
-  currentTime: number;
-  /** Indicates whether the audio is set to loop. */
-  loop: boolean;
-  /** Indicates whether the audio is currently playing. */
-  isPlaying: boolean;
-};
-
 /**
  * A custom React hook that provides comprehensive controls for playing audio.
  * It manages an HTMLAudioElement under the hood, handling playback, pausing,
@@ -310,3 +285,33 @@ export default function useAudio({
     seek: handleSeek,
   };
 }
+
+export type AudioState = {
+  /** The current volume level (0.0 to 1.0). */
+  volume: number;
+  /** The current playback time in seconds. */
+  currentTime: number;
+  /** Indicates whether the audio is set to loop. */
+  loop: boolean;
+  /** Indicates whether the audio is currently playing. */
+  isPlaying: boolean;
+};
+
+export type AudioControls = {
+  /** Starts or resumes playback of the audio. */
+  play: () => void;
+  /** Pauses playback of the audio. */
+  pause: () => void;
+  /** Stops playback of the audio and resets the current time to 0. */
+  stop: () => void;
+  /** Sets the current playback time to the specified time in seconds. */
+  seek: (time: number) => void;
+  /** Sets the volume of the audio (0.0 to 1.0). */
+  setVolume: (volume: number) => void;
+  /** Toggles whether the audio will loop when it reaches the end. */
+  toggleLoop: () => void;
+  /** Toggles the playback state (play/pause). */
+  togglePlay: () => void;
+};
+
+export type AudioController = AudioState & AudioControls;

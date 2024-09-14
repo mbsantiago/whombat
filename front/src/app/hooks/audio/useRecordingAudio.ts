@@ -1,33 +1,15 @@
 import { useCallback, useMemo } from "react";
-
 import api from "@/app/api";
+
 import useAudio from "@/lib/hooks/audio/useAudio";
 
 import type { Recording, AudioSettings } from "@/lib/types";
-
-export type AudioController = {
-  startTime: number;
-  endTime: number;
-  volume: number;
-  currentTime: number;
-  speed: number;
-  loop: boolean;
-  isPlaying: boolean;
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  toggleLoop: () => void;
-  togglePlay: () => void;
-};
 
 export default function useRecordingAudio({
   recording,
   startTime,
   endTime,
-  settings,
-  urlFn = api.audio.getStreamUrl,
+  audioSettings,
   onTimeUpdate,
   onSeek,
   ...handlers
@@ -35,13 +17,7 @@ export default function useRecordingAudio({
   recording: Recording;
   startTime: number;
   endTime: number;
-  settings: AudioSettings;
-  urlFn?: (args: {
-    recording: Recording;
-    startTime?: number;
-    endTime?: number;
-    settings?: AudioSettings;
-  }) => string;
+  audioSettings: AudioSettings;
   onSeek?: (time: number) => void;
   onPlay?: () => void;
   onPause?: () => void;
@@ -57,17 +33,17 @@ export default function useRecordingAudio({
   onCanPlayThrough?: () => void;
   onAbort?: () => void;
 }): AudioController {
-  const { speed } = settings;
+  const { speed } = audioSettings;
 
   const url = useMemo(
     () =>
-      urlFn({
+      api.audio.getStreamUrl({
         recording,
         startTime,
         endTime,
-        settings,
+        settings: audioSettings,
       }),
-    [recording, startTime, endTime, settings, urlFn],
+    [recording, startTime, endTime, audioSettings, urlFn],
   );
 
   const handleTimeUpdate = useCallback(
@@ -93,6 +69,7 @@ export default function useRecordingAudio({
   );
 
   return {
+    recording,
     startTime,
     endTime,
     speed,
@@ -109,3 +86,26 @@ export default function useRecordingAudio({
     seek,
   };
 }
+
+export type AudioState = {
+  recording: Recording;
+  startTime: number;
+  endTime: number;
+  volume: number;
+  currentTime: number;
+  speed: number;
+  loop: boolean;
+  isPlaying: boolean;
+};
+
+export type AudioControls = {
+  play: () => void;
+  pause: () => void;
+  stop: () => void;
+  seek: (time: number) => void;
+  setVolume: (volume: number) => void;
+  toggleLoop: () => void;
+  togglePlay: () => void;
+};
+
+export type AudioController = AudioState & AudioControls;

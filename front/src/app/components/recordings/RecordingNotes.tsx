@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import useRecording from "@/app/hooks/useRecording";
+import useRecording from "@/app/hooks/api/useRecording";
 import RecordingNotesBase from "@/lib/components/recordings/RecordingNotes";
 import Loading from "@/app/loading";
 import Error from "@/app/error";
-import UserContext from "@/app/(base)/context";
+import UserContext from "@/app/contexts/user";
 
 import type { Recording } from "@/lib/types";
 
@@ -29,9 +29,9 @@ export default function RecordingNotes({
     <RecordingNotesBase
       notes={data.notes ?? []}
       currentUser={currentUser}
-      onNoteCreate={addNote}
-      onNoteUpdate={(note, data) => updateNote({ note, data })}
-      onNoteDelete={removeNote}
+      onNoteCreate={addNote.mutate}
+      onNoteUpdate={(note, data) => updateNote.mutate({ note, data })}
+      onNoteDelete={removeNote.mutate}
     />
   );
 }

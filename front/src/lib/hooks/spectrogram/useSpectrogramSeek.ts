@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
-import type { AudioController } from "@/lib/hooks/audio/useRecordingAudio";
+import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
 import type { DoublePressHandler } from "@/lib/types";
 
 export default function useSpectrogramSeek({

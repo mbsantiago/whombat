@@ -2,7 +2,7 @@ import { useRef, useMemo, useCallback } from "react";
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import Player from "@/lib/components/audio/Player";
 import Card from "@/lib/components/ui/Card";
-import SpectrogramBar from "@/lib/components/spectrograms/SpectrogramBar";
+import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import SpectrogramSettings from "@/lib/components/spectrograms/SpectrogramSettings";
 import SpectrogramPredictedTags from "@/lib/components/spectrograms/SpectrogramPredictedTags";
