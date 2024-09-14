@@ -18,29 +18,27 @@ describe("useSpectrogramSettings Hook", () => {
 
   it("initializes with the correct initial settings", () => {
     const { result } = renderHook(() =>
-      useSpectrogramSettings({ initialSettings, onChange: jest.fn() }),
+      useSpectrogramSettings({ initialSettings }),
     );
     expect(result.current.settings).toEqual(initialSettings);
   });
 
-  it("updates settings and calls onChange", () => {
-    const onChange = jest.fn();
+  it("updates settings", () => {
     const { result } = renderHook(() =>
-      useSpectrogramSettings({ initialSettings, onChange }),
+      useSpectrogramSettings({ initialSettings }),
     );
 
     act(() => {
-      result.current.setWindowSize(1024);
-      result.current.setOverlap(0.25);
-      result.current.setScale("power");
-      result.current.setWindow("hamming");
-      result.current.setDBRange({ min: -60, max: 10 });
-      result.current.setColormap("magma");
-      result.current.togglePCEN();
-      result.current.toggleNormalize();
+      result.current.dispatch({ type: "setWindowSize", windowSize: 1024 });
+      result.current.dispatch({ type: "setOverlap", overlap: 0.25 });
+      result.current.dispatch({ type: "setScale", scale: "power" });
+      result.current.dispatch({ type: "setWindow", window: "hamming" });
+      result.current.dispatch({ type: "setDBRange", min: -60, max: 10 });
+      result.current.dispatch({ type: "setColormap", colormap: "magma" });
+      result.current.dispatch({ type: "togglePCEN" });
+      result.current.dispatch({ type: "toggleNormalize" });
     });
 
-    expect(onChange).toHaveBeenCalledTimes(8);
     expect(result.current.settings).toEqual({
       window_size: 1024,
       overlap: 0.25,
@@ -55,49 +53,95 @@ describe("useSpectrogramSettings Hook", () => {
     });
   });
 
-  it("calls onError when invalid settings are provided", () => {
-    const onError = jest.fn();
+  it("Errors on negative window size", () => {
     const { result } = renderHook(() =>
-      useSpectrogramSettings({ initialSettings, onError }),
+      useSpectrogramSettings({ initialSettings }),
     );
 
-    act(() => {
-      result.current.setWindowSize(-1);
-      result.current.setOverlap(1.5);
-      result.current.setScale("invalid" as any);
-      result.current.setWindow("invalid" as any);
-      result.current.setDBRange({ min: 5, max: -5 });
-      result.current.setColormap("invalid" as any);
-    });
-
-    expect(onError).toHaveBeenCalledTimes(6);
+    expect(() =>
+      act(() =>
+        result.current.dispatch({ type: "setWindowSize", windowSize: -1 }),
+      ),
+    ).toThrow("Window size must be greater than 0");
   });
 
-  it("resets settings and calls onReset", () => {
-    const onReset = jest.fn();
-    const onChange = jest.fn();
-
+  it("Errors on non 0-1 overlap", () => {
     const { result } = renderHook(() =>
-      useSpectrogramSettings({ initialSettings, onChange, onReset }),
+      useSpectrogramSettings({ initialSettings }),
+    );
+
+    expect(() =>
+      act(() => result.current.dispatch({ type: "setOverlap", overlap: 1.5 })),
+    ).toThrow("Overlap must be between 0 and 1");
+  });
+
+  it("Errors on invalid scale", () => {
+    const { result } = renderHook(() =>
+      useSpectrogramSettings({ initialSettings }),
+    );
+
+    expect(() =>
+      act(() =>
+        // @ts-ignore
+        result.current.dispatch({ type: "setScale", scale: "invalid" }),
+      ),
+    ).toThrow("Invalid spectrogram scale, must be one of amplitude, power, dB");
+  });
+
+  it("Errors on invalid window", () => {
+    const { result } = renderHook(() =>
+      useSpectrogramSettings({ initialSettings }),
+    );
+
+    expect(() =>
+      act(() =>
+        // @ts-ignore
+        result.current.dispatch({ type: "setWindow", window: "invalid" }),
+      ),
+    ).toThrow("Invalid window type, must be one of ");
+  });
+
+  it("Errors on invalid DB range", () => {
+    const { result } = renderHook(() =>
+      useSpectrogramSettings({ initialSettings }),
+    );
+
+    expect(() =>
+      act(() =>
+        result.current.dispatch({ type: "setDBRange", min: 5, max: -5 }),
+      ),
+    ).toThrow("Minimum dB must be less than maximum dB");
+  });
+
+  it("Errors on invalid colormap", () => {
+    const { result } = renderHook(() =>
+      useSpectrogramSettings({ initialSettings }),
+    );
+
+    expect(() =>
+      act(() =>
+        // @ts-ignore
+        result.current.dispatch({ type: "setColormap", colormap: "invalid" }),
+      ),
+    ).toThrow("Invalid colormap, must be one of ");
+  });
+
+  it("Can reset settings", () => {
+    const { result } = renderHook(() =>
+      useSpectrogramSettings({ initialSettings }),
     );
 
     // Change settings first
     act(() => {
-      result.current.setWindowSize(2048);
+      result.current.dispatch({ type: "setWindowSize", windowSize: 2048 });
     });
 
-    expect(onChange).toHaveBeenLastCalledWith({
-      ...initialSettings,
-      window_size: 2048,
-    });
     expect(result.current.settings.window_size).toBe(2048);
 
     act(() => {
-      result.current.reset();
+      result.current.dispatch({ type: "reset" });
     });
 
-    expect(onReset).toHaveBeenCalled();
-    expect(onChange).toHaveBeenLastCalledWith(initialSettings);
     expect(result.current.settings).toEqual(initialSettings);
   });
 });

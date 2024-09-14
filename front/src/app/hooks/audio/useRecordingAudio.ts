@@ -11,8 +11,7 @@ export default function useRecordingAudio({
   endTime,
   audioSettings,
   onTimeUpdate,
-  onSeek,
-  ...handlers
+  onSeek, ...handlers
 }: {
   recording: Recording;
   startTime: number;
@@ -41,9 +40,10 @@ export default function useRecordingAudio({
         recording,
         startTime,
         endTime,
-        settings: audioSettings,
+        // TODO: Fix this
+        // settings: audioSettings,
       }),
-    [recording, startTime, endTime, audioSettings, urlFn],
+    [recording, startTime, endTime],
   );
 
   const handleTimeUpdate = useCallback(

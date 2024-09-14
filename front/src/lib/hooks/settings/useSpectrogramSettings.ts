@@ -1,200 +1,142 @@
-import { useCallback, useState } from "react";
-import { produce } from "immer";
+import { useMemo } from "react";
+import { useImmerReducer } from "use-immer";
 import type { SpectrogramSettings } from "@/lib/types";
 import { SCALES, WINDOWS, COLORMAPS } from "@/lib/schemas";
+import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
 
+/**
+ * Custom hook to manage spectrogram settings.
+ */
+export default function useSpectrogramSettings({
+  initialSettings = DEFAULT_SPECTROGRAM_SETTINGS,
+}: {
+  /** The initial values for the spectrogram settings. */
+  initialSettings?: SpectrogramSettings;
+}): SpectrogramSettingsInterface {
+  const reducer = useMemo(
+    () =>
+      createSpectrogramSettingsReducer({
+        initial: initialSettings,
+      }),
+    [initialSettings],
+  );
+  const [settings, dispatch] = useImmerReducer(reducer, initialSettings);
+  return {
+    settings,
+    dispatch,
+  };
+}
+
+/**
+ * Types of actions that can be dispatched to update the spectrogram settings.
+ */
+export type SpectrogramSettingsAction =
+  | { type: "setAll"; settings: SpectrogramSettings }
+  | { type: "setWindowSize"; windowSize: number }
+  | { type: "setOverlap"; overlap: number }
+  | { type: "setScale"; scale: (typeof SCALES)[number] }
+  | { type: "setWindow"; window: (typeof WINDOWS)[number] }
+  | { type: "setDBRange"; min?: number; max?: number }
+  | { type: "setColormap"; colormap: (typeof COLORMAPS)[number] }
+  | { type: "togglePCEN" }
+  | { type: "toggleNormalize" }
+  | { type: "reset" };
+
+/**
+ * Creates a reducer function to manage spectrogram settings.
+ */
+function createSpectrogramSettingsReducer({
+  initial,
+}: {
+  /** The initial spectrogram settings. */
+  initial: SpectrogramSettings;
+}) {
+  return function spectrogramSettingsReducer(
+    draft: SpectrogramSettings,
+    action: SpectrogramSettingsAction,
+  ) {
+    switch (action.type) {
+      case "setAll": {
+        return action.settings;
+      }
+      case "setWindowSize": {
+        if (action.windowSize <= 0) {
+          throw new Error("Window size must be greater than 0");
+        }
+        draft.window_size = action.windowSize;
+        break;
+      }
+      case "setOverlap": {
+        console.log(action)
+        if (action.overlap <= 0 || action.overlap >= 1) {
+          throw new Error("Overlap must be between 0 and 1");
+        }
+        draft.overlap = action.overlap;
+        break;
+      }
+      case "setScale": {
+        if (!SCALES.includes(action.scale)) {
+          throw new Error(
+            `Invalid spectrogram scale, must be one of ${SCALES.join(", ")}`,
+          );
+        }
+        draft.scale = action.scale;
+        break;
+      }
+      case "setWindow": {
+        if (!WINDOWS.includes(action.window as any)) {
+          throw new Error(
+            `Invalid window type, must be one of ${WINDOWS.join(", ")}`,
+          );
+        }
+        draft.window = action.window;
+        break;
+      }
+      case "setDBRange": {
+        if (
+          action.min != null &&
+          action.max != null &&
+          action.min >= action.max
+        ) {
+          throw new Error("Minimum dB must be less than maximum dB");
+        }
+        if (action.min != null) draft.min_dB = action.min;
+        if (action.max != null) draft.max_dB = action.max;
+        break;
+      }
+      case "setColormap": {
+        if (!COLORMAPS.includes(action.colormap as any)) {
+          throw new Error(
+            `Invalid colormap, must be one of ${COLORMAPS.join(", ")}`,
+          );
+        }
+        draft.cmap = action.colormap;
+        break;
+      }
+      case "togglePCEN": {
+        draft.pcen = !draft.pcen;
+        break;
+      }
+      case "toggleNormalize": {
+        draft.normalize = !draft.normalize;
+        break;
+      }
+      case "reset": {
+        return initial;
+      }
+      default: {
+        // @ts-ignore
+        throw Error("Unknown action: " + action.type);
+      }
+    }
+  };
+}
+
+/**
+ * Interface for the spectrogram settings hook.
+ */
 export type SpectrogramSettingsInterface = {
   /** The current spectrogram settings. */
   settings: SpectrogramSettings;
-  /** Sets the spectrogram settings. */
-  set: (settings: SpectrogramSettings) => void;
-  /** Sets the window size for the spectrogram calculation. */
-  setWindowSize: (windowSize: number) => void;
-  /** Sets the overlap between consecutive windows. */
-  setOverlap: (overlap: number) => void;
-  /** Sets the scale for the spectrogram ('amplitude', 'power', or 'dB'). */
-  setScale: (scale: (typeof SCALES)[number]) => void;
-  /** Sets the window function for the spectrogram. */
-  setWindow: (window: (typeof WINDOWS)[number]) => void;
-  /** Sets the minimum and maximum dB range for the spectrogram. */
-  setDBRange: (params: { min?: number; max?: number }) => void;
-  /** Sets the colormap for the spectrogram. */
-  setColormap: (colormap: (typeof COLORMAPS)[number]) => void;
-  /** Toggles per-channel energy normalization (PCEN) on/off. */
-  togglePCEN: () => void;
-  /** Toggles normalization of the spectrogram on/off. */
-  toggleNormalize: () => void;
-  /** Resets the settings to their initial values and calls the optional
-   * `onReset` callback. */
-  reset: () => void;
+  dispatch: (action: SpectrogramSettingsAction) => void;
 };
-
-/**
- * A React hook that provides an interface for managing spectrogram settings.
- * All setter functions include validation to ensure the settings remain valid,
- * and an `onError` callback is provided for handling invalid input. Any
- * changes to the settings are propagated to the `onChange` callback.
- */
-export default function useSpectrogramSettings({
-  initialSettings,
-  onChange,
-  onReset,
-  onError,
-}: {
-  /** The initial values for the spectrogram settings. */
-  initialSettings: SpectrogramSettings;
-  /** A callback function that is triggered whenever the settings change. */
-  onChange?: (settings: SpectrogramSettings) => void;
-  /** An optional callback function that is called when the settings are reset.
-   * */
-  onReset?: () => void;
-  /** An optional callback function that is called when an error occurs during
-   * validation. */
-  onError?: (error: Error) => void;
-}): SpectrogramSettingsInterface {
-  const [settings, setSettings] =
-    useState<SpectrogramSettings>(initialSettings);
-
-  const updateSettings = useCallback(
-    (recipe: (draft: SpectrogramSettings) => void) => {
-      setSettings((prev) => {
-        const next = produce(prev, recipe);
-        onChange?.(next);
-        return next;
-      });
-    },
-    [onChange],
-  );
-
-  const setWindowSize = useCallback(
-    (windowSize: number) =>
-      updateSettings((draft) => {
-        if (windowSize <= 0) {
-          onError?.(new Error("Window size must be greater than 0"));
-          return;
-        }
-
-        draft.window_size = windowSize;
-      }),
-    [updateSettings, onError],
-  );
-
-  const setOverlap = useCallback(
-    (overlap: number) =>
-      updateSettings((draft) => {
-        if (overlap <= 0 || overlap >= 1) {
-          onError?.(new Error("Overlap must be between 0 and 1"));
-          return;
-        }
-
-        draft.overlap = overlap;
-      }),
-    [updateSettings, onError],
-  );
-
-  const setScale = useCallback(
-    (scale: (typeof SCALES)[number]) =>
-      updateSettings((draft) => {
-        if (!SCALES.includes(scale)) {
-          onError?.(
-            new Error(
-              `Invalid spectrogram scale, must be one of ${SCALES.join(", ")}`,
-            ),
-          );
-          return;
-        }
-
-        draft.scale = scale;
-      }),
-    [updateSettings, onError],
-  );
-
-  const setWindow = useCallback(
-    (window: (typeof WINDOWS)[number]) =>
-      updateSettings((draft) => {
-        if (!WINDOWS.includes(window as any)) {
-          onError?.(
-            new Error(
-              `Invalid window type, must be one of ${WINDOWS.join(", ")}`,
-            ),
-          );
-          return;
-        }
-        draft.window = window;
-      }),
-    [updateSettings, onError],
-  );
-
-  const setDBRange = useCallback(
-    ({ min = -80, max = 0 }: { min?: number; max?: number }) =>
-      updateSettings((draft) => {
-        if (min >= max) {
-          onError?.(new Error("Minimum dB must be less than maximum dB"));
-          return;
-        }
-        draft.min_dB = min;
-        draft.max_dB = max;
-      }),
-    [updateSettings, onError],
-  );
-
-  const setColormap = useCallback(
-    (colormap: (typeof COLORMAPS)[number]) =>
-      updateSettings((draft) => {
-        if (!COLORMAPS.includes(colormap as any)) {
-          onError?.(
-            new Error(
-              `Invalid colormap, must be one of ${COLORMAPS.join(", ")}`,
-            ),
-          );
-          return;
-        }
-        draft.cmap = colormap;
-      }),
-    [updateSettings, onError],
-  );
-
-  const togglePCEN = useCallback(
-    () =>
-      updateSettings((draft) => {
-        draft.pcen = !draft.pcen;
-      }),
-    [updateSettings],
-  );
-
-  const toggleNormalize = useCallback(
-    () =>
-      updateSettings((draft) => {
-        draft.normalize = !draft.normalize;
-      }),
-    [updateSettings],
-  );
-
-  const reset = useCallback(
-    () =>
-      updateSettings(() => {
-        onReset?.();
-        return initialSettings;
-      }),
-    [initialSettings, onReset, updateSettings],
-  );
-
-  const setAll = useCallback(
-    (settings: SpectrogramSettings) => updateSettings(() => settings),
-    [updateSettings],
-  );
-
-  return {
-    settings,
-    setWindowSize,
-    setOverlap,
-    setScale,
-    setWindow,
-    setDBRange,
-    setColormap,
-    togglePCEN,
-    toggleNormalize,
-    reset,
-    set: setAll,
-  };
-}

@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "@/lib/utils/debounce";
 
-import AmplitudeSettings from "./settings/AmplitudeSettings";
-import ClampSettings from "./settings/ClampSettings";
-import ColorSettings from "./settings/ColorSettings";
-import DeNoiseSettings from "./settings/DeNoiseSettings";
-import STFTSettings from "./settings/STFTSettings";
+import AmplitudeSettings from "@/lib/components/settings/settings/AmplitudeSettings";
+import ClampSettings from "@/lib/components/settings/settings/ClampSettings";
+import ColorSettings from "@/lib/components/settings/settings/ColorSettings";
+import DeNoiseSettings from "@/lib/components/settings/settings/DeNoiseSettings";
+import STFTSettings from "@/lib/components/settings/settings/STFTSettings";
 import { SpectrogramSettingsSchema } from "@/lib/schemas";
 
 import type { SpectrogramSettings } from "@/lib/types";

@@ -16,16 +16,16 @@ export default function SettingsMenu({
   samplerate,
   onAudioSettingsChange,
   onSpectrogramSettingsChange,
-  onResetClick,
-  onSaveClick,
+  onResetSettings,
+  onSaveSettings,
 }: {
   audioSettings: AudioSettings;
   spectrogramSettings: SpectrogramSettings;
   samplerate: number;
   onAudioSettingsChange?: (settings: AudioSettings) => void;
   onSpectrogramSettingsChange?: (settings: SpectrogramSettings) => void;
-  onResetClick?: () => void;
-  onSaveClick?: () => void;
+  onResetSettings?: () => void;
+  onSaveSettings?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -43,10 +43,10 @@ export default function SettingsMenu({
               Settings
             </span>
             <span className="inline-flex gap-4 items-center">
-              <Button mode="text" variant="warning" onClick={onResetClick}>
+              <Button mode="text" variant="warning" onClick={onResetSettings}>
                 Reset
               </Button>
-              <Button mode="text" variant="primary" onClick={onSaveClick}>
+              <Button mode="text" variant="primary" onClick={onSaveSettings}>
                 Save
               </Button>
             </span>

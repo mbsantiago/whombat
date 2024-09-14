@@ -10,7 +10,7 @@ const meta: Meta<typeof Player> = {
     onPlay: fn(),
     onPause: fn(),
     onSeek: fn(),
-    onSpeedChange: fn(),
+    onChangeSpeed: fn(),
     onToggleLoop: fn(),
   },
 };

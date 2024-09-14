@@ -16,44 +16,40 @@ export default function useSettings() {
     (state) => state.setSpectrogramSettings,
   );
 
-  const audioSettings = useAudioSettings({
-    initialSettings: initialAudioSettings,
-  });
+  const { settings: audioSettings, dispatch: dispatchAudioSettingsAction } =
+    useAudioSettings({
+      initialSettings: initialAudioSettings,
+    });
 
-  const spectrogramSettings = useSpectrogramSettings({
+  const {
+    settings: spectrogramSettings,
+    dispatch: dispatchSpectrogramSettingsAction,
+  } = useSpectrogramSettings({
     initialSettings: initialSpectrogramSettings,
   });
 
-  const { settings: currentAudioSettings, set: setAudioSettings } =
-    audioSettings;
-  const { settings: currentSpectrogramSettings, set: setSpectrogramSettings } =
-    spectrogramSettings;
-
   const save = useCallback(() => {
-    saveAudioSettings(currentAudioSettings);
-    saveSpectrogramSettings(currentSpectrogramSettings);
+    saveAudioSettings(audioSettings);
+    saveSpectrogramSettings(spectrogramSettings);
     toast.success("Settings saved");
   }, [
-    currentAudioSettings,
-    currentSpectrogramSettings,
+    audioSettings,
+    spectrogramSettings,
     saveAudioSettings,
     saveSpectrogramSettings,
   ]);
 
   const reset = useCallback(() => {
-    setAudioSettings(initialAudioSettings);
-    setSpectrogramSettings(initialSpectrogramSettings);
+    dispatchAudioSettingsAction({ type: "reset" });
+    dispatchSpectrogramSettingsAction({ type: "reset" });
     toast.success("Settings reset");
-  }, [
-    initialAudioSettings,
-    initialSpectrogramSettings,
-    setAudioSettings,
-    setSpectrogramSettings,
-  ]);
+  }, [dispatchAudioSettingsAction, dispatchSpectrogramSettingsAction]);
 
   return {
     audioSettings,
     spectrogramSettings,
+    dispatchAudioSettingsAction,
+    dispatchSpectrogramSettingsAction,
     save,
     reset,
   };

@@ -12,33 +12,30 @@ describe("useAudioSettings Hook", () => {
   };
 
   it("initializes with the correct initial settings", () => {
-    const { result } = renderHook(() =>
-      useAudioSettings({ initialSettings, onChange: jest.fn() }),
-    );
+    const { result } = renderHook(() => useAudioSettings({ initialSettings }));
     expect(result.current.settings).toEqual(initialSettings);
   });
 
   it("updates settings using the provided functions", () => {
-    const onSettingsChangeMock = jest.fn();
     const { result } = renderHook(() =>
       useAudioSettings({
         initialSettings,
-        onChange: onSettingsChangeMock,
       }),
     );
 
-    const { setSpeed, toggleResample, setSamplerate, setFilter, setChannel } =
-      result.current;
+    const { dispatch } = result.current;
 
     act(() => {
-      setSpeed(1.5);
-      toggleResample();
-      setSamplerate(48000);
-      setFilter({ lowFreq: 100, highFreq: 5000 });
-      setChannel(1);
+      dispatch({ type: "setSpeed", speed: 1.5 });
+      dispatch({ type: "toggleResample" });
+      dispatch({ type: "setSamplerate", samplerate: 48000 });
+      dispatch({
+        type: "setFilter",
+        filter: { lowFreq: 100, highFreq: 5000 },
+      });
+      dispatch({ type: "setChannel", channel: 1 });
     });
 
-    expect(onSettingsChangeMock).toHaveBeenCalledTimes(5);
     expect(result.current.settings).toEqual({
       speed: 1.5,
       resample: true,
@@ -51,22 +48,24 @@ describe("useAudioSettings Hook", () => {
   });
 
   it("resets settings to their initial values", () => {
-    const onResetMock = jest.fn();
     const { result } = renderHook(() =>
       useAudioSettings({
         initialSettings,
-        onChange: jest.fn(),
-        onReset: onResetMock,
       }),
     );
 
-    const { reset } = result.current;
+    const { dispatch } = result.current;
 
     act(() => {
-      reset();
+      dispatch({ type: "setSpeed", speed: 1.5 });
+    });
+
+    expect(result.current.settings).not.toEqual(initialSettings);
+
+    act(() => {
+      dispatch({ type: "reset" });
     });
 
     expect(result.current.settings).toEqual(initialSettings);
-    expect(onResetMock).toHaveBeenCalled();
   });
 });

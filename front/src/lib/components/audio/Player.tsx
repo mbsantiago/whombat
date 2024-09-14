@@ -50,7 +50,7 @@ export default function Player({
   onPause,
   onSeek,
   onToggleLoop,
-  onSpeedChange,
+  onChangeSpeed,
 }: {
   currentTime: number;
   startTime?: number;
@@ -63,7 +63,7 @@ export default function Player({
   onPause?: () => void;
   onSeek?: (time: number) => void;
   onToggleLoop?: () => void;
-  onSpeedChange?: (speed: number) => void;
+  onChangeSpeed?: (speed: number) => void;
 }) {
   return (
     <div className="flex flex-row gap-2 items-center px-2 max-w-max rounded-md border border-stone-300 bg-stone-100 dark:border-stone-600 dark:bg-stone-700">
@@ -106,7 +106,7 @@ export default function Player({
       />
       <SelectSpeed
         speed={speed}
-        onChange={(value) => onSpeedChange?.(value)}
+        onChange={(value) => onChangeSpeed?.(value)}
         options={speedOptions}
       />
     </div>

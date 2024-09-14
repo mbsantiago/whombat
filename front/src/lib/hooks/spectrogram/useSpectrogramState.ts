@@ -1,16 +1,22 @@
 import { useState, useCallback } from "react";
-import { SpectrogramState } from "@/lib/types";
+import { SpectrogramMode } from "@/lib/types";
 
 export default function useSpectrogramState({
   state: initialState = "panning",
 }: {
-  state?: SpectrogramState;
-} = {}) {
-  const [state, setState] = useState(initialState);
-
-  const enablePanning = useCallback(() => setState("panning"), []);
-  const enableZooming = useCallback(() => setState("zooming"), []);
-  const enableIdle = useCallback(() => setState("idle"), []);
-
-  return { state, setState, enablePanning, enableZooming, enableIdle };
+  state?: SpectrogramMode;
+} = {}): SpectrogramState {
+  const [mode, setMode] = useState(initialState);
+  const enablePanning = useCallback(() => setMode("panning"), []);
+  const enableZooming = useCallback(() => setMode("zooming"), []);
+  const enableIdle = useCallback(() => setMode("idle"), []);
+  return { mode, setMode, enablePanning, enableZooming, enableIdle };
 }
+
+export type SpectrogramState = {
+  mode: SpectrogramMode;
+  setMode: (mode: SpectrogramMode) => void;
+  enablePanning: () => void;
+  enableZooming: () => void;
+  enableIdle: () => void;
+};

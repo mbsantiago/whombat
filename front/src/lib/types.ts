@@ -261,4 +261,4 @@ export type CanvasHandlers = {
   onDoubleClick?: DoublePressHandler;
 };
 
-export type SpectrogramState = "panning" | "zooming" | "idle";
+export type SpectrogramMode = "panning" | "zooming" | "idle";

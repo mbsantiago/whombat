@@ -4,7 +4,7 @@ import Player from "@/lib/components/audio/Player";
 import Card from "@/lib/components/ui/Card";
 import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
-import SpectrogramSettings from "@/lib/components/spectrograms/SpectrogramSettings";
+import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 import SpectrogramPredictedTags from "@/lib/components/spectrograms/SpectrogramPredictedTags";
 import type {
   ClipEvaluation,

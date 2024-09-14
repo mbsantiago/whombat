@@ -18,7 +18,7 @@ import {
 import type {
   AudioSettings,
   SpectrogramSettings,
-  SpectrogramState,
+  SpectrogramMode,
   SpectrogramWindow,
   DrawFn,
   HoverHandler,
@@ -86,7 +86,7 @@ const ClipAnnotationSpectrogram = memo(function ClipAnnotationSpectrogram({
   geometryType?: GeometryType;
   height?: number;
   spectrogramDrawFn?: DrawFn;
-  spectrogramMode?: SpectrogramState;
+  spectrogramMode?: SpectrogramMode;
   spectrogramSettings?: SpectrogramSettings;
   onAnnotationDelete?: () => void;
   onAnnotationDraw?: () => void;
@@ -151,7 +151,7 @@ const ClipAnnotationSpectrogram = memo(function ClipAnnotationSpectrogram({
           onPause={onAudioPause}
           onSeek={onAudioSeek}
           onToggleLoop={onAudioLoopToggle}
-          onSpeedChange={onAudioSpeedChange}
+          onChangeSpeed={onAudioSpeedChange}
           speedOptions={speedOptions}
         />
         <SettingsMenu
@@ -160,8 +160,8 @@ const ClipAnnotationSpectrogram = memo(function ClipAnnotationSpectrogram({
           samplerate={samplerate}
           onAudioSettingsChange={onAudioSettingsChange}
           onSpectrogramSettingsChange={onSpectrogramSettingsChange}
-          onResetClick={onSettingsReset}
-          onSaveClick={onSettingsSave}
+          onResetSettings={onSettingsReset}
+          onSaveSettings={onSettingsSave}
         />
       </div>
       <Canvas

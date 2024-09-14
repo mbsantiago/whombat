@@ -67,7 +67,7 @@ export default function useSpectrogram({
   } = useSpectrogramInteractions({
     viewport,
     audio,
-    state: state.state,
+    state: state.mode,
     onZoom: state.enablePanning,
   });
 

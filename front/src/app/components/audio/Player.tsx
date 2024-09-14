@@ -1,23 +1,37 @@
+import { useMemo } from "react";
 import PlayerBase from "@/lib/components/audio/Player";
 
 import type { Recording } from "@/lib/types";
-import useRecordingAudio from "@/app/hooks/audio/useRecordingAudio";
+import { type AudioController } from "@/app/hooks/audio/useRecordingAudio";
+import { getSpeedOptions } from "@/lib/hooks/settings/useAudioSettings";
 
 export default function Player({
+  audio,
   recording,
-  startTime,
-  endTime,
+  onChangeSpeed,
 }: {
+  audio: AudioController;
   recording: Recording;
-  startTime?: number;
-  endTime?: number;
+  onChangeSpeed?: (speed: number) => void;
 }) {
+  const speedOptions = useMemo(() => {
+    return getSpeedOptions(recording.samplerate);
+  }, [recording.samplerate]);
+
   return (
     <PlayerBase
-      currentTime={0}
-      startTime={0}
-      endTime={recording.duration}
-      speedOptions={[{ label: "1x", value: 1 }]}
+      currentTime={audio.currentTime}
+      startTime={audio.startTime}
+      endTime={audio.endTime}
+      isPlaying={audio.isPlaying}
+      loop={audio.loop}
+      speed={audio.speed}
+      speedOptions={speedOptions}
+      onPlay={audio.play}
+      onPause={audio.pause}
+      onSeek={audio.seek}
+      onToggleLoop={audio.toggleLoop}
+      onChangeSpeed={onChangeSpeed}
     />
   );
 }

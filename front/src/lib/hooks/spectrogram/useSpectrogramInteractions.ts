@@ -2,7 +2,7 @@ import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
 import useSpectrogramSeek from "@/lib/hooks/spectrogram/useSpectrogramSeek";
 import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
-import type { SpectrogramWindow, SpectrogramState } from "@/lib/types";
+import type { SpectrogramWindow, SpectrogramMode } from "@/lib/types";
 import {
   useSpectrogramDrag,
   useSpectrogramScroll,
@@ -16,7 +16,7 @@ export default function useSpectrogramInteractions({
   state,
   onZoom,
 }: {
-  state: SpectrogramState;
+  state: SpectrogramMode;
   viewport: ViewportController;
   audio: AudioController;
   onZoom?: (window: SpectrogramWindow) => void;

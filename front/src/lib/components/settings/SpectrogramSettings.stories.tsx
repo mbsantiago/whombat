@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 
 const meta: Meta<typeof SpectrogramSettings> = {
-  title: "Settings/SpectrogramSettings",
+  title: "Settings/SpectrogramsSettings",
   component: SpectrogramSettings,
 };
 
