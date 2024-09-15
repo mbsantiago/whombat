@@ -35,6 +35,7 @@ export default function TagSearchBar({
   ...props
 }: TagSearchBarProps & Parameters<typeof useTags>[0]) {
   const tagColorFn = useStore((state) => state.getTagColor);
+
   const { items, create, filter } = useTags({
     filter: initialFilter,
     fixed,

@@ -49,6 +49,7 @@ export type Filter<T extends Object> = {
 };
 
 const _fixed: any[] = [];
+const _emptyObject: any = {};
 
 /**
  * A React hook for managing a debounced filter state object.
@@ -61,15 +62,15 @@ const _fixed: any[] = [];
  * and utility functions for managing the state.
  */
 export default function useFilter<T extends Object>({
-  defaults,
+  defaults = _emptyObject,
   fixed = _fixed,
   debounce = 500,
 }: {
-  defaults: T;
+  defaults?: T;
   fixed?: (keyof T)[];
   debounce?: number;
   prefix?: string;
-}): Filter<T> {
+} = {}): Filter<T> {
   const [state, setState] = useState<T>(defaults);
   const [debouncedState, setDebouncedState] = useState<T>(state);
 

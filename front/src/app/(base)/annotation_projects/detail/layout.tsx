@@ -7,7 +7,7 @@ import Loading from "@/app/loading";
 import ProjectHeader from "@/lib/components/annotation_projects/AnnotationProjectHeader";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
-import AnnotationProjectContext from "./context";
+import AnnotationProjectContext from "../../../contexts/annotationProject";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();

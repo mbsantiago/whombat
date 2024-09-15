@@ -2,10 +2,10 @@
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import ProjectTags from "@/lib/components/annotation_projects/AnnotationProjectTags";
+import ProjectTags from "@/app/components/annotation_projects/AnnotationProjectTags";
 import Center from "@/lib/components/layouts/Center";
 
-import AnnotationProjectContext from "../context";
+import AnnotationProjectContext from "../../../../contexts/annotationProject";
 
 export default function Page() {
   const project = useContext(AnnotationProjectContext);

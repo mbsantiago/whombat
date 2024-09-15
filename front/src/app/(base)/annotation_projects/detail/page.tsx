@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
 
 import AnnotationProjectDetail from "@/app/components/annotation_projects/AnnotationProjectDetail";
-import AnnotationProjectContext from "./context";
+import AnnotationProjectContext from "../../../contexts/annotationProject";
 
 export default function Page() {
   const annotationProject = useContext(AnnotationProjectContext);

@@ -2,27 +2,18 @@ import { H2, H3 } from "@/lib/components/ui/Headings";
 import { TagsIcon } from "@/lib/components/icons";
 import Info from "@/lib/components/ui/Info";
 import TagList from "@/lib/components/tags/TagList";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
-import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationProject, Tag } from "@/lib/types";
 
 export default function AnnotationProjectTags({
-  annotationProject: data,
-  onAddTag,
-  onRemoveTag,
+  annotationProject,
+  onDeleteTag,
+  TagSearchBar,
 }: {
   annotationProject: AnnotationProject;
-  onAddTag?: (project: AnnotationProject) => void;
-  onRemoveTag?: (project: AnnotationProject) => void;
+  onDeleteTag?: (tag: Tag) => void;
+  TagSearchBar?: JSX.Element;
 }) {
-  const project = useAnnotationProject({
-    uuid: data.uuid,
-    annotationProject: data,
-    onAddTag,
-    onRemoveTag,
-  });
-
   return (
     <div className="flex flex-col gap-4 p-4">
       <H2>
@@ -44,13 +35,7 @@ export default function AnnotationProjectTags({
             Use the search bar below to find tags for the project. Select a tag
             to add.
           </small>
-          <div className="py-2">
-            <TagSearchBar
-              autoFocus={false}
-              onSelectTag={project.addTag.mutate}
-              onCreateTag={project.addTag.mutate}
-            />
-          </div>
+          <div className="py-2">{TagSearchBar}</div>
           <small className="text-stone-500">
             Create new tags if needed, but avoid duplicating meanings.
           </small>
@@ -59,7 +44,7 @@ export default function AnnotationProjectTags({
           <H3>Selected tags</H3>
           <p>
             <span className="font-bold text-blue-500">
-              {(project.data?.tags ?? []).length.toLocaleString()}
+              {(annotationProject.tags ?? []).length.toLocaleString()}
             </span>{" "}
             tags selected. These are available for annotators.
           </p>
@@ -69,8 +54,8 @@ export default function AnnotationProjectTags({
           </small>
           <div>
             <TagList
-              tags={project.data?.tags ?? []}
-              onClick={project.removeTag.mutate}
+              tags={annotationProject.tags ?? []}
+              onClick={onDeleteTag}
             />
           </div>
         </div>

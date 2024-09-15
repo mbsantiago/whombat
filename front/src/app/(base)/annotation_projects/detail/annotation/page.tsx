@@ -11,7 +11,7 @@ import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
 import useStore from "@/app/store";
 import { changeURLParam } from "@/lib/utils/url";
 
-import AnnotationProjectContext from "../context";
+import AnnotationProjectContext from "../../../../contexts/annotationProject";
 
 import api from "@/app/api";
 import type { AnnotationTask, SpectrogramSettings, Tag } from "@/lib/types";

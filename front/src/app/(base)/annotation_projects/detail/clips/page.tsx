@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { useContext } from "react";
 
 import AnnotationProjectTaskClips from "@/lib/components/annotation_projects/AnnotationProjectTaskClips";
-import AnnotationProject from "../context";
+import AnnotationProject from "../../../../contexts/annotationProject";
 
 import type { AnnotationTask } from "@/lib/types";
 
