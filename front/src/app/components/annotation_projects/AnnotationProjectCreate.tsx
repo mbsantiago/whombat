@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 
@@ -6,6 +7,7 @@ import AnnotationProjectCreateBase from "@/lib/components/annotation_projects/An
 
 import type { AxiosError } from "axios";
 import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationProjectCreate } from "@/lib/api/annotation_projects";
 
 export default function AnnotationProjectCreate({
   onCreateAnnotationProject,
@@ -14,13 +16,26 @@ export default function AnnotationProjectCreate({
   onCreateAnnotationProject?: (project: AnnotationProject) => void;
   onError?: (error: AxiosError) => void;
 }) {
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: api.annotationProjects.create,
     onError: onError,
-    onSuccess: (project) => {
-      toast.success(`Annotation project ${project.name} created`);
-      onCreateAnnotationProject?.(project);
-    },
+    onSuccess: onCreateAnnotationProject,
   });
-  return <AnnotationProjectCreateBase onCreateAnnotationProject={mutate} />;
+
+  const handleCreateProject = useCallback(
+    async (data: AnnotationProjectCreate) => {
+      toast.promise(mutateAsync(data), {
+        loading: "Creating project...",
+        success: "Project created",
+        error: "Failed to create project",
+      });
+    },
+    [mutateAsync],
+  );
+
+  return (
+    <AnnotationProjectCreateBase
+      onCreateAnnotationProject={handleCreateProject}
+    />
+  );
 }

@@ -4,14 +4,11 @@ import DetailLayout from "@/lib/components/layouts/Detail";
   * DatasetDetail component renders the detailed view of a dataset.
   * It uses the DetailLayout component to structure the layout.
 1 */
-export default function DatasetDetail({
-  DatasetUpdate,
-  DatasetOverview,
-  DatasetTagsSummary,
-  DatasetNotesSummary,
-}: {
+export default function DatasetDetail(props: {
   /** The component for updating the dataset. */
   DatasetUpdate: JSX.Element;
+  /** The component for dataset actions. */
+  DatasetActions: JSX.Element;
   /** The component for displaying the dataset overview. */
   DatasetOverview: JSX.Element;
   /** The component for displaying the dataset tags summary. */
@@ -20,12 +17,20 @@ export default function DatasetDetail({
   DatasetNotesSummary: JSX.Element;
 }) {
   return (
-    <DetailLayout sideBar={DatasetUpdate}>
-      <div className="grid grid-cols-2 gap-8">
-        <div className="col-span-2">{DatasetOverview}</div>
-        <div className="col-span-2 xl:col-span-1">{DatasetTagsSummary}</div>
-        <div className="col-span-2 xl:col-span-1">{DatasetNotesSummary}</div>
-      </div>
-    </DetailLayout>
+    <DetailLayout
+      Actions={props.DatasetActions}
+      SideBar={props.DatasetUpdate}
+      MainContent={
+        <div className="grid grid-cols-2 gap-8">
+          <div className="col-span-2">{props.DatasetOverview}</div>
+          <div className="col-span-2 xl:col-span-1">
+            {props.DatasetTagsSummary}
+          </div>
+          <div className="col-span-2 xl:col-span-1">
+            {props.DatasetNotesSummary}
+          </div>
+        </div>
+      }
+    />
   );
 }

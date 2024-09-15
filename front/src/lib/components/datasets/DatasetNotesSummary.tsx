@@ -1,6 +1,6 @@
 import { useMemo, type ComponentProps } from "react";
 
-import Loading from "@/app/loading";
+import Loading from "@/lib/components/ui/Loading";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import { CheckIcon, NotesIcon } from "@/lib/components/icons";
@@ -15,11 +15,9 @@ import type { Note } from "@/lib/types";
  * @returns JSX element displaying the notes and issues summary.
  */
 export default function DatasetNotesSumary({
-  notes,
   isLoading = false,
   ...props
 }: {
-  notes: Note[];
   isLoading?: boolean;
 } & ComponentProps<typeof IssuesSummary>) {
   return (
@@ -28,7 +26,7 @@ export default function DatasetNotesSumary({
         <NotesIcon className="inline-block mr-2 w-6 h-6 text-emerald-500" />
         Notes and Issues
       </H3>
-      {isLoading ? <Loading /> : <IssuesSummary notes={notes} {...props} />}
+      {isLoading ? <Loading /> : <IssuesSummary {...props} />}
     </Card>
   );
 }
@@ -61,6 +59,7 @@ function IssuesSummary({
     () => notes.filter((note) => note.is_issue).slice(0, maxIssues),
     [notes, maxIssues],
   );
+
   if (issues.length === 0) return <NoIssues />;
 
   return (

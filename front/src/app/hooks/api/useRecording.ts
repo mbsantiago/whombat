@@ -128,8 +128,12 @@ export default function useRecording({
     },
   });
 
-  const download = useCallback(() => {
-    api.recordings.download(uuid);
+  const download = useCallback(async () => {
+    toast.promise(api.recordings.download(uuid), {
+      loading: "Preparing download, please wait...",
+      success: "Download complete",
+      error: "Failed to download recording",
+    });
   }, [uuid]);
 
   const delete_ = useDestruction({

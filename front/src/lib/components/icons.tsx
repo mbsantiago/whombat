@@ -1,4 +1,7 @@
 import {
+  InformationCircleIcon,
+  BarsArrowUpIcon,
+  BarsArrowDownIcon,
   QuestionMarkCircleIcon,
   TrophyIcon,
   AcademicCapIcon,
@@ -318,4 +321,7 @@ export {
   WrenchScrewdriverIcon as ToolsIcon,
   TrophyIcon,
   QuestionMarkCircleIcon as HelpIcon,
+  BarsArrowDownIcon as DescendingIcon,
+  BarsArrowUpIcon as AscendingIcon,
+  InformationCircleIcon as InfoIcon,
 };

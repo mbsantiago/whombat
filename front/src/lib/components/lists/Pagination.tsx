@@ -5,27 +5,9 @@ import Select from "@/lib/components/inputs/Select";
 
 const pageSizeOptions = [1, 5, 10, 25, 50, 100];
 
-function SetPageSize({
-  pageSize = 10,
-  onSetPageSize,
-}: {
-  pageSize?: number;
-  onSetPageSize?: (pageSize: number) => void;
-}) {
-  return (
-    <Select
-      label="Page Size:"
-      selected={{ label: pageSize.toString(), value: pageSize, id: pageSize }}
-      onChange={(value) => onSetPageSize?.(value)}
-      options={pageSizeOptions.map((value) => ({
-        label: value.toString(),
-        value,
-        id: value,
-      }))}
-    />
-  );
-}
-
+/**
+ * Pagination component allows users to navigate through pages of items.
+ */
 export default function Pagination({
   page = 0,
   numPages = 1,
@@ -37,14 +19,23 @@ export default function Pagination({
   onSetPage: setPage,
   onSetPageSize: setPageSize,
 }: {
+  /** The current page number. */
   page?: number;
+  /** The total number of pages. */
   numPages?: number;
+  /** The number of items per page. */
   pageSize?: number;
+  /** Indicates if there is a next page. */
   hasNextPage?: boolean;
+  /** Indicates if there is a previous page. */
   hasPrevPage?: boolean;
+  /** Callback function to handle next page action. */
   onNextPage?: () => void;
+  /** Callback function to handle previous page action. */
   onPrevPage?: () => void;
+  /** Callback function to set the current page. */
   onSetPage?: (page: number) => void;
+  /** Callback function to set the page size. */
   onSetPageSize?: (pageSize: number) => void;
 }) {
   return (
@@ -95,5 +86,26 @@ export default function Pagination({
       </Button>
       <SetPageSize pageSize={pageSize} onSetPageSize={setPageSize} />
     </div>
+  );
+}
+
+function SetPageSize({
+  pageSize = 10,
+  onSetPageSize,
+}: {
+  pageSize?: number;
+  onSetPageSize?: (pageSize: number) => void;
+}) {
+  return (
+    <Select
+      label="Page Size:"
+      selected={{ label: pageSize.toString(), value: pageSize, id: pageSize }}
+      onChange={(value) => onSetPageSize?.(value)}
+      options={pageSizeOptions.map((value) => ({
+        label: value.toString(),
+        value,
+        id: value,
+      }))}
+    />
   );
 }

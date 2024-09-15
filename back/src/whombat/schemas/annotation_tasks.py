@@ -52,12 +52,6 @@ class AnnotationTask(BaseSchema):
     status_badges: list[AnnotationStatusBadge]
     """Status badges for the task."""
 
-    clip: Clip
-    """Clip of the task."""
-
-    clip_annotation: ClipAnnotation
-    """Clip annotation for the task."""
-
 
 class AnnotationTaskUpdate(BaseModel):
     """Schema for updating a task."""

@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 /**
  * A layout component for displaying content with a sidebar.
  *
@@ -9,19 +7,22 @@ import type { ReactNode } from "react";
  * meaning it will remain visible as the user scrolls through the main content.
  */
 export default function DetailLayout({
-  children,
-  sideBar,
+  MainContent,
+  SideBar,
+  Actions,
 }: {
   /** The main content to be displayed. */
-  children: ReactNode;
+  MainContent: JSX.Element;
   /** The content to be displayed in the sidebar. */
-  sideBar: ReactNode;
+  SideBar: JSX.Element;
+  Actions?: JSX.Element;
 }) {
   return (
-    <div className="flex flex-row flex-wrap gap-8 justify-between lg:flex-nowrap w-100">
-      <div className="grow">{children}</div>
-      <div className="flex flex-col flex-none gap-4 max-w-sm">
-        <div className="sticky top-8">{sideBar}</div>
+    <div className="flex flex-row flex-wrap gap-8 justify-between md:flex-nowrap w-100">
+      <div className="grow">{MainContent}</div>
+      <div className="flex flex-col flex-none gap-4 max-w-xs">
+        {Actions}
+        <div className="sticky top-8">{SideBar}</div>
       </div>
     </div>
   );

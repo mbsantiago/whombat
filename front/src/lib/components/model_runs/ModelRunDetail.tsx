@@ -12,21 +12,22 @@ export default function ModelRunDetail(props: {
 }) {
   return (
     <DetailLayout
-      sideBar={
+      SideBar={
         <ModelRunUpdateForm
           modelRun={props.modelRun}
           onUpdate={props.onUpdate}
           onDelete={props.onDelete}
         />
       }
-    >
-      <div className="flex flex-col gap-4">
-        <ModelRunEvaluation
-          modelRun={props.modelRun}
-          evaluationSet={props.evaluationSet}
-          onEvaluate={props.onEvaluate}
-        />
-      </div>
-    </DetailLayout>
+      MainContent={
+        <div className="flex flex-col gap-4">
+          <ModelRunEvaluation
+            modelRun={props.modelRun}
+            evaluationSet={props.evaluationSet}
+            onEvaluate={props.onEvaluate}
+          />
+        </div>
+      }
+    />
   );
 }

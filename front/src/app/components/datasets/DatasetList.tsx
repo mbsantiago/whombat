@@ -1,4 +1,10 @@
 import DatasetListBase from "@/lib/components/datasets/DatasetList";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/app/components/Pagination";
+import DatasetImport from "@/app/components/datasets/DatasetImport";
+import DatasetCreate from "@/app/components/datasets/DatasetCreate";
+import { AnnotationProjectIcon } from "@/lib/components/icons";
+
 import useDatasets from "@/app/hooks/api/useDatasets";
 
 import type { Dataset } from "@/lib/types";
@@ -14,26 +20,27 @@ export default function DatasetList({
   onCreateDataset?: (dataset: Dataset) => void;
   onClickDataset?: (dataset: Dataset) => void;
 }) {
-  const datasets = useDatasets({ onCreateDataset });
-
-  // TODO: Add import functionality
-
+  const { items, pagination, isLoading, filter } = useDatasets({
+    onCreateDataset,
+  });
   return (
     <DatasetListBase
-      datasets={datasets.items}
-      isLoading={datasets.isLoading}
-      onChangeQuery={(query) => datasets.filter.set("search", query)}
-      onSumbitQuery={datasets.filter.submit}
+      datasets={items}
+      isLoading={isLoading}
       onClickDataset={onClickDataset}
-      page={datasets.pagination.page}
-      numPages={datasets.pagination.numPages}
-      pageSize={datasets.pagination.pageSize}
-      hasNextPage={datasets.pagination.hasNextPage}
-      hasPrevPage={datasets.pagination.hasPrevPage}
-      onNextPage={datasets.pagination.nextPage}
-      onPrevPage={datasets.pagination.prevPage}
-      onSetPage={datasets.pagination.setPage}
-      onSetPageSize={datasets.pagination.setPageSize}
+      DatasetImport={<DatasetImport onImportDataset={onCreateDataset} />}
+      DatasetSearch={
+        <Search
+          label="Search"
+          placeholder="Search project..."
+          value={filter.get("search")}
+          onChange={(value) => filter.set("search", value as string)}
+          onSubmit={filter.submit}
+          icon={<AnnotationProjectIcon />}
+        />
+      }
+      DatasetCreate={<DatasetCreate onCreateDataset={onCreateDataset} />}
+      Pagination={<Pagination pagination={pagination} />}
     />
   );
 }

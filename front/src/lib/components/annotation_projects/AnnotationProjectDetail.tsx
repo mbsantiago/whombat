@@ -1,47 +1,23 @@
-import Card from "@/lib/components/ui/Card";
+import DetailLayout from "../layouts/Detail";
 
-import AnnotationProjectActions from "./AnnotationProjectActions";
-import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
-import AnnotationProjectProgress from "./AnnotationProjectProgress";
-import AnnotationProjectTagsSummary from "./AnnotationProjectTagsSummary";
-import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
-
-import type { AnnotationProject } from "@/lib/types";
-
-export default function AnnotationProjectDetail({
-  annotationProject,
-  onChange,
-  onDelete,
-}: {
-  annotationProject: AnnotationProject;
-  onChange?: (data: AnnotationProject) => void;
-  onDelete?: (data: Promise<AnnotationProject>) => void;
+export default function AnnotationProjectDetail(props: {
+  AnnotationProjectProgress: JSX.Element;
+  AnnotationProjectTagsSummary: JSX.Element;
+  AnnotationProjectNotesSummary: JSX.Element;
+  AnnotationProjectActions: JSX.Element;
+  AnnotationProjectUpdate: JSX.Element;
 }) {
   return (
-    <div className="flex flex-row gap-8 justify-between w-100">
-      <div className="grow">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <AnnotationProjectProgress annotationProject={annotationProject} />
-          </div>
-          <AnnotationProjectTagsSummary project={annotationProject} />
-          <AnnotationProjectNotesSummary project={annotationProject} />
+    <DetailLayout
+      MainContent={
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="col-span-1 lg:col-span-2">{props.AnnotationProjectProgress}</div>
+          {props.AnnotationProjectTagsSummary}
+          {props.AnnotationProjectNotesSummary}
         </div>
-      </div>
-      <div className="flex flex-col flex-none gap-4 max-w-sm">
-        <AnnotationProjectActions
-          annotationProject={annotationProject}
-          onDelete={onDelete}
-        />
-        <div className="sticky top-8">
-          <Card>
-            <AnnotationProjectUpdate
-              project={annotationProject}
-              onChange={onChange}
-            />
-          </Card>
-        </div>
-      </div>
-    </div>
+      }
+      Actions={props.AnnotationProjectActions}
+      SideBar={props.AnnotationProjectUpdate}
+    />
   );
 }

@@ -10,32 +10,33 @@ import {
   NeedsReviewIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-import Link from "@/lib/components/ui/Link";
+import Button from "@/lib/components/ui/Button";
 import Loading from "@/lib/components/ui/Loading";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
-import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 
-import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationTask } from "@/lib/types";
+
+const _emptyList: AnnotationTask[] = [];
 
 export default function ProjectProgress({
-  annotationProject,
+  annotationTasks = _emptyList,
+  isLoading = false,
+  onAddTasks,
+  onClickPending,
+  onClickReview,
+  onClickCompleted,
+  onClickVerified,
 }: {
-  annotationProject: AnnotationProject;
+  isLoading?: boolean;
+  annotationTasks?: AnnotationTask[];
+  onAddTasks?: () => void;
+  onClickPending?: () => void;
+  onClickReview?: () => void;
+  onClickCompleted?: () => void;
+  onClickVerified?: () => void;
 }) {
-  const filter = useMemo(
-    () => ({
-      annotation_project: annotationProject,
-    }),
-    [annotationProject],
-  );
-
-  const { items: annotationTasks, isLoading } = useAnnotationTasks({
-    filter,
-    pageSize: -1,
-  });
-
   const { missing, needReview, completed, verified } = useMemo(() => {
     if (isLoading || annotationTasks == null) {
       return {
@@ -52,13 +53,9 @@ export default function ProjectProgress({
     <Card>
       <div className="flex flex-row justify-between items-center">
         <H3>Annotation Progress</H3>
-        <Link
-          mode="text"
-          variant="primary"
-          href={`tasks/?annotation_project_uuid=${annotationProject.uuid}`}
-        >
+        <Button mode="text" variant="primary" onClick={onAddTasks}>
           <AddIcon className="inline-block mr-2 w-5 h-5" /> Add tasks
-        </Link>
+        </Button>
       </div>
       {isLoading ? (
         <Loading />
@@ -72,6 +69,10 @@ export default function ProjectProgress({
           needReview={needReview}
           completed={completed}
           verified={verified}
+          onClickReview={onClickReview}
+          onClickCompleted={onClickCompleted}
+          onClickPending={onClickPending}
+          onClickVerified={onClickVerified}
         />
       )}
     </Card>
@@ -97,6 +98,10 @@ function ProgressReport({
   needReview,
   completed,
   verified,
+  onClickPending,
+  onClickReview,
+  onClickCompleted,
+  onClickVerified,
 }: {
   annotationTasks: any;
   isLoading: boolean;
@@ -104,6 +109,10 @@ function ProgressReport({
   needReview: number;
   completed: number;
   verified: number;
+  onClickPending?: () => void;
+  onClickReview?: () => void;
+  onClickCompleted?: () => void;
+  onClickVerified?: () => void;
 }) {
   return (
     <>
@@ -113,6 +122,7 @@ function ProgressReport({
           title="Remaining"
           value={missing}
           isLoading={isLoading}
+          onClick={onClickPending}
         />
         <MetricBadge
           icon={
@@ -121,6 +131,7 @@ function ProgressReport({
           title="Need Review"
           value={needReview}
           isLoading={isLoading}
+          onClick={onClickReview}
         />
         <MetricBadge
           icon={
@@ -129,6 +140,7 @@ function ProgressReport({
           title="Completed"
           value={completed}
           isLoading={isLoading}
+          onClick={onClickCompleted}
         />
         <MetricBadge
           icon={
@@ -137,6 +149,7 @@ function ProgressReport({
           title="Verified"
           value={verified}
           isLoading={isLoading}
+          onClick={onClickVerified}
         />
       </div>
       <div className="mt-4">

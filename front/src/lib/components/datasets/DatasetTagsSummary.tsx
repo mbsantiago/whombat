@@ -3,9 +3,10 @@ import { useMemo, type ComponentProps } from "react";
 import Loading from "@/app/loading";
 import Empty from "@/lib/components/Empty";
 import Card from "@/lib/components/ui/Card";
+import TagCount from "@/lib/components/tags/TagCount";
 import { H3 } from "@/lib/components/ui/Headings";
 import { TagsIcon } from "@/lib/components/icons";
-import TagCount, { getTagKey } from "@/lib/components/tags/TagCount";
+import { getTagKey } from "@/lib/utils/tags";
 
 import type { RecordingTag } from "@/lib/api/tags";
 import type { Tag } from "@/lib/types";
@@ -53,7 +54,8 @@ export default function DatasetTagsSummary({
 }
 
 /**
- * Counts the occurrences of unique tags and returns them in descending order of frequency.
+ * Counts the occurrences of unique tags and returns them in descending order
+ * of frequency.
  *
  * @param tags - An array of tag instances.
  * @returns An array of tuples containing tags and their respective counts.

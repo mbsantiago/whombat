@@ -10,9 +10,10 @@ import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjectList({
   onCreateAnnotationProject,
+  onClickAnnotationProject,
 }: {
   onCreateAnnotationProject?: (annotationProject: AnnotationProject) => void;
-  onClickAnnotationProject: (annotationProject: AnnotationProject) => void;
+  onClickAnnotationProject?: (annotationProject: AnnotationProject) => void;
 }) {
   const { items, pagination, isLoading, filter } = useAnnotationProjects({
     onCreateAnnotationProject,
@@ -21,6 +22,7 @@ export default function AnnotationProjectList({
     <AnnotationProjectListBase
       annotationProjects={items}
       isLoading={isLoading}
+      onClickAnnotationProject={onClickAnnotationProject}
       AnnotationProjectImport={
         <AnnotationProjectImport
           onImportAnnotationProject={onCreateAnnotationProject}
@@ -37,7 +39,7 @@ export default function AnnotationProjectList({
           placeholder="Search project..."
           value={filter.get("search")}
           onChange={(value) => filter.set("search", value as string)}
-          onSubmit={() => filter.submit()}
+          onSubmit={filter.submit}
           icon={<DatasetIcon />}
         />
       }

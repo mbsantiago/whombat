@@ -12,7 +12,6 @@ import "./Table.css";
  * and column definitions.
  * This defines the basic aspect of the table, while the actual content
  * and cell rendering is controlled by the `table` prop.
- * @component
  */
 export default function Table<S>({
   table,

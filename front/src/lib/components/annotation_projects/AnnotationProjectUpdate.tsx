@@ -1,42 +1,35 @@
 import Description from "@/lib/components/ui/Description";
+import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationProjectUpdate } from "@/lib/api/annotation_projects";
 
-export default function ProjectUpdateForm({
-  project: data,
-  onChange,
+export default function AnnotationProjectUpdateComponent({
+  annotationProject: data,
+  isLoading = false,
+  onChangeAnnotationProject,
 }: {
-  project: AnnotationProject;
-  onChange?: (data: AnnotationProject) => void;
+  annotationProject: AnnotationProject;
+  isLoading: boolean;
+  onChangeAnnotationProject?: (data: AnnotationProjectUpdate) => void;
 }) {
-  const {
-    data: project,
-    update,
-    isLoading,
-  } = useAnnotationProject({
-    uuid: data.uuid,
-    annotationProject: data,
-    onUpdate: onChange,
-  });
-
   return (
-    <>
+    <Card>
       <div className="px-4 sm:px-0">
-        <H3>Details</H3>
+        <H3>Project Details</H3>
       </div>
       <div className="mt-6 border-t border-stone-300 dark:border-stone-700">
-        {isLoading || project == null ? (
+        {isLoading ? (
           <Loading />
         ) : (
           <dl className="divide-y divide-stone-500">
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Name"
-                value={project.name}
-                onChange={(name) => update.mutate({ name })}
+                value={data.name}
+                onChange={(name) => onChangeAnnotationProject?.({ name })}
                 type="text"
                 editable
               />
@@ -44,8 +37,10 @@ export default function ProjectUpdateForm({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Description"
-                value={project.description}
-                onChange={(description) => update.mutate({ description })}
+                value={data.description}
+                onChange={(description) =>
+                  onChangeAnnotationProject?.({ description })
+                }
                 type="textarea"
                 editable
               />
@@ -53,9 +48,9 @@ export default function ProjectUpdateForm({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Annotation Instructions"
-                value={project.annotation_instructions ?? ""}
+                value={data.annotation_instructions ?? ""}
                 onChange={(annotation_instructions) =>
-                  update.mutate({ annotation_instructions })
+                  onChangeAnnotationProject?.({ annotation_instructions })
                 }
                 type="textarea"
                 editable
@@ -64,13 +59,13 @@ export default function ProjectUpdateForm({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Created On"
-                value={project.created_on}
+                value={data.created_on}
                 type="text"
               />
             </div>
           </dl>
         )}
       </div>
-    </>
+    </Card>
   );
 }

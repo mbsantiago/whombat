@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { getTagColor, type Color } from "@/lib/utils/tags";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
-import Select from "@/lib/components/inputs/Select";
 import TagComponent from "@/lib/components/tags/Tag";
-import Search from "@/lib/components/inputs/Search";
-import InputGroup from "@/lib/components/inputs/InputGroup";
+import ListSearch from "@/lib/components/lists/ListSearch";
 import type { Tag } from "@/lib/types";
+import { getTagKey } from "@/lib/utils/tags";
 
 /**
  * Component to display tags and their respective frequencies.
@@ -44,26 +43,11 @@ export default function TagCount({
 
   return (
     <div className="flex flex-col w-full">
-      <div className="inline-flex gap-2 justify-between items-center">
-        <div className="grow">
-          <InputGroup name="search" label="Search">
-            <Search onChange={(value) => setSearch(value as string)} />
-          </InputGroup>
-        </div>
-        <div className="w-24">
-          <InputGroup name="limit" label="Show Max">
-            <Select
-              selected={{ id: limit, label: limit, value: limit }}
-              onChange={(value) => setLimit(value as number)}
-              options={[5, 10, 20, 50, 100].map((value) => ({
-                id: value,
-                label: value,
-                value,
-              }))}
-            />
-          </InputGroup>
-        </div>
-      </div>
+      <ListSearch
+        limit={limit}
+        onChangeLimit={setLimit}
+        onChangeSearch={setSearch}
+      />
       <div className="grid grid-cols-2 gap-2 w-full">
         {items.map(({ tag, count }) => (
           <>
@@ -95,8 +79,4 @@ export default function TagCount({
       </div>
     </div>
   );
-}
-
-export function getTagKey(tag: Tag): string {
-  return `${tag.key}-${tag.value}`;
 }

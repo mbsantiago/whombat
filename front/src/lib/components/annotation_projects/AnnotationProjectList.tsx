@@ -1,10 +1,9 @@
-import Loading from "@/app/loading";
 import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
 import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
 import { AddIcon, UploadIcon, WarningIcon } from "@/lib/components/icons";
-import StackedList from "@/lib/components/lists/StackedList";
 import type { AnnotationProject } from "@/lib/types";
+import ListLayout from "@/lib/components/layouts/List";
 
 export default function AnnotationProjectList({
   annotationProjects,
@@ -24,61 +23,48 @@ export default function AnnotationProjectList({
   Pagination: JSX.Element;
 }) {
   return (
-    <div className="flex flex-col p-8 space-y-2 w-full">
-      <div className="flex flex-row space-x-4">
-        <div className="flex-grow">{AnnotationProjectSearch}</div>
-        <div className="h-full">
-          <Dialog
-            mode="text"
-            title="Create Annotation Project"
-            width="w-96"
-            label={
-              <>
-                <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
-              </>
-            }
-          >
-            {() => AnnotationProjectCreate}
-          </Dialog>
-        </div>
-        <div className="h-full">
-          <Dialog
-            mode="text"
-            title="Import annotation project"
-            label={
-              <>
-                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
-                Import
-              </>
-            }
-          >
-            {() => AnnotationProjectImport}
-          </Dialog>
-        </div>
-      </div>
-      {isLoading ? (
-        <Empty>
-          <div className="p-8">
-            <Loading />
-          </div>
-        </Empty>
-      ) : annotationProjects.length === 0 ? (
-        <NoProjects />
-      ) : (
-        <>
-          <StackedList
-            items={annotationProjects.map((item) => (
-              <AnnotationProjectComponent
-                key={item.uuid}
-                annotationProject={item}
-                onClickAnnotationProject={() => onClickAnnotationProject?.(item)}
-              />
-            ))}
-          />
-        </>
-      )}
-      {Pagination}
-    </div>
+    <ListLayout
+      isLoading={isLoading}
+      isEmpty={annotationProjects.length === 0}
+      Search={AnnotationProjectSearch}
+      Empty={<NoProjects />}
+      Actions={[
+        <Dialog
+          key="create"
+          mode="text"
+          title="Create Annotation Project"
+          width="w-96"
+          label={
+            <>
+              <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
+            </>
+          }
+        >
+          {() => AnnotationProjectCreate}
+        </Dialog>,
+        <Dialog
+          key="import"
+          mode="text"
+          title="Import annotation project"
+          label={
+            <>
+              <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+              Import
+            </>
+          }
+        >
+          {() => AnnotationProjectImport}
+        </Dialog>,
+      ]}
+      Pagination={Pagination}
+      items={annotationProjects.map((item) => (
+        <AnnotationProjectComponent
+          key={item.uuid}
+          annotationProject={item}
+          onClickAnnotationProject={() => onClickAnnotationProject?.(item)}
+        />
+      ))}
+    />
   );
 }
 

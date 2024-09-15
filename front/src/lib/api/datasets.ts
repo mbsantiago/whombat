@@ -7,51 +7,6 @@ import { GetManySchema, Page, downloadContent } from "./common";
 
 import type { Dataset, RecordingState } from "@/lib/types";
 
-export const DatasetFilterSchema = z.object({
-  search: z.string().optional(),
-});
-
-export type DatasetFilter = z.input<typeof DatasetFilterSchema>;
-
-export const DatasetCreateSchema = z.object({
-  uuid: z.string().uuid().optional(),
-  name: z.string().min(1),
-  audio_dir: z.string(),
-  description: z.string().optional(),
-});
-
-export type DatasetCreate = z.input<typeof DatasetCreateSchema>;
-
-export const DatasetUpdateSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
-});
-
-export type DatasetUpdate = z.input<typeof DatasetUpdateSchema>;
-
-export const DatasetPageSchema = Page(DatasetSchema);
-
-export type DatasetPage = z.infer<typeof DatasetPageSchema>;
-
-export const GetDatasetsQuerySchema = z.intersection(
-  GetManySchema,
-  DatasetFilterSchema,
-);
-
-export type GetDatasetsQuery = z.input<typeof GetDatasetsQuerySchema>;
-
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/datasets/",
-  create: "/api/v1/datasets/",
-  state: "/api/v1/datasets/detail/state/",
-  get: "/api/v1/datasets/detail/",
-  update: "/api/v1/datasets/detail/",
-  delete: "/api/v1/datasets/detail/",
-  downloadJson: "/api/v1/datasets/detail/download/json/",
-  downloadCsv: "/api/v1/datasets/detail/download/csv/",
-  import: "/api/v1/datasets/import/",
-};
-
 export function registerDatasetAPI({
   instance,
   endpoints = DEFAULT_ENDPOINTS,
@@ -113,8 +68,12 @@ export function registerDatasetAPI({
     downloadContent(data, `${uuid}.${format}`, filetype);
   }
 
-  async function importDataset(data: FormData): Promise<Dataset> {
-    const { data: res } = await instance.post(endpoints.import, data);
+  async function importDataset(data: DatasetImport): Promise<Dataset> {
+    const formData = new FormData();
+    const file = data.dataset[0];
+    formData.append("dataset", file);
+    formData.append("audio_dir", data.audio_dir);
+    const { data: res } = await instance.post(endpoints.import, formData);
     return DatasetSchema.parse(res);
   }
 
@@ -129,3 +88,55 @@ export function registerDatasetAPI({
     import: importDataset,
   } as const;
 }
+
+export const DatasetFilterSchema = z.object({
+  search: z.string().optional(),
+});
+
+export type DatasetFilter = z.input<typeof DatasetFilterSchema>;
+
+export const DatasetCreateSchema = z.object({
+  uuid: z.string().uuid().optional(),
+  name: z.string().min(1),
+  audio_dir: z.string(),
+  description: z.string().optional(),
+});
+
+export type DatasetCreate = z.input<typeof DatasetCreateSchema>;
+
+export const DatasetUpdateSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+});
+
+export type DatasetUpdate = z.input<typeof DatasetUpdateSchema>;
+
+export const DatasetPageSchema = Page(DatasetSchema);
+
+export type DatasetPage = z.infer<typeof DatasetPageSchema>;
+
+export const GetDatasetsQuerySchema = z.intersection(
+  GetManySchema,
+  DatasetFilterSchema,
+);
+
+export type GetDatasetsQuery = z.input<typeof GetDatasetsQuerySchema>;
+
+export const DatasetImportSchema = z.object({
+  dataset: z.instanceof(FileList),
+  audio_dir: z.string(),
+});
+
+export type DatasetImport = z.infer<typeof DatasetImportSchema>;
+
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/datasets/",
+  create: "/api/v1/datasets/",
+  state: "/api/v1/datasets/detail/state/",
+  get: "/api/v1/datasets/detail/",
+  update: "/api/v1/datasets/detail/",
+  delete: "/api/v1/datasets/detail/",
+  downloadJson: "/api/v1/datasets/detail/download/json/",
+  downloadCsv: "/api/v1/datasets/detail/download/csv/",
+  import: "/api/v1/datasets/import/",
+};

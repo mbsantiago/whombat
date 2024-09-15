@@ -1,17 +1,10 @@
 import { useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
-
-const DatasetImportSchema = z.object({
-  dataset: z.instanceof(FileList),
-  audio_dir: z.string().optional(),
-});
-
-type DatasetImport = z.infer<typeof DatasetImportSchema>;
+import { DatasetImportSchema, DatasetImport } from "@/lib/api/datasets";
 
 /**
  * Component for importing a dataset.
@@ -20,7 +13,7 @@ type DatasetImport = z.infer<typeof DatasetImportSchema>;
  * successfully imported.
  * @returns JSX element containing a form for importing a dataset.
  */
-export default function DatasetImport({
+export default function DatasetImportComponent({
   onImportDataset,
 }: {
   onImportDataset?: (dataset: DatasetImport) => void;

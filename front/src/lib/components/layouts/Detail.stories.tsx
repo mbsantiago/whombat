@@ -13,9 +13,9 @@ type Story = StoryObj<typeof Detail>;
 
 export const Primary: Story = {
   args: {
-    sideBar: (
+    SideBar: (
       <div className="border border-black w-100 h-100">Side bar content</div>
     ),
-    children: <div className="border border-black">Content</div>,
+    MainContent: <div className="border border-black">Content</div>,
   },
 };

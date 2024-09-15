@@ -6,12 +6,6 @@ import { z } from "zod";
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
-const AnnotationProjectImportSchema = z.object({
-  annotation_project: z.instanceof(FileList),
-});
-
-type AnnotationProjectImport = z.infer<typeof AnnotationProjectImportSchema>;
-
 export default function AnnotationProjectImport({
   onImportAnnotationProject,
 }: {
@@ -50,3 +44,11 @@ export default function AnnotationProjectImport({
     </form>
   );
 }
+
+export const AnnotationProjectImportSchema = z.object({
+  annotation_project: z.instanceof(FileList),
+});
+
+export type AnnotationProjectImport = z.infer<
+  typeof AnnotationProjectImportSchema
+>;

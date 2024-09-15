@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import Alert from "@/lib/components/ui/Alert";
 import Button from "@/lib/components/ui/Button";
 import {
@@ -8,12 +6,42 @@ import {
   DownloadIcon,
   WarningIcon,
 } from "@/lib/components/icons";
-import Link from "@/lib/components/ui/Link";
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
 
-function DeleteProject({ onDelete }: { onDelete?: () => void }) {
+export default function ProjectActions({
+  annotationProject,
+  onDeleteAnnotationProject,
+  onDownloadAnnotationProject,
+}: {
+  annotationProject: AnnotationProject;
+  onDeleteAnnotationProject?: () => void;
+  onDownloadAnnotationProject?: () => void;
+}) {
+  return (
+    <div className="flex flex-row gap-2 justify-center">
+      <Button
+        mode="text"
+        variant="primary"
+        onClick={onDownloadAnnotationProject}
+      >
+        <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
+      </Button>
+      <DeleteProject
+        annotationProject={annotationProject}
+        onDelete={onDeleteAnnotationProject}
+      />
+    </div>
+  );
+}
+
+function DeleteProject({
+  annotationProject,
+  onDelete,
+}: {
+  annotationProject: AnnotationProject;
+  onDelete?: () => void;
+}) {
   return (
     <Alert
       title={
@@ -34,6 +62,9 @@ function DeleteProject({ onDelete }: { onDelete?: () => void }) {
       {({ close }) => {
         return (
           <>
+            <h2 className="p-4 font-extrabold text-center">
+              {annotationProject.name}
+            </h2>
             <div className="flex flex-col gap-2">
               <p>
                 This action cannot be undone. All annotations and recordings
@@ -55,42 +86,5 @@ function DeleteProject({ onDelete }: { onDelete?: () => void }) {
         );
       }}
     </Alert>
-  );
-}
-
-export default function ProjectActions({
-  annotationProject,
-  onDelete,
-}: {
-  annotationProject: AnnotationProject;
-  onDelete?: (project: Promise<AnnotationProject>) => void;
-}) {
-  const {
-    delete: { mutateAsync: deleteProject },
-    download,
-  } = useAnnotationProject({
-    uuid: annotationProject.uuid,
-    annotationProject,
-  });
-
-  const handleDelete = useCallback(async () => {
-    // @ts-ignore
-    const promise = deleteProject();
-    onDelete?.(promise);
-  }, [deleteProject, onDelete]);
-
-  return (
-    <div className="flex flex-row gap-2 justify-center">
-      <Link
-        mode="text"
-        variant="primary"
-        href={download || ""}
-        target="_blank"
-        download
-      >
-        <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
-      </Link>
-      <DeleteProject onDelete={handleDelete} />
-    </div>
   );
 }

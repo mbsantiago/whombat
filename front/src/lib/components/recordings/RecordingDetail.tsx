@@ -1,5 +1,7 @@
+import DetailLayout from "../layouts/Detail";
+
 /**
- * RecordingDetail component renders the detailed view of a recording. 
+ * RecordingDetail component renders the detailed view of a recording.
  *
  * It accepts several JSX elements as props to compose the view.
  */
@@ -20,22 +22,22 @@ export default function RecordingDetail(props: {
   RecordingMap: JSX.Element;
 }) {
   return (
-    <div className="flex flex-col gap-4 pb-4">
-      {props.RecordingHeader}
-      <div className="flex flex-row flex-wrap gap-8 justify-between lg:flex-nowrap w-100">
-        <div className="grow">
-          <div className="grid grid-cols-2 gap-8">
-            <div className="col-span-2">{props.RecordingTagBar}</div>
-            <div className="col-span-2">{props.RecordingSpectrogram}</div>
-            <div className="col-span-2">{props.RecordingNotes}</div>
-          </div>
+    <DetailLayout
+      Actions={props.RecordingActions}
+      MainContent={
+        <div className="grid grid-cols-2 gap-8">
+          <div className="col-span-2">{props.RecordingHeader}</div>
+          <div className="col-span-2">{props.RecordingTagBar}</div>
+          <div className="col-span-2">{props.RecordingSpectrogram}</div>
+          <div className="col-span-2">{props.RecordingNotes}</div>
         </div>
+      }
+      SideBar={
         <div className="flex flex-col flex-none gap-4 max-w-sm">
-          {props.RecordingActions}
           {props.RecordingMediaInfo}
           {props.RecordingMap}
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 }
