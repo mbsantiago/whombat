@@ -7,7 +7,7 @@ import type { AnnotationProject } from "@/lib/types";
 import type { AnnotationProjectUpdate } from "@/lib/api/annotation_projects";
 
 export default function AnnotationProjectUpdateComponent({
-  annotationProject: data,
+  annotationProject,
   isLoading = false,
   onChangeAnnotationProject,
 }: {
@@ -28,7 +28,7 @@ export default function AnnotationProjectUpdateComponent({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Name"
-                value={data.name}
+                value={annotationProject.name}
                 onChange={(name) => onChangeAnnotationProject?.({ name })}
                 type="text"
                 editable
@@ -37,7 +37,7 @@ export default function AnnotationProjectUpdateComponent({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Description"
-                value={data.description}
+                value={annotationProject.description}
                 onChange={(description) =>
                   onChangeAnnotationProject?.({ description })
                 }
@@ -48,7 +48,7 @@ export default function AnnotationProjectUpdateComponent({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Annotation Instructions"
-                value={data.annotation_instructions ?? ""}
+                value={annotationProject.annotation_instructions ?? ""}
                 onChange={(annotation_instructions) =>
                   onChangeAnnotationProject?.({ annotation_instructions })
                 }
@@ -59,7 +59,7 @@ export default function AnnotationProjectUpdateComponent({
             <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <Description
                 name="Created On"
-                value={data.created_on}
+                value={annotationProject.created_on}
                 type="text"
               />
             </div>

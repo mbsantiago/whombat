@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentProps } from "react";
 
 import {
   AddIcon,
@@ -27,12 +27,13 @@ export default function ProjectTagsSummary({
   clipTags = _emptyClipList,
   soundEventTags = _emptySEList,
   onAddTags,
+  ...props
 }: {
   annotationProject: AnnotationProject;
   clipTags?: ClipTag[];
   soundEventTags?: SoundEventTag[];
   onAddTags?: () => void;
-}) {
+} & Omit<ComponentProps<typeof TagCounts>, "counts">) {
   const projectTags = useMemo(
     () => annotationProject.tags || [],
     [annotationProject.tags],
@@ -61,7 +62,11 @@ export default function ProjectTagsSummary({
           <AddIcon className="inline-block mr-2 w-5 h-5" /> Add Tags
         </Button>
       </div>
-      {projectTags.length === 0 ? <NoTags /> : <TagCounts counts={counts} />}
+      {projectTags.length === 0 ? (
+        <NoTags />
+      ) : (
+        <TagCounts counts={counts} {...props} />
+      )}
     </Card>
   );
 }

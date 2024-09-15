@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
+import { GetManySchema, Page, downloadContent } from "@/lib/api/common";
 import { AnnotationProjectSchema } from "@/lib/schemas";
 
 import type { AnnotationProject, Tag } from "@/lib/types";
@@ -160,6 +160,17 @@ export function registerAnnotationProjectAPI(
     return `${baseUrl}${endpoints.download}?annotation_project_uuid=${annotationProject.uuid}`;
   }
 
+  async function download(uuid: string) {
+    const { data } = await instance.get(endpoints.download, {
+      params: { annotation_project_uuid: uuid },
+    });
+    downloadContent(
+      data,
+      `annotation-project-${uuid}.json`,
+      "application/json",
+    );
+  }
+
   async function importProject(
     data: AnnotationProjectImport,
   ): Promise<AnnotationProject> {
@@ -179,6 +190,7 @@ export function registerAnnotationProjectAPI(
     addTag,
     removeTag,
     import: importProject,
+    download,
     getDownloadUrl,
   } as const;
 }

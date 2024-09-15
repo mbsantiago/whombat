@@ -1,6 +1,7 @@
 import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
 
 import { type ClipCreateMany } from "@/lib/api/clips";
 import api from "@/app/api";
@@ -40,7 +41,10 @@ export default function useAnnotationProject({
 
   const update = useMutation({
     mutationFn: api.annotationProjects.update,
-    onSuccess: onUpdate,
+    onSuccess: (data) => {
+      toast.success("Annotation project updated");
+      onUpdate?.(data);
+    },
   });
 
   const addTag = useMutation({
@@ -55,7 +59,10 @@ export default function useAnnotationProject({
 
   const delete_ = useMutation({
     mutationFn: api.annotationProjects.delete,
-    onSuccess: onDelete,
+    onSuccess: (data) => {
+      toast.success("Annotation project deleted");
+      onDelete?.(data);
+    },
   });
 
   const { data } = query;
@@ -79,10 +86,13 @@ export default function useAnnotationProject({
     },
   });
 
-  const download = useMemo(() => {
-    if (data == null) return;
-    return api.annotationProjects.getDownloadUrl(data);
-  }, [data]);
+  const download = useCallback(async () => {
+    await toast.promise(api.annotationProjects.download(uuid), {
+      loading: "Downloading...",
+      success: "Download complete",
+      error: "Failed to download dataset",
+    });
+  }, [uuid]);
 
   return {
     ...query,

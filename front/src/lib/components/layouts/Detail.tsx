@@ -20,7 +20,7 @@ export default function DetailLayout({
   return (
     <div className="flex flex-row flex-wrap gap-8 justify-between md:flex-nowrap w-100">
       <div className="grow">{MainContent}</div>
-      <div className="flex flex-col flex-none gap-4 max-w-xs">
+      <div className="flex flex-col flex-none gap-4 max-w-sm">
         {Actions}
         <div className="sticky top-8">{SideBar}</div>
       </div>
