@@ -45,20 +45,25 @@ export const Playing: Story = {
     loop: false,
     speed: 1,
 
-    speedOptions: [{
-      "label": "0.5x",
-      "value": 0.5
-    }, {
-      "label": "1x",
-      "value": 1
-    }, {
-      "label": "2x",
-      "value": 2
-    }, {
-      "label": "4x",
-      "value": 4
-    }]
-  }
+    speedOptions: [
+      {
+        label: "0.5x",
+        value: 0.5,
+      },
+      {
+        label: "1x",
+        value: 1,
+      },
+      {
+        label: "2x",
+        value: 2,
+      },
+      {
+        label: "4x",
+        value: 4,
+      },
+    ],
+  },
 };
 
 export const WithLoop: Story = {
@@ -70,20 +75,25 @@ export const WithLoop: Story = {
     loop: true,
     speed: 1,
 
-    speedOptions: [{
-      "label": "0.5x",
-      "value": 0.5
-    }, {
-      "label": "1x",
-      "value": 1
-    }, {
-      "label": "2x",
-      "value": 2
-    }, {
-      "label": "4x",
-      "value": 4
-    }]
-  }
+    speedOptions: [
+      {
+        label: "0.5x",
+        value: 0.5,
+      },
+      {
+        label: "1x",
+        value: 1,
+      },
+      {
+        label: "2x",
+        value: 2,
+      },
+      {
+        label: "4x",
+        value: 4,
+      },
+    ],
+  },
 };
 
 export const Midway: Story = {
@@ -95,18 +105,23 @@ export const Midway: Story = {
     loop: true,
     speed: 1,
 
-    speedOptions: [{
-      "label": "0.5x",
-      "value": 0.5
-    }, {
-      "label": "1x",
-      "value": 1
-    }, {
-      "label": "2x",
-      "value": 2
-    }, {
-      "label": "4x",
-      "value": 4
-    }]
-  }
+    speedOptions: [
+      {
+        label: "0.5x",
+        value: 0.5,
+      },
+      {
+        label: "1x",
+        value: 1,
+      },
+      {
+        label: "2x",
+        value: 2,
+      },
+      {
+        label: "4x",
+        value: 4,
+      },
+    ],
+  },
 };

@@ -20,6 +20,6 @@ export const Primary: Story = {
       description: "Annotation project 1",
       created_on: new Date(),
     },
-    onChangeAnnotationProject: fn()
+    onChangeAnnotationProject: fn(),
   },
 };

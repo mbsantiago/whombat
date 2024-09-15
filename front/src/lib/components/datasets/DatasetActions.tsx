@@ -37,9 +37,7 @@ function DeleteDataset({
         return (
           <>
             <div className="flex flex-col gap-2 text-center">
-              <h2 className="text-center p-4 font-extrabold">
-                {dataset.name}
-              </h2>
+              <h2 className="text-center p-4 font-extrabold">{dataset.name}</h2>
               <p>
                 This action cannot be undone. This will permanently delete the
                 recordings in the dataset and all associated objects. This

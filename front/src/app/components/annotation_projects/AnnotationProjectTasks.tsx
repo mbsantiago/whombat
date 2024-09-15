@@ -6,16 +6,10 @@ import AnnotationProjectTasksBase from "@/lib/components/annotation_projects/Ann
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 import useFilter from "@/lib/hooks/utils/useFilter";
-import { getRandomSubarray } from "@/lib/utils/arrays";
-import { type ClipExtraction, computeClips } from "@/lib/utils/clips";
+import { computeClips } from "@/lib/utils/clips";
 
 import type { RecordingFilter } from "@/lib/api/recordings";
-import type {
-  AnnotationProject,
-  AnnotationTask,
-  Dataset,
-  Recording,
-} from "@/lib/types";
+import type { AnnotationProject, AnnotationTask, Dataset } from "@/lib/types";
 
 export default function AnnotationProjectTasks({
   annotationProject: initialData,

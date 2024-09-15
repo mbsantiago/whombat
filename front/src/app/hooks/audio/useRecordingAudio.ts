@@ -11,7 +11,8 @@ export default function useRecordingAudio({
   endTime,
   audioSettings,
   onTimeUpdate,
-  onSeek, ...handlers
+  onSeek,
+  ...handlers
 }: {
   recording: Recording;
   startTime: number;

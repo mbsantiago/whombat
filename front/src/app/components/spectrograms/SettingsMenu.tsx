@@ -23,7 +23,7 @@ export default function SettingsMenu({
   const handleSave = useCallback(() => {
     saveAudioSettings(audioSettings.settings);
     saveSpectrogramSettings(spectrogramSettings.settings);
-    toast.success("Settings saved")
+    toast.success("Settings saved");
   }, [
     audioSettings.settings,
     spectrogramSettings.settings,
@@ -36,7 +36,7 @@ export default function SettingsMenu({
   const handleReset = useCallback(() => {
     spectrogramDispatch({ type: "reset" });
     audioDispatch({ type: "reset" });
-    toast.success("Settings reset")
+    toast.success("Settings reset");
   }, [audioDispatch, spectrogramDispatch]);
 
   return (

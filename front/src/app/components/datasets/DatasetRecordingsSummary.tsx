@@ -11,5 +11,10 @@ export default function DatasetRecordingsSummary({
     uuid: dataset.uuid,
     dataset,
   });
-  return <DatasetRecordingsSummaryBase dataset={data || dataset} onDownloadDataset={download} />;
+  return (
+    <DatasetRecordingsSummaryBase
+      dataset={data || dataset}
+      onDownloadDataset={download}
+    />
+  );
 }

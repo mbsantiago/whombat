@@ -11,7 +11,9 @@ export default function AnnotationProjectDetail(props: {
     <DetailLayout
       MainContent={
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="col-span-1 lg:col-span-2">{props.AnnotationProjectProgress}</div>
+          <div className="col-span-1 lg:col-span-2">
+            {props.AnnotationProjectProgress}
+          </div>
           {props.AnnotationProjectTagsSummary}
           {props.AnnotationProjectNotesSummary}
         </div>
