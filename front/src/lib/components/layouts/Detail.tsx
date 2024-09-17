@@ -22,7 +22,7 @@ export default function DetailLayout({
       <div className="grow">{MainContent}</div>
       <div className="flex flex-col flex-none gap-4 max-w-sm">
         {Actions}
-        <div className="sticky top-8">{SideBar}</div>
+        <div className="sticky top-8 w-full">{SideBar}</div>
       </div>
     </div>
   );

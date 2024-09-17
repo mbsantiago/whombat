@@ -1,23 +1,24 @@
 import { type AxiosError } from "axios";
+import { useQuery as useReactQuery } from "@tanstack/react-query";
 
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
 
-import type { AnnotationTask } from "@/lib/types";
+import type { AnnotationTask, ClipAnnotation } from "@/lib/types";
 
 export default function useAnnotationTask({
   uuid,
   annotationTask,
   enabled = true,
   withAnnotations = false,
-  onDelete,
+  onDeleteAnnotationTask,
   onAddBadge,
   onRemoveBadge,
   onError,
 }: {
   uuid: string;
   annotationTask?: AnnotationTask;
-  onDelete?: (task: AnnotationTask) => void;
+  onDeleteAnnotationTask?: (task: AnnotationTask) => void;
   onAddBadge?: (task: AnnotationTask) => void;
   onRemoveBadge?: (task: AnnotationTask) => void;
   onError?: (error: AxiosError) => void;
@@ -34,16 +35,15 @@ export default function useAnnotationTask({
       onError,
     });
 
-  const annotationsQuery = useQuery({
-    name: "annotations",
+  const clipAnnotation = useQuery({
+    secondaryName: "annotations",
     queryFn: api.annotationTasks.getAnnotations,
     enabled: withAnnotations,
-  });
-  if (annotationsQuery.error) console.error(annotationsQuery.error);
+  }) as ReturnType<typeof useReactQuery<ClipAnnotation>>
 
-  const deleteTask = useDestruction({
+  const deleteAnnotationTask = useDestruction({
     mutationFn: api.annotationTasks.delete,
-    onSuccess: onDelete,
+    onSuccess: onDeleteAnnotationTask,
   });
 
   const addBadge = useMutation({
@@ -60,7 +60,7 @@ export default function useAnnotationTask({
     ...query,
     addBadge,
     removeBadge,
-    delete: deleteTask,
-    annotations: annotationsQuery,
+    deleteAnnotationTask,
+    clipAnnotation,
   } as const;
 }

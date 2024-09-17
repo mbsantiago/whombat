@@ -4,11 +4,13 @@ import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
 
 import type {
+  Note,
   ClipAnnotation,
   Geometry,
   SoundEventAnnotation,
   Tag,
 } from "@/lib/types";
+import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
 import type { AxiosError } from "axios";
 
 /**
@@ -17,12 +19,13 @@ import type { AxiosError } from "axios";
 export default function useClipAnnotation({
   uuid,
   clipAnnotation,
-  onDelete,
-  onAddTag,
-  onRemoveTag,
-  onAddNote,
-  onRemoveNote,
   onError,
+  onDeleteClipAnnotation,
+  onAddClipAnnotationTag,
+  onRemoveClipAnnotationTag,
+  onAddClipAnnotationNote,
+  onUpdateClipAnnotationNote,
+  onRemoveClipAnnotationNote,
   onAddSoundEventAnnotation,
   onDeleteSoundEventAnnotation,
   onUpdateSoundEventAnnotation,
@@ -30,13 +33,20 @@ export default function useClipAnnotation({
   onRemoveTagFromSoundEventAnnotation,
   enabled = true,
 }: {
-  uuid?: string;
+  uuid: string;
   clipAnnotation?: ClipAnnotation;
-  onDelete?: (annotation: ClipAnnotation) => void;
-  onAddTag?: (annotation: ClipAnnotation) => void;
-  onRemoveTag?: (annotation: ClipAnnotation) => void;
-  onAddNote?: (annotation: ClipAnnotation) => void;
-  onRemoveNote?: (annotation: ClipAnnotation) => void;
+  onDeleteClipAnnotation?: (annotation: ClipAnnotation) => void;
+  onAddClipAnnotationTag?: (annotation: ClipAnnotation, tag: Tag) => void;
+  onRemoveClipAnnotationTag?: (annotation: ClipAnnotation, tag: Tag) => void;
+  onAddClipAnnotationNote?: (
+    annotation: ClipAnnotation,
+    note: NoteCreate,
+  ) => void;
+  onUpdateClipAnnotationNote?: (
+    annotation: ClipAnnotation,
+    note: NoteUpdate,
+  ) => void;
+  onRemoveClipAnnotationNote?: (annotation: ClipAnnotation, note: Note) => void;
   onAddSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
   onDeleteSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
   onUpdateSoundEventAnnotation?: (annotation: SoundEventAnnotation) => void;
@@ -47,6 +57,10 @@ export default function useClipAnnotation({
   onError?: (error: AxiosError) => void;
   enabled?: boolean;
 }) {
+  if (clipAnnotation != null && clipAnnotation.uuid !== uuid) {
+    throw new Error("Clip annotation UUID does not match the provided UUID.");
+  }
+
   const { query, useMutation, useDestruction, setData, client } =
     useObject<ClipAnnotation>({
       name: "clip_annotation",
@@ -57,29 +71,38 @@ export default function useClipAnnotation({
       onError,
     });
 
-  const delete_ = useDestruction({
+  const deleteClipAnnotation = useDestruction({
     mutationFn: api.clipAnnotations.delete,
-    onSuccess: onDelete,
+    onSuccess: onDeleteClipAnnotation,
   });
 
-  const addTag = useMutation({
+  const addClipAnnotationTag = useMutation({
     mutationFn: api.clipAnnotations.addTag,
-    onSuccess: onAddTag,
+    onSuccess: onAddClipAnnotationTag,
   });
 
-  const removeTag = useMutation({
+  const removeClipAnnotationTag = useMutation({
     mutationFn: api.clipAnnotations.removeTag,
-    onSuccess: onRemoveTag,
+    onSuccess: onRemoveClipAnnotationTag,
   });
 
-  const addNote = useMutation({
+  const addClipAnnotationNote = useMutation({
     mutationFn: api.clipAnnotations.addNote,
-    onSuccess: onAddNote,
+    onSuccess: onAddClipAnnotationNote,
   });
 
-  const removeNote = useMutation({
+  const updateClipAnnotationNote = useQueryMutation({
+    mutationFn: ({ note, data }: { note: Note; data: NoteUpdate }) =>
+      api.notes.update(note, data),
+    onSuccess: (note) => {
+      query.refetch();
+      onUpdateClipAnnotationNote?.(query.data!, note);
+    },
+  });
+
+  const removeClipAnnotationNote = useMutation({
     mutationFn: api.clipAnnotations.removeNote,
-    onSuccess: onRemoveNote,
+    onSuccess: onRemoveClipAnnotationNote,
   });
 
   const addSoundEvent = useQueryMutation<
@@ -159,7 +182,7 @@ export default function useClipAnnotation({
     },
   });
 
-  const addTagToSoundEvent = useQueryMutation<
+  const addSoundEventTag = useQueryMutation<
     SoundEventAnnotation,
     AxiosError,
     {
@@ -184,7 +207,7 @@ export default function useClipAnnotation({
     },
   });
 
-  const removeTagFromSoundEvent = useQueryMutation<
+  const removeSoundEventTag = useQueryMutation<
     SoundEventAnnotation,
     AxiosError,
     {
@@ -211,15 +234,16 @@ export default function useClipAnnotation({
 
   return {
     ...query,
-    delete: delete_,
-    addTag,
-    removeTag,
-    addNote,
-    removeNote,
+    deleteClipAnnotation,
+    addClipAnnotationTag,
+    removeClipAnnotationTag,
+    addClipAnnotationNote,
+    updateClipAnnotationNote,
+    removeClipAnnotationNote,
     addSoundEvent,
     updateSoundEvent,
     removeSoundEvent,
-    addTagToSoundEvent,
-    removeTagFromSoundEvent,
+    addSoundEventTag,
+    removeSoundEventTag,
   } as const;
 }

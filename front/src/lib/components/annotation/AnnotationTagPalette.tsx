@@ -1,37 +1,33 @@
+import { FC } from "react";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H4 } from "@/lib/components/ui/Headings";
 import { DeleteIcon, ToolsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
+import TagSearchBarBase, {
+  type TagSearchBarProps,
+} from "@/lib/components/tags/TagSearchBar";
 
-import type { TagFilter } from "@/lib/api/tags";
-import {
-  getTagColor as getTagColorDefault,
-  type Color,
-} from "@/lib/utils/tags";
+import { getTagColor, type Color } from "@/lib/utils/tags";
 import type { Tag } from "@/lib/types";
 
 export default function AnnotationTagPalette({
   tags,
-  tagFilter,
   onClick,
-  onAddTag,
-  onCreateTag,
   onRemoveTag,
   onClearTags,
-  getTagColor = getTagColorDefault,
+  tagColorFn = getTagColor,
+  TagSearchBar = TagSearchBarBase,
+  ...props
 }: {
   tags: Tag[];
-  tagFilter?: TagFilter;
-  onCreateTag?: (tag: Tag) => void;
   onClick?: (tag: Tag) => void;
-  onAddTag?: (tag: Tag) => void;
   onRemoveTag?: (tag: Tag) => void;
   onClearTags?: () => void;
-  getTagColor?: (tag: Tag) => Color;
-}) {
+  tagColorFn?: (tag: Tag) => Color;
+  TagSearchBar?: FC<TagSearchBarProps>;
+} & TagSearchBarProps) {
   return (
     <Card>
       <H4 className="text-center">
@@ -55,12 +51,7 @@ export default function AnnotationTagPalette({
           </Button>
         </Tooltip>
         <div className="grow">
-          <TagSearchBar
-            onSelectTag={onAddTag}
-            onCreateTag={onCreateTag}
-            initialFilter={tagFilter}
-            placeholder="Add tags..."
-          />
+          <TagSearchBar {...props} />
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1">
@@ -68,7 +59,7 @@ export default function AnnotationTagPalette({
           <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
-            {...getTagColor(tag)}
+            {...tagColorFn(tag)}
             onClick={() => onClick?.(tag)}
             onClose={() => onRemoveTag?.(tag)}
           />

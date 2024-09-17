@@ -40,18 +40,6 @@ export default function AnnotationProjectHeader({
           Overview
         </Tab>,
         <Tab
-          key="clips"
-          active={selectedLayoutSegment === "clips"}
-          onClick={() => {
-            router.push(
-              `/annotation_projects/detail/clips/?${params.toString()}`,
-            );
-          }}
-        >
-          <ClipsIcon className="w-5 h-5 align-middle" />
-          Clips
-        </Tab>,
-        <Tab
           key="annotate"
           active={selectedLayoutSegment === "annotation"}
           onClick={() => {
@@ -91,3 +79,16 @@ export default function AnnotationProjectHeader({
     />
   );
 }
+
+{/* <Tab */}
+{/*   key="clips" */}
+{/*   active={selectedLayoutSegment === "clips"} */}
+{/*   onClick={() => { */}
+{/*     router.push( */}
+{/*       `/annotation_projects/detail/clips/?${params.toString()}`, */}
+{/*     ); */}
+{/*   }} */}
+{/* > */}
+{/*   <ClipsIcon className="w-5 h-5 align-middle" /> */}
+{/*   Clips */}
+{/* </Tab>, */}

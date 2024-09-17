@@ -38,7 +38,7 @@ export default function AnnotationProgress({
 }: {
   instructions: string;
   tasks: AnnotationTask[];
-  filter: AnnotationTaskFilter;
+  filter?: AnnotationTaskFilter;
   fixedFilterFields?: (keyof AnnotationTaskFilter)[];
   onSetFilterField?: <K extends keyof AnnotationTaskFilter>(
     key: K,
@@ -110,12 +110,12 @@ export default function AnnotationProgress({
           <span className="text-sm text-stone-500">Pending:</span>
           <Toggle
             label="Only Pending"
-            isSelected={filter.pending ?? false}
+            isSelected={filter?.pending ?? false}
             onChange={(checked) => {
               if (checked) {
                 onSetFilterField?.("pending", checked);
               } else {
-                onSetFilterField?.("pending", true);
+                onSetFilterField?.("pending", false);
               }
             }}
           />

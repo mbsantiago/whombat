@@ -9,24 +9,26 @@ import type { AnnotationStatus, AnnotationTask } from "@/lib/types";
 
 export default function AnnotationTaskStatus({
   task,
+  isLoading = false,
   onDone,
   onReview,
   onVerify,
   onRemoveBadge,
 }: {
   task?: AnnotationTask;
+  isLoading?: boolean;
   onDone?: () => void;
   onReview?: () => void;
   onVerify?: () => void;
   onRemoveBadge?: (state: AnnotationStatus) => void;
 }) {
   return (
-    <div className="flex flex-row justify-between items-center border rounded-md border-stone-200 dark:border-stone-800 px-6">
+    <div className="flex flex-row justify-between items-center px-6 rounded-md border border-stone-200 dark:border-stone-800">
       <div className="flex flex-row flex-wrap gap-2">
-        {task == null ? (
+        {isLoading ? (
           <Loading />
         ) : (
-          task.status_badges?.map((badge) => (
+          task?.status_badges?.map((badge) => (
             <StatusBadge
               key={`${badge.state}-${badge.user?.id}`}
               badge={badge}
@@ -41,7 +43,7 @@ export default function AnnotationTaskStatus({
             <div className="inline-flex gap-2 items-center">
               Task Done!
               <div className="text-xs">
-                <KeyboardKey code="g" />
+                <KeyboardKey keys={["g"]} />
               </div>
             </div>
           }
@@ -57,7 +59,7 @@ export default function AnnotationTaskStatus({
             <div className="inline-flex gap-2 items-center">
               Needs Review
               <div className="text-xs">
-                <KeyboardKey code="r" />
+                <KeyboardKey keys={["r"]} />
               </div>
             </div>
           }
@@ -73,7 +75,7 @@ export default function AnnotationTaskStatus({
             <div className="inline-flex gap-2 items-center">
               Verified
               <div className="text-xs">
-                <KeyboardKey code="v" />
+                <KeyboardKey keys={["v"]} />
               </div>
             </div>
           }

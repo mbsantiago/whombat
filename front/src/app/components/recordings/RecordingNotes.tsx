@@ -29,9 +29,9 @@ export default function RecordingNotes({
     <RecordingNotesBase
       notes={data.notes ?? []}
       currentUser={currentUser}
-      onNoteCreate={addNote.mutate}
-      onNoteUpdate={(note, data) => updateNote.mutate({ note, data })}
-      onNoteDelete={removeNote.mutate}
+      onCreateNote={addNote.mutate}
+      onUpdateNote={(note, data) => updateNote.mutate({ note, data })}
+      onDeleteNote={removeNote.mutate}
     />
   );
 }

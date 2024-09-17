@@ -118,8 +118,8 @@ export default function useAnnotateClip(props: {
     addSoundEvent: { mutate: addSoundEvent },
     removeSoundEvent: { mutate: removeSoundEvent },
     updateSoundEvent: { mutate: updateSoundEvent },
-    addTagToSoundEvent: { mutate: addTagToSoundEvent },
-    removeTagFromSoundEvent: { mutate: removeTagFromSoundEvent },
+    addSoundEventTag: { mutate: addTagToSoundEvent },
+    removeSoundEventTag: { mutate: removeTagFromSoundEvent },
   } = useClipAnnotation({
     uuid: data.uuid,
     clipAnnotation: data,

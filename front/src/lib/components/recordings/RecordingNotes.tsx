@@ -1,11 +1,7 @@
-import Card from "@/lib/components/ui/Card";
-import { H3 } from "@/lib/components/ui/Headings";
-import { NotesIcon } from "@/lib/components/icons";
-import CreateNote from "@/lib/components/notes/CreateNote";
-import Feed from "@/lib/components/notes/Feed";
+import type { ComponentProps } from "react";
+import NotesPanel from "@/lib/components/notes/NotesPanel";
 
-import type { NoteCreate } from "@/lib/api/notes";
-import type { Note, User } from "@/lib/types";
+import { NotesIcon } from "@/lib/components/icons";
 
 function NoNotes() {
   return (
@@ -22,36 +18,10 @@ function NoNotes() {
   );
 }
 
-export default function RecordingNotes({
-  notes,
-  currentUser,
-  onNoteCreate,
-  onNoteUpdate,
-  onNoteDelete,
-}: {
-  notes: Note[];
-  currentUser?: User;
-  onNoteCreate?: (note: NoteCreate) => void;
-  onNoteUpdate?: (note: Note, data: Partial<Note>) => void;
-  onNoteDelete?: (note: Note) => void;
-}) {
+export default function RecordingNotes(
+  props: Omit<ComponentProps<typeof NotesPanel>, "title" | "EmptyNotes">,
+) {
   return (
-    <Card>
-      <H3>
-        <NotesIcon className="inline-block mr-1 w-5 h-5" />
-        Notes
-      </H3>
-      {notes.length === 0 ? (
-        <NoNotes />
-      ) : (
-        <Feed
-          notes={notes}
-          currentUser={currentUser}
-          onUpdate={onNoteUpdate}
-          onDelete={onNoteDelete}
-        />
-      )}
-      <CreateNote onCreateNote={onNoteCreate} />
-    </Card>
+    <NotesPanel title="Recording Notes" EmptyNotes={<NoNotes />} {...props} />
   );
 }
