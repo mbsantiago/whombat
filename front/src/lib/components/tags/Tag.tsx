@@ -61,6 +61,7 @@ export default function Tag({
   color,
   level = 1,
   className,
+  canClose = true,
   onClick,
   onClose,
   ...props
@@ -68,6 +69,7 @@ export default function Tag({
   tag: Tag;
   level: (typeof LEVELS)[number];
   color: (typeof COLOR_NAMES)[number];
+  canClose?: boolean;
   onClick?: () => void;
   onClose?: () => void;
 } & HTMLProps<HTMLDivElement>) {
@@ -84,18 +86,18 @@ export default function Tag({
       )}
       {...props}
     >
-      {onClose != null && (
+      {onClose != null && canClose && (
         <button type="button" className="group min-w-fit" onClick={onClose}>
           <CloseIcon className="inline-block w-4 h-4 group-hover:text-red-500 group-hover:stroke-3" />
         </button>
       )}
       <button
         type="button"
-        className="group flex flex-row items-center max-w-full"
+        className="flex flex-row items-center max-w-full group"
         onClick={onClick}
       >
         <span className="font-thin min-w-fit shrink">{tag.key}</span>
-        <span className="ml-1 grow flex-1 font-bold group-hover:underline truncate group-hover:decoration-2 group-hover:underline-offset-2">
+        <span className="flex-1 ml-1 font-bold group-hover:underline grow truncate group-hover:decoration-2 group-hover:underline-offset-2">
           {tag.value}
         </span>
       </button>

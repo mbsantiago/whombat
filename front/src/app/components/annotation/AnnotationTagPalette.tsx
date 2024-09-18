@@ -1,5 +1,5 @@
 import AnnotationTagPaletteBase from "@/lib/components/annotation/AnnotationTagPalette";
-import TagSearchBar from "@/app/components/tags/TagSearchBar";
+import ProjectTagSearch from "../tags/ProjectTagsSearch";
 
 import toast from "react-hot-toast";
 import useStore from "@/app/store";
@@ -10,11 +10,13 @@ import type { Tag, ClipAnnotation } from "@/lib/types";
 export default function AnnotationTagPalette({
   clipAnnotation,
   tags,
-  onTagsChange,
+  onAddTag,
+  onRemoveTag,
 }: {
   clipAnnotation?: ClipAnnotation;
   tags: Tag[];
-  onTagsChange?: (tags: Tag[]) => void;
+  onAddTag?: (tag: Tag) => void;
+  onRemoveTag?: (tag: Tag) => void;
 }) {
   const tagColorFn = useStore((state) => state.getTagColor);
 
@@ -27,19 +29,15 @@ export default function AnnotationTagPalette({
   return (
     <AnnotationTagPaletteBase
       tags={tags}
-      TagSearchBar={TagSearchBar}
+      TagSearchBar={ProjectTagSearch}
       tagColorFn={tagColorFn}
-      onSelectTag={(tag) => {
-        if (tags.find((t) => t.key === tag.key && t.value === tag.value))
-          return;
-        onTagsChange?.([...tags, tag]);
-      }}
-      onRemoveTag={(tag) => {
-        onTagsChange?.(
-          tags.filter((t) => t.key !== tag.key || t.value !== tag.value),
-        );
-      }}
-      onClick={(tag) => addClipAnnotationTag.mutate(tag, { onSuccess: () => toast.success("Tag added.")})}
+      onSelectTag={onAddTag}
+      onRemoveTag={onRemoveTag}
+      onClick={(tag) =>
+        addClipAnnotationTag.mutate(tag, {
+          onSuccess: () => toast.success("Tag added."),
+        })
+      }
     />
   );
 }

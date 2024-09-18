@@ -1,3 +1,4 @@
+import type { DOMAttributes } from "react";
 import type {
   SpectrogramWindow,
   DrawFn,
@@ -10,6 +11,35 @@ import type {
   DoublePressHandler,
 } from "@/lib/types";
 import useCanvas from "@/lib/hooks/canvas/useCanvas";
+
+export type CanvasProps = {
+  /** A callback that is called when the cursor hovers over the canvas. */
+  onHover?: HoverHandler;
+  /** A callback that is called when the user starts moving the cursor on the
+   * canvas. */
+  onMoveStart?: MoveStartHandler;
+  /** A callback that is called when the user stops moving the cursor on the
+   * canvas. */
+  onMoveEnd?: MoveEndHandler;
+  /** A callback that is called when the user moves the cursor on the canvas.
+   * */
+  onMove?: MoveHandler;
+  /** A callback that is called when the user presses the canvas. */
+  onPress?: PressHandler;
+  /** A callback that is called when the user scrolls the canvas. */
+  onScroll?: ScrollHandler;
+  /** A callback that is called when the user double clicks the canvas. */
+  onDoubleClick?: DoublePressHandler;
+} & Omit<
+  DOMAttributes<HTMLCanvasElement>,
+  | "onHover"
+  | "onMoveStart"
+  | "onMoveEnd"
+  | "onMove"
+  | "onPress"
+  | "onScroll"
+  | "onDoubleClick"
+>;
 
 /**
  * A React component for creating an interactive canvas element.
@@ -30,6 +60,8 @@ export default function Canvas({
   onPress,
   onScroll,
   onDoubleClick,
+  canvasRef,
+  ...rest
 }: {
   /** The function to use for drawing on the canvas. */
   drawFn?: DrawFn;
@@ -37,24 +69,8 @@ export default function Canvas({
   viewport: SpectrogramWindow;
   /** The height of the canvas. */
   height: number | string;
-  /** A callback that is called when the cursor hovers over the canvas. */
-  onHover?: HoverHandler;
-  /** A callback that is called when the user starts moving the cursor on the
-   * canvas. */
-  onMoveStart?: MoveStartHandler;
-  /** A callback that is called when the user stops moving the cursor on the
-   * canvas. */
-  onMoveEnd?: MoveEndHandler;
-  /** A callback that is called when the user moves the cursor on the canvas.
-   * */
-  onMove?: MoveHandler;
-  /** A callback that is called when the user presses the canvas. */
-  onPress?: PressHandler;
-  /** A callback that is called when the user scrolls the canvas. */
-  onScroll?: ScrollHandler;
-  /** A callback that is called when the user double clicks the canvas. */
-  onDoubleClick?: DoublePressHandler;
-}) {
+  canvasRef?: React.RefObject<HTMLCanvasElement>;
+} & CanvasProps) {
   const { ref, props } = useCanvas({
     drawFn,
     viewport,
@@ -65,10 +81,11 @@ export default function Canvas({
     onPress,
     onScroll,
     onDoubleClick,
+    canvasRef,
   });
   return (
     <div className="overflow-hidden rounded-md" style={{ height }}>
-      <canvas ref={ref} className="w-full h-full" {...props} />
+      <canvas ref={ref} className="w-full h-full" {...props} {...rest} />
     </div>
   );
 }

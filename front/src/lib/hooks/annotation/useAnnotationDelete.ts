@@ -77,8 +77,17 @@ export default function useAnnotationDelete({
 
   const props = mergeProps(pressProps, hoverProps);
 
+  if (!enabled) {
+    return {
+      props: {},
+      draw: _VOID_FN,
+    };
+  }
+
   return {
     props,
     draw,
   };
 }
+
+const _VOID_FN = () => {};

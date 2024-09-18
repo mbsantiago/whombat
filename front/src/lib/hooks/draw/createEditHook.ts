@@ -104,7 +104,7 @@ export default function createEditHook<J, T>(
         shiftKey?: boolean;
         ctrlKey?: boolean;
       }) => {
-        if (hovered == null || object == null) return;
+        if (!enabled || hovered == null || object == null) return;
         setKeys({ shiftKey, ctrlKey });
 
         if (!shiftKey) {
@@ -113,13 +113,14 @@ export default function createEditHook<J, T>(
           setTmpObject(shiftObject(object, initial, current));
         }
       },
-      [hovered, object],
+      [hovered, object, enabled],
     );
 
     const { props: dragProps, isDragging } = useDrag({
       onMoveStart: handleMoveStart,
       onMoveEnd: handleMoveEnd,
       onMove: handleMove,
+      enabled,
     });
 
     const handleOnPress = useCallback(() => {

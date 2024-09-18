@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useMemo } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+
 import AnnotationTaskBase from "@/lib/components/annotation/AnnotationTask";
-import AnnotationTaskStatus from "@/app/components/annotation_tasks/AnnotationTaskStatus";
-import AnnotationProgress from "./AnnotationProgress";
+import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
+import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";
 import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
-import type { AnnotationProject, AnnotationTask, Tag } from "@/lib/types";
-import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
+import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
+import ProjectTagSearch from "../tags/ProjectTagsSearch";
+
+import useAnnotateTasks from "@/lib/hooks/annotation/useAnnotateTasks";
+import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
+import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
+import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
+
+import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 
 export default function AnnotateTasks({
   annotationProject,
@@ -16,117 +25,101 @@ export default function AnnotateTasks({
   annotationProject: AnnotationProject;
   annotationTask?: AnnotationTask;
 }) {
-  const [task, setTask] = useState<AnnotationTask | null>(
-    annotationTask || null,
+  const audioSettings = useAudioSettings();
+
+  const spectrogramSettings = useSpectrogramSettings();
+
+  const tagPalette = useAnnotationTagPallete();
+
+  const filter = useMemo(
+    () => ({ annotation_project: annotationProject }),
+    [annotationProject],
   );
 
-  const [tagsPalette, setTagsPalette] = useState<Tag[]>([]);
+  const tasks = useAnnotateTasks({
+    annotationTask,
+    filter,
+  });
 
-  const {
-    clipAnnotation: { data: clipAnnotation },
-  } = useAnnotationTask({
-    uuid: task?.uuid || "",
-    annotationTask: task || undefined,
-    withAnnotations: true,
-    enabled: task != null,
+  useHotkeys("n", tasks.nextTask, {
+    description: "Go to next task",
+  });
+
+  useHotkeys("p", tasks.prevTask, {
+    description: "Go to previous task",
+  });
+
+  useHotkeys("g", () => tasks.markCompleted.mutate(), {
+    description: "Mark current task as completed",
+  });
+
+  useHotkeys("r", () => tasks.markRejected.mutate(), {
+    description: "Mark current task as rejected (for review)",
+  });
+
+  useHotkeys("v", () => tasks.markVerified.mutate(), {
+    description: "Mark current task as verified",
   });
 
   return (
     <AnnotationTaskBase
-      selectedTask={task}
-      AnnotationTaskStatus={
-        task != null ? <AnnotationTaskStatus task={task} /> : undefined
+      selectedTask={tasks.task}
+      TaskStatus={
+        <AnnotationTaskStatus
+          task={tasks.task || undefined}
+          onDone={tasks.markCompleted.mutate}
+          onReview={tasks.markRejected.mutate}
+          onVerify={tasks.markVerified.mutate}
+          onRemoveBadge={tasks.removeBadge.mutate}
+        />
       }
-      AnnotationProgress={
+      Progress={
         <AnnotationProgress
-          selectedTask={task}
-          annotationProject={annotationProject}
-          onSelectAnnotationTask={setTask}
+          tasks={tasks.tasks}
+          instructions={annotationProject.annotation_instructions || ""}
+          onNext={tasks.nextTask}
+          onPrevious={tasks.prevTask}
+          current={tasks.current}
+          filter={tasks.filter}
+          fixedFilterFields={["annotation_project"]}
+          onSetFilterField={tasks.setFilter}
+          onClearFilterField={tasks.clearFilter}
         />
       }
-      AnnotationContext={
-        task != null ? <AnnotationContext task={task} /> : undefined
-      }
-      AnnotationTagPalette={
-        <AnnotationTagPalette
-          tags={tagsPalette}
-          clipAnnotation={clipAnnotation}
-          onTagsChange={setTagsPalette}
-        />
-      }
-      AnnotationTaskTags={
-        clipAnnotation != null ? (
-          <ClipAnnotationTags clipAnnotation={clipAnnotation} />
+      Context={
+        tasks.task != null ? (
+          <AnnotationContext task={tasks.task} onTagClick={tagPalette.addTag} />
         ) : undefined
       }
-      AnnotationTaskNotes={
-        clipAnnotation != null ? (
-          <ClipAnnotationNotes clipAnnotation={clipAnnotation} />
+      TagPalette={
+        <AnnotationTagPalette
+          tags={tagPalette.tags}
+          clipAnnotation={tasks.annotations.data}
+          onAddTag={tagPalette.addTag}
+          onRemoveTag={tagPalette.removeTag}
+        />
+      }
+      ClipTags={
+        tasks.annotations.data != null ? (
+          <ClipAnnotationTags clipAnnotation={tasks.annotations.data} />
+        ) : undefined
+      }
+      ClipNotes={
+        tasks.annotations.data != null ? (
+          <ClipAnnotationNotes clipAnnotation={tasks.annotations.data} />
+        ) : undefined
+      }
+      Spectrogram={
+        tasks.annotations.data != null ? (
+          <ClipAnnotationSpectrogram
+            clipAnnotation={tasks.annotations.data}
+            audioSettings={audioSettings}
+            spectrogramSettings={spectrogramSettings}
+            tagPalette={tagPalette}
+            TagSearchBar={ProjectTagSearch}
+          />
         ) : undefined
       }
     />
   );
 }
-
-// const [selectedAnnotation, setSelectedAnnotation] =
-//   useState<SoundEventAnnotation | null>(null);
-// const [tagPalette, setTagPalette] = useState<Tag[]>([]);
-//
-// const tasks = useAnnotationTasks({
-//   filter: taskFilter,
-//   annotationTask: annotationTask,
-//   onChangeTask,
-//   onCompleteTask,
-//   onRejectTask,
-//   onVerifyTask,
-// });
-//
-// const { data: clipAnnotation, isLoading: isLoadingClipAnnotation } =
-//   tasks.annotations;
-//
-// const { data, addTag, removeTag, addNote, removeNote } = useClipAnnotation({
-//   uuid: clipAnnotation?.uuid,
-//   clipAnnotation,
-//   onAddTag: onAddClipTag,
-//   onRemoveTag: onRemoveClipTag,
-//   enabled: clipAnnotation != null,
-// });
-//
-// const onClearTags = useCallback(async () => {
-//   const tags = clipAnnotation?.tags?.slice(0);
-//   if (tags == null) return;
-//   for (const tag of tags) {
-//     await removeTag.mutateAsync(tag);
-//   }
-// }, [clipAnnotation, removeTag]);
-//
-// const handleAddTagToPalette = useCallback((tag: Tag) => {
-//   setTagPalette((tags) => {
-//     if (tags.some((t) => t.key === tag.key && t.value === tag.value)) {
-//       return tags;
-//     }
-//     return [...tags, tag];
-//   });
-// }, []);
-//
-// const handleRemoveTagFromPalette = useCallback((tag: Tag) => {
-//   setTagPalette((tags) => {
-//     return tags.filter((t) => t.key !== tag.key || t.value !== tag.value);
-//   });
-// }, []);
-//
-// const handleClearTagPalette = useCallback(() => {
-//   setTagPalette([]);
-// }, []);
-//
-// if (tasks.isLoading) {
-//   return <Loading />;
-// }
-//
-// if (tasks.isError) {
-//   return <div>Error loading annotation tasks</div>;
-// }
-//
-// if (tasks.task == null) {
-//   return <Empty>No tasks available</Empty>;
-// }

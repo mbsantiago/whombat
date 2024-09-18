@@ -51,7 +51,7 @@ export default function AnnotationTagPalette({
           </Button>
         </Tooltip>
         <div className="grow">
-          <TagSearchBar {...props} />
+          <TagSearchBar placement="bottom-end" {...props} />
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1">

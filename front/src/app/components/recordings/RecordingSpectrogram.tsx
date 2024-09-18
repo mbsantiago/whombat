@@ -3,7 +3,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
 import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
-import useRecordingViewport from "@/lib/hooks/recordings/useRecordingViewport";
+import useRecordingViewport from "@/lib/hooks/window/useRecordingViewport";
 import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 
 import Player from "@/app/components/audio/Player";
@@ -59,7 +59,7 @@ export default function RecordingSpectrogram({
       Player={
         <Player
           audio={audio}
-          recording={recording}
+          samplerate={recording.samplerate}
           onChangeSpeed={(speed) =>
             audioSettings.dispatch({ type: "setSpeed", speed })
           }
@@ -67,7 +67,7 @@ export default function RecordingSpectrogram({
       }
       SettingsMenu={
         <SettingsMenu
-          recording={recording}
+          samplerate={recording.samplerate}
           audioSettings={audioSettings}
           spectrogramSettings={spectrogramSettings}
         />

@@ -53,6 +53,7 @@ export default function useCanvas({
   onPress,
   onScroll,
   onDoubleClick,
+  ...rest
 }: {
   viewport: SpectrogramWindow;
   drawFn?: DrawFn;
@@ -63,11 +64,14 @@ export default function useCanvas({
   onPress?: PressHandler;
   onScroll?: ScrollHandler;
   onDoubleClick?: DoublePressHandler;
+  canvasRef?: React.RefObject<HTMLCanvasElement>;
 }): {
   ref: React.RefObject<HTMLCanvasElement>;
   props: React.DOMAttributes<HTMLCanvasElement>;
 } {
   const ref = useRef<HTMLCanvasElement>(null);
+
+  const { canvasRef = ref } = rest;
 
   const { positionProps, cursorPosition } = useViewportPosition({
     viewport,
@@ -113,12 +117,12 @@ export default function useCanvas({
     [drawFn, viewport],
   );
 
-  useCaptureScroll({ ref });
+  useCaptureScroll({ ref: canvasRef });
 
-  useCanvasDraw({ ref, draw });
+  useCanvasDraw({ ref: canvasRef, draw });
 
   return {
-    ref,
+    ref: canvasRef,
     props,
   };
 }

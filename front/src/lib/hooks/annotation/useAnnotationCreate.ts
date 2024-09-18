@@ -64,6 +64,13 @@ export default function useAnnotationCreate({
     enabled: enabled && geometryType === "LineString",
   });
 
+  if (!enabled) {
+    return {
+      props: {},
+      draw: _VOID_FN,
+    };
+  }
+
   switch (geometryType) {
     case "BoundingBox":
       return { props: propsBBox, draw: drawBBox };
@@ -77,3 +84,5 @@ export default function useAnnotationCreate({
       throw new Error(`Invalid geometry type: ${geometryType}`);
   }
 }
+
+const _VOID_FN = () => {};

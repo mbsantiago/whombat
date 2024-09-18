@@ -32,10 +32,11 @@ const _emptyTags: Tag[] = [];
 export default function RecordingTagBar({
   tags = _emptyTags,
   label = "Tags",
+  disabled = false,
+  canClose = true,
   onClickTag,
   onDeleteTag,
-  colorFn = getTagColor,
-  disabled = false,
+  tagColorFn = getTagColor,
   TagSearchBar = TagSearchBarBase,
   ...props
 }: {
@@ -48,9 +49,11 @@ export default function RecordingTagBar({
   /** Callback function to handle deleting a tag. */
   onDeleteTag?: (tag: Tag) => void;
   /** Function to determine the color of a tag. */
-  colorFn?: (tag: Tag) => Color;
+  tagColorFn?: (tag: Tag) => Color;
   /** If true, the add tag button is disabled. */
   disabled?: boolean;
+  /** If true, the tag can be closed. */
+  canClose?: boolean;
   /** The tag search bar component to render inside the add tag button popover.
    *
    * Can be a custom tag search bar component that accepts the same props as the
@@ -70,9 +73,10 @@ export default function RecordingTagBar({
           <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
-            {...colorFn(tag)}
+            {...tagColorFn(tag)}
             onClick={() => onClickTag?.(tag)}
             onClose={() => onDeleteTag?.(tag)}
+            canClose={canClose}
           />
         ))}
         {tags?.length === 0 && (

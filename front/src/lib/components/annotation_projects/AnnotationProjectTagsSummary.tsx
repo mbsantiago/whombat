@@ -88,7 +88,7 @@ type TagCount = {
 function TagCounts({
   counts,
   sortBy: initialSortBy = "clip",
-  showMax: initialShowMax = 1,
+  showMax: initialShowMax = 10,
   onClickTag,
   tagColorFn = getTagColor,
 }: {

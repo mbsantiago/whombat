@@ -1,14 +1,16 @@
-import { RecordingIcon } from "@/lib/components/icons";
-import Button from "@/lib/components/ui/Button";
-import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import {
   getBaseName,
   removeExtension,
 } from "@/lib/components/recordings/RecordingHeader";
+
+import Button from "@/lib/components/ui/Button";
+import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import RecordingLocation from "@/lib/components/recordings/RecordingLocation";
 import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
 import RecordingTime from "@/lib/components/recordings/RecordingTime";
+import { RecordingIcon } from "@/lib/components/icons";
 
+import type { Color } from "@/lib/utils/tags";
 import type { Recording, Tag } from "@/lib/types";
 
 /**
@@ -22,6 +24,7 @@ export default function AnnotationContext({
   recording,
   onTagClick,
   onClickRecording,
+  tagColorFn,
 }: {
   /** The recording object containing details such as path, uuid, latitude,
    * longitude, time, date, samplerate, channels, time_expansion, and tags.
@@ -31,6 +34,7 @@ export default function AnnotationContext({
   onTagClick?: (tag: Tag) => void;
   /** Optional callback function to handle recording click events. */
   onClickRecording?: () => void;
+  tagColorFn?: (tag: Tag) => Color;
 }) {
   const { path } = recording;
   const baseName = removeExtension(getBaseName(path) ?? "");
@@ -75,7 +79,9 @@ export default function AnnotationContext({
         label="Recording Tags"
         tags={recording.tags ?? []}
         onClickTag={onTagClick}
+        tagColorFn={tagColorFn}
         disabled
+        canClose={false}
       />
     </div>
   );

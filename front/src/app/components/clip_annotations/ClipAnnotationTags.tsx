@@ -1,11 +1,12 @@
 import { useCallback } from "react";
 import ClipAnnotationTagsBase from "@/lib/components/clip_annotations/ClipAnnotationTags";
-import TagSearchBar from "@/app/components/tags/TagSearchBar";
+import ProjectTagSearch from "../tags/ProjectTagsSearch";
 import toast from "react-hot-toast";
 
 import useStore from "@/app/store";
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 
+import type { TagSearchBarProps } from "@/lib/components/tags/TagSearchBar";
 import type { ClipAnnotation } from "@/lib/types";
 
 export default function ClipAnnotationTags({
@@ -29,12 +30,17 @@ export default function ClipAnnotationTags({
     }
   }, [data, removeClipAnnotationTag]);
 
+  const TagSearchBar = useCallback(
+    (props: TagSearchBarProps) => (
+      <ProjectTagSearch placement="bottom-end" {...props} />
+    ),
+    [],
+  );
+
   return (
     <ClipAnnotationTagsBase
       tags={data?.tags || []}
-      TagSearchBar={(props) => (
-        <TagSearchBar placement="bottom-end" {...props} />
-      )}
+      TagSearchBar={TagSearchBar}
       tagColorFn={tagColorFn}
       onAddTag={(tag) =>
         addClipAnnotationTag.mutate(tag, {

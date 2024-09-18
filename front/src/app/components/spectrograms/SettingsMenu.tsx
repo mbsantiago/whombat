@@ -4,14 +4,13 @@ import SettingsMenuBase from "@/lib/components/settings/SettingsMenu";
 import useStore from "@/app/store";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-import type { Recording } from "@/lib/types";
 
 export default function SettingsMenu({
-  recording,
+  samplerate,
   audioSettings,
   spectrogramSettings,
 }: {
-  recording: Recording;
+  samplerate: number;
   audioSettings: ReturnType<typeof useAudioSettings>;
   spectrogramSettings: ReturnType<typeof useSpectrogramSettings>;
 }) {
@@ -41,7 +40,7 @@ export default function SettingsMenu({
 
   return (
     <SettingsMenuBase
-      samplerate={recording.samplerate}
+      samplerate={samplerate}
       audioSettings={audioSettings.settings}
       spectrogramSettings={spectrogramSettings.settings}
       onAudioSettingsChange={(settings) =>

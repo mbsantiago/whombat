@@ -1,64 +1,48 @@
-// Purpose: React component for displaying tags on the spectrogram.
-import { Popover } from "@headlessui/react";
-import { Float } from "@headlessui-float/react";
 import classNames from "classnames";
-import { type HTMLProps, type ReactNode } from "react";
 import { useMemo } from "react";
 
-import { CloseIcon, TagIcon } from "@/lib/components/icons";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import useStore from "@/app/store";
+import { CloseIcon } from "@/lib/components/icons";
+import AddTagButton from "../tags/AddTagButton";
 
-import type { TagFilter } from "@/lib/api/tags";
-import type { TagElement, TagGroup } from "@/lib/utils/tags";
+import {
+  getTagColor,
+  type TagElement,
+  type TagGroup,
+  type Color,
+} from "@/lib/utils/tags";
+import type { ComponentProps, ReactNode } from "react";
 import type { Tag as TagType } from "@/lib/types";
 
-function TagBarPopover({
-  onClose,
-  onAdd,
-  onCreate,
-  filter,
+export default function SpectrogramTags({
+  children,
+  tags,
   ...props
 }: {
-  onClose?: () => void;
-  onAdd?: (tag: TagType) => void;
-  onCreate?: (tag: TagType) => void;
-  filter?: TagFilter;
-} & Omit<HTMLProps<HTMLInputElement>, "value" | "onChange" | "onBlur">) {
+  children: ReactNode;
+  tags: TagGroup[];
+} & Omit<ComponentProps<typeof TagGroup>, "group">) {
   return (
-    <TagSearchBar
-      // @ts-ignore
-      onSelectTag={(tag) => {
-        onAdd?.(tag);
-      }}
-      onCreateTag={onCreate}
-      autoFocus={true}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          onClose?.();
-        } else if (e.key === "Enter") {
-          onClose?.();
-        }
-      }}
-      initialFilter={filter}
-      {...props}
-    />
+    <div className="relative w-full h-full rounded">
+      {children}
+      {tags.map((group) => (
+        <TagGroup key={group.annotation.uuid} group={group} {...props} />
+      ))}
+    </div>
   );
 }
 
 export function SpectrogramTag({
   tag,
   onClick,
+  tagColorFn = getTagColor,
   disabled = false,
-}: TagElement & { disabled?: boolean }) {
-  const getTagColor = useStore((state) => state.getTagColor);
-  const color = getTagColor(tag);
+}: TagElement & { disabled?: boolean; tagColorFn: (tag: TagType) => Color }) {
+  const color = tagColorFn(tag);
   const className = useMemo(() => {
     return `bg-${color.color}-500`;
   }, [color]);
-
   return (
-    <span className="flex flex-row gap-1 -my-2 items-center px-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
       <span
         className={`inline-block my-2 w-2 h-2 rounded-full ${className} ring-1 ring-stone-900 opacity-100`}
       ></span>
@@ -79,67 +63,18 @@ export function SpectrogramTag({
   );
 }
 
-export function AddTagButton({
-  filter,
-  onCreate,
-  onAdd,
-}: {
-  filter?: TagFilter;
-  onCreate?: (tag: TagType) => void;
-  onAdd?: (tag: TagType) => void;
-}) {
-  return (
-    <Popover as="div">
-      <Float
-        placement="bottom"
-        offset={4}
-        zIndex={20}
-        enter="transition duration-200 ease-out"
-        enterFrom="scale-95 opacity-0"
-        enterTo="scale-100 opacity-100"
-        leave="transition duration-150 ease-in"
-        leaveFrom="scale-100 opacity-100"
-        leaveTo="scale-95 opacity-0"
-        portal={true}
-      >
-        <Popover.Button className="rounded hover:text-emerald-500 focus:ring-4 focus:outline-none group focus:ring-emerald-500/50 z-20">
-          +<TagIcon className="inline-block ml-1 w-4 h-4 stroke-2" />
-          <span className="hidden absolute ml-1 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:inline-block group-hover:opacity-100">
-            Add tag
-          </span>
-        </Popover.Button>
-        <Popover.Panel className="w-52" focus unmount>
-          {({ close }) => (
-            <TagBarPopover
-              filter={filter}
-              onClose={close}
-              onCreate={(tag) => {
-                onCreate?.(tag);
-                close();
-              }}
-              onAdd={(tag) => {
-                onAdd?.(tag);
-                close();
-              }}
-            />
-          )}
-        </Popover.Panel>
-      </Float>
-    </Popover>
-  );
-}
-
 export function TagGroup({
   group,
-  filter,
   onCreate,
   disabled = false,
+  tagColorFn = getTagColor,
+  ...props
 }: {
   group: TagGroup;
-  filter?: TagFilter;
-  onCreate?: (tag: TagType) => void;
   disabled?: boolean;
-}) {
+  onCreate?: (tag: TagType) => void;
+  tagColorFn?: (tag: TagType) => Color;
+} & ComponentProps<typeof AddTagButton>) {
   const { x, y } = group.position;
   return (
     <div
@@ -154,56 +89,24 @@ export function TagGroup({
         top: y,
       }}
     >
-      <div className="-ms-2 relative flex flex-col right-0 hover:gap-2">
+      <div className="flex relative right-0 flex-col hover:gap-2 -ms-2">
         {group.tags.map((tagElement) => (
           <SpectrogramTag
             key={`${tagElement.tag.key}:${tagElement.tag.value}`}
-            {...tagElement}
             disabled={disabled}
+            tagColorFn={tagColorFn}
+            {...tagElement}
           />
         ))}
       </div>
       {!disabled && (
         <AddTagButton
-          filter={filter}
-          onCreate={(tag) => {
-            onCreate?.(tag);
+          onSelectTag={(tag) => {
             group.onAdd?.(tag);
           }}
-          onAdd={(tag) => {
-            group.onAdd?.(tag);
-          }}
+          {...props}
         />
       )}
-    </div>
-  );
-}
-
-export default function SpectrogramTags({
-  tags,
-  children,
-  filter,
-  onCreate,
-  disabled = false,
-}: {
-  tags: TagGroup[];
-  children: ReactNode;
-  filter?: TagFilter;
-  onCreate?: (tag: TagType) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="relative w-full h-full rounded">
-      {children}
-      {tags.map((group) => (
-        <TagGroup
-          key={group.annotation.uuid}
-          group={group}
-          filter={filter}
-          onCreate={onCreate}
-          disabled={disabled}
-        />
-      ))}
     </div>
   );
 }

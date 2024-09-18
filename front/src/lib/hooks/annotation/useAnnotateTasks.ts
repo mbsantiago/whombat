@@ -13,9 +13,7 @@ import {
   type AnnotationTaskPage,
 } from "@/lib/api/annotation_tasks";
 import api from "@/app/api";
-import useAnnotateTasksKeyShortcuts from "@/lib/hooks/annotation/useAnnotateTasksKeyShortcuts";
 import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
-import { type Filter } from "@/lib/hooks/utils/useFilter";
 import { shuffleArray } from "@/lib/utils/arrays";
 
 import type {
@@ -43,7 +41,6 @@ type AnnotationState = {
   hasNextTask: boolean;
   /** Whether there is a previous annotation task */
   hasPrevTask: boolean;
-  _filter: Filter<AnnotationTaskFilter>;
 };
 
 type AnnotationControls = {
@@ -58,6 +55,7 @@ type AnnotationControls = {
     key: T,
     value: AnnotationTaskFilter[T],
   ) => void;
+  clearFilter: <T extends keyof AnnotationTaskFilter>(field: T) => void;
   /** Select a random annotation task */
   selectRandomTask: () => void;
   /** Mark the current task as completed */
@@ -290,19 +288,12 @@ export default function useAnnotateTasks({
     }
   }, [currentTask, items, goToTask]);
 
-  useAnnotateTasksKeyShortcuts({
-    onGoNext: nextTask,
-    onGoPrevious: prevTask,
-    onMarkCompleted: markCompleted.mutate,
-    onMarkRejected: markRejected.mutate,
-    onMarkVerified: markVerified.mutate,
-  });
-
   return {
     current: index,
     task: currentTask,
     filter: filter.filter,
     tasks: items,
+    clearFilter: filter.clear,
     isLoading,
     isError,
     goToTask,
@@ -317,6 +308,5 @@ export default function useAnnotateTasks({
     markVerified,
     removeBadge,
     selectRandomTask,
-    _filter: filter,
   };
 }

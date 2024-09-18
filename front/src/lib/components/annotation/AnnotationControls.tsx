@@ -15,6 +15,7 @@ import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Select from "@/lib/components/inputs/Select";
 import Tooltip from "@/lib/components/ui/Tooltip";
 
+import type { AnnotationMode } from "@/lib/hooks/annotation/useAnnotationState";
 import type { GeometryType } from "@/lib/types";
 
 type Node = {
@@ -47,16 +48,9 @@ const geometryTypes: Record<GeometryType, Node> = {
   },
 };
 
-export type AnnotationMode =
-  | "drawing"
-  | "selecting"
-  | "editing"
-  | "deleting"
-  | "none";
-
 export default function AnnotationControls({
   geometryType,
-  mode = "selecting",
+  mode = "select",
   onDraw,
   onDelete,
   onSelect,
@@ -84,13 +78,13 @@ export default function AnnotationControls({
         autoPlacement={false}
       >
         <Button
-          variant={mode === "drawing" ? "primary" : "secondary"}
+          variant={mode === "draw" ? "primary" : "secondary"}
           onClick={onDraw}
         >
           <AnnotationProjectIcon className="w-5 h-5" />
         </Button>
       </Tooltip>
-      {!(mode === "editing") ? (
+      {!(mode === "edit") ? (
         <Tooltip
           tooltip={
             <div className="inline-flex gap-1">
@@ -104,7 +98,7 @@ export default function AnnotationControls({
           autoPlacement={false}
         >
           <Button
-            variant={mode == "selecting" ? "primary" : "secondary"}
+            variant={mode == "select" ? "primary" : "secondary"}
             onClick={onSelect}
           >
             <SelectIcon className="w-5 h-5" />
@@ -128,7 +122,7 @@ export default function AnnotationControls({
         autoPlacement={false}
       >
         <Button
-          variant={mode === "deleting" ? "danger" : "secondary"}
+          variant={mode === "delete" ? "danger" : "secondary"}
           onClick={onDelete}
         >
           <DeleteIcon className="w-5 h-5" />

@@ -70,13 +70,13 @@ const meta: Meta<typeof AnnotationTaskComponent> = {
   title: "Annotation/Task",
   component: AnnotationTaskComponent,
   args: {
-    AnnotationProgress: (
+    Progress: (
       <AnnotationProgress instructions={"Annotate"} tasks={[]} />
     ),
-    AnnotationTagPalette: <AnnotationTagPalette tags={tags} />,
-    AnnotationTaskStatus: <AnnotationTaskStatus task={task} />,
-    AnnotationContext: <AnnotationContext recording={baseRecording} />,
-    AnnotationTaskSpectrogram: (
+    TagPalette: <AnnotationTagPalette tags={tags} />,
+    TaskStatus: <AnnotationTaskStatus task={task} />,
+    Context: <AnnotationContext recording={baseRecording} />,
+    Spectrogram: (
       <ClipAnnotationSpectrogram
         ViewportToolbar={<ViewportToolbar mode="panning" />}
         AnnotationControls={
@@ -100,9 +100,9 @@ const meta: Meta<typeof AnnotationTaskComponent> = {
         Canvas={<Canvas viewport={viewport} height={400} />}
       />
     ),
-    AnnotationTaskTags: <ClipAnnotationTags tags={[]} />,
-    AnnotationTaskNotes: <ClipAnnotationNotes notes={[]} />,
-    AnnotationTaskSoundEvents: <ClipAnnotationSoundEvents />,
+    ClipTags: <ClipAnnotationTags tags={[]} />,
+    ClipNotes: <ClipAnnotationNotes notes={[]} />,
+    SoundEvents: <ClipAnnotationSoundEvents />,
   },
   parameters: {
     controls: {
@@ -163,7 +163,7 @@ export const SelectedTaskAndSoundEvent: Story = {
   args: {
     selectedTask: task,
     isLoading: false,
-    AnnotationTaskSoundEvents: (
+    SoundEvents: (
       <ClipAnnotationSoundEvents
         selectedSoundEventAnnotation={soundEventAnnotation}
       />

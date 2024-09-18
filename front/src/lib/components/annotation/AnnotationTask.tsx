@@ -6,37 +6,37 @@ import type { AnnotationTask } from "@/lib/types";
 export default function AnnotationTask(props: {
   selectedTask: AnnotationTask | null;
   isLoading?: boolean;
-  AnnotationProgress?: JSX.Element;
-  AnnotationTagPalette?: JSX.Element;
-  AnnotationTaskStatus?: JSX.Element;
-  AnnotationContext?: JSX.Element;
-  AnnotationTaskSpectrogram?: JSX.Element;
-  AnnotationTaskSoundEvents?: JSX.Element;
-  AnnotationTaskTags?: JSX.Element;
-  AnnotationTaskNotes?: JSX.Element;
+  Progress?: JSX.Element;
+  TagPalette?: JSX.Element;
+  TaskStatus?: JSX.Element;
+  Context?: JSX.Element;
+  Spectrogram?: JSX.Element;
+  SoundEvents?: JSX.Element;
+  ClipTags?: JSX.Element;
+  ClipNotes?: JSX.Element;
 }) {
   return (
     <DetailLayout
-      Actions={props.AnnotationTaskStatus}
+      Actions={props.TaskStatus}
       SideBar={
         <div className="flex flex-col gap-2 w-full">
-          {props.AnnotationTagPalette}
-          {props.AnnotationTaskTags}
-          {props.AnnotationTaskNotes}
+          {props.TagPalette}
+          {props.ClipTags}
+          {props.ClipNotes}
         </div>
       }
       MainContent={
         <div className="flex flex-col gap-2">
-          {props.AnnotationProgress}
+          {props.Progress}
           {props.isLoading ? (
             <Loading />
           ) : props.selectedTask == null ? (
             <NoTaskSelected />
           ) : (
             <>
-              {props.AnnotationContext}
-              {props.AnnotationTaskSpectrogram}
-              {props.AnnotationTaskSoundEvents}
+              {props.Context}
+              {props.Spectrogram}
+              {props.SoundEvents}
             </>
           )}
         </div>
