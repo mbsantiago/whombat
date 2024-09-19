@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import { DatasetIcon } from "@/lib/components/icons";
+import { AnnotationProjectIcon } from "@/lib/components/icons";
 import AnnotationProjectList from "./AnnotationProjectList";
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
@@ -17,7 +17,7 @@ const meta: Meta<typeof AnnotationProjectList> = {
       <Search
         label="Search"
         placeholder="Search project..."
-        icon={<DatasetIcon />}
+        icon={<AnnotationProjectIcon />}
       />
     ),
     AnnotationProjectCreate: (

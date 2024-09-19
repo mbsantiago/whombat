@@ -41,6 +41,8 @@ export default function useAnnotationTask({
     enabled: withAnnotations,
   }) as ReturnType<typeof useReactQuery<ClipAnnotation>>
 
+  console.log(clipAnnotation)
+
   const deleteAnnotationTask = useDestruction({
     mutationFn: api.annotationTasks.delete,
     onSuccess: onDeleteAnnotationTask,

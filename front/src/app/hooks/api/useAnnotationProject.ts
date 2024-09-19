@@ -59,10 +59,7 @@ export default function useAnnotationProject({
 
   const delete_ = useMutation({
     mutationFn: api.annotationProjects.delete,
-    onSuccess: (data) => {
-      toast.success("Annotation project deleted");
-      onDelete?.(data);
-    },
+    onSuccess: onDelete,
   });
 
   const { data } = query;

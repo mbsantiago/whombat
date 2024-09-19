@@ -137,6 +137,7 @@ def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
             session,
             annotation_task_uuid,
         )
+
         return await api.annotation_tasks.get_clip_annotation(
             session, annotation_task
         )

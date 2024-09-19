@@ -9,6 +9,7 @@ const ClipAnnotationSpectrogram = memo(
     SettingsMenu: JSX.Element;
     ViewportBar: JSX.Element;
     Canvas: JSX.Element;
+    SelectedSoundEvent?: JSX.Element;
   }) {
     return (
       <Card>
@@ -20,6 +21,7 @@ const ClipAnnotationSpectrogram = memo(
         </div>
         {props.Canvas}
         {props.ViewportBar}
+        {props.SelectedSoundEvent}
       </Card>
     );
   },

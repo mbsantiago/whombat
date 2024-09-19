@@ -1,4 +1,4 @@
-import { useCallback, FC } from "react";
+import { useCallback } from "react";
 import { mergeProps } from "react-aria";
 
 import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
@@ -9,15 +9,12 @@ import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
 import useAnnotationEdit from "@/lib/hooks/annotation/useAnnotationEdit";
 import useAnnotationSelect from "@/lib/hooks/annotation/useAnnotationSelect";
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-import useSpectrogramTags from "@/lib/hooks/spectrogram/useSpectrogramTags";
-import useStore from "@/app/store";
 
 import drawOnset from "@/lib/draw/onset";
 import { scaleTimeToViewport } from "@/lib/utils/geometry";
 
-import TagSearchBarBase from "../tags/TagSearchBar";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
-import type { TagSearchBarProps } from "@/lib/components/tags/TagSearchBar";
+import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
 import CanvasBase, {
   type CanvasProps,
 } from "@/lib/components/spectrograms/Canvas";
@@ -51,7 +48,6 @@ export default function CanvasWithAnnotations({
   annotationState,
   defaultTags = _emptyTags,
   height = 400,
-  TagSearchBar = TagSearchBarBase,
 }: {
   clipAnnotation: ClipAnnotation;
   audio: AudioController;
@@ -63,7 +59,6 @@ export default function CanvasWithAnnotations({
   annotationState: AnnotationState;
   defaultTags?: Tag[];
   height?: number;
-  TagSearchBar?: FC<TagSearchBarProps>;
 }) {
   const { size: dimensions, ref } = useElementSize<HTMLCanvasElement>();
 
@@ -72,8 +67,6 @@ export default function CanvasWithAnnotations({
     addSoundEvent,
     removeSoundEvent,
     updateSoundEvent,
-    removeSoundEventTag,
-    addSoundEventTag,
   } = useClipAnnotation({
     uuid: clipAnnotation.uuid,
     clipAnnotation,
@@ -224,16 +217,6 @@ export default function CanvasWithAnnotations({
     ],
   );
 
-  const tags = useSpectrogramTags({
-    annotations: data.sound_events || [],
-    viewport: viewport.viewport,
-    dimensions,
-    onClickTag: (soundEventAnnotation, tag) =>
-      removeSoundEventTag.mutate({ soundEventAnnotation, tag }),
-    onAddTag: (soundEventAnnotation, tag) =>
-      addSoundEventTag.mutate({ soundEventAnnotation, tag }),
-  });
-
   let canvasProps: CanvasProps = mergeProps(
     selectProps,
     deleteProps,
@@ -242,13 +225,11 @@ export default function CanvasWithAnnotations({
     interactionProps,
   );
 
-  const tagColorFn = useStore((state) => state.getTagColor);
-
   return (
     <SpectrogramTags
-      tags={tags}
-      TagSearchBar={TagSearchBar}
-      tagColorFn={tagColorFn}
+      soundEvents={data.sound_events || []}
+      viewport={viewport.viewport}
+      SoundEventTags={SoundEventSpectrogramTags}
     >
       <CanvasBase
         viewport={viewport.viewport}

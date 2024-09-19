@@ -1,4 +1,5 @@
 import AnnotationProjectActionsBase from "@/lib/components/annotation_projects/AnnotationProjectActions";
+import toast from "react-hot-toast";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import type { AnnotationProject } from "@/lib/types";
@@ -20,7 +21,11 @@ export default function AnnotationProjectActions({
     <AnnotationProjectActionsBase
       annotationProject={annotationProject}
       onDeleteAnnotationProject={() =>
-        deleteAnnotationProject.mutate(annotationProject)
+        toast.promise(deleteAnnotationProject.mutateAsync(annotationProject), {
+          loading: "Deleting project...",
+          success: "Project deleted",
+          error: "Failed to delete project",
+        })
       }
       onDownloadAnnotationProject={download}
     />

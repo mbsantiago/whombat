@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
-import EvaluationSetDetail from "@/lib/components/evaluation_sets/EvaluationSetDetail";
+import EvaluationSetDetail from "@/app/components/evaluation_sets/EvaluationSetDetail";
 
 import EvaluationSetContext from "./context";
 

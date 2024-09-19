@@ -1,5 +1,6 @@
 """Schemas for handling Evaluation Sets."""
 
+from enum import Enum
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -14,6 +15,13 @@ __all__ = [
 ]
 
 
+class PredictionTypes(str, Enum):
+    clip_classification = "Clip Classification"
+    clip_tagging = "Clip Tagging"
+    sound_event_detection = "Sound Event Detection"
+    sound_event_tagging = "Sound Event Tagging"
+
+
 class EvaluationSetCreate(BaseModel):
     """Schema for creating EvaluationSet objects."""
 
@@ -23,7 +31,7 @@ class EvaluationSetCreate(BaseModel):
     description: str | None = Field(default=None)
     """The description of the evaluation set."""
 
-    task: str = Field(..., min_length=1)
+    task: PredictionTypes = Field(..., min_length=1)
     """The name of the task the evaluation set is used for."""
 
 
@@ -42,7 +50,7 @@ class EvaluationSet(BaseSchema):
     description: str | None
     """The description of the evaluation set."""
 
-    task: str
+    task: PredictionTypes
     """The name of the task the evaluation set is used for."""
 
     tags: list[Tag] = Field(default_factory=list)

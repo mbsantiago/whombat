@@ -1,8 +1,8 @@
 """Common API functions."""
 
-import logging
 import re
 from dataclasses import MISSING, fields
+from itertools import batched
 from typing import Any, Callable, Sequence, TypeVar
 
 from pydantic import BaseModel
@@ -37,9 +37,6 @@ __all__ = [
     "update_feature_on_object",
     "update_object",
 ]
-
-
-logger = logging.getLogger(__name__)
 
 
 A = TypeVar("A", bound=models.Base)
@@ -420,6 +417,7 @@ async def create_objects_without_duplicates(
     key: Callable[[dict], Any],
     key_column: ColumnElement | InstrumentedAttribute,
     return_all: bool = False,
+    rows_batch: int = 200,
 ) -> Sequence[A]:
     """Create multiple objects.
 
@@ -462,11 +460,11 @@ async def create_objects_without_duplicates(
 
     # Get existing objects
     all_keys = [key(obj) for obj in data]
-    existing, _ = await get_objects(
+    existing = await get_objects_by_keys_batched(
         session,
         model,
-        limit=-1,
-        filters=[key_column.in_(all_keys)],
+        key_column,
+        all_keys,
     )
     existing_keys = {key(obj.__dict__) for obj in existing}
 
@@ -486,25 +484,35 @@ async def create_objects_without_duplicates(
     ]
     keys = [key(obj) for obj in missing]
 
-    stmt = insert(model).values(values)
-    await session.execute(stmt)
-    await session.flush()
+    for batch in batched(values, rows_batch):
+        stmt = insert(model).values(batch)
+        await session.execute(stmt)
+        await session.flush()
 
-    if return_all:
-        created, _ = await get_objects(
-            session,
-            model,
-            filters=[key_column.in_(all_keys)],
-            limit=None,
-        )
-        return created
-
-    created, _ = await get_objects(
+    return await get_objects_by_keys_batched(
         session,
         model,
-        filters=[key_column.in_(keys)],
-        limit=None,
+        key_column,
+        all_keys if return_all else keys,
     )
+
+
+async def get_objects_by_keys_batched(
+    session: AsyncSession,
+    model: type[A],
+    key_column: ColumnElement | InstrumentedAttribute,
+    keys: Sequence[Any],
+    batch_size: int = 200,
+):
+    created = []
+    for batch in batched(keys, batch_size):
+        subset, _ = await get_objects(
+            session,
+            model,
+            filters=[key_column.in_(batch)],
+            limit=None,
+        )
+        created.extend(subset)
     return created
 
 

@@ -315,6 +315,7 @@ export {
   ArrowTrendingUpIcon as ScoreIcon,
   UserGroupIcon as UsersIcon,
   PuzzlePieceIcon as PluginIcon,
+  PuzzlePieceIcon as PredictionTypeIcon,
   NoSymbolIcon as NoIcon,
   SunIcon,
   LineStringIcon,

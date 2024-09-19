@@ -1,21 +1,75 @@
-import Loading from "@/app/loading";
+import ListLayout from "../layouts/List";
 import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
 import EvaluationSetComponent from "@/lib/components/evaluation_sets/EvaluationSet";
-import EvaluationSetCreate from "@/lib/components/evaluation_sets/EvaluationSetCreate";
-import EvaluationSetImport from "@/lib/components/evaluation_sets/EvaluationSetImport";
-import {
-  AddIcon,
-  TasksIcon,
-  UploadIcon,
-  WarningIcon,
-} from "@/lib/components/icons";
-import Search from "@/lib/components/inputs/Search";
-import Pagination from "@/lib/components/lists/Pagination";
-import StackedList from "@/lib/components/lists/StackedList";
-import useEvaluationSets from "@/app/hooks/api/useEvaluationSets";
+import { AddIcon, UploadIcon, WarningIcon } from "@/lib/components/icons";
 
-import type { EvaluationSet } from "@/lib/types";
+import type { EvaluationSet, Tag } from "@/lib/types";
+
+export default function EvaluationSets({
+  evaluationSets,
+  isLoading = false,
+  onClickEvaluationSet,
+  onClickEvaluationSetTag,
+  Search,
+  Create,
+  Import,
+  Pagination,
+}: {
+  evaluationSets: EvaluationSet[];
+  isLoading?: boolean;
+  onClickEvaluationSet?: (dataset: EvaluationSet) => void;
+  onClickEvaluationSetTag?: (tag: Tag) => void;
+  Search: JSX.Element;
+  Create: JSX.Element;
+  Import: JSX.Element;
+  Pagination: JSX.Element;
+}) {
+  return (
+    <ListLayout
+      isLoading={isLoading}
+      isEmpty={evaluationSets.length === 0}
+      Search={Search}
+      Empty={<NoEvaluationSets />}
+      Actions={[
+        <Dialog
+          key="create"
+          mode="text"
+          title="Create Evaluation Set"
+          label={
+            <>
+              <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
+            </>
+          }
+        >
+          {() => Create}
+        </Dialog>,
+        <Dialog
+          key="import"
+          mode="text"
+          title="Import an Evaluation Set"
+          label={
+            <>
+              <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
+              Import
+            </>
+          }
+        >
+          {() => Import}
+        </Dialog>,
+      ]}
+      Pagination={Pagination}
+      items={evaluationSets.map((item) => (
+        <EvaluationSetComponent
+          key={item.uuid}
+          evaluationSet={item}
+          onClickEvaluationSet={() => onClickEvaluationSet?.(item)}
+          onClickEvaluationSetTag={onClickEvaluationSetTag}
+        />
+      ))}
+    />
+  );
+}
 
 function NoEvaluationSets() {
   return (
@@ -31,69 +85,5 @@ function NoEvaluationSets() {
         button above.
       </p>
     </Empty>
-  );
-}
-
-export default function EvaluationSets(props: {
-  onCreate?: (evaluationSet: Promise<EvaluationSet>) => void;
-}) {
-  const { onCreate } = props;
-  const { items, pagination, filter, isLoading } = useEvaluationSets();
-
-  return (
-    <div className="flex flex-col p-8 space-y-2 w-full">
-      <div className="flex flex-row space-x-4">
-        <div className="flex-grow">
-          <Search
-            label="Search"
-            placeholder="Search evaluation set..."
-            value={filter.get("search")}
-            onChange={(value) => filter.set("search", value as string)}
-            onSubmit={() => filter.submit()}
-            icon={<TasksIcon />}
-          />
-        </div>
-        <div className="h-full">
-          <Dialog
-            mode="text"
-            title="Import an Evaluation Set"
-            label={
-              <>
-                <UploadIcon className="inline-block w-4 h-4 align-middle" />{" "}
-                Import
-              </>
-            }
-          >
-            {() => <EvaluationSetImport onCreate={onCreate} />}
-          </Dialog>
-        </div>
-        <div className="h-full">
-          <Dialog
-            mode="text"
-            title="Create Evaluation Set"
-            label={
-              <>
-                <AddIcon className="inline-block w-4 h-4 align-middle" /> Create
-              </>
-            }
-          >
-            {() => <EvaluationSetCreate onCreate={onCreate} />}
-          </Dialog>
-        </div>
-      </div>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <>
-          {items.length === 0 && <NoEvaluationSets />}
-          <StackedList
-            items={items.map((item) => (
-              <EvaluationSetComponent key={item.uuid} evaluationSet={item} />
-            ))}
-          />
-          {items.length > 0 && <Pagination {...pagination} />}
-        </>
-      )}
-    </div>
   );
 }

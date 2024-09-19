@@ -1,3 +1,4 @@
+import DetailLayout from "@/lib/components/layouts/Detail";
 import Card from "@/lib/components/ui/Card";
 import EvaluationSetActions from "@/lib/components/evaluation_sets/EvaluationSetActions";
 import EvaluationSetOverview from "@/lib/components/evaluation_sets/EvaluationSetOverview";
@@ -17,32 +18,34 @@ export default function EvaluationSetDetail({
   onDelete?: (evaluationSet: Promise<EvaluationSet>) => void;
 }) {
   return (
-    <div className="w-100 flex flex-row gap-8 justify-between">
-      <div className="grow flex flex-col gap-4">
-        <EvaluationSetOverview evaluationSet={evaluationSet} />
-        <div className="grid grid-cols-2 gap-4">
-          <Card>
-            <ModelEvaluationSummary evaluationSet={evaluationSet} />
-          </Card>
-          <Card>
-            <UserEvaluationSummary evaluationSet={evaluationSet} />
-          </Card>
-        </div>
-      </div>
-      <div className="flex flex-col flex-none max-w-sm gap-4">
+    <DetailLayout
+      Actions={
         <EvaluationSetActions
           evaluationSet={evaluationSet}
           onDelete={onDelete}
         />
-        <div className="sticky top-8">
-          <Card>
-            <EvaluationSetUpdateForm
-              evaluationSet={evaluationSet}
-              onChange={onChange}
-            />
-          </Card>
+      }
+      SideBar={
+        <Card>
+          <EvaluationSetUpdateForm
+            evaluationSet={evaluationSet}
+            onChange={onChange}
+          />
+        </Card>
+      }
+      MainContent={
+        <div className="flex flex-col gap-4 grow">
+          <EvaluationSetOverview evaluationSet={evaluationSet} />
+          <div className="grid grid-cols-2 gap-4">
+            <Card>
+              <ModelEvaluationSummary evaluationSet={evaluationSet} />
+            </Card>
+            <Card>
+              <UserEvaluationSummary evaluationSet={evaluationSet} />
+            </Card>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 }

@@ -51,7 +51,7 @@ export type Color = {
 export type TagElement = {
   tag: Tag;
   score?: number;
-  onClick: () => void;
+  onClick?: () => void;
 };
 
 export type Position = {
@@ -133,6 +133,11 @@ function getTimeIntervalLabelPosition({
   };
 }
 
+function getRandomHeight(height: number, uuid: string): number {
+  const randomVal = Number(`0x${uuid.slice(-8)}`) / 0xffffffff;
+  return 50 + randomVal * (height - 100);
+}
+
 function getTimeStampLabelPosition({
   annotation,
   window,
@@ -155,7 +160,7 @@ function getTimeStampLabelPosition({
   const x = scaleTimeToViewport(time, window, dimensions.width);
 
   // Get random height between 50 and dimensions.height - 50
-  const y = 50 + Math.random() * (dimensions.height - 100);
+  const y = getRandomHeight(dimensions.height, annotation.uuid);
 
   const tooLeft = x < 50;
 

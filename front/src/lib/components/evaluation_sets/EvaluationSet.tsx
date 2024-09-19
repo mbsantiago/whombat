@@ -1,32 +1,37 @@
-import Link from "next/link";
-
+import Button from "@/lib/components/ui/Button";
 import { Atom } from "@/lib/components/datasets/Dataset";
-import { CalendarIcon, TasksIcon } from "@/lib/components/icons";
+import { CalendarIcon, TasksIcon, TagsIcon } from "@/lib/components/icons";
+import TagComponent from "../tags/Tag";
+import { getTagKey, getTagColor, type Color } from "@/lib/utils/tags";
 
-import type { EvaluationSet as EvaluationSetType } from "@/lib/types";
+import type { EvaluationSet, Tag } from "@/lib/types";
 
-export default function EvaluationSet({
+export default function EvaluationSetComponent({
   evaluationSet,
+  onClickEvaluationSet,
+  onClickEvaluationSetTag,
+  tagColorFn = getTagColor,
 }: {
-  evaluationSet: EvaluationSetType;
+  evaluationSet: EvaluationSet;
+  onClickEvaluationSetTag?: (tag: Tag) => void;
+  onClickEvaluationSet?: () => void;
+  tagColorFn?: (tag: Tag) => Color;
 }) {
   return (
     <div className="w-full">
       <div className="px-4 sm:px-0">
-        <h3 className="text-base font-semibold leading-7 text-stone-900 dark:text-stone-100">
+        <h3 className="inline-flex items-center text-base font-semibold leading-7 text-stone-900 dark:text-stone-100">
           <span className="inline-block w-6 h-6 align-middle text-stone-500">
             <TasksIcon />
           </span>{" "}
-          <Link
-            className="hover:font-bold hover:text-emerald-500"
-            href={{
-              pathname: "/evaluation/detail/",
-              query: { evaluation_set_uuid: evaluationSet.uuid },
-            }}
+          <Button
+            className="inline-block"
+            mode="text"
+            onClick={onClickEvaluationSet}
           >
             {evaluationSet.name}
-          </Link>
-          <span className="ms-4 text-sm text-stone-500">
+          </Button>
+          <span className="text-sm ms-4 text-stone-500">
             {evaluationSet.task}
           </span>
         </h3>
@@ -39,7 +44,32 @@ export default function EvaluationSet({
           label={<CalendarIcon className="w-4 h-4 align-middle" />}
           value={evaluationSet.created_on.toDateString()}
         />
+        <Atom
+          label={
+            <span className="inline-flex items-center">
+              <TagsIcon className="mr-2 w-4 h-4" />
+              Targets
+            </span>
+          }
+          value={
+            <span>
+              {evaluationSet.tags
+                ?.slice(0, 10)
+                .map((tag) => (
+                  <TagComponent
+                    key={getTagKey(tag)}
+                    tag={tag}
+                    onClick={() => onClickEvaluationSetTag?.(tag)}
+                    {...tagColorFn(tag)}
+                  />
+                ))}
+            </span>
+          }
+        />
       </div>
     </div>
   );
 }
+
+
+

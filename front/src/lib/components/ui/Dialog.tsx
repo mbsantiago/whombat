@@ -15,7 +15,7 @@ export default function Dialog({
   children,
   label,
   open = false,
-  width = "max-w-md",
+  width = "max-w-lg",
   ...rest
 }: {
   /** The title of the dialog. */

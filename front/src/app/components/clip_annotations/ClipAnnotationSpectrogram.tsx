@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
@@ -10,9 +9,9 @@ import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useAnnotationState from "@/lib/hooks/annotation/useAnnotationState";
 import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
 
-import TagSearchBarBase from "../tags/TagSearchBar";
 import CanvasWithAnnotations from "@/app/components/spectrograms/CanvasWithAnnotation";
 import Player from "@/app/components/audio/Player";
+import Empty from "@/lib/components/Empty";
 import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
 import ViewportBar from "@/app/components/spectrograms/ViewportBar";
 import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
@@ -20,20 +19,18 @@ import AnnotationControls from "@/lib/components/annotation/AnnotationControls";
 import ClipAnnotationSpectrogramBase from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
 
 import type { ClipAnnotation } from "@/lib/types";
-import type { TagSearchBarProps } from "@/lib/components/tags/TagSearchBar";
+import SelectedSoundEventAnnotation from "@/app/components/sound_event_annotations/SelectedSoundEventAnnotation";
 
 export default function ClipAnnotationSpectrogram({
   clipAnnotation,
   spectrogramSettings,
   audioSettings,
   tagPalette,
-  TagSearchBar = TagSearchBarBase,
 }: {
   clipAnnotation: ClipAnnotation;
   spectrogramSettings: ReturnType<typeof useSpectrogramSettings>;
   audioSettings: ReturnType<typeof useAudioSettings>;
   tagPalette: ReturnType<typeof useAnnotationTagPallete>;
-  TagSearchBar?: FC<TagSearchBarProps>;
 }) {
   const { data = clipAnnotation } = useClipAnnotation({
     uuid: clipAnnotation.uuid,
@@ -130,8 +127,18 @@ export default function ClipAnnotationSpectrogram({
           audio={audio}
           viewport={viewport}
           defaultTags={tagPalette.tags}
-          TagSearchBar={TagSearchBar}
         />
+      }
+      SelectedSoundEvent={
+        annotationState.selectedAnnotation != null ? (
+          <SelectedSoundEventAnnotation
+            soundEventAnnotation={annotationState.selectedAnnotation}
+          />
+        ) : (
+          <Empty>
+            No annotation selected, click on an annotation to view details
+          </Empty>
+        )
       }
     />
   );

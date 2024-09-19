@@ -2,20 +2,24 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { loremIpsum } from "lorem-ipsum";
 
+import { DatasetIcon } from "@/lib/components/icons";
 import DatasetList from "./DatasetList";
+import Pagination from "@/lib/components/lists/Pagination";
+import Search from "@/lib/components/inputs/Search";
 
 const meta: Meta<typeof DatasetList> = {
   title: "Dataset/List",
   component: DatasetList,
   args: {
-    onChangeQuery: fn(),
     onClickDataset: fn(),
-    onCreateDataset: fn(),
-    onImportDataset: fn(),
-    onNextPage: fn(),
-    onPrevPage: fn(),
-    onSetPage: fn(),
-    onSetPageSize: fn(),
+    Pagination: <Pagination />,
+    DatasetSearch: (
+      <Search
+        label="Search"
+        placeholder="Search dataset..."
+        icon={<DatasetIcon />}
+      />
+    ),
   },
 };
 

@@ -12,27 +12,32 @@ export default function SelectedSoundEventAnnotation({
   onDeleteSoundEventAnnotationTag,
   onCreateSoundEventAnnotationNote,
   onCreateTag,
+  ...props
 }: {
   soundEventAnnotation: SoundEventAnnotation;
   onAddSoundEventAnnotationTag?: (tag: Tag) => void;
   onDeleteSoundEventAnnotationTag?: (tag: Tag) => void;
   onCreateSoundEventAnnotationNote?: (note: NoteCreate) => void;
   onCreateTag?: (tag: Tag) => void;
-}) {
+} & Omit<
+  Parameters<typeof SoundEventAnnotationTags>[0],
+  "soundEventAnnotation"
+>) {
   return (
     <div className="flex flex-row gap-8 py-4 w-full">
       <Card className="grow">
-        <div className="flex flex-col gap-8">
-          <SoundEventAnnotationDetails
-            soundEventAnnotation={soundEventAnnotation}
-          />
-          <SoundEventAnnotationTags
-            soundEventAnnotation={soundEventAnnotation}
-            onAddTag={onAddSoundEventAnnotationTag}
-            onRemoveTag={onDeleteSoundEventAnnotationTag}
-            onCreateTag={onCreateTag}
-          />
-        </div>
+        <SoundEventAnnotationDetails
+          soundEventAnnotation={soundEventAnnotation}
+        />
+      </Card>
+      <Card>
+        <SoundEventAnnotationTags
+          soundEventAnnotation={soundEventAnnotation}
+          onAddTag={onAddSoundEventAnnotationTag}
+          onRemoveTag={onDeleteSoundEventAnnotationTag}
+          onCreateTag={onCreateTag}
+          {...props}
+        />
       </Card>
       <SoundEventAnnotationNotes
         soundEventAnnotation={soundEventAnnotation}

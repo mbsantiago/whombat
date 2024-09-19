@@ -61,18 +61,22 @@ class SoundEventAnnotation(Base):
     __tablename__ = "sound_event_annotation"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id"),
         nullable=False,
     )
+
     created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         ForeignKey("user.id"),
     )
+
     sound_event_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event.id"),
         nullable=False,
@@ -83,16 +87,21 @@ class SoundEventAnnotation(Base):
         init=False,
         repr=False,
     )
+
     created_by: orm.Mapped[Optional[User]] = orm.relationship(
         lazy="joined",
         init=False,
         repr=False,
     )
+
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
         lazy="joined",
         init=False,
         repr=False,
+        cascade="all, delete-orphan",
+        single_parent=True,
     )
+
     tags: orm.Mapped[list[Tag]] = orm.relationship(
         secondary="sound_event_annotation_tag",
         lazy="joined",
@@ -101,6 +110,7 @@ class SoundEventAnnotation(Base):
         repr=False,
         init=False,
     )
+
     notes: orm.Mapped[list[Note]] = orm.relationship(
         back_populates="sound_event_annotation",
         secondary="sound_event_annotation_note",

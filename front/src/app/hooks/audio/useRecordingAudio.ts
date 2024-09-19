@@ -41,10 +41,9 @@ export default function useRecordingAudio({
         recording,
         startTime,
         endTime,
-        // TODO: Fix this
-        // settings: audioSettings,
+        speed: audioSettings.speed,
       }),
-    [recording, startTime, endTime],
+    [recording, startTime, endTime, audioSettings.speed],
   );
 
   const handleTimeUpdate = useCallback(

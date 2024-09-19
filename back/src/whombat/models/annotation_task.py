@@ -73,18 +73,22 @@ class AnnotationTask(Base):
     __table_args__ = (UniqueConstraint("annotation_project_id", "clip_id"),)
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+
     annotation_project_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("annotation_project.id"),
         nullable=False,
     )
+
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
     )
+
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id"),
         nullable=True,
     )
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
@@ -97,20 +101,23 @@ class AnnotationTask(Base):
         init=False,
         repr=False,
     )
+
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
         repr=False,
     )
+
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="annotation_task",
         cascade="all, delete-orphan",
         init=False,
         single_parent=True,
     )
+
     status_badges: orm.Mapped[list["AnnotationStatusBadge"]] = (
         orm.relationship(
             back_populates="annotation_task",
-            cascade="all",
+            cascade="all, delete-orphan",
             lazy="joined",
             init=False,
             repr=False,

@@ -9,9 +9,9 @@ import Button from "@/lib/components/ui/Button";
 
 import type { Dataset as DatasetType } from "@/lib/types";
 
-export function Atom({ label, value }: { label: ReactNode; value: string }) {
+export function Atom({ label, value }: { label: ReactNode; value: ReactNode }) {
   return (
-    <div className="flex flex-row mx-4 space-x-1">
+    <div className="flex flex-row mr-4 space-x-1">
       <div className="text-sm font-medium text-stone-500">{label}</div>
       <div className="text-sm text-stone-700 dark:text-stone-300">{value}</div>
     </div>

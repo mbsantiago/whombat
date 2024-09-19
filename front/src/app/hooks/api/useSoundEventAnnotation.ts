@@ -7,7 +7,9 @@ import type {
   ClipAnnotation,
   SoundEventAnnotation,
   Recording,
+  Tag,
 } from "@/lib/types";
+import { NoteCreate } from "@/lib/api/notes";
 import type { AxiosError } from "axios";
 
 /**
@@ -31,9 +33,9 @@ export default function useSoundEventAnnotation({
   soundEventAnnotation?: SoundEventAnnotation;
   onDelete?: (annotation: SoundEventAnnotation) => void;
   onUpdate?: (annotation: SoundEventAnnotation) => void;
-  onAddTag?: (annotation: SoundEventAnnotation) => void;
-  onRemoveTag?: (annotation: SoundEventAnnotation) => void;
-  onAddNote?: (annotation: SoundEventAnnotation) => void;
+  onAddTag?: (tag: Tag) => void;
+  onRemoveTag?: (tag: Tag) => void;
+  onAddNote?: (note: NoteCreate) => void;
   onError?: (error: AxiosError) => void;
   enabled?: boolean;
   withRecording?: boolean;
@@ -67,7 +69,7 @@ export default function useSoundEventAnnotation({
   }, [query.data, withRecording]);
 
   const recordingQuery = useQuery<Recording | null>({
-    name: "annotations",
+    secondaryName: "recording",
     queryFn: getRecordingFn,
     enabled: withRecording && query.data != null,
   });
@@ -120,8 +122,8 @@ export default function useSoundEventAnnotation({
   });
 
   const handleAddTag = useCallback(
-    (annotation: SoundEventAnnotation) => {
-      onAddTag?.(annotation);
+    (annotation: SoundEventAnnotation, tag: Tag) => {
+      onAddTag?.(tag);
       updateClipAnnotation(annotation);
     },
     [onAddTag, updateClipAnnotation],
@@ -133,8 +135,8 @@ export default function useSoundEventAnnotation({
   });
 
   const handleRemoveTag = useCallback(
-    (annotation: SoundEventAnnotation) => {
-      onRemoveTag?.(annotation);
+    (annotation: SoundEventAnnotation, tag: Tag) => {
+      onRemoveTag?.(tag);
       updateClipAnnotation(annotation);
     },
     [onRemoveTag, updateClipAnnotation],
@@ -146,8 +148,8 @@ export default function useSoundEventAnnotation({
   });
 
   const handleAddNote = useCallback(
-    (annotation: SoundEventAnnotation) => {
-      onAddNote?.(annotation);
+    (annotation: SoundEventAnnotation, note: NoteCreate) => {
+      onAddNote?.(note);
       updateClipAnnotation(annotation);
     },
     [onAddNote, updateClipAnnotation],

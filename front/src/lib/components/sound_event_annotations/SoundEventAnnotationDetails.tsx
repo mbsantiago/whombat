@@ -1,4 +1,3 @@
-import Card from "@/lib/components/ui/Card";
 import {
   DescriptionData,
   DescriptionTerm,
@@ -15,11 +14,13 @@ export default function SoundEventAnnotationDetails({
   return (
     <div className="flex flex-col gap-2">
       <H4 className="text-center">Sound Event Details</H4>
-      <DescriptionTerm>Geometry Type</DescriptionTerm>
-      <DescriptionData>
-        {soundEventAnnotation.sound_event.geometry_type}
-      </DescriptionData>
       <div className="flex flex-row flex-wrap gap-4">
+        <div className="flex flex-col mr-4">
+          <DescriptionTerm>Geometry Type</DescriptionTerm>
+          <DescriptionData>
+            {soundEventAnnotation.sound_event.geometry_type}
+          </DescriptionData>
+        </div>
         {soundEventAnnotation.sound_event.features?.map((feature) => (
           <div key={feature.name}>
             <DescriptionTerm>{feature.name}</DescriptionTerm>
