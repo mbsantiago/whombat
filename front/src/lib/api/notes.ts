@@ -1,61 +1,32 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  AnnotationTaskSchema,
-  DatasetSchema,
-  NoteSchema,
-  NoteUpdateSchema,
-  RecordingSchema,
-  SoundEventSchema,
-  UserSchema,
-} from "@/lib/schemas";
+import { GetMany, Page } from "@/lib/api/common";
 
-import type { Note, NoteUpdate } from "@/lib/types";
-
-export const NotePageSchema = Page(NoteSchema);
-
-export type NotePage = z.infer<typeof NotePageSchema>;
-
-export const NoteFilterSchema = z.object({
-  is_issue: z.boolean().optional(),
-  search: z.string().optional(),
-  created_by: UserSchema.optional(),
-  recording: RecordingSchema.optional(),
-  annotation_task: AnnotationTaskSchema.optional(),
-  sound_event: SoundEventSchema.optional(),
-  dataset: DatasetSchema.optional(),
-});
-
-export type NoteFilter = z.input<typeof NoteFilterSchema>;
-
-export const GetNotesQuerySchema = z.intersection(
-  GetManySchema,
-  NoteFilterSchema,
-);
-
-export type GetNotesQuery = z.input<typeof GetNotesQuerySchema>;
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/notes/",
-  update: "/api/v1/notes/detail/",
-  get: "/api/v1/notes/detail/",
-  delete: "/api/v1/notes/detail/",
+  list: "/api/v1/notes/",
+  detail: "/api/v1/notes/detail/",
+  getRecordingNotes: "/api/v1/notes/recording_notes/",
+  getClipAnnotationNotes: "/api/v1/notes/clip_annotation_notes/",
+  getSoundEventAnnotationNotes: "/api/v1/notes/sound_event_annotation_notes/",
 };
 
 export function registerNotesAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getNote(uuid: string): Promise<Note> {
-    let response = await instance.get(endpoints.get, { params: { uuid } });
-    return NoteSchema.parse(response.data);
+  async function getNote(uuid: string): Promise<types.Note> {
+    let response = await instance.get(endpoints.detail, { params: { uuid } });
+    return schemas.NoteSchema.parse(response.data);
   }
 
-  async function getManyNotes(query: GetNotesQuery): Promise<NotePage> {
-    let params = GetNotesQuerySchema.parse(query);
-    let response = await instance.get(endpoints.getMany, {
+  async function getManyNotes(
+    query: types.GetManyQuery & types.NoteFilter,
+  ): Promise<types.Paginated<types.Note>> {
+    let params = GetMany(schemas.NoteFilterSchema).parse(query);
+    let response = await instance.get(endpoints.list, {
       params: {
         limit: params.limit,
         offset: params.offset,
@@ -69,22 +40,94 @@ export function registerNotesAPI(
         dataset__eq: params.dataset?.uuid,
       },
     });
-    return NotePageSchema.parse(response.data);
+    return Page(schemas.NoteSchema).parse(response.data);
   }
 
-  async function updateNote(note: Note, data: NoteUpdate): Promise<Note> {
-    let body = NoteUpdateSchema.parse(data);
-    let response = await instance.patch(endpoints.update, body, {
+  async function updateNote(
+    note: types.Note,
+    data: types.NoteUpdate,
+  ): Promise<types.Note> {
+    let body = schemas.NoteUpdateSchema.parse(data);
+    let response = await instance.patch(endpoints.detail, body, {
       params: { note_uuid: note.uuid },
     });
-    return NoteSchema.parse(response.data);
+    return schemas.NoteSchema.parse(response.data);
   }
 
-  async function deleteNote(note: Note): Promise<Note> {
-    let response = await instance.delete(endpoints.delete, {
+  async function deleteNote(note: types.Note): Promise<types.Note> {
+    let response = await instance.delete(endpoints.detail, {
       params: { note_uuid: note.uuid },
     });
-    return NoteSchema.parse(response.data);
+    return schemas.NoteSchema.parse(response.data);
+  }
+
+  async function getRecordingNotes(
+    query: types.GetManyQuery & types.RecordingNoteFilter,
+  ): Promise<types.Paginated<types.RecordingNote>> {
+    const params = GetMany(schemas.RecordingNoteFilterSchema).parse(query);
+    const response = await instance.get(endpoints.getRecordingNotes, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        created_by__eq: params.created_by?.id,
+        created_on__before: params.created_on?.before,
+        created_on__after: params.created_on?.after,
+        created_on__on: params.created_on?.on,
+        recording__eq: params.recording?.uuid,
+        dataset__eq: params.dataset?.uuid,
+        issues__eq: params.issues?.eq,
+      },
+    });
+    return Page(schemas.RecordingNoteSchema).parse(response.data);
+  }
+
+  async function getClipAnnotationNotes(
+    query: types.GetManyQuery & types.ClipAnnotationNoteFilter,
+  ): Promise<types.Paginated<types.ClipAnnotationNote>> {
+    const params = GetMany(schemas.ClipAnnotationNoteFilterSchema).parse(query);
+    const response = await instance.get(endpoints.getClipAnnotationNotes, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        created_by__eq: params.created_by?.id,
+        created_on__before: params.created_on?.before,
+        created_on__after: params.created_on?.after,
+        created_on__on: params.created_on?.on,
+        clip_annotation__eq: params.clip_annotation?.uuid,
+        annotation_project__eq: params.annotation_project?.uuid,
+        issues__eq: params.issues?.eq,
+      },
+    });
+    return Page(schemas.ClipAnnotationNoteSchema).parse(response.data);
+  }
+
+  async function getSoundEventAnnotationNotes(
+    query: types.GetManyQuery & types.SoundEventAnnotationNoteFilter,
+  ): Promise<types.Paginated<types.SoundEventAnnotationNote>> {
+    const params = GetMany(schemas.SoundEventAnnotationNoteFilterSchema).parse(
+      query,
+    );
+    const response = await instance.get(
+      endpoints.getSoundEventAnnotationNotes,
+      {
+        params: {
+          limit: params.limit,
+          offset: params.offset,
+          sort_by: params.sort_by,
+          created_by__eq: params.created_by?.id,
+          created_on__before: params.created_on?.before,
+          created_on__after: params.created_on?.after,
+          created_on__on: params.created_on?.on,
+          clip_annotation__eq: params.clip_annotation?.uuid,
+          sound_event_annotation__eq: params.sound_event_annotation?.uuid,
+          annotation_project__eq: params.annotation_project?.uuid,
+          issues__eq: params.issues?.eq,
+        },
+      },
+    );
+    return Page(schemas.SoundEventAnnotationNoteSchema).parse(response.data);
   }
 
   return {
@@ -92,5 +135,8 @@ export function registerNotesAPI(
     update: updateNote,
     getMany: getManyNotes,
     delete: deleteNote,
+    getRecordingNotes,
+    getClipAnnotationNotes,
+    getSoundEventAnnotationNotes,
   };
 }

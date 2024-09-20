@@ -17,6 +17,8 @@ __all__ = [
     "Recording",
     "RecordingCreate",
     "RecordingUpdate",
+    "RecordingTag",
+    "RecordingNote",
 ]
 
 
@@ -158,3 +160,11 @@ class RecordingTag(BaseSchema):
 
     tag: Tag
     """The tag associated with the recording."""
+
+
+class RecordingNote(BaseSchema):
+    """Schema for RecordingNote objects."""
+
+    recording_uuid: UUID
+
+    note: Note

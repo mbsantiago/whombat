@@ -233,6 +233,9 @@ class DateFilter(Filter):
     after: datetime.date | None = None
     on: datetime.date | None = None
 
+    def is_null(self) -> bool:
+        return self.before is None and self.after is None and self.on is None
+
 
 def date_filter(
     field: MappedColumn | InstrumentedAttribute,

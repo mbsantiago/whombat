@@ -15,6 +15,7 @@ __all__ = [
     "ClipAnnotation",
     "ClipAnnotationCreate",
     "ClipAnnotationTag",
+    "ClipAnnotationNote",
 ]
 
 
@@ -70,3 +71,13 @@ class ClipAnnotationUpdate(BaseSchema):
 
     uuid: UUID | None = None
     """UUID of the annotation."""
+
+
+class ClipAnnotationNote(BaseSchema):
+    """Schema for a ClipAnnotationNote."""
+
+    note: Note
+    """Note attached to this annotation."""
+
+    clip_annotation_uuid: UUID
+    """UUID of the ClipAnnotation this note is attached to."""

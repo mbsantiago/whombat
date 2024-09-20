@@ -7,7 +7,7 @@ import { H3 } from "@/lib/components/ui/Headings";
 import NoteComponent from "@/lib/components/notes/Note";
 import { CheckIcon, IssuesIcon } from "@/lib/components/icons";
 
-import type { Note } from "@/lib/types";
+import type * as types from "@/lib/types";
 
 export default function ProjectNotesSummary({
   isLoading = false,
@@ -36,14 +36,20 @@ function IssuesSummary({
   onResolveNote,
   onDeleteNote,
 }: {
-  clipNotes?: ClipNote[];
+  clipNotes?: types.ClipAnnotationNote[];
+  soundEventNotes?: types.SoundEventAnnotationNote[];
   maxIssues?: number;
-  soundEventNotes?: SoundEventNote[];
   canDelete?: boolean;
   canResolve?: boolean;
-  onClickNote?: (note: ClipNote | SoundEventNote) => void;
-  onResolveNote?: (note: ClipNote | SoundEventNote) => void;
-  onDeleteNote?: (note: ClipNote | SoundEventNote) => void;
+  onClickNote?: (
+    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
+  ) => void;
+  onResolveNote?: (
+    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
+  ) => void;
+  onDeleteNote?: (
+    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
+  ) => void;
 }) {
   const issues = useMemo(() => {
     const clipIssues = clipNotes.filter((clipNote) => clipNote.note.is_issue);
@@ -90,17 +96,5 @@ function NoIssues() {
   );
 }
 
-type ClipNote = {
-  task_uuid: string;
-  clip_uuid: string;
-  note: Note;
-};
-
-type SoundEventNote = {
-  task_uuid: string;
-  sound_event_uuid: string;
-  note: Note;
-};
-
-const _emptyClipNotes: ClipNote[] = [];
-const _emptySoundEventNotes: SoundEventNote[] = [];
+const _emptyClipNotes: types.ClipAnnotationNote[] = [];
+const _emptySoundEventNotes: types.SoundEventAnnotationNote[] = [];

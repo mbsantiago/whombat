@@ -15,6 +15,7 @@ __all__ = [
     "SoundEventAnnotationCreate",
     "SoundEventAnnotationUpdate",
     "SoundEventAnnotationTag",
+    "SoundEventAnnotationNote",
 ]
 
 
@@ -68,3 +69,13 @@ class SoundEventAnnotationUpdate(BaseSchema):
 
     geometry: Geometry = Field(..., discriminator="type")
     """Geometry of this annotation."""
+
+
+class SoundEventAnnotationNote(BaseSchema):
+    """Schema for a SoundEventAnnotationNote."""
+
+    note: Note
+    """Note attached to this annotation."""
+
+    sound_event_annotation_uuid: UUID
+    """UUID of the SoundEventAnnotation this note is attached to."""

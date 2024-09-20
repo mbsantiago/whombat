@@ -1,13 +1,48 @@
-import { useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useCallback } from "react";
+import api from "@/app/api";
+import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 
-import useNotes from "@/app/hooks/api/useNotes";
 import DatasetNotesSummaryBase from "@/lib/components/datasets/DatasetNotesSummary";
-import type { Dataset } from "@/lib/types";
+import type * as types from "@/lib/types";
 
-export default function DatasetNotesSummary({ dataset }: { dataset: Dataset }) {
-  const filter = useMemo(() => ({ dataset: dataset }), [dataset]);
-  const notes = useNotes({ pageSize: -1, filter });
+export default function DatasetNotesSummary({
+  dataset,
+}: {
+  dataset: types.Dataset;
+}) {
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const filter: types.RecordingNoteFilter = useMemo(
+    () => ({ dataset, issues: { eq: true } }),
+    [dataset],
+  );
+
+  const handleClickNote = useCallback(
+    (recordingNote: types.RecordingNote) => {
+      router.push(
+        `/datasets/detail/recordings/detail/?recording_uuid=${recordingNote.recording_uuid}&${params.toString()}`,
+      );
+    },
+    [router, params],
+  );
+
+  const {
+    query: { isLoading },
+    items: notes,
+  } = usePagedQuery({
+    name: "recording_notes",
+    queryFn: api.notes.getRecordingNotes,
+    filter,
+    pageSize: -1,
+  });
+
   return (
-    <DatasetNotesSummaryBase notes={notes.items} isLoading={notes.isLoading} />
+    <DatasetNotesSummaryBase
+      notes={notes}
+      isLoading={isLoading}
+      onClickNote={handleClickNote}
+    />
   );
 }

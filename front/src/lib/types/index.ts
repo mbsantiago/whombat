@@ -34,6 +34,8 @@ export type NoteCreate = z.infer<typeof schemas.NoteCreateSchema>;
 
 export type NoteUpdate = z.input<typeof schemas.NoteUpdateSchema>;
 
+export type NoteFilter = z.infer<typeof schemas.NoteFilterSchema>;
+
 export type Recording = z.infer<typeof schemas.RecordingSchema>;
 
 export type RecordingTag = z.infer<typeof schemas.RecordingTagSchema>;
@@ -43,6 +45,10 @@ export type RecordingTagFilter = z.infer<
 >;
 
 export type RecordingNote = z.infer<typeof schemas.RecordingNoteSchema>;
+
+export type RecordingNoteFilter = z.infer<
+  typeof schemas.RecordingNoteFilterSchema
+>;
 
 export type FileState = z.infer<typeof schemas.FileStateSchema>;
 
@@ -98,6 +104,10 @@ export type SoundEventAnnotationNote = z.infer<
   typeof schemas.SoundEventAnnotationNoteSchema
 >;
 
+export type SoundEventAnnotationNoteFilter = z.infer<
+  typeof schemas.SoundEventAnnotationNoteFilterSchema
+>;
+
 export type SoundEventAnnotationFilter = z.infer<
   typeof schemas.SoundEventAnnotationFilterSchema
 >;
@@ -120,6 +130,10 @@ export type ClipAnnotationTagFilter = z.infer<
 
 export type ClipAnnotationNote = z.infer<
   typeof schemas.ClipAnnotationNoteSchema
+>;
+
+export type ClipAnnotationNoteFilter = z.infer<
+  typeof schemas.ClipAnnotationNoteFilterSchema
 >;
 
 export type AnnotationStatus = z.infer<typeof schemas.AnnotationStatusSchema>;

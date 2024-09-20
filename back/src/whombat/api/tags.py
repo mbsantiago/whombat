@@ -241,6 +241,7 @@ class TagAPI(
             schemas.SoundEventAnnotationTag(
                 sound_event_annotation_uuid=obj.sound_event_annotation.uuid,
                 tag=schemas.Tag.model_validate(obj.tag),
+                created_on=obj.created_on,
                 created_by=schemas.SimpleUser.model_validate(obj.created_by)
                 if obj.created_by
                 else None,

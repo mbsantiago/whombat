@@ -6,7 +6,7 @@ import { H3 } from "@/lib/components/ui/Headings";
 import { CheckIcon, NotesIcon } from "@/lib/components/icons";
 import NoteComponent from "@/lib/components/notes/Note";
 
-import type { Note } from "@/lib/types";
+import type * as types from "@/lib/types";
 
 /**
  * Component to display a summary of notes and issues for a dataset.
@@ -47,16 +47,19 @@ function IssuesSummary({
   onDeleteNote,
   onResolveNote,
 }: {
-  notes: Note[];
+  notes: types.RecordingNote[];
   maxIssues?: number;
   canResolve?: boolean;
   canDelete?: boolean;
-  onClickNote?: (note: Note) => void;
-  onDeleteNote?: (note: Note) => void;
-  onResolveNote?: (note: Note) => void;
+  onClickNote?: (note: types.RecordingNote) => void;
+  onDeleteNote?: (note: types.RecordingNote) => void;
+  onResolveNote?: (note: types.RecordingNote) => void;
 }) {
   const issues = useMemo(
-    () => notes.filter((note) => note.is_issue).slice(0, maxIssues),
+    () =>
+      notes
+        .filter((recordingNote) => recordingNote.note.is_issue)
+        .slice(0, maxIssues),
     [notes, maxIssues],
   );
 
@@ -66,15 +69,15 @@ function IssuesSummary({
     <>
       Latest Issues
       <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
-        {issues.map((issue) => (
+        {issues.map((recordingNote) => (
           <NoteComponent
-            key={issue.uuid}
-            note={issue}
+            key={recordingNote.note.uuid}
+            note={recordingNote.note}
             canDelete={canDelete}
             canResolve={canResolve}
-            onClickNote={() => onClickNote?.(issue)}
-            onResolveNote={() => onResolveNote?.(issue)}
-            onDeleteNote={() => onDeleteNote?.(issue)}
+            onClickNote={() => onClickNote?.(recordingNote)}
+            onResolveNote={() => onResolveNote?.(recordingNote)}
+            onDeleteNote={() => onDeleteNote?.(recordingNote)}
           />
         ))}
       </ul>
