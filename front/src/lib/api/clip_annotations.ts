@@ -1,23 +1,15 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import { type NoteCreate, NoteCreateSchema } from "@/lib/api/notes";
-import {
-  AnnotationProjectSchema,
-  ClipAnnotationSchema,
-  ClipSchema,
-  EvaluationSetSchema,
-  TagSchema,
-} from "@/lib/schemas";
+import { Page, GetMany } from "@/lib/api/common";
 
-import type { Clip, ClipAnnotation, Note, Tag } from "@/lib/types";
+import * as schemas from "@/lib/schemas";
+import * as types from "@/lib/types";
 
 export function registerClipAnnotationsAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function create(clip: Clip): Promise<ClipAnnotation> {
+  async function create(clip: types.Clip): Promise<types.ClipAnnotation> {
     const response = await instance.post(
       endpoints.create,
       {},
@@ -25,13 +17,13 @@ export function registerClipAnnotationsAPI(
         params: { clip_uuid: clip.uuid },
       },
     );
-    return ClipAnnotationSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   async function getMany(
-    query: GetClipAnnotationsQuery,
-  ): Promise<ClipAnnotationPage> {
-    const params = GetClipAnnotationsQuerySchema.parse(query);
+    query: types.GetMany<types.ClipAnnotationFilter>,
+  ): Promise<types.Paginated<types.ClipAnnotation>> {
+    const params = GetMany(schemas.ClipAnnotationFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -44,29 +36,29 @@ export function registerClipAnnotationsAPI(
         evaluation_set__eq: params.evaluation_set?.uuid,
       },
     });
-    return ClipAnnotationPageSchema.parse(response.data);
+    return Page(schemas.ClipAnnotationSchema).parse(response.data);
   }
 
-  async function get(uuid: string): Promise<ClipAnnotation> {
+  async function get(uuid: string): Promise<types.ClipAnnotation> {
     const response = await instance.get(endpoints.get, {
       params: { clip_annotation_uuid: uuid },
     });
-    return ClipAnnotationSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   async function deleteClipAnnotation(
-    clipAnnotation: ClipAnnotation,
-  ): Promise<ClipAnnotation> {
+    clipAnnotation: types.ClipAnnotation,
+  ): Promise<types.ClipAnnotation> {
     const response = await instance.delete(endpoints.delete, {
       params: { clip_annotation_uuid: clipAnnotation.uuid },
     });
-    return ClipAnnotationSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   async function addTag(
-    clipAnnotation: ClipAnnotation,
-    tag: Tag,
-  ): Promise<ClipAnnotation> {
+    clipAnnotation: types.ClipAnnotation,
+    tag: types.Tag,
+  ): Promise<types.ClipAnnotation> {
     const respose = await instance.post(
       endpoints.addTag,
       {},
@@ -78,13 +70,13 @@ export function registerClipAnnotationsAPI(
         },
       },
     );
-    return ClipAnnotationSchema.parse(respose.data);
+    return schemas.ClipAnnotationSchema.parse(respose.data);
   }
 
   async function removeTag(
-    clipAnnotation: ClipAnnotation,
-    tag: Tag,
-  ): Promise<ClipAnnotation> {
+    clipAnnotation: types.ClipAnnotation,
+    tag: types.Tag,
+  ): Promise<types.ClipAnnotation> {
     const respose = await instance.delete(endpoints.removeTag, {
       params: {
         clip_annotation_uuid: clipAnnotation.uuid,
@@ -92,59 +84,39 @@ export function registerClipAnnotationsAPI(
         value: tag.value,
       },
     });
-    return ClipAnnotationSchema.parse(respose.data);
+    return schemas.ClipAnnotationSchema.parse(respose.data);
   }
 
   async function addNote(
-    clipAnnotation: ClipAnnotation,
-    data: NoteCreate,
-  ): Promise<ClipAnnotation> {
-    const body = NoteCreateSchema.parse(data);
+    clipAnnotation: types.ClipAnnotation,
+    data: types.NoteCreate,
+  ): Promise<types.ClipAnnotation> {
+    const body = schemas.NoteCreateSchema.parse(data);
     const response = await instance.post(endpoints.addNote, body, {
       params: {
         clip_annotation_uuid: clipAnnotation.uuid,
       },
     });
-    return ClipAnnotationSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   async function removeNote(
-    clipAnnotation: ClipAnnotation,
-    note: Note,
-  ): Promise<ClipAnnotation> {
+    clipAnnotation: types.ClipAnnotation,
+    note: types.Note,
+  ): Promise<types.ClipAnnotation> {
     const response = await instance.delete(endpoints.removeNote, {
       params: {
         clip_annotation_uuid: clipAnnotation.uuid,
         note_uuid: note.uuid,
       },
     });
-    return ClipAnnotationSchema.parse(response.data);
-  }
-
-  async function getTags(
-    query: GetClipAnnotationsQuery,
-  ): Promise<ClipAnnotationTagPage> {
-    const params = GetClipAnnotationsQuerySchema.parse(query);
-    const response = await instance.get(endpoints.getTags, {
-      params: {
-        limit: params.limit,
-        offset: params.offset,
-        sort_by: params.sort_by,
-        clip__eq: params.clip?.uuid,
-        tag__key: params.tag?.key,
-        tag__value: params.tag?.value,
-        annotation_project__eq: params.annotation_project?.uuid,
-        evaluation_set__eq: params.evaluation_set?.uuid,
-      },
-    });
-    return ClipAnnotationTagPageSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   return {
     create,
     getMany,
     get,
-    getTags,
     delete: deleteClipAnnotation,
     addTag,
     removeTag,
@@ -153,43 +125,9 @@ export function registerClipAnnotationsAPI(
   } as const;
 }
 
-export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
-
-export type ClipAnnotationPage = z.infer<typeof ClipAnnotationPageSchema>;
-
-export const ClipAnnotationFilterSchema = z.object({
-  clip: ClipSchema.optional(),
-  tag: TagSchema.optional(),
-  annotation_project: AnnotationProjectSchema.optional(),
-  evaluation_set: EvaluationSetSchema.optional(),
-});
-
-export type ClipAnnotationFilter = z.input<typeof ClipAnnotationFilterSchema>;
-
-export const GetClipAnnotationsQuerySchema = z.intersection(
-  GetManySchema,
-  ClipAnnotationFilterSchema,
-);
-
-export type GetClipAnnotationsQuery = z.input<
-  typeof GetClipAnnotationsQuerySchema
->;
-
-export const ClipAnnotationTagSchema = z.object({
-  clip_annotation_uuid: z.string().uuid(),
-  tag: TagSchema,
-});
-
-export type ClipAnnotationTag = z.infer<typeof ClipAnnotationTagSchema>;
-
-export const ClipAnnotationTagPageSchema = Page(ClipAnnotationTagSchema);
-
-export type ClipAnnotationTagPage = z.infer<typeof ClipAnnotationTagPageSchema>;
-
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/clip_annotations/",
   get: "/api/v1/clip_annotations/detail/",
-  getTags: "/api/v1/clip_annotations/tags/",
   create: "/api/v1/clip_annotations/",
   delete: "/api/v1/clip_annotations/",
   addTag: "/api/v1/clip_annotations/detail/tags/",

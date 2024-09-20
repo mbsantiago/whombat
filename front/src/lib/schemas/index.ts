@@ -24,6 +24,12 @@ export const TagSchema = z.object({
   value: z.string(),
 });
 
+export const TagAssociationSchema = z.object({
+  tag: TagSchema,
+  created_by: UserSchema.nullish(),
+  created_on: z.coerce.date(),
+});
+
 export const FeatureSchema = z.object({
   name: z.string(),
   value: z.number(),
@@ -33,6 +39,22 @@ export const NoteSchema = z.object({
   uuid: z.string().uuid(),
   message: z.string(),
   is_issue: z.boolean(),
+  created_by: UserSchema.nullish(),
+  created_on: z.coerce.date(),
+});
+
+export const NoteCreateSchema = z.object({
+  message: z.string(),
+  is_issue: z.boolean(),
+});
+
+export const NoteUpdateSchema = z.object({
+  message: z.string().optional(),
+  is_issue: z.boolean().optional(),
+});
+
+export const NoteAssociationSchema = z.object({
+  note: NoteSchema,
   created_by: UserSchema.nullish(),
   created_on: z.coerce.date(),
 });
@@ -57,6 +79,14 @@ export const RecordingSchema = z.object({
   notes: z.array(NoteSchema).optional(),
   owners: z.array(UserSchema).optional(),
   created_on: z.coerce.date(),
+});
+
+export const RecordingTagSchema = TagAssociationSchema.extend({
+  recording_uuid: z.string().uuid(),
+});
+
+export const RecordingNoteSchema = NoteAssociationSchema.extend({
+  recording_uuid: z.string().uuid(),
 });
 
 export const FileStateSchema = z.enum([
@@ -165,12 +195,6 @@ export const ClipSchema = z.object({
   created_on: z.coerce.date(),
 });
 
-export const AnnotationTagSchema = z.object({
-  tag: TagSchema,
-  created_by: UserSchema.nullish(),
-  created_on: z.coerce.date(),
-});
-
 export const SoundEventAnnotationSchema = z.object({
   uuid: z.string().uuid(),
   sound_event: SoundEventSchema,
@@ -178,6 +202,23 @@ export const SoundEventAnnotationSchema = z.object({
   notes: z.array(NoteSchema).nullish(),
   tags: z.array(TagSchema).nullish(),
   created_on: z.coerce.date(),
+});
+
+export const SoundEventAnnotationCreateSchema = z.object({
+  geometry: GeometrySchema,
+  tags: z.array(TagSchema).optional(),
+});
+
+export const SoundEventAnnotationUpdateSchema = z.object({
+  geometry: GeometrySchema,
+});
+
+export const SoundEventAnnotationTagSchema = TagAssociationSchema.extend({
+  sound_event_annotation_uuid: z.string().uuid(),
+});
+
+export const SoundEventAnnotationNoteSchema = NoteAssociationSchema.extend({
+  sound_event_annotation_uuid: z.string().uuid(),
 });
 
 export const ClipAnnotationSchema = z.object({
@@ -188,6 +229,14 @@ export const ClipAnnotationSchema = z.object({
   tags: z.array(TagSchema).nullish(),
   sound_events: z.array(SoundEventAnnotationSchema).nullish(),
   created_on: z.coerce.date(),
+});
+
+export const ClipAnnotationTagSchema = TagAssociationSchema.extend({
+  clip_annotation_uuid: z.string().uuid(),
+});
+
+export const ClipAnnotationNoteSchema = NoteAssociationSchema.extend({
+  clip_annotation_uuid: z.string().uuid(),
 });
 
 export const AnnotationStatusSchema = z.enum([
@@ -501,4 +550,56 @@ export const TimeFilterSchema = z.object({
   before: TimeStringSchema.optional(),
   after: TimeStringSchema.optional(),
   is_null: z.boolean().optional(),
+});
+
+export const ClipAnnotationFilterSchema = z.object({
+  clip: ClipSchema.optional(),
+  tag: TagSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+});
+
+export const GetManySchema = z.object({
+  limit: z.number().int().gte(-1).optional(),
+  offset: z.number().int().gte(0).optional(),
+  sort_by: z.string().optional(),
+});
+
+export const TagFilterSchema = z.object({
+  search: z.string().optional(),
+  key: z.string().optional(),
+  value: StringFilterSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording: RecordingSchema.optional(),
+  sound_event_annotation: SoundEventAnnotationSchema.optional(),
+  clip_annotation: ClipAnnotationSchema.optional(),
+  sound_event_prediction: SoundEventPredictionSchema.optional(),
+  clip_prediction: ClipPredictionSchema.optional(),
+  evaluation_set: EvaluationSchema.optional(),
+  dataset: DatasetSchema.optional(),
+});
+
+export const SoundEventAnnotationFilterSchema = z.object({
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording: RecordingSchema.optional(),
+  sound_event: SoundEventSchema.optional(),
+  created_by: UserSchema.optional(),
+  tag: TagSchema.optional(),
+});
+
+export const RecordingTagFilterSchema = z.object({
+  recording: RecordingSchema.optional(),
+  dataset: DatasetSchema.optional(),
+  tag: TagSchema.optional(),
+  issue: z.boolean().optional(),
+});
+
+export const ClipAnnotationTagFilterSchema = z.object({
+  annotation_project: AnnotationProjectSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+});
+
+export const SoundEventAnnotationTagFilterSchema = z.object({
+  annotation_project: AnnotationProjectSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
 });

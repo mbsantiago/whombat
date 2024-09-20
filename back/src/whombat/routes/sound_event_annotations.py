@@ -10,10 +10,6 @@ from whombat.api.scatterplots.sound_event_annotations import (
     ScatterPlotData,
     get_scatterplot_data,
 )
-from whombat.api.sound_event_annotations import SoundEventAnnotationTagSchema
-from whombat.filters.sound_event_annotation_tags import (
-    SoundEventAnnotationTagFilter,
-)
 from whombat.filters.sound_event_annotations import SoundEventAnnotationFilter
 from whombat.routes.dependencies import Session, get_current_user_dependency
 from whombat.routes.dependencies.settings import WhombatSettings
@@ -114,38 +110,6 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         )
         return schemas.Page(
             items=sound_event_annotations,
-            total=total,
-            limit=limit,
-            offset=offset,
-        )
-
-    @sound_event_annotations_router.get(
-        "/tags/",
-        response_model=schemas.Page[SoundEventAnnotationTagSchema],
-    )
-    async def get_annotation_tags(
-        session: Session,
-        filter: Annotated[
-            SoundEventAnnotationTagFilter,  # type: ignore
-            Depends(SoundEventAnnotationTagFilter),
-        ],
-        limit: Limit = 10,
-        offset: Offset = 0,
-        sort_by: str = "-created_on",
-    ) -> schemas.Page[SoundEventAnnotationTagSchema]:
-        """Get a page of annotation tags."""
-        (
-            tags,
-            total,
-        ) = await api.sound_event_annotations.get_soundevent_tags(
-            session,
-            limit=limit,
-            offset=offset,
-            filters=[filter],
-            sort_by=sort_by,
-        )
-        return schemas.Page(
-            items=tags,
             total=total,
             limit=limit,
             offset=offset,

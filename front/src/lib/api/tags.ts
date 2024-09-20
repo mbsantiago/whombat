@@ -1,29 +1,25 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  AnnotationProjectSchema,
-  ClipAnnotationSchema,
-  ClipPredictionSchema,
-  DatasetSchema,
-  EvaluationSchema,
-  RecordingSchema,
-  SoundEventAnnotationSchema,
-  SoundEventPredictionSchema,
-  StringFilterSchema,
-  TagSchema,
-} from "@/lib/schemas";
+import { Page, GetMany } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import * as types from "@/lib/types";
 
-import type { Tag } from "@/lib/types";
-import { table } from "console";
+const DEFAULT_ENDPOINTS = {
+  get: "/api/v1/tags/",
+  getRecordingTags: "/api/v1/tags/recording_tags/",
+  getClipAnnotationTags: "/api/v1/tags/clip_annotation_tags/",
+  getSoundEventAnnotationTags: "/api/v1/tags/sound_event_annotation_tags/",
+  create: "/api/v1/tags/",
+};
 
 export function registerTagAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getTags(query: GetTagsQuery): Promise<TagPage> {
-    const params = GetTagsQuerySchema.parse(query);
+  async function getTags(
+    query: types.GetMany<types.TagFilter>,
+  ): Promise<types.Paginated<types.Tag>> {
+    const params = GetMany(schemas.TagFilterSchema).parse(query);
     const response = await instance.get(endpoints.get, {
       params: {
         limit: params.limit,
@@ -43,13 +39,13 @@ export function registerTagAPI(
         dataset__eq: params.dataset?.uuid,
       },
     });
-    return response.data;
+    return Page(schemas.TagSchema).parse(response.data);
   }
 
   async function getRecordingTags(
-    query: GetRecordingTagsQuery,
-  ): Promise<RecordingTagPage> {
-    const params = GetRecordingTagsQuerySchema.parse(query);
+    query: types.GetMany<types.RecordingTagFilter>,
+  ): Promise<types.Paginated<types.RecordingTag>> {
+    const params = GetMany(schemas.RecordingTagFilterSchema).parse(query);
     const response = await instance.get(endpoints.getRecordingTags, {
       params: {
         limit: params.limit,
@@ -62,96 +58,53 @@ export function registerTagAPI(
         issue__eq: params.issue,
       },
     });
-    return response.data;
+    return Page(schemas.RecordingTagSchema).parse(response.data);
   }
 
-  async function createTag(data: TagCreate): Promise<Tag> {
+  async function getClipAnnotationTags(
+    query: types.GetManyQuery & types.ClipAnnotationTagFilter,
+  ): Promise<types.Paginated<types.ClipAnnotationTag>> {
+    const params = GetMany(schemas.ClipAnnotationTagFilterSchema).parse(query);
+    const response = await instance.get(endpoints.getClipAnnotationTags, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        annotation_project__eq: params.annotation_project?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
+    return Page(schemas.ClipAnnotationTagSchema).parse(response.data);
+  }
+
+  async function getSoundEventTags(
+    query: types.GetManyQuery & types.SoundEventAnnotationTagFilter,
+  ): Promise<types.Paginated<types.SoundEventAnnotationTag>> {
+    const params = GetMany(schemas.SoundEventAnnotationTagFilterSchema).parse(
+      query,
+    );
+    const response = await instance.get(endpoints.getSoundEventAnnotationTags, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        annotation_project__eq: params.annotation_project?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
+    return Page(schemas.SoundEventAnnotationTagSchema).parse(response.data);
+  }
+
+  async function createTag(data: types.Tag): Promise<types.Tag> {
     const response = await instance.post(endpoints.create, data);
-    return TagSchema.parse(response.data);
+    return schemas.TagSchema.parse(response.data);
   }
 
-  return { get: getTags, create: createTag, getRecordingTags } as const;
+  return {
+    get: getTags,
+    create: createTag,
+    getRecordingTags,
+    getClipAnnotationTags,
+    getSoundEventTags,
+  } as const;
 }
-
-export const TagPageSchema = Page(TagSchema);
-
-export type TagPage = z.infer<typeof TagPageSchema>;
-
-export const TagCreateSchema = z.object({
-  key: z.string(),
-  value: z.string(),
-});
-
-export type TagCreate = z.input<typeof TagCreateSchema>;
-
-export const RecordingTagSchema = z.object({
-  tag: TagSchema,
-  recording_uuid: z.string().uuid(),
-});
-
-export const ClipAnnotationTagSchema = z.object({
-  tag: TagSchema,
-  clip_annotation_uuid: z.string().uuid(),
-});
-
-export const SoundEventAnnotationTagSchema = z.object({
-  tag: TagSchema,
-  sound_event_annotation_uuid: z.string().uuid(),
-});
-
-export type RecordingTag = z.infer<typeof RecordingTagSchema>;
-
-export type ClipAnnotationTag = z.infer<typeof ClipAnnotationTagSchema>;
-
-export type SoundEventAnnotationTag = z.infer<
-  typeof SoundEventAnnotationTagSchema
->;
-
-export const RecordingTagPageSchema = Page(RecordingTagSchema);
-
-export type RecordingTagPage = z.infer<typeof RecordingTagPageSchema>;
-
-export const TagFilterSchema = z.object({
-  search: z.string().optional(),
-  key: z.string().optional(),
-  value: StringFilterSchema.optional(),
-  annotation_project: AnnotationProjectSchema.optional(),
-  recording: RecordingSchema.optional(),
-  sound_event_annotation: SoundEventAnnotationSchema.optional(),
-  clip_annotation: ClipAnnotationSchema.optional(),
-  sound_event_prediction: SoundEventPredictionSchema.optional(),
-  clip_prediction: ClipPredictionSchema.optional(),
-  evaluation_set: EvaluationSchema.optional(),
-  dataset: DatasetSchema.optional(),
-});
-
-export type TagFilter = z.input<typeof TagFilterSchema>;
-
-export const RecordingTagFilterSchema = z.object({
-  recording: RecordingSchema.optional(),
-  dataset: DatasetSchema.optional(),
-  tag: TagSchema.optional(),
-  issue: z.boolean().optional(),
-});
-
-export type RecordingTagFilter = z.input<typeof RecordingTagFilterSchema>;
-
-export const GetTagsQuerySchema = z.intersection(
-  GetManySchema,
-  TagFilterSchema,
-);
-
-export type GetTagsQuery = z.input<typeof GetTagsQuerySchema>;
-
-export const GetRecordingTagsQuerySchema = z.intersection(
-  GetManySchema,
-  RecordingTagFilterSchema,
-);
-
-export type GetRecordingTagsQuery = z.input<typeof GetRecordingTagsQuerySchema>;
-
-const DEFAULT_ENDPOINTS = {
-  get: "/api/v1/tags/",
-  getRecordingTags: "/api/v1/tags/recording_tags/",
-  create: "/api/v1/tags/",
-};

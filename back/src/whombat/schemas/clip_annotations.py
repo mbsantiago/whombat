@@ -27,6 +27,9 @@ class ClipAnnotationTag(BaseSchema):
     tag: Tag
     """Tag attached to this annotation."""
 
+    clip_annotation_uuid: UUID
+    """UUID of the ClipAnnotation this tag is attached to."""
+
 
 class ClipAnnotationCreate(BaseModel):
     """Schema for data required to create an ClipAnnotation."""

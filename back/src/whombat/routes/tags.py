@@ -5,7 +5,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
+from whombat.filters.clip_annotation_tags import ClipAnnotationTagFilter
 from whombat.filters.recording_tags import RecordingTagFilter
+from whombat.filters.sound_event_annotation_tags import (
+    SoundEventAnnotationTagFilter,
+)
 from whombat.filters.tags import TagFilter
 from whombat.routes.dependencies import Session
 from whombat.routes.types import Limit, Offset
@@ -49,6 +53,72 @@ async def get_recording_tags(
 ):
     """Get all recording tags."""
     tags, total = await api.tags.get_recording_tags(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tags,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@tags_router.get(
+    "/clip_annotation_tags/",
+    response_model=schemas.Page[schemas.ClipAnnotationTag],
+)
+async def get_clip_annotation_tags(
+    session: Session,
+    filter: Annotated[
+        ClipAnnotationTagFilter,  # type: ignore
+        Depends(ClipAnnotationTagFilter),
+    ],
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-created_on",
+) -> schemas.Page[schemas.ClipAnnotationTag]:
+    """Get a page of annotation tags."""
+    (
+        tags,
+        total,
+    ) = await api.tags.get_clip_annotation_tags(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tags,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@tags_router.get(
+    "/sound_event_annotation_tags/",
+    response_model=schemas.Page[schemas.SoundEventAnnotationTag],
+)
+async def get_sound_event_annotation_tags(
+    session: Session,
+    filter: Annotated[
+        SoundEventAnnotationTagFilter,  # type: ignore
+        Depends(SoundEventAnnotationTagFilter),
+    ],
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-created_on",
+) -> schemas.Page[schemas.SoundEventAnnotationTag]:
+    """Get a page of annotation tags."""
+    (
+        tags,
+        total,
+    ) = await api.tags.get_sound_event_annotation_tags(
         session,
         limit=limit,
         offset=offset,

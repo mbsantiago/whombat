@@ -1,6 +1,11 @@
 // Purpose: Common types and constants for the API.
 import axios from "axios";
 import { z } from "zod";
+import { GetManySchema } from "@/lib/schemas";
+import { Paginated } from "@/lib/types";
+
+// TODO: Will need to update other modules to import from the types and schemas
+export { GetManySchema, type Paginated };
 
 export const HOST = "http://localhost:5000";
 export const BASE_ROUTE = `/api/v1`;
@@ -10,21 +15,6 @@ export const instance = axios.create({
   baseURL: HOST,
 });
 
-export const GetManySchema = z.object({
-  limit: z.number().int().gte(-1).optional(),
-  offset: z.number().int().gte(0).optional(),
-  sort_by: z.string().optional(),
-});
-
-export type GetManyQuery = z.infer<typeof GetManySchema>;
-
-export type Paginated<T> = {
-  items: T[];
-  total: number;
-  limit: number;
-  offset: number;
-};
-
 export const Page = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({
     items: z.array(schema),
@@ -32,6 +22,9 @@ export const Page = <T extends z.ZodTypeAny>(schema: T) =>
     limit: z.number().int(),
     offset: z.number().int(),
   });
+
+export const GetMany = <T extends z.ZodTypeAny>(schema: T) =>
+  z.intersection(GetManySchema, schema);
 
 export function downloadContent(data: any, filename: string, filetype: string) {
   const href = URL.createObjectURL(new Blob([data], { type: filetype }));

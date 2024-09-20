@@ -6,30 +6,17 @@ import {
   AnnotationTaskSchema,
   DatasetSchema,
   NoteSchema,
+  NoteUpdateSchema,
   RecordingSchema,
   SoundEventSchema,
   UserSchema,
 } from "@/lib/schemas";
 
-import type { Note } from "@/lib/types";
+import type { Note, NoteUpdate } from "@/lib/types";
 
 export const NotePageSchema = Page(NoteSchema);
 
 export type NotePage = z.infer<typeof NotePageSchema>;
-
-export const NoteCreateSchema = z.object({
-  message: z.string(),
-  is_issue: z.boolean(),
-});
-
-export type NoteCreate = z.input<typeof NoteCreateSchema>;
-
-export const NoteUpdateSchema = z.object({
-  message: z.string().optional(),
-  is_issue: z.boolean().optional(),
-});
-
-export type NoteUpdate = z.input<typeof NoteUpdateSchema>;
 
 export const NoteFilterSchema = z.object({
   is_issue: z.boolean().optional(),

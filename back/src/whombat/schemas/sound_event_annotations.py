@@ -14,10 +14,11 @@ __all__ = [
     "SoundEventAnnotation",
     "SoundEventAnnotationCreate",
     "SoundEventAnnotationUpdate",
+    "SoundEventAnnotationTag",
 ]
 
 
-class SoundEventAnnotationTag(BaseModel):
+class SoundEventAnnotationTag(BaseSchema):
     """Schema for a SoundEventAnnotationTag."""
 
     tag: Tag
@@ -25,6 +26,9 @@ class SoundEventAnnotationTag(BaseModel):
 
     created_by: SimpleUser | None
     """User who created this annotation."""
+
+    sound_event_annotation_uuid: UUID
+    """UUID of the SoundEventAnnotation this tag is attached to."""
 
 
 class SoundEventAnnotationCreate(BaseModel):
