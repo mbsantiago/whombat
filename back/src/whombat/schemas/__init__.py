@@ -25,7 +25,7 @@ from whombat.schemas.annotation_tasks import (
     AnnotationTaskUpdate,
 )
 from whombat.schemas.audio import AudioParameters
-from whombat.schemas.base import Page
+from whombat.schemas.base import BaseSchema, Page
 from whombat.schemas.clip_annotations import (
     ClipAnnotation,
     ClipAnnotationCreate,
@@ -122,6 +122,7 @@ __all__ = [
     "AnnotationTaskCreate",
     "AnnotationTaskUpdate",
     "AudioParameters",
+    "BaseSchema",
     "Clip",
     "ClipAnnotation",
     "ClipAnnotationCreate",
@@ -159,6 +160,7 @@ __all__ = [
     "Note",
     "NoteCreate",
     "NoteUpdate",
+    "Page",
     "Page",
     "PluginInfo",
     "PredictedTag",

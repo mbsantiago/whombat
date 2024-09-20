@@ -13,39 +13,6 @@ import {
 
 import type { Clip, ClipAnnotation, Note, Tag } from "@/lib/types";
 
-export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
-
-export type ClipAnnotationPage = z.infer<typeof ClipAnnotationPageSchema>;
-
-export const ClipAnnotationFilterSchema = z.object({
-  clip: ClipSchema.optional(),
-  tag: TagSchema.optional(),
-  annotation_project: AnnotationProjectSchema.optional(),
-  evaluation_set: EvaluationSetSchema.optional(),
-});
-
-export type ClipAnnotationFilter = z.input<typeof ClipAnnotationFilterSchema>;
-
-export const GetClipAnnotationsQuerySchema = z.intersection(
-  GetManySchema,
-  ClipAnnotationFilterSchema,
-);
-
-export type GetClipAnnotationsQuery = z.input<
-  typeof GetClipAnnotationsQuerySchema
->;
-
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/clip_annotations/",
-  get: "/api/v1/clip_annotations/detail/",
-  create: "/api/v1/clip_annotations/",
-  delete: "/api/v1/clip_annotations/",
-  addTag: "/api/v1/clip_annotations/detail/tags/",
-  removeTag: "/api/v1/clip_annotations/detail/tags/",
-  addNote: "/api/v1/clip_annotations/detail/notes/",
-  removeNote: "/api/v1/clip_annotations/detail/notes/",
-};
-
 export function registerClipAnnotationsAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
@@ -154,10 +121,30 @@ export function registerClipAnnotationsAPI(
     return ClipAnnotationSchema.parse(response.data);
   }
 
+  async function getTags(
+    query: GetClipAnnotationsQuery,
+  ): Promise<ClipAnnotationTagPage> {
+    const params = GetClipAnnotationsQuerySchema.parse(query);
+    const response = await instance.get(endpoints.getTags, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        clip__eq: params.clip?.uuid,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        annotation_project__eq: params.annotation_project?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
+    return ClipAnnotationTagPageSchema.parse(response.data);
+  }
+
   return {
     create,
     getMany,
     get,
+    getTags,
     delete: deleteClipAnnotation,
     addTag,
     removeTag,
@@ -165,3 +152,48 @@ export function registerClipAnnotationsAPI(
     removeNote,
   } as const;
 }
+
+export const ClipAnnotationPageSchema = Page(ClipAnnotationSchema);
+
+export type ClipAnnotationPage = z.infer<typeof ClipAnnotationPageSchema>;
+
+export const ClipAnnotationFilterSchema = z.object({
+  clip: ClipSchema.optional(),
+  tag: TagSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+});
+
+export type ClipAnnotationFilter = z.input<typeof ClipAnnotationFilterSchema>;
+
+export const GetClipAnnotationsQuerySchema = z.intersection(
+  GetManySchema,
+  ClipAnnotationFilterSchema,
+);
+
+export type GetClipAnnotationsQuery = z.input<
+  typeof GetClipAnnotationsQuerySchema
+>;
+
+export const ClipAnnotationTagSchema = z.object({
+  clip_annotation_uuid: z.string().uuid(),
+  tag: TagSchema,
+});
+
+export type ClipAnnotationTag = z.infer<typeof ClipAnnotationTagSchema>;
+
+export const ClipAnnotationTagPageSchema = Page(ClipAnnotationTagSchema);
+
+export type ClipAnnotationTagPage = z.infer<typeof ClipAnnotationTagPageSchema>;
+
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/clip_annotations/",
+  get: "/api/v1/clip_annotations/detail/",
+  getTags: "/api/v1/clip_annotations/tags/",
+  create: "/api/v1/clip_annotations/",
+  delete: "/api/v1/clip_annotations/",
+  addTag: "/api/v1/clip_annotations/detail/tags/",
+  removeTag: "/api/v1/clip_annotations/detail/tags/",
+  addNote: "/api/v1/clip_annotations/detail/notes/",
+  removeNote: "/api/v1/clip_annotations/detail/notes/",
+};

@@ -12,26 +12,32 @@ import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
 import ListSearch from "@/lib/components/lists/ListSearch";
 import TagComponent from "@/lib/components/tags/Tag";
+import Loading from "@/lib/components/ui/Loading";
 import { H4 } from "@/lib/components/ui/Headings";
 import { getTagKey, getTagColor, Color } from "@/lib/utils/tags";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
-import type { ClipTag, SoundEventTag } from "@/lib/api/tags";
+import type {
+  ClipAnnotationTag,
+  SoundEventAnnotationTag,
+} from "@/lib/api/tags";
 import type { AnnotationProject, Tag } from "@/lib/types";
 
-const _emptyClipList: ClipTag[] = [];
-const _emptySEList: SoundEventTag[] = [];
+const _emptyClipList: ClipAnnotationTag[] = [];
+const _emptySEList: SoundEventAnnotationTag[] = [];
 
 export default function ProjectTagsSummary({
   annotationProject,
+  isLoading = false,
   clipTags = _emptyClipList,
   soundEventTags = _emptySEList,
   onAddTags,
   ...props
 }: {
   annotationProject: AnnotationProject;
-  clipTags?: ClipTag[];
-  soundEventTags?: SoundEventTag[];
+  isLoading?: boolean;
+  clipTags?: ClipAnnotationTag[];
+  soundEventTags?: SoundEventAnnotationTag[];
   onAddTags?: () => void;
 } & Omit<ComponentProps<typeof TagCounts>, "counts">) {
   const projectTags = useMemo(
@@ -62,7 +68,9 @@ export default function ProjectTagsSummary({
           <AddIcon className="inline-block mr-2 w-5 h-5" /> Add Tags
         </Button>
       </div>
-      {projectTags.length === 0 ? (
+      {isLoading ? (
+        <Loading />
+      ) : projectTags.length === 0 ? (
         <NoTags />
       ) : (
         <TagCounts counts={counts} {...props} />
@@ -206,8 +214,8 @@ function getTagCount({
   soundEventTags,
 }: {
   projectTags: Tag[];
-  clipTags: ClipTag[];
-  soundEventTags: SoundEventTag[];
+  clipTags: ClipAnnotationTag[];
+  soundEventTags: SoundEventAnnotationTag[];
 }): {
   tag: Tag;
   clipCount: number;
@@ -287,24 +295,28 @@ function TagTable({
               ) : null}
             </Button>
           </th>
-          <th scope="col" className="py-2">
+          <th scope="col" className="py-2 w-20">
             <Button padding="p-0" mode="text" onClick={onSortByClip}>
-              Clip Count
+              Clips
               {sortBy == "clip" ? (
                 <DescendingIcon className="inline-block ml-2 w-5 h-5" />
               ) : sortBy == "-clip" ? (
                 <AscendingIcon className="inline-block ml-2 w-5 h-5" />
-              ) : null}
+              ) : (
+                <DescendingIcon className="inline-block invisible ml-2 w-5 h-5" />
+              )}
             </Button>
           </th>
-          <th scope="col" className="py-2">
+          <th scope="col" className="py-2 w-20">
             <Button padding="p-0" mode="text" onClick={onSortBySoundEvent}>
-              Sound Event Count
+              Sound Events
               {sortBy == "soundEvent" ? (
                 <DescendingIcon className="inline-block ml-2 w-5 h-5" />
               ) : sortBy == "-soundEvent" ? (
                 <AscendingIcon className="inline-block ml-2 w-5 h-5" />
-              ) : null}
+              ) : (
+                <DescendingIcon className="inline-block invisible ml-2 w-5 h-5" />
+              )}
             </Button>
           </th>
         </tr>

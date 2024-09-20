@@ -6,7 +6,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
+from whombat.api.clip_annotations import ClipAnnotationTagSchema
 from whombat.filters.clip_annotations import ClipAnnotationFilter
+from whombat.filters.clip_annotation_tags import ClipAnnotationTagFilter
 from whombat.routes.dependencies import Session, get_current_user_dependency
 from whombat.routes.dependencies.settings import WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -66,6 +68,38 @@ def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
         )
         return schemas.Page(
             items=clip_annotations,
+            total=total,
+            limit=limit,
+            offset=offset,
+        )
+
+    @clip_annotations_router.get(
+        "/tags/",
+        response_model=schemas.Page[ClipAnnotationTagSchema],
+    )
+    async def get_annotation_tags(
+        session: Session,
+        filter: Annotated[
+            ClipAnnotationTagFilter,  # type: ignore
+            Depends(ClipAnnotationTagFilter),
+        ],
+        limit: Limit = 10,
+        offset: Offset = 0,
+        sort_by: str = "-created_on",
+    ) -> schemas.Page[ClipAnnotationTagSchema]:
+        """Get a page of annotation tags."""
+        (
+            tags,
+            total,
+        ) = await api.clip_annotations.get_clip_tags(
+            session,
+            limit=limit,
+            offset=offset,
+            filters=[filter],
+            sort_by=sort_by,
+        )
+        return schemas.Page(
+            items=tags,
             total=total,
             limit=limit,
             offset=offset,

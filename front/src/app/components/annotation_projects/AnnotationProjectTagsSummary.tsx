@@ -1,9 +1,12 @@
 import { useRouter } from "next/navigation";
-import AnnotationProjectTagsSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectTagsSummary";
+import { useCallback, useMemo } from "react";
+
+import api from "@/app/api";
 import useStore from "@/app/store";
+import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import AnnotationProjectTagsSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectTagsSummary";
 
 import type { AnnotationProject } from "@/lib/types";
-import { useCallback } from "react";
 
 /**
  * Component to display a summary of tags for a annotation_project.
@@ -14,6 +17,7 @@ export default function AnnotationProjectTagsSummary({
   annotationProject: AnnotationProject;
 }) {
   const router = useRouter();
+
   const tagColorFn = useStore((state) => state.getTagColor);
 
   const handleAddTag = useCallback(() => {
@@ -22,12 +26,39 @@ export default function AnnotationProjectTagsSummary({
     );
   }, [router, annotationProject.uuid]);
 
-  // TODO: implement get clip and sound event tags
+  const filter = useMemo(
+    () => ({ annotation_project: annotationProject }),
+    [annotationProject],
+  );
+
+  const {
+    items: clipTags,
+    query: { isLoading: isLoadingClipTags },
+  } = usePagedQuery({
+    name: "clip_annotation_tags",
+    queryFn: api.clipAnnotations.getTags,
+    pageSize: -1,
+    filter,
+  });
+
+  const {
+    items: soundEventTags,
+    query: { isLoading: isLoadingSoundEventTags },
+  } = usePagedQuery({
+    name: "sound_event_annotation_tags",
+    queryFn: api.soundEventAnnotations.getTags,
+    pageSize: -1,
+    filter,
+  });
+
   return (
     <AnnotationProjectTagsSummaryBase
       annotationProject={annotationProject}
       tagColorFn={tagColorFn}
       onAddTags={handleAddTag}
+      clipTags={clipTags}
+      soundEventTags={soundEventTags}
+      isLoading={isLoadingClipTags || isLoadingSoundEventTags}
     />
   );
 }

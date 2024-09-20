@@ -82,6 +82,7 @@ const DEFAULT_ENDPOINTS = {
   create: "/api/v1/sound_event_annotations/",
   getMany: "/api/v1/sound_event_annotations/",
   get: "/api/v1/sound_event_annotations/detail/",
+  getTags: "/api/v1/sound_event_annotations/tags/",
   getScatterPlotData: "/api/v1/sound_event_annotations/scatter_plot/",
   update: "/api/v1/sound_event_annotations/detail/",
   delete: "/api/v1/sound_event_annotations/detail/",
@@ -237,9 +238,30 @@ export function registerSoundEventAnnotationsAPI(
     return SoundEventAnnotationSchema.parse(response.data);
   }
 
+  async function getTags(
+    query: GetAnnotationsQuerySchema,
+  ): Promise<SoundEventAnnotationTagPage> {
+    const params = GetAnnotationsQuerySchema.parse(query);
+    const response = await instance.get(endpoints.getTags, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        annotation_project__eq: params.annotation_project?.uuid,
+        recording__eq: params.recording?.uuid,
+        sound_event__eq: params.sound_event?.uuid,
+        created_by__eq: params.created_by?.id,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+      },
+    });
+    return SoundEventAnnotationTagPageSchema.parse(response.data);
+  }
+
   return {
     create,
     getMany,
+    getTags,
     get: getSoundEventAnnotation,
     update: updateSoundEventAnnotation,
     addTag,
@@ -250,3 +272,20 @@ export function registerSoundEventAnnotationsAPI(
     delete: deleteSoundEventAnnotation,
   } as const;
 }
+
+export const SoundEventAnnotationTagSchema = z.object({
+  sound_event_annotation_uuid: z.string().uuid(),
+  tag: TagSchema,
+});
+
+export type SoundEventAnnotationTag = z.infer<
+  typeof SoundEventAnnotationTagSchema
+>;
+
+export const SoundEventAnnotationTagPageSchema = Page(
+  SoundEventAnnotationTagSchema,
+);
+
+export type SoundEventAnnotationTagPage = z.infer<
+  typeof SoundEventAnnotationTagPageSchema
+>;

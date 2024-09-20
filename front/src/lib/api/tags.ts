@@ -89,21 +89,23 @@ export const RecordingTagSchema = z.object({
   recording_uuid: z.string().uuid(),
 });
 
-export const ClipTagSchema = z.object({
+export const ClipAnnotationTagSchema = z.object({
   tag: TagSchema,
-  clip_uuid: z.string().uuid(),
+  clip_annotation_uuid: z.string().uuid(),
 });
 
-export const SoundEventTagSchema = z.object({
+export const SoundEventAnnotationTagSchema = z.object({
   tag: TagSchema,
-  sound_event_uuid: z.string().uuid(),
+  sound_event_annotation_uuid: z.string().uuid(),
 });
 
 export type RecordingTag = z.infer<typeof RecordingTagSchema>;
 
-export type ClipTag = z.infer<typeof ClipTagSchema>;
+export type ClipAnnotationTag = z.infer<typeof ClipAnnotationTagSchema>;
 
-export type SoundEventTag = z.infer<typeof SoundEventTagSchema>;
+export type SoundEventAnnotationTag = z.infer<
+  typeof SoundEventAnnotationTagSchema
+>;
 
 export const RecordingTagPageSchema = Page(RecordingTagSchema);
 

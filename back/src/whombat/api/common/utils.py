@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import InstrumentedAttribute
 from sqlalchemy.sql._typing import _ColumnExpressionArgument
+from sqlalchemy.sql.base import ExecutableOption
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import exceptions, models
@@ -233,6 +234,7 @@ async def get_objects_from_query(
     *,
     limit: int | None = 1000,
     offset: int | None = 0,
+    options: Sequence[ExecutableOption] | None = None,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
     sort_by: _ColumnExpressionArgument | str | None = None,
 ) -> tuple[Result[Any], int]:
@@ -269,6 +271,10 @@ async def get_objects_from_query(
         else:
             query = query.where(filter_)
 
+    if options is not None:
+        for option in options:
+            query = query.options(option)
+
     count = await get_count(session, model, query)
 
     if sort_by is not None:
@@ -293,6 +299,7 @@ async def get_objects(
     limit: int | None = 1000,
     offset: int | None = 0,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
+    options: Sequence[ExecutableOption] | None = None,
     sort_by: _ColumnExpressionArgument | str | None = None,
 ) -> tuple[Sequence[A], int]:
     """Get all objects.
@@ -325,6 +332,7 @@ async def get_objects(
         session,
         model,
         query,
+        options=options,
         limit=limit,
         offset=offset,
         filters=filters,

@@ -26,6 +26,18 @@ export const NoTags: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+    annotationProject: {
+      uuid: "1",
+      name: "Project 1",
+      description: "Annotation project 1",
+      created_on: new Date(),
+    },
+  },
+};
+
 export const WithProjectTags: Story = {
   args: {
     annotationProject: {
@@ -57,45 +69,45 @@ export const WithAnnotations: Story = {
     },
     clipTags: [
       {
-        clip_uuid: "1",
+        clip_annotation_uuid: "1",
         tag: { key: "species", value: "Myotis lucifugus" },
       },
       {
-        clip_uuid: "1",
+        clip_annotation_uuid: "1",
         tag: { key: "event", value: "Echolocation" },
       },
       {
-        clip_uuid: "2",
+        clip_annotation_uuid: "2",
         tag: { key: "species", value: "Myotis septentrionalis" },
       },
       {
-        clip_uuid: "2",
+        clip_annotation_uuid: "2",
         tag: { key: "event", value: "Echolocation" },
       },
       {
-        clip_uuid: "3",
+        clip_annotation_uuid: "3",
         tag: { key: "event", value: "Myotis lucifugus" },
       },
     ],
     soundEventTags: [
       {
-        sound_event_uuid: "1",
+        sound_event_annotation_uuid: "1",
         tag: { key: "species", value: "Myotis septentrionalis" },
       },
       {
-        sound_event_uuid: "1",
+        sound_event_annotation_uuid: "1",
         tag: { key: "event", value: "Echolocation" },
       },
       {
-        sound_event_uuid: "2",
+        sound_event_annotation_uuid: "2",
         tag: { key: "species", value: "Myotis septentrionalis" },
       },
       {
-        sound_event_uuid: "2",
+        sound_event_annotation_uuid: "2",
         tag: { key: "event", value: "Echolocation" },
       },
       {
-        sound_event_uuid: "3",
+        sound_event_annotation_uuid: "3",
         tag: { key: "species", value: "Myotis septentrionalis" },
       },
     ],

@@ -7,6 +7,7 @@ from uuid import UUID
 from soundevent import data
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
@@ -15,11 +16,19 @@ from whombat.api.common import BaseAPI
 from whombat.api.notes import notes
 from whombat.api.sound_event_annotations import sound_event_annotations
 from whombat.api.tags import tags
+from whombat.filters.base import Filter
 
 __all__ = [
     "ClipAnnotationAPI",
     "clip_annotations",
 ]
+
+
+class ClipAnnotationTagSchema(schemas.BaseSchema):
+    """Schema for a tag on a sound event annotation."""
+
+    clip_annotation_uuid: UUID
+    tag: schemas.Tag
 
 
 class ClipAnnotationAPI(
@@ -62,6 +71,36 @@ class ClipAnnotationAPI(
             clip_id=clip.id,
             **kwargs,
         )
+
+    async def get_clip_tags(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[Sequence[ClipAnnotationTagSchema], int]:
+        objs, count = await common.get_objects(
+            session,
+            models.ClipAnnotationTag,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            options=[
+                joinedload(
+                    models.ClipAnnotationTag.clip_annotation,
+                ).load_only(models.ClipAnnotation.uuid),
+            ],
+        )
+        return [
+            ClipAnnotationTagSchema(
+                clip_annotation_uuid=obj.clip_annotation.uuid,
+                tag=schemas.Tag.model_validate(obj.tag),
+            )
+            for obj in objs
+        ], count
 
     async def create_many(
         self,
