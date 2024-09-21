@@ -1,5 +1,3 @@
-import { type ReactNode } from "react";
-
 import Button from "@/lib/components/ui/Button";
 import {
   DeleteIcon,
@@ -8,25 +6,27 @@ import {
   GoToIcon,
 } from "@/lib/components/icons";
 
-import type { Note } from "@/lib/types";
+import type * as types from "@/lib/types";
 
-export default function Note({
-  note,
-  actions,
-  canDelete = false,
-  canResolve = true,
-  onClickNote,
-  onResolveNote,
-  onDeleteNote,
-}: {
-  note: Note;
-  actions?: ReactNode;
+export type NoteProps = {
+  note: types.Note;
+  noteType?: string;
   canDelete?: boolean;
   canResolve?: boolean;
   onClickNote?: () => void;
   onResolveNote?: () => void;
   onDeleteNote?: () => void;
-}) {
+};
+
+export default function Note({
+  note,
+  canDelete = false,
+  canResolve = true,
+  noteType = "",
+  onClickNote,
+  onResolveNote,
+  onDeleteNote,
+}: NoteProps) {
   return (
     <li role="article" className="relative p-2 pl-6">
       <div className="flex flex-col flex-1 gap-2">
@@ -37,10 +37,11 @@ export default function Note({
             <NoteIcon className="inline-block w-5 h-5 text-ston-500" />
           )}
         </div>
-        <h4 className="flex flex-col items-start text-base font-medium leading-6 md:flex-row lg:items-center text-stone-700 dark:text-stone-300">
+        <h4 className="flex flex-col items-start text-base font-medium leading-6 md:flex-row lg:items-center text-stone-700 dark:text-stone-300 gap-2">
           <span className="flex-1">
             {note.created_by?.username || "anonymous"}
           </span>
+          {noteType != null ? <span className="font-thin">{noteType}</span> : null}
           <span className="text-xs font-normal text-stone-400">
             {" "}
             {note.created_on.toLocaleString()}
@@ -48,7 +49,6 @@ export default function Note({
         </h4>
         <p className="text-sm text-stone-500">{note.message}</p>
         <div className="flex flex-row gap-4 justify-end">
-          {actions}
           {onClickNote == null ? null : (
             <Button mode="text" onClick={onClickNote}>
               <GoToIcon className="inline-block mr-1 w-4 h-4 text-emerald-500" />{" "}

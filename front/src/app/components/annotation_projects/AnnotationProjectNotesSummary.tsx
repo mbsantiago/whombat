@@ -2,6 +2,7 @@ import api from "@/app/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useCallback } from "react";
 
+import Note from "@/app/components/notes/Note";
 import AnnotationProjectNotesSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectNotesSummary";
 import type * as types from "@/lib/types";
 
@@ -12,23 +13,9 @@ export default function AnnotationProjectNotesSummary({
 }: {
   annotationProject: types.AnnotationProject;
 }) {
-  const router = useRouter();
-  const params = useSearchParams();
-
   const filter = useMemo(
     () => ({ annotationProject, issues: { eq: true } }),
     [annotationProject],
-  );
-
-  const handleClickNote = useCallback(
-    (note: types.ClipAnnotationNote | types.SoundEventAnnotationNote) => {
-      if (note.clip_annotation_uuid != null) {
-        router.push(
-          `/annotation_projects/detail/annotation/?clip_annotation_uuid=${recordingNote.recording_uuid}&${params.toString()}`,
-        );
-      }
-    },
-    [router, params],
   );
 
   const {
@@ -53,11 +40,67 @@ export default function AnnotationProjectNotesSummary({
 
   return (
     <AnnotationProjectNotesSummaryBase
-      canDelete={false}
-      canResolve={false}
       isLoading={isLoadingClipNotes || isLoadingSoundEventNotes}
       clipNotes={clipAnnotationNotes}
       soundEventNotes={soundEventAnnotationNotes}
+      SoundEventAnnotationNote={SoundEventAnnotationNote}
+      ClipAnnotationNote={ClipAnnotationNote}
+    />
+  );
+}
+
+function SoundEventAnnotationNote({
+  soundEventAnnotationNote,
+}: {
+  soundEventAnnotationNote: types.SoundEventAnnotationNote;
+}) {
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const handleClick = useCallback(async () => {
+    const annotationTask = await api.soundEventAnnotations.getAnnotationTask(
+      soundEventAnnotationNote.sound_event_annotation_uuid,
+    );
+    router.push(
+      `/annotation_projects/detail/annotation/?annotation_task_uuid=${annotationTask.uuid}&${params.toString()}`,
+    );
+  }, [router, params, soundEventAnnotationNote.sound_event_annotation_uuid]);
+
+  return (
+    <Note
+      noteType="Sound Event Note"
+      note={soundEventAnnotationNote.note}
+      canDelete={false}
+      canResolve={false}
+      onClickNote={handleClick}
+    />
+  );
+}
+
+function ClipAnnotationNote({
+  clipAnnotationNote,
+}: {
+  clipAnnotationNote: types.ClipAnnotationNote;
+}) {
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const handleClick = useCallback(async () => {
+    const annotationTask = await api.clipAnnotations.getAnnotationTask(
+      clipAnnotationNote.clip_annotation_uuid,
+    );
+    router.push(
+      `/annotation_projects/detail/annotation/?annotation_task_uuid=${annotationTask.uuid}&${params.toString()}`,
+    );
+  }, [router, params, clipAnnotationNote.clip_annotation_uuid]);
+
+  return (
+    <Note
+      noteType="Clip Note"
+      note={clipAnnotationNote.note}
+      canDelete={false}
+      canResolve={false}
+      onClickNote={handleClick}
     />
   );
 }

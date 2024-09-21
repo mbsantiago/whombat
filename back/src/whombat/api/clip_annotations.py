@@ -5,7 +5,7 @@ from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
@@ -318,6 +318,44 @@ class ClipAnnotationAPI(
         )
         self._update_cache(obj)
         return obj
+
+    async def get_annotation_task(
+        self,
+        session: AsyncSession,
+        data: schemas.ClipAnnotation,
+    ) -> schemas.AnnotationTask:
+        """Get the annotation task where the clip is the target.
+
+        Parameters
+        ----------
+        session : AsyncSession
+            The database session.
+        data : schemas.ClipAnnotation
+            The clip annotation to get the task for.
+
+        Returns
+        -------
+        schemas.AnnotationTask
+            The annotation task for the clip.
+        """
+        stmt = (
+            select(models.AnnotationTask)
+            .join(
+                models.ClipAnnotation,
+                models.ClipAnnotation.id
+                == models.AnnotationTask.clip_annotation_id,
+            )
+            .filter(models.ClipAnnotation.uuid == data.uuid)
+        )
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+
+        if obj is None:
+            raise exceptions.NotFoundError(
+                f"Annotation task for clip annotation {data.uuid} not found."
+            )
+
+        return schemas.AnnotationTask.model_validate(obj)
 
     async def from_soundevent(
         self,

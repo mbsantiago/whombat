@@ -1,10 +1,9 @@
-import { useMemo, type ComponentProps } from "react";
+import { type FC, type ComponentProps } from "react";
 
 import Loading from "@/lib/components/ui/Loading";
 import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
-import NoteComponent from "@/lib/components/notes/Note";
 import { CheckIcon, IssuesIcon } from "@/lib/components/icons";
 
 import type * as types from "@/lib/types";
@@ -27,63 +26,51 @@ export default function ProjectNotesSummary({
 }
 
 function IssuesSummary({
-  maxIssues = 10,
   clipNotes = _emptyClipNotes,
   soundEventNotes = _emptySoundEventNotes,
-  canDelete = false,
-  canResolve = false,
-  onClickNote,
-  onResolveNote,
-  onDeleteNote,
+  SoundEventAnnotationNote,
+  ClipAnnotationNote,
 }: {
   clipNotes?: types.ClipAnnotationNote[];
   soundEventNotes?: types.SoundEventAnnotationNote[];
-  maxIssues?: number;
-  canDelete?: boolean;
-  canResolve?: boolean;
-  onClickNote?: (
-    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
-  ) => void;
-  onResolveNote?: (
-    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
-  ) => void;
-  onDeleteNote?: (
-    note: types.ClipAnnotationNote | types.SoundEventAnnotationNote,
-  ) => void;
+  SoundEventAnnotationNote: FC<{
+    soundEventAnnotationNote: types.SoundEventAnnotationNote;
+  }>;
+  ClipAnnotationNote: FC<{ clipAnnotationNote: types.ClipAnnotationNote }>;
 }) {
-  const issues = useMemo(() => {
-    const clipIssues = clipNotes.filter((clipNote) => clipNote.note.is_issue);
-
-    const soundEventIssues = soundEventNotes.filter(
-      (seNote) => seNote.note.is_issue,
-    );
-
-    const allNotes = [...clipIssues, ...soundEventIssues].sort((a, b) =>
-      a.note.created_on > b.note.created_on ? -1 : 1,
-    );
-
-    return allNotes.slice(0, maxIssues);
-  }, [maxIssues, clipNotes, soundEventNotes]);
-
-  if (issues.length === 0) return <NoIssues />;
+  if (soundEventNotes.length === 0 && clipNotes.length === 0) {
+    return <NoIssues />;
+  }
 
   return (
-    <>
-      Latest Issues
-      <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
-        {issues.map((issue) => (
-          <NoteComponent
-            key={issue.note.uuid}
-            note={issue.note}
-            canDelete={canDelete}
-            canResolve={canResolve}
-            onClickNote={() => onClickNote?.(issue)}
-            onResolveNote={() => onResolveNote?.(issue)}
-            onDeleteNote={() => onDeleteNote?.(issue)}
-          />
-        ))}
-      </ul>
-    </>
+    <div className="flex flex-col gap-4">
+      {clipNotes.length === 0 ? null : (
+        <div className="flex flex-col gap-2">
+          <span className="font-thin">Latest Clip Issues</span>
+          <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
+            {clipNotes.map((issue) => (
+              <ClipAnnotationNote
+                key={issue.note.uuid}
+                clipAnnotationNote={issue}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
+      {soundEventNotes.length === 0 ? null : (
+        <div className="flex flex-col gap-2">
+          <span className="font-thin">Latest Sound Event Issues</span>
+          <ul className="flex flex-col gap-2 p-2 pl-4 rounded-md border divide-y divide-dashed divide-stone-300 dark:border-stone-800 dark:divide-stone-800">
+            {soundEventNotes.map((issue) => (
+              <SoundEventAnnotationNote
+                key={issue.note.uuid}
+                soundEventAnnotationNote={issue}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 

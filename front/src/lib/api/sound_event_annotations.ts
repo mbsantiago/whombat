@@ -19,6 +19,7 @@ const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/sound_event_annotations/",
   get: "/api/v1/sound_event_annotations/detail/",
   getTags: "/api/v1/sound_event_annotations/tags/",
+  getAnnotationTask: "/api/v1/sound_event_annotations/detail/annotation_task/",
   getScatterPlotData: "/api/v1/sound_event_annotations/scatter_plot/",
   update: "/api/v1/sound_event_annotations/detail/",
   delete: "/api/v1/sound_event_annotations/detail/",
@@ -94,6 +95,15 @@ export function registerSoundEventAnnotationsAPI(
       params: { sound_event_annotation_uuid: uuid },
     });
     return schemas.SoundEventAnnotationSchema.parse(response.data);
+  }
+
+  async function getAnnotationTask(
+    uuid: string,
+  ): Promise<types.AnnotationTask> {
+    const response = await instance.get(endpoints.getAnnotationTask, {
+      params: { sound_event_annotation_uuid: uuid },
+    });
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   async function updateSoundEventAnnotation(
@@ -182,6 +192,7 @@ export function registerSoundEventAnnotationsAPI(
     create,
     getMany,
     get: getSoundEventAnnotation,
+    getAnnotationTask,
     update: updateSoundEventAnnotation,
     addTag,
     removeTag,

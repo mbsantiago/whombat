@@ -20,7 +20,7 @@ export default function useNote({
     throw new Error("Note uuid does not match");
   }
 
-  const { query, useMutation } = useObject({
+  const { query, useMutation, useDestruction } = useObject({
     id: uuid,
     initialData: note,
     name: "note",
@@ -33,7 +33,7 @@ export default function useNote({
     onSuccess: onUpdate,
   });
 
-  const delete_ = useMutation({
+  const delete_ = useDestruction({
     mutationFn: api.notes.delete,
     onSuccess: onDelete,
   });

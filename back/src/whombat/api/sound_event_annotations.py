@@ -4,7 +4,7 @@ from pathlib import Path
 from uuid import UUID
 
 from soundevent import data
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
@@ -69,6 +69,49 @@ class SoundEventAnnotationAPI(
             created_by_id=created_by.id if created_by else None,
             **kwargs,
         )
+
+    async def get_annotation_task(
+        self,
+        session: AsyncSession,
+        data: schemas.SoundEventAnnotation,
+    ) -> schemas.AnnotationTask:
+        """Get the annotation task in which the sound event was annotated.
+
+        Parameters
+        ----------
+        session : AsyncSession
+            The database session.
+        data : schemas.SoundEventAnnotation
+            The sound event annotation.
+
+        Returns
+        -------
+        schemas.AnnotationTask
+            The annotation task for the sound event annotation.
+        """
+        stmt = (
+            select(models.AnnotationTask)
+            .join(
+                models.ClipAnnotation,
+                models.ClipAnnotation.id
+                == models.AnnotationTask.clip_annotation_id,
+            )
+            .join(
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.clip_annotation_id
+                == models.ClipAnnotation.id,
+            )
+            .filter(models.SoundEventAnnotation.uuid == data.uuid)
+        )
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+
+        if obj is None:
+            raise exceptions.NotFoundError(
+                f"Annotation task for clip annotation {data.uuid} not found."
+            )
+
+        return schemas.AnnotationTask.model_validate(obj)
 
     async def add_tag(
         self,

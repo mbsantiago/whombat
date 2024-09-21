@@ -1,15 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 
 import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
+import Note from "@/lib/components/notes/Note";
 
 const meta: Meta<typeof AnnotationProjectNotesSummary> = {
   title: "AnnotationProject/NotesSummary",
   component: AnnotationProjectNotesSummary,
   args: {
-    onClickNote: fn(),
-    onResolveNote: fn(),
-    onDeleteNote: fn(),
+    SoundEventAnnotationNote: ({ soundEventAnnotationNote }) => (
+      <Note note={soundEventAnnotationNote.note} />
+    ),
+    ClipAnnotationNote: ({ clipAnnotationNote }) => (
+      <Note note={clipAnnotationNote.note} />
+    ),
+  },
+  parameters: {
+    controls: { exclude: ["ClipAnnotationNote", "SoundEventAnnotationNote"] },
   },
 };
 
@@ -38,8 +44,8 @@ export const WithClipNotes: Story = {
     isLoading: false,
     clipNotes: [
       {
-        task_uuid: "task-1",
-        clip_uuid: "clip-1",
+        clip_annotation_uuid: "clip-1",
+        created_on: new Date(),
         note: {
           uuid: "note1",
           message: "This is a note",
@@ -57,8 +63,8 @@ export const WithClipIssues: Story = {
     isLoading: false,
     clipNotes: [
       {
-        task_uuid: "task-1",
-        clip_uuid: "clip-1",
+        clip_annotation_uuid: "clip-1",
+        created_on: new Date(),
         note: {
           uuid: "note1",
           message: "This clip has an issue",
@@ -77,8 +83,8 @@ export const WithSoundEventNotes: Story = {
     clipNotes: [],
     soundEventNotes: [
       {
-        task_uuid: "task-1",
-        sound_event_uuid: "se-1",
+        sound_event_annotation_uuid: "se-1",
+        created_on: new Date(),
         note: {
           uuid: "note1",
           message: "This is a note",
@@ -96,8 +102,8 @@ export const WithSoundEventIssues: Story = {
     clipNotes: [],
     soundEventNotes: [
       {
-        task_uuid: "task-1",
-        sound_event_uuid: "se-1",
+        sound_event_annotation_uuid: "se-1",
+        created_on: new Date(),
         note: {
           uuid: "note1",
           message: "This sound event has an issue",
@@ -114,8 +120,8 @@ export const WithIssuesBoth: Story = {
     isLoading: false,
     clipNotes: [
       {
-        task_uuid: "task-1",
-        clip_uuid: "clip-1",
+        clip_annotation_uuid: "clip-1",
+        created_on: new Date(),
         note: {
           uuid: "note1",
           message: "This clip has an issue",
@@ -126,8 +132,8 @@ export const WithIssuesBoth: Story = {
     ],
     soundEventNotes: [
       {
-        task_uuid: "task-1",
-        sound_event_uuid: "se-1",
+        sound_event_annotation_uuid: "se-1",
+        created_on: new Date(),
         note: {
           uuid: "note2",
           message: "This sound event has an issue",

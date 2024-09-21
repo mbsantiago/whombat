@@ -18,7 +18,9 @@ export function registerNotesAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getNote(uuid: string): Promise<types.Note> {
-    let response = await instance.get(endpoints.detail, { params: { uuid } });
+    let response = await instance.get(endpoints.detail, {
+      params: { note_uuid: uuid },
+    });
     return schemas.NoteSchema.parse(response.data);
   }
 

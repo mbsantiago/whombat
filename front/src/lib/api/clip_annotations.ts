@@ -5,6 +5,18 @@ import { Page, GetMany } from "@/lib/api/common";
 import * as schemas from "@/lib/schemas";
 import * as types from "@/lib/types";
 
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/clip_annotations/",
+  get: "/api/v1/clip_annotations/detail/",
+  getAnnotationTask: "/api/v1/clip_annotations/detail/annotation_task/",
+  create: "/api/v1/clip_annotations/",
+  delete: "/api/v1/clip_annotations/",
+  addTag: "/api/v1/clip_annotations/detail/tags/",
+  removeTag: "/api/v1/clip_annotations/detail/tags/",
+  addNote: "/api/v1/clip_annotations/detail/notes/",
+  removeNote: "/api/v1/clip_annotations/detail/notes/",
+};
+
 export function registerClipAnnotationsAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
@@ -44,6 +56,15 @@ export function registerClipAnnotationsAPI(
       params: { clip_annotation_uuid: uuid },
     });
     return schemas.ClipAnnotationSchema.parse(response.data);
+  }
+
+  async function getAnnotationTask(
+    uuid: string,
+  ): Promise<types.AnnotationTask> {
+    const response = await instance.get(endpoints.getAnnotationTask, {
+      params: { clip_annotation_uuid: uuid },
+    });
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   async function deleteClipAnnotation(
@@ -117,6 +138,7 @@ export function registerClipAnnotationsAPI(
     create,
     getMany,
     get,
+    getAnnotationTask,
     delete: deleteClipAnnotation,
     addTag,
     removeTag,
@@ -124,14 +146,3 @@ export function registerClipAnnotationsAPI(
     removeNote,
   } as const;
 }
-
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/clip_annotations/",
-  get: "/api/v1/clip_annotations/detail/",
-  create: "/api/v1/clip_annotations/",
-  delete: "/api/v1/clip_annotations/",
-  addTag: "/api/v1/clip_annotations/detail/tags/",
-  removeTag: "/api/v1/clip_annotations/detail/tags/",
-  addNote: "/api/v1/clip_annotations/detail/notes/",
-  removeNote: "/api/v1/clip_annotations/detail/notes/",
-};
