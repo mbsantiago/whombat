@@ -1,14 +1,14 @@
-import { useCallback } from "react";
-import type { Interval, SpectrogramWindow, Position } from "@/lib/types";
 import useLifoQueue from "@/lib/hooks/utils/useLifoQueue";
+import type { Interval, Position, SpectrogramWindow } from "@/lib/types";
 import {
   adjustWindowToBounds,
   centerWindowOn,
+  expandWindow,
   scaleWindow,
   shiftWindow,
-  expandWindow,
   zoomWindowToPosition,
 } from "@/lib/utils/windows";
+import { useCallback } from "react";
 
 export type ViewportControls = {
   /** Sets the viewport to a new position and dimensions.*/

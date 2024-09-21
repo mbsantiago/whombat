@@ -1,9 +1,8 @@
-import Card from "@/lib/components/ui/Card";
+import type { NoteCreate } from "@/lib/api/notes";
 import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
 import SoundEventAnnotationNotes from "@/lib/components/sound_event_annotations/SoundEventAnnotationNotes";
 import SoundEventAnnotationTags from "@/lib/components/sound_event_annotations/SoundEventAnnotationTags";
-
-import type { NoteCreate } from "@/lib/api/notes";
+import Card from "@/lib/components/ui/Card";
 import type { SoundEventAnnotation, Tag } from "@/lib/types";
 
 export default function SelectedSoundEventAnnotation({

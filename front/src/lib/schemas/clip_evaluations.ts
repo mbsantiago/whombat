@@ -1,8 +1,9 @@
 import { z } from "zod";
+
 import { ClipAnnotationSchema } from "./clip_annotations";
 import { ClipPredictionSchema } from "./clip_predictions";
-import { SoundEventEvaluationSchema } from "./sound_event_evaluations";
 import { FeatureSchema } from "./features";
+import { SoundEventEvaluationSchema } from "./sound_event_evaluations";
 
 export const ClipEvaluationSchema = z.object({
   uuid: z.string().uuid(),

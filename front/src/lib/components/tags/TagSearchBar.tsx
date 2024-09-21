@@ -6,25 +6,23 @@
  * Additionally, it allows the user to create new tags by typing the tag in the
  * format `key:value` and pressing `Shift`+`Enter`.
  */
+import { Input } from "@/lib/components/inputs/index";
+import Tag from "@/lib/components/tags/Tag";
+import KeyboardKey from "@/lib/components/ui/KeyboardKey";
+import type { Tag as TagType } from "@/lib/types";
+import { type Color, getTagColor } from "@/lib/utils/tags";
+import { Float } from "@headlessui-float/react";
+import { Combobox } from "@headlessui/react";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import {
-  forwardRef,
-  useState,
-  useCallback,
   type ChangeEvent,
+  ComponentProps,
   type InputHTMLAttributes,
   type KeyboardEvent,
-  ComponentProps,
+  forwardRef,
+  useCallback,
+  useState,
 } from "react";
-import { Combobox } from "@headlessui/react";
-import { Float } from "@headlessui-float/react";
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
-
-import { Input } from "@/lib/components/inputs/index";
-import KeyboardKey from "@/lib/components/ui/KeyboardKey";
-import Tag from "@/lib/components/tags/Tag";
-import { getTagColor, type Color } from "@/lib/utils/tags";
-
-import type { Tag as TagType } from "@/lib/types";
 
 /**
  * ComboBoxSection component wraps its children with a div that has specific

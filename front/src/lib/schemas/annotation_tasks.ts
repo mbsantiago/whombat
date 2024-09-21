@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { ClipSchema } from "./clips";
+
 import { ClipAnnotationSchema } from "./clip_annotations";
+import { ClipSchema } from "./clips";
 import { UserSchema } from "./users";
 
 export const AnnotationStatusSchema = z.enum([

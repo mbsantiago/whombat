@@ -1,7 +1,7 @@
+import type { AnnotationTask } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import AnnotationProgress from "./AnnotationProgress";
-import type { AnnotationTask } from "@/lib/types";
 
 const meta: Meta<typeof AnnotationProgress> = {
   title: "Annotation/Progress",

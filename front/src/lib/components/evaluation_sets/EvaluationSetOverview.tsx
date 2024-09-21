@@ -1,17 +1,16 @@
-import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H3 } from "@/lib/components/ui/Headings";
 import {
   AddIcon,
   ModelIcon,
+  PredictionTypeIcon,
   TagsIcon,
   TasksIcon,
   UserIcon,
-  PredictionTypeIcon,
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
-
 import type { EvaluationSet } from "@/lib/types";
 
 export default function EvaluationSetOverview({
@@ -58,7 +57,9 @@ export default function EvaluationSetOverview({
       </div>
       <div className="flex flex-row gap-2 justify-around">
         <MetricBadge
-          icon={<PredictionTypeIcon className="inline-block w-8 h-8 text-blue-500" />}
+          icon={
+            <PredictionTypeIcon className="inline-block w-8 h-8 text-blue-500" />
+          }
           title="Prediction Type"
           value={evaluationSet.task}
         />

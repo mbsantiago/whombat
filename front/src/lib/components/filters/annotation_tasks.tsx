@@ -1,4 +1,6 @@
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import FilterBadge from "@/lib/components/filters/FilterBadge";
+import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import { BooleanFilter } from "@/lib/components/filters/Filters";
 import {
   CompleteIcon,
@@ -6,9 +8,6 @@ import {
   NeedsReviewIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
-import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values
 const annotationTaskFilterDefs: FilterDef<AnnotationTaskFilter>[] = [

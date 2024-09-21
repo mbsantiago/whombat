@@ -8,7 +8,6 @@ import {
   MIN_DB,
 } from "@/lib/constants";
 import { IntervalSchema, SpectrogramParametersSchema } from "@/lib/schemas";
-
 import type { Interval, SpectrogramParameters } from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {

@@ -1,6 +1,3 @@
-import { AxiosInstance } from "axios";
-import { z } from "zod";
-
 import { GetManySchema, Page } from "@/lib/api/common";
 import {
   ClipEvaluationSchema,
@@ -12,6 +9,8 @@ import {
   SoundEventPredictionSchema,
   TagSchema,
 } from "@/lib/schemas";
+import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 export const SoundEventEvaluationPageSchema = Page(SoundEventEvaluationSchema);
 

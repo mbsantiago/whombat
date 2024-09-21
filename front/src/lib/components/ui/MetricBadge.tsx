@@ -1,5 +1,4 @@
 import Spinner from "@/lib/components/ui/Spinner";
-
 import type { ReactNode } from "react";
 
 export default function MetricBadge({

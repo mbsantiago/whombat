@@ -1,7 +1,8 @@
 import { z } from "zod";
+
 import { ClipSchema } from "./clips";
-import { PredictionTagSchema } from "./tags";
 import { SoundEventPredictionSchema } from "./sound_event_predictions";
+import { PredictionTagSchema } from "./tags";
 
 export const ClipPredictionSchema = z.object({
   uuid: z.string().uuid(),

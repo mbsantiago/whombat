@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import {
   DEFAULT_CMAP,
   DEFAULT_FILTER_ORDER,
@@ -11,6 +9,7 @@ import {
   MIN_DB,
   MIN_SAMPLERATE,
 } from "@/lib/constants";
+import { z } from "zod";
 
 export const AudioSettingsSchema = z
   .object({

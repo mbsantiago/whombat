@@ -1,6 +1,5 @@
-import React from "react";
-
 import Link from "@/lib/components/ui/Link";
+import React from "react";
 
 export default function PluginInfo({
   name,

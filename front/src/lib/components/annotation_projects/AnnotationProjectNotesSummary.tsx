@@ -1,12 +1,10 @@
-import { type FC, type ComponentProps } from "react";
-
-import Loading from "@/lib/components/ui/Loading";
-import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H3 } from "@/lib/components/ui/Headings";
 import { CheckIcon, IssuesIcon } from "@/lib/components/icons";
-
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
+import Loading from "@/lib/components/ui/Loading";
 import type * as types from "@/lib/types";
+import { type ComponentProps, type FC } from "react";
 
 export default function ProjectNotesSummary({
   isLoading = false,

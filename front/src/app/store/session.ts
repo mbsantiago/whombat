@@ -1,7 +1,6 @@
 // Purpose: State management for session data
-import { StateCreator } from "zustand";
-
 import type { User } from "@/lib/types";
+import { StateCreator } from "zustand";
 
 interface SessionSlice {
   user: User | null;

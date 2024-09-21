@@ -1,13 +1,13 @@
-import { useRef, type RefObject } from "react";
 import type { CollectionChildren } from "@react-types/shared";
-import {
-  useListBox,
-  useOption,
-  useListBoxSection,
-  type AriaListBoxProps,
-} from "react-aria";
 import classNames from "classnames";
-import { type ListState, useListState, type Node } from "react-stately";
+import { type RefObject, useRef } from "react";
+import {
+  type AriaListBoxProps,
+  useListBox,
+  useListBoxSection,
+  useOption,
+} from "react-aria";
+import { type ListState, type Node, useListState } from "react-stately";
 
 export default function ListBox<T extends object>(
   props: {

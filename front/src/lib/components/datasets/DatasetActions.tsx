@@ -1,13 +1,33 @@
-import Alert from "@/lib/components/ui/Alert";
-import Button from "@/lib/components/ui/Button";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
 } from "@/lib/components/icons";
-
+import Alert from "@/lib/components/ui/Alert";
+import Button from "@/lib/components/ui/Button";
 import type { Dataset } from "@/lib/types";
+
+export default function DatasetActions({
+  dataset,
+  onDownloadDataset,
+  onDeleteDataset,
+}: {
+  dataset: Dataset;
+  onDownloadDataset?: () => void;
+  onDeleteDataset?: () => void;
+}) {
+  return (
+    <div className="flex flex-row gap-2 justify-center">
+      {onDownloadDataset != null ? (
+        <Button mode="text" variant="primary" onClick={onDownloadDataset}>
+          <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
+        </Button>
+      ) : null}
+      <DeleteDataset dataset={dataset} onDeleteDataset={onDeleteDataset} />
+    </div>
+  );
+}
 
 function DeleteDataset({
   dataset,
@@ -37,7 +57,7 @@ function DeleteDataset({
         return (
           <>
             <div className="flex flex-col gap-2 text-center">
-              <h2 className="text-center p-4 font-extrabold">{dataset.name}</h2>
+              <h2 className="p-4 font-extrabold text-center">{dataset.name}</h2>
               <p>
                 This action cannot be undone. This will permanently delete the
                 recordings in the dataset and all associated objects. This
@@ -74,26 +94,5 @@ function DeleteDataset({
         );
       }}
     </Alert>
-  );
-}
-
-export default function DatasetActions({
-  dataset,
-  onDownloadDataset,
-  onDeleteDataset,
-}: {
-  dataset: Dataset;
-  onDownloadDataset?: () => void;
-  onDeleteDataset?: () => void;
-}) {
-  return (
-    <div className="flex flex-row gap-2 justify-center">
-      {onDownloadDataset != null ? (
-        <Button mode="text" variant="primary" onClick={onDownloadDataset}>
-          <DownloadIcon className="inline-block mr-2 w-5 h-5" /> Download
-        </Button>
-      ) : null}
-      <DeleteDataset dataset={dataset} onDeleteDataset={onDeleteDataset} />
-    </div>
   );
 }

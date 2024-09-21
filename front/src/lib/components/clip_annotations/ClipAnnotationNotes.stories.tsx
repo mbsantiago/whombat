@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import ClipAnnotationNotes from "@/lib/components/clip_annotations/ClipAnnotationNotes";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof ClipAnnotationNotes> = {
   title: "ClipAnnotation/ClipAnnotationNotes",

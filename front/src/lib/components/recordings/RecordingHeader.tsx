@@ -1,12 +1,11 @@
-import { H3 } from "@/lib/components/ui/Headings";
 import { RecordingIcon } from "@/lib/components/icons";
+import { H3 } from "@/lib/components/ui/Headings";
 import Tooltip from "@/lib/components/ui/Tooltip";
+import type { Recording } from "@/lib/types";
 
 import RecordingDate from "./RecordingDate";
 import RecordingLocation from "./RecordingLocation";
 import RecordingTime from "./RecordingTime";
-
-import type { Recording } from "@/lib/types";
 
 /** Get the basename of a path
  * Taken from https://stackoverflow.com/a/25221100

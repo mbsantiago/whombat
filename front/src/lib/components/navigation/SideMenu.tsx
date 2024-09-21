@@ -1,7 +1,4 @@
-import classnames from "classnames";
-import { usePathname } from "next/navigation";
-
-import { HorizontalDivider } from "@/lib/components/layouts/Divider";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 import {
   AnnotationProjectIcon,
   DatasetsIcon,
@@ -13,12 +10,13 @@ import {
   SettingsIcon,
   WhombatIcon,
 } from "@/lib/components/icons";
+import { HorizontalDivider } from "@/lib/components/layouts/Divider";
 import Button from "@/lib/components/ui/Button";
 import Link from "@/lib/components/ui/Link";
 import Tooltip from "@/lib/components/ui/Tooltip";
-import useActiveUser from "@/app/hooks/api/useActiveUser";
-
 import type { User } from "@/lib/types";
+import classnames from "classnames";
+import { usePathname } from "next/navigation";
 import type { ComponentProps } from "react";
 
 function SideMenuLink({

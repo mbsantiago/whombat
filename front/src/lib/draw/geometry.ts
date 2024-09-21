@@ -4,7 +4,6 @@ import { drawLineString, drawMultiLineString } from "@/lib/draw/linestring";
 import drawOnset from "@/lib/draw/onset";
 import { drawMultiPoint, drawPoint } from "@/lib/draw/point";
 import { drawMultiPolygon, drawPolygon } from "@/lib/draw/polygon";
-
 import type { BorderStyle, FillStyle } from "@/lib/draw/styles";
 import type { Geometry } from "@/lib/types";
 

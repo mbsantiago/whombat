@@ -1,22 +1,19 @@
-import { useCallback } from "react";
-
-import useViewport from "@/lib/hooks/window/useViewport";
-import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
-import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
-import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
-import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
-import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
-
 import drawOnset from "@/lib/draw/onset";
-import { scaleTimeToViewport } from "@/lib/utils/geometry";
-import { getInitialViewingWindow } from "@/lib/utils/windows";
-
+import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
+import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
+import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
+import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
+import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
+import useViewport from "@/lib/hooks/window/useViewport";
 import type {
-  Recording,
   AudioSettings,
+  Recording,
   SpectrogramSettings,
   SpectrogramWindow,
 } from "@/lib/types";
+import { scaleTimeToViewport } from "@/lib/utils/geometry";
+import { getInitialViewingWindow } from "@/lib/utils/windows";
+import { useCallback } from "react";
 
 export default function useSpectrogram({
   recording,

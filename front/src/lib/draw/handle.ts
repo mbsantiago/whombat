@@ -1,5 +1,4 @@
-import { BorderStyle, BLUE, setBorderStyle } from "@/lib/draw/styles";
-
+import { BLUE, BorderStyle, setBorderStyle } from "@/lib/draw/styles";
 import type { Coordinates } from "@/lib/types";
 
 const DEFAULT_HANDLE_SIZE = 6;

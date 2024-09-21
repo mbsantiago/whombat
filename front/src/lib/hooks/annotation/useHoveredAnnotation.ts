@@ -1,18 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-
 import useWindowHover from "@/lib/hooks/window/useWindowHover";
-import {
-  isCloseToGeometry,
-  scaleGeometryToViewport,
-  scalePositionToViewport,
-} from "@/lib/utils/geometry";
-
 import type {
   Dimensions,
   Position,
   SoundEventAnnotation,
   SpectrogramWindow,
 } from "@/lib/types";
+import {
+  isCloseToGeometry,
+  scaleGeometryToViewport,
+  scalePositionToViewport,
+} from "@/lib/utils/geometry";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function useHoveredAnnotations({
   viewport,

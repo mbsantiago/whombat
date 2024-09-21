@@ -1,9 +1,9 @@
-import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
-import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/Empty";
+import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
 import { AddIcon, UploadIcon, WarningIcon } from "@/lib/components/icons";
-import type { AnnotationProject } from "@/lib/types";
 import ListLayout from "@/lib/components/layouts/List";
+import Dialog from "@/lib/components/ui/Dialog";
+import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjectList({
   annotationProjects,

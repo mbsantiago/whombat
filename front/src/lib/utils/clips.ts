@@ -1,7 +1,6 @@
 import { type ClipCreateMany } from "@/lib/api/clips";
-import { getRandomSubarray } from "@/lib/utils/arrays";
-
 import type { Recording } from "@/lib/types";
+import { getRandomSubarray } from "@/lib/utils/arrays";
 
 export type ClipExtraction = {
   subsampleRecordings: boolean;

@@ -1,11 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-
 import drawGeometry from "@/lib/draw/geometry";
 import { DEFAULT_LINESTRING_STYLE } from "@/lib/draw/linestring";
-import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
-import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-
 import type { BorderStyle } from "@/lib/draw/styles";
+import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
 import type {
   Coordinates,
   Dimensions,
@@ -13,6 +9,8 @@ import type {
   Position,
   SpectrogramWindow,
 } from "@/lib/types";
+import { scaleGeometryToViewport } from "@/lib/utils/geometry";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useCreateLineString({
   viewport,

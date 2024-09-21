@@ -1,19 +1,17 @@
-import { useCallback, useState } from "react";
-import { mergeProps } from "react-aria";
-
 // import useSpectrogramDrag from "@/lib/hooks/spectrogram/useSpectrogramDrag";
 import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
+import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import useWindowScroll from "@/lib/hooks/window/useWindowScroll";
-
 import type {
-  Position,
-  SpectrogramWindow,
   CanvasHandlers,
-  ScrollEvent,
   MoveHandler,
   MoveStartHandler,
+  Position,
+  ScrollEvent,
+  SpectrogramWindow,
 } from "@/lib/types";
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
+import { useCallback, useState } from "react";
+import { mergeProps } from "react-aria";
 
 /**
  * The motion modes supported by the spectrogram motions.

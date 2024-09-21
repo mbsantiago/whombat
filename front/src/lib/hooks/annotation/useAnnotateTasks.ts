@@ -1,3 +1,14 @@
+import api from "@/app/api";
+import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
+import {
+  AnnotationTaskFilter,
+  type AnnotationTaskPage,
+} from "@/lib/api/annotation_tasks";
+import type {
+  AnnotationStatus,
+  AnnotationTask,
+  ClipAnnotation,
+} from "@/lib/types";
 import {
   type UseMutationResult,
   type UseQueryResult,
@@ -7,19 +18,6 @@ import {
 } from "@tanstack/react-query";
 import { type AxiosError } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-import {
-  AnnotationTaskFilter,
-  type AnnotationTaskPage,
-} from "@/lib/api/annotation_tasks";
-import api from "@/app/api";
-import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
-
-import type {
-  AnnotationStatus,
-  AnnotationTask,
-  ClipAnnotation,
-} from "@/lib/types";
 
 type AnnotationState = {
   /** Currently selected annotation task index */

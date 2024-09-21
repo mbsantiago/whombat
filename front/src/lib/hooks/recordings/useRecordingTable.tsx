@@ -1,10 +1,4 @@
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { useState, useMemo, type FC } from "react";
-
+import type { RecordingUpdate } from "@/lib/api/recordings";
 import {
   DateIcon,
   LocationIcon,
@@ -13,8 +7,6 @@ import {
   TagIcon,
   TimeIcon,
 } from "@/lib/components/icons";
-import { type Color } from "@/lib/utils/tags";
-import Button from "@/lib/components/ui/Button";
 import TableCell from "@/lib/components/tables/TableCell";
 import Checkbox from "@/lib/components/tables/TableCheckbox";
 import TableHeader from "@/lib/components/tables/TableHeader";
@@ -24,9 +16,15 @@ import TableTags from "@/lib/components/tables/TableTags";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
-import type { RecordingUpdate } from "@/lib/api/recordings";
+import Button from "@/lib/components/ui/Button";
 import type { Note, Recording, Tag } from "@/lib/types";
+import { type Color } from "@/lib/utils/tags";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { type FC, useMemo, useState } from "react";
 
 const defaultPathFormatter = (path: string) => path;
 

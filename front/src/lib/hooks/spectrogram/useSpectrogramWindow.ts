@@ -1,16 +1,14 @@
-import { useCallback, useMemo } from "react";
-
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import api from "@/app/api";
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import drawImage from "@/lib/draw/image";
 import useImage from "@/lib/hooks/spectrogram/useImage";
-
 import type {
   Interval,
   Recording,
   SpectrogramParameters,
   SpectrogramWindow,
 } from "@/lib/types";
+import { useCallback, useMemo } from "react";
 
 type GetUrlFn = ({
   recording,

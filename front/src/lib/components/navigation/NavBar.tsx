@@ -1,12 +1,10 @@
+import useActiveUser from "@/app/hooks/api/useActiveUser";
+import { HorizontalDivider } from "@/lib/components/layouts/Divider";
+import type { User } from "@/lib/types";
 import { Menu, Transition } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/24/outline";
 import classnames from "classnames";
 import { Fragment } from "react";
-import useActiveUser from "@/app/hooks/api/useActiveUser";
-
-import { HorizontalDivider } from "@/lib/components/layouts/Divider";
-
-import type { User } from "@/lib/types";
 
 function Brand() {
   return (

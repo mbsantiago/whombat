@@ -1,22 +1,20 @@
+import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
+import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
+import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
+import AnnotationTaskBase from "@/lib/components/annotation/AnnotationTask";
+import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
+import useAnnotateTasks from "@/lib/hooks/annotation/useAnnotateTasks";
+import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
+import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 import { useMemo } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
-import AnnotationTaskBase from "@/lib/components/annotation/AnnotationTask";
-import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
-import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
-import AnnotationContext from "./AnnotationContext";
-import AnnotationTagPalette from "./AnnotationTagPalette";
-import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
 import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
+import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
 import ProjectTagSearch from "../tags/ProjectTagsSearch";
-
-import useAnnotateTasks from "@/lib/hooks/annotation/useAnnotateTasks";
-import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
-import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
-import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-
-import type { AnnotationProject, AnnotationTask } from "@/lib/types";
+import AnnotationContext from "./AnnotationContext";
+import AnnotationTagPalette from "./AnnotationTagPalette";
 
 export default function AnnotateTasks({
   annotationProject,

@@ -1,4 +1,5 @@
 "use client";
+
 import Empty from "@/lib/components/Empty";
 
 export default function Page() {

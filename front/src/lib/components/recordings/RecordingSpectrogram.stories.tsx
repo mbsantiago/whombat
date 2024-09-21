@@ -1,17 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
-import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
-import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import Player from "@/lib/components/audio/Player";
+import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
 import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 import Canvas from "@/lib/components/spectrograms/Canvas";
 import ViewportBar from "@/lib/components/spectrograms/ViewportBar";
-
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
 } from "@/lib/constants";
 import type { SpectrogramWindow } from "@/lib/types";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof RecordingSpectrogram> = {
   title: "Recordings/Spectrogram",

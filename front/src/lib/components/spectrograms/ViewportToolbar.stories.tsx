@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof ViewportToolbar> = {
   title: "Spectrograms/ViewportToolbar",

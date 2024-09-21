@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import RecordingHeader from "@/lib/components/recordings/RecordingHeader";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof RecordingHeader> = {
   title: "Recordings/Header",

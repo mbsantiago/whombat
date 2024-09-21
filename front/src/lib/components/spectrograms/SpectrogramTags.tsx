@@ -1,20 +1,19 @@
-import classNames from "classnames";
-import { useMemo } from "react";
-
 import { CloseIcon } from "@/lib/components/icons";
-import AddTagButton from "../tags/AddTagButton";
-import { getLabelPosition, getTagKey } from "@/lib/utils/tags";
-import { isGeometryInWindow } from "@/lib/utils/geometry";
 import useElementSize from "@/lib/hooks/utils/useElementSize";
-
-import { getTagColor, type TagElement, type Color } from "@/lib/utils/tags";
-import type { ComponentProps, ReactNode, FC } from "react";
 import type {
   Dimensions,
   SoundEventAnnotation,
   SpectrogramWindow,
   Tag as TagType,
 } from "@/lib/types";
+import { isGeometryInWindow } from "@/lib/utils/geometry";
+import { getLabelPosition, getTagKey } from "@/lib/utils/tags";
+import { type Color, type TagElement, getTagColor } from "@/lib/utils/tags";
+import classNames from "classnames";
+import { useMemo } from "react";
+import type { ComponentProps, FC, ReactNode } from "react";
+
+import AddTagButton from "../tags/AddTagButton";
 
 export default function SpectrogramTags({
   children,

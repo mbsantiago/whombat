@@ -1,11 +1,9 @@
+import { DatasetSchema, RecordingStateSchema } from "@/lib/schemas";
+import type { Dataset, RecordingState } from "@/lib/types";
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { DatasetSchema, RecordingStateSchema } from "@/lib/schemas";
-
 import { GetManySchema, Page, downloadContent } from "./common";
-
-import type { Dataset, RecordingState } from "@/lib/types";
 
 export function registerDatasetAPI({
   instance,

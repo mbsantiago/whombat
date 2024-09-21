@@ -1,28 +1,27 @@
-import { useEffect, useCallback, useRef } from "react";
-import type {
-  Recording,
-  SpectrogramSettings,
-  Interval,
-  SpectrogramWindow,
-  SpectrogramParameters,
-  AudioSettings,
-} from "@/lib/types";
-
+import api from "@/app/api";
+import drawFreqAxis from "@/lib/draw/freqAxis";
 import drawImage from "@/lib/draw/image";
+import drawTimeAxis from "@/lib/draw/timeAxis";
+import type {
+  AudioSettings,
+  Interval,
+  Recording,
+  SpectrogramParameters,
+  SpectrogramSettings,
+  SpectrogramWindow,
+} from "@/lib/types";
 import {
-  calculateSpectrogramChunkIntervals,
   SPECTROGRAM_CHUNK_BUFFER,
   SPECTROGRAM_CHUNK_SIZE,
+  calculateSpectrogramChunkIntervals,
 } from "@/lib/utils/chunks";
-import useSpectrogramParameters from "./useSpectrogramParameters";
-import drawTimeAxis from "@/lib/draw/timeAxis";
-import drawFreqAxis from "@/lib/draw/freqAxis";
+import { intervalIntersection, scaleInterval } from "@/lib/utils/geometry";
+import { useCallback, useEffect, useRef } from "react";
+
 import useSpectrogramChunksState, {
   type ChunkState,
 } from "./useSpectrogramChunksState";
-import { intervalIntersection, scaleInterval } from "@/lib/utils/geometry";
-
-import api from "@/app/api";
+import useSpectrogramParameters from "./useSpectrogramParameters";
 
 export type RecordingSpectrogramInterface = {
   /** A function to draw the spectrogram on a canvas. */

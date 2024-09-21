@@ -1,18 +1,19 @@
 import { z } from "zod";
-import { TagSchema } from "./tags";
-import { TimeStringSchema } from "./common";
-import { ClipSchema } from "./clips";
+
 import { AnnotationProjectSchema } from "./annotation_projects";
-import { EvaluationSetSchema } from "./evaluation_sets";
-import { SoundEventAnnotationSchema } from "./sound_event_annotations";
-import { RecordingSchema } from "./recordings";
-import { ClipAnnotationSchema } from "./clip_annotations";
-import { SoundEventPredictionSchema } from "./sound_event_predictions";
-import { ClipPredictionSchema } from "./clip_predictions";
-import { EvaluationSchema } from "./evaluations";
-import { DatasetSchema } from "./datasets";
-import { SoundEventSchema } from "./sound_events";
 import { AnnotationTaskSchema } from "./annotation_tasks";
+import { ClipAnnotationSchema } from "./clip_annotations";
+import { ClipPredictionSchema } from "./clip_predictions";
+import { ClipSchema } from "./clips";
+import { TimeStringSchema } from "./common";
+import { DatasetSchema } from "./datasets";
+import { EvaluationSetSchema } from "./evaluation_sets";
+import { EvaluationSchema } from "./evaluations";
+import { RecordingSchema } from "./recordings";
+import { SoundEventAnnotationSchema } from "./sound_event_annotations";
+import { SoundEventPredictionSchema } from "./sound_event_predictions";
+import { SoundEventSchema } from "./sound_events";
+import { TagSchema } from "./tags";
 import { UserSchema } from "./users";
 
 export const FeatureFilterSchema = z.object({
@@ -143,4 +144,12 @@ export const SoundEventAnnotationNoteFilterSchema = z.object({
   sound_event_annotation: SoundEventAnnotationSchema.optional(),
   clip_annotation: ClipAnnotationSchema.optional(),
   annotation_project: AnnotationProjectSchema.optional(),
+});
+
+export const EvaluationSetFilterSchema = z.object({
+  search: z.string().optional(),
+});
+
+export const AnnotationProjectFilterSchema = z.object({
+  search: z.string().optional(),
 });

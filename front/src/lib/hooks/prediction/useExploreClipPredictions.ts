@@ -1,10 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
-
 import useClipPredictions from "@/app/hooks/api/useClipPredictions";
-
 import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { ClipPrediction, Interval } from "@/lib/types";
+import { useCallback, useMemo, useState } from "react";
 
 type ExplorationState = {
   filter: Filter<ClipPredictionFilter>;

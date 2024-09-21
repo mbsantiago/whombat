@@ -1,12 +1,11 @@
-import { type FC } from "react";
-
-import Button from "@/lib/components/ui/Button";
 import { DeleteIcon, TagIcon } from "@/lib/components/icons";
-import Popover from "@/lib/components/ui/Popover";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
+import Button from "@/lib/components/ui/Button";
+import Popover from "@/lib/components/ui/Popover";
 import { type Tag } from "@/lib/types";
+import { type FC } from "react";
 
 /**
  * SelectedMenu Component

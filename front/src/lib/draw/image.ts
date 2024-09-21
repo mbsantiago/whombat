@@ -1,5 +1,5 @@
 import type { SpectrogramWindow } from "@/lib/types";
-import { intersectWindows, getViewportPosition } from "@/lib/utils/windows";
+import { getViewportPosition, intersectWindows } from "@/lib/utils/windows";
 
 const FONT_SIZE = 30;
 const FONT_FAMILY = "system-ui";

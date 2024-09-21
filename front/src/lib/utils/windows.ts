@@ -1,11 +1,10 @@
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import { DEFAULT_OVERLAP, DEFAULT_WINDOW_SIZE } from "@/lib/constants";
-
 import type {
   Interval,
+  Position,
   SpectrogramParameters,
   SpectrogramWindow,
-  Position,
 } from "@/lib/types";
 
 /** Size of the target initial spectrogram in pixels. */

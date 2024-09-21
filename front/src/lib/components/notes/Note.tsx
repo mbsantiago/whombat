@@ -1,11 +1,10 @@
-import Button from "@/lib/components/ui/Button";
 import {
   DeleteIcon,
+  GoToIcon,
   IssueIcon,
   NoteIcon,
-  GoToIcon,
 } from "@/lib/components/icons";
-
+import Button from "@/lib/components/ui/Button";
 import type * as types from "@/lib/types";
 
 export type NoteProps = {
@@ -41,7 +40,9 @@ export default function Note({
           <span className="flex-1">
             {note.created_by?.username || "anonymous"}
           </span>
-          {noteType != null ? <span className="font-thin">{noteType}</span> : null}
+          {noteType != null ? (
+            <span className="font-thin">{noteType}</span>
+          ) : null}
           <span className="text-xs font-normal text-stone-400">
             {" "}
             {note.created_on.toLocaleString()}

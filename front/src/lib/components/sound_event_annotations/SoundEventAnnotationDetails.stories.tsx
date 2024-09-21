@@ -1,7 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
 import type { SoundEventAnnotation } from "@/lib/types";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof SoundEventAnnotationDetails> = {
   title: "SoundEventAnnotations/Details",
@@ -28,10 +27,9 @@ const base: SoundEventAnnotation = {
       { name: "low_freq", value: 6000 },
       { name: "high_freq", value: 8000 },
       { name: "bandwidth", value: 2000 },
-    ]
+    ],
   },
 };
-
 
 export const Primary: Story = {
   args: {

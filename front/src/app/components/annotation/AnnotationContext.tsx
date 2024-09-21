@@ -1,10 +1,9 @@
+import Error from "@/app/error";
+import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
+import useStore from "@/app/store";
 import AnnotationContextBase from "@/lib/components/annotation/AnnotationContext";
 import Loading from "@/lib/components/ui/Loading";
-import Error from "@/app/error";
 import type { AnnotationTask, Recording, Tag } from "@/lib/types";
-
-import useStore from "@/app/store";
-import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
 
 export default function AnnotationContext({
   task,

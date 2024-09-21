@@ -1,6 +1,3 @@
-import { AxiosInstance } from "axios";
-import { z } from "zod";
-
 import { GetManySchema, Page } from "@/lib/api/common";
 import {
   ClipAnnotationSchema,
@@ -12,8 +9,9 @@ import {
   PredictedTagFilterSchema,
   TagSchema,
 } from "@/lib/schemas";
-
 import type { ClipEvaluation } from "@/lib/types";
+import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 export const ClipEvaluationPageSchema = Page(ClipEvaluationSchema);
 

@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-
 import drawGeometry from "@/lib/draw/geometry";
 import { DEFAULT_INTERVAL_STYLE } from "@/lib/draw/interval";
 import { type Style } from "@/lib/draw/styles";
 import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
-import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-
 import type {
   Dimensions,
   Position,
   SpectrogramWindow,
   TimeInterval,
 } from "@/lib/types";
+import { scaleGeometryToViewport } from "@/lib/utils/geometry";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useCreateInterval({
   viewport,

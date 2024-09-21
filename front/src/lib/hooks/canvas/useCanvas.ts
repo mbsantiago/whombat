@@ -1,24 +1,23 @@
-import { useRef, useCallback } from "react";
-import { mergeProps } from "react-aria";
-
-import type {
-  SpectrogramWindow,
-  HoverHandler,
-  MoveStartHandler,
-  MoveEndHandler,
-  MoveHandler,
-  PressHandler,
-  ScrollHandler,
-  DoublePressHandler,
-  DrawFn,
-} from "@/lib/types";
-import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
 import useCanvasDraw from "@/lib/hooks/draw/useCanvas";
+import useViewportDoublePress from "@/lib/hooks/interactions/useViewportDoublePress";
 import useViewportMove from "@/lib/hooks/interactions/useViewportMove";
 import useViewportPosition from "@/lib/hooks/interactions/useViewportPosition";
 import useViewportPress from "@/lib/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/lib/hooks/interactions/useViewportScroll";
-import useViewportDoublePress from "@/lib/hooks/interactions/useViewportDoublePress";
+import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
+import type {
+  DoublePressHandler,
+  DrawFn,
+  HoverHandler,
+  MoveEndHandler,
+  MoveHandler,
+  MoveStartHandler,
+  PressHandler,
+  ScrollHandler,
+  SpectrogramWindow,
+} from "@/lib/types";
+import { useCallback, useRef } from "react";
+import { mergeProps } from "react-aria";
 
 /**
  * A comprehensive custom React hook for managing various interactions and

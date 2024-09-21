@@ -1,18 +1,16 @@
-import { useHotkeys } from "react-hotkeys-hook";
-
+import Player from "@/app/components/audio/Player";
+import Canvas from "@/app/components/spectrograms/Canvas";
+import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
+import ViewportBar from "@/app/components/spectrograms/ViewportBar";
+import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
-import useRecordingViewport from "@/lib/hooks/window/useRecordingViewport";
-import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
-
-import Player from "@/app/components/audio/Player";
-import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
-import ViewportBar from "@/app/components/spectrograms/ViewportBar";
-import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
-import Canvas from "@/app/components/spectrograms/Canvas";
 import RecordingSpectrogramBase from "@/lib/components/recordings/RecordingSpectrogram";
+import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
+import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
+import useRecordingViewport from "@/lib/hooks/window/useRecordingViewport";
 import type { Recording } from "@/lib/types";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function RecordingSpectrogram({
   recording,

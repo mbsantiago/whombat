@@ -1,9 +1,9 @@
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
+import type { Tag } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
 import SelectedMenu from "./SelectedMenu";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import type { Tag } from "@/lib/types";
 
 const meta: Meta<typeof SelectedMenu> = {
   title: "Table/SelectedMenu",

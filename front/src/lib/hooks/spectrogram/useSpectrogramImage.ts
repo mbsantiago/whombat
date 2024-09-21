@@ -1,6 +1,5 @@
 import useRecordingSegments from "@/lib/hooks/spectrogram/useRecordingSegments";
 import useSpectrogramWindow from "@/lib/hooks/spectrogram/useSpectrogramWindow";
-
 import type {
   Recording,
   SpectrogramParameters,

@@ -1,27 +1,25 @@
-import { useMemo, useState, type ComponentProps } from "react";
-
-import {
-  AddIcon,
-  TagsIcon,
-  DescendingIcon,
-  AscendingIcon,
-} from "@/lib/components/icons";
-import Help from "@/lib/components/ui/Help";
-import Button from "@/lib/components/ui/Button";
-import Card from "@/lib/components/ui/Card";
-import Empty from "@/lib/components/Empty";
-import ListSearch from "@/lib/components/lists/ListSearch";
-import TagComponent from "@/lib/components/tags/Tag";
-import Loading from "@/lib/components/ui/Loading";
-import { H4 } from "@/lib/components/ui/Headings";
-import { getTagKey, getTagColor, Color } from "@/lib/utils/tags";
-import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
-
 import type {
   ClipAnnotationTag,
   SoundEventAnnotationTag,
 } from "@/lib/api/tags";
+import Empty from "@/lib/components/Empty";
+import {
+  AddIcon,
+  AscendingIcon,
+  DescendingIcon,
+  TagsIcon,
+} from "@/lib/components/icons";
+import ListSearch from "@/lib/components/lists/ListSearch";
+import TagComponent from "@/lib/components/tags/Tag";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H4 } from "@/lib/components/ui/Headings";
+import Help from "@/lib/components/ui/Help";
+import Loading from "@/lib/components/ui/Loading";
+import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 import type { AnnotationProject, Tag } from "@/lib/types";
+import { Color, getTagColor, getTagKey } from "@/lib/utils/tags";
+import { type ComponentProps, useMemo, useState } from "react";
 
 const _emptyClipList: ClipAnnotationTag[] = [];
 const _emptySEList: SoundEventAnnotationTag[] = [];

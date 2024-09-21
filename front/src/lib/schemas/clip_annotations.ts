@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { UserSchema } from "./users";
+
 import { ClipSchema } from "./clips";
-import { NoteSchema, NoteAssociationSchema } from "./notes";
-import { TagSchema, TagAssociationSchema } from "./tags";
+import { NoteAssociationSchema, NoteSchema } from "./notes";
 import { SoundEventAnnotationSchema } from "./sound_event_annotations";
+import { TagAssociationSchema, TagSchema } from "./tags";
+import { UserSchema } from "./users";
 
 export const ClipAnnotationSchema = z.object({
   uuid: z.string().uuid(),

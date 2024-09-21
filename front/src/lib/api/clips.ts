@@ -1,6 +1,3 @@
-import { AxiosInstance } from "axios";
-import { z } from "zod";
-
 import {
   ClipSchema,
   DatasetSchema,
@@ -8,10 +5,11 @@ import {
   NumberFilterSchema,
   RecordingSchema,
 } from "@/lib/schemas";
+import type { Clip } from "@/lib/types";
+import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 import { GetManySchema, Page } from "./common";
-
-import type { Clip } from "@/lib/types";
 
 export const ClipCreateSchema = z
   .object({

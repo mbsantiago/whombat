@@ -1,17 +1,15 @@
-import { type FC } from "react";
-
 import Empty from "@/lib/components/Empty";
-import { H4 } from "@/lib/components/ui/Headings";
-import { TagsIcon, DeleteIcon } from "@/lib/components/icons";
-import Button from "@/lib/components/ui/Button";
+import { DeleteIcon, TagsIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
-import { getTagColor, type Color } from "@/lib/utils/tags";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
+import Button from "@/lib/components/ui/Button";
+import { H4 } from "@/lib/components/ui/Headings";
 import type { Tag } from "@/lib/types";
+import { type Color, getTagColor } from "@/lib/utils/tags";
+import { type FC } from "react";
 
 const _emptyTags: Tag[] = [];
 

@@ -1,6 +1,8 @@
+import type { RecordingFilter } from "@/lib/api/recordings";
 import FilterBadge, {
   NumberFilterBadge,
 } from "@/lib/components/filters/FilterBadge";
+import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import {
   BooleanFilter,
   FloatFilter,
@@ -17,9 +19,6 @@ import {
   TimeExpansionIcon,
   TimeIcon,
 } from "@/lib/components/icons";
-
-import type { RecordingFilter } from "@/lib/api/recordings";
-import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values
 const recordingFilterDefs: FilterDef<RecordingFilter>[] = [

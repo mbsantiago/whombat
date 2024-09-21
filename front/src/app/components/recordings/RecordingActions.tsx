@@ -1,8 +1,7 @@
-import RecordingActionsBase from "@/lib/components/recordings/RecordingActions";
-import Loading from "@/app/loading";
 import Error from "@/app/error";
 import useRecording from "@/app/hooks/api/useRecording";
-
+import Loading from "@/app/loading";
+import RecordingActionsBase from "@/lib/components/recordings/RecordingActions";
 import type { Recording } from "@/lib/types";
 
 export default function RecordingActions({

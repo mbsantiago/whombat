@@ -1,14 +1,12 @@
+import { CloseIcon, SearchIcon } from "@/lib/components/icons";
+import Button from "@/lib/components/ui/Button";
+import Loading from "@/lib/components/ui/Loading";
 import { ReactElement, useRef } from "react";
+import type { InputHTMLAttributes } from "react";
 import { VisuallyHidden, useSearchField } from "react-aria";
 import { type SearchFieldProps, useSearchFieldState } from "react-stately";
 
-import Button from "@/lib/components/ui/Button";
-import { CloseIcon, SearchIcon } from "@/lib/components/icons";
-import Loading from "@/lib/components/ui/Loading";
-
 import Input from "./Input";
-
-import type { InputHTMLAttributes } from "react";
 
 /**
  * Search component that provides a search input field with optional loading

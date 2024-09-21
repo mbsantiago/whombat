@@ -1,12 +1,12 @@
+import { type Dataset } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
 import DatasetDetail from "./DatasetDetail";
-import DatasetUpdate from "./DatasetUpdate";
+import DatasetNotesSummary from "./DatasetNotesSummary";
 import DatasetOverview from "./DatasetOverview";
 import DatasetTagsSummary from "./DatasetTagsSummary";
-import DatasetNotesSummary from "./DatasetNotesSummary";
-import { type Dataset } from "@/lib/types";
+import DatasetUpdate from "./DatasetUpdate";
 
 const meta: Meta<typeof DatasetDetail> = {
   title: "Dataset/Detail",

@@ -1,19 +1,19 @@
+import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
+import {
+  type Note,
+  type Recording,
+  type SpectrogramWindow,
+  type Tag,
+} from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
-import RecordingHeader from "./RecordingHeader";
-import RecordingTagBar from "./RecordingTagBar";
-import RecordingSpectrogram from "./RecordingSpectrogram";
-import RecordingNotes from "./RecordingNotes";
 import RecordingActions from "./RecordingActions";
-import RecordingMediaInfo from "./RecordingMediaInfo";
+import RecordingHeader from "./RecordingHeader";
 import RecordingMap from "./RecordingMap";
-import {
-  type Recording,
-  type Tag,
-  type SpectrogramWindow,
-  type Note,
-} from "@/lib/types";
+import RecordingMediaInfo from "./RecordingMediaInfo";
+import RecordingNotes from "./RecordingNotes";
+import RecordingSpectrogram from "./RecordingSpectrogram";
+import RecordingTagBar from "./RecordingTagBar";
 
 const meta: Meta<typeof RecordingDetail> = {
   title: "Recordings/Detail",

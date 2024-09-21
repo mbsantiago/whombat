@@ -1,13 +1,12 @@
-import { useCallback } from "react";
-import ClipAnnotationTagsBase from "@/lib/components/clip_annotations/ClipAnnotationTags";
-import ProjectTagSearch from "../tags/ProjectTagsSearch";
-import toast from "react-hot-toast";
-
-import useStore from "@/app/store";
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-
+import useStore from "@/app/store";
+import ClipAnnotationTagsBase from "@/lib/components/clip_annotations/ClipAnnotationTags";
 import type { TagSearchBarProps } from "@/lib/components/tags/TagSearchBar";
 import type { ClipAnnotation } from "@/lib/types";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
+
+import ProjectTagSearch from "../tags/ProjectTagsSearch";
 
 export default function ClipAnnotationTags({
   clipAnnotation,

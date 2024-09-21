@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import Search from "@/lib/components/inputs/Search";
 import InputGroup from "@/lib/components/inputs/InputGroup";
+import Search from "@/lib/components/inputs/Search";
 import Select from "@/lib/components/inputs/Select";
+import { useMemo } from "react";
 
 const DEFAULT_LIMIT_OPTIONS = [5, 10, 20, 50, 100];
 

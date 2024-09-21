@@ -1,8 +1,8 @@
+import { CheckIcon } from "@/lib/components/icons";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { CheckIcon } from "@/lib/components/icons";
-import SectionTabs from "./SectionTabs";
 import Tab from "../ui/Tab";
+import SectionTabs from "./SectionTabs";
 
 const meta: Meta<typeof SectionTabs> = {
   title: "Navigation/SectionTabs",

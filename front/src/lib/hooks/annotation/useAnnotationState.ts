@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from "react";
+import type { GeometryType, SoundEventAnnotation } from "@/lib/types";
+import { useCallback, useMemo, useState } from "react";
 
 import type { SpectrogramState } from "../spectrogram/useSpectrogramState";
-import type { SoundEventAnnotation, GeometryType } from "@/lib/types";
 
 export type AnnotationMode = "select" | "draw" | "edit" | "delete" | "idle";
 

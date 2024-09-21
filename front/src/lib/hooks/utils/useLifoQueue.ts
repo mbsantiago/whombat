@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, SetStateAction } from "react";
+import { SetStateAction, useCallback, useRef, useState } from "react";
 
 export interface QueueMethods<T> {
   push(item: T): void;

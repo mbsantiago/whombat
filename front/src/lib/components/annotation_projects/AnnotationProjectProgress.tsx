@@ -1,8 +1,4 @@
-import { useMemo } from "react";
-
-import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
-import { H3 } from "@/lib/components/ui/Headings";
 import {
   AddIcon,
   CompleteIcon,
@@ -11,12 +7,14 @@ import {
   VerifiedIcon,
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
-import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
-
 import type { AnnotationTask } from "@/lib/types";
+import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
+import { useMemo } from "react";
 
 const _emptyList: AnnotationTask[] = [];
 

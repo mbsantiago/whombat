@@ -1,20 +1,18 @@
 import {
-  useRouter,
-  useSearchParams,
-  useSelectedLayoutSegment,
-} from "next/navigation";
-
-import {
+  ClipsIcon,
   DatasetIcon,
   EditIcon,
   TagsIcon,
   TasksIcon,
-  ClipsIcon,
 } from "@/lib/components/icons";
 import SectionTabs from "@/lib/components/navigation/SectionTabs";
 import Tab from "@/lib/components/ui/Tab";
-
 import type { AnnotationProject } from "@/lib/types";
+import {
+  useRouter,
+  useSearchParams,
+  useSelectedLayoutSegment,
+} from "next/navigation";
 
 export default function AnnotationProjectHeader({
   annotationProject,
@@ -80,15 +78,39 @@ export default function AnnotationProjectHeader({
   );
 }
 
-{/* <Tab */}
-{/*   key="clips" */}
-{/*   active={selectedLayoutSegment === "clips"} */}
-{/*   onClick={() => { */}
-{/*     router.push( */}
-{/*       `/annotation_projects/detail/clips/?${params.toString()}`, */}
-{/*     ); */}
-{/*   }} */}
-{/* > */}
-{/*   <ClipsIcon className="w-5 h-5 align-middle" /> */}
-{/*   Clips */}
-{/* </Tab>, */}
+{
+  /* <Tab */
+}
+{
+  /*   key="clips" */
+}
+{
+  /*   active={selectedLayoutSegment === "clips"} */
+}
+{
+  /*   onClick={() => { */
+}
+{
+  /*     router.push( */
+}
+{
+  /*       `/annotation_projects/detail/clips/?${params.toString()}`, */
+}
+{
+  /*     ); */
+}
+{
+  /*   }} */
+}
+{
+  /* > */
+}
+{
+  /*   <ClipsIcon className="w-5 h-5 align-middle" /> */
+}
+{
+  /*   Clips */
+}
+{
+  /* </Tab>, */
+}

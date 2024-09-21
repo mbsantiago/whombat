@@ -1,6 +1,7 @@
-import { renderHook, act } from "@testing-library/react";
-import useSpectrogramSettings from "./useSpectrogramSettings";
 import type { SpectrogramSettings } from "@/lib/types";
+import { act, renderHook } from "@testing-library/react";
+
+import useSpectrogramSettings from "./useSpectrogramSettings";
 
 describe("useSpectrogramSettings Hook", () => {
   const initialSettings: SpectrogramSettings = {

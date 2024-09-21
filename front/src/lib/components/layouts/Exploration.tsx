@@ -1,15 +1,13 @@
-import { useState, useMemo } from "react";
-
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
+import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import { FilterIcon } from "@/lib/components/icons";
 import Tabs from "@/lib/components/navigation/SectionTabs";
 import useFilter from "@/lib/hooks/utils/useFilter";
-
-import type { ReactNode } from "react";
-import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { SpectrogramParameters } from "@/lib/types";
+import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 
 type Tab = {
   id: string;

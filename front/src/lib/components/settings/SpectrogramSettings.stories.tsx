@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof SpectrogramSettings> = {
   title: "Settings/SpectrogramsSettings",

@@ -1,10 +1,8 @@
-import { type AxiosError } from "axios";
-import { useQuery as useReactQuery } from "@tanstack/react-query";
-
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type { AnnotationTask, ClipAnnotation } from "@/lib/types";
+import { useQuery as useReactQuery } from "@tanstack/react-query";
+import { type AxiosError } from "axios";
 
 export default function useAnnotationTask({
   uuid,
@@ -39,7 +37,7 @@ export default function useAnnotationTask({
     secondaryName: "annotations",
     queryFn: api.annotationTasks.getAnnotations,
     enabled: withAnnotations,
-  }) as ReturnType<typeof useReactQuery<ClipAnnotation>>
+  }) as ReturnType<typeof useReactQuery<ClipAnnotation>>;
 
   const deleteAnnotationTask = useDestruction({
     mutationFn: api.annotationTasks.delete,

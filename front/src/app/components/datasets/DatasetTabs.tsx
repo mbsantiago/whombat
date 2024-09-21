@@ -1,14 +1,12 @@
+import { DatasetIcon, RecordingsIcon } from "@/lib/components/icons";
+import SectionTabs from "@/lib/components/navigation/SectionTabs";
+import Tab from "@/lib/components/ui/Tab";
+import type { Dataset } from "@/lib/types";
 import {
   useRouter,
   useSearchParams,
   useSelectedLayoutSegment,
 } from "next/navigation";
-
-import { DatasetIcon, RecordingsIcon } from "@/lib/components/icons";
-import SectionTabs from "@/lib/components/navigation/SectionTabs";
-import Tab from "@/lib/components/ui/Tab";
-
-import type { Dataset } from "@/lib/types";
 
 /**
  * Navigation header component for the dataset pages.

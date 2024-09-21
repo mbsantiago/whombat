@@ -1,35 +1,31 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
-import AnnotationTaskComponent from "./AnnotationTask";
-import AnnotationProgress from "./AnnotationProgress";
-import AnnotationContext from "./AnnotationContext";
-import AnnotationTagPalette from "./AnnotationTagPalette";
-
-import AnnotationTaskStatus from "../annotation_tasks/AnnotationTaskStatus";
-
-import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
-import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
-import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
-import ClipAnnotationSoundEvents from "../clip_annotations/ClipAnnotationSoundEvents";
-
-import Player from "../audio/Player";
-import ViewportToolbar from "../spectrograms/ViewportToolbar";
-import AnnotationControls from "../annotation/AnnotationControls";
-import SettingsMenu from "../settings/SettingsMenu";
-import ViewportBar from "../spectrograms/ViewportBar";
-import Canvas from "../spectrograms/Canvas";
-
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
 } from "@/lib/constants";
 import type {
-  SpectrogramWindow,
-  SoundEventAnnotation,
   AnnotationTask,
   Recording,
+  SoundEventAnnotation,
+  SpectrogramWindow,
   Tag,
 } from "@/lib/types";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import AnnotationControls from "../annotation/AnnotationControls";
+import AnnotationTaskStatus from "../annotation_tasks/AnnotationTaskStatus";
+import Player from "../audio/Player";
+import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
+import ClipAnnotationSoundEvents from "../clip_annotations/ClipAnnotationSoundEvents";
+import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
+import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
+import SettingsMenu from "../settings/SettingsMenu";
+import Canvas from "../spectrograms/Canvas";
+import ViewportBar from "../spectrograms/ViewportBar";
+import ViewportToolbar from "../spectrograms/ViewportToolbar";
+import AnnotationContext from "./AnnotationContext";
+import AnnotationProgress from "./AnnotationProgress";
+import AnnotationTagPalette from "./AnnotationTagPalette";
+import AnnotationTaskComponent from "./AnnotationTask";
 
 const samplerate = 44100;
 
@@ -70,9 +66,7 @@ const meta: Meta<typeof AnnotationTaskComponent> = {
   title: "Annotation/Task",
   component: AnnotationTaskComponent,
   args: {
-    Progress: (
-      <AnnotationProgress instructions={"Annotate"} tasks={[]} />
-    ),
+    Progress: <AnnotationProgress instructions={"Annotate"} tasks={[]} />,
     TagPalette: <AnnotationTagPalette tags={tags} />,
     TaskStatus: <AnnotationTaskStatus task={task} />,
     Context: <AnnotationContext recording={baseRecording} />,

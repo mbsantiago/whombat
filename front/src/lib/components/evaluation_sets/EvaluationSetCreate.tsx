@@ -1,8 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
-
-import PredictionTypeSelect from "./PredictionTypeSelect";
 import {
   type EvaluationSetCreate,
   EvaluationSetCreateSchema,
@@ -13,6 +8,11 @@ import {
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
+import { Controller, useForm } from "react-hook-form";
+
+import PredictionTypeSelect from "./PredictionTypeSelect";
 
 export default function EvaluationSetCreateComponent({
   onCreateEvaluationSet,

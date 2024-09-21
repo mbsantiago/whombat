@@ -1,10 +1,11 @@
 "use client";
+
 import { divIcon } from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMap } from "react-leaflet/hooks";
 import { Marker as LeafletMarker } from "react-leaflet/Marker";
 import { Popup } from "react-leaflet/Popup";
-import "leaflet/dist/leaflet.css";
+import { useMap } from "react-leaflet/hooks";
 
 // Taken from https://heroicons.com/
 const MAP_PIN = `

@@ -1,25 +1,22 @@
-import { useHotkeys } from "react-hotkeys-hook";
-
+import Player from "@/app/components/audio/Player";
+import SelectedSoundEventAnnotation from "@/app/components/sound_event_annotations/SelectedSoundEventAnnotation";
+import CanvasWithAnnotations from "@/app/components/spectrograms/CanvasWithAnnotation";
+import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
+import ViewportBar from "@/app/components/spectrograms/ViewportBar";
+import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
-import useClipViewport from "@/lib/hooks/window/useClipViewport";
-import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
-import useAnnotationState from "@/lib/hooks/annotation/useAnnotationState";
-import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
-
-import CanvasWithAnnotations from "@/app/components/spectrograms/CanvasWithAnnotation";
-import Player from "@/app/components/audio/Player";
 import Empty from "@/lib/components/Empty";
-import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
-import ViewportBar from "@/app/components/spectrograms/ViewportBar";
-import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
 import AnnotationControls from "@/lib/components/annotation/AnnotationControls";
 import ClipAnnotationSpectrogramBase from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
-
+import useAnnotationState from "@/lib/hooks/annotation/useAnnotationState";
+import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
+import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
+import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
+import useClipViewport from "@/lib/hooks/window/useClipViewport";
 import type { ClipAnnotation } from "@/lib/types";
-import SelectedSoundEventAnnotation from "@/app/components/sound_event_annotations/SelectedSoundEventAnnotation";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function ClipAnnotationSpectrogram({
   clipAnnotation,

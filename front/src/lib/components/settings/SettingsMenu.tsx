@@ -1,14 +1,12 @@
-import { useState } from "react";
-
-import { H3 } from "@/lib/components/ui/Headings";
-import SpectrogramSettingsComponent from "@/lib/components/settings/SpectrogramSettings";
+import { SettingsIcon } from "@/lib/components/icons";
 import AudioSettingsComponent from "@/lib/components/settings/AudioSettings";
+import SpectrogramSettingsComponent from "@/lib/components/settings/SpectrogramSettings";
 import Button from "@/lib/components/ui/Button";
+import { H3 } from "@/lib/components/ui/Headings";
 import SlideOver from "@/lib/components/ui/SlideOver";
 import Tooltip from "@/lib/components/ui/Tooltip";
-import { SettingsIcon } from "@/lib/components/icons";
-
-import type { SpectrogramSettings, AudioSettings } from "@/lib/types";
+import type { AudioSettings, SpectrogramSettings } from "@/lib/types";
+import { useState } from "react";
 
 export default function SettingsMenu({
   audioSettings,

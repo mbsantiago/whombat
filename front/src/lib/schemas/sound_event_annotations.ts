@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { UserSchema } from "./users";
+
 import { GeometrySchema } from "./geometries";
+import { NoteAssociationSchema, NoteSchema } from "./notes";
 import { SoundEventSchema } from "./sound_events";
-import { NoteSchema, NoteAssociationSchema } from "./notes";
-import { TagSchema, TagAssociationSchema } from "./tags";
+import { TagAssociationSchema, TagSchema } from "./tags";
+import { UserSchema } from "./users";
 
 export const SoundEventAnnotationSchema = z.object({
   uuid: z.string().uuid(),

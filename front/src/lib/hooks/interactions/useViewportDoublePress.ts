@@ -1,6 +1,5 @@
+import type { DoublePressHandler, Position } from "@/lib/types";
 import { useMemo } from "react";
-
-import type { Position, DoublePressHandler } from "@/lib/types";
 
 export default function useViewportDoublePress({
   cursorPosition,

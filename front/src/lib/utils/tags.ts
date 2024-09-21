@@ -1,10 +1,3 @@
-import {
-  bboxIntersection,
-  computeGeometryBBox,
-  scaleBBoxToViewport,
-  scaleTimeToViewport,
-} from "@/lib/utils/geometry";
-
 import type {
   Box,
   Dimensions,
@@ -15,6 +8,12 @@ import type {
   TimeInterval,
   TimeStamp,
 } from "@/lib/types";
+import {
+  bboxIntersection,
+  computeGeometryBBox,
+  scaleBBoxToViewport,
+  scaleTimeToViewport,
+} from "@/lib/utils/geometry";
 
 export const COLOR_NAMES = [
   "slate",

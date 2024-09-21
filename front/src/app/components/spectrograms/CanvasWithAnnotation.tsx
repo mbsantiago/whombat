@@ -1,39 +1,35 @@
-import { useCallback } from "react";
-import { mergeProps } from "react-aria";
-
-import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
-import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
-import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
-import useAnnotationCreate from "@/lib/hooks/annotation/useAnnotationCreate";
-import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
-import useAnnotationEdit from "@/lib/hooks/annotation/useAnnotationEdit";
-import useAnnotationSelect from "@/lib/hooks/annotation/useAnnotationSelect";
-import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-
-import drawOnset from "@/lib/draw/onset";
-import { scaleTimeToViewport } from "@/lib/utils/geometry";
-
-import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
 import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
+import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
 import CanvasBase, {
   type CanvasProps,
 } from "@/lib/components/spectrograms/Canvas";
-
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
-import type { SpectrogramState } from "@/lib/hooks/spectrogram/useSpectrogramState";
+import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
+import drawOnset from "@/lib/draw/onset";
+import useAnnotationCreate from "@/lib/hooks/annotation/useAnnotationCreate";
+import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
+import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
+import useAnnotationEdit from "@/lib/hooks/annotation/useAnnotationEdit";
+import useAnnotationSelect from "@/lib/hooks/annotation/useAnnotationSelect";
 import type { AnnotationState } from "@/lib/hooks/annotation/useAnnotationState";
-import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
+import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
+import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
+import type { SpectrogramState } from "@/lib/hooks/spectrogram/useSpectrogramState";
+import useElementSize from "@/lib/hooks/utils/useElementSize";
+import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import type {
+  AudioSettings,
+  ClipAnnotation,
   Geometry,
   Recording,
-  ClipAnnotation,
   SoundEventAnnotation,
-  AudioSettings,
   SpectrogramSettings,
   SpectrogramWindow,
   Tag,
 } from "@/lib/types";
-import useElementSize from "@/lib/hooks/utils/useElementSize";
+import { scaleTimeToViewport } from "@/lib/utils/geometry";
+import { useCallback } from "react";
+import { mergeProps } from "react-aria";
 
 const _emptyTags: Tag[] = [];
 

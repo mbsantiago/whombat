@@ -1,7 +1,6 @@
+import RecordingTime from "@/lib/components/recordings/RecordingTime";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-
-import RecordingTime from "@/lib/components/recordings/RecordingTime";
 
 const meta: Meta<typeof RecordingTime> = {
   title: "Recordings/Time",

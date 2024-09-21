@@ -1,5 +1,4 @@
 import ViewportToolbarBase from "@/lib/components/spectrograms/ViewportToolbar";
-
 import type { SpectrogramState } from "@/lib/hooks/spectrogram/useSpectrogramState";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
 

@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import RecordingActions from "@/lib/components/recordings/RecordingActions";
+import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof RecordingActions> = {
   title: "Recordings/Actions",

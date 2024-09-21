@@ -1,7 +1,6 @@
-import { StateCreator } from "zustand";
-
 import type { Tag } from "@/lib/types";
-import { getTagKey, getRandomColor, type Color } from "@/lib/utils/tags";
+import { type Color, getRandomColor, getTagKey } from "@/lib/utils/tags";
+import { StateCreator } from "zustand";
 
 export type ColorsSlice = {
   colors: {

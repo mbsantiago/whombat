@@ -1,9 +1,8 @@
-import { useCallback } from "react";
 import useStore from "@/app/store";
-import toast from "react-hot-toast";
-
-import useSpectrogramSettings from "@/lib/hooks/settings/useSpectrogramSettings";
 import useAudioSettings from "@/lib/hooks/settings/useAudioSettings";
+import useSpectrogramSettings from "@/lib/hooks/settings/useSpectrogramSettings";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
 
 export default function useSettings() {
   const initialAudioSettings = useStore((state) => state.audioSettings);

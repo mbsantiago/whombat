@@ -1,16 +1,16 @@
-import type { DOMAttributes } from "react";
+import useCanvas from "@/lib/hooks/canvas/useCanvas";
 import type {
-  SpectrogramWindow,
+  DoublePressHandler,
   DrawFn,
   HoverHandler,
-  MoveStartHandler,
   MoveEndHandler,
   MoveHandler,
+  MoveStartHandler,
   PressHandler,
   ScrollHandler,
-  DoublePressHandler,
+  SpectrogramWindow,
 } from "@/lib/types";
-import useCanvas from "@/lib/hooks/canvas/useCanvas";
+import type { DOMAttributes } from "react";
 
 export type CanvasProps = {
   /** A callback that is called when the cursor hovers over the canvas. */

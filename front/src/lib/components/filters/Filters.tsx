@@ -1,12 +1,10 @@
-import { useCallback, useState } from "react";
-
-import Button from "@/lib/components/ui/Button";
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import { CheckIcon, CloseIcon } from "@/lib/components/icons";
 import Checkbox from "@/lib/components/tables/TableCheckbox";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-
+import Button from "@/lib/components/ui/Button";
 import type { Dataset, NumberFilter, Tag } from "@/lib/types";
+import { useCallback, useState } from "react";
 
 export type SetFilter<T extends Object> = <K extends keyof T>(
   key: K,

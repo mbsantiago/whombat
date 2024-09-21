@@ -1,7 +1,6 @@
-import type { ComponentProps } from "react";
-import NotesPanel from "@/lib/components/notes/NotesPanel";
-
 import { NotesIcon } from "@/lib/components/icons";
+import NotesPanel from "@/lib/components/notes/NotesPanel";
+import type { ComponentProps } from "react";
 
 function NoNotes() {
   return (

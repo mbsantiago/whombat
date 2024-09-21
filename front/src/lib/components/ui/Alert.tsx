@@ -1,7 +1,6 @@
-import { type ComponentProps, type ReactNode } from "react";
-
 import Button from "@/lib/components/ui/Button";
 import Dialog from "@/lib/components/ui/Dialog";
+import { type ComponentProps, type ReactNode } from "react";
 
 /**
  * An alert dialog component that provides a simple way to display a message with a title and a close button.

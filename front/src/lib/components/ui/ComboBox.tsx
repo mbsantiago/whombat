@@ -1,12 +1,11 @@
-import { useRef } from "react";
-import { AriaComboBoxOptions, useComboBox, useFilter } from "react-aria";
-import { useComboBoxState } from "react-stately";
-import type { CollectionChildren } from "@react-types/shared";
-
 import Input from "@/lib/components/inputs/Input";
 import InputLabel from "@/lib/components/inputs/InputLabel";
 import ListBox from "@/lib/components/ui/ListBox";
 import { Popover } from "@/lib/components/ui/Popover2";
+import type { CollectionChildren } from "@react-types/shared";
+import { useRef } from "react";
+import { AriaComboBoxOptions, useComboBox, useFilter } from "react-aria";
+import { useComboBoxState } from "react-stately";
 
 export default function ComboBox<T extends object>(
   props: Omit<

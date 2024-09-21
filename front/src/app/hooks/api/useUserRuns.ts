@@ -1,8 +1,7 @@
 import api from "@/app/api";
+import type { UserRunFilter } from "@/lib/api/user_runs";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-
-import type { UserRunFilter } from "@/lib/api/user_runs";
 
 const _empty: UserRunFilter = {};
 const _fixed: (keyof UserRunFilter)[] = [];

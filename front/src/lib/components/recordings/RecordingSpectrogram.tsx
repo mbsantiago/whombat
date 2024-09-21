@@ -1,5 +1,5 @@
-import { memo } from "react";
 import Card from "@/lib/components/ui/Card";
+import { memo } from "react";
 
 const RecordingSpectrogram = memo(function RecordingSpectrogram(props: {
   ViewportToolbar: JSX.Element;

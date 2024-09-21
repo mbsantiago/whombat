@@ -1,9 +1,9 @@
+import { InfoIcon } from "@/lib/components/icons";
 import classNames from "classnames";
+import type { ReactNode } from "react";
 
 import Button from "./Button";
 import Popover from "./Popover";
-import { InfoIcon } from "@/lib/components/icons";
-import type { ReactNode } from "react";
 
 /**
  * An informational alert component used to display messages to the user.

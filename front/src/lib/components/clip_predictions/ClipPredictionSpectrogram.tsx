@@ -1,24 +1,24 @@
-import { useRef, useMemo, useCallback } from "react";
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import Player from "@/lib/components/audio/Player";
-import Card from "@/lib/components/ui/Card";
-import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
-import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 import SpectrogramPredictedTags from "@/lib/components/spectrograms/SpectrogramPredictedTags";
-import type {
-  ClipPrediction,
-  SpectrogramParameters,
-  Position,
-  Interval,
-} from "@/lib/types";
-import useSpectrogram from "@/lib/hooks/spectrogram/useSpectrogram";
+import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
+import Card from "@/lib/components/ui/Card";
 import useAudio from "@/lib/hooks/audio/useAudio";
 import useCanvas from "@/lib/hooks/draw/useCanvas";
-import useSpectrogramTrackAudio from "@/lib/hooks/spectrogram/useSpectrogramTrackAudio";
-import { getInitialViewingWindow } from "@/lib/utils/windows";
 import usePredictionDraw from "@/lib/hooks/prediction/usePredictionDraw";
+import useSpectrogram from "@/lib/hooks/spectrogram/useSpectrogram";
 import useSpectrogramPredictionTags from "@/lib/hooks/spectrogram/useSpectrogramPredictionTags";
+import useSpectrogramTrackAudio from "@/lib/hooks/spectrogram/useSpectrogramTrackAudio";
+import type {
+  ClipPrediction,
+  Interval,
+  Position,
+  SpectrogramParameters,
+} from "@/lib/types";
+import { getInitialViewingWindow } from "@/lib/utils/windows";
+import { useCallback, useMemo, useRef } from "react";
 
 const DEFAULT_THRESHOLD: Interval = { min: 0.5, max: 1 };
 

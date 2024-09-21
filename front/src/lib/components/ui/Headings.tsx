@@ -1,5 +1,4 @@
 import classnames from "classnames";
-
 import type { HTMLAttributes, ReactNode } from "react";
 
 export function H1({

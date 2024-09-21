@@ -1,15 +1,14 @@
-import Button from "@/lib/components/ui/Button";
-import Card from "@/lib/components/ui/Card";
-import Loading from "@/lib/components/ui/Loading";
+import type { RecordingFilter } from "@/lib/api/recordings";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
-import { H2, H3 } from "@/lib/components/ui/Headings";
 import { FilterIcon, TasksIcon } from "@/lib/components/icons";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";
-import type { RecordingFilter } from "@/lib/api/recordings";
-
+import { Input, InputGroup } from "@/lib/components/inputs/index";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H2, H3 } from "@/lib/components/ui/Headings";
+import Loading from "@/lib/components/ui/Loading";
 import type { Dataset } from "@/lib/types";
 
 export default function AnnotationProjectTasks(props: {

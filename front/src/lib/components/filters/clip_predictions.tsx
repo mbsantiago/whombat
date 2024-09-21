@@ -1,9 +1,8 @@
+import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import FilterBadge from "@/lib/components/filters/FilterBadge";
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { TagFilter } from "@/lib/components/filters/Filters";
 import { TagIcon } from "@/lib/components/icons";
-
-import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 
 const clipPredictionFilterDef: FilterDef<ClipPredictionFilter>[] = [
   {

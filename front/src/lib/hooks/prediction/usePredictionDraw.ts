@@ -1,12 +1,12 @@
-import { useCallback } from "react";
-import drawGeometry from "@/draw/geometry";
-import { ORANGE } from "@/draw/styles";
-import { scaleGeometryToViewport } from "@/utils/geometry";
+import drawGeometry from "@/lib/draw/geometry";
+import { ORANGE } from "@/lib/draw/styles";
 import type {
+  Interval,
   SoundEventPrediction,
   SpectrogramWindow,
-  Interval,
-} from "@/types";
+} from "@/lib/types";
+import { scaleGeometryToViewport } from "@/lib/utils/geometry";
+import { useCallback } from "react";
 
 const IDLE_STYLE = {
   borderColor: ORANGE,

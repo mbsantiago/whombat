@@ -1,16 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-
 import { BBoxStyle, DEFAULT_BBOX_STYLE } from "@/lib/draw/bbox";
 import drawGeometry from "@/lib/draw/geometry";
 import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
-import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-
 import type {
   BoundingBox,
   Dimensions,
   Position,
   SpectrogramWindow,
 } from "@/lib/types";
+import { scaleGeometryToViewport } from "@/lib/utils/geometry";
+import { useCallback, useEffect, useState } from "react";
 
 export default function useCreateBBox({
   viewport,

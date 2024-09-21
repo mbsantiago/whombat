@@ -1,11 +1,11 @@
 import { TagIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
-import { getTagColor, type Color } from "@/lib/utils/tags";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import type { Tag } from "@/lib/types";
+import { type Color, getTagColor } from "@/lib/utils/tags";
 import { type FC } from "react";
 
 const _emptyTags: Tag[] = [];

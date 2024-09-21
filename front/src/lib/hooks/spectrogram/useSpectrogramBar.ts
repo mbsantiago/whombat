@@ -1,22 +1,19 @@
-import { useMemo } from "react";
-import { mergeProps } from "react-aria";
-
-import type {
-  MoveStartEvent,
-  MoveMoveEvent,
-  MoveEndEvent,
-  PressEvent,
-} from "react-aria";
-
-import { getViewportPosition } from "@/lib/utils/windows";
-import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
-import useElementSize from "@/lib/hooks/utils/useElementSize";
 import useViewportMove from "@/lib/hooks/interactions/useViewportMove";
 import useViewportPosition from "@/lib/hooks/interactions/useViewportPosition";
 import useViewportPress from "@/lib/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/lib/hooks/interactions/useViewportScroll";
-
-import type { SpectrogramWindow, Position, ScrollEvent } from "@/lib/types";
+import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
+import useElementSize from "@/lib/hooks/utils/useElementSize";
+import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
+import { getViewportPosition } from "@/lib/utils/windows";
+import { useMemo } from "react";
+import { mergeProps } from "react-aria";
+import type {
+  MoveEndEvent,
+  MoveMoveEvent,
+  MoveStartEvent,
+  PressEvent,
+} from "react-aria";
 
 export default function useSpectrogramBar({
   viewport,

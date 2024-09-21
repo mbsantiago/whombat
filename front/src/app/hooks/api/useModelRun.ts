@@ -1,8 +1,7 @@
 import api from "@/app/api";
-import useObject from "@/lib/hooks/utils/useObject";
-
 import type { ModelRunUpdate } from "@/lib/api/model_runs";
-import type { ModelRun, EvaluationSet, Evaluation } from "@/lib/types";
+import useObject from "@/lib/hooks/utils/useObject";
+import type { Evaluation, EvaluationSet, ModelRun } from "@/lib/types";
 import type { AxiosError } from "axios";
 
 export default function useModelRun({

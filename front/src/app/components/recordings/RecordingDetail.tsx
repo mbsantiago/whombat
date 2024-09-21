@@ -1,13 +1,13 @@
 import RecordingDetailBase from "@/lib/components/recordings/RecordingDetail";
+import RecordingMap from "@/lib/components/recordings/RecordingMap";
+import RecordingMediaInfo from "@/lib/components/recordings/RecordingMediaInfo";
 import { type Recording } from "@/lib/types";
 
-import RecordingHeader from "./RecordingHeader";
-import RecordingTagBar from "./RecordingTagBar";
-import RecordingNotes from "./RecordingNotes";
 import RecordingActions from "./RecordingActions";
+import RecordingHeader from "./RecordingHeader";
+import RecordingNotes from "./RecordingNotes";
 import RecordingSpectrogram from "./RecordingSpectrogram";
-import RecordingMediaInfo from "@/lib/components/recordings/RecordingMediaInfo";
-import RecordingMap from "@/lib/components/recordings/RecordingMap";
+import RecordingTagBar from "./RecordingTagBar";
 
 export default function RecordingDetail({
   recording,

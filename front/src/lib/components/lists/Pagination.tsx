@@ -1,7 +1,7 @@
-import Button from "@/lib/components/ui/Button";
 import * as icons from "@/lib/components/icons";
-import { Input } from "@/lib/components/inputs/index";
 import Select from "@/lib/components/inputs/Select";
+import { Input } from "@/lib/components/inputs/index";
+import Button from "@/lib/components/ui/Button";
 
 const pageSizeOptions = [1, 5, 10, 25, 50, 100];
 

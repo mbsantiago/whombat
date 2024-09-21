@@ -1,13 +1,11 @@
 /** @module Tag.
  * Definition of the Tag component.
  */
-import classnames from "classnames";
-import { type HTMLProps } from "react";
-
 import { ALL_COLORS } from "@/lib/components/colors";
 import { CloseIcon } from "@/lib/components/icons";
-
 import type { Tag } from "@/lib/types";
+import classnames from "classnames";
+import { type HTMLProps } from "react";
 
 const COLOR_NAMES = [
   "slate",

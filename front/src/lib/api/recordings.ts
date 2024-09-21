@@ -1,7 +1,5 @@
-import { AxiosInstance } from "axios";
-import { z } from "zod";
-
 import { GetManySchema, Page, downloadContent } from "@/lib/api/common";
+import type { NoteCreate } from "@/lib/api/notes";
 import {
   DatasetSchema,
   DateFilterSchema,
@@ -12,9 +10,9 @@ import {
   TimeFilterSchema,
   TimeStringSchema,
 } from "@/lib/schemas";
-
-import type { NoteCreate } from "@/lib/api/notes";
 import type { Feature, Note, Recording, Tag } from "@/lib/types";
+import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 export const RecordingPageSchema = Page(RecordingSchema);
 

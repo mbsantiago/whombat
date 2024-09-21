@@ -1,6 +1,5 @@
 import { useTableNav } from "@table-nav/react";
 import { flexRender } from "@tanstack/react-table";
-
 import type { Table } from "@tanstack/react-table";
 import type { KeyboardEvent } from "react";
 

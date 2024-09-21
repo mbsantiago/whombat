@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-
 import api from "@/app/api";
-import Loading from "@/lib/components/ui/Loading";
-import Pagination from "@/lib/components/lists/Pagination";
-import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
-import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
-import type { SpectrogramParameters, ClipAnnotation } from "@/lib/types";
+import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
+import Pagination from "@/lib/components/lists/Pagination";
+import Loading from "@/lib/components/ui/Loading";
+import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import type { ClipAnnotation, SpectrogramParameters } from "@/lib/types";
+import { useMemo } from "react";
 
 const empty = {};
 

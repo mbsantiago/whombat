@@ -1,7 +1,6 @@
+import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-
-import RecordingDate from "@/lib/components/recordings/RecordingDate";
 
 const meta: Meta<typeof RecordingDate> = {
   title: "Recordings/Date",

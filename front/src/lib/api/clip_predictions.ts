@@ -1,18 +1,16 @@
-import { AxiosInstance } from "axios";
-import { z } from "zod";
-
 import { GetManySchema, Page } from "@/lib/api/common";
 import {
   ClipPredictionSchema,
   ClipSchema,
   ModelRunSchema,
+  PredictedTagFilterSchema,
   PredictionTagSchema,
   RecordingSchema,
   UserRunSchema,
-  PredictedTagFilterSchema,
 } from "@/lib/schemas";
-
 import type { ClipPrediction, Tag } from "@/lib/types";
+import { AxiosInstance } from "axios";
+import { z } from "zod";
 
 export const ClipPredictionCreateSchema = z.object({
   tags: z.array(PredictionTagSchema).optional(),

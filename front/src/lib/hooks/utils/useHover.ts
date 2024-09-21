@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-
 import type { DOMAttributes } from "react";
 
 export default function useHover<T>({

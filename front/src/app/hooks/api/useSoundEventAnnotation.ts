@@ -1,16 +1,14 @@
-import { useCallback, useMemo } from "react";
-
 import api from "@/app/api";
+import { NoteCreate } from "@/lib/api/notes";
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type {
   ClipAnnotation,
-  SoundEventAnnotation,
   Recording,
+  SoundEventAnnotation,
   Tag,
 } from "@/lib/types";
-import { NoteCreate } from "@/lib/api/notes";
 import type { AxiosError } from "axios";
+import { useCallback, useMemo } from "react";
 
 /**
  * A hook for managing the state of a sound event annotation.

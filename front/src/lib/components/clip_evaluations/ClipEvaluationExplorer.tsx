@@ -1,21 +1,20 @@
-import Button from "@/lib/components/ui/Button";
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
+import Empty from "@/lib/components/Empty";
+import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
-import Loading from "@/lib/components/ui/Loading";
-import Empty from "@/lib/components/Empty";
-import RangeSlider from "@/lib/components/inputs/RangeSlider";
-import Toggle from "@/lib/components/inputs/Toggle";
+import clipEvaluationFilterDef from "@/lib/components/filters/clip_evaluations";
 import {
   FilterIcon,
   LoopIcon,
   NextIcon,
   PreviousIcon,
 } from "@/lib/components/icons";
-import clipEvaluationFilterDef from "@/lib/components/filters/clip_evaluations";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import Toggle from "@/lib/components/inputs/Toggle";
+import Button from "@/lib/components/ui/Button";
+import Loading from "@/lib/components/ui/Loading";
 import useExploreClipEvaluations from "@/lib/hooks/evaluation/useExploreClipEvaluations";
-import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
-
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { ClipEvaluation, Interval } from "@/lib/types";
 

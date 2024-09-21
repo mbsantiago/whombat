@@ -1,7 +1,8 @@
-import DetailLayout from "../layouts/Detail";
 import Empty from "@/lib/components/Empty";
 import Loading from "@/lib/components/ui/Loading";
 import type { AnnotationTask } from "@/lib/types";
+
+import DetailLayout from "../layouts/Detail";
 
 export default function AnnotationTask(props: {
   selectedTask: AnnotationTask | null;

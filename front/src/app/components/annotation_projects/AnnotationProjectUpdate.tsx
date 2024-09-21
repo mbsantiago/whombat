@@ -1,6 +1,6 @@
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 import AnnotationProjectUpdateBase from "@/lib/components/annotation_projects/AnnotationProjectUpdate";
 import type { AnnotationProject } from "@/lib/types";
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 export default function AnnotationProjectUpdate({
   annotationProject,

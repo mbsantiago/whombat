@@ -1,18 +1,16 @@
-import { useCallback, useMemo } from "react";
-
 import { type Style } from "@/lib/draw/styles";
 import useEditGeometry from "@/lib/hooks/draw/useEditGeometry";
-import {
-  scaleGeometryToViewport,
-  scaleGeometryToWindow,
-} from "@/lib/utils/geometry";
-
 import type {
   Dimensions,
   Geometry,
   SoundEventAnnotation,
   SpectrogramWindow,
 } from "@/lib/types";
+import {
+  scaleGeometryToViewport,
+  scaleGeometryToWindow,
+} from "@/lib/utils/geometry";
+import { useCallback, useMemo } from "react";
 
 export default function useEditAnnotationGeometry({
   viewport,

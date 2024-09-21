@@ -1,12 +1,11 @@
-import Alert from "@/lib/components/ui/Alert";
-import Button from "@/lib/components/ui/Button";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
 } from "@/lib/components/icons";
-
+import Alert from "@/lib/components/ui/Alert";
+import Button from "@/lib/components/ui/Button";
 import type { AnnotationProject } from "@/lib/types";
 
 export default function ProjectActions({

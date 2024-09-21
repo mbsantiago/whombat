@@ -1,9 +1,8 @@
-import { Listbox } from "@headlessui/react";
-import { Float } from "@headlessui-float/react";
-import { Fragment, type ReactNode } from "react";
-
 import { CheckIcon, ExpandIcon } from "@/lib/components/icons";
 import { Submit } from "@/lib/components/inputs/index";
+import { Float } from "@headlessui-float/react";
+import { Listbox } from "@headlessui/react";
+import { Fragment, type ReactNode } from "react";
 
 export type Option<T> = {
   id: string | number;

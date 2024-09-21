@@ -1,8 +1,7 @@
-import { useCallback } from "react";
-
-import type { SpectrogramWindow } from "@/lib/types";
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import useSpectrogramBox from "@/lib/hooks/spectrogram/useSpectrogramBBox";
+import type { ViewportController } from "@/lib/hooks/window/useViewport";
+import type { SpectrogramWindow } from "@/lib/types";
+import { useCallback } from "react";
 
 export const VALID_STYLE = {
   fillAlpha: 0.3,

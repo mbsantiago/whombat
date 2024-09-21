@@ -7,7 +7,6 @@ import {
   setBorderStyle,
   setFontStyle,
 } from "@/lib/draw/styles";
-
 import type { Interval } from "@/lib/types";
 
 export function selectResolution(length: number, interval: Interval) {

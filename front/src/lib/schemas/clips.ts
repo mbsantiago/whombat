@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { RecordingSchema } from "./recordings";
 import { FeatureSchema } from "./features";
+import { RecordingSchema } from "./recordings";
 
 export const ClipSchema = z.object({
   uuid: z.string().uuid(),

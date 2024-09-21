@@ -6,8 +6,16 @@
  * @module
  * @exports Player
  */
-import { Listbox } from "@headlessui/react";
+import {
+  ExpandIcon,
+  LoopIcon,
+  PauseIcon,
+  PlayIcon,
+  SpeedIcon,
+} from "@/lib/components/icons";
+import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 import { Float } from "@headlessui-float/react";
+import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
 import { Fragment, useRef } from "react";
 import {
@@ -18,18 +26,8 @@ import {
   useSlider,
   useSliderThumb,
 } from "react-aria";
-import { useSliderState } from "react-stately";
-
-import {
-  ExpandIcon,
-  LoopIcon,
-  PauseIcon,
-  PlayIcon,
-  SpeedIcon,
-} from "@/lib/components/icons";
-
-import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 import type { AriaSliderProps, AriaSliderThumbOptions } from "react-aria";
+import { useSliderState } from "react-stately";
 import type { SliderState } from "react-stately";
 
 const COMMON_BUTTON_CLASSES =

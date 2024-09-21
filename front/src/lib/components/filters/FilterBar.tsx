@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
-import { FilterIcon } from "@/lib/components/icons";
-
 import type { FilterDef } from "@/lib/components/filters/FilterMenu";
+import { FilterIcon } from "@/lib/components/icons";
+import { useMemo } from "react";
 
 const _emptyFilter = {};
 

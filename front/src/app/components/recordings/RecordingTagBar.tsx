@@ -1,12 +1,11 @@
-import RecordingTagBarBase from "@/lib/components/recordings/RecordingTagBar";
 import TagSearchBar from "@/app/components/tags/TagSearchBar";
-import Loading from "@/app/loading";
 import Error from "@/app/error";
 import useRecording from "@/app/hooks/api/useRecording";
-
+import Loading from "@/app/loading";
 import type { TagFilter } from "@/lib/api/tags";
-import type { ComponentProps } from "react";
+import RecordingTagBarBase from "@/lib/components/recordings/RecordingTagBar";
 import type { Recording, Tag } from "@/lib/types";
+import type { ComponentProps } from "react";
 
 /**
  * RecordingTagBar component is responsible for displaying and managing tags

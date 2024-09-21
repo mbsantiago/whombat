@@ -1,6 +1,3 @@
-import { type ComponentProps, useCallback, type FC } from "react";
-
-import { type Color } from "@/lib/utils/tags";
 import { type RecordingFilter } from "@/lib/api/recordings";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
@@ -9,12 +6,13 @@ import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import SelectedMenu from "@/lib/components/tables/SelectedMenu";
 import Table from "@/lib/components/tables/Table";
-import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
+import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
 import type { Recording, Tag } from "@/lib/types";
+import { type Color } from "@/lib/utils/tags";
+import { type ComponentProps, type FC, useCallback } from "react";
 
 export default function RecordingTable({
   recordings,

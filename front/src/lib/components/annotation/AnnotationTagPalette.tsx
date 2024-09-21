@@ -1,16 +1,15 @@
-import { FC } from "react";
-import Button from "@/lib/components/ui/Button";
-import Card from "@/lib/components/ui/Card";
-import { H4 } from "@/lib/components/ui/Headings";
 import { DeleteIcon, ToolsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
-import Tooltip from "@/lib/components/ui/Tooltip";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
-import { getTagColor, type Color } from "@/lib/utils/tags";
+import Button from "@/lib/components/ui/Button";
+import Card from "@/lib/components/ui/Card";
+import { H4 } from "@/lib/components/ui/Headings";
+import Tooltip from "@/lib/components/ui/Tooltip";
 import type { Tag } from "@/lib/types";
+import { type Color, getTagColor } from "@/lib/utils/tags";
+import { FC } from "react";
 
 export default function AnnotationTagPalette({
   tags,

@@ -1,8 +1,8 @@
+import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
+import { COLORMAPS, SCALES, WINDOWS } from "@/lib/schemas";
+import type { SpectrogramSettings } from "@/lib/types";
 import { useMemo } from "react";
 import { useImmerReducer } from "use-immer";
-import type { SpectrogramSettings } from "@/lib/types";
-import { SCALES, WINDOWS, COLORMAPS } from "@/lib/schemas";
-import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
 
 /**
  * Custom hook to manage spectrogram settings.

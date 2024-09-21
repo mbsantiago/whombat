@@ -1,16 +1,14 @@
-import { useCallback } from "react";
-import { mergeProps, usePress } from "react-aria";
-
 import drawGeometry from "@/lib/draw/geometry";
 import { ORANGE } from "@/lib/draw/styles";
 import useHoveredAnnotation from "@/lib/hooks/annotation/useHoveredAnnotation";
-import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-
 import type {
   Dimensions,
   SoundEventAnnotation,
   SpectrogramWindow,
 } from "@/lib/types";
+import { scaleGeometryToViewport } from "@/lib/utils/geometry";
+import { useCallback } from "react";
+import { mergeProps, usePress } from "react-aria";
 
 const SELECT_STYLE = {
   borderColor: ORANGE,

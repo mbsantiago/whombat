@@ -1,5 +1,12 @@
+import { SearchIcon } from "@/lib/components/icons";
+import { Input } from "@/lib/components/inputs";
+import Loading from "@/lib/components/ui/Loading";
+import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
+import type { CollectionElement, Node } from "@react-types/shared";
 import classNames from "classnames";
+import type { FuseOptionKey } from "fuse.js";
 import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
+import type { ReactElement, ReactNode } from "react";
 import {
   DismissButton,
   Overlay,
@@ -9,17 +16,8 @@ import {
   useOption,
   usePopover,
 } from "react-aria";
-import { type ComboBoxState, useComboBoxState } from "react-stately";
-
-import { SearchIcon } from "@/lib/components/icons";
-import { Input } from "@/lib/components/inputs";
-import Loading from "@/lib/components/ui/Loading";
-import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
-
-import type { CollectionElement, Node } from "@react-types/shared";
-import type { FuseOptionKey } from "fuse.js";
-import type { ReactElement, ReactNode } from "react";
 import type { AriaListBoxOptions, AriaPopoverProps } from "react-aria";
+import { type ComboBoxState, useComboBoxState } from "react-stately";
 
 function EmptyMessage({}: { state: ComboBoxState<any> }) {
   return <div className="p-2">No results</div>;

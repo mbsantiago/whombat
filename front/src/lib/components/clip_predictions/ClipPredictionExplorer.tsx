@@ -1,20 +1,19 @@
-import Button from "@/lib/components/ui/Button";
+import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
+import Empty from "@/lib/components/Empty";
+import ClipPredictionDisplay from "@/lib/components/clip_predictions/ClipPredictionDisplay";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
-import Loading from "@/lib/components/ui/Loading";
-import Empty from "@/lib/components/Empty";
-import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import clipPredictionFilterDef from "@/lib/components/filters/clip_predictions";
 import {
   FilterIcon,
   LoopIcon,
   NextIcon,
   PreviousIcon,
 } from "@/lib/components/icons";
-import clipPredictionFilterDef from "@/lib/components/filters/clip_predictions";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import Button from "@/lib/components/ui/Button";
+import Loading from "@/lib/components/ui/Loading";
 import useExploreClipPredictions from "@/lib/hooks/prediction/useExploreClipPredictions";
-import ClipPredictionDisplay from "@/lib/components/clip_predictions/ClipPredictionDisplay";
-
-import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { ClipPrediction, Interval } from "@/lib/types";
 

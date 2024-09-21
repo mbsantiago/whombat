@@ -1,8 +1,7 @@
+import type { DatasetUpdate } from "@/lib/api/datasets";
 import Card from "@/lib/components/ui/Card";
 import Description from "@/lib/components/ui/Description";
-
 import type { Dataset } from "@/lib/types";
-import type { DatasetUpdate } from "@/lib/api/datasets";
 
 export default function DatasetUpdateComponent({
   dataset,

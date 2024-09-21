@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { type AudioSlice, createAudioSlice } from "./audio";
 import { type ClipboardSlice, createClipboardSlice } from "./clipboard";
 import { type ColorsSlice, createColorsSlice } from "./colors";
 import { type SessionSlice, createSessionSlice } from "./session";
 import { type SpectrogramSlice, createSpectrogramSlice } from "./spectrogram";
-import { type AudioSlice, createAudioSlice } from "./audio";
 
 type Store = SessionSlice &
   ClipboardSlice &

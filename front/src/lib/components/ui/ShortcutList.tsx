@@ -1,4 +1,5 @@
 import { type Hotkey } from "react-hotkeys-hook/src/types";
+
 import KeyboardKey from "./KeyboardKey";
 
 export default function ShortcutsList({ shortcuts }: { shortcuts: Hotkey[] }) {

@@ -1,9 +1,8 @@
-import { ComponentProps, useMemo, useContext } from "react";
-
+import AnnotationProjectContext from "@/app/contexts/annotationProject";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
+import { ComponentProps, useContext, useMemo } from "react";
 
 import TagSearchBar from "./TagSearchBar";
-import AnnotationProjectContext from "@/app/contexts/annotationProject";
 
 export default function ProjectTagSearch(
   props: Omit<

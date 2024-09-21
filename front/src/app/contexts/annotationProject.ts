@@ -1,6 +1,5 @@
-import { createContext } from "react";
-
 import type { AnnotationProject } from "@/lib/types";
+import { createContext } from "react";
 
 const AnnotationProjectContext = createContext<AnnotationProject>({
   name: "",

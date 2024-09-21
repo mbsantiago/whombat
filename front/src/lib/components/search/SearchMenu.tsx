@@ -1,10 +1,9 @@
-import { Combobox } from "@headlessui/react";
+import Search from "@/lib/components/inputs/Search";
+import Button from "@/lib/components/ui/Button";
 import { Float } from "@headlessui-float/react";
+import { Combobox } from "@headlessui/react";
 import Fuse from "fuse.js";
 import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
-
-import Button from "@/lib/components/ui/Button";
-import Search from "@/lib/components/inputs/Search";
 
 /** A search menu.
  * @component

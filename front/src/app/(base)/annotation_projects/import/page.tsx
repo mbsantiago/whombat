@@ -1,15 +1,14 @@
 "use client";
 
+import api from "@/app/api";
+import { UploadIcon } from "@/lib/components/icons";
+import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
+import Hero from "@/lib/components/ui/Hero";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-
-import api from "@/app/api";
-import Hero from "@/lib/components/ui/Hero";
-import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
 export default function Page() {
   const router = useRouter();

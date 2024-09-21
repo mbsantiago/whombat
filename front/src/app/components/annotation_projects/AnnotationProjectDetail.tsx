@@ -1,11 +1,11 @@
 import AnnotationProjectDetailBase from "@/lib/components/annotation_projects/AnnotationProjectDetail";
-import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
-import AnnotationProjectTagsSummary from "./AnnotationProjectTagsSummary";
-import AnnotationProjectProgress from "./AnnotationProjectProgress";
-import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
-import AnnotationProjectActions from "./AnnotationProjectActions";
-
 import type { AnnotationProject } from "@/lib/types";
+
+import AnnotationProjectActions from "./AnnotationProjectActions";
+import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
+import AnnotationProjectProgress from "./AnnotationProjectProgress";
+import AnnotationProjectTagsSummary from "./AnnotationProjectTagsSummary";
+import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
 
 export default function AnnotationProjectDetail({
   annotationProject,

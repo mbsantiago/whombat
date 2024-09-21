@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import AnnotationProjectActions from "./AnnotationProjectActions";
 import AnnotationProjectDetail from "./AnnotationProjectDetail";
+import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
 import AnnotationProjectProgress from "./AnnotationProjectProgress";
 import AnnotationProjectTagsSummary from "./AnnotationProjectTagsSummary";
-import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
-import AnnotationProjectActions from "./AnnotationProjectActions";
 import AnnotationProjectUpdate from "./AnnotationProjectUpdate";
 
 const meta: Meta<typeof AnnotationProjectDetail> = {

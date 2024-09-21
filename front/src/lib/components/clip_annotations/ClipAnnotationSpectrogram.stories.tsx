@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from "@storybook/react";
-
 import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
-import Player from "../audio/Player";
-import ViewportToolbar from "../spectrograms/ViewportToolbar";
-import AnnotationControls from "../annotation/AnnotationControls";
-import SettingsMenu from "../settings/SettingsMenu";
-import ViewportBar from "../spectrograms/ViewportBar";
-import Canvas from "../spectrograms/Canvas";
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
 } from "@/lib/constants";
 import type { SpectrogramWindow } from "@/lib/types";
+import type { Meta, StoryObj } from "@storybook/react";
+
+import AnnotationControls from "../annotation/AnnotationControls";
+import Player from "../audio/Player";
+import SettingsMenu from "../settings/SettingsMenu";
+import Canvas from "../spectrograms/Canvas";
+import ViewportBar from "../spectrograms/ViewportBar";
+import ViewportToolbar from "../spectrograms/ViewportToolbar";
 
 const meta: Meta<typeof ClipAnnotationSpectrogram> = {
   title: "ClipAnnotation/ClipAnnotationSpectrogram",

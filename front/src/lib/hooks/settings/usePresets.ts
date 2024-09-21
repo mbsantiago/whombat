@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 type PresetInterface<T> = {
   /** An object containing all stored presets, where keys are preset names and

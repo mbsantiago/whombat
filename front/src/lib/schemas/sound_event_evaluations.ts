@@ -1,7 +1,8 @@
 import { z } from "zod";
+
+import { FeatureSchema } from "./features";
 import { SoundEventAnnotationSchema } from "./sound_event_annotations";
 import { SoundEventPredictionSchema } from "./sound_event_predictions";
-import { FeatureSchema } from "./features";
 
 export const SoundEventEvaluationSchema = z.object({
   uuid: z.string().uuid(),

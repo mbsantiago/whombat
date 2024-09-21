@@ -1,9 +1,7 @@
+import { CloseIcon } from "@/lib/components/icons";
+import Button from "@/lib/components/ui/Button";
 import { Dialog as HeadlessDialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-
-import Button from "@/lib/components/ui/Button";
-import { CloseIcon } from "@/lib/components/icons";
-
 import type { ComponentProps, ReactNode } from "react";
 
 /**

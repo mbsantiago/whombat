@@ -1,16 +1,15 @@
-import { useCallback, useState } from "react";
-
 import drawBBox from "@/lib/draw/bbox";
-import { getViewportPosition } from "@/lib/utils/windows";
 import { type ViewportController } from "@/lib/hooks/window/useViewport";
 import type {
-  Position,
-  MoveStartHandler,
+  DrawFn,
   MoveEndHandler,
   MoveHandler,
-  DrawFn,
+  MoveStartHandler,
+  Position,
   SpectrogramWindow,
 } from "@/lib/types";
+import { getViewportPosition } from "@/lib/utils/windows";
+import { useCallback, useState } from "react";
 
 const cmp = (a: number, b: number) => a - b;
 function toViewport(bbox: {

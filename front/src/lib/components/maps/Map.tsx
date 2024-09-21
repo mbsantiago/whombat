@@ -1,8 +1,10 @@
 "use client";
+
+import "leaflet/dist/leaflet.css";
 import { type ComponentProps, type ReactNode } from "react";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
-import "leaflet/dist/leaflet.css";
+
 import "./Map.css";
 
 type Position = {

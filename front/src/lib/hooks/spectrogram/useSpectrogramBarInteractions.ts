@@ -1,12 +1,12 @@
-import type {
-  MoveStartEvent,
-  MoveMoveEvent,
-  PressEvent,
-  MoveEndEvent,
-} from "react-aria";
-import { useCallback } from "react";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
 import type { Position, ScrollEvent } from "@/lib/types";
+import { useCallback } from "react";
+import type {
+  MoveEndEvent,
+  MoveMoveEvent,
+  MoveStartEvent,
+  PressEvent,
+} from "react-aria";
 
 export default function useSpectrogramBarInteractions({
   viewport,

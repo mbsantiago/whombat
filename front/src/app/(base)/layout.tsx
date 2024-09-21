@@ -1,14 +1,14 @@
 "use client";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useContext, useCallback } from "react";
-import toast from "react-hot-toast";
-import { HotkeysProvider } from "react-hotkeys-hook";
 
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 import Loading from "@/app/loading";
 import { WhombatIcon } from "@/lib/components/icons";
 import { NavBar } from "@/lib/components/navigation/NavBar";
 import { SideMenu } from "@/lib/components/navigation/SideMenu";
-import useActiveUser from "@/app/hooks/api/useActiveUser";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { type ReactNode, useCallback, useContext } from "react";
+import toast from "react-hot-toast";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 import UserContext from "../contexts/user";
 

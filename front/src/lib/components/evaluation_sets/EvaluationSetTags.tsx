@@ -1,13 +1,11 @@
-import { useMemo } from "react";
-
-import { H2, H3 } from "@/lib/components/ui/Headings";
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 import { TagsIcon } from "@/lib/components/icons";
-import Info from "@/lib/components/ui/Info";
 import TagList from "@/lib/components/tags/TagList";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
-
+import { H2, H3 } from "@/lib/components/ui/Headings";
+import Info from "@/lib/components/ui/Info";
 import type { EvaluationSet } from "@/lib/types";
+import { useMemo } from "react";
 
 export default function EvaluationSetTags({
   evaluationSet: initialData,

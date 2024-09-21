@@ -1,9 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-
 import ClipAnnotationTags from "@/lib/components/clip_annotations/ClipAnnotationTags";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import type { Tag } from "@/lib/types";
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 
 const meta: Meta<typeof ClipAnnotationTags> = {
   title: "ClipAnnotation/ClipAnnotationTags",

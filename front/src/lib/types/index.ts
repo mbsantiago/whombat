@@ -1,13 +1,11 @@
-import { z } from "zod";
-
+import * as schemas from "@/lib/schemas";
 import type {
-  MoveStartEvent as MoveStartEventAria,
-  MoveMoveEvent as MoveMoveEventAria,
   MoveEndEvent as MoveEndEventAria,
+  MoveMoveEvent as MoveMoveEventAria,
+  MoveStartEvent as MoveStartEventAria,
   PressEvent as PressEventAria,
 } from "react-aria";
-
-import * as schemas from "@/lib/schemas";
+import { z } from "zod";
 
 export type GetManyQuery = z.infer<typeof schemas.GetManySchema>;
 
@@ -146,6 +144,22 @@ export type AnnotationTask = z.infer<typeof schemas.AnnotationTaskSchema>;
 
 export type AnnotationProject = z.infer<typeof schemas.AnnotationProjectSchema>;
 
+export type AnnotationProjectFilter = z.infer<
+  typeof schemas.AnnotationProjectFilterSchema
+>;
+
+export type AnnotationProjectCreate = z.input<
+  typeof schemas.AnnotationProjectCreateSchema
+>;
+
+export type AnnotationProjectUpdate = z.input<
+  typeof schemas.AnnotationProjectUpdateSchema
+>;
+
+export type AnnotationProjectImport = z.infer<
+  typeof schemas.AnnotationProjectImportSchema
+>;
+
 export type PredictionTag = z.infer<typeof schemas.PredictionTagSchema>;
 
 export type SoundEventPrediction = z.infer<
@@ -167,6 +181,22 @@ export type ClipEvaluation = z.infer<typeof schemas.ClipEvaluationSchema>;
 export type Evaluation = z.infer<typeof schemas.EvaluationSchema>;
 
 export type EvaluationSet = z.infer<typeof schemas.EvaluationSetSchema>;
+
+export type EvaluationSetFilter = z.infer<
+  typeof schemas.EvaluationSetFilterSchema
+>;
+
+export type EvaluationSetCreate = z.input<
+  typeof schemas.EvaluationSetCreateSchema
+>;
+
+export type EvaluationSetUpdate = z.input<
+  typeof schemas.EvaluationSetUpdateSchema
+>;
+
+export type EvaluationSetImport = z.infer<
+  typeof schemas.EvaluationSetImportSchema
+>;
 
 export type Position = {
   time: number;

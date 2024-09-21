@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { useDebounce } from "react-use";
-
+import useAnnotationProjects from "@/app/hooks/api/useAnnotationProjects";
 import { type AnnotationProjectFilter } from "@/lib/api/annotation_projects";
 import SearchMenu from "@/lib/components/search/SearchMenu";
-import useAnnotationProjects from "@/app/hooks/api/useAnnotationProjects";
-
 import type { AnnotationProject } from "@/lib/types";
+import { useState } from "react";
+import { useDebounce } from "react-use";
 
 export default function AnnotationProjectSearch({
   filter,

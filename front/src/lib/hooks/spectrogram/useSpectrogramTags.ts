@@ -1,15 +1,13 @@
-import { useMemo } from "react";
-
-import { isGeometryInWindow } from "@/lib/utils/geometry";
-import { getLabelPosition } from "@/lib/utils/tags";
-
-import type { TagElement, TagGroup } from "@/lib/utils/tags";
 import type {
   Dimensions,
   SoundEventAnnotation,
   SpectrogramWindow,
   Tag,
 } from "@/lib/types";
+import { isGeometryInWindow } from "@/lib/utils/geometry";
+import { getLabelPosition } from "@/lib/utils/tags";
+import type { TagElement, TagGroup } from "@/lib/utils/tags";
+import { useMemo } from "react";
 
 export default function useSpectrogramTags({
   annotations,

@@ -1,11 +1,9 @@
-import { useMemo } from "react";
-
 import api from "@/app/api";
-import useObject from "@/lib/hooks/utils/useObject";
-
 import type { EvaluationSetUpdate } from "@/lib/api/evaluation_sets";
+import useObject from "@/lib/hooks/utils/useObject";
 import type { EvaluationSet } from "@/lib/types";
 import type { AxiosError } from "axios";
+import { useMemo } from "react";
 
 export default function useEvaluationSet({
   uuid,
@@ -20,7 +18,7 @@ export default function useEvaluationSet({
   onAddTasks,
   onError,
 }: {
-  uuid?: string;
+  uuid: string;
   evaluationSet?: EvaluationSet;
   enabled?: boolean;
   onUpdate?: (evaluation_set: EvaluationSet) => void;

@@ -1,4 +1,5 @@
 "use client";
+
 import Hero from "@/lib/components/ui/Hero";
 import Link from "@/lib/components/ui/Link";
 

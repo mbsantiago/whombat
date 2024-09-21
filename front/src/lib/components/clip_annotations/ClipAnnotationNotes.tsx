@@ -1,5 +1,5 @@
-import NotesPanel from "@/lib/components/notes/NotesPanel";
 import Empty from "@/lib/components/Empty";
+import NotesPanel from "@/lib/components/notes/NotesPanel";
 import { ComponentProps } from "react";
 
 export default function ClipAnnotationNotes(

@@ -1,9 +1,9 @@
-import { useMemo } from "react";
 import type {
-  SpectrogramSettings,
-  SpectrogramParameters,
   AudioSettings,
+  SpectrogramParameters,
+  SpectrogramSettings,
 } from "@/lib/types";
+import { useMemo } from "react";
 
 export default function useSpectrogramParameters({
   audioSettings,

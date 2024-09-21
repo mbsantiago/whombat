@@ -7,4 +7,3 @@ export const ModelRunSchema = z.object({
   description: z.string().nullish(),
   created_on: z.coerce.date(),
 });
-

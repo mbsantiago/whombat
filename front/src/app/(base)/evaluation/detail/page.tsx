@@ -1,29 +1,18 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useCallback, useContext } from "react";
-import toast from "react-hot-toast";
 
 import EvaluationSetDetail from "@/app/components/evaluation_sets/EvaluationSetDetail";
+import { useRouter } from "next/navigation";
+import { useCallback, useContext } from "react";
 
 import EvaluationSetContext from "./context";
-
-import type { EvaluationSet } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();
   const evaluationSet = useContext(EvaluationSetContext);
 
-  const handleDelete = useCallback(
-    (data: Promise<EvaluationSet>) => {
-      toast.promise(data, {
-        loading: "Deleting evaluation set...",
-        success: "Evaluation set deleted",
-        error: "Failed to delete evaluation set",
-      });
-      data.then(() => router.push("/evaluation/"));
-    },
-    [router],
-  );
+  const handleDelete = useCallback(() => {
+    router.push("/evaluation/");
+  }, [router]);
 
   return (
     <EvaluationSetDetail

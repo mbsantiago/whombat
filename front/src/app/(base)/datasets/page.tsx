@@ -1,4 +1,5 @@
 "use client";
+
 /**
  * Page module for displaying the list of datasets.
  *
@@ -8,13 +9,11 @@
  * @module pages/datasets
  * @see components/datasets/DatasetList
  */
-import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-
 import DatasetList from "@/app/components/datasets/DatasetList";
 import Hero from "@/lib/components/ui/Hero";
-
 import type { Dataset } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 export default function Page() {
   const router = useRouter();

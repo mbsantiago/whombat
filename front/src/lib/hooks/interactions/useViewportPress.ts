@@ -1,8 +1,7 @@
+import type { Position, PressHandler } from "@/lib/types";
 import { useCallback } from "react";
 import { usePress } from "react-aria";
 import type { PressEvent } from "react-aria";
-
-import type { Position, PressHandler } from "@/lib/types";
 
 /**
  * A custom React hook for handling press interactions (clicks/taps) on a

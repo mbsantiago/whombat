@@ -1,9 +1,7 @@
 /** State for application wide spectrogram and audio parameters */
-import { StateCreator } from "zustand";
-
 import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
-
 import type { SpectrogramSettings } from "@/lib/types";
+import { StateCreator } from "zustand";
 
 export type SpectrogramSlice = {
   spectrogramSettings: SpectrogramSettings;

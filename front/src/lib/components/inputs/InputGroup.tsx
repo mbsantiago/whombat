@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import InputLabel from "./InputLabel";
 
 export function InputError({ message }: { message: string }) {

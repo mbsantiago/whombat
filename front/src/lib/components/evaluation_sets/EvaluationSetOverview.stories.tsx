@@ -1,8 +1,8 @@
+import type { EvaluationSet } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
 import EvaluationSetOverview from "./EvaluationSetOverview";
-import type { EvaluationSet } from "@/lib/types";
 
 const evaluationSet: EvaluationSet = {
   uuid: "1",

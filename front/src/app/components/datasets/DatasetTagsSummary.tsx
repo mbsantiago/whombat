@@ -1,12 +1,10 @@
-import { useMemo } from "react";
-import { useRouter } from "next/navigation";
-
 import api from "@/app/api";
+import useStore from "@/app/store";
 import DatasetTagsSummaryBase from "@/lib/components/datasets/DatasetTagsSummary";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import useStore from "@/app/store";
-
 import type { Dataset } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 /**
  * Component to display a summary of tags for a dataset.

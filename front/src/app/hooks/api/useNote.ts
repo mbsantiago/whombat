@@ -1,6 +1,5 @@
 import api from "@/app/api";
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type { Note } from "@/lib/types";
 
 export default function useNote({

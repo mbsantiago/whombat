@@ -1,9 +1,7 @@
+import { EditIcon } from "@/lib/components/icons";
+import { Input, TextArea } from "@/lib/components/inputs";
 import classNames from "classnames";
 import { useState } from "react";
-
-import { Input, TextArea } from "@/lib/components/inputs";
-import { EditIcon } from "@/lib/components/icons";
-
 import type { HTMLAttributes, ReactNode } from "react";
 
 /**

@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
 import AnnotationTaskTable from "@/lib/components/annotation_tasks/AnnotationTaskTable";
-
 import type { AnnotationProject, AnnotationTask } from "@/lib/types";
+import { useMemo } from "react";
 
 export default function AnnotationProjectTaskClips({
   annotationProject,

@@ -3,8 +3,7 @@
  * A React hook for managing the loading state, errors, and timeouts of an
  * image.
  */
-
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 
 // Default timeout in milliseconds
 const DEFAULT_TIMEOUT = 30_000;

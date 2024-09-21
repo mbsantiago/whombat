@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { getTagKey } from "@/lib/utils/tags";
 import type { Tag } from "@/lib/types";
+import { getTagKey } from "@/lib/utils/tags";
+import { useCallback, useState } from "react";
 
 const _emptyTag: Tag[] = [];
 

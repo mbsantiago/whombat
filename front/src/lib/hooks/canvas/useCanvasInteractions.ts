@@ -1,13 +1,13 @@
+import type { Position, SpectrogramWindow } from "@/lib/types";
 import { type DOMAttributes } from "react";
 import { mergeProps } from "react-aria";
 import type {
-  MoveStartEvent,
-  MoveMoveEvent,
   MoveEndEvent,
+  MoveMoveEvent,
+  MoveStartEvent,
   PressEvent,
 } from "react-aria";
 
-import type { SpectrogramWindow, Position } from "@/lib/types";
 import useViewportMove from "../interactions/useViewportMove";
 import useViewportPosition from "../interactions/useViewportPosition";
 import useViewportPress from "../interactions/useViewportPress";

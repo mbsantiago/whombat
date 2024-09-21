@@ -1,11 +1,11 @@
+import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
+import useStore from "@/app/store";
 import {
   SoundEventSpectrogramTagsBase,
   SoundEventSpectrogramTagsProps,
 } from "@/lib/components/spectrograms/SpectrogramTags";
-import ProjectTagSearch from "../tags/ProjectTagsSearch";
 
-import useStore from "@/app/store";
-import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
+import ProjectTagSearch from "../tags/ProjectTagsSearch";
 
 export default function SoundEventAnnotationTags({
   soundEvent,

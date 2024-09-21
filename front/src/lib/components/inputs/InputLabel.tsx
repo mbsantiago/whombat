@@ -1,5 +1,5 @@
-import type { LabelHTMLAttributes } from "react";
 import classNames from "classnames";
+import type { LabelHTMLAttributes } from "react";
 
 /**
 /* Label for an input element.

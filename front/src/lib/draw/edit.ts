@@ -2,7 +2,6 @@ import drawHandle from "@/lib/draw/handle";
 import { drawLineString } from "@/lib/draw/linestring";
 import { drawPolygon } from "@/lib/draw/polygon";
 import { GREEN, type Style } from "@/lib/draw/styles";
-
 import type { Coordinates, Geometry, Pixel } from "@/lib/types";
 
 const HANDLE_SIZE = 5;

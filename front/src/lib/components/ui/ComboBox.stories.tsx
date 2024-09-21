@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Item } from "react-stately";
 
 import ComboBox from "./ComboBox";
-import { Item } from "react-stately";
 
 const meta: Meta<typeof ComboBox> = {
   title: "UI/ComboBox",

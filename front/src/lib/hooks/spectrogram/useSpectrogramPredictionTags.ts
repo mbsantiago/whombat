@@ -1,16 +1,14 @@
-import { useMemo } from "react";
-
-import { isGeometryInWindow } from "@/lib/utils/geometry";
-import { getLabelPosition } from "@/lib/utils/tags";
-
-import type { TagElement, TagGroup } from "@/lib/utils/tags";
 import type {
   Dimensions,
-  SoundEventPrediction,
-  PredictionTag,
-  SpectrogramWindow,
   Interval,
+  PredictionTag,
+  SoundEventPrediction,
+  SpectrogramWindow,
 } from "@/lib/types";
+import { isGeometryInWindow } from "@/lib/utils/geometry";
+import { getLabelPosition } from "@/lib/utils/tags";
+import type { TagElement, TagGroup } from "@/lib/utils/tags";
+import { useMemo } from "react";
 
 const DEFAULT_INTERVAL = { min: 0.5, max: 1 };
 

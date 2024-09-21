@@ -1,7 +1,6 @@
-import { renderHook, act } from "@testing-library/react";
-
 import useViewport from "@/lib/hooks/window/useViewport";
 import type { SpectrogramWindow } from "@/lib/types";
+import { act, renderHook } from "@testing-library/react";
 
 describe("useViewport hook", () => {
   const initialViewport: SpectrogramWindow = {

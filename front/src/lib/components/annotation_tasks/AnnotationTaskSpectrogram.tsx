@@ -1,8 +1,8 @@
-import { ComponentProps } from "react";
-import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
-import ClipAnnotationSoundEvents from "../clip_annotations/ClipAnnotationSoundEvents";
-
 import type { AnnotationTask } from "@/lib/types";
+import { ComponentProps } from "react";
+
+import ClipAnnotationSoundEvents from "../clip_annotations/ClipAnnotationSoundEvents";
+import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
 
 export default function AnnotationTaskSpectrogram({
   task,

@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { PredictionTagSchema } from "./tags";
+
 import { SoundEventSchema } from "./sound_events";
+import { PredictionTagSchema } from "./tags";
 
 export const SoundEventPredictionSchema = z.object({
   uuid: z.string().uuid(),

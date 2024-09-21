@@ -1,7 +1,7 @@
+import { CheckIcon } from "@/lib/components/icons";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import Search from "./Search";
-import { CheckIcon } from "@/lib/components/icons";
 
 const meta: Meta<typeof Search> = {
   title: "Inputs/Search",

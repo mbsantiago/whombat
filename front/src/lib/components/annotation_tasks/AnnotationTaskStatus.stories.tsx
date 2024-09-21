@@ -1,8 +1,8 @@
+import type { AnnotationTask } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
 import AnnotationTaskStatus from "./AnnotationTaskStatus";
-import type { AnnotationTask } from "@/lib/types";
 
 const meta: Meta<typeof AnnotationTaskStatus> = {
   title: "AnnotationTask/Status",

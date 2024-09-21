@@ -1,10 +1,9 @@
-import Card from "@/lib/components/ui/Card";
-import { H3 } from "@/lib/components/ui/Headings";
+import type { NoteCreate } from "@/lib/api/notes";
 import { NotesIcon } from "@/lib/components/icons";
 import CreateNote from "@/lib/components/notes/CreateNote";
 import Feed from "@/lib/components/notes/Feed";
-
-import type { NoteCreate } from "@/lib/api/notes";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import type { Note, User } from "@/lib/types";
 
 export default function NotesPanel({

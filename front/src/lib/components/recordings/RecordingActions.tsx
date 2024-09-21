@@ -1,12 +1,12 @@
-import Alert from "@/lib/components/ui/Alert";
-import Button from "@/lib/components/ui/Button";
-import Link from "@/lib/components/ui/Link";
 import {
   CloseIcon,
   DeleteIcon,
   DownloadIcon,
   WarningIcon,
 } from "@/lib/components/icons";
+import Alert from "@/lib/components/ui/Alert";
+import Button from "@/lib/components/ui/Button";
+import Link from "@/lib/components/ui/Link";
 
 export default function RecordingActions({
   onDeleteRecording,

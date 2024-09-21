@@ -1,10 +1,10 @@
 "use client";
-import { useSearchParams, notFound } from "next/navigation";
 
-import Error from "@/app/error";
-import Loading from "@/app/loading";
 import RecordingDetail from "@/app/components/recordings/RecordingDetail";
+import Error from "@/app/error";
 import useRecording from "@/app/hooks/api/useRecording";
+import Loading from "@/app/loading";
+import { notFound, useSearchParams } from "next/navigation";
 
 export default function Page() {
   const searchParams = useSearchParams();

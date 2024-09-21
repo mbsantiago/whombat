@@ -1,11 +1,9 @@
+import Select from "@/lib/components/inputs/Select";
+import { InputGroup } from "@/lib/components/inputs/index";
+import type { SpectrogramSettings } from "@/lib/types";
 import { type Control, Controller } from "react-hook-form";
 
-import { InputGroup } from "@/lib/components/inputs/index";
-import Select from "@/lib/components/inputs/Select";
-
 import SettingsSection from "./SettingsSection";
-
-import type { SpectrogramSettings } from "@/lib/types";
 
 const SPECTROGRAM_COLORMAPS: Record<
   string,

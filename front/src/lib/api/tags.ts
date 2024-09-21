@@ -1,8 +1,7 @@
-import { AxiosInstance } from "axios";
-
-import { Page, GetMany } from "@/lib/api/common";
+import { GetMany, Page } from "@/lib/api/common";
 import * as schemas from "@/lib/schemas";
 import * as types from "@/lib/types";
+import { AxiosInstance } from "axios";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/tags/",

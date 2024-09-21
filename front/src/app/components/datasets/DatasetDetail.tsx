@@ -1,10 +1,11 @@
 import DatasetDetailBase from "@/lib/components/datasets/DatasetDetail";
-import DatasetNotesSummary from "./DatasetNotesSummary";
-import DatasetTagsSummary from "./DatasetTagsSummary";
-import DatasetOverview from "./DatasetOverview";
-import DatasetUpdate from "./DatasetUpdate";
-import DatasetActions from "./DatasetActions";
 import type { Dataset } from "@/lib/types";
+
+import DatasetActions from "./DatasetActions";
+import DatasetNotesSummary from "./DatasetNotesSummary";
+import DatasetOverview from "./DatasetOverview";
+import DatasetTagsSummary from "./DatasetTagsSummary";
+import DatasetUpdate from "./DatasetUpdate";
 
 export default function DatasetDetail({
   dataset,

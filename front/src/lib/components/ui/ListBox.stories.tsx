@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Item, Section } from "react-stately";
 
 import ListBox from "./ListBox";
-import { Item, Section } from "react-stately";
 
 const meta: Meta<typeof ListBox> = {
   title: "UI/ListBox",

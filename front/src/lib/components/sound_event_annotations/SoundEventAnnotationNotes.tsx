@@ -1,8 +1,7 @@
-import { useMemo } from "react";
 import NotesPanel from "@/lib/components/notes/NotesPanel";
-
-import type { ComponentProps } from "react";
 import type { SoundEventAnnotation } from "@/lib/types";
+import { useMemo } from "react";
+import type { ComponentProps } from "react";
 
 export default function SoundEventAnnotationNotes({
   soundEventAnnotation,

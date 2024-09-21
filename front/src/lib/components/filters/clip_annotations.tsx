@@ -1,9 +1,8 @@
+import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import FilterBadge from "@/lib/components/filters/FilterBadge";
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { TagFilter } from "@/lib/components/filters/Filters";
 import { TagIcon } from "@/lib/components/icons";
-
-import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 
 const clipAnnotationFilterDef: FilterDef<ClipAnnotationFilter>[] = [
   {

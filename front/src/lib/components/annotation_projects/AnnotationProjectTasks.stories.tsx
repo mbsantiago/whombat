@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Item } from "react-stately";
-import { fn } from "@storybook/test";
-
 import Search from "@/lib/components/search/Search";
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+import { Item } from "react-stately";
+
 import AnnotationProjectTasks from "./AnnotationProjectTasks";
 
 const meta: Meta<typeof AnnotationProjectTasks> = {

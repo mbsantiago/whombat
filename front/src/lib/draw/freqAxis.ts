@@ -8,7 +8,6 @@ import {
   setFontStyle,
 } from "@/lib/draw/styles";
 import { getTicks, parseNum, selectResolution } from "@/lib/draw/timeAxis";
-
 import type { Interval } from "@/lib/types";
 
 function drawFreqTick(

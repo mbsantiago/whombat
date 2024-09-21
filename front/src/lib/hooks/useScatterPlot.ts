@@ -1,3 +1,5 @@
+import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
+import useTheme from "@/lib/hooks/useTheme";
 import {
   type Datum,
   type Layout,
@@ -5,10 +7,6 @@ import {
   type PlotMouseEvent,
 } from "plotly.js";
 import { useCallback, useMemo } from "react";
-
-import useTheme from "@/lib/hooks/useTheme";
-
-import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
 
 type GroupKey = string;
 

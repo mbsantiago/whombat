@@ -1,9 +1,9 @@
-import type { User } from "@/lib/types";
-import Dialog from "@/lib/components/ui/Dialog";
+import useActiveUser from "@/app/hooks/api/useActiveUser";
 import { UserIcon } from "@/lib/components/icons";
 import Description from "@/lib/components/ui/Description";
+import Dialog from "@/lib/components/ui/Dialog";
 import UserChangePassword from "@/lib/components/users/UserChangePassword";
-import useActiveUser from "@/app/hooks/api/useActiveUser";
+import type { User } from "@/lib/types";
 
 export default function UserProfile(props: { user: User }) {
   const { user } = props;

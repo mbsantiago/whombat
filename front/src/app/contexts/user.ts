@@ -1,6 +1,5 @@
-import { createContext } from "react";
-
 import type { User } from "@/lib/types";
+import { createContext } from "react";
 
 const UserContext = createContext<User>({
   id: "",

@@ -1,16 +1,14 @@
-import { useMutation as useQueryMutation } from "@tanstack/react-query";
-
 import api from "@/app/api";
+import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type {
-  Note,
   ClipAnnotation,
   Geometry,
+  Note,
   SoundEventAnnotation,
   Tag,
 } from "@/lib/types";
-import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
+import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 /**

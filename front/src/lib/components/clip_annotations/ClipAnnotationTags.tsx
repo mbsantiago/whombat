@@ -1,8 +1,8 @@
-import { type ComponentProps } from "react";
-import TagPanel from "../tags/TagPanel";
-
-import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/Empty";
+import Card from "@/lib/components/ui/Card";
+import { type ComponentProps } from "react";
+
+import TagPanel from "../tags/TagPanel";
 
 export default function ClipAnnotationTags(
   props: Omit<ComponentProps<typeof TagPanel>, "title">,

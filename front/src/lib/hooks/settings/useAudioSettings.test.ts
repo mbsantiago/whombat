@@ -1,6 +1,7 @@
-import { renderHook, act } from "@testing-library/react";
-import useAudioSettings from "./useAudioSettings";
 import type { AudioSettings } from "@/lib/types";
+import { act, renderHook } from "@testing-library/react";
+
+import useAudioSettings from "./useAudioSettings";
 
 describe("useAudioSettings Hook", () => {
   const initialSettings: AudioSettings = {

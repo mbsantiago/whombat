@@ -1,7 +1,7 @@
+import Note from "@/lib/components/notes/Note";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
-import Note from "@/lib/components/notes/Note";
 
 const meta: Meta<typeof AnnotationProjectNotesSummary> = {
   title: "AnnotationProject/NotesSummary",

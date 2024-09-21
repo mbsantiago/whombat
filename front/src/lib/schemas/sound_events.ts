@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { GeometrySchema, GeometryTypeSchema } from "./geometries";
 import { FeatureSchema } from "./features";
+import { GeometrySchema, GeometryTypeSchema } from "./geometries";
 
 export const SoundEventSchema = z.object({
   uuid: z.string().uuid(),

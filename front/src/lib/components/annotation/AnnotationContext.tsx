@@ -1,17 +1,15 @@
+import { RecordingIcon } from "@/lib/components/icons";
+import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import {
   getBaseName,
   removeExtension,
 } from "@/lib/components/recordings/RecordingHeader";
-
-import Button from "@/lib/components/ui/Button";
-import RecordingDate from "@/lib/components/recordings/RecordingDate";
 import RecordingLocation from "@/lib/components/recordings/RecordingLocation";
 import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
 import RecordingTime from "@/lib/components/recordings/RecordingTime";
-import { RecordingIcon } from "@/lib/components/icons";
-
-import type { Color } from "@/lib/utils/tags";
+import Button from "@/lib/components/ui/Button";
 import type { Recording, Tag } from "@/lib/types";
+import type { Color } from "@/lib/utils/tags";
 
 /**
  * AnnotationContext component displays contextual info for annotators.

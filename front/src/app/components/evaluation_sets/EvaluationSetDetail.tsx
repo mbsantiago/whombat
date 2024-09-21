@@ -1,11 +1,10 @@
-import DetailLayout from "@/lib/components/layouts/Detail";
-import Card from "@/lib/components/ui/Card";
-import EvaluationSetActions from "@/lib/components/evaluation_sets/EvaluationSetActions";
+import EvaluationSetActions from "@/app/components/evaluation_sets/EvaluationSetActions";
 import EvaluationSetOverview from "@/app/components/evaluation_sets/EvaluationSetOverview";
 import EvaluationSetUpdateForm from "@/lib/components/evaluation_sets/EvaluationSetUpdateForm";
 import ModelEvaluationSummary from "@/lib/components/evaluation_sets/ModelEvaluationSummary";
 import UserEvaluationSummary from "@/lib/components/evaluation_sets/UserEvaluationSummary";
-
+import DetailLayout from "@/lib/components/layouts/Detail";
+import Card from "@/lib/components/ui/Card";
 import type { EvaluationSet } from "@/lib/types";
 
 export default function EvaluationSetDetail({
@@ -15,7 +14,7 @@ export default function EvaluationSetDetail({
 }: {
   evaluationSet: EvaluationSet;
   onChange?: (evaluationSet: EvaluationSet) => void;
-  onDelete?: (evaluationSet: Promise<EvaluationSet>) => void;
+  onDelete?: (evaluationSet: EvaluationSet) => void;
 }) {
   return (
     <DetailLayout

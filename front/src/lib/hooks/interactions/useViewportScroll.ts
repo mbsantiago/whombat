@@ -1,5 +1,5 @@
+import type { Position, ScrollHandler, SpectrogramWindow } from "@/lib/types";
 import { useMemo } from "react";
-import type { SpectrogramWindow, Position, ScrollHandler } from "@/lib/types";
 
 /**
  * A custom React hook for handling scroll events on an HTML element.

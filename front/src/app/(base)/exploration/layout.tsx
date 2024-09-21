@@ -1,7 +1,7 @@
 "use client";
-import { type ReactNode } from "react";
 
 import ExplorationTabs from "@/app/(base)/exploration/components/ExplorationTabs";
+import { type ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (

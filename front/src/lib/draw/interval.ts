@@ -1,5 +1,4 @@
 import { Style, setBorderStyle, setFillStyle } from "@/lib/draw/styles";
-
 import type { Interval } from "@/lib/types";
 
 const DEFAULT_FILL_COLOR = "red";

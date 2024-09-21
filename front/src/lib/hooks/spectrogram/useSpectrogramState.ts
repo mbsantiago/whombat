@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
 import { SpectrogramMode } from "@/lib/types";
+import { useCallback, useState } from "react";
 
 export default function useSpectrogramState({
   state: initialState = "panning",

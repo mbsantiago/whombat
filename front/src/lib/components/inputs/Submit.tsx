@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import type { InputHTMLAttributes, ReactNode } from "react";
 
 import {
   BACKGROUND_STYLE,
@@ -8,8 +9,6 @@ import {
   FOCUS_STYLE,
   TEXT_STYLE,
 } from "./styles";
-
-import type { InputHTMLAttributes, ReactNode } from "react";
 
 export default function Submit({
   children,

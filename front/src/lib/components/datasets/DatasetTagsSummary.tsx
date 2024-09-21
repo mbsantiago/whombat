@@ -1,15 +1,13 @@
-import { useMemo, type ComponentProps } from "react";
-
 import Loading from "@/app/loading";
-import Empty from "@/lib/components/Empty";
-import Card from "@/lib/components/ui/Card";
-import TagCount from "@/lib/components/tags/TagCount";
-import { H3 } from "@/lib/components/ui/Headings";
-import { TagsIcon } from "@/lib/components/icons";
-import { getTagKey } from "@/lib/utils/tags";
-
 import type { RecordingTag } from "@/lib/api/tags";
+import Empty from "@/lib/components/Empty";
+import { TagsIcon } from "@/lib/components/icons";
+import TagCount from "@/lib/components/tags/TagCount";
+import Card from "@/lib/components/ui/Card";
+import { H3 } from "@/lib/components/ui/Headings";
 import type { Tag } from "@/lib/types";
+import { getTagKey } from "@/lib/utils/tags";
+import { type ComponentProps, useMemo } from "react";
 
 /**
  * Component to display a summary of tags for a dataset.

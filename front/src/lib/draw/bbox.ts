@@ -4,7 +4,6 @@ import {
   setBorderStyle,
   setFillStyle,
 } from "@/lib/draw/styles";
-
 import type { Box } from "@/lib/types";
 
 export type BBoxStyle = BorderStyle & FillStyle;
