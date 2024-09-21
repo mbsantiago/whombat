@@ -14,7 +14,6 @@ import {
 } from "@/lib/api/annotation_tasks";
 import api from "@/app/api";
 import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
-import { shuffleArray } from "@/lib/utils/arrays";
 
 import type {
   AnnotationStatus,
@@ -73,7 +72,6 @@ const empty = {};
 export default function useAnnotateTasks({
   filter: initialFilter = empty,
   annotationTask: initialTask,
-  shuffle = false,
   onChangeTask,
   onCompleteTask,
   onRejectTask,
@@ -83,8 +81,6 @@ export default function useAnnotateTasks({
   filter?: AnnotationTaskFilter;
   /** Optional, initial annotation task to select */
   annotationTask?: AnnotationTask;
-  /** If true, the annotation tasks will be shuffled */
-  shuffle?: boolean;
   /** Callback when the selected annotation task changes */
   onChangeTask?: (task: AnnotationTask) => void;
   /** Callback when the current task is marked as completed */
@@ -97,26 +93,14 @@ export default function useAnnotateTasks({
   const [currentTask, setCurrentTask] = useState<AnnotationTask | null>(
     initialTask ?? null,
   );
+
   const client = useQueryClient();
 
-  const {
-    items: initialItems,
-    filter,
-    isLoading,
-    isError,
-    queryKey,
-  } = useAnnotationTasks({
+  const { items, filter, isLoading, isError, queryKey } = useAnnotationTasks({
     pageSize: -1,
     filter: initialFilter,
     fixed: Object.keys(initialFilter) as (keyof AnnotationTaskFilter)[],
   });
-
-  const items = useMemo(() => {
-    if (shuffle) {
-      return shuffleArray(initialItems);
-    }
-    return initialItems;
-  }, [initialItems, shuffle]);
 
   const index = useMemo(() => {
     if (currentTask === null) return -1;
