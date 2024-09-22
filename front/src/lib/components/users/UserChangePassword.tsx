@@ -1,9 +1,12 @@
-import useActiveUser from "@/app/hooks/api/useActiveUser";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
-import type { User } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import useActiveUser from "@/app/hooks/api/useActiveUser";
+
+import { Input, InputGroup } from "@/lib/components/inputs/index";
+
+import type { User } from "@/lib/types";
 
 const schema = z
   .object({

@@ -1,10 +1,12 @@
+import { useCallback, useState } from "react";
+
+import useHover from "@/lib/hooks/utils/useHover";
+
 import {
   type EditableElement,
   convertElementToGeometry,
 } from "@/lib/draw/edit";
-import useHover from "@/lib/hooks/utils/useHover";
 import { isCloseToGeometry } from "@/lib/utils/geometry";
-import { useCallback, useState } from "react";
 
 export default function useElementHover<J>({
   elements,

@@ -1,6 +1,7 @@
-import { type Dataset } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+
+import { type Dataset } from "@/lib/types";
 
 import DatasetDetail from "./DatasetDetail";
 import DatasetNotesSummary from "./DatasetNotesSummary";

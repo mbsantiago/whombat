@@ -1,3 +1,5 @@
+import type { Meta, StoryObj } from "@storybook/react";
+
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
@@ -9,7 +11,6 @@ import type {
   SpectrogramWindow,
   Tag,
 } from "@/lib/types";
-import type { Meta, StoryObj } from "@storybook/react";
 
 import AnnotationControls from "../annotation/AnnotationControls";
 import AnnotationTaskStatus from "../annotation_tasks/AnnotationTaskStatus";

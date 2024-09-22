@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
+
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
-import Link from "next/link";
 
 export default function Page() {
   return (

@@ -1,4 +1,8 @@
 // @ts-ignore
+import bbox from "@turf/bbox";
+// @ts-ignore
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+
 import { MAX_FREQ } from "@/lib/constants";
 import type {
   BoundingBox,
@@ -17,9 +21,6 @@ import type {
   TimeInterval,
   TimeStamp,
 } from "@/lib/types";
-import bbox from "@turf/bbox";
-// @ts-ignore
-import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 
 export function intervalIntersection(
   interval1: Interval,

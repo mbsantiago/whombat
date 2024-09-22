@@ -1,4 +1,3 @@
-import * as schemas from "@/lib/schemas";
 import type {
   MoveEndEvent as MoveEndEventAria,
   MoveMoveEvent as MoveMoveEventAria,
@@ -6,6 +5,8 @@ import type {
   PressEvent as PressEventAria,
 } from "react-aria";
 import { z } from "zod";
+
+import * as schemas from "@/lib/schemas";
 
 export type GetManyQuery = z.infer<typeof schemas.GetManySchema>;
 

@@ -1,4 +1,5 @@
 import PaginationBase from "@/lib/components/lists/Pagination";
+
 import type { Pagination } from "@/lib/hooks/utils/usePagedQuery";
 
 export default function Pagination({ pagination }: { pagination: Pagination }) {

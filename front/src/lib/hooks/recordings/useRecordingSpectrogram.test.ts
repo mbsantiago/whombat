@@ -1,10 +1,11 @@
+import { act, renderHook } from "@testing-library/react";
+
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
 } from "@/lib/constants";
 import type { Recording } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
-import { act, renderHook } from "@testing-library/react";
 
 import useRecordingSpectrogram from "./useRecordingSpectrogram";
 

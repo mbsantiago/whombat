@@ -1,7 +1,3 @@
-import { SearchIcon } from "@/lib/components/icons";
-import { Input } from "@/lib/components/inputs";
-import Loading from "@/lib/components/ui/Loading";
-import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 import type { CollectionElement, Node } from "@react-types/shared";
 import classNames from "classnames";
 import type { FuseOptionKey } from "fuse.js";
@@ -18,6 +14,12 @@ import {
 } from "react-aria";
 import type { AriaListBoxOptions, AriaPopoverProps } from "react-aria";
 import { type ComboBoxState, useComboBoxState } from "react-stately";
+
+import { SearchIcon } from "@/lib/components/icons";
+import { Input } from "@/lib/components/inputs";
+import Loading from "@/lib/components/ui/Loading";
+
+import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
 function EmptyMessage({}: { state: ComboBoxState<any> }) {
   return <div className="p-2">No results</div>;

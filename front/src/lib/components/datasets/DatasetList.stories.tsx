@@ -1,9 +1,10 @@
-import { DatasetIcon } from "@/lib/components/icons";
-import Search from "@/lib/components/inputs/Search";
-import Pagination from "@/lib/components/lists/Pagination";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { loremIpsum } from "lorem-ipsum";
+
+import { DatasetIcon } from "@/lib/components/icons";
+import Search from "@/lib/components/inputs/Search";
+import Pagination from "@/lib/components/lists/Pagination";
 
 import DatasetList from "./DatasetList";
 

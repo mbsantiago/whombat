@@ -1,9 +1,11 @@
+import { ComponentProps } from "react";
+
 import DatasetExport from "@/lib/components/datasets/DatasetExport";
 import { DownloadIcon, RecordingsIcon } from "@/lib/components/icons";
 import SecondaryNavBar from "@/lib/components/navigation/SecondaryNavBar";
 import Dialog from "@/lib/components/ui/Dialog";
+
 import type { Dataset } from "@/lib/types";
-import { ComponentProps } from "react";
 
 export default function DatasetRecordingSummary({
   dataset,

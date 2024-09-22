@@ -1,8 +1,9 @@
-import { CloseIcon } from "@/lib/components/icons";
-import Button from "@/lib/components/ui/Button";
 import { Dialog as HeadlessDialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
+
+import { CloseIcon } from "@/lib/components/icons";
+import Button from "@/lib/components/ui/Button";
 
 /**
  * A modal dialog component that provides a customizable overlay with a title,

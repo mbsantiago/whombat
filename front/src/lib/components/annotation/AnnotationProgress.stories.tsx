@@ -1,5 +1,6 @@
-import type { AnnotationTask } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import type { AnnotationTask } from "@/lib/types";
 
 import AnnotationProgress from "./AnnotationProgress";
 

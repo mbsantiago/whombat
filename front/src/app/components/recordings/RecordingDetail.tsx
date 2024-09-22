@@ -1,6 +1,7 @@
 import RecordingDetailBase from "@/lib/components/recordings/RecordingDetail";
 import RecordingMap from "@/lib/components/recordings/RecordingMap";
 import RecordingMediaInfo from "@/lib/components/recordings/RecordingMediaInfo";
+
 import { type Recording } from "@/lib/types";
 
 import RecordingActions from "./RecordingActions";

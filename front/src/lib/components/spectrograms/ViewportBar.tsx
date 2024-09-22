@@ -1,11 +1,13 @@
-import useSpectrogramBar from "@/lib/hooks/spectrogram/useSpectrogramBar";
-import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
 import type {
   MoveEndEvent,
   MoveMoveEvent,
   MoveStartEvent,
   PressEvent,
 } from "react-aria";
+
+import useSpectrogramBar from "@/lib/hooks/spectrogram/useSpectrogramBar";
+
+import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
 
 /**
  * A draggable bar component used to interact with and navigate a spectrogram

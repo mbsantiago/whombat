@@ -1,5 +1,6 @@
-import Card from "@/lib/components/ui/Card";
 import { memo } from "react";
+
+import Card from "@/lib/components/ui/Card";
 
 const ClipAnnotationSpectrogram = memo(
   function ClipAnnotationSpectrogram(props: {

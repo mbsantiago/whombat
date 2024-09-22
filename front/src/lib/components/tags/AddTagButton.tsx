@@ -1,11 +1,12 @@
+import { Float } from "@headlessui-float/react";
+import { Popover } from "@headlessui/react";
+import { type ComponentProps, type FC, memo } from "react";
+
 import { AddIcon } from "@/lib/components/icons";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
-import { Float } from "@headlessui-float/react";
-import { Popover } from "@headlessui/react";
-import { type ComponentProps, type FC, memo } from "react";
 
 /**
  * AddTagButton Component

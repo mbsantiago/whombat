@@ -1,5 +1,11 @@
+import classNames from "classnames";
+import { useMemo } from "react";
+import type { ComponentProps, FC, ReactNode } from "react";
+
 import { CloseIcon } from "@/lib/components/icons";
+
 import useElementSize from "@/lib/hooks/utils/useElementSize";
+
 import type {
   Dimensions,
   SoundEventAnnotation,
@@ -9,9 +15,6 @@ import type {
 import { isGeometryInWindow } from "@/lib/utils/geometry";
 import { getLabelPosition, getTagKey } from "@/lib/utils/tags";
 import { type Color, type TagElement, getTagColor } from "@/lib/utils/tags";
-import classNames from "classnames";
-import { useMemo } from "react";
-import type { ComponentProps, FC, ReactNode } from "react";
 
 import AddTagButton from "../tags/AddTagButton";
 

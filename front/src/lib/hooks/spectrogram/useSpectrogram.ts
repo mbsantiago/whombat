@@ -1,10 +1,13 @@
-import drawOnset from "@/lib/draw/onset";
+import { useCallback } from "react";
+
 import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
 import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
 import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
 import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useViewport from "@/lib/hooks/window/useViewport";
+
+import drawOnset from "@/lib/draw/onset";
 import type {
   AudioSettings,
   Recording,
@@ -13,7 +16,6 @@ import type {
 } from "@/lib/types";
 import { scaleTimeToViewport } from "@/lib/utils/geometry";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
-import { useCallback } from "react";
 
 export default function useSpectrogram({
   recording,

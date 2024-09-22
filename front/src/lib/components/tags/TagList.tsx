@@ -1,9 +1,12 @@
 // TODO: Remove this import
 import useStore from "@/app/store";
+
 import Search from "@/lib/components/inputs/Search";
 import TagComponent from "@/lib/components/tags/Tag";
 import Button from "@/lib/components/ui/Button";
+
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
+
 import type { Tag } from "@/lib/types";
 
 export default function TagList({

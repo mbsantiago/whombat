@@ -1,7 +1,8 @@
-import { UserSchema } from "@/lib/schemas";
-import type { User } from "@/lib/types";
 import { AxiosInstance } from "axios";
 import { z } from "zod";
+
+import { UserSchema } from "@/lib/schemas";
+import type { User } from "@/lib/types";
 
 export const UserCreateSchema = z
   .object({

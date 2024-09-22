@@ -1,11 +1,12 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+import { loremIpsum } from "lorem-ipsum";
+
 import EvaluationSetCreate from "@/lib/components/evaluation_sets/EvaluationSetCreate";
 import EvaluationSetImport from "@/lib/components/evaluation_sets/EvaluationSetImport";
 import { EvaluationIcon } from "@/lib/components/icons";
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-import { loremIpsum } from "lorem-ipsum";
 
 import EvaluationSetList from "./EvaluationSetList";
 

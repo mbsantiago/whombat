@@ -1,5 +1,6 @@
-import { CheckIcon } from "@/lib/components/icons";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import { CheckIcon } from "@/lib/components/icons";
 
 import Search from "./Search";
 

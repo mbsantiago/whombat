@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
@@ -12,9 +14,9 @@ import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
+
 import type { AnnotationTask } from "@/lib/types";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
-import { useMemo } from "react";
 
 const _emptyList: AnnotationTask[] = [];
 

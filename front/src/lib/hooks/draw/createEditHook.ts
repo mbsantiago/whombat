@@ -1,12 +1,14 @@
-import { type EditableElement, drawEditableElement } from "@/lib/draw/edit";
-import type { Style } from "@/lib/draw/styles";
-import useElementHover from "@/lib/hooks/draw/useElementHover";
-import useDrag from "@/lib/hooks/utils/useDrag";
-import type { EventKeys } from "@/lib/hooks/utils/useDrag";
-import type { Dimensions, Pixel } from "@/lib/types";
 import { useCallback, useMemo, useState } from "react";
 import type { DOMAttributes } from "react";
 import { mergeProps, usePress } from "react-aria";
+
+import useElementHover from "@/lib/hooks/draw/useElementHover";
+import useDrag from "@/lib/hooks/utils/useDrag";
+import type { EventKeys } from "@/lib/hooks/utils/useDrag";
+
+import { type EditableElement, drawEditableElement } from "@/lib/draw/edit";
+import type { Style } from "@/lib/draw/styles";
+import type { Dimensions, Pixel } from "@/lib/types";
 
 interface UseEditObjectProps<J> {
   dimensions: Dimensions;

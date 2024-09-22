@@ -1,5 +1,6 @@
-import type { EditableElement } from "@/lib/draw/edit";
 import createEditHook from "@/lib/hooks/draw/createEditHook";
+
+import type { EditableElement } from "@/lib/draw/edit";
 import type {
   BoundingBox,
   Dimensions,

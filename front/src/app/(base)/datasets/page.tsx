@@ -9,11 +9,14 @@
  * @module pages/datasets
  * @see components/datasets/DatasetList
  */
-import DatasetList from "@/app/components/datasets/DatasetList";
-import Hero from "@/lib/components/ui/Hero";
-import type { Dataset } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+
+import DatasetList from "@/app/components/datasets/DatasetList";
+
+import Hero from "@/lib/components/ui/Hero";
+
+import type { Dataset } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

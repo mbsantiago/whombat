@@ -1,6 +1,8 @@
-import useNote from "@/app/hooks/api/useNote";
-import NoteBase, { NoteProps } from "@/lib/components/notes/Note";
 import toast from "react-hot-toast";
+
+import useNote from "@/app/hooks/api/useNote";
+
+import NoteBase, { NoteProps } from "@/lib/components/notes/Note";
 
 export default function Note(props: NoteProps) {
   const { note, onDeleteNote, onResolveNote, ...rest } = props;

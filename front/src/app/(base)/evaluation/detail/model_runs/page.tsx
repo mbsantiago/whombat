@@ -1,10 +1,12 @@
 "use client";
 
-import EvaluationSetModelRuns from "@/lib/components/evaluation_sets/EvaluationSetModelRuns";
-import type { ModelRun } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
+
+import EvaluationSetModelRuns from "@/lib/components/evaluation_sets/EvaluationSetModelRuns";
+
+import type { ModelRun } from "@/lib/types";
 
 import EvaluationSetContext from "../context";
 

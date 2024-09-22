@@ -1,13 +1,18 @@
-import TagSearchBar from "@/app/components/tags/TagSearchBar";
-import useRecordings from "@/app/hooks/api/useRecordings";
-import Loading from "@/app/loading";
-import useStore from "@/app/store";
-import RecordingTable from "@/lib/components/recordings/RecordingTable";
-import { parsePosition } from "@/lib/components/tables/TableMap";
-import type * as types from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import type { KeyboardEvent } from "react";
+
+import TagSearchBar from "@/app/components/tags/TagSearchBar";
+
+import useRecordings from "@/app/hooks/api/useRecordings";
+
+import Loading from "@/app/loading";
+import useStore from "@/app/store";
+
+import RecordingTable from "@/lib/components/recordings/RecordingTable";
+import { parsePosition } from "@/lib/components/tables/TableMap";
+
+import type * as types from "@/lib/types";
 
 const EDITABLE_COLUMNS = ["date", "time", "location", "tags"];
 

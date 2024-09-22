@@ -1,19 +1,24 @@
-import api from "@/app/api";
+import { useMemo, useState } from "react";
+import Plot from "react-plotly.js";
+import { useMount } from "react-use";
+
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
-import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
+
+import api from "@/app/api";
+
 import Empty from "@/lib/components/Empty";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import Card from "@/lib/components/ui/Card";
 import Loading from "@/lib/components/ui/Loading";
+
 import useScatterPlot from "@/lib/hooks/useScatterPlot";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
+import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
 import type {
   SoundEventAnnotationFilter,
   SpectrogramParameters,
 } from "@/lib/types";
-import { useMemo, useState } from "react";
-import Plot from "react-plotly.js";
-import { useMount } from "react-use";
 
 export default function AnnotationsScatterPlot(props: {
   filter: SoundEventAnnotationFilter;

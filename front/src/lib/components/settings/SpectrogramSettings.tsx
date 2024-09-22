@@ -1,14 +1,16 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
 import AmplitudeSettings from "@/lib/components/settings/settings/AmplitudeSettings";
 import ClampSettings from "@/lib/components/settings/settings/ClampSettings";
 import ColorSettings from "@/lib/components/settings/settings/ColorSettings";
 import DeNoiseSettings from "@/lib/components/settings/settings/DeNoiseSettings";
 import STFTSettings from "@/lib/components/settings/settings/STFTSettings";
+
 import { SpectrogramSettingsSchema } from "@/lib/schemas";
 import type { SpectrogramSettings } from "@/lib/types";
 import { debounce } from "@/lib/utils/debounce";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
 
 export default function SpectrogramSettings({
   settings,

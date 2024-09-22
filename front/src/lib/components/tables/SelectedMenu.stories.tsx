@@ -1,7 +1,9 @@
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import type { Tag } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+
+import TagSearchBar from "@/lib/components/tags/TagSearchBar";
+
+import type { Tag } from "@/lib/types";
 
 import SelectedMenu from "./SelectedMenu";
 

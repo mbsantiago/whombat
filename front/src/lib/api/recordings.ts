@@ -1,7 +1,8 @@
+import { AxiosInstance } from "axios";
+
 import { GetMany, Page, downloadContent } from "@/lib/api/common";
 import * as schemas from "@/lib/schemas";
 import type * as types from "@/lib/types";
-import { AxiosInstance } from "axios";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/recordings/",

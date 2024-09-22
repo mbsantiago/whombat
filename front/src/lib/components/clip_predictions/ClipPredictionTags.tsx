@@ -1,10 +1,13 @@
+import { useMemo } from "react";
+
 import useStore from "@/app/store";
+
 import Empty from "@/lib/components/Empty";
 import { TagsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
 import { H4 } from "@/lib/components/ui/Headings";
+
 import type { ClipPrediction, Interval, Tag } from "@/lib/types";
-import { useMemo } from "react";
 
 const DEFAULT_THRESHOLD: Interval = { min: 0.5, max: 1 };
 

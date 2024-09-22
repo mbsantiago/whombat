@@ -1,6 +1,7 @@
-import Player from "@/lib/components/audio/Player";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+
+import Player from "@/lib/components/audio/Player";
 
 const meta: Meta<typeof Player> = {
   title: "Audio/Player",

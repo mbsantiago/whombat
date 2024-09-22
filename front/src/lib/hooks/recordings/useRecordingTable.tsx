@@ -1,4 +1,11 @@
 import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { type FC, useMemo, useState } from "react";
+
+import {
   DateIcon,
   LocationIcon,
   NotesIcon,
@@ -16,14 +23,9 @@ import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
+
 import type { Note, Recording, RecordingUpdate, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { type FC, useMemo, useState } from "react";
 
 const defaultPathFormatter = (path: string) => path;
 

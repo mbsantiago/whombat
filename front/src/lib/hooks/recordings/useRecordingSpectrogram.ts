@@ -1,11 +1,13 @@
+import { useEffect, useMemo } from "react";
+
 import useSpectrogram from "@/lib/hooks/spectrogram/useSpectrogram";
+
 import type {
   AudioSettings,
   Recording,
   SpectrogramSettings,
 } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
-import { useEffect, useMemo } from "react";
 
 export default function useRecordingSpectrogram({
   recording,

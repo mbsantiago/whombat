@@ -1,8 +1,9 @@
+import { AxiosInstance } from "axios";
+import { z } from "zod";
+
 import { GetMany, Page } from "@/lib/api/common";
 import * as schemas from "@/lib/schemas";
 import * as types from "@/lib/types";
-import { AxiosInstance } from "axios";
-import { z } from "zod";
 
 export const ScatterPlotDataSchema = z.object({
   uuid: z.string(),

@@ -5,6 +5,7 @@ import {
   NoteIcon,
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
+
 import type * as types from "@/lib/types";
 
 export type NoteProps = {

@@ -1,7 +1,8 @@
-import type { Pixel } from "@/lib/types";
 import { useCallback, useMemo, useState } from "react";
 import type { DOMAttributes, MouseEvent } from "react";
 import { mergeProps, useMove } from "react-aria";
+
+import type { Pixel } from "@/lib/types";
 
 export type EventKeys = {
   shiftKey?: boolean;

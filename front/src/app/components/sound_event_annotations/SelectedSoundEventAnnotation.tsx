@@ -1,6 +1,9 @@
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
+
 import useStore from "@/app/store";
+
 import SelectedSoundEventAnnotationBase from "@/lib/components/sound_event_annotations/SelectedSoundEventAnnotation";
+
 import type { SoundEventAnnotation } from "@/lib/types";
 
 import ProjectTagSearch from "../tags/ProjectTagsSearch";

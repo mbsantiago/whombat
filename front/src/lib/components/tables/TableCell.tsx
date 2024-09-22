@@ -1,6 +1,7 @@
-import { EditIcon } from "@/lib/components/icons";
 import classnames from "classnames";
 import type { HTMLProps, ReactNode } from "react";
+
+import { EditIcon } from "@/lib/components/icons";
 
 /**
  * TableCell Component

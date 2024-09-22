@@ -1,5 +1,6 @@
-import AudioSettings from "@/lib/components/settings/AudioSettings";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import AudioSettings from "@/lib/components/settings/AudioSettings";
 
 const meta: Meta<typeof AudioSettings> = {
   title: "Settings/AudioSettings",

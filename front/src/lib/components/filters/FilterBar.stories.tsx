@@ -1,10 +1,12 @@
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+
 import FilterBadge from "@/lib/components/filters/FilterBadge";
 import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import { BooleanFilter } from "@/lib/components/filters/Filters";
 import { VerifiedIcon } from "@/lib/components/icons";
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 
 import FilterBar from "./FilterBar";
 

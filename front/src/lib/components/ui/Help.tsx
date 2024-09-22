@@ -1,6 +1,7 @@
-import { InfoIcon } from "@/lib/components/icons";
 import classNames from "classnames";
 import type { ReactNode } from "react";
+
+import { InfoIcon } from "@/lib/components/icons";
 
 import Button from "./Button";
 import Popover from "./Popover";

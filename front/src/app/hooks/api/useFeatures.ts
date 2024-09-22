@@ -1,7 +1,9 @@
 import api from "@/app/api";
-import { type FeatureFilter } from "@/lib/api/features";
+
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
+import { type FeatureFilter } from "@/lib/api/features";
 
 const _empty: FeatureFilter = {};
 const _fixed: (keyof FeatureFilter)[] = [];

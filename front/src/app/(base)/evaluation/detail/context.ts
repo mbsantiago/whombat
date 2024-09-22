@@ -1,5 +1,6 @@
-import type { EvaluationSet } from "@/lib/types";
 import { createContext } from "react";
+
+import type { EvaluationSet } from "@/lib/types";
 
 const EvaluationSetContext = createContext<EvaluationSet>({
   name: "",

@@ -1,10 +1,15 @@
+import { useCallback } from "react";
+
 import { type AudioController } from "@/app/hooks/audio/useRecordingAudio";
+
 import CanvasBase from "@/lib/components/spectrograms/Canvas";
-import drawOnset from "@/lib/draw/onset";
+
 import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
 import type { SpectrogramState } from "@/lib/hooks/spectrogram/useSpectrogramState";
 import { ViewportController } from "@/lib/hooks/window/useViewport";
+
+import drawOnset from "@/lib/draw/onset";
 import type {
   AudioSettings,
   Recording,
@@ -12,7 +17,6 @@ import type {
   SpectrogramWindow,
 } from "@/lib/types";
 import { scaleTimeToViewport } from "@/lib/utils/geometry";
-import { useCallback } from "react";
 
 export default function Canvas({
   viewport,

@@ -1,12 +1,14 @@
+import dynamic from "next/dynamic";
+
 import soundEventAnnotationFilterDef from "@/lib/components/filters/sound_event_annotations";
 import { GalleryIcon, PlotIcon } from "@/lib/components/icons";
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import AnnotationGallery from "@/lib/components/sound_event_annotations/SoundEventAnnotationsGallery";
+
 import type {
   SoundEventAnnotationFilter,
   SpectrogramParameters,
 } from "@/lib/types";
-import dynamic from "next/dynamic";
 
 const AnnotationsScatterPlot = dynamic(
   () =>

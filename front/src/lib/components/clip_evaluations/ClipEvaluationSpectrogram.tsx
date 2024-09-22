@@ -1,16 +1,20 @@
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
+import { useCallback, useMemo, useRef } from "react";
+
 import Player from "@/lib/components/audio/Player";
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 import SpectrogramPredictedTags from "@/lib/components/spectrograms/SpectrogramPredictedTags";
 import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import Card from "@/lib/components/ui/Card";
+
 import useAudio from "@/lib/hooks/audio/useAudio";
 import useCanvas from "@/lib/hooks/draw/useCanvas";
 import useMatchDraw from "@/lib/hooks/evaluation/useMatchDraw";
 import useSpectrogram from "@/lib/hooks/spectrogram/useSpectrogram";
 import useSpectrogramPredictionTags from "@/lib/hooks/spectrogram/useSpectrogramPredictionTags";
 import useSpectrogramTrackAudio from "@/lib/hooks/spectrogram/useSpectrogramTrackAudio";
+
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import type {
   ClipEvaluation,
   Interval,
@@ -18,7 +22,6 @@ import type {
   SpectrogramParameters,
 } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
-import { useCallback, useMemo, useRef } from "react";
 
 const DEFAULT_THRESHOLD: Interval = { min: 0.5, max: 1 };
 

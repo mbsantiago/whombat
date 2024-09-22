@@ -1,11 +1,13 @@
+import { useCallback } from "react";
+
 import useEditAnnotationGeometry from "@/lib/hooks/draw/useEditAnnotation";
+
 import type {
   Dimensions,
   Geometry,
   SoundEventAnnotation,
   SpectrogramWindow,
 } from "@/lib/types";
-import { useCallback } from "react";
 
 const PRIMARY = "rgb(16 185 129)";
 

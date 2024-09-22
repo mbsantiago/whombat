@@ -1,8 +1,10 @@
-import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
+import { useEffect, useMemo } from "react";
+
 import useViewport from "@/lib/hooks/window/useViewport";
+
+import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
 import type { Clip, SpectrogramSettings } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
-import { useEffect, useMemo } from "react";
 
 export default function useRecordingViewport({
   clip,

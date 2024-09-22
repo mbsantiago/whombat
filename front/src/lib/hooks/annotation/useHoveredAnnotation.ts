@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import useWindowHover from "@/lib/hooks/window/useWindowHover";
+
 import type {
   Dimensions,
   Position,
@@ -10,7 +13,6 @@ import {
   scaleGeometryToViewport,
   scalePositionToViewport,
 } from "@/lib/utils/geometry";
-import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function useHoveredAnnotations({
   viewport,

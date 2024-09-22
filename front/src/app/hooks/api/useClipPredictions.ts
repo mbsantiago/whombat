@@ -1,7 +1,9 @@
 import api from "@/app/api";
-import { type ClipPredictionFilter } from "@/lib/api/clip_predictions";
+
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
+import { type ClipPredictionFilter } from "@/lib/api/clip_predictions";
 
 const _empty: ClipPredictionFilter = {};
 const _fixed: (keyof ClipPredictionFilter)[] = [];

@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import drawGeometry from "@/lib/draw/geometry";
 import { ORANGE } from "@/lib/draw/styles";
 import type {
@@ -6,7 +8,6 @@ import type {
   SpectrogramWindow,
 } from "@/lib/types";
 import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-import { useCallback } from "react";
 
 const IDLE_STYLE = {
   borderColor: ORANGE,

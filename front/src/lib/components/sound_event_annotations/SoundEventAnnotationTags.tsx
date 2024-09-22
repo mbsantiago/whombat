@@ -1,5 +1,6 @@
-import type { SoundEventAnnotation } from "@/lib/types";
 import { type ComponentProps, useMemo } from "react";
+
+import type { SoundEventAnnotation } from "@/lib/types";
 
 import TagPanel from "../tags/TagPanel";
 

@@ -1,8 +1,11 @@
-import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
-import AnnotationProjectProgressBase from "@/lib/components/annotation_projects/AnnotationProjectProgress";
-import type { AnnotationProject } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
+
+import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
+
+import AnnotationProjectProgressBase from "@/lib/components/annotation_projects/AnnotationProjectProgress";
+
+import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjectProgress({
   annotationProject,

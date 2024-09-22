@@ -1,4 +1,10 @@
 import {
+  useRouter,
+  useSearchParams,
+  useSelectedLayoutSegment,
+} from "next/navigation";
+
+import {
   ClipsIcon,
   HomeIcon,
   RecordingIcon,
@@ -6,11 +12,6 @@ import {
 } from "@/lib/components/icons";
 import SectionTabs from "@/lib/components/navigation/SectionTabs";
 import Tab from "@/lib/components/ui/Tab";
-import {
-  useRouter,
-  useSearchParams,
-  useSelectedLayoutSegment,
-} from "next/navigation";
 
 export default function ExplorationTabs() {
   const router = useRouter();

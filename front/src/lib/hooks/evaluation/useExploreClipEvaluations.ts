@@ -1,8 +1,11 @@
-import useClipEvaluations from "@/app/hooks/api/useClipEvaluations";
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
-import type { ClipEvaluation, Interval } from "@/lib/types";
 import { useCallback, useMemo, useState } from "react";
+
+import useClipEvaluations from "@/app/hooks/api/useClipEvaluations";
+
+import type { Filter } from "@/lib/hooks/utils/useFilter";
+
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
+import type { ClipEvaluation, Interval } from "@/lib/types";
 
 type ExplorationState = {
   filter: Filter<ClipEvaluationFilter>;

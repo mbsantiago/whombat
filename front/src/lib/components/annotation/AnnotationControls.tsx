@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 import {
   AnnotationProjectIcon,
   BoundingBoxIcon,
@@ -12,9 +14,10 @@ import Select from "@/lib/components/inputs/Select";
 import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tooltip from "@/lib/components/ui/Tooltip";
+
 import type { AnnotationMode } from "@/lib/hooks/annotation/useAnnotationState";
+
 import type { GeometryType } from "@/lib/types";
-import { ReactNode } from "react";
 
 type Node = {
   id: string;

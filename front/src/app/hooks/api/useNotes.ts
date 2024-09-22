@@ -1,6 +1,8 @@
 import api from "@/app/api";
+
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
 import type { NoteFilter } from "@/lib/types";
 
 const _empty: NoteFilter = {};

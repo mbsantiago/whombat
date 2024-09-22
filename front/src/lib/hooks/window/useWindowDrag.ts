@@ -1,8 +1,10 @@
-import type { EventKeys } from "@/lib/hooks/utils/useDrag";
-import type { Dimensions, Position, SpectrogramWindow } from "@/lib/types";
-import { scalePixelsToWindow } from "@/lib/utils/geometry";
 import { useCallback, useState } from "react";
 import { useMove } from "react-aria";
+
+import type { EventKeys } from "@/lib/hooks/utils/useDrag";
+
+import type { Dimensions, Position, SpectrogramWindow } from "@/lib/types";
+import { scalePixelsToWindow } from "@/lib/utils/geometry";
 
 /**
  * The `useDrag` hook manages dragging behavior for an object

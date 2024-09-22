@@ -1,7 +1,10 @@
+import { useCallback, useEffect, useState } from "react";
+
+import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
+
 import drawGeometry from "@/lib/draw/geometry";
 import { DEFAULT_ONSET_STYLE } from "@/lib/draw/onset";
 import { type Style } from "@/lib/draw/styles";
-import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
 import type {
   Dimensions,
   Position,
@@ -9,7 +12,6 @@ import type {
   TimeStamp,
 } from "@/lib/types";
 import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-import { useCallback, useEffect, useState } from "react";
 
 export default function useCreateTimeStamp({
   viewport,

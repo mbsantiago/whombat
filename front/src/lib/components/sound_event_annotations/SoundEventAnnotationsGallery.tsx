@@ -1,17 +1,22 @@
-import api from "@/app/api";
+import { useMemo } from "react";
+
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
+
+import api from "@/app/api";
+
 import Empty from "@/lib/components/Empty";
 import Pagination from "@/lib/components/lists/Pagination";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import Card from "@/lib/components/ui/Card";
 import Loading from "@/lib/components/ui/Loading";
+
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
 import type {
   SoundEventAnnotation,
   SoundEventAnnotationFilter,
   SpectrogramParameters,
 } from "@/lib/types";
-import { useMemo } from "react";
 
 const empty = {};
 

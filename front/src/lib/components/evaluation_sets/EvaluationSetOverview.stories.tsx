@@ -1,6 +1,7 @@
-import type { EvaluationSet } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+
+import type { EvaluationSet } from "@/lib/types";
 
 import EvaluationSetOverview from "./EvaluationSetOverview";
 

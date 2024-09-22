@@ -1,7 +1,8 @@
-import type { AudioSettings, Recording } from "@/lib/types";
 import { produce } from "immer";
 import { useMemo } from "react";
 import { useImmerReducer } from "use-immer";
+
+import type { AudioSettings, Recording } from "@/lib/types";
 
 /**
  * A React hook for managing and updating audio settings.

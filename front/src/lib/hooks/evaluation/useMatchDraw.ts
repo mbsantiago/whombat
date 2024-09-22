@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import drawGeometry from "@/lib/draw/geometry";
 import { GREEN, ORANGE, RED } from "@/lib/draw/styles";
 import type {
@@ -6,7 +8,6 @@ import type {
   SpectrogramWindow,
 } from "@/lib/types";
 import { scaleGeometryToViewport } from "@/lib/utils/geometry";
-import { useCallback } from "react";
 
 const DEFAULT_INTERVAL = {
   min: 0.5,

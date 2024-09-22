@@ -1,7 +1,8 @@
 /** State for application wide spectrogram and audio parameters */
+import { StateCreator } from "zustand";
+
 import { DEFAULT_AUDIO_SETTINGS } from "@/lib/constants";
 import type { AudioSettings } from "@/lib/types";
-import { StateCreator } from "zustand";
 
 export type AudioSlice = {
   audioSettings: AudioSettings;

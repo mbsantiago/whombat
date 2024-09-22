@@ -1,10 +1,12 @@
+import type { Meta, StoryObj } from "@storybook/react";
+
 import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
+
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,
 } from "@/lib/constants";
 import type { SpectrogramWindow } from "@/lib/types";
-import type { Meta, StoryObj } from "@storybook/react";
 
 import AnnotationControls from "../annotation/AnnotationControls";
 import Player from "../audio/Player";

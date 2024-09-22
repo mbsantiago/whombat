@@ -1,5 +1,6 @@
-import type { Recording, SpectrogramWindow } from "@/lib/types";
 import { useMemo } from "react";
+
+import type { Recording, SpectrogramWindow } from "@/lib/types";
 
 // Sizes of the segments
 const DURATIONS = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256];

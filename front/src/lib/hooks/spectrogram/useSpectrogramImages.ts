@@ -1,4 +1,7 @@
+import { useCallback, useEffect, useRef } from "react";
+
 import api from "@/app/api";
+
 import drawFreqAxis from "@/lib/draw/freqAxis";
 import drawImage from "@/lib/draw/image";
 import drawTimeAxis from "@/lib/draw/timeAxis";
@@ -16,7 +19,6 @@ import {
   calculateSpectrogramChunkIntervals,
 } from "@/lib/utils/chunks";
 import { intervalIntersection, scaleInterval } from "@/lib/utils/geometry";
-import { useCallback, useEffect, useRef } from "react";
 
 import useSpectrogramChunksState, {
   type ChunkState,

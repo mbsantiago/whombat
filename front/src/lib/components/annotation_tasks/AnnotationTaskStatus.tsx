@@ -1,9 +1,11 @@
 import Loading from "@/app/loading";
+
 import StatusBadge from "@/lib/components/annotation_tasks/StatusBadge";
 import { CheckIcon, CloseIcon, VerifiedIcon } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tooltip from "@/lib/components/ui/Tooltip";
+
 import type { AnnotationStatus, AnnotationTask } from "@/lib/types";
 
 export default function AnnotationTaskStatus({

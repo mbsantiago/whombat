@@ -1,3 +1,6 @@
+import { AxiosInstance } from "axios";
+import { z } from "zod";
+
 import { GetManySchema, Page } from "@/lib/api/common";
 import {
   EvaluationSchema,
@@ -8,8 +11,6 @@ import {
   UserRunSchema,
 } from "@/lib/schemas";
 import type { Evaluation } from "@/lib/types";
-import { AxiosInstance } from "axios";
-import { z } from "zod";
 
 export const EvaluationCreateSchema = z.object({
   task: z.string(),

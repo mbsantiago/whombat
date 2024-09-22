@@ -1,10 +1,11 @@
-import { type GetManyQuery, type Paginated } from "@/lib/types";
 import {
   type UseQueryResult,
   keepPreviousData,
   useQuery,
 } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+
+import { type GetManyQuery, type Paginated } from "@/lib/types";
 
 /**
  * Represents a pagination state with various utility functions.

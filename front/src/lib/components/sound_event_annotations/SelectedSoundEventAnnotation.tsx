@@ -2,6 +2,7 @@ import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotation
 import SoundEventAnnotationNotes from "@/lib/components/sound_event_annotations/SoundEventAnnotationNotes";
 import SoundEventAnnotationTags from "@/lib/components/sound_event_annotations/SoundEventAnnotationTags";
 import Card from "@/lib/components/ui/Card";
+
 import type { NoteCreate, SoundEventAnnotation, Tag } from "@/lib/types";
 
 export default function SelectedSoundEventAnnotation({

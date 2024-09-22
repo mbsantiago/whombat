@@ -1,5 +1,5 @@
 import useModelRuns from "@/app/hooks/api/useModelRuns";
-import type { ModelRunFilter } from "@/lib/api/model_runs";
+
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
@@ -14,6 +14,8 @@ import ModelRunComponent from "@/lib/components/model_runs/ModelRun";
 import ModelRunImport from "@/lib/components/model_runs/ModelRunImport";
 import Dialog from "@/lib/components/ui/Dialog";
 import Loading from "@/lib/components/ui/Loading";
+
+import type { ModelRunFilter } from "@/lib/api/model_runs";
 import type { ModelRun } from "@/lib/types";
 
 function NoModelRuns() {

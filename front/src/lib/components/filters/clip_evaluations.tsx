@@ -1,10 +1,11 @@
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import FilterBadge, {
   NumberFilterBadge,
 } from "@/lib/components/filters/FilterBadge";
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { FloatFilter, TagFilter } from "@/lib/components/filters/Filters";
 import { ScoreIcon, TagIcon } from "@/lib/components/icons";
+
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 
 const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
   {

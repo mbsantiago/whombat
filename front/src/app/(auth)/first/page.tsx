@@ -1,12 +1,14 @@
 "use client";
 
-import { WhombatIcon } from "@/lib/components/icons";
-import Info from "@/lib/components/ui/Info";
-import UserCreateForm from "@/lib/components/users/UserCreateForm";
-import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
+
+import { WhombatIcon } from "@/lib/components/icons";
+import Info from "@/lib/components/ui/Info";
+import UserCreateForm from "@/lib/components/users/UserCreateForm";
+
+import type { User } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();

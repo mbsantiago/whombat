@@ -1,6 +1,8 @@
-import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
-import type { SoundEventAnnotation } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import SoundEventAnnotationDetails from "@/lib/components/sound_event_annotations/SoundEventAnnotationDetails";
+
+import type { SoundEventAnnotation } from "@/lib/types";
 
 const meta: Meta<typeof SoundEventAnnotationDetails> = {
   title: "SoundEventAnnotations/Details",

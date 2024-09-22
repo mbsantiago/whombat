@@ -1,15 +1,19 @@
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
+import { useCallback, useMemo, useRef } from "react";
+
 import Player from "@/lib/components/audio/Player";
 import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
 import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
+
 import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
 import useAudio from "@/lib/hooks/audio/useAudio";
 import useCanvas from "@/lib/hooks/draw/useCanvas";
 import useSpectrogram from "@/lib/hooks/spectrogram/useSpectrogram";
 import useSpectrogramTags from "@/lib/hooks/spectrogram/useSpectrogramTags";
 import useSpectrogramTrackAudio from "@/lib/hooks/spectrogram/useSpectrogramTrackAudio";
+
+import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import type {
   Position,
   Recording,
@@ -18,7 +22,6 @@ import type {
 } from "@/lib/types";
 import { computeGeometryBBox } from "@/lib/utils/geometry";
 import { getCenteredViewingWindow } from "@/lib/utils/windows";
-import { useCallback, useMemo, useRef } from "react";
 
 const MIN_DURATION = 0.2;
 const MAX_DURATION = 5;

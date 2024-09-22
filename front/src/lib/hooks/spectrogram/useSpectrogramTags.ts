@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import type {
   Dimensions,
   SoundEventAnnotation,
@@ -7,7 +9,6 @@ import type {
 import { isGeometryInWindow } from "@/lib/utils/geometry";
 import { getLabelPosition } from "@/lib/utils/tags";
 import type { TagElement, TagGroup } from "@/lib/utils/tags";
-import { useMemo } from "react";
 
 export default function useSpectrogramTags({
   annotations,

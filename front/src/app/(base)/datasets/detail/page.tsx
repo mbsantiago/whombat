@@ -1,8 +1,9 @@
 "use client";
 
-import DatasetDetail from "@/app/components/datasets/DatasetDetail";
 import { notFound, useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
+
+import DatasetDetail from "@/app/components/datasets/DatasetDetail";
 
 import DatasetContext from "./context";
 

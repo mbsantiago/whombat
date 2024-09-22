@@ -1,6 +1,9 @@
+import { type Control, Controller } from "react-hook-form";
+
 import Select from "@/lib/components/inputs/Select";
 import Slider from "@/lib/components/inputs/Slider";
 import { InputGroup } from "@/lib/components/inputs/index";
+
 import {
   MAX_FFT_SIZE,
   MAX_HOP_FRACTION,
@@ -8,7 +11,6 @@ import {
   MIN_HOP_FRACTION,
 } from "@/lib/constants";
 import type { SpectrogramSettings } from "@/lib/types";
-import { type Control, Controller } from "react-hook-form";
 
 import SettingsSection from "./SettingsSection";
 

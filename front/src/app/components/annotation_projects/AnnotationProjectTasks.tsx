@@ -1,8 +1,16 @@
-import api from "@/app/api";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
+
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
+
+import api from "@/app/api";
+
 import AnnotationProjectTasksBase from "@/lib/components/annotation_projects/AnnotationProjectTasks";
+
 import useFilter from "@/lib/hooks/utils/useFilter";
+
 import type {
   AnnotationProject,
   AnnotationTask,
@@ -10,8 +18,6 @@ import type {
   RecordingFilter,
 } from "@/lib/types";
 import { computeClips } from "@/lib/utils/clips";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
 
 export default function AnnotationProjectTasks({
   annotationProject: initialData,

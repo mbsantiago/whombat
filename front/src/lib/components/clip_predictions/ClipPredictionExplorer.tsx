@@ -1,4 +1,3 @@
-import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import Empty from "@/lib/components/Empty";
 import ClipPredictionDisplay from "@/lib/components/clip_predictions/ClipPredictionDisplay";
 import FilterBar from "@/lib/components/filters/FilterBar";
@@ -13,8 +12,11 @@ import {
 import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import Button from "@/lib/components/ui/Button";
 import Loading from "@/lib/components/ui/Loading";
+
 import useExploreClipPredictions from "@/lib/hooks/prediction/useExploreClipPredictions";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
+
+import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
 import type { ClipPrediction, Interval } from "@/lib/types";
 
 export default function ClipPredictionExplorer(props: {

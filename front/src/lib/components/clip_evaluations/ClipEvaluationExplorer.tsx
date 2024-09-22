@@ -1,4 +1,3 @@
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import Empty from "@/lib/components/Empty";
 import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
 import FilterBar from "@/lib/components/filters/FilterBar";
@@ -14,8 +13,11 @@ import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import Toggle from "@/lib/components/inputs/Toggle";
 import Button from "@/lib/components/ui/Button";
 import Loading from "@/lib/components/ui/Loading";
+
 import useExploreClipEvaluations from "@/lib/hooks/evaluation/useExploreClipEvaluations";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
+
+import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
 import type { ClipEvaluation, Interval } from "@/lib/types";
 
 export default function ClipEvaluationExplorer(props: {

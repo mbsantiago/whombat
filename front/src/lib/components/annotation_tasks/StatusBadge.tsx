@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 import {
   CheckIcon,
   CloseIcon,
@@ -5,8 +7,8 @@ import {
   UserIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
+
 import type { AnnotationStatusBadge } from "@/lib/types";
-import classNames from "classnames";
 
 const ICONS = {
   assigned: UserIcon,

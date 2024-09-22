@@ -1,5 +1,6 @@
-import type { GeometryType, SoundEventAnnotation } from "@/lib/types";
 import { useCallback, useMemo, useState } from "react";
+
+import type { GeometryType, SoundEventAnnotation } from "@/lib/types";
 
 import type { SpectrogramState } from "../spectrogram/useSpectrogramState";
 

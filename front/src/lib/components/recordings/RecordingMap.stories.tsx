@@ -1,6 +1,8 @@
-import RecordingMap from "@/lib/components/recordings/RecordingMap";
-import type { Recording } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import RecordingMap from "@/lib/components/recordings/RecordingMap";
+
+import type { Recording } from "@/lib/types";
 
 const meta: Meta<typeof RecordingMap> = {
   title: "Recordings/Map",

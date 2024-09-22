@@ -1,5 +1,6 @@
-import Note from "@/lib/components/notes/Note";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import Note from "@/lib/components/notes/Note";
 
 import AnnotationProjectNotesSummary from "./AnnotationProjectNotesSummary";
 

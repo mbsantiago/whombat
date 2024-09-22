@@ -1,7 +1,9 @@
+import type { Meta, StoryObj } from "@storybook/react";
+
 import ViewportBar from "@/lib/components/spectrograms/ViewportBar";
+
 import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
 import useViewport from "@/lib/hooks/window/useViewport";
-import type { Meta, StoryObj } from "@storybook/react";
 
 const meta: Meta<typeof ViewportBar> = {
   title: "Spectrograms/SpectrogramBar",

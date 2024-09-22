@@ -1,11 +1,13 @@
+import { type ReactNode } from "react";
+
 import {
   CalendarIcon,
   DatasetIcon,
   RecordingsIcon,
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
+
 import type { Dataset as DatasetType } from "@/lib/types";
-import { type ReactNode } from "react";
 
 export function Atom({ label, value }: { label: ReactNode; value: ReactNode }) {
   return (

@@ -1,3 +1,5 @@
+import { type ComponentProps, type FC, useCallback } from "react";
+
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
@@ -8,10 +10,11 @@ import Table from "@/lib/components/tables/Table";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
+
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
+
 import type { Recording, RecordingFilter, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
-import { type ComponentProps, type FC, useCallback } from "react";
 
 export default function RecordingTable({
   recordings,

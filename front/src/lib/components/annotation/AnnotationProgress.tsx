@@ -1,4 +1,5 @@
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
+import { useMemo } from "react";
+
 import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
@@ -10,12 +11,14 @@ import Dialog from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
+
 import { ANNOTATION_KEY_SHORTCUTS } from "@/lib/hooks/annotation/useAnnotateClipKeyShortcuts";
 import { AUDIO_KEY_SHORTCUTS } from "@/lib/hooks/audio/useAudioKeyShortcuts";
 import { SPECTROGRAM_KEY_SHORTCUTS } from "@/lib/hooks/spectrogram/useSpectrogramKeyShortcuts";
+
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import type { AnnotationTask } from "@/lib/types";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
-import { useMemo } from "react";
 
 const SHORTCUTS = [
   ...AUDIO_KEY_SHORTCUTS,

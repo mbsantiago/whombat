@@ -1,5 +1,8 @@
-import { type Style } from "@/lib/draw/styles";
+import { useCallback, useMemo } from "react";
+
 import useEditGeometry from "@/lib/hooks/draw/useEditGeometry";
+
+import { type Style } from "@/lib/draw/styles";
 import type {
   Dimensions,
   Geometry,
@@ -10,7 +13,6 @@ import {
   scaleGeometryToViewport,
   scaleGeometryToWindow,
 } from "@/lib/utils/geometry";
-import { useCallback, useMemo } from "react";
 
 export default function useEditAnnotationGeometry({
   viewport,

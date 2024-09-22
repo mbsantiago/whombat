@@ -1,3 +1,6 @@
+import { AxiosInstance } from "axios";
+import { z } from "zod";
+
 import { GetManySchema, Page } from "@/lib/api/common";
 import {
   EvaluationSchema,
@@ -7,8 +10,6 @@ import {
   StringFilterSchema,
 } from "@/lib/schemas";
 import type { Evaluation, EvaluationSet, ModelRun } from "@/lib/types";
-import { AxiosInstance } from "axios";
-import { z } from "zod";
 
 export const ModelRunFilterSchema = z.object({
   search: z.string().optional(),

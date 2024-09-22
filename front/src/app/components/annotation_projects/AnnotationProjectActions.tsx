@@ -1,7 +1,10 @@
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
-import AnnotationProjectActionsBase from "@/lib/components/annotation_projects/AnnotationProjectActions";
-import type { AnnotationProject } from "@/lib/types";
 import toast from "react-hot-toast";
+
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
+
+import AnnotationProjectActionsBase from "@/lib/components/annotation_projects/AnnotationProjectActions";
+
+import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjectActions({
   annotationProject,

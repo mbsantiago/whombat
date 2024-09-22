@@ -1,10 +1,11 @@
 "use client";
 
+import { useContext } from "react";
+
 import Center from "@/lib/components/layouts/Center";
 import Card from "@/lib/components/ui/Card";
 import Hero from "@/lib/components/ui/Hero";
 import UserProfile from "@/lib/components/users/UserProfile";
-import { useContext } from "react";
 
 import UserContext from "../../contexts/user";
 

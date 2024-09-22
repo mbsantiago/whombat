@@ -1,5 +1,6 @@
-import type { AnnotationTask } from "@/lib/types";
 import { ComponentProps } from "react";
+
+import type { AnnotationTask } from "@/lib/types";
 
 import ClipAnnotationSoundEvents from "../clip_annotations/ClipAnnotationSoundEvents";
 import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";

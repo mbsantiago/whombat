@@ -1,11 +1,14 @@
 // Purpose: React component for displaying predicted tags on the spectrogram.
-import useStore from "@/app/store";
-import { getTagClassNames } from "@/lib/components/tags/Tag";
-import type { Interval } from "@/lib/types";
-import type { TagElement, TagGroup } from "@/lib/utils/tags";
 import classNames from "classnames";
 import { type ReactNode } from "react";
 import { useMemo } from "react";
+
+import useStore from "@/app/store";
+
+import { getTagClassNames } from "@/lib/components/tags/Tag";
+
+import type { Interval } from "@/lib/types";
+import type { TagElement, TagGroup } from "@/lib/utils/tags";
 
 export default function SpectrogramPredictedTags({
   tags,

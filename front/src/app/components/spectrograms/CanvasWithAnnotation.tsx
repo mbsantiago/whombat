@@ -1,11 +1,16 @@
+import { useCallback } from "react";
+import { mergeProps } from "react-aria";
+
 import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
+
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
+
 import CanvasBase, {
   type CanvasProps,
 } from "@/lib/components/spectrograms/Canvas";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
-import drawOnset from "@/lib/draw/onset";
+
 import useAnnotationCreate from "@/lib/hooks/annotation/useAnnotationCreate";
 import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
 import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
@@ -17,6 +22,8 @@ import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramIn
 import type { SpectrogramState } from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useElementSize from "@/lib/hooks/utils/useElementSize";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
+
+import drawOnset from "@/lib/draw/onset";
 import type {
   AudioSettings,
   ClipAnnotation,
@@ -28,8 +35,6 @@ import type {
   Tag,
 } from "@/lib/types";
 import { scaleTimeToViewport } from "@/lib/utils/geometry";
-import { useCallback } from "react";
-import { mergeProps } from "react-aria";
 
 const _emptyTags: Tag[] = [];
 

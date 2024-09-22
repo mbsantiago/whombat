@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { SettingsIcon } from "@/lib/components/icons";
 import AudioSettingsComponent from "@/lib/components/settings/AudioSettings";
 import SpectrogramSettingsComponent from "@/lib/components/settings/SpectrogramSettings";
@@ -5,8 +7,8 @@ import Button from "@/lib/components/ui/Button";
 import { H3 } from "@/lib/components/ui/Headings";
 import SlideOver from "@/lib/components/ui/SlideOver";
 import Tooltip from "@/lib/components/ui/Tooltip";
+
 import type { AudioSettings, SpectrogramSettings } from "@/lib/types";
-import { useState } from "react";
 
 export default function SettingsMenu({
   audioSettings,

@@ -1,3 +1,7 @@
+import { useCallback, useRef } from "react";
+import { useMove } from "react-aria";
+import type { MoveEndEvent, MoveMoveEvent, MoveStartEvent } from "react-aria";
+
 import type {
   MoveEndHandler,
   MoveHandler,
@@ -5,9 +9,6 @@ import type {
   Position,
   SpectrogramWindow,
 } from "@/lib/types";
-import { useCallback, useRef } from "react";
-import { useMove } from "react-aria";
-import type { MoveEndEvent, MoveMoveEvent, MoveStartEvent } from "react-aria";
 
 /**
  * A custom React hook for handling move interactions (start, move, end) on a

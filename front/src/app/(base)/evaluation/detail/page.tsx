@@ -1,8 +1,9 @@
 "use client";
 
-import EvaluationSetDetail from "@/app/components/evaluation_sets/EvaluationSetDetail";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
+
+import EvaluationSetDetail from "@/app/components/evaluation_sets/EvaluationSetDetail";
 
 import EvaluationSetContext from "./context";
 

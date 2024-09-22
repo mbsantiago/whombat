@@ -1,9 +1,10 @@
-import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { UploadIcon } from "@/lib/components/icons";
+import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
 
 export default function AnnotationProjectImport({
   onImportAnnotationProject,

@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
+
 import Header from "@/lib/components/ui/Header";
 import { H1 } from "@/lib/components/ui/Headings";
-import type { ReactNode } from "react";
 
 /**
  * A component for rendering a section header with a tabbed navigation bar.

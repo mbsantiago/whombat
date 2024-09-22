@@ -1,11 +1,13 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
 import { AnnotationProjectIcon } from "@/lib/components/icons";
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
+
 import type { AnnotationProject } from "@/lib/types";
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 
 import AnnotationProjectList from "./AnnotationProjectList";
 

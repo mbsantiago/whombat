@@ -1,7 +1,8 @@
-import type { Dimensions, Position, SpectrogramWindow } from "@/lib/types";
-import { scalePixelsToWindow } from "@/lib/utils/geometry";
 import { useMemo } from "react";
 import type { DOMAttributes, MouseEvent } from "react";
+
+import type { Dimensions, Position, SpectrogramWindow } from "@/lib/types";
+import { scalePixelsToWindow } from "@/lib/utils/geometry";
 
 export default function useWindowHover<T extends HTMLElement>({
   viewport,

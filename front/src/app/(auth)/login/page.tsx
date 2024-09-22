@@ -1,14 +1,16 @@
 "use client";
 
-import api from "@/app/api";
-import { WhombatIcon } from "@/lib/components/icons";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
-import Info from "@/lib/components/ui/Info";
-import Link from "@/lib/components/ui/Link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import api from "@/app/api";
+
+import { WhombatIcon } from "@/lib/components/icons";
+import { Input, InputGroup } from "@/lib/components/inputs/index";
+import Info from "@/lib/components/ui/Info";
+import Link from "@/lib/components/ui/Link";
 
 const schema = z.object({
   username: z.string(),

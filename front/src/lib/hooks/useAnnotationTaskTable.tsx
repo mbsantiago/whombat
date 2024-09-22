@@ -1,16 +1,3 @@
-import useStore from "@/app/store";
-import StatusBadge from "@/lib/components/annotation_tasks/StatusBadge";
-import { SunIcon } from "@/lib/components/icons";
-import TableCell from "@/lib/components/tables/TableCell";
-import TableHeader from "@/lib/components/tables/TableHeader";
-import TagComponent from "@/lib/components/tags/Tag";
-import type {
-  AnnotationStatusBadge,
-  AnnotationTask,
-  Note,
-  Recording,
-  Tag,
-} from "@/lib/types";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -18,6 +5,22 @@ import {
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { useMemo } from "react";
+
+import useStore from "@/app/store";
+
+import StatusBadge from "@/lib/components/annotation_tasks/StatusBadge";
+import { SunIcon } from "@/lib/components/icons";
+import TableCell from "@/lib/components/tables/TableCell";
+import TableHeader from "@/lib/components/tables/TableHeader";
+import TagComponent from "@/lib/components/tags/Tag";
+
+import type {
+  AnnotationStatusBadge,
+  AnnotationTask,
+  Note,
+  Recording,
+  Tag,
+} from "@/lib/types";
 
 const defaultPathFormatter = (path: string) => path;
 

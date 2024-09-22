@@ -8,11 +8,13 @@
  * (DatasetNavHeader) and wraps the content with the DatasetContext.Provider to
  * provide dataset-related context to its children components.
  */
-import useDataset from "@/app/hooks/api/useDataset";
-import Loading from "@/app/loading";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 import toast from "react-hot-toast";
+
+import useDataset from "@/app/hooks/api/useDataset";
+
+import Loading from "@/app/loading";
 
 import DatasetTabs from "../../../components/datasets/DatasetTabs";
 import DatasetContext from "./context";

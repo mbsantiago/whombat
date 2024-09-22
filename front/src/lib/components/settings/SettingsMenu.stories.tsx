@@ -1,5 +1,6 @@
-import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 import type { Meta, StoryObj } from "@storybook/react";
+
+import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 
 const meta: Meta<typeof SettingsMenu> = {
   title: "Settings/SettingsMenu",

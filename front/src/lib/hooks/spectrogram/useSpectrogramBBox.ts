@@ -1,5 +1,8 @@
-import drawBBox from "@/lib/draw/bbox";
+import { useCallback, useState } from "react";
+
 import { type ViewportController } from "@/lib/hooks/window/useViewport";
+
+import drawBBox from "@/lib/draw/bbox";
 import type {
   DrawFn,
   MoveEndHandler,
@@ -9,7 +12,6 @@ import type {
   SpectrogramWindow,
 } from "@/lib/types";
 import { getViewportPosition } from "@/lib/utils/windows";
-import { useCallback, useState } from "react";
 
 const cmp = (a: number, b: number) => a - b;
 function toViewport(bbox: {

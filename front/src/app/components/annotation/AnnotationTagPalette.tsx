@@ -1,8 +1,12 @@
-import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-import useStore from "@/app/store";
-import AnnotationTagPaletteBase from "@/lib/components/annotation/AnnotationTagPalette";
-import type { ClipAnnotation, Tag } from "@/lib/types";
 import toast from "react-hot-toast";
+
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
+
+import useStore from "@/app/store";
+
+import AnnotationTagPaletteBase from "@/lib/components/annotation/AnnotationTagPalette";
+
+import type { ClipAnnotation, Tag } from "@/lib/types";
 
 import ProjectTagSearch from "../tags/ProjectTagsSearch";
 

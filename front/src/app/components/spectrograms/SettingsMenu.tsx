@@ -1,9 +1,12 @@
-import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
-import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-import useStore from "@/app/store";
-import SettingsMenuBase from "@/lib/components/settings/SettingsMenu";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
+
+import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
+import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
+
+import useStore from "@/app/store";
+
+import SettingsMenuBase from "@/lib/components/settings/SettingsMenu";
 
 export default function SettingsMenu({
   samplerate,

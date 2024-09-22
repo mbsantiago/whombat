@@ -1,8 +1,9 @@
-import { EditIcon } from "@/lib/components/icons";
-import { Input, TextArea } from "@/lib/components/inputs";
 import classNames from "classnames";
 import { useState } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
+
+import { EditIcon } from "@/lib/components/icons";
+import { Input, TextArea } from "@/lib/components/inputs";
 
 /**
  * A component to display data within a description list (<dd>) element.

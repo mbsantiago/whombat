@@ -1,6 +1,7 @@
-import type { Chunk, Interval } from "@/lib/types";
 import { produce } from "immer";
 import { useCallback, useState } from "react";
+
+import type { Chunk, Interval } from "@/lib/types";
 
 export type ChunkState = {
   interval: Interval;

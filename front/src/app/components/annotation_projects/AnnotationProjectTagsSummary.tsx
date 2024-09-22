@@ -1,10 +1,14 @@
-import api from "@/app/api";
-import useStore from "@/app/store";
-import AnnotationProjectTagsSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectTagsSummary";
-import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import type { AnnotationProject } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
+
+import api from "@/app/api";
+import useStore from "@/app/store";
+
+import AnnotationProjectTagsSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectTagsSummary";
+
+import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+
+import type { AnnotationProject } from "@/lib/types";
 
 /**
  * Component to display a summary of tags for a annotation_project.

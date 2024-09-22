@@ -1,8 +1,10 @@
-import { ClientProvider } from "@/app/client";
-import Notification from "@/lib/components/ui/Notification";
 import type { Metadata } from "next";
 import { Mulish } from "next/font/google";
 import { StrictMode } from "react";
+
+import { ClientProvider } from "@/app/client";
+
+import Notification from "@/lib/components/ui/Notification";
 
 import "./globals.css";
 

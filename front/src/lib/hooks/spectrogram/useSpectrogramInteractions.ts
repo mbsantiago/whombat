@@ -1,4 +1,5 @@
 import type { AudioController } from "@/app/hooks/audio/useRecordingAudio";
+
 import {
   useSpectrogramDrag,
   useSpectrogramScroll,
@@ -6,6 +7,7 @@ import {
 import useSpectrogramSeek from "@/lib/hooks/spectrogram/useSpectrogramSeek";
 import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
+
 import type { SpectrogramMode, SpectrogramWindow } from "@/lib/types";
 
 const nullFn = () => {};

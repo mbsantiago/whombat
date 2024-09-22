@@ -1,9 +1,10 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
+
 import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
 import TagSearchBar, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 
 const meta: Meta<typeof RecordingTagBar> = {
   title: "Recordings/TagBar",

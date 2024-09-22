@@ -1,9 +1,11 @@
-import type { EventKeys } from "@/lib/hooks/utils/useDrag";
-import useWindowDrag from "@/lib/hooks/window/useWindowDrag";
-import type { Position, SpectrogramWindow } from "@/lib/types";
-import { scalePixelsToWindow } from "@/lib/utils/geometry";
 import { type MouseEvent, useCallback, useMemo, useState } from "react";
 import { mergeProps } from "react-aria";
+
+import type { EventKeys } from "@/lib/hooks/utils/useDrag";
+import useWindowDrag from "@/lib/hooks/window/useWindowDrag";
+
+import type { Position, SpectrogramWindow } from "@/lib/types";
+import { scalePixelsToWindow } from "@/lib/utils/geometry";
 
 /**
  * Hook for handling window motions on a spectrogram.

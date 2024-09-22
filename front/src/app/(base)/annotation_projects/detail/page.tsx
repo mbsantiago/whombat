@@ -1,8 +1,9 @@
 "use client";
 
-import AnnotationProjectDetail from "@/app/components/annotation_projects/AnnotationProjectDetail";
 import { useRouter } from "next/navigation";
 import { useCallback, useContext } from "react";
+
+import AnnotationProjectDetail from "@/app/components/annotation_projects/AnnotationProjectDetail";
 
 import AnnotationProjectContext from "../../../contexts/annotationProject";
 

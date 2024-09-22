@@ -1,4 +1,5 @@
 import ViewportBarBase from "@/lib/components/spectrograms/ViewportBar";
+
 import useSpectrogramBarInteractions from "@/lib/hooks/spectrogram/useSpectrogramBarInteractions";
 import type { ViewportController } from "@/lib/hooks/window/useViewport";
 

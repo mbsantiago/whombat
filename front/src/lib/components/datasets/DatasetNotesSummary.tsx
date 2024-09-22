@@ -1,10 +1,12 @@
+import { type ComponentProps, useMemo } from "react";
+
 import { CheckIcon, NotesIcon } from "@/lib/components/icons";
 import NoteComponent from "@/lib/components/notes/Note";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
+
 import type * as types from "@/lib/types";
-import { type ComponentProps, useMemo } from "react";
 
 /**
  * Component to display a summary of notes and issues for a dataset.

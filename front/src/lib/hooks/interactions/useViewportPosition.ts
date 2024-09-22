@@ -1,5 +1,6 @@
-import type { HoverHandler, SpectrogramWindow } from "@/lib/types";
 import { useMemo, useRef } from "react";
+
+import type { HoverHandler, SpectrogramWindow } from "@/lib/types";
 
 /**
  * A custom React hook for managing cursor position and interaction on a HTML

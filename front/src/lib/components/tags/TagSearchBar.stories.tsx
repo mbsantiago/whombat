@@ -1,6 +1,7 @@
-import type { Tag } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+
+import type { Tag } from "@/lib/types";
 
 import TagSearchBar from "./TagSearchBar";
 

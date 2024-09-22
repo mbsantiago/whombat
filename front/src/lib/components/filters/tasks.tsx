@@ -1,4 +1,3 @@
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 import FilterBadge from "@/lib/components/filters/FilterBadge";
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import {
@@ -13,6 +12,8 @@ import {
   TagIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
+
+import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
 
 const tasksFilterDefs: FilterDef<AnnotationTaskFilter>[] = [
   {

@@ -1,3 +1,5 @@
+import { type ComponentProps, useMemo, useState } from "react";
+
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
@@ -12,7 +14,9 @@ import Card from "@/lib/components/ui/Card";
 import { H4 } from "@/lib/components/ui/Headings";
 import Help from "@/lib/components/ui/Help";
 import Loading from "@/lib/components/ui/Loading";
+
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
+
 import type {
   AnnotationProject,
   ClipAnnotationTag,
@@ -20,7 +24,6 @@ import type {
   Tag,
 } from "@/lib/types";
 import { Color, getTagColor, getTagKey } from "@/lib/utils/tags";
-import { type ComponentProps, useMemo, useState } from "react";
 
 const _emptyClipList: ClipAnnotationTag[] = [];
 const _emptySEList: SoundEventAnnotationTag[] = [];

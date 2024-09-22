@@ -1,8 +1,10 @@
+import { useMemo } from "react";
+
 import ClipPredictionExplorer from "@/lib/components/clip_predictions/ClipPredictionExplorer";
 import Card from "@/lib/components/ui/Card";
 import { H4 } from "@/lib/components/ui/Headings";
+
 import type { ModelRun } from "@/lib/types";
-import { useMemo } from "react";
 
 export default function ModelRunPredictions(props: { modelRun: ModelRun }) {
   const filter = useMemo(
