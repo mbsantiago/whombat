@@ -1,9 +1,7 @@
-import {
-  EvaluationSetImport,
-  EvaluationSetImportSchema,
-} from "@/lib/api/evaluation_sets";
 import { UploadIcon } from "@/lib/components/icons";
 import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
+import { EvaluationSetImportSchema } from "@/lib/schemas";
+import { EvaluationSetImport } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";

@@ -36,6 +36,10 @@ export type NoteFilter = z.infer<typeof schemas.NoteFilterSchema>;
 
 export type Recording = z.infer<typeof schemas.RecordingSchema>;
 
+export type RecordingFilter = z.input<typeof schemas.RecordingFilterSchema>;
+
+export type RecordingUpdate = z.input<typeof schemas.RecordingUpdateSchema>;
+
 export type RecordingTag = z.infer<typeof schemas.RecordingTagSchema>;
 
 export type RecordingTagFilter = z.infer<
@@ -53,6 +57,14 @@ export type FileState = z.infer<typeof schemas.FileStateSchema>;
 export type RecordingState = z.infer<typeof schemas.RecordingStateSchema>;
 
 export type Dataset = z.infer<typeof schemas.DatasetSchema>;
+
+export type DatasetFilter = z.input<typeof schemas.DatasetFilterSchema>;
+
+export type DatasetCreate = z.input<typeof schemas.DatasetCreateSchema>;
+
+export type DatasetUpdate = z.input<typeof schemas.DatasetUpdateSchema>;
+
+export type DatasetImport = z.infer<typeof schemas.DatasetImportSchema>;
 
 export type GeometryType = z.infer<typeof schemas.GeometryTypeSchema>;
 

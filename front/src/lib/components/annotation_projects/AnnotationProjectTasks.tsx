@@ -1,4 +1,3 @@
-import type { RecordingFilter } from "@/lib/api/recordings";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
@@ -9,7 +8,7 @@ import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H2, H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
-import type { Dataset } from "@/lib/types";
+import type { Dataset, RecordingFilter } from "@/lib/types";
 
 export default function AnnotationProjectTasks(props: {
   dataset?: Dataset;

@@ -1,7 +1,7 @@
 import api from "@/app/api";
-import { type SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import type { SoundEventAnnotationFilter } from "@/lib/types";
 
 const _empty: SoundEventAnnotationFilter = {};
 const _fixed: (keyof SoundEventAnnotationFilter)[] = [];

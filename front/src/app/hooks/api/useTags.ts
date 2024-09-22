@@ -1,7 +1,7 @@
 import api from "@/app/api";
-import { type TagFilter } from "@/lib/api/tags";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import type { TagFilter } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 
 const _empty: TagFilter = {};

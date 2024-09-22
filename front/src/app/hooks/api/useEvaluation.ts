@@ -10,7 +10,7 @@ export default function useEvaluation({
   onDelete,
   onError,
 }: {
-  uuid?: string;
+  uuid: string;
   evaluation?: Evaluation;
   enabled?: boolean;
   withState?: boolean;

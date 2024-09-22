@@ -1,7 +1,7 @@
 import api from "@/app/api";
-import { type NoteFilter } from "@/lib/api/notes";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import type { NoteFilter } from "@/lib/types";
 
 const _empty: NoteFilter = {};
 const _fixed: (keyof NoteFilter)[] = [];

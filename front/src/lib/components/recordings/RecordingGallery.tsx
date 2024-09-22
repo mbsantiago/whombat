@@ -1,10 +1,13 @@
 import api from "@/app/api";
-import type { RecordingFilter } from "@/lib/api/recordings";
 import Pagination from "@/lib/components/lists/Pagination";
 import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
 import Loading from "@/lib/components/ui/Loading";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import type { Recording, SpectrogramParameters } from "@/lib/types";
+import type {
+  Recording,
+  RecordingFilter,
+  SpectrogramParameters,
+} from "@/lib/types";
 import { useMemo } from "react";
 
 const empty = {};
@@ -40,7 +43,7 @@ export default function RecordingsGallery(props: {
               {pagination.page * pagination.pageSize} -{" "}
               {pagination.page * pagination.pageSize + annotations.length}
             </span>{" "}
-            of <span className="text-emerald-500 font-bold">{total}</span>{" "}
+            of <span className="font-bold text-emerald-500">{total}</span>{" "}
             recordings
           </span>
         </div>

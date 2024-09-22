@@ -1,8 +1,8 @@
 import api from "@/app/api";
-import { NoteCreate } from "@/lib/api/notes";
 import useObject from "@/lib/hooks/utils/useObject";
 import type {
   ClipAnnotation,
+  NoteCreate,
   Recording,
   SoundEventAnnotation,
   Tag,

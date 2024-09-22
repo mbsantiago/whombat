@@ -1,7 +1,7 @@
 import api from "@/app/api";
-import { type ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
+import type { ClipAnnotationFilter } from "@/lib/types";
 
 const _empty: ClipAnnotationFilter = {};
 const _fixed: (keyof ClipAnnotationFilter)[] = [];

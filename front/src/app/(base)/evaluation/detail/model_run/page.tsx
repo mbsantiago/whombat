@@ -59,8 +59,9 @@ export default function Page() {
   }, []);
 
   const modelRun = useModelRun({
-    uuid: modelRunUUID || undefined,
+    uuid: modelRunUUID ?? "",
     onError: handleError,
+    enabled: modelRunUUID != null,
   });
 
   if (modelRun.isLoading) return <Loading />;

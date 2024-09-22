@@ -1,9 +1,8 @@
-import type { AnnotationProjectUpdate } from "@/lib/api/annotation_projects";
 import Card from "@/lib/components/ui/Card";
 import Description from "@/lib/components/ui/Description";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
-import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationProject, AnnotationProjectUpdate } from "@/lib/types";
 
 export default function AnnotationProjectUpdateComponent({
   annotationProject,
@@ -11,7 +10,7 @@ export default function AnnotationProjectUpdateComponent({
   onChangeAnnotationProject,
 }: {
   annotationProject: AnnotationProject;
-  isLoading: boolean;
+  isLoading?: boolean;
   onChangeAnnotationProject?: (data: AnnotationProjectUpdate) => void;
 }) {
   return (

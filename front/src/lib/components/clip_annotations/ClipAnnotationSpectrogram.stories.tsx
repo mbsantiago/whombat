@@ -49,7 +49,7 @@ export const Primary: Story = {
   args: {
     ViewportToolbar: <ViewportToolbar mode="panning" />,
     AnnotationControls: (
-      <AnnotationControls mode="none" geometryType="BoundingBox" />
+      <AnnotationControls mode="idle" geometryType="BoundingBox" />
     ),
     Player: (
       <Player

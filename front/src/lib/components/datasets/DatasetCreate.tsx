@@ -1,10 +1,11 @@
-import { type DatasetCreate, DatasetCreateSchema } from "@/lib/api/datasets";
 import {
   Input,
   InputGroup,
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
+import { DatasetCreateSchema } from "@/lib/schemas";
+import type { DatasetCreate } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";

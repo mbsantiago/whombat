@@ -32,6 +32,15 @@ export const RecordingSchema = z.object({
   created_on: z.coerce.date(),
 });
 
+export const RecordingUpdateSchema = z.object({
+  date: z.coerce.date().nullish(),
+  time: TimeStringSchema.nullish(),
+  latitude: z.number().nullish(),
+  longitude: z.number().nullish(),
+  rights: z.string().nullish(),
+  time_expansion: z.coerce.number().optional(),
+});
+
 export const RecordingTagSchema = TagAssociationSchema.extend({
   recording_uuid: z.string().uuid(),
 });

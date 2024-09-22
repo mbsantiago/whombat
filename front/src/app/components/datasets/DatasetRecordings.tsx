@@ -2,10 +2,9 @@ import TagSearchBar from "@/app/components/tags/TagSearchBar";
 import useRecordings from "@/app/hooks/api/useRecordings";
 import Loading from "@/app/loading";
 import useStore from "@/app/store";
-import { type RecordingUpdate } from "@/lib/api/recordings";
 import RecordingTable from "@/lib/components/recordings/RecordingTable";
 import { parsePosition } from "@/lib/components/tables/TableMap";
-import type { Dataset, Recording, Tag } from "@/lib/types";
+import type * as types from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import type { KeyboardEvent } from "react";
@@ -18,14 +17,18 @@ function useRecordingTableKeyShortcuts({
   onRemoveTag,
 }: {
   onUpdate: (data: {
-    recording: Recording;
-    data: RecordingUpdate;
+    recording: types.Recording;
+    data: types.RecordingUpdate;
     index: number;
   }) => void;
-  onAddTag: (data: { recording: Recording; tag: Tag; index: number }) => void;
+  onAddTag: (data: {
+    recording: types.Recording;
+    tag: types.Tag;
+    index: number;
+  }) => void;
   onRemoveTag: (data: {
-    recording: Recording;
-    tag: Tag;
+    recording: types.Recording;
+    tag: types.Tag;
     index: number;
   }) => void;
 }) {
@@ -46,7 +49,7 @@ function useRecordingTableKeyShortcuts({
       value,
       row,
     }: {
-      recording: Recording;
+      recording: types.Recording;
       column: string;
       value: any;
       row: number;
@@ -66,7 +69,7 @@ function useRecordingTableKeyShortcuts({
 
       if (column === "tags") {
         try {
-          (value as Tag[]).forEach((tag: Tag) => {
+          (value as types.Tag[]).forEach((tag: types.Tag) => {
             onAddTag({ recording, tag, index: row });
           });
         } catch {
@@ -85,7 +88,7 @@ function useRecordingTableKeyShortcuts({
       column,
       row,
     }: {
-      recording: Recording;
+      recording: types.Recording;
       column: string;
       row: number;
     }) => {
@@ -104,7 +107,7 @@ function useRecordingTableKeyShortcuts({
 
       if (column === "tags") {
         let currentTags = recording.tags || [];
-        currentTags.forEach((tag: Tag) => {
+        currentTags.forEach((tag: types.Tag) => {
           onRemoveTag({ recording, tag, index: row });
         });
       }
@@ -142,12 +145,12 @@ function useRecordingTableKeyShortcuts({
         if (clipboard.context !== "recordings_table") return;
         if (clipboard.column !== column) return;
         const value = clipboard.value;
-        handlePaste({ recording: data as Recording, column, value, row });
+        handlePaste({ recording: data as types.Recording, column, value, row });
       }
 
       // Delete value on delete or backspace
       if (event.key === "Delete" || event.key === "Backspace") {
-        handleDelete({ recording: data as Recording, column, row });
+        handleDelete({ recording: data as types.Recording, column, row });
       }
     };
   }, [clipboard, onUpdate, onAddTag, onRemoveTag, copy]);
@@ -155,7 +158,11 @@ function useRecordingTableKeyShortcuts({
   return handleKeyDown;
 }
 
-export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
+export default function DatasetRecordings({
+  dataset,
+}: {
+  dataset: types.Dataset;
+}) {
   const router = useRouter();
 
   const tagColorFn = useStore((state) => state.getTagColor);
@@ -173,7 +180,7 @@ export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
   );
 
   const onClickRecording = useCallback(
-    (recording: Recording) => {
+    (recording: types.Recording) => {
       const url = `detail/?recording_uuid=${recording.uuid}`;
       router.push(`${url}&dataset_uuid=${dataset.uuid}`);
     },
@@ -190,44 +197,54 @@ export default function DatasetRecordings({ dataset }: { dataset: Dataset }) {
   });
 
   const handleClickTag = useCallback(
-    (tag: Tag) => {
+    (tag: types.Tag) => {
       recordings.filter.set("tag", tag);
     },
     [recordings.filter],
   );
 
   const handleSearchChange = useCallback(
-    (q) => recordings.filter.set("search", q),
+    (q: string) => recordings.filter.set("search", q),
     [recordings.filter],
   );
 
   const handleSetFilterField = useCallback(
-    (field, value) => recordings.filter.set(field, value),
+    <T extends keyof types.RecordingFilter>(
+      field: T,
+      value: types.RecordingFilter[T],
+    ) => recordings.filter.set(field, value),
     [recordings.filter],
   );
 
   const handleClearFilterField = useCallback(
-    (field) => recordings.filter.clear(field),
+    (field: keyof types.RecordingFilter) => recordings.filter.clear(field),
     [recordings.filter],
   );
 
   const handleDeleteRecordingTag = useCallback(
-    (data) => recordings.removeTag.mutate(data),
+    (data: { recording: types.Recording; tag: types.Tag; index: number }) =>
+      recordings.removeTag.mutate(data),
     [recordings.removeTag],
   );
 
   const handleAddRecordingTag = useCallback(
-    (data) => recordings.addTag.mutate(data),
+    (data: { recording: types.Recording; tag: types.Tag; index: number }) =>
+      recordings.addTag.mutate(data),
     [recordings.addTag],
   );
 
   const handleUpdateRecording = useCallback(
-    (data) => recordings.updateRecording.mutate(data),
+    (data: {
+      recording: types.Recording;
+      data: types.RecordingUpdate;
+      index: number;
+    }) => recordings.updateRecording.mutate(data),
     [recordings.updateRecording],
   );
 
   const handleDeleteRecording = useCallback(
-    (data) => recordings.deleteRecording.mutate(data),
+    (data: { recording: types.Recording; index: number }) =>
+      recordings.deleteRecording.mutate(data),
     [recordings.deleteRecording],
   );
 

@@ -1,7 +1,6 @@
 import api from "@/app/api";
-import type { DatasetImport } from "@/lib/api/datasets";
 import DatasetImportBase from "@/lib/components/datasets/DatasetImport";
-import type { Dataset } from "@/lib/types";
+import type { Dataset, DatasetImport } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback } from "react";

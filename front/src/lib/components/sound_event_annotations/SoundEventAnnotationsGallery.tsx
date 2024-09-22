@@ -1,13 +1,16 @@
 import api from "@/app/api";
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
-import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import Empty from "@/lib/components/Empty";
 import Pagination from "@/lib/components/lists/Pagination";
 import SoundEventAnnotationSpectrogram from "@/lib/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
 import Card from "@/lib/components/ui/Card";
 import Loading from "@/lib/components/ui/Loading";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import type { SoundEventAnnotation, SpectrogramParameters } from "@/lib/types";
+import type {
+  SoundEventAnnotation,
+  SoundEventAnnotationFilter,
+  SpectrogramParameters,
+} from "@/lib/types";
 import { useMemo } from "react";
 
 const empty = {};
@@ -43,7 +46,7 @@ export default function SoundEventAnnotationsGallery(props: {
               {pagination.page * pagination.pageSize} -{" "}
               {pagination.page * pagination.pageSize + annotations.length}
             </span>{" "}
-            of <span className="text-emerald-500 font-bold">{total}</span> sound
+            of <span className="font-bold text-emerald-500">{total}</span> sound
             events
           </span>
         </div>
@@ -85,7 +88,7 @@ function Spectrogram(props: {
   if (isLoading) {
     return (
       <div
-        className="w-full flex flex-row items-center justify-center"
+        className="flex flex-row justify-center items-center w-full"
         style={{ height }}
       >
         <Loading />

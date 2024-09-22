@@ -1,7 +1,6 @@
 import api from "@/app/api";
-import type { AnnotationProjectImport } from "@/lib/api/annotation_projects";
 import AnnotationProjectImportBase from "@/lib/components/annotation_projects/AnnotationProjectImport";
-import type { AnnotationProject } from "@/lib/types";
+import type { AnnotationProject, AnnotationProjectImport } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback } from "react";

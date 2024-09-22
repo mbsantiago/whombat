@@ -14,55 +14,55 @@ type Story = StoryObj<typeof AnnotationControls>;
 export const Selecting: Story = {
   args: {
     geometryType: "BoundingBox",
-    mode: "selecting",
+    mode: "select",
   },
 };
 
 export const Drawing: Story = {
   args: {
     geometryType: "BoundingBox",
-    mode: "drawing",
+    mode: "draw",
   },
 };
 
 export const Editing: Story = {
   args: {
     geometryType: "BoundingBox",
-    mode: "editing",
+    mode: "edit",
   },
 };
 
 export const Deleting: Story = {
   args: {
     geometryType: "BoundingBox",
-    mode: "deleting",
+    mode: "delete",
   },
 };
 
 export const BoundingBox: Story = {
   args: {
     geometryType: "BoundingBox",
-    mode: "none",
+    mode: "idle",
   },
 };
 
 export const TimeStamp: Story = {
   args: {
     geometryType: "TimeStamp",
-    mode: "none",
+    mode: "idle",
   },
 };
 
 export const TimeInterval: Story = {
   args: {
     geometryType: "TimeInterval",
-    mode: "none",
+    mode: "idle",
   },
 };
 
 export const LineString: Story = {
   args: {
     geometryType: "LineString",
-    mode: "none",
+    mode: "idle",
   },
 };

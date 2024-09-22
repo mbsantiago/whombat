@@ -17,14 +17,17 @@ export const Primary: Story = {
     tags: [
       {
         tag: { key: "key1", value: "value1" },
+        created_on: new Date(),
         recording_uuid: "recording1",
       },
       {
         tag: { key: "key1", value: "value1" },
+        created_on: new Date(),
         recording_uuid: "recording2",
       },
       {
         tag: { key: "key2", value: "value2" },
+        created_on: new Date(),
         recording_uuid: "recording3",
       },
     ],

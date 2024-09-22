@@ -1,10 +1,9 @@
-import type { NoteCreate } from "@/lib/api/notes";
 import { NotesIcon } from "@/lib/components/icons";
 import CreateNote from "@/lib/components/notes/CreateNote";
 import Feed from "@/lib/components/notes/Feed";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
-import type { Note, User } from "@/lib/types";
+import type { Note, NoteCreate, User } from "@/lib/types";
 
 export default function NotesPanel({
   notes,

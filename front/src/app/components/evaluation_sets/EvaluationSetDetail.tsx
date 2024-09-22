@@ -14,7 +14,7 @@ export default function EvaluationSetDetail({
 }: {
   evaluationSet: EvaluationSet;
   onChange?: (evaluationSet: EvaluationSet) => void;
-  onDelete?: (evaluationSet: EvaluationSet) => void;
+  onDelete?: () => void;
 }) {
   return (
     <DetailLayout

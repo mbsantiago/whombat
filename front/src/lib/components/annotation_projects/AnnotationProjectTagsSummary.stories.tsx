@@ -70,45 +70,55 @@ export const WithAnnotations: Story = {
     clipTags: [
       {
         clip_annotation_uuid: "1",
+        created_on: new Date(),
         tag: { key: "species", value: "Myotis lucifugus" },
       },
       {
         clip_annotation_uuid: "1",
+        created_on: new Date(),
         tag: { key: "event", value: "Echolocation" },
       },
       {
         clip_annotation_uuid: "2",
         tag: { key: "species", value: "Myotis septentrionalis" },
+        created_on: new Date(),
       },
       {
         clip_annotation_uuid: "2",
         tag: { key: "event", value: "Echolocation" },
+        created_on: new Date(),
       },
       {
         clip_annotation_uuid: "3",
         tag: { key: "event", value: "Myotis lucifugus" },
+        created_on: new Date(),
       },
     ],
     soundEventTags: [
       {
         sound_event_annotation_uuid: "1",
         tag: { key: "species", value: "Myotis septentrionalis" },
+        created_on: new Date(),
       },
       {
         sound_event_annotation_uuid: "1",
         tag: { key: "event", value: "Echolocation" },
+        created_on: new Date(),
       },
       {
         sound_event_annotation_uuid: "2",
         tag: { key: "species", value: "Myotis septentrionalis" },
+        created_on: new Date(),
       },
       {
         sound_event_annotation_uuid: "2",
         tag: { key: "event", value: "Echolocation" },
+        created_on: new Date(),
       },
       {
         sound_event_annotation_uuid: "3",
         tag: { key: "species", value: "Myotis septentrionalis" },
+        created_on: new Date(),
       },
     ],
   },

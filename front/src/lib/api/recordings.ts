@@ -1,57 +1,7 @@
-import { GetManySchema, Page, downloadContent } from "@/lib/api/common";
-import type { NoteCreate } from "@/lib/api/notes";
-import {
-  DatasetSchema,
-  DateFilterSchema,
-  IntegerFilterSchema,
-  NumberFilterSchema,
-  RecordingSchema,
-  TagSchema,
-  TimeFilterSchema,
-  TimeStringSchema,
-} from "@/lib/schemas";
-import type { Feature, Note, Recording, Tag } from "@/lib/types";
+import { GetMany, Page, downloadContent } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 import { AxiosInstance } from "axios";
-import { z } from "zod";
-
-export const RecordingPageSchema = Page(RecordingSchema);
-
-export type RecordingPage = z.infer<typeof RecordingPageSchema>;
-
-export const RecordingUpdateSchema = z.object({
-  date: z.coerce.date().nullish(),
-  time: TimeStringSchema.nullish(),
-  latitude: z.number().nullish(),
-  longitude: z.number().nullish(),
-  rights: z.string().nullish(),
-  time_expansion: z.coerce.number().optional(),
-});
-
-export type RecordingUpdate = z.input<typeof RecordingUpdateSchema>;
-
-export const RecordingFilterSchema = z.object({
-  search: z.string().optional(),
-  dataset: DatasetSchema.optional(),
-  duration: NumberFilterSchema.optional(),
-  samplerate: IntegerFilterSchema.optional(),
-  channels: IntegerFilterSchema.optional(),
-  time_expansion: NumberFilterSchema.optional(),
-  latitude: NumberFilterSchema.optional(),
-  longitude: NumberFilterSchema.optional(),
-  tag: TagSchema.optional(),
-  has_issues: z.boolean().optional(),
-  date: DateFilterSchema.optional(),
-  time: TimeFilterSchema.optional(),
-});
-
-export type RecordingFilter = z.input<typeof RecordingFilterSchema>;
-
-export const GetRecordingsQuerySchema = z.intersection(
-  GetManySchema,
-  RecordingFilterSchema,
-);
-
-export type GetRecordingsQuery = z.input<typeof GetRecordingsQuerySchema>;
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/recordings/",
@@ -72,8 +22,10 @@ export function registerRecordingAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getMany(query: GetRecordingsQuery): Promise<RecordingPage> {
-    const params = GetRecordingsQuerySchema.parse(query);
+  async function getMany(
+    query: types.GetManyQuery & types.RecordingFilter,
+  ): Promise<types.Paginated<types.Recording>> {
+    const params = GetMany(schemas.RecordingFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -103,35 +55,40 @@ export function registerRecordingAPI(
         time__is_null: params.time?.is_null,
       },
     });
-    return RecordingPageSchema.parse(data);
+    return Page(schemas.RecordingSchema).parse(data);
   }
 
-  async function get(uuid: string): Promise<Recording> {
+  async function get(uuid: string): Promise<types.Recording> {
     const { data } = await instance.get(endpoints.get, {
       params: { recording_uuid: uuid },
     });
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function update(
-    recording: Recording,
-    data: RecordingUpdate,
-  ): Promise<Recording> {
-    const body = RecordingUpdateSchema.parse(data);
+    recording: types.Recording,
+    data: types.RecordingUpdate,
+  ): Promise<types.Recording> {
+    const body = schemas.RecordingUpdateSchema.parse(data);
     const { data: res } = await instance.patch(endpoints.update, body, {
       params: { recording_uuid: recording.uuid },
     });
-    return RecordingSchema.parse(res);
+    return schemas.RecordingSchema.parse(res);
   }
 
-  async function deleteRecording(recording: Recording): Promise<Recording> {
+  async function deleteRecording(
+    recording: types.Recording,
+  ): Promise<types.Recording> {
     const { data: res } = await instance.delete(endpoints.delete, {
       params: { recording_uuid: recording.uuid },
     });
-    return RecordingSchema.parse(res);
+    return schemas.RecordingSchema.parse(res);
   }
 
-  async function addTag(recording: Recording, tag: Tag): Promise<Recording> {
+  async function addTag(
+    recording: types.Recording,
+    tag: types.Tag,
+  ): Promise<types.Recording> {
     const { data } = await instance.post(
       endpoints.addTag,
       {},
@@ -143,10 +100,13 @@ export function registerRecordingAPI(
         },
       },
     );
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
-  async function removeTag(recording: Recording, tag: Tag): Promise<Recording> {
+  async function removeTag(
+    recording: types.Recording,
+    tag: types.Tag,
+  ): Promise<types.Recording> {
     const { data } = await instance.delete(endpoints.removeTag, {
       params: {
         recording_uuid: recording.uuid,
@@ -154,36 +114,36 @@ export function registerRecordingAPI(
         value: tag.value,
       },
     });
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function addNote(
-    recording: Recording,
-    data: NoteCreate,
-  ): Promise<Recording> {
+    recording: types.Recording,
+    data: types.NoteCreate,
+  ): Promise<types.Recording> {
     const { data: updated } = await instance.post(endpoints.addNote, data, {
       params: { recording_uuid: recording.uuid },
     });
-    return RecordingSchema.parse(updated);
+    return schemas.RecordingSchema.parse(updated);
   }
 
   async function removeNote(
-    recording: Recording,
-    note: Note,
-  ): Promise<Recording> {
+    recording: types.Recording,
+    note: types.Note,
+  ): Promise<types.Recording> {
     const { data } = await instance.delete(endpoints.removeNote, {
       params: {
         recording_uuid: recording.uuid,
         note_uuid: note.uuid,
       },
     });
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function addFeature(
-    recording: Recording,
-    feature: Feature,
-  ): Promise<Recording> {
+    recording: types.Recording,
+    feature: types.Feature,
+  ): Promise<types.Recording> {
     const { data } = await instance.post(
       endpoints.addFeature,
       {},
@@ -195,13 +155,13 @@ export function registerRecordingAPI(
         },
       },
     );
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function removeFeature(
-    recording: Recording,
-    feature: Feature,
-  ): Promise<Recording> {
+    recording: types.Recording,
+    feature: types.Feature,
+  ): Promise<types.Recording> {
     const { data } = await instance.delete(endpoints.removeFeature, {
       params: {
         recording_uuid: recording.uuid,
@@ -209,13 +169,13 @@ export function registerRecordingAPI(
         value: feature.value,
       },
     });
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function updateFeature(
-    recording: Recording,
-    feature: Feature,
-  ): Promise<Recording> {
+    recording: types.Recording,
+    feature: types.Feature,
+  ): Promise<types.Recording> {
     const { data } = await instance.patch(
       endpoints.updateFeature,
       {},
@@ -227,7 +187,7 @@ export function registerRecordingAPI(
         },
       },
     );
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function downloadRecording(uuid: string) {

@@ -1,13 +1,11 @@
 import {
-  type EvaluationSetCreate,
-  EvaluationSetCreateSchema,
-} from "@/lib/api/evaluation_sets";
-import {
   Input,
   InputGroup,
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
+import { EvaluationSetCreateSchema } from "@/lib/schemas";
+import type { EvaluationSetCreate } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";

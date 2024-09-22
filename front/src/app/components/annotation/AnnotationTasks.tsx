@@ -12,7 +12,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
 import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
 import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
-import ProjectTagSearch from "../tags/ProjectTagsSearch";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";
 
@@ -114,7 +113,6 @@ export default function AnnotateTasks({
             audioSettings={audioSettings}
             spectrogramSettings={spectrogramSettings}
             tagPalette={tagPalette}
-            TagSearchBar={ProjectTagSearch}
           />
         ) : undefined
       }

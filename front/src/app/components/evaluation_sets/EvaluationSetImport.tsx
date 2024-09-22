@@ -1,7 +1,6 @@
 import api from "@/app/api";
-import type { EvaluationSetImport } from "@/lib/api/evaluation_sets";
 import EvaluationSetImportBase from "@/lib/components/evaluation_sets/EvaluationSetImport";
-import type { EvaluationSet } from "@/lib/types";
+import type { EvaluationSet, EvaluationSetImport } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback } from "react";

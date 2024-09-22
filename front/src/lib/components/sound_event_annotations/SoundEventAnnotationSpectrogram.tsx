@@ -4,7 +4,6 @@ import SpectrogramSettings from "@/lib/components/settings/SpectrogramSettings";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
 import SpectrogramBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
-import Card from "@/lib/components/ui/Card";
 import useAnnotationDraw from "@/lib/hooks/annotation/useAnnotationDraw";
 import useAudio from "@/lib/hooks/audio/useAudio";
 import useCanvas from "@/lib/hooks/draw/useCanvas";

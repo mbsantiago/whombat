@@ -1,7 +1,6 @@
 import api from "@/app/api";
-import type { EvaluationSetUpdate } from "@/lib/api/evaluation_sets";
 import useObject from "@/lib/hooks/utils/useObject";
-import type { EvaluationSet } from "@/lib/types";
+import type { EvaluationSet, EvaluationSetUpdate } from "@/lib/types";
 import type { AxiosError } from "axios";
 import { useMemo } from "react";
 

@@ -23,16 +23,24 @@ export const WithNotes: Story = {
   args: {
     notes: [
       {
-        uuid: "note1",
-        message: "This is a test note.",
-        is_issue: false,
+        recording_uuid: "recording-1",
         created_on: new Date(),
+        note: {
+          uuid: "note1",
+          message: "This is a test note.",
+          is_issue: false,
+          created_on: new Date(),
+        },
       },
       {
-        uuid: "note2",
-        message: "This is another test note.",
-        is_issue: false,
+        recording_uuid: "recording-2",
         created_on: new Date(),
+        note: {
+          uuid: "note2",
+          message: "This is another test note.",
+          is_issue: false,
+          created_on: new Date(),
+        },
       },
     ],
     onClickNote: fn(),
@@ -43,16 +51,24 @@ export const WithIssues: Story = {
   args: {
     notes: [
       {
-        uuid: "note1",
-        message: "This is a test note.",
-        is_issue: false,
+        recording_uuid: "recording-1",
         created_on: new Date(),
+        note: {
+          uuid: "note1",
+          message: "This is a test note.",
+          is_issue: false,
+          created_on: new Date(),
+        },
       },
       {
-        uuid: "note2",
-        message: "This is another test note.",
-        is_issue: true,
+        recording_uuid: "recording-2",
         created_on: new Date(),
+        note: {
+          uuid: "note2",
+          message: "This is another test note.",
+          is_issue: true,
+          created_on: new Date(),
+        },
       },
     ],
     onClickNote: fn(),

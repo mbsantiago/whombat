@@ -1,7 +1,6 @@
 import api from "@/app/api";
-import type { DatasetUpdate } from "@/lib/api/datasets";
 import useObject from "@/lib/hooks/utils/useObject";
-import type { Dataset } from "@/lib/types";
+import type { Dataset, DatasetUpdate } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback } from "react";

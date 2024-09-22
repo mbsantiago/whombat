@@ -14,6 +14,5 @@ type Story = StoryObj<typeof AnnotationTagPalette>;
 export const Empty: Story = {
   args: {
     tags: [],
-    tagFilter: {},
   },
 };

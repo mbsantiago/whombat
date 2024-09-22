@@ -153,3 +153,22 @@ export const EvaluationSetFilterSchema = z.object({
 export const AnnotationProjectFilterSchema = z.object({
   search: z.string().optional(),
 });
+
+export const DatasetFilterSchema = z.object({
+  search: z.string().optional(),
+});
+
+export const RecordingFilterSchema = z.object({
+  search: z.string().optional(),
+  dataset: DatasetSchema.optional(),
+  duration: NumberFilterSchema.optional(),
+  samplerate: IntegerFilterSchema.optional(),
+  channels: IntegerFilterSchema.optional(),
+  time_expansion: NumberFilterSchema.optional(),
+  latitude: NumberFilterSchema.optional(),
+  longitude: NumberFilterSchema.optional(),
+  tag: TagSchema.optional(),
+  has_issues: z.boolean().optional(),
+  date: DateFilterSchema.optional(),
+  time: TimeFilterSchema.optional(),
+});

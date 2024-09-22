@@ -1,8 +1,7 @@
 import api from "@/app/api";
-import { type DatasetFilter } from "@/lib/api/datasets";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import { type Dataset } from "@/lib/types";
+import type { Dataset, DatasetFilter } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 

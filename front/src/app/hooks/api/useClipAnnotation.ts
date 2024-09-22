@@ -1,10 +1,11 @@
 import api from "@/app/api";
-import type { NoteCreate, NoteUpdate } from "@/lib/api/notes";
 import useObject from "@/lib/hooks/utils/useObject";
 import type {
   ClipAnnotation,
   Geometry,
   Note,
+  NoteCreate,
+  NoteUpdate,
   SoundEventAnnotation,
   Tag,
 } from "@/lib/types";

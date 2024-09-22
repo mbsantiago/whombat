@@ -74,7 +74,7 @@ const meta: Meta<typeof AnnotationTaskComponent> = {
       <ClipAnnotationSpectrogram
         ViewportToolbar={<ViewportToolbar mode="panning" />}
         AnnotationControls={
-          <AnnotationControls mode="none" geometryType="BoundingBox" />
+          <AnnotationControls mode="idle" geometryType="BoundingBox" />
         }
         Player={
           <Player

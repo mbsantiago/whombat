@@ -2,11 +2,12 @@ import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import type { FilterDef } from "@/lib/components/filters/FilterMenu";
 import { FilterIcon } from "@/lib/components/icons";
-import Tabs from "@/lib/components/navigation/SectionTabs";
+import SectionTabs from "@/lib/components/navigation/SectionTabs";
+import Tab from "@/lib/components/ui/Tab";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import type { Filter } from "@/lib/hooks/utils/useFilter";
 import type { SpectrogramParameters } from "@/lib/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 type Tab = {
@@ -28,20 +29,10 @@ export default function ExplorationLayout<T extends Object>(props: {
 }) {
   const [view, setView] = useState(props.tabs[0].id);
 
-  const filter = useFilter<T>({
-    // @ts-ignore
-    defaults: props.filter || _empty,
-  });
+  const { filter: initialFilter = _empty } = props;
+  const filter = useFilter<T>({ defaults: initialFilter });
 
-  const tabs = useMemo(
-    () =>
-      props.tabs.map((tab) => ({
-        ...tab,
-        isActive: tab.id === view,
-        onClick: () => setView(tab.id),
-      })),
-    [props.tabs, view],
-  );
+  // TODO: Update the section tabs
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -54,7 +45,7 @@ export default function ExplorationLayout<T extends Object>(props: {
         <FilterControls filter={filter} filterDef={props.filterDef} />
       </div>
       <div className="flex flex-row gap-2 justify-center w-full">
-        <Tabs tabs={tabs} />
+        <SectionTabs title="Exploration" tabs={[]} />
       </div>
       <div className="p-4">
         {props.children({ view, filter: filter.filter })}

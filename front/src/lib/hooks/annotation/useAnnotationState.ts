@@ -73,7 +73,7 @@ export default function useAnnotationState({
   );
 
   const selectAnnotation = useCallback(
-    (annotation: SoundEventAnnotation) => {
+    (annotation: SoundEventAnnotation | null) => {
       setSelectedAnnotation(annotation);
       onSelectAnnotation?.(annotation);
       changeMode("edit");

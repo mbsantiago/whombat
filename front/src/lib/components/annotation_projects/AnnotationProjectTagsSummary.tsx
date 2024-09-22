@@ -1,7 +1,3 @@
-import type {
-  ClipAnnotationTag,
-  SoundEventAnnotationTag,
-} from "@/lib/api/tags";
 import Empty from "@/lib/components/Empty";
 import {
   AddIcon,
@@ -17,7 +13,12 @@ import { H4 } from "@/lib/components/ui/Headings";
 import Help from "@/lib/components/ui/Help";
 import Loading from "@/lib/components/ui/Loading";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
-import type { AnnotationProject, Tag } from "@/lib/types";
+import type {
+  AnnotationProject,
+  ClipAnnotationTag,
+  SoundEventAnnotationTag,
+  Tag,
+} from "@/lib/types";
 import { Color, getTagColor, getTagKey } from "@/lib/utils/tags";
 import { type ComponentProps, useMemo, useState } from "react";
 

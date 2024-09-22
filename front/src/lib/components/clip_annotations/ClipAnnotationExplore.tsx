@@ -1,9 +1,8 @@
-import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import AnnotationGallery from "@/lib/components/clip_annotations/ClipAnnotationGallery";
 import clipAnnotationFilterDef from "@/lib/components/filters/clip_annotations";
 import { GalleryIcon } from "@/lib/components/icons";
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
-import type { SpectrogramParameters } from "@/lib/types";
+import type { ClipAnnotationFilter, SpectrogramParameters } from "@/lib/types";
 
 const tabs = [
   {

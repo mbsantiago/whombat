@@ -1,8 +1,8 @@
-import type { SoundEventAnnotationFilter } from "@/lib/api/sound_event_annotations";
 import FilterBadge from "@/lib/components/filters/FilterBadge";
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { TagFilter } from "@/lib/components/filters/Filters";
 import { TagIcon } from "@/lib/components/icons";
+import type { SoundEventAnnotationFilter } from "@/lib/types";
 
 const soundEventAnnotationFilterDef: FilterDef<SoundEventAnnotationFilter>[] = [
   {
@@ -20,7 +20,7 @@ const soundEventAnnotationFilterDef: FilterDef<SoundEventAnnotationFilter>[] = [
     ),
     description: "Select sound events that have a given tag",
     icon: (
-      <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TagIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
 ];

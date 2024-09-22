@@ -1,9 +1,8 @@
-import type { RecordingFilter } from "@/lib/api/recordings";
 import recordingFilterDef from "@/lib/components/filters/recordings";
 import { GalleryIcon } from "@/lib/components/icons";
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import RecordingGallery from "@/lib/components/recordings/RecordingGallery";
-import type { SpectrogramParameters } from "@/lib/types";
+import type { RecordingFilter, SpectrogramParameters } from "@/lib/types";
 
 const tabs = [
   {

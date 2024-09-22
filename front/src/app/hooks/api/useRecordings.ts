@@ -1,12 +1,13 @@
 import api from "@/app/api";
-import type {
-  RecordingFilter,
-  RecordingPage,
-  RecordingUpdate,
-} from "@/lib/api/recordings";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import type { Recording, Tag } from "@/lib/types";
+import type {
+  Paginated,
+  Recording,
+  RecordingFilter,
+  RecordingUpdate,
+  Tag,
+} from "@/lib/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -44,7 +45,7 @@ export default function useRecordings({
         index: number;
       },
     ) => {
-      client.setQueryData(queryKey, (old: RecordingPage) => {
+      client.setQueryData(queryKey, (old: Paginated<Recording>) => {
         return {
           ...old,
           items: old.items.map((recording, other) => {
@@ -66,7 +67,7 @@ export default function useRecordings({
         index: number;
       },
     ) => {
-      client.setQueryData(queryKey, (old: RecordingPage) => ({
+      client.setQueryData(queryKey, (old: Paginated<Recording>) => ({
         ...old,
         items: old.items.filter((_, other) => {
           return other !== index;

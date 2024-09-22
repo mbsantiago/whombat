@@ -1,10 +1,13 @@
 import api from "@/app/api";
-import type { ClipAnnotationFilter } from "@/lib/api/clip_annotations";
 import ClipAnnotationSpectrogram from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
 import Pagination from "@/lib/components/lists/Pagination";
 import Loading from "@/lib/components/ui/Loading";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-import type { ClipAnnotation, SpectrogramParameters } from "@/lib/types";
+import type {
+  ClipAnnotation,
+  ClipAnnotationFilter,
+  SpectrogramParameters,
+} from "@/lib/types";
 import { useMemo } from "react";
 
 const empty = {};
@@ -40,7 +43,7 @@ export default function ClipAnnotationsGallery(props: {
               {pagination.page * pagination.pageSize} -{" "}
               {pagination.page * pagination.pageSize + annotations.length}
             </span>{" "}
-            of <span className="text-emerald-500 font-bold">{total}</span> clips
+            of <span className="font-bold text-emerald-500">{total}</span> clips
           </span>
         </div>
         <Pagination {...pagination} />

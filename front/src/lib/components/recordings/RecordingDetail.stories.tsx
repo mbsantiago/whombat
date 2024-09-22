@@ -7,6 +7,15 @@ import {
 } from "@/lib/types";
 import type { Meta, StoryObj } from "@storybook/react";
 
+import {
+  DEFAULT_AUDIO_SETTINGS,
+  DEFAULT_SPECTROGRAM_SETTINGS,
+} from "@/lib/constants";
+import Player from "@/lib/components/audio/Player";
+import SettingsMenu from "@/lib/components/settings/SettingsMenu";
+import Canvas from "@/lib/components/spectrograms/Canvas";
+import ViewportBar from "@/lib/components/spectrograms/ViewportBar";
+import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
 import RecordingActions from "./RecordingActions";
 import RecordingHeader from "./RecordingHeader";
 import RecordingMap from "./RecordingMap";
@@ -71,13 +80,26 @@ export const Primary: Story = {
   args: {
     RecordingHeader: <RecordingHeader recording={recording} />,
     RecordingTagBar: <RecordingTagBar tags={recording.tags as Tag[]} />,
-    RecordingSpectrogram: (
-      <RecordingSpectrogram
-        samplerate={recording.samplerate}
-        bounds={bounds}
-        viewport={viewport}
+    RecordingSpectrogram: <RecordingSpectrogram 
+    ViewportToolbar={<ViewportToolbar mode="panning" />}
+    Player={(
+      <Player
+        currentTime={0}
+        startTime={0}
+        endTime={1}
+        speedOptions={[{ label: "1x", value: 1 }]}
       />
-    ),
+    )}
+    SettingsMenu={(
+      <SettingsMenu
+        audioSettings={DEFAULT_AUDIO_SETTINGS}
+        spectrogramSettings={DEFAULT_SPECTROGRAM_SETTINGS}
+        samplerate={recording.samplerate}
+      />
+    )}
+    Canvas={<Canvas viewport={viewport} height={400} />}
+    ViewportBar={<ViewportBar viewport={viewport} bounds={bounds} />}
+    />,
     RecordingNotes: <RecordingNotes notes={recording.notes as Note[]} />,
     RecordingActions: <RecordingActions />,
     RecordingMediaInfo: <RecordingMediaInfo recording={recording} />,

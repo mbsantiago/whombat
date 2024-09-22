@@ -1,9 +1,21 @@
-import { DatasetSchema, RecordingStateSchema } from "@/lib/schemas";
-import type { Dataset, RecordingState } from "@/lib/types";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { GetManySchema, Page, downloadContent } from "./common";
+import { GetMany, Page, downloadContent } from "./common";
+
+const DEFAULT_ENDPOINTS = {
+  getMany: "/api/v1/datasets/",
+  create: "/api/v1/datasets/",
+  state: "/api/v1/datasets/detail/state/",
+  get: "/api/v1/datasets/detail/",
+  update: "/api/v1/datasets/detail/",
+  delete: "/api/v1/datasets/detail/",
+  downloadJson: "/api/v1/datasets/detail/download/json/",
+  downloadCsv: "/api/v1/datasets/detail/download/csv/",
+  import: "/api/v1/datasets/import/",
+};
 
 export function registerDatasetAPI({
   instance,
@@ -12,48 +24,52 @@ export function registerDatasetAPI({
   instance: AxiosInstance;
   endpoints?: typeof DEFAULT_ENDPOINTS;
 }) {
-  async function getMany(query: GetDatasetsQuery): Promise<DatasetPage> {
-    const params = GetDatasetsQuerySchema.parse(query);
+  async function getMany(
+    query: types.GetManyQuery & types.DatasetFilter,
+  ): Promise<types.Paginated<types.Dataset>> {
+    const params = GetMany(schemas.DatasetFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
-    return DatasetPageSchema.parse(data);
+    return Page(schemas.DatasetSchema).parse(data);
   }
 
-  async function create(data: DatasetCreate): Promise<Dataset> {
-    const body = DatasetCreateSchema.parse(data);
+  async function create(data: types.DatasetCreate): Promise<types.Dataset> {
+    const body = schemas.DatasetCreateSchema.parse(data);
     const { data: res } = await instance.post(endpoints.create, body);
-    return DatasetSchema.parse(res);
+    return schemas.DatasetSchema.parse(res);
   }
 
-  async function get(uuid: string): Promise<Dataset> {
+  async function get(uuid: string): Promise<types.Dataset> {
     const { data } = await instance.get(endpoints.get, {
       params: { dataset_uuid: uuid },
     });
-    return DatasetSchema.parse(data);
+    return schemas.DatasetSchema.parse(data);
   }
 
-  async function getDatasetState(uuid: string): Promise<RecordingState[]> {
+  async function getDatasetState(
+    uuid: string,
+  ): Promise<types.RecordingState[]> {
     const { data } = await instance.get(endpoints.state, {
       params: { dataset_uuid: uuid },
     });
-    return z.array(RecordingStateSchema).parse(data);
+    return z.array(schemas.RecordingStateSchema).parse(data);
   }
 
   async function updateDataset(
-    dataset: Dataset,
-    data: DatasetUpdate,
-  ): Promise<Dataset> {
-    const body = DatasetUpdateSchema.parse(data);
+    dataset: types.Dataset,
+    data: types.DatasetUpdate,
+  ): Promise<types.Dataset> {
+    const body = schemas.DatasetUpdateSchema.parse(data);
     const { data: res } = await instance.patch(endpoints.update, body, {
       params: { dataset_uuid: dataset.uuid },
     });
-    return DatasetSchema.parse(res);
+    return schemas.DatasetSchema.parse(res);
   }
 
-  async function deleteDataset(dataset: Dataset): Promise<Dataset> {
+  async function deleteDataset(dataset: types.Dataset): Promise<types.Dataset> {
     const { data } = await instance.delete(endpoints.delete, {
       params: { dataset_uuid: dataset.uuid },
     });
-    return DatasetSchema.parse(data);
+    return schemas.DatasetSchema.parse(data);
   }
 
   async function downloadDataset(uuid: string, format: "json" | "csv") {
@@ -62,17 +78,20 @@ export function registerDatasetAPI({
     const { data } = await instance.get(endpoint, {
       params: { dataset_uuid: uuid },
     });
+    console.log({ data });
     let filetype = format === "csv" ? "text/csv" : "application/json";
     downloadContent(data, `${uuid}.${format}`, filetype);
   }
 
-  async function importDataset(data: DatasetImport): Promise<Dataset> {
+  async function importDataset(
+    data: types.DatasetImport,
+  ): Promise<types.Dataset> {
     const formData = new FormData();
     const file = data.dataset[0];
     formData.append("dataset", file);
     formData.append("audio_dir", data.audio_dir);
     const { data: res } = await instance.post(endpoints.import, formData);
-    return DatasetSchema.parse(res);
+    return schemas.DatasetSchema.parse(res);
   }
 
   return {
@@ -86,55 +105,3 @@ export function registerDatasetAPI({
     import: importDataset,
   } as const;
 }
-
-export const DatasetFilterSchema = z.object({
-  search: z.string().optional(),
-});
-
-export type DatasetFilter = z.input<typeof DatasetFilterSchema>;
-
-export const DatasetCreateSchema = z.object({
-  uuid: z.string().uuid().optional(),
-  name: z.string().min(1),
-  audio_dir: z.string(),
-  description: z.string().optional(),
-});
-
-export type DatasetCreate = z.input<typeof DatasetCreateSchema>;
-
-export const DatasetUpdateSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
-});
-
-export type DatasetUpdate = z.input<typeof DatasetUpdateSchema>;
-
-export const DatasetPageSchema = Page(DatasetSchema);
-
-export type DatasetPage = z.infer<typeof DatasetPageSchema>;
-
-export const GetDatasetsQuerySchema = z.intersection(
-  GetManySchema,
-  DatasetFilterSchema,
-);
-
-export type GetDatasetsQuery = z.input<typeof GetDatasetsQuerySchema>;
-
-export const DatasetImportSchema = z.object({
-  dataset: z.instanceof(FileList),
-  audio_dir: z.string(),
-});
-
-export type DatasetImport = z.infer<typeof DatasetImportSchema>;
-
-const DEFAULT_ENDPOINTS = {
-  getMany: "/api/v1/datasets/",
-  create: "/api/v1/datasets/",
-  state: "/api/v1/datasets/detail/state/",
-  get: "/api/v1/datasets/detail/",
-  update: "/api/v1/datasets/detail/",
-  delete: "/api/v1/datasets/detail/",
-  downloadJson: "/api/v1/datasets/detail/download/json/",
-  downloadCsv: "/api/v1/datasets/detail/download/csv/",
-  import: "/api/v1/datasets/import/",
-};

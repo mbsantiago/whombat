@@ -1,4 +1,3 @@
-import type { RecordingFilter } from "@/lib/api/recordings";
 import FilterBadge, {
   NumberFilterBadge,
 } from "@/lib/components/filters/FilterBadge";
@@ -19,6 +18,7 @@ import {
   TimeExpansionIcon,
   TimeIcon,
 } from "@/lib/components/icons";
+import type { RecordingFilter } from "@/lib/types";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values
 const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
@@ -36,7 +36,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
     ),
     description: "Select recordings by duration. Duration is in seconds.",
     icon: (
-      <TimeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TimeIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -49,7 +49,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       <FloatFilter onChange={(val) => setFilter("samplerate", val)} />
     ),
     icon: (
-      <SampleRateIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <SampleRateIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -62,7 +62,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       <FloatFilter onChange={(val) => setFilter("channels", val)} />
     ),
     icon: (
-      <ChannelsIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <ChannelsIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -79,7 +79,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       <FloatFilter onChange={(val) => setFilter("time_expansion", val)} />
     ),
     icon: (
-      <TimeExpansionIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TimeExpansionIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -95,7 +95,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       />
     ),
     icon: (
-      <LatitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <LatitudeIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -111,7 +111,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       />
     ),
     icon: (
-      <LongitudeIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <LongitudeIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -128,7 +128,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       <TagFilter onChange={(tag) => setFilter("tag", tag)} />
     ),
     icon: (
-      <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TagIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -145,7 +145,7 @@ const recordingFilterDefs: FilterDef<RecordingFilter>[] = [
       <BooleanFilter onChange={(val) => setFilter("has_issues", val)} />
     ),
     icon: (
-      <IssueIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <IssueIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
 ];

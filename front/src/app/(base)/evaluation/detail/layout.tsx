@@ -20,7 +20,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     isError,
     data: evaluationSet,
   } = useEvaluationSet({
-    uuid: uuid || undefined,
+    uuid: uuid ?? "",
+    enabled: uuid != null,
   });
 
   if (uuid == null) {

@@ -13,7 +13,7 @@ export default function useModelRun({
   onEvaluate,
   onError,
 }: {
-  uuid?: string;
+  uuid: string;
   modelRun?: ModelRun;
   enabled?: boolean;
   withState?: boolean;

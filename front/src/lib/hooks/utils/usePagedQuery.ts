@@ -1,4 +1,4 @@
-import { type GetManyQuery, type Paginated } from "@/lib/api/common";
+import { type GetManyQuery, type Paginated } from "@/lib/types";
 import {
   type UseQueryResult,
   keepPreviousData,

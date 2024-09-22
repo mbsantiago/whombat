@@ -1,4 +1,3 @@
-import { type RecordingFilter } from "@/lib/api/recordings";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
@@ -10,7 +9,7 @@ import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
-import type { Recording, Tag } from "@/lib/types";
+import type { Recording, RecordingFilter, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
 import { type ComponentProps, type FC, useCallback } from "react";
 
@@ -51,7 +50,7 @@ export default function RecordingTable({
   onSearchChange?: (value: string) => void;
   /** Callback function to handle setting a filter field. */
   onSetFilterField?: <T extends keyof RecordingFilter>(
-    key: T,
+    field: T,
     value: RecordingFilter[T],
   ) => void;
   /** Callback function to handle clearing a filter field. */

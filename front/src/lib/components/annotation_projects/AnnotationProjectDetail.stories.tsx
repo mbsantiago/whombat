@@ -1,3 +1,4 @@
+import Note from "@/lib/components/notes/Note";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import AnnotationProjectActions from "./AnnotationProjectActions";
@@ -51,6 +52,15 @@ export const Primary: Story = {
     AnnotationProjectTagsSummary: (
       <AnnotationProjectTagsSummary annotationProject={annotationProject} />
     ),
-    AnnotationProjectNotesSummary: <AnnotationProjectNotesSummary />,
+    AnnotationProjectNotesSummary: (
+      <AnnotationProjectNotesSummary
+        ClipAnnotationNote={(props) => (
+          <Note note={props.clipAnnotationNote.note} />
+        )}
+        SoundEventAnnotationNote={(props) => (
+          <Note note={props.soundEventAnnotationNote.note} />
+        )}
+      />
+    ),
   },
 };
