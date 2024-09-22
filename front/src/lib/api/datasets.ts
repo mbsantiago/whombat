@@ -73,15 +73,33 @@ export function registerDatasetAPI({
     return schemas.DatasetSchema.parse(data);
   }
 
-  async function downloadDataset(uuid: string, format: "json" | "csv") {
-    let endpoint =
-      format === "csv" ? endpoints.downloadCsv : endpoints.downloadJson;
-    const { data } = await instance.get(endpoint, {
+  async function downloadDatasetJSON(uuid: string) {
+    const { data } = await instance.get(endpoints.downloadJson, {
       params: { dataset_uuid: uuid },
     });
-    console.log({ data });
-    let filetype = format === "csv" ? "text/csv" : "application/json";
-    downloadContent(data, `${uuid}.${format}`, filetype);
+    downloadContent(
+      JSON.stringify(data),
+      `dataset-${uuid}.json`,
+      "application/json",
+    );
+  }
+
+  async function downloadDatasetCSV(uuid: string) {
+    const { data } = await instance.get(endpoints.downloadCsv, {
+      params: { dataset_uuid: uuid },
+    });
+    downloadContent(data, `dataset-${uuid}.csv`, "text/csv");
+  }
+
+  async function downloadDataset(uuid: string, format: "json" | "csv") {
+    switch (format) {
+      case "json":
+        return downloadDatasetJSON(uuid);
+      case "csv":
+        return downloadDatasetCSV(uuid);
+      default:
+        throw new Error(`Invalid format ${format}`);
+    }
   }
 
   async function importDataset(

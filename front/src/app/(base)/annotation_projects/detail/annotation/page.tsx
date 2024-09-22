@@ -19,10 +19,10 @@ export default function Page() {
 
   const { data: task, isLoading } = useAnnotationTask({
     uuid: taskUUID ?? "",
-    enabled: !!taskUUID,
+    enabled: taskUUID != null,
   });
 
-  if (isLoading) {
+  if (isLoading && taskUUID != null) {
     return <Loading />;
   }
 

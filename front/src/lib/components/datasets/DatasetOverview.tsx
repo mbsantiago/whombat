@@ -30,30 +30,23 @@ export default function DatasetOverview({
       </div>
       <div className="flex flex-row gap-2 justify-around">
         <MetricBadge
+          onClick={onClickDatasetRecordings}
           icon={
-            <Button mode="text" onClick={onClickDatasetRecordings}>
-              <RecordingsIcon className="inline-block w-8 h-8 text-blue-500" />
-            </Button>
+            <RecordingsIcon className="inline-block w-8 h-8 text-blue-500" />
           }
           title="Recordings"
           value={dataset.recording_count}
         />
         <MetricBadge
-          icon={
-            <Button mode="text" onClick={onClickDatasetIssues}>
-              <IssueIcon className="inline-block w-8 h-8 text-amber-500" />
-            </Button>
-          }
+          onClick={onClickDatasetIssues}
+          icon={<IssueIcon className="inline-block w-8 h-8 text-amber-500" />}
           title="Metadata Issues"
           value={numIssues}
           isLoading={isLoading}
         />
         <MetricBadge
-          icon={
-            <Button mode="text" onClick={onClickDatasetMissing}>
-              <WarningIcon className="inline-block w-8 h-8 text-red-500" />
-            </Button>
-          }
+          onClick={onClickDatasetMissing}
+          icon={<WarningIcon className="inline-block w-8 h-8 text-red-500" />}
           title="Missing Files"
           value={numMissing}
           isLoading={isLoading}

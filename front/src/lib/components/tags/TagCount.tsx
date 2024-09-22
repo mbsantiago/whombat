@@ -51,13 +51,10 @@ export default function TagCount({
         onChangeLimit={setLimit}
         onChangeSearch={setSearch}
       />
-      <div className="grid grid-cols-2 gap-2 w-full">
+      <div className="flex flex-col gap-2 w-full">
         {items.map(({ tag, count }) => (
-          <>
-            <div
-              key={getTagKey(tag)}
-              className="flex flex-row items-center m-px h-6"
-            >
+          <div className="flex flex-row gap-2" key={getTagKey(tag)}>
+            <div className="inline-flex items-center m-px w-1/2 h-6">
               <div className="flex overflow-hidden flex-row w-full h-4 rounded-full bg-stone-200 dark:bg-stone-700">
                 <div
                   className="flex flex-row justify-center items-center h-4 text-blue-100 bg-blue-600 dark:text-blue-900 dark:bg-blue-400"
@@ -67,17 +64,13 @@ export default function TagCount({
                 </div>
               </div>
             </div>
-            <div key={`${getTagKey(tag)}-tag`}>
-              <div className="flex flex-row justify-start">
-                <TagComponent
-                  tag={tag}
-                  disabled
-                  {...tagColorFn(tag)}
-                  onClick={() => onTagClick?.(tag)}
-                />
-              </div>
-            </div>
-          </>
+            <TagComponent
+              tag={tag}
+              disabled
+              {...tagColorFn(tag)}
+              onClick={() => onTagClick?.(tag)}
+            />
+          </div>
         ))}
       </div>
     </div>

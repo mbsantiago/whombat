@@ -68,7 +68,6 @@ function createSpectrogramSettingsReducer({
         break;
       }
       case "setOverlap": {
-        console.log(action);
         if (action.overlap <= 0 || action.overlap >= 1) {
           throw new Error("Overlap must be between 0 and 1");
         }

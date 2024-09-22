@@ -64,7 +64,7 @@ export default function useRecordingAudio({
     (time: number) => {
       let adjustedTime = (time - startTime) / speed;
       audio.seek(adjustedTime);
-      onSeek?.(adjustedTime);
+      onSeek?.(time);
     },
     [audio, speed, startTime, onSeek],
   );

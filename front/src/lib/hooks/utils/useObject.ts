@@ -295,6 +295,7 @@ export default function useObject<T>({
   const query = useQuery<T, AxiosError>({
     queryKey: [name, id],
     queryFn: () => queryFn(id),
+    enabled,
     ...rest,
   });
 

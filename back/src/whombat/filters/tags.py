@@ -37,7 +37,7 @@ class AnnotationProjectFilter(base.Filter):
             return query
 
         subquery = (
-            select(models.AnnotationProject.id)
+            select(models.Tag.id)
             .join(
                 models.AnnotationProjectTag,
                 models.AnnotationProjectTag.tag_id == models.Tag.id,
@@ -50,7 +50,7 @@ class AnnotationProjectFilter(base.Filter):
             .filter(models.AnnotationProject.uuid == self.eq)
         )
 
-        return query.filter(models.AnnotationProject.id.in_(subquery))
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class RecordingFilter(base.Filter):

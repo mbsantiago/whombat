@@ -114,7 +114,7 @@ export function registerAnnotationProjectAPI(
       params: { annotation_project_uuid: uuid },
     });
     downloadContent(
-      data,
+      JSON.stringify(data),
       `annotation-project-${uuid}.json`,
       "application/json",
     );

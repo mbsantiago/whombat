@@ -159,7 +159,11 @@ export function registerEvaluationSetAPI(
     const { data } = await instance.get(endpoints.download, {
       params: { evaluation_set_uuid: uuid },
     });
-    downloadContent(data, `evaluation-set-${uuid}.json`, "application/json");
+    downloadContent(
+      JSON.stringify(data),
+      `evaluation-set-${uuid}.json`,
+      "application/json",
+    );
   }
 
   async function importEvaluationSet(
