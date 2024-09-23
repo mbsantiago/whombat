@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react";
 
-import { type ViewportController } from "@/lib/hooks/window/useViewport";
-
 import drawBBox from "@/lib/draw/bbox";
 import type {
   DrawFn,
@@ -10,6 +8,7 @@ import type {
   MoveStartHandler,
   Position,
   SpectrogramWindow,
+  ViewportController,
 } from "@/lib/types";
 import { getViewportPosition } from "@/lib/utils/windows";
 

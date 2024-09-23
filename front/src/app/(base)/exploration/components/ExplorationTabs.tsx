@@ -36,7 +36,9 @@ export default function ExplorationTabs() {
           key={"recordings"}
           active={selectedLayoutSegment === "recordings"}
           onClick={() => {
-            router.push(`/exploration/recordings/?${params.toString()}`);
+            router.push(
+              `/exploration/recordings/gallery/?${params.toString()}`,
+            );
           }}
         >
           <RecordingIcon className="w-4 h-4 align-middle" />
@@ -46,7 +48,7 @@ export default function ExplorationTabs() {
           key={"clips"}
           active={selectedLayoutSegment === "clips"}
           onClick={() => {
-            router.push(`/exploration/clips/?${params.toString()}`);
+            router.push(`/exploration/clips/gallery/?${params.toString()}`);
           }}
         >
           <ClipsIcon className="w-4 h-4 align-middle" />
@@ -56,7 +58,9 @@ export default function ExplorationTabs() {
           key={"soundevents"}
           active={selectedLayoutSegment === "sound_events"}
           onClick={() => {
-            router.push(`/exploration/sound_events/?${params.toString()}`);
+            router.push(
+              `/exploration/sound_events/gallery/?${params.toString()}`,
+            );
           }}
         >
           <SoundEventIcon className="w-4 h-4 align-middle" />

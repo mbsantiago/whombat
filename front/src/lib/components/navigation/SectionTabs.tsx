@@ -19,12 +19,12 @@ export default function SectionTabs({
   /** An array of React elements representing the tabs to be displayed. */
   tabs: ReactNode[];
   /** The title to be displayed in the section header. */
-  title: ReactNode;
+  title?: ReactNode;
 }) {
   return (
     <Header>
       <div className="flex overflow-x-auto flex-row space-x-4 w-full">
-        <H1>{title}</H1>
+        {title != null && <H1>{title}</H1>}
         <ul className="flex space-x-4">
           {tabs.map((tab, index) => (
             <li key={index}>{tab}</li>

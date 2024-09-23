@@ -1,4 +1,4 @@
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   ModelIcon,
@@ -100,7 +100,7 @@ export default function EvaluationSetOverview({
 
 function NoEvaluationExamples() {
   return (
-    <Empty padding="p-2">
+    <Empty outerClassName="p-2">
       <div className="inline-flex gap-4 text-amber-500">
         <TasksIcon className="w-8 h-8 text-amber-500" />
         Missing Evaluation Examples
@@ -117,7 +117,7 @@ function NoEvaluationExamples() {
 
 function NoEvaluationTags() {
   return (
-    <Empty padding="p-2">
+    <Empty outerClassName="p-2">
       <div className="inline-flex gap-4 text-amber-500">
         <TagsIcon className="w-8 h-8 text-amber-500" />
         Missing Evaluation Tags

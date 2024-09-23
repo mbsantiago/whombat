@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
-import { type AudioController } from "@/app/hooks/audio/useRecordingAudio";
-
 import PlayerBase from "@/lib/components/audio/Player";
 
 import { getSpeedOptions } from "@/lib/hooks/settings/useAudioSettings";
+
+import type { AudioController } from "@/lib/types";
 
 export default function Player({
   audio,

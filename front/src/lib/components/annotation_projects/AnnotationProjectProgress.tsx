@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   CompleteIcon,

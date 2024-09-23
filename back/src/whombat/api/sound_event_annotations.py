@@ -70,6 +70,46 @@ class SoundEventAnnotationAPI(
             **kwargs,
         )
 
+    async def get_clip_annotation(
+        self,
+        session: AsyncSession,
+        data: schemas.SoundEventAnnotation,
+    ) -> schemas.ClipAnnotation:
+        """Get the clip annotation in which the sound event was annotated.
+
+        Parameters
+        ----------
+        session : AsyncSession
+            The database session.
+        data : schemas.SoundEventAnnotation
+            The sound event annotation.
+
+        Returns
+        -------
+        schemas.ClipAnnotation
+            The clip annotation for the sound event annotation.
+        """
+        stmt = (
+            select(models.ClipAnnotation)
+            .join(
+                models.SoundEventAnnotation,
+                models.SoundEventAnnotation.clip_annotation_id
+                == models.ClipAnnotation.id,
+            )
+            .filter(models.SoundEventAnnotation.uuid == data.uuid)
+        )
+
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+
+        if obj is None:
+            raise exceptions.NotFoundError(
+                "Clip annotation for sound event "
+                f"annotation {data.uuid} not found."
+            )
+
+        return schemas.ClipAnnotation.model_validate(obj)
+
     async def get_annotation_task(
         self,
         session: AsyncSession,

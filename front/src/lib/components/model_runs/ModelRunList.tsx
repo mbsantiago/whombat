@@ -1,6 +1,6 @@
 import useModelRuns from "@/app/hooks/api/useModelRuns";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   ModelIcon,

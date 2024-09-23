@@ -1,4 +1,4 @@
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import Loading from "@/lib/components/ui/Loading";
 
 import type { AnnotationTask } from "@/lib/types";

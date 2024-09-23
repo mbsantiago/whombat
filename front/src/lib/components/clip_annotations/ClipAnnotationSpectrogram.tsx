@@ -4,16 +4,16 @@ import Card from "@/lib/components/ui/Card";
 
 const ClipAnnotationSpectrogram = memo(
   function ClipAnnotationSpectrogram(props: {
-    ViewportToolbar: JSX.Element;
-    AnnotationControls: JSX.Element;
-    Player: JSX.Element;
-    SettingsMenu: JSX.Element;
-    ViewportBar: JSX.Element;
+    ViewportToolbar?: JSX.Element;
+    AnnotationControls?: JSX.Element;
+    Player?: JSX.Element;
+    SettingsMenu?: JSX.Element;
+    ViewportBar?: JSX.Element;
     Canvas: JSX.Element;
     SelectedSoundEvent?: JSX.Element;
   }) {
     return (
-      <Card>
+      <Card className="w-full">
         <div className="flex flex-row gap-4">
           {props.ViewportToolbar}
           {props.AnnotationControls}

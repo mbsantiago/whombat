@@ -2,7 +2,7 @@ import { type ComponentProps, useMemo } from "react";
 
 import Loading from "@/app/loading";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import { TagsIcon } from "@/lib/components/icons";
 import TagCount from "@/lib/components/tags/TagCount";
 import Card from "@/lib/components/ui/Card";

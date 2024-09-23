@@ -2,7 +2,7 @@ import { type ComponentProps } from "react";
 
 import type { SoundEventAnnotation } from "@/lib/types";
 
-import Empty from "../Empty";
+import Empty from "../ui/Empty";
 import SelectedSoundEventAnnotation from "../sound_event_annotations/SelectedSoundEventAnnotation";
 
 export default function ClipAnnotationSoundEvents({

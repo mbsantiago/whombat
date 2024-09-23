@@ -4,7 +4,7 @@ import api from "@/app/api";
 
 import useAudio from "@/lib/hooks/audio/useAudio";
 
-import type { AudioSettings, Recording } from "@/lib/types";
+import type { AudioController, AudioSettings, Recording } from "@/lib/types";
 
 export default function useRecordingAudio({
   recording,
@@ -87,26 +87,3 @@ export default function useRecordingAudio({
     seek,
   };
 }
-
-export type AudioState = {
-  recording: Recording;
-  startTime: number;
-  endTime: number;
-  volume: number;
-  currentTime: number;
-  speed: number;
-  loop: boolean;
-  isPlaying: boolean;
-};
-
-export type AudioControls = {
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-  seek: (time: number) => void;
-  setVolume: (volume: number) => void;
-  toggleLoop: () => void;
-  togglePlay: () => void;
-};
-
-export type AudioController = AudioState & AudioControls;

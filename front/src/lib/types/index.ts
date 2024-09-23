@@ -1,9 +1,3 @@
-import type {
-  MoveEndEvent as MoveEndEventAria,
-  MoveMoveEvent as MoveMoveEventAria,
-  MoveStartEvent as MoveStartEventAria,
-  PressEvent as PressEventAria,
-} from "react-aria";
 import { z } from "zod";
 
 import * as schemas from "@/lib/schemas";
@@ -35,28 +29,6 @@ export type NoteUpdate = z.input<typeof schemas.NoteUpdateSchema>;
 
 export type NoteFilter = z.infer<typeof schemas.NoteFilterSchema>;
 
-export type Recording = z.infer<typeof schemas.RecordingSchema>;
-
-export type RecordingFilter = z.input<typeof schemas.RecordingFilterSchema>;
-
-export type RecordingUpdate = z.input<typeof schemas.RecordingUpdateSchema>;
-
-export type RecordingTag = z.infer<typeof schemas.RecordingTagSchema>;
-
-export type RecordingTagFilter = z.infer<
-  typeof schemas.RecordingTagFilterSchema
->;
-
-export type RecordingNote = z.infer<typeof schemas.RecordingNoteSchema>;
-
-export type RecordingNoteFilter = z.infer<
-  typeof schemas.RecordingNoteFilterSchema
->;
-
-export type FileState = z.infer<typeof schemas.FileStateSchema>;
-
-export type RecordingState = z.infer<typeof schemas.RecordingStateSchema>;
-
 export type Dataset = z.infer<typeof schemas.DatasetSchema>;
 
 export type DatasetFilter = z.input<typeof schemas.DatasetFilterSchema>;
@@ -67,65 +39,11 @@ export type DatasetUpdate = z.input<typeof schemas.DatasetUpdateSchema>;
 
 export type DatasetImport = z.infer<typeof schemas.DatasetImportSchema>;
 
-export type GeometryType = z.infer<typeof schemas.GeometryTypeSchema>;
-
-export type TimeStamp = z.infer<typeof schemas.TimeStampSchema>;
-
-export type TimeInterval = z.infer<typeof schemas.TimeIntervalSchema>;
-
-export type BoundingBox = z.infer<typeof schemas.BoundingBoxSchema>;
-
-export type Point = z.infer<typeof schemas.PointSchema>;
-
-export type LineString = z.infer<typeof schemas.LineStringSchema>;
-
-export type Polygon = z.infer<typeof schemas.PolygonSchema>;
-
-export type MultiPoint = z.infer<typeof schemas.MultiPointSchema>;
-
-export type MultiLineString = z.infer<typeof schemas.MultiLineStringSchema>;
-
-export type MultiPolygon = z.infer<typeof schemas.MultiPolygonSchema>;
-
-export type Geometry = z.infer<typeof schemas.GeometrySchema>;
-
 export type SoundEvent = z.infer<typeof schemas.SoundEventSchema>;
 
 export type Clip = z.infer<typeof schemas.ClipSchema>;
 
 export type AnnotationTag = z.infer<typeof schemas.TagAssociationSchema>;
-
-export type SoundEventAnnotation = z.infer<
-  typeof schemas.SoundEventAnnotationSchema
->;
-
-export type SoundEventAnnotationCreate = z.input<
-  typeof schemas.SoundEventAnnotationCreateSchema
->;
-
-export type SoundEventAnnotationUpdate = z.input<
-  typeof schemas.SoundEventAnnotationUpdateSchema
->;
-
-export type SoundEventAnnotationTag = z.infer<
-  typeof schemas.SoundEventAnnotationTagSchema
->;
-
-export type SoundEventAnnotationNote = z.infer<
-  typeof schemas.SoundEventAnnotationNoteSchema
->;
-
-export type SoundEventAnnotationNoteFilter = z.infer<
-  typeof schemas.SoundEventAnnotationNoteFilterSchema
->;
-
-export type SoundEventAnnotationFilter = z.infer<
-  typeof schemas.SoundEventAnnotationFilterSchema
->;
-
-export type SoundEventAnnotationTagFilter = z.infer<
-  typeof schemas.SoundEventAnnotationTagFilterSchema
->;
 
 export type ClipAnnotation = z.infer<typeof schemas.ClipAnnotationSchema>;
 
@@ -211,37 +129,6 @@ export type EvaluationSetImport = z.infer<
   typeof schemas.EvaluationSetImportSchema
 >;
 
-export type Position = {
-  time: number;
-  freq: number;
-};
-
-export type Pixel = {
-  x: number;
-  y: number;
-};
-
-export type Coordinates = number[];
-
-export type Box = [number, number, number, number];
-
-export type Dimensions = {
-  width: number;
-  height: number;
-};
-
-export type Interval = z.infer<typeof schemas.IntervalSchema>;
-
-/** A chunk of the spectrogram. */
-export type Chunk = {
-  /** The interval of the chunk in seconds. */
-  interval: Interval;
-  /** A buffered interval for the chunk. */
-  buffer: Interval;
-};
-
-export type SpectrogramWindow = z.infer<typeof schemas.SpectrogramWindowSchema>;
-
 export type SpectrogramParameters = z.infer<
   typeof schemas.SpectrogramParametersSchema
 >;
@@ -274,83 +161,18 @@ export type PredictedTagFilter = z.input<
 
 export type IntegerFilter = z.input<typeof schemas.IntegerFilterSchema>;
 
-// Canvas types
-
-export type CanvasContext = CanvasRenderingContext2D;
-export type DrawFn = (ctx: CanvasContext, viewport: SpectrogramWindow) => void;
-
-// Canvas interaction events
-
-export type ScrollEvent = {
-  position: Position;
-  timeFrac: number;
-  freqFrac: number;
-  type: "wheel";
-  deltaX: number;
-  deltaY: number;
-  shiftKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  altKey: boolean;
-  preventDefault: () => void;
-  stopPropagation: () => void;
+export type Shortcut = {
+  label: string;
+  shortcut: string;
+  description: string;
 };
 
-export type HoverEvent = {
-  position: Position;
-};
-
-export type MoveStartEvent = {
-  position: Position;
-} & MoveStartEventAria;
-
-export type MoveEndEvent = {
-  position: Position;
-} & MoveEndEventAria;
-
-export type MoveEvent = {
-  position: Position;
-  initial: Position;
-  shift: Position;
-} & MoveMoveEventAria;
-
-export type PressEvent = {
-  position: Position;
-} & PressEventAria;
-
-export type DoublePressEvent = {
-  position: Position;
-  altKey: boolean;
-  ctrlKey: boolean;
-  metaKey: boolean;
-  shiftKey: boolean;
-  type: "dblpress";
-  stopPropagation: () => void;
-  preventDefault: () => void;
-};
-
-export type HoverHandler = (event: HoverEvent) => void;
-
-export type MoveStartHandler = (event: MoveStartEvent) => void;
-
-export type MoveEndHandler = (event: MoveEndEvent) => void;
-
-export type MoveHandler = (event: MoveEvent) => void;
-
-export type PressHandler = (event: PressEvent) => void;
-
-export type ScrollHandler = (event: ScrollEvent) => void;
-
-export type DoublePressHandler = (event: DoublePressEvent) => void;
-
-export type CanvasHandlers = {
-  onHover?: HoverHandler;
-  onMoveStart?: MoveStartHandler;
-  onMoveEnd?: MoveEndHandler;
-  onMove?: MoveHandler;
-  onPress?: PressHandler;
-  onScroll?: ScrollHandler;
-  onDoubleClick?: DoublePressHandler;
-};
-
-export type SpectrogramMode = "panning" | "zooming" | "idle";
+export type * from "./handlers";
+export type * from "./spectrogram";
+export type * from "./annotation";
+export type * from "./geometry";
+export type * from "./sound_event_annotations";
+export type * from "./viewport";
+export type * from "./canvas";
+export type * from "./recording";
+export type * from "./audio";

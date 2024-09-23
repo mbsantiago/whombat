@@ -1,6 +1,6 @@
 import { ComponentProps } from "react";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import NotesPanel from "@/lib/components/notes/NotesPanel";
 
 export default function ClipAnnotationNotes(
@@ -10,5 +10,5 @@ export default function ClipAnnotationNotes(
 }
 
 function NoNotes() {
-  return <Empty padding="p-2">No notes</Empty>;
+  return <Empty outerClassName="p-2">No notes</Empty>;
 }

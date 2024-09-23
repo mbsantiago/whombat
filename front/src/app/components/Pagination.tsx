@@ -2,7 +2,13 @@ import PaginationBase from "@/lib/components/lists/Pagination";
 
 import type { Pagination } from "@/lib/hooks/utils/usePagedQuery";
 
-export default function Pagination({ pagination }: { pagination: Pagination }) {
+export default function Pagination({
+  pagination,
+  pageSizeOptions,
+}: {
+  pagination: Pagination;
+  pageSizeOptions?: number[];
+}) {
   return (
     <PaginationBase
       page={pagination.page}
@@ -14,6 +20,7 @@ export default function Pagination({ pagination }: { pagination: Pagination }) {
       onPrevPage={pagination.prevPage}
       onSetPage={pagination.setPage}
       onSetPageSize={pagination.setPageSize}
+      pageSizeOptions={pageSizeOptions}
     />
   );
 }

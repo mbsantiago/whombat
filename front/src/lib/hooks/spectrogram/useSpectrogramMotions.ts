@@ -1,10 +1,4 @@
-// import useSpectrogramDrag from "@/lib/hooks/spectrogram/useSpectrogramDrag";
-import { useCallback, useState } from "react";
-import { mergeProps } from "react-aria";
-
-import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
-import useWindowScroll from "@/lib/hooks/window/useWindowScroll";
+import { useCallback } from "react";
 
 import type {
   CanvasHandlers,
@@ -12,33 +6,8 @@ import type {
   MoveStartHandler,
   Position,
   ScrollEvent,
-  SpectrogramWindow,
+  ViewportController,
 } from "@/lib/types";
-
-/**
- * The motion modes supported by the spectrogram motions.
- *
- * @description Either "drag", "zoom", or "idle".
- */
-export type MotionMode = "drag" | "zoom" | "idle";
-
-/**
- * The state of the spectrogram motions.
- */
-export type MotionState = {
-  canDrag: boolean;
-  canZoom: boolean;
-  enabled: boolean;
-};
-
-/**
- * The controls for managing spectrogram motions.
- */
-export type MotionControls = {
-  enableDrag: () => void;
-  enableZoom: () => void;
-  disable: () => void;
-};
 
 export function useSpectrogramDrag({
   viewport,

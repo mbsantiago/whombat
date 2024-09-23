@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import useStore from "@/app/store";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import { TagsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
 import { H4 } from "@/lib/components/ui/Headings";
@@ -51,7 +51,7 @@ export default function ClipEvaluationTags(props: {
             />
           ))}
           {predictedTags.length === 0 && (
-            <Empty padding="p-0">No predicted tags.</Empty>
+            <Empty outerClassName="p-0">No predicted tags.</Empty>
           )}
         </div>
         <div className="flex flex-col gap-2">
@@ -64,7 +64,7 @@ export default function ClipEvaluationTags(props: {
               {...getTagColor(tag)}
             />
           ))}
-          {predictedTags.length === 0 && <Empty padding="p-0">No tags.</Empty>}
+          {predictedTags.length === 0 && <Empty outerClassName="p-0">No tags.</Empty>}
         </div>
       </div>
     </div>

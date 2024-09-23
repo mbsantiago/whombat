@@ -58,8 +58,7 @@ export type SoundEventSpectrogramTagsProps = {
   soundEvent: SoundEventAnnotation;
   viewport: SpectrogramWindow;
   dimensions: Dimensions;
-  active?: boolean;
-  disabled?: boolean;
+  enabled?: boolean;
   onAddTag?: (tag: TagType) => void;
   onRemoveTag?: (tag: TagType) => void;
 };
@@ -68,8 +67,7 @@ export function SoundEventSpectrogramTagsBase({
   soundEvent,
   viewport,
   dimensions,
-  active = true,
-  disabled = false,
+  enabled = true,
   tagColorFn = getTagColor,
   onRemoveTag,
   onAddTag,
@@ -81,9 +79,6 @@ export function SoundEventSpectrogramTagsBase({
   return (
     <div
       className={classNames(
-        {
-          "pointer-events-none": !active,
-        },
         "h-5 flex flex-col absolute px-2 text-stone-300 hover:z-50 z-40",
       )}
       style={{
@@ -95,14 +90,14 @@ export function SoundEventSpectrogramTagsBase({
         {soundEvent.tags?.map((tag) => (
           <SpectrogramTag
             key={getTagKey(tag)}
-            disabled={disabled}
+            disabled={!enabled}
             tagColorFn={tagColorFn}
             onClick={() => onRemoveTag?.(tag)}
             tag={tag}
           />
         ))}
       </div>
-      {!disabled && <AddTagButton onSelectTag={onAddTag} {...props} />}
+      {enabled && <AddTagButton onSelectTag={onAddTag} {...props} />}
     </div>
   );
 }

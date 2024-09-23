@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { FeatureSchema } from "./features";
 import { GeometrySchema } from "./geometries";
 import { NoteAssociationSchema, NoteSchema } from "./notes";
 import { SoundEventSchema } from "./sound_events";
@@ -30,4 +31,11 @@ export const SoundEventAnnotationTagSchema = TagAssociationSchema.extend({
 
 export const SoundEventAnnotationNoteSchema = NoteAssociationSchema.extend({
   sound_event_annotation_uuid: z.string().uuid(),
+});
+
+export const ScatterPlotDataSchema = z.object({
+  uuid: z.string(),
+  features: z.array(FeatureSchema).optional(),
+  tags: z.array(TagSchema).optional(),
+  recording_tags: z.array(TagSchema).optional(),
 });

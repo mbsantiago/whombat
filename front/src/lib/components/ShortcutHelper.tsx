@@ -6,11 +6,7 @@ import Button from "@/lib/components/ui/Button";
 import { DialogOverlay } from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 
-type Shortcut = {
-  label: string;
-  shortcut: string;
-  description: string;
-};
+import type { Shortcut } from "@/lib/types";
 
 export default function ShortcutHelper({
   shortcuts,

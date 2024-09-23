@@ -4,52 +4,10 @@
 import classnames from "classnames";
 import { type HTMLProps } from "react";
 
-import { ALL_COLORS } from "@/lib/components/colors";
 import { CloseIcon } from "@/lib/components/icons";
 
 import type { Tag } from "@/lib/types";
-
-const COLOR_NAMES = [
-  "slate",
-  "gray",
-  "zinc",
-  "neutral",
-  "stone",
-  "red",
-  "orange",
-  "amber",
-  "yellow",
-  "lime",
-  "green",
-  "emerald",
-  "teal",
-  "cyan",
-  "sky",
-  "blue",
-  "indigo",
-  "violet",
-  "purple",
-  "fuchsia",
-  "pink",
-  "rose",
-];
-
-const LEVELS = [1, 2, 3, 4, 5, 6];
-
-export function getTagClassNames(color: string, level: number) {
-  const background = `bg-${color}-${level}00 dark:bg-${color}-${10 - level}00`;
-  const border = `border-${color}-${level + 2}00 dark:border-${color}-${
-    10 - level - 2
-  }00`;
-  const text = `text-${color}-${level + 3}00 dark:text-${color}-${
-    10 - level - 3
-  }00`;
-  return {
-    background,
-    border,
-    text,
-  };
-}
+import { COLOR_NAMES, LEVELS, getTagClassNames } from "@/lib/utils/tags";
 
 /** A Tag.
  * Will display a tag. The aspect can be customized by specifying
@@ -105,4 +63,4 @@ export default function Tag({
   );
 }
 
-export { ALL_COLORS, COLOR_NAMES, LEVELS, getTagClassNames as getClassNames };
+export { COLOR_NAMES, LEVELS };

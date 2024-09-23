@@ -3,10 +3,10 @@ import { memo } from "react";
 import Card from "@/lib/components/ui/Card";
 
 const RecordingSpectrogram = memo(function RecordingSpectrogram(props: {
-  ViewportToolbar: JSX.Element;
-  Player: JSX.Element;
-  SettingsMenu: JSX.Element;
-  ViewportBar: JSX.Element;
+  ViewportToolbar?: JSX.Element;
+  Player?: JSX.Element;
+  SettingsMenu?: JSX.Element;
+  ViewportBar?: JSX.Element;
   Canvas: JSX.Element;
 }) {
   return (

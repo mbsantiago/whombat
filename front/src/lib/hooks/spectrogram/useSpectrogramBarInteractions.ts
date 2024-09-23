@@ -6,9 +6,7 @@ import type {
   PressEvent,
 } from "react-aria";
 
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
-
-import type { Position, ScrollEvent } from "@/lib/types";
+import type { Position, ScrollEvent, ViewportController } from "@/lib/types";
 
 export default function useSpectrogramBarInteractions({
   viewport,

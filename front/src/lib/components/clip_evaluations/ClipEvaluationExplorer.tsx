@@ -1,4 +1,4 @@
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";

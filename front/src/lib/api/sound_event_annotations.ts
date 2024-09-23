@@ -1,18 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
 import { GetMany, Page } from "@/lib/api/common";
 import * as schemas from "@/lib/schemas";
 import * as types from "@/lib/types";
-
-export const ScatterPlotDataSchema = z.object({
-  uuid: z.string(),
-  features: z.array(schemas.FeatureSchema).optional(),
-  tags: z.array(schemas.TagSchema).optional(),
-  recording_tags: z.array(schemas.TagSchema).optional(),
-});
-
-export type ScatterPlotData = z.infer<typeof ScatterPlotDataSchema>;
 
 const DEFAULT_ENDPOINTS = {
   create: "/api/v1/sound_event_annotations/",
@@ -68,7 +58,7 @@ export function registerSoundEventAnnotationsAPI(
 
   async function getScatterPlotData(
     query: types.GetManyQuery & types.SoundEventAnnotationFilter,
-  ): Promise<types.Paginated<ScatterPlotData>> {
+  ): Promise<types.Paginated<types.ScatterPlotData>> {
     const params = GetMany(schemas.SoundEventAnnotationFilterSchema).parse(
       query,
     );
@@ -85,7 +75,7 @@ export function registerSoundEventAnnotationsAPI(
         tag__value: params.tag?.value,
       },
     });
-    return Page(ScatterPlotDataSchema).parse(response.data);
+    return Page(schemas.ScatterPlotDataSchema).parse(response.data);
   }
 
   async function getSoundEventAnnotation(

@@ -1,89 +1,21 @@
-import { useState } from "react";
-import type { ReactNode } from "react";
+import Loading from "@/lib/components/ui/Loading";
 
-import FilterBar from "@/lib/components/filters/FilterBar";
-import FilterMenu from "@/lib/components/filters/FilterMenu";
-import type { FilterDef } from "@/lib/components/filters/FilterMenu";
-import { FilterIcon } from "@/lib/components/icons";
-import SectionTabs from "@/lib/components/navigation/SectionTabs";
-import Tab from "@/lib/components/ui/Tab";
-
-import useFilter from "@/lib/hooks/utils/useFilter";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
-
-import type { SpectrogramParameters } from "@/lib/types";
-
-type Tab = {
-  id: string;
-  title: string;
-  icon?: JSX.Element;
-};
-
-const _empty = {};
-
-export default function ExplorationLayout<T extends Object>(props: {
-  description: string;
-  filter?: T;
-  filterDef: FilterDef<T>[];
-  parameters?: SpectrogramParameters;
-  onParametersSave?: (parameters: SpectrogramParameters) => void;
-  children: (props: { view: string; filter: T }) => ReactNode;
-  tabs: Tab[];
+export default function ExplorationLayout(props: {
+  isLoading?: boolean;
+  description?: string;
+  children?: React.ReactNode;
+  Counts?: JSX.Element;
+  Pagination?: JSX.Element;
 }) {
-  const [view, setView] = useState(props.tabs[0].id);
-
-  const { filter: initialFilter = _empty } = props;
-  const filter = useFilter<T>({ defaults: initialFilter });
-
-  // TODO: Update the section tabs
-
   return (
-    <div className="flex flex-col gap-2 p-2">
-      <div>
-        <div className="flex flex-row justify-center">
-          <p className="max-w-prose text-sm text-center text-stone-500">
-            {props.description}
-          </p>
-        </div>
-        <FilterControls filter={filter} filterDef={props.filterDef} />
-      </div>
-      <div className="flex flex-row gap-2 justify-center w-full">
-        <SectionTabs title="Exploration" tabs={[]} />
+    <div className="flex flex-col gap-4 p-2">
+      <div className="flex sticky top-0 z-50 flex-row justify-between items-center py-4 dark:bg-stone-900">
+        {props.Counts}
+        {props.Pagination}
       </div>
       <div className="p-4">
-        {props.children({ view, filter: filter.filter })}
+        {props.isLoading ? <Loading /> : props.children}
       </div>
-    </div>
-  );
-}
-
-function FilterControls<T extends Object>({
-  filter,
-  filterDef,
-}: {
-  filter: Filter<T>;
-  filterDef: FilterDef<T>[];
-}) {
-  return (
-    <div className="flex flex-row gap-2 items-center px-2">
-      <FilterMenu
-        mode="text"
-        onSetFilterField={filter.set}
-        filterDef={filterDef}
-        button={
-          <>
-            Add filters <FilterIcon className="inline-block w-4 h-4 stroke-2" />
-          </>
-        }
-      />
-      <FilterBar
-        filter={filter.filter}
-        onClearFilterField={filter.clear}
-        fixedFilterFields={filter.fixed}
-        filterDef={filterDef}
-        showIfEmpty
-        withLabel={false}
-      />
     </div>
   );
 }

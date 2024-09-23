@@ -2,7 +2,12 @@ import { useCallback } from "react";
 
 import useLifoQueue from "@/lib/hooks/utils/useLifoQueue";
 
-import type { Interval, Position, SpectrogramWindow } from "@/lib/types";
+import type {
+  Interval,
+  Position,
+  SpectrogramWindow,
+  ViewportController,
+} from "@/lib/types";
 import {
   adjustWindowToBounds,
   centerWindowOn,
@@ -11,48 +16,6 @@ import {
   shiftWindow,
   zoomWindowToPosition,
 } from "@/lib/utils/windows";
-
-export type ViewportControls = {
-  /** Sets the viewport to a new position and dimensions.*/
-  set(window: SpectrogramWindow): void;
-  /** Sets the time interval of the viewport.*/
-  setTimeInterval(interval: Interval): void;
-  /** Sets the frequency interval of the viewport.*/
-  setFrequencyInterval(interval: Interval): void;
-  /** Scales the viewport by the given factors (time and/or frequency).*/
-  scale({ time, freq }: { time?: number; freq?: number }): void;
-  /** Expands the viewport by the given amounts (time and/or frequency).*/
-  expand({ time, freq }: { time?: number; freq?: number }): void;
-  /** Shifts the viewport by the given amounts (time and/or frequency).*/
-  shift({ time, freq }: { time?: number; freq?: number }): void;
-  /** Centers the viewport on the specified time and/or frequency.*/
-  centerOn({ time, freq }: { time?: number; freq?: number }): void;
-  /** Zooms the viewport to the specified position by some factor.*/
-  zoomToPosition({
-    position,
-    factor,
-  }: {
-    position: Position;
-    factor: number;
-  }): void;
-  /** Resets the viewport to its initial position and dimensions.*/
-  reset(): void;
-  /** Saves the current viewport position to the history stack.*/
-  save(): void;
-  /** Goes back to the previous viewport position in the history stack.*/
-  back(): void;
-};
-
-/**
- * Represents the state and functionality of a viewport within a spectrogram
- * display.
- */
-export type ViewportController = ViewportControls & {
-  /** The current position and dimensions of the viewport. */
-  viewport: SpectrogramWindow;
-  /** The maximum allowable boundaries for the viewport. */
-  bounds: SpectrogramWindow;
-};
 
 /**
  * A React hook that provides functionality for managing a viewport (window)

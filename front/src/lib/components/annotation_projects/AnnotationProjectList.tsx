@@ -1,4 +1,4 @@
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import AnnotationProjectComponent from "@/lib/components/annotation_projects/AnnotationProject";
 import { AddIcon, UploadIcon, WarningIcon } from "@/lib/components/icons";
 import ListLayout from "@/lib/components/layouts/List";

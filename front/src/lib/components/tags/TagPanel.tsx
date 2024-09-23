@@ -1,6 +1,6 @@
 import { type FC } from "react";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import { DeleteIcon, TagsIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
@@ -80,5 +80,5 @@ export default function TagPanel({
 }
 
 function NoTags() {
-  return <Empty padding="p-2">No tags</Empty>;
+  return <Empty outerClassName="p-2">No tags</Empty>;
 }

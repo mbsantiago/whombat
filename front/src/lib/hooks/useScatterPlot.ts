@@ -8,7 +8,7 @@ import { useCallback, useMemo } from "react";
 
 import useTheme from "@/lib/hooks/useTheme";
 
-import type { ScatterPlotData } from "@/lib/api/sound_event_annotations";
+import type { ScatterPlotData } from "@/lib/types";
 
 type GroupKey = string;
 
@@ -49,7 +49,7 @@ function newTrace(
 export interface UseScatterPlotProps {
   width?: number;
   height?: number;
-  annotations: ScatterPlotData[];
+  data: ScatterPlotData[];
   groupBy?: Grouper;
   xFeature?: string;
   yFeature?: string;
@@ -58,7 +58,7 @@ export interface UseScatterPlotProps {
 }
 
 export default function useScatterPlot({
-  annotations = [],
+  data: initialData = [],
   groupBy = defaultGrouper,
   xFeature = "duration",
   yFeature = "high_freq",
@@ -68,7 +68,7 @@ export default function useScatterPlot({
   const data = useMemo<Partial<PlotData>[]>(() => {
     const traces: { [key: string]: Partial<PlotData> } = {};
 
-    annotations.forEach((annotation) => {
+    initialData.forEach((annotation) => {
       const groupKey = groupBy(annotation);
 
       if (groupKey == null) return;
@@ -92,7 +92,7 @@ export default function useScatterPlot({
     });
 
     return Object.values(traces);
-  }, [annotations, groupBy, xFeature, yFeature, zFeature]);
+  }, [initialData, groupBy, xFeature, yFeature, zFeature]);
 
   const isDark = useTheme();
 

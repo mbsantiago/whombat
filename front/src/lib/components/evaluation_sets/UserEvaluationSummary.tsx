@@ -1,58 +1,37 @@
-import { useMemo } from "react";
+import * as icons from "@/lib/components/icons";
+import * as ui from "@/lib/components/ui";
 
-import useUserRuns from "@/app/hooks/api/useUserRuns";
+import type * as types from "@/lib/types";
 
-import Loading from "@/app/loading";
-
-import Empty from "@/lib/components/Empty";
-import { TrainIcon, UserIcon } from "@/lib/components/icons";
-import { H4 } from "@/lib/components/ui/Headings";
-import Link from "@/lib/components/ui/Link";
-
-import type { EvaluationSet } from "@/lib/types";
-
-export default function UserEvaluationSummary({
-  evaluationSet,
-  showMax = 5,
-}: {
-  evaluationSet: EvaluationSet;
-  showMax?: number;
+export default function UserEvaluationSummary(props: {
+  userRuns: types.UserRun[];
+  isLoading?: boolean;
+  onAddUserRun?: () => void;
+  onClickUserRun?: (userRun: types.UserRun) => void;
 }) {
-  const filter = useMemo(
-    () => ({
-      evaluation_set: evaluationSet,
-    }),
-    [evaluationSet],
-  );
-  const predictionRuns = useUserRuns({ filter, pageSize: showMax });
-
   return (
     <div>
       <div className="flex flex-row justify-between items-center">
-        <H4 className="whitespace-nowrap">
-          <UserIcon className="inline-block mr-2 w-5 h-5" />
+        <ui.H4 className="whitespace-nowrap">
+          <icons.UserIcon className="inline-block mr-2 w-5 h-5" />
           User Training Sessions
-        </H4>
-        <Link
-          href={`/evaluation/detail/user_runs/?evaluation_set_uuid=${evaluationSet.uuid}`}
-          mode="text"
-          variant="primary"
-        >
-          <TrainIcon className="inline-block mr-2 w-5 h-5" /> Start New
-        </Link>
+        </ui.H4>
+        <ui.Button mode="text" variant="primary" onClick={props.onAddUserRun}>
+          <icons.TrainIcon className="inline-block mr-2 w-5 h-5" /> Start New
+        </ui.Button>
       </div>
-      {predictionRuns.isLoading ? (
-        <Loading />
-      ) : predictionRuns.items.length > 0 ? (
+      {props.isLoading ? (
+        <ui.Loading />
+      ) : props.userRuns.length > 0 ? (
         <div className="flex flex-col gap-2">
-          {predictionRuns.items.map((userRun) => (
+          {props.userRuns.map((userRun) => (
             <div key={userRun.uuid}>
               {userRun.user.username} - {userRun.created_on.toLocaleString()}
             </div>
           ))}
         </div>
       ) : (
-        <Empty>No training sessions</Empty>
+        <ui.Empty>No training sessions</ui.Empty>
       )}
     </div>
   );

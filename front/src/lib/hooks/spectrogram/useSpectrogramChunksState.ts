@@ -37,6 +37,7 @@ export default function useSpectrogramChunksState(
   const setError = useCallback((index: number) => {
     setState((prev) =>
       produce(prev, (draft) => {
+        if (index < 0 || index >= draft.length) return;
         draft[index].isError = true;
         draft[index].isLoading = false;
         draft[index].isReady = false;
@@ -47,6 +48,7 @@ export default function useSpectrogramChunksState(
   const setReady = useCallback((index: number) => {
     setState((prev) =>
       produce(prev, (draft) => {
+        if (index < 0 || index >= draft.length) return;
         draft[index].isReady = true;
         draft[index].isLoading = false;
         draft[index].isError = false;

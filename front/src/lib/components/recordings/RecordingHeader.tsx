@@ -25,10 +25,12 @@ export function getExtension(path: string) {
 
 export default function RecordingHeader({
   recording,
+  disabled = false,
   onRecordingUpdate,
   onRecordingClick,
 }: {
   recording: Recording;
+  disabled?: boolean;
   onRecordingUpdate?: (data: Partial<Recording>) => void;
   onRecordingClick?: () => void;
 }) {
@@ -66,10 +68,19 @@ export default function RecordingHeader({
       <RecordingLocation
         latitude={recording.latitude}
         longitude={recording.longitude}
+        disabled={disabled}
         onChange={onRecordingUpdate}
       />
-      <RecordingTime time={recording.time} onChange={onRecordingUpdate} />
-      <RecordingDate date={recording.date} onChange={onRecordingUpdate} />
+      <RecordingTime
+        disabled={disabled}
+        time={recording.time}
+        onChange={onRecordingUpdate}
+      />
+      <RecordingDate
+        disabled={disabled}
+        date={recording.date}
+        onChange={onRecordingUpdate}
+      />
     </div>
   );
 }

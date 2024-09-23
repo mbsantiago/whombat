@@ -12,12 +12,12 @@ const IDLE_STYLE = {
   fillAlpha: 0.1,
 };
 
-export default function useAnnotationDraw({
+export default function useSoundEventDraw({
   viewport,
-  annotations,
+  soundEvents: annotations,
 }: {
   viewport: SpectrogramWindow;
-  annotations: SoundEventAnnotation[];
+  soundEvents: SoundEventAnnotation[];
 }) {
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D) => {

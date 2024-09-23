@@ -78,7 +78,7 @@ export default function RecordingTagBar({
             {...tagColorFn(tag)}
             onClick={() => onClickTag?.(tag)}
             onClose={() => onDeleteTag?.(tag)}
-            canClose={canClose}
+            canClose={canClose && !disabled}
           />
         ))}
         {tags?.length === 0 && (

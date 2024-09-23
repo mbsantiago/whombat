@@ -1,11 +1,10 @@
-import { useHotkeys } from "react-hotkeys-hook";
-
 import Player from "@/app/components/audio/Player";
-import Canvas from "@/app/components/spectrograms/Canvas";
+import RecordingCanvas from "@/app/components/spectrograms/RecordingCanvas";
 import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
 import ViewportBar from "@/app/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
 
+import useSpectrogramHotkeys from "@/app/hooks/hotkeys/useSpectrogramHotkeys";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
 
@@ -15,13 +14,14 @@ import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
 import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useRecordingViewport from "@/lib/hooks/window/useRecordingViewport";
 
-import type { Recording } from "@/lib/types";
+import type { Recording, SpectrogramProps } from "@/lib/types";
 
 export default function RecordingSpectrogram({
   recording,
+  ...props
 }: {
   recording: Recording;
-}) {
+} & SpectrogramProps) {
   const state = useSpectrogramState();
 
   const audioSettings = useAudioSettings();
@@ -39,51 +39,58 @@ export default function RecordingSpectrogram({
     audioSettings: audioSettings.settings,
   });
 
-  useHotkeys("space", audio.togglePlay, {
-    preventDefault: true,
-    description: "Toggle playing",
-  });
+  const {
+    withControls = true,
+    withViewportBar = true,
+    withHotKeys = true,
+  } = props;
 
-  useHotkeys("z", state.enableZooming, {
-    description: "Enable spectrogram zooming",
-  });
-
-  useHotkeys("x", state.enablePanning, {
-    description: "Enable spectrogram panning",
-  });
-
-  useHotkeys("b", viewport.back, {
-    description: "Go back to previous view",
+  useSpectrogramHotkeys({
+    spectrogramState: state,
+    audio,
+    viewport,
+    enabled: withHotKeys,
   });
 
   return (
     <RecordingSpectrogramBase
-      ViewportToolbar={<ViewportToolbar state={state} viewport={viewport} />}
+      ViewportToolbar={
+        withControls ? (
+          <ViewportToolbar state={state} viewport={viewport} />
+        ) : undefined
+      }
       Player={
-        <Player
-          audio={audio}
-          samplerate={recording.samplerate}
-          onChangeSpeed={(speed) =>
-            audioSettings.dispatch({ type: "setSpeed", speed })
-          }
-        />
+        withControls ? (
+          <Player
+            audio={audio}
+            samplerate={recording.samplerate}
+            onChangeSpeed={(speed) =>
+              audioSettings.dispatch({ type: "setSpeed", speed })
+            }
+          />
+        ) : undefined
       }
       SettingsMenu={
-        <SettingsMenu
-          samplerate={recording.samplerate}
-          audioSettings={audioSettings}
-          spectrogramSettings={spectrogramSettings}
-        />
+        withControls ? (
+          <SettingsMenu
+            samplerate={recording.samplerate}
+            audioSettings={audioSettings}
+            spectrogramSettings={spectrogramSettings}
+          />
+        ) : undefined
       }
-      ViewportBar={<ViewportBar viewport={viewport} />}
+      ViewportBar={
+        withViewportBar ? <ViewportBar viewport={viewport} /> : undefined
+      }
       Canvas={
-        <Canvas
+        <RecordingCanvas
           audioSettings={audioSettings.settings}
           spectrogramSettings={spectrogramSettings.settings}
           state={state}
           recording={recording}
           audio={audio}
           viewport={viewport}
+          height={props.height}
         />
       }
     />

@@ -1,11 +1,15 @@
 import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
 import { DEFAULT_OVERLAP, DEFAULT_WINDOW_SIZE } from "@/lib/constants";
 import type {
+  Geometry,
   Interval,
   Position,
+  Recording,
   SpectrogramParameters,
   SpectrogramWindow,
 } from "@/lib/types";
+
+import { computeGeometryBBox } from "./geometry";
 
 /** Size of the target initial spectrogram in pixels. */
 const TARGET_INITIAL_SIZE = 512 * 1024;
@@ -38,6 +42,40 @@ export function getInitialViewingWindow({
   return {
     time: { min: startTime, max: startTime + duration },
     freq: { min: 0, max: samplerate / 2 },
+  };
+}
+
+export function getGeometryViewingWindow({
+  geometry,
+  recording,
+  timeBuffer = 1,
+  freqBuffer = null,
+}: {
+  geometry: Geometry;
+  recording: Recording;
+  timeBuffer?: number;
+  freqBuffer?: number | null;
+}): SpectrogramWindow {
+  const [startTime, lowFreq, endTime, highFreq] = computeGeometryBBox(geometry);
+  const maxFreq = recording.samplerate / 2;
+
+  const freq =
+    freqBuffer == null
+      ? {
+          min: 0,
+          max: maxFreq,
+        }
+      : {
+          min: Math.max(lowFreq - freqBuffer),
+          max: Math.min(highFreq + freqBuffer, maxFreq),
+        };
+
+  return {
+    time: {
+      min: Math.max(startTime - timeBuffer, 0),
+      max: Math.min(endTime + timeBuffer, recording.duration),
+    },
+    freq,
   };
 }
 

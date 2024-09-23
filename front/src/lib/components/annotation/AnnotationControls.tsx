@@ -15,9 +15,7 @@ import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tooltip from "@/lib/components/ui/Tooltip";
 
-import type { AnnotationMode } from "@/lib/hooks/annotation/useAnnotationState";
-
-import type { GeometryType } from "@/lib/types";
+import type { AnnotationMode, GeometryType } from "@/lib/types";
 
 type Node = {
   id: string;

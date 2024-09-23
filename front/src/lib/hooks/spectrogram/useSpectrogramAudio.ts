@@ -3,9 +3,8 @@ import { useCallback, useMemo } from "react";
 import useRecordingAudio from "@/app/hooks/audio/useRecordingAudio";
 
 import { adjustToRecording } from "@/lib/hooks/settings/useAudioSettings";
-import type { ViewportController } from "@/lib/hooks/window/useViewport";
 
-import type { AudioSettings, Recording } from "@/lib/types";
+import type { AudioSettings, Recording, ViewportController } from "@/lib/types";
 
 /** A custom React hook to manage audio playback synchronized with a
  * spectrogram viewport.

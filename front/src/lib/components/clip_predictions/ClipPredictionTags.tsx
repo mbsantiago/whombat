@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import useStore from "@/app/store";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import { TagsIcon } from "@/lib/components/icons";
 import TagComponent from "@/lib/components/tags/Tag";
 import { H4 } from "@/lib/components/ui/Headings";
@@ -42,7 +42,7 @@ export default function ClipPredictionTags(props: {
           />
         ))}
         {tags.length === 0 && (
-          <Empty padding="p-2">No tags predicted for this clip</Empty>
+          <Empty outerClassName="p-2">No tags predicted for this clip</Empty>
         )}
       </div>
     </div>

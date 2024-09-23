@@ -12,19 +12,11 @@ import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
 
-import { ANNOTATION_KEY_SHORTCUTS } from "@/lib/hooks/annotation/useAnnotateClipKeyShortcuts";
-import { AUDIO_KEY_SHORTCUTS } from "@/lib/hooks/audio/useAudioKeyShortcuts";
-import { SPECTROGRAM_KEY_SHORTCUTS } from "@/lib/hooks/spectrogram/useSpectrogramKeyShortcuts";
-
 import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
-import type { AnnotationTask } from "@/lib/types";
+import type { AnnotationTask, Shortcut } from "@/lib/types";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 
-const SHORTCUTS = [
-  ...AUDIO_KEY_SHORTCUTS,
-  ...SPECTROGRAM_KEY_SHORTCUTS,
-  ...ANNOTATION_KEY_SHORTCUTS,
-];
+const SHORTCUTS: Shortcut[] = [];
 
 export default function AnnotationProgress({
   current,

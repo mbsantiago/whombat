@@ -14,7 +14,7 @@ import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPale
 import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
-import ClipAnnotationSpectrogram from "../clip_annotations/ClipAnnotationSpectrogram";
+import ClipAnnotationSpectrogram from "./AnnotationClip";
 import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";

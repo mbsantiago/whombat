@@ -1,3 +1,4 @@
+import { useQuery as useReactQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback, useMemo } from "react";
 
@@ -69,11 +70,11 @@ export default function useSoundEventAnnotation({
     };
   }, [query.data, withRecording]);
 
-  const recordingQuery = useQuery<Recording | null>({
+  const recordingQuery = useQuery<Recording>({
     secondaryName: "recording",
     queryFn: getRecordingFn,
     enabled: withRecording && query.data != null,
-  });
+  }) as ReturnType<typeof useReactQuery<Recording>>;
 
   const updateClipAnnotation = useCallback(
     (annotation: SoundEventAnnotation) => {

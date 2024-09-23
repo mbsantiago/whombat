@@ -1,4 +1,4 @@
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import EvaluationSetComponent from "@/lib/components/evaluation_sets/EvaluationSet";
 import { AddIcon, UploadIcon, WarningIcon } from "@/lib/components/icons";
 import Dialog from "@/lib/components/ui/Dialog";

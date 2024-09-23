@@ -3,7 +3,7 @@ import Select from "@/lib/components/inputs/Select";
 import { Input } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 
-const pageSizeOptions = [1, 5, 10, 25, 50, 100];
+const defaultPageSizeOptions = [1, 5, 10, 25, 50, 100];
 
 /**
  * Pagination component allows users to navigate through pages of items.
@@ -18,6 +18,7 @@ export default function Pagination({
   onPrevPage: prevPage,
   onSetPage: setPage,
   onSetPageSize: setPageSize,
+  pageSizeOptions = defaultPageSizeOptions,
 }: {
   /** The current page number. */
   page?: number;
@@ -37,6 +38,8 @@ export default function Pagination({
   onSetPage?: (page: number) => void;
   /** Callback function to set the page size. */
   onSetPageSize?: (pageSize: number) => void;
+  /** The page size options. */
+  pageSizeOptions?: number[];
 }) {
   return (
     <div className="flex flex-row space-x-2">
@@ -84,7 +87,11 @@ export default function Pagination({
       >
         <icons.LastIcon className="w-5 h-5 fill-transparent stroke-inherit" />
       </Button>
-      <SetPageSize pageSize={pageSize} onSetPageSize={setPageSize} />
+      <SetPageSize
+        pageSize={pageSize}
+        onSetPageSize={setPageSize}
+        pageSizeOptions={pageSizeOptions}
+      />
     </div>
   );
 }
@@ -92,9 +99,11 @@ export default function Pagination({
 function SetPageSize({
   pageSize = 10,
   onSetPageSize,
+  pageSizeOptions = defaultPageSizeOptions,
 }: {
   pageSize?: number;
   onSetPageSize?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
 }) {
   return (
     <Select

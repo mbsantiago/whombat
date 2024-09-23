@@ -6,7 +6,7 @@ import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
 import type { Clip, SpectrogramSettings } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
 
-export default function useRecordingViewport({
+export default function useClipViewport({
   clip,
   spectrogramSettings = DEFAULT_SPECTROGRAM_SETTINGS,
 }: {

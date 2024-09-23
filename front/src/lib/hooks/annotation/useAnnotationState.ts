@@ -1,22 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
-import type { GeometryType, SoundEventAnnotation } from "@/lib/types";
-
-import type { SpectrogramState } from "../spectrogram/useSpectrogramState";
-
-export type AnnotationMode = "select" | "draw" | "edit" | "delete" | "idle";
-
-export type AnnotationState = {
-  mode: AnnotationMode;
-  geometryType: GeometryType;
-  selectedAnnotation: SoundEventAnnotation | null;
-  setMode: (mode: AnnotationMode) => void;
-  setGeometryType: (geometryType: GeometryType) => void;
-  setSelectedAnnotation: (annotation: SoundEventAnnotation | null) => void;
-  enableDeleting: () => void;
-  enableDrawing: () => void;
-  enableSelecting: () => void;
-};
+import type {
+  AnnotationMode,
+  AnnotationState,
+  GeometryType,
+  SoundEventAnnotation,
+  SpectrogramState,
+} from "@/lib/types";
 
 export default function useAnnotationState({
   spectrogramState,

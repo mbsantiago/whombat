@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-import EmptyComponent from "@/lib/components/Empty";
+import EmptyComponent from "@/lib/components/ui/Empty";
 import StackedList from "@/lib/components/lists/StackedList";
 import Loading from "@/lib/components/ui/Loading";
 

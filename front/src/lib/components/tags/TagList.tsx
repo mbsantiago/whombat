@@ -1,6 +1,3 @@
-// TODO: Remove this import
-import useStore from "@/app/store";
-
 import Search from "@/lib/components/inputs/Search";
 import TagComponent from "@/lib/components/tags/Tag";
 import Button from "@/lib/components/ui/Button";
@@ -8,16 +5,19 @@ import Button from "@/lib/components/ui/Button";
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
 import type { Tag } from "@/lib/types";
+import { Color, getTagColor } from "@/lib/utils/tags";
 
 export default function TagList({
   tags,
   onClick,
   onRemove,
   showMax = 10,
+  tagColorFn = getTagColor,
 }: {
   tags: Tag[];
   onClick?: (tag: Tag) => void;
   onRemove?: (tag: Tag) => void;
+  tagColorFn?: (tag: Tag) => Color;
   showMax?: number;
 }) {
   const { items, setSearch, setLimit, hasMore } = useListWithSearch({
@@ -25,7 +25,6 @@ export default function TagList({
     fields: ["key", "value"],
     limit: showMax,
   });
-  const getTagColor = useStore((state) => state.getTagColor);
   return (
     <div className="flex flex-col gap-4">
       <Search onChange={(value) => setSearch(value as string)} />
@@ -38,7 +37,7 @@ export default function TagList({
           <TagComponent
             key={`${tag.key}-${tag.value}`}
             tag={tag}
-            {...getTagColor(tag)}
+            {...tagColorFn(tag)}
             onClick={onClick && (() => onClick(tag))}
             onClose={onRemove && (() => onRemove(tag))}
           />

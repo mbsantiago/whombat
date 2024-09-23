@@ -5,7 +5,7 @@ import useEvaluations from "@/app/hooks/api/useEvaluations";
 
 import api from "@/app/api";
 
-import Empty from "@/lib/components/Empty";
+import Empty from "@/lib/components/ui/Empty";
 import ClipEvaluationExplorer from "@/lib/components/clip_evaluations/ClipEvaluationExplorer";
 import EvaluationComponent from "@/lib/components/evaluations/Evaluation";
 import Button from "@/lib/components/ui/Button";

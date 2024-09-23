@@ -1,53 +1,41 @@
-import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
+import * as ui from "@/lib/components/ui";
 
-import Description from "@/lib/components/ui/Description";
-import { H3 } from "@/lib/components/ui/Headings";
-
-import type { EvaluationSet } from "@/lib/types";
+import type { EvaluationSet, EvaluationSetUpdate } from "@/lib/types";
 
 export default function EvaluationSetUpdateForm({
-  evaluationSet: initialData,
+  evaluationSet,
   onChange,
 }: {
   evaluationSet: EvaluationSet;
-  onChange?: (data: EvaluationSet) => void;
+  onChange?: (data: EvaluationSetUpdate) => void;
 }) {
-  const {
-    data: evaluationSet,
-    update: { mutate: updateEvaluationSet },
-  } = useEvaluationSet({
-    uuid: initialData.uuid,
-    evaluationSet: initialData,
-    onUpdate: onChange,
-  });
-
   return (
-    <>
+    <ui.Card>
       <div className="px-4 sm:px-0">
-        <H3 className="text-center">Details</H3>
+        <ui.H3 className="text-center">Details</ui.H3>
       </div>
       <div className="mt-4 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <Description
+            <ui.Description
               name="Name"
               value={evaluationSet?.name ?? ""}
-              onChange={(name) => updateEvaluationSet({ name })}
+              onChange={(name) => onChange?.({ name })}
               type="text"
               editable
             />
           </div>
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <Description
+            <ui.Description
               name="Description"
               value={evaluationSet?.description ?? ""}
-              onChange={(description) => updateEvaluationSet({ description })}
+              onChange={(description) => onChange?.({ description })}
               type="textarea"
               editable
             />
           </div>
           <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <Description
+            <ui.Description
               name="Created On"
               value={evaluationSet?.created_on}
               type="date"
@@ -55,6 +43,6 @@ export default function EvaluationSetUpdateForm({
           </div>
         </dl>
       </div>
-    </>
+    </ui.Card>
   );
 }

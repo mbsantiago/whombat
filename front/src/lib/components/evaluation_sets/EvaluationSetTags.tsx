@@ -1,41 +1,27 @@
-import { useMemo } from "react";
+import type { ComponentProps } from "react";
 
-import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
-
-import { TagsIcon } from "@/lib/components/icons";
+import * as icons from "@/lib/components/icons";
 import TagList from "@/lib/components/tags/TagList";
-import TagSearchBar from "@/lib/components/tags/TagSearchBar";
-import { H2, H3 } from "@/lib/components/ui/Headings";
-import Info from "@/lib/components/ui/Info";
+import * as ui from "@/lib/components/ui";
 
-import type { EvaluationSet } from "@/lib/types";
+import type * as types from "@/lib/types";
 
 export default function EvaluationSetTags({
-  evaluationSet: initialData,
-  onAddTag,
-  onRemoveTag,
+  tags,
+  onDeleteTag,
+  TagSearchBar,
+  ...props
 }: {
-  evaluationSet: EvaluationSet;
-  onAddTag?: (data: EvaluationSet) => void;
-  onRemoveTag?: (data: EvaluationSet) => void;
-}) {
-  const project = useEvaluationSet({
-    uuid: initialData.uuid,
-    evaluationSet: initialData,
-    onAddTag,
-    onRemoveTag,
-  });
-
-  const tags = useMemo(() => {
-    return project.data?.tags ?? [];
-  }, [project.data?.tags]);
-
+  tags: types.Tag[];
+  onDeleteTag?: (tag: types.Tag) => void;
+  TagSearchBar?: JSX.Element;
+} & Omit<ComponentProps<typeof TagList>, "onClick" | "tags">) {
   return (
     <div className="flex flex-col gap-4 p-4">
-      <H2>
-        <TagsIcon className="inline-block mr-2 w-8 h-8 align-middle" />
+      <ui.H2>
+        <icons.TagsIcon className="inline-block mr-2 w-8 h-8 align-middle" />
         Evaluation Tags
-      </H2>
+      </ui.H2>
       <p className="text-stone-500">
         When assessing models and annotators using this evaluation set, emphasis
         will be placed solely on{" "}
@@ -43,29 +29,24 @@ export default function EvaluationSetTags({
         registered tags, ensuring alignment with the goals of this evaluation
         set to achieve precise and meaningful assessments.
       </p>
-      <Info className="mt-4">
+      <ui.Info className="mt-4">
         It is recommended to add all tags before starting evaluation. Otherwise,
         adding tags later will make any existing evaluations inconsistent with
         the new tags.
-      </Info>
+      </ui.Info>
       <div className="grid grid-cols-2 gap-y-4 gap-x-14">
-        <div className="md:col-span-1 col-span-2">
-          <H3>Add Tags</H3>
+        <div className="col-span-2 md:col-span-1">
+          <ui.H3>Add Tags</ui.H3>
           <small className="text-stone-500">
             Use the search bar below to look for tags you want to focus
             evaluation on. Select as many tags as you want.
           </small>
-          <div className="py-2 mb-3">
-            <TagSearchBar
-              autoFocus={false}
-              onSelectTag={project.addTag.mutate}
-            />
-          </div>
+          <div className="py-2 mb-3">{TagSearchBar}</div>
         </div>
-        <div className="flex flex-col col-span-2 md:col-span-1 gap-2">
-          <H3>Selected tags</H3>
+        <div className="flex flex-col col-span-2 gap-2 md:col-span-1">
+          <ui.H3>Selected tags</ui.H3>
           <p>
-            <span className="text-blue-500 font-bold">
+            <span className="font-bold text-blue-500">
               {tags.length.toLocaleString()}
             </span>{" "}
             tags to use for evaluation. Each of these tags will be considered a
@@ -76,7 +57,7 @@ export default function EvaluationSetTags({
             remove it.
           </small>
           <div>
-            <TagList tags={tags} onClick={project.removeTag.mutate} />
+            <TagList tags={tags} onClick={onDeleteTag} {...props} />
           </div>
         </div>
       </div>
