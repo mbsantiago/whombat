@@ -12,8 +12,11 @@ import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
 
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
-import type { AnnotationTask, Shortcut } from "@/lib/types";
+import type {
+  AnnotationTask,
+  AnnotationTaskFilter,
+  Shortcut,
+} from "@/lib/types";
 import { computeAnnotationTasksProgress } from "@/lib/utils/annotation_tasks";
 
 const SHORTCUTS: Shortcut[] = [];

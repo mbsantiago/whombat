@@ -24,8 +24,8 @@ export function registerNotesAPI(
   }
 
   async function getManyNotes(
-    query: types.GetManyQuery & types.NoteFilter,
-  ): Promise<types.Paginated<types.Note>> {
+    query: types.GetMany & types.NoteFilter,
+  ): Promise<types.Page<types.Note>> {
     let params = GetMany(schemas.NoteFilterSchema).parse(query);
     let response = await instance.get(endpoints.list, {
       params: {
@@ -63,8 +63,8 @@ export function registerNotesAPI(
   }
 
   async function getRecordingNotes(
-    query: types.GetManyQuery & types.RecordingNoteFilter,
-  ): Promise<types.Paginated<types.RecordingNote>> {
+    query: types.GetMany & types.RecordingNoteFilter,
+  ): Promise<types.Page<types.RecordingNote>> {
     const params = GetMany(schemas.RecordingNoteFilterSchema).parse(query);
     const response = await instance.get(endpoints.getRecordingNotes, {
       params: {
@@ -84,8 +84,8 @@ export function registerNotesAPI(
   }
 
   async function getClipAnnotationNotes(
-    query: types.GetManyQuery & types.ClipAnnotationNoteFilter,
-  ): Promise<types.Paginated<types.ClipAnnotationNote>> {
+    query: types.GetMany & types.ClipAnnotationNoteFilter,
+  ): Promise<types.Page<types.ClipAnnotationNote>> {
     const params = GetMany(schemas.ClipAnnotationNoteFilterSchema).parse(query);
     const response = await instance.get(endpoints.getClipAnnotationNotes, {
       params: {
@@ -105,8 +105,8 @@ export function registerNotesAPI(
   }
 
   async function getSoundEventAnnotationNotes(
-    query: types.GetManyQuery & types.SoundEventAnnotationNoteFilter,
-  ): Promise<types.Paginated<types.SoundEventAnnotationNote>> {
+    query: types.GetMany & types.SoundEventAnnotationNoteFilter,
+  ): Promise<types.Page<types.SoundEventAnnotationNote>> {
     const params = GetMany(schemas.SoundEventAnnotationNoteFilterSchema).parse(
       query,
     );

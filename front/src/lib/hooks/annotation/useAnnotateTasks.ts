@@ -12,14 +12,12 @@ import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
 
 import api from "@/app/api";
 
-import {
-  AnnotationTaskFilter,
-  type AnnotationTaskPage,
-} from "@/lib/api/annotation_tasks";
 import type {
   AnnotationStatus,
   AnnotationTask,
+  AnnotationTaskFilter,
   ClipAnnotation,
+  Page,
 } from "@/lib/types";
 
 type AnnotationState = {
@@ -176,7 +174,7 @@ export default function useAnnotateTasks({
   const updateTaskData = useCallback(
     (task: AnnotationTask) => {
       client.setQueryData(["annotation_task", task.uuid], task);
-      client.setQueryData(queryKey, (old: AnnotationTaskPage) => {
+      client.setQueryData(queryKey, (old: Page<AnnotationTask>) => {
         if (old == null) return old;
         return {
           ...old,

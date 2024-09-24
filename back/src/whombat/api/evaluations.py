@@ -1,7 +1,7 @@
 """API functions to interact with evaluations."""
 
 from pathlib import Path
-from typing import Sequence
+from typing import Callable, Mapping, Sequence
 from uuid import UUID
 
 from soundevent import data
@@ -24,6 +24,7 @@ from whombat.api.io.aoef.evaluations import import_evaluation
 from whombat.api.model_runs import model_runs
 from whombat.filters.base import Filter
 from whombat.filters.clip_evaluations import EvaluationFilter
+from whombat.schemas.evaluation_sets import PredictionTypes
 
 
 class EvaluationAPI(
@@ -343,11 +344,11 @@ class EvaluationAPI(
         return schemas.Evaluation.model_validate(db_eval)
 
 
-EVALUATION_METHODS = {
-    "sound_event_detection": evaluate.sound_event_detection,
-    "clip_classification": evaluate.clip_classification,
-    "clip_multilabel_classification": evaluate.clip_multilabel_classification,
-    "sound_event_classification": evaluate.sound_event_classification,
+EVALUATION_METHODS: Mapping[PredictionTypes, Callable] = {
+    PredictionTypes.sound_event_detection: evaluate.sound_event_detection,
+    PredictionTypes.clip_classification: evaluate.clip_classification,
+    PredictionTypes.clip_tagging: evaluate.clip_multilabel_classification,
+    PredictionTypes.sound_event_tagging: evaluate.sound_event_classification,
 }
 
 
@@ -355,7 +356,7 @@ def evaluate_predictions(
     clip_predictions: Sequence[data.ClipPrediction],
     clip_annotations: Sequence[data.ClipAnnotation],
     tags: Sequence[data.Tag],
-    task: str,
+    task: PredictionTypes,
 ) -> data.Evaluation:
     """Evaluate predictions."""
     eval_fn = EVALUATION_METHODS.get(task)

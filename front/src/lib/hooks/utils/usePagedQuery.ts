@@ -5,31 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 
-import { type GetManyQuery, type Paginated } from "@/lib/types";
-
-/**
- * Represents a pagination state with various utility functions.
- */
-export type Pagination = {
-  /** The current page number. */
-  page: number;
-  /** The total number of pages. */
-  numPages: number;
-  /** The number of items per page. */
-  pageSize: number;
-  /** Sets the current page number. */
-  setPage: (page: number) => void;
-  /** Sets the number of items per page. */
-  setPageSize: (pageSize: number) => void;
-  /** Checks if there is a next page. */
-  hasNextPage: boolean;
-  /** Checks if there is a previous page. */
-  hasPrevPage: boolean;
-  /** Moves to the next page. */
-  nextPage: () => void;
-  /** Moves to the previous page. */
-  prevPage: () => void;
-};
+import type { GetMany, Page, PaginationController } from "@/lib/types";
 
 /**
  * Represents a paged list with items, total count, and pagination information.
@@ -40,9 +16,9 @@ export type PagedList<T> = {
   /** The total count of items. */
   total: number;
   /** The pagination information. */
-  pagination: Pagination;
+  pagination: PaginationController;
   /** The result of the query. */
-  query: UseQueryResult<Paginated<T>, Error>;
+  query: UseQueryResult<Page<T>, Error>;
   /** The key used for the query. */
   queryKey: any[];
 };
@@ -66,7 +42,7 @@ export default function usePagedQuery<T, S extends Object>({
   enabled = true,
 }: {
   name: string;
-  queryFn: (query: GetManyQuery) => Promise<Paginated<T>>;
+  queryFn: (query: GetMany) => Promise<Page<T>>;
   pageSize: number;
   filter: S;
   enabled?: boolean;
@@ -75,7 +51,7 @@ export default function usePagedQuery<T, S extends Object>({
   const [size, setPageSize] = useState(pageSize);
   const queryKey = [name, page, size, JSON.stringify(filter)];
 
-  const query = useQuery<Paginated<T>, Error>({
+  const query = useQuery<Page<T>, Error>({
     queryKey,
     queryFn: () => queryFn({ limit: size, offset: page * size, ...filter }),
     enabled,
@@ -94,7 +70,7 @@ export default function usePagedQuery<T, S extends Object>({
     });
   }, [numPages]);
 
-  const pagination: Pagination = useMemo(
+  const pagination: PaginationController = useMemo(
     () => ({
       page,
       numPages,

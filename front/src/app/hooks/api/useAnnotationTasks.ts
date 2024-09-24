@@ -3,7 +3,7 @@ import api from "@/app/api";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 
-import { type AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
+import type { AnnotationTaskFilter } from "@/lib/types";
 
 const emptyFilter: AnnotationTaskFilter = {};
 const _fixed: (keyof AnnotationTaskFilter)[] = [];

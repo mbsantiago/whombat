@@ -146,6 +146,7 @@ export const FixedDataset: Story = {
         uuid: "1",
         audio_dir: "",
         name: "dataset",
+        recording_count: 0,
         description: "test dataset",
         created_on: new Date(),
       },

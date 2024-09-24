@@ -5,10 +5,12 @@ import { useMemo } from "react";
 
 import useStore from "@/app/store";
 
-import { getTagClassNames } from "@/lib/components/tags/Tag";
-
 import type { Interval } from "@/lib/types";
-import type { TagElement, TagGroup } from "@/lib/utils/tags";
+import {
+  type TagElement,
+  type TagGroup,
+  getTagClassNames,
+} from "@/lib/utils/tags";
 
 export default function SpectrogramPredictedTags({
   tags,
@@ -63,7 +65,7 @@ export function SpectrogramPredictedTag({
   }, [score]);
 
   return (
-    <span className="flex flex-row gap-1 -my-2 items-center px-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
       <span className={classNames(DOT_CLASS, tagClassNames.background)}></span>
       <span
         className={classNames(DOT_CLASS, confidenceClassNames.background)}
@@ -106,7 +108,7 @@ export function TagGroupComponent({
         top: y,
       }}
     >
-      <div className="-ms-2 relative flex flex-col right-0 hover:gap-2">
+      <div className="flex relative right-0 flex-col hover:gap-2 -ms-2">
         {group.tags
           .filter(
             ({ score = 1 }) =>

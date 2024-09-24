@@ -35,8 +35,8 @@ export function registerSoundEventAnnotationsAPI(
   }
 
   async function getMany(
-    query: types.GetManyQuery & types.SoundEventAnnotationFilter,
-  ): Promise<types.Paginated<types.SoundEventAnnotation>> {
+    query: types.GetMany & types.SoundEventAnnotationFilter,
+  ): Promise<types.Page<types.SoundEventAnnotation>> {
     const params = GetMany(schemas.SoundEventAnnotationFilterSchema).parse(
       query,
     );
@@ -57,8 +57,8 @@ export function registerSoundEventAnnotationsAPI(
   }
 
   async function getScatterPlotData(
-    query: types.GetManyQuery & types.SoundEventAnnotationFilter,
-  ): Promise<types.Paginated<types.ScatterPlotData>> {
+    query: types.GetMany & types.SoundEventAnnotationFilter,
+  ): Promise<types.Page<types.ScatterPlotData>> {
     const params = GetMany(schemas.SoundEventAnnotationFilterSchema).parse(
       query,
     );

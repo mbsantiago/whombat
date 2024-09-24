@@ -1,21 +1,9 @@
-import Input from "./Input";
-import InputGroup from "./InputGroup";
-import Location from "./Location";
-import RangeSlider from "./RangeSlider";
-import Select from "./Select";
-import Slider from "./Slider";
-import Submit from "./Submit";
-import TextArea from "./TextArea";
-import Toggle from "./Toggle";
-
-export {
-  InputGroup,
-  Submit,
-  TextArea,
-  Input,
-  Slider,
-  RangeSlider,
-  Toggle,
-  Select,
-  Location,
-};
+export { default as Input } from "./Input";
+export { default as InputGroup } from "./InputGroup";
+export { default as Location } from "./Location";
+export { default as RangeSlider } from "./RangeSlider";
+export { default as Select } from "./Select";
+export { default as Slider } from "./Slider";
+export { default as Submit } from "./Submit";
+export { default as TextArea } from "./TextArea";
+export { default as Toggle } from "./Toggle";

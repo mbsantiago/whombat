@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select
 
 from whombat import models
 from whombat.filters import base
@@ -89,8 +89,11 @@ class EvaluationSetFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        print("Filtering!!!", self.eq)
+
+        subquery = (
+            select(models.ModelRun.id)
+            .join(
                 models.EvaluationSetModelRun,
                 models.EvaluationSetModelRun.model_run_id
                 == models.ModelRun.id,
@@ -100,8 +103,10 @@ class EvaluationSetFilter(base.Filter):
                 models.EvaluationSet.id
                 == models.EvaluationSetModelRun.evaluation_set_id,
             )
-            .where(models.EvaluationSet.uuid == self.eq)
+            .filter(models.EvaluationSet.uuid == self.eq)
         )
+
+        return query.filter(models.ModelRun.id.in_(subquery))
 
 
 ModelRunFilter = base.combine(

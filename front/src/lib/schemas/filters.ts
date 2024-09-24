@@ -3,21 +3,24 @@ import { z } from "zod";
 import { AnnotationProjectSchema } from "./annotation_projects";
 import { AnnotationTaskSchema } from "./annotation_tasks";
 import { ClipAnnotationSchema } from "./clip_annotations";
+import { ClipEvaluationSchema } from "./clip_evaluations";
 import { ClipPredictionSchema } from "./clip_predictions";
 import { ClipSchema } from "./clips";
 import { TimeStringSchema } from "./common";
 import { DatasetSchema } from "./datasets";
 import { EvaluationSetSchema } from "./evaluation_sets";
 import { EvaluationSchema } from "./evaluations";
+import { ModelRunSchema } from "./model_runs";
 import { RecordingSchema } from "./recordings";
 import { SoundEventAnnotationSchema } from "./sound_event_annotations";
 import { SoundEventPredictionSchema } from "./sound_event_predictions";
 import { SoundEventSchema } from "./sound_events";
 import { TagSchema } from "./tags";
+import { UserRunSchema } from "./user_runs";
 import { UserSchema } from "./users";
 
 export const FeatureFilterSchema = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   gt: z.number().optional(),
   lt: z.number().optional(),
 });
@@ -171,4 +174,100 @@ export const RecordingFilterSchema = z.object({
   has_issues: z.boolean().optional(),
   date: DateFilterSchema.optional(),
   time: TimeFilterSchema.optional(),
+});
+
+export const ModelRunFilterSchema = z.object({
+  search: z.string().optional(),
+  name: StringFilterSchema.optional(),
+  version: z.string().optional(),
+  evaluated: z.boolean().optional(),
+  score: NumberFilterSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+  has_evaluation: z.boolean().optional(),
+});
+
+export const ClipEvaluationFilterSchema = z.object({
+  clip_annotation: ClipAnnotationSchema.optional(),
+  clip_prediction: ClipPredictionSchema.optional(),
+  score: NumberFilterSchema.optional(),
+  evaluation: EvaluationSchema.optional(),
+  metric: FeatureFilterSchema.optional(),
+  prediction_tag: PredictedTagFilterSchema.optional(),
+  annotation_tag: TagSchema.optional(),
+});
+
+export const AnnotationTaskFilterSchema = z.object({
+  dataset: DatasetSchema.optional(),
+  annotation_project: AnnotationProjectSchema.optional(),
+  recording_tag: TagSchema.optional(),
+  sound_event_annotation_tag: TagSchema.optional(),
+  pending: z.boolean().optional(),
+  assigned: z.boolean().optional(),
+  verified: z.boolean().optional(),
+  rejected: z.boolean().optional(),
+  completed: z.boolean().optional(),
+  assigned_to: UserSchema.optional(),
+  search_recordings: z.string().optional(),
+});
+
+export const ClipPredictionFilterSchema = z.object({
+  clip: ClipSchema.optional(),
+  recording: RecordingSchema.optional(),
+  tag: PredictedTagFilterSchema.optional(),
+  sound_event_tag: PredictedTagFilterSchema.optional(),
+  model_run: ModelRunSchema.optional(),
+  user_run: UserRunSchema.optional(),
+});
+
+export const ClipFilterSchema = z.object({
+  recording: RecordingSchema.optional(),
+  dataset: DatasetSchema.optional(),
+  start_time: NumberFilterSchema.optional(),
+  end_time: NumberFilterSchema.optional(),
+  feature: FeatureFilterSchema.optional(),
+});
+
+export const EvaluationFilterSchema = z.object({
+  score: NumberFilterSchema.optional(),
+  task: StringFilterSchema.optional(),
+  model_run: ModelRunSchema.optional(),
+  user_run: UserRunSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+});
+
+export const SoundEventEvaluationFilterSchema = z.object({
+  clip_evaluation: ClipEvaluationSchema.optional(),
+  score: NumberFilterSchema.optional(),
+  metric: FeatureFilterSchema.optional(),
+  target: SoundEventAnnotationSchema.optional(),
+  source: SoundEventPredictionSchema.optional(),
+  has_source: z.boolean().optional(),
+  has_target: z.boolean().optional(),
+  target_tag: TagSchema.optional(),
+  source_tag: PredictedTagFilterSchema.optional(),
+});
+
+export const SoundEventPredictionFilterSchema = z.object({
+  recording: RecordingSchema.optional(),
+  sound_event: SoundEventSchema.optional(),
+  clip_prediction: ClipPredictionSchema.optional(),
+  tag: PredictedTagFilterSchema.optional(),
+  model_run: ModelRunSchema.optional(),
+  user_run: UserRunSchema.optional(),
+  clip: ClipSchema.optional(),
+});
+
+export const SoundEventFilterSchema = z.object({
+  geometry_type: z.string().optional(),
+  created_on: DateFilterSchema.optional(),
+  recording: RecordingSchema.optional(),
+  feature: FeatureFilterSchema.optional(),
+});
+
+export const UserRunFilterSchema = z.object({
+  user: UserSchema.optional(),
+  evaluated: z.boolean().optional(),
+  score: NumberFilterSchema.optional(),
+  evaluation_set: EvaluationSetSchema.optional(),
+  has_evaluation: z.boolean().optional(),
 });

@@ -2,22 +2,40 @@ import { CloseIcon, DeleteIcon, WarningIcon } from "@/lib/components/icons";
 import Alert from "@/lib/components/ui/Alert";
 import Button from "@/lib/components/ui/Button";
 
-export default function DeleteModelRun({
+import type { ModelRun } from "@/lib/types";
+
+export default function ModelRunActions({
+  modelRun,
+  onDeleteModelRun,
+}: {
+  modelRun: ModelRun;
+  onDeleteModelRun?: () => void;
+}) {
+  return (
+    <div className="flex flex-row gap-2 justify-center">
+      <DeleteModelRun onDelete={onDeleteModelRun} modelRun={modelRun} />
+    </div>
+  );
+}
+
+export function DeleteModelRun({
+  modelRun,
   onDelete,
 }: {
+  modelRun: ModelRun;
   onDelete?: () => void;
 }) {
   return (
     <Alert
       title={
         <>
-          <WarningIcon className="inline-block w-8 h-8 mr-2 text-red-500" />
+          <WarningIcon className="inline-block mr-2 w-8 h-8 text-red-500" />
           Are you sure you want to delete this model run?
         </>
       }
       button={
         <>
-          <DeleteIcon className="inline-block w-5 h-5 mr-2" />
+          <DeleteIcon className="inline-block mr-2 w-5 h-5" />
           Delete
         </>
       }
@@ -32,16 +50,19 @@ export default function DeleteModelRun({
                 This action cannot be undone. This will permanently delete the
                 model run with all its predictions and evaluations.
               </p>
+              <h2 className="p-4 font-extrabold text-center">
+                {modelRun.name}
+              </h2>
               <p>Do you want to proceed?</p>
             </div>
-            <div className="flex flex-row justify-end gap-2 mt-4">
+            <div className="flex flex-row gap-2 justify-end mt-4">
               <Button
                 tabIndex={0}
                 mode="text"
                 variant="danger"
                 onClick={onDelete}
               >
-                <DeleteIcon className="h-5 w-5 inline-block mr-2" />
+                <DeleteIcon className="inline-block mr-2 w-5 h-5" />
                 Delete
               </Button>
               <Button
@@ -50,7 +71,7 @@ export default function DeleteModelRun({
                 variant="primary"
                 onClick={close}
               >
-                <CloseIcon className="h-5 w-5 inline-block mr-2" />
+                <CloseIcon className="inline-block mr-2 w-5 h-5" />
                 Cancel
               </Button>
             </div>

@@ -1,50 +1,13 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  EvaluationSchema,
-  EvaluationSetSchema,
-  ModelRunSchema,
-  NumberFilterSchema,
-  StringFilterSchema,
-} from "@/lib/schemas";
-import type { Evaluation, EvaluationSet, ModelRun } from "@/lib/types";
-
-export const ModelRunFilterSchema = z.object({
-  search: z.string().optional(),
-  name: StringFilterSchema.optional(),
-  version: z.string().optional(),
-  evaluated: z.boolean().optional(),
-  score: NumberFilterSchema.optional(),
-  evaluation_set: EvaluationSetSchema.optional(),
-  has_evaluation: z.boolean().optional(),
-});
-
-export type ModelRunFilter = z.input<typeof ModelRunFilterSchema>;
-
-export const GetModelRunQuerySchema = z.intersection(
-  GetManySchema,
-  ModelRunFilterSchema,
-);
-
-export type GetModelRunQuery = z.input<typeof GetModelRunQuerySchema>;
-
-export const ModelRunPageSchema = Page(ModelRunSchema);
-
-export type ModelRunPage = z.infer<typeof ModelRunPageSchema>;
-
-export const ModelRunUpdateSchema = z.object({
-  name: z.string().optional(),
-  version: z.string().optional(),
-  description: z.string().optional(),
-});
-
-export type ModelRunUpdate = z.input<typeof ModelRunUpdateSchema>;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/model_runs/",
   get: "/api/v1/model_runs/detail/",
+  getEvaluation: "/api/v1/model_runs/detail/evaluation/",
   update: "/api/v1/model_runs/detail/",
   delete: "/api/v1/model_runs/detail/",
   import: "/api/v1/model_runs/import/",
@@ -56,9 +19,9 @@ export function registerModelRunAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getManyModelRuns(
-    query: GetModelRunQuery,
-  ): Promise<ModelRunPage> {
-    const params = GetModelRunQuerySchema.parse(query);
+    query: types.GetMany & types.ModelRunFilter,
+  ): Promise<types.Page<types.ModelRun>> {
+    const params = GetMany(schemas.ModelRunFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -75,43 +38,67 @@ export function registerModelRunAPI(
         has_evaluation__eq: params.has_evaluation,
       },
     });
-    return ModelRunPageSchema.parse(response.data);
+    return Page(schemas.ModelRunSchema).parse(response.data);
   }
 
-  async function getModelRun(uuid: string): Promise<ModelRun> {
+  async function getModelRun(uuid: string): Promise<types.ModelRun> {
     const response = await instance.get(endpoints.get, {
       params: { model_run_uuid: uuid },
     });
-    return ModelRunSchema.parse(response.data);
+    return schemas.ModelRunSchema.parse(response.data);
+  }
+
+  async function getEvaluation(
+    modelRun: types.ModelRun,
+    evaluationSet: types.EvaluationSet,
+  ): Promise<types.Evaluation> {
+    const response = await instance.get(endpoints.getEvaluation, {
+      params: {
+        model_run_uuid: modelRun.uuid,
+        evaluation_set_uuid: evaluationSet.uuid,
+      },
+    });
+    return schemas.EvaluationSchema.parse(response.data);
   }
 
   async function updateModelRun(
-    modelRun: ModelRun,
-    data: ModelRunUpdate,
-  ): Promise<ModelRun> {
-    const body = ModelRunUpdateSchema.parse(data);
+    modelRun: types.ModelRun,
+    data: types.ModelRunUpdate,
+  ): Promise<types.ModelRun> {
+    const body = schemas.ModelRunUpdateSchema.parse(data);
     const response = await instance.patch(endpoints.update, body, {
       params: { model_run_uuid: modelRun.uuid },
     });
-    return ModelRunSchema.parse(response.data);
+    return schemas.ModelRunSchema.parse(response.data);
   }
 
-  async function deleteModelRun(modelRun: ModelRun): Promise<ModelRun> {
+  async function deleteModelRun(
+    modelRun: types.ModelRun,
+  ): Promise<types.ModelRun> {
     const response = await instance.delete(endpoints.delete, {
       params: { model_run_uuid: modelRun.uuid },
     });
-    return ModelRunSchema.parse(response.data);
+    return schemas.ModelRunSchema.parse(response.data);
   }
 
-  async function importModelRun(data: FormData): Promise<ModelRun> {
-    const { data: res } = await instance.post(endpoints.import, data);
-    return ModelRunSchema.parse(res);
+  async function importModelRun(
+    data: types.ModelRunImport,
+  ): Promise<types.ModelRun> {
+    const formData = new FormData();
+    const file = data.model_run[0];
+    formData.append("model_run", file);
+    formData.append("evaluation_set_uuid", data.evaluation_set_uuid);
+    console.log({
+      evaluation_set_uui: data.evaluation_set_uuid,
+    });
+    const { data: res } = await instance.post(endpoints.import, formData);
+    return schemas.ModelRunSchema.parse(res);
   }
 
   async function evaluateModelRun(
-    modelRun: ModelRun,
-    evaluationSet: EvaluationSet,
-  ): Promise<Evaluation> {
+    modelRun: types.ModelRun,
+    evaluationSet: types.EvaluationSet,
+  ): Promise<types.Evaluation> {
     const { data: res } = await instance.post(
       endpoints.evaluate,
       {},
@@ -122,12 +109,13 @@ export function registerModelRunAPI(
         },
       },
     );
-    return EvaluationSchema.parse(res);
+    return schemas.EvaluationSchema.parse(res);
   }
 
   return {
     getMany: getManyModelRuns,
     get: getModelRun,
+    getEvaluation,
     update: updateModelRun,
     evaluate: evaluateModelRun,
     delete: deleteModelRun,

@@ -36,5 +36,5 @@ export default function AnnotationsScatterPlot(props: {
 }
 
 function groupBySpecies(data: ScatterPlotData) {
-  return data.tags?.find((tag) => tag.key === "Species")?.value || "unknown";
+  return data.tags?.find((tag) => tag.key === "Scientific Taxon Name")?.value || "unknown";
 }

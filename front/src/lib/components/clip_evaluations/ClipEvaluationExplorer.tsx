@@ -1,145 +1,58 @@
-import Empty from "@/lib/components/ui/Empty";
-import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
-import FilterBar from "@/lib/components/filters/FilterBar";
-import FilterMenu from "@/lib/components/filters/FilterMenu";
-import clipEvaluationFilterDef from "@/lib/components/filters/clip_evaluations";
-import {
-  FilterIcon,
-  LoopIcon,
-  NextIcon,
-  PreviousIcon,
-} from "@/lib/components/icons";
-import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import Slider from "@/lib/components/inputs/Slider";
 import Toggle from "@/lib/components/inputs/Toggle";
-import Button from "@/lib/components/ui/Button";
-import Loading from "@/lib/components/ui/Loading";
-
-import useExploreClipEvaluations from "@/lib/hooks/evaluation/useExploreClipEvaluations";
-import type { Filter } from "@/lib/hooks/utils/useFilter";
-
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
-import type { ClipEvaluation, Interval } from "@/lib/types";
+import * as ui from "@/lib/components/ui";
 
 export default function ClipEvaluationExplorer(props: {
-  filter?: ClipEvaluationFilter;
-  clipEvaluation?: ClipEvaluation;
+  isLoading?: boolean;
+  isEmpty?: boolean;
+  FilterControls?: JSX.Element;
+  NavigationControls?: JSX.Element;
+  FilterBar?: JSX.Element;
+  ClipEvaluation?: JSX.Element;
 }) {
-  const nav = useExploreClipEvaluations({
-    filter: props.filter,
-    clipEvaluation: props.clipEvaluation,
-  });
-
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <div className="flex flex-row gap-4 items-center">
-        <h4 className="text-lg font-bold text-stone-500">Clip Explorer</h4>
-        <p className="text-sm text-stone-500">
-          Explore each of the evaluated clip.
-        </p>
+    <ui.Card className="flex flex-col gap-2 w-full">
+      <ui.H4 className="text-lg font-bold text-stone-500">Clip Explorer</ui.H4>
+      <p className="text-sm text-stone-500">
+        Explore each of the evaluated clips.
+      </p>
+      <div className="flex flex-col">
+        <div className="flex flex-row gap-2 justify-between items-center">
+          {props.NavigationControls}
+          {props.FilterControls}
+        </div>
+        <div className="flex flex-row gap-2 items-center">
+          {props.FilterBar}
+        </div>
       </div>
-      <ExplorerControls
-        total={nav.total}
-        hasNext={nav.hasNext}
-        hasPrev={nav.hasPrev}
-        filter={nav.filter}
-        random={nav.random}
-        next={nav.next}
-        prev={nav.prev}
-        index={nav.index}
-        threshold={nav.threshold}
-        onThresholdChange={nav.setThreshold}
-        showAnnotations={nav.showAnnotations}
-        showPredictions={nav.showPredictions}
-        onToggleAnnotations={nav.toggleAnnotations}
-        onTogglePredictions={nav.togglePredictions}
-      />
-      {nav.isLoading ? (
-        <Loading />
-      ) : nav.clipEvaluation == null ? (
-        <Empty>
+      {props.isLoading ? (
+        <ui.Loading />
+      ) : props.isEmpty ? (
+        <ui.Empty>
           <p>No clip predictions found</p>
-        </Empty>
+        </ui.Empty>
       ) : (
-        <ClipEvaluationDisplay
-          clipEvaluation={nav.clipEvaluation}
-          threshold={nav.threshold}
-          showAnnotations={nav.showAnnotations}
-          showPredictions={nav.showPredictions}
-        />
+        props.ClipEvaluation
       )}
-    </div>
+    </ui.Card>
   );
 }
 
-function ExplorerControls(props: {
-  index?: number | null;
-  threshold?: Interval;
-  total?: number;
-  hasNext?: boolean;
-  hasPrev?: boolean;
-  filter: Filter<ClipEvaluationFilter>;
+export function FilterControls(props: {
+  threshold?: number;
   showAnnotations?: boolean;
   showPredictions?: boolean;
-  random: () => void;
-  next?: () => void;
-  prev?: () => void;
-  onThresholdChange?: (threshold: Interval) => void;
+  onThresholdChange?: (threshold: number) => void;
   onToggleAnnotations?: () => void;
   onTogglePredictions?: () => void;
+  FilterMenu?: JSX.Element;
 }) {
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-row gap-2 justify-between items-center">
-        <NavigationState index={props.index} total={props.total} />
-        <FilterControls {...props} />
-        <NavigationControls {...props} />
-      </div>
-      <div className="flex flex-row gap-2 items-center">
-        <FilterBar
-          filter={props.filter.filter}
-          onClearFilterField={props.filter.clear}
-          fixedFilterFields={props.filter.fixed}
-          filterDef={clipEvaluationFilterDef}
-          showIfEmpty
-        />
-      </div>
-    </div>
-  );
-}
-
-function NavigationState(props: { index?: number | null; total?: number }) {
-  return (
-    <div className="inline-flex gap-2">
-      <p className="text-sm font-bold text-blue-500">#{props.index ?? 0}</p>
-      <p className="text-sm text-stone-500">{props.total ?? 0} clips</p>
-    </div>
-  );
-}
-
-function FilterControls(props: {
-  filter: Filter<ClipEvaluationFilter>;
-  threshold?: Interval;
-  showAnnotations?: boolean;
-  showPredictions?: boolean;
-  onThresholdChange?: (threshold: Interval) => void;
-  onToggleAnnotations?: () => void;
-  onTogglePredictions?: () => void;
-}) {
-  return (
-    <div className="inline-flex gap-2 items-center">
-      <FilterMenu
-        onSetFilterField={props.filter.set}
-        filterDef={clipEvaluationFilterDef}
-        mode="text"
-        button={
-          <>
-            Add filters <FilterIcon className="inline-block w-4 h-4 stroke-2" />
-          </>
-        }
-      />
-      <div className="flex flex-row gap-2 items-center">
+    <div className="inline-flex gap-4 items-center">
+      {props.FilterMenu}
+      <div className="inline-flex gap-1 items-center">
         <span className="inline-block text-sm text-stone-500">
-          Annotations:
+          Show Annotations:
         </span>
         <Toggle
           label="annotations"
@@ -147,9 +60,9 @@ function FilterControls(props: {
           onChange={props.onToggleAnnotations}
         />
       </div>
-      <div className="flex flex-row gap-2 items-center">
+      <div className="inline-flex gap-1 items-center">
         <span className="inline-block text-sm text-stone-500">
-          Predictions:
+          Show Predictions:
         </span>
         <Toggle
           label="predictions"
@@ -157,49 +70,20 @@ function FilterControls(props: {
           onChange={props.onTogglePredictions}
         />
       </div>
-      <div className="flex flex-row gap-2 items-center">
+      <div className="inline-flex gap-1 items-center">
         <span className="inline-block text-sm text-stone-500">Threshold:</span>
-        <div className="w-40">
-          <RangeSlider
+        <div className="inline-flex items-center w-40">
+          <Slider
             label="threshold"
             minValue={0}
             maxValue={1}
             step={0.05}
             formatter={(val) => val.toFixed(2)}
-            value={[props.threshold?.min ?? 0, props.threshold?.max ?? 1]}
-            onChange={(val) => {
-              const [minVal, maxVal] = val as [number, number];
-              props.onThresholdChange?.({ min: minVal, max: maxVal });
-            }}
+            value={props.threshold}
+            onChange={(val) => props.onThresholdChange?.(val as number)}
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function NavigationControls(props: {
-  hasNext?: boolean;
-  hasPrev?: boolean;
-  random: () => void;
-  next?: () => void;
-  prev?: () => void;
-}) {
-  return (
-    <div className="inline-flex gap-2">
-      <Button mode="text" onClick={props.prev} disabled={!props.hasPrev}>
-        <PreviousIcon className="w-6 h-6" />
-      </Button>
-      <Button
-        mode="text"
-        onClick={props.random}
-        disabled={!props.hasPrev && !props.hasNext}
-      >
-        <LoopIcon className="w-6 h-6" />
-      </Button>
-      <Button mode="text" onClick={props.next} disabled={!props.hasNext}>
-        <NextIcon className="w-6 h-6" />
-      </Button>
     </div>
   );
 }

@@ -11,3 +11,16 @@ export const ClipSchema = z.object({
   features: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
+
+export const ClipCreateSchema = z
+  .object({
+    start_time: z.number(),
+    end_time: z.number(),
+  })
+  .refine((clip) => clip.start_time < clip.end_time, {
+    message: "Start time must be less than end time",
+  });
+
+export const ClipCreateManySchema = z.array(
+  z.tuple([z.string().uuid(), ClipCreateSchema]),
+);

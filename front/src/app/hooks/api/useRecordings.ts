@@ -7,7 +7,7 @@ import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 
 import type {
-  Paginated,
+  Page,
   Recording,
   RecordingFilter,
   RecordingUpdate,
@@ -48,7 +48,7 @@ export default function useRecordings({
         index: number;
       },
     ) => {
-      client.setQueryData(queryKey, (old: Paginated<Recording>) => {
+      client.setQueryData(queryKey, (old: Page<Recording>) => {
         return {
           ...old,
           items: old.items.map((recording, other) => {
@@ -70,7 +70,7 @@ export default function useRecordings({
         index: number;
       },
     ) => {
-      client.setQueryData(queryKey, (old: Paginated<Recording>) => ({
+      client.setQueryData(queryKey, (old: Page<Recording>) => ({
         ...old,
         items: old.items.filter((_, other) => {
           return other !== index;

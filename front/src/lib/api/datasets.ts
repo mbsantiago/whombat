@@ -26,8 +26,8 @@ export function registerDatasetAPI({
   endpoints?: typeof DEFAULT_ENDPOINTS;
 }) {
   async function getMany(
-    query: types.GetManyQuery & types.DatasetFilter,
-  ): Promise<types.Paginated<types.Dataset>> {
+    query: types.GetMany & types.DatasetFilter,
+  ): Promise<types.Page<types.Dataset>> {
     const params = GetMany(schemas.DatasetFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
     return Page(schemas.DatasetSchema).parse(data);

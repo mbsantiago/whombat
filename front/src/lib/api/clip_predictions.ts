@@ -1,47 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  ClipPredictionSchema,
-  ClipSchema,
-  ModelRunSchema,
-  PredictedTagFilterSchema,
-  PredictionTagSchema,
-  RecordingSchema,
-  UserRunSchema,
-} from "@/lib/schemas";
-import type { ClipPrediction, Tag } from "@/lib/types";
-
-export const ClipPredictionCreateSchema = z.object({
-  tags: z.array(PredictionTagSchema).optional(),
-});
-
-export type ClipPredictionCreate = z.input<typeof ClipPredictionCreateSchema>;
-
-export const ClipPredictionFilterSchema = z.object({
-  clip: ClipSchema.optional(),
-  recording: RecordingSchema.optional(),
-  tag: PredictedTagFilterSchema.optional(),
-  sound_event_tag: PredictedTagFilterSchema.optional(),
-  model_run: ModelRunSchema.optional(),
-  user_run: UserRunSchema.optional(),
-});
-
-export type ClipPredictionFilter = z.input<typeof ClipPredictionFilterSchema>;
-
-export const GetClipPredictionsQuerySchema = z.intersection(
-  GetManySchema,
-  ClipPredictionFilterSchema,
-);
-
-export type GetClipPredictionsQuery = z.input<
-  typeof GetClipPredictionsQuerySchema
->;
-
-export const ClipPredictionPageSchema = Page(ClipPredictionSchema);
-
-export type ClipPredictionPage = z.output<typeof ClipPredictionPageSchema>;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   create: "/api/v1/clip_predictions/",
@@ -56,20 +17,20 @@ export function registerClipPredictionsAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function create(
-    clipPrediction: ClipPrediction,
-    data: ClipPredictionCreate,
-  ): Promise<ClipPrediction> {
-    const body = ClipPredictionCreateSchema.parse(data);
+    clipPrediction: types.ClipPrediction,
+    data: types.ClipPredictionCreate,
+  ): Promise<types.ClipPrediction> {
+    const body = schemas.ClipPredictionCreateSchema.parse(data);
     const response = await instance.post(endpoints.create, body, {
       params: { clip_prediction_uuid: clipPrediction.uuid },
     });
-    return ClipPredictionSchema.parse(response.data);
+    return schemas.ClipPredictionSchema.parse(response.data);
   }
 
   async function getMany(
-    query: GetClipPredictionsQuery,
-  ): Promise<ClipPredictionPage> {
-    const params = GetClipPredictionsQuerySchema.parse(query);
+    query: types.GetMany & types.ClipPredictionFilter,
+  ): Promise<types.Page<types.ClipPrediction>> {
+    const params = GetMany(schemas.ClipPredictionFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -89,23 +50,23 @@ export function registerClipPredictionsAPI(
         user_run__eq: params.user_run?.uuid,
       },
     });
-    return ClipPredictionPageSchema.parse(response.data);
+    return Page(schemas.ClipPredictionSchema).parse(response.data);
   }
 
   async function deleteClipPrediction(
-    clipPrediction: ClipPrediction,
-  ): Promise<ClipPrediction> {
+    clipPrediction: types.ClipPrediction,
+  ): Promise<types.ClipPrediction> {
     const { data } = await instance.delete(endpoints.delete, {
       params: { clip_prediction_uuid: clipPrediction.uuid },
     });
-    return ClipPredictionSchema.parse(data);
+    return schemas.ClipPredictionSchema.parse(data);
   }
 
   async function addTag(
-    clipPrediction: ClipPrediction,
-    tag: Tag,
+    clipPrediction: types.ClipPrediction,
+    tag: types.Tag,
     score: number,
-  ): Promise<ClipPrediction> {
+  ): Promise<types.ClipPrediction> {
     const { data } = await instance.post(
       endpoints.addTag,
       {},
@@ -118,13 +79,13 @@ export function registerClipPredictionsAPI(
         },
       },
     );
-    return ClipPredictionSchema.parse(data);
+    return schemas.ClipPredictionSchema.parse(data);
   }
 
   async function removeTag(
-    clipPrediction: ClipPrediction,
-    tag: Tag,
-  ): Promise<ClipPrediction> {
+    clipPrediction: types.ClipPrediction,
+    tag: types.Tag,
+  ): Promise<types.ClipPrediction> {
     const { data } = await instance.delete(endpoints.removeTag, {
       params: {
         clip_prediction_uuid: clipPrediction.uuid,
@@ -132,7 +93,7 @@ export function registerClipPredictionsAPI(
         value: tag.value,
       },
     });
-    return ClipPredictionSchema.parse(data);
+    return schemas.ClipPredictionSchema.parse(data);
   }
 
   return {

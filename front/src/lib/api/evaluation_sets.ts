@@ -27,8 +27,8 @@ export function registerEvaluationSetAPI(
   }: { baseUrl?: string; endpoints?: typeof DEFAULT_ENDPOINTS } = {},
 ) {
   async function getManyEvaluationSets(
-    query: types.GetManyQuery & types.EvaluationSetFilter,
-  ): Promise<types.Paginated<types.EvaluationSet>> {
+    query: types.GetMany & types.EvaluationSetFilter,
+  ): Promise<types.Page<types.EvaluationSet>> {
     const params = GetMany(schemas.EvaluationSetFilterSchema).parse(query);
     const res = await instance.get(endpoints.getMany, { params });
     return Page(schemas.EvaluationSetSchema).parse(res.data);

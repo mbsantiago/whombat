@@ -246,7 +246,6 @@ class EvaluationSetAPI(
             evaluation_set_id=obj.id,
             model_run_id=model_run.id,
         )
-
         return obj
 
     async def remove_model_run(

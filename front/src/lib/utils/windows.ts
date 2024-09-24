@@ -1,11 +1,14 @@
-import { DEFAULT_SPECTROGRAM_PARAMETERS } from "@/lib/api/spectrograms";
-import { DEFAULT_OVERLAP, DEFAULT_WINDOW_SIZE } from "@/lib/constants";
+import {
+  DEFAULT_OVERLAP,
+  DEFAULT_SPECTROGRAM_SETTINGS,
+  DEFAULT_WINDOW_SIZE,
+} from "@/lib/constants";
 import type {
   Geometry,
   Interval,
   Position,
   Recording,
-  SpectrogramParameters,
+  SpectrogramSettings,
   SpectrogramWindow,
 } from "@/lib/types";
 
@@ -83,12 +86,12 @@ export function getCenteredViewingWindow({
   startTime,
   endTime,
   samplerate,
-  parameters = DEFAULT_SPECTROGRAM_PARAMETERS,
+  settings = DEFAULT_SPECTROGRAM_SETTINGS,
 }: {
   startTime: number;
   endTime: number;
   samplerate: number;
-  parameters?: SpectrogramParameters;
+  settings?: SpectrogramSettings;
 }): SpectrogramWindow {
   const center = (startTime + endTime) / 2;
   const duration = getInitialDuration({
@@ -97,8 +100,8 @@ export function getCenteredViewingWindow({
       max: endTime,
     },
     samplerate,
-    windowSize: parameters.window_size,
-    overlap: parameters.overlap,
+    windowSize: settings.window_size,
+    overlap: settings.overlap,
   });
   return {
     time: { min: center - duration / 2, max: center + duration / 2 },

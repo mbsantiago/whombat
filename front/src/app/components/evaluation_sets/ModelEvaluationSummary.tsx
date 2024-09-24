@@ -5,7 +5,7 @@ import useModelRuns from "@/app/hooks/api/useModelRuns";
 
 import ModelEvaluationSummaryBase from "@/lib/components/evaluation_sets/ModelEvaluationSummary";
 
-import type { EvaluationSet } from "@/lib/types";
+import type { EvaluationSet, ModelRun } from "@/lib/types";
 
 export default function ModelEvaluationSummary({
   evaluationSet,
@@ -35,11 +35,21 @@ export default function ModelEvaluationSummary({
     );
   }, [router, evaluationSet.uuid]);
 
+  const handleClickModelRun = useCallback(
+    (modelRun: ModelRun) => {
+      router.push(
+        `/evaluation/detail/model_run/?evaluation_set_uuid=${evaluationSet.uuid}&model_run_uuid=${modelRun.uuid}`,
+      );
+    },
+    [evaluationSet, router],
+  );
+
   return (
     <ModelEvaluationSummaryBase
       isLoading={isLoading}
       modelRuns={items}
       onAddModelRuns={handleOnAddModelRuns}
+      onClickModelRun={handleClickModelRun}
       {...props}
     />
   );

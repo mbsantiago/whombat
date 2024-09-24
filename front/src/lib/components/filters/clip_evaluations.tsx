@@ -5,7 +5,7 @@ import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { FloatFilter, TagFilter } from "@/lib/components/filters/Filters";
 import { ScoreIcon, TagIcon } from "@/lib/components/icons";
 
-import type { ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
+import type { ClipEvaluationFilter } from "@/lib/types";
 
 const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
   {
@@ -25,7 +25,7 @@ const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
     ),
     description: "Select clips with a specific predicted tag.",
     icon: (
-      <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TagIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -43,7 +43,7 @@ const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
     ),
     description: "Select clips with a specific true tag.",
     icon: (
-      <TagIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <TagIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
   {
@@ -59,7 +59,7 @@ const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [
       <NumberFilterBadge field="Score" value={value} onRemove={clear} />
     ),
     icon: (
-      <ScoreIcon className="h-5 w-5 inline-block text-stone-500 mr-1 align-middle" />
+      <ScoreIcon className="inline-block mr-1 w-5 h-5 align-middle text-stone-500" />
     ),
   },
 ];

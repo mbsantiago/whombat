@@ -1,65 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  ClipPredictionSchema,
-  ClipSchema,
-  GeometrySchema,
-  ModelRunSchema,
-  PredictedTagFilterSchema,
-  RecordingSchema,
-  SoundEventPredictionSchema,
-  SoundEventSchema,
-  UserRunSchema,
-} from "@/lib/schemas";
-import type { ClipPrediction, SoundEventPrediction, Tag } from "@/lib/types";
-
-export const SoundEventPredictionCreateSchema = z.object({
-  geometry: GeometrySchema,
-  score: z.number(),
-});
-
-export type SoundEventPredictionCreate = z.input<
-  typeof SoundEventPredictionCreateSchema
->;
-
-export const SoundEventPredictionUpdateSchema = z.object({
-  score: z.number(),
-});
-
-export type SoundEventPredictionUpdate = z.input<
-  typeof SoundEventPredictionUpdateSchema
->;
-
-export const SoundEventPredictionFilterSchema = z.object({
-  recording: RecordingSchema.optional(),
-  sound_event: SoundEventSchema.optional(),
-  clip_prediction: ClipPredictionSchema.optional(),
-  tag: PredictedTagFilterSchema.optional(),
-  model_run: ModelRunSchema.optional(),
-  user_run: UserRunSchema.optional(),
-  clip: ClipSchema.optional(),
-});
-
-export type SoundEventPredictionFilter = z.input<
-  typeof SoundEventPredictionFilterSchema
->;
-
-export const GetSoundEventPredictionsQuerySchema = z.intersection(
-  GetManySchema,
-  SoundEventPredictionFilterSchema,
-);
-
-export type GetSoundEventPredictionsQuery = z.input<
-  typeof GetSoundEventPredictionsQuerySchema
->;
-
-export const SoundEventPredictionPageSchema = Page(SoundEventPredictionSchema);
-
-export type SoundEventPredictionPage = z.output<
-  typeof SoundEventPredictionPageSchema
->;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   create: "/api/v1/sound_event_predictions/",
@@ -74,20 +17,22 @@ export function registerSoundEventPredictionsAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function create(
-    clipPrediction: ClipPrediction,
-    data: SoundEventPredictionCreate,
-  ): Promise<SoundEventPrediction> {
-    const body = SoundEventPredictionCreateSchema.parse(data);
+    clipPrediction: types.ClipPrediction,
+    data: types.SoundEventPredictionCreate,
+  ): Promise<types.SoundEventPrediction> {
+    const body = schemas.SoundEventPredictionCreateSchema.parse(data);
     const response = await instance.post(endpoints.create, body, {
       params: { clip_prediction_uuid: clipPrediction.uuid },
     });
-    return SoundEventPredictionSchema.parse(response.data);
+    return schemas.SoundEventPredictionSchema.parse(response.data);
   }
 
   async function getMany(
-    query: GetSoundEventPredictionsQuery,
-  ): Promise<SoundEventPredictionPage> {
-    const params = GetSoundEventPredictionsQuerySchema.parse(query);
+    query: types.GetMany & types.SoundEventPredictionFilter,
+  ): Promise<types.Page<types.SoundEventPrediction>> {
+    const params = GetMany(schemas.SoundEventPredictionFilterSchema).parse(
+      query,
+    );
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -105,23 +50,23 @@ export function registerSoundEventPredictionsAPI(
         clip__eq: params.clip?.uuid,
       },
     });
-    return SoundEventPredictionPageSchema.parse(response.data);
+    return Page(schemas.SoundEventPredictionSchema).parse(response.data);
   }
 
   async function deleteSoundEventPrediction(
-    soundEventPrediction: SoundEventPrediction,
-  ): Promise<SoundEventPrediction> {
+    soundEventPrediction: types.SoundEventPrediction,
+  ): Promise<types.SoundEventPrediction> {
     const { data } = await instance.delete(endpoints.delete, {
       params: { sound_event_prediction_uuid: soundEventPrediction.uuid },
     });
-    return SoundEventPredictionSchema.parse(data);
+    return schemas.SoundEventPredictionSchema.parse(data);
   }
 
   async function addTag(
-    soundEventPrediction: SoundEventPrediction,
-    tag: Tag,
+    soundEventPrediction: types.SoundEventPrediction,
+    tag: types.Tag,
     score: number,
-  ): Promise<SoundEventPrediction> {
+  ): Promise<types.SoundEventPrediction> {
     const { data } = await instance.post(
       endpoints.addTag,
       {},
@@ -134,13 +79,13 @@ export function registerSoundEventPredictionsAPI(
         },
       },
     );
-    return SoundEventPredictionSchema.parse(data);
+    return schemas.SoundEventPredictionSchema.parse(data);
   }
 
   async function removeTag(
-    soundEventPrediction: SoundEventPrediction,
-    tag: Tag,
-  ): Promise<SoundEventPrediction> {
+    soundEventPrediction: types.SoundEventPrediction,
+    tag: types.Tag,
+  ): Promise<types.SoundEventPrediction> {
     const { data } = await instance.delete(endpoints.removeTag, {
       params: {
         sound_event_prediction_uuid: soundEventPrediction.uuid,
@@ -148,7 +93,7 @@ export function registerSoundEventPredictionsAPI(
         value: tag.value,
       },
     });
-    return SoundEventPredictionSchema.parse(data);
+    return schemas.SoundEventPredictionSchema.parse(data);
   }
 
   return {

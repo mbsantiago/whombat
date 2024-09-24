@@ -11,8 +11,7 @@ import Table from "@/lib/components/tables/Table";
 
 import useAnnotationTaskTable from "@/lib/hooks/useAnnotationTaskTable";
 
-import type { AnnotationTaskFilter } from "@/lib/api/annotation_tasks";
-import type { AnnotationTask } from "@/lib/types";
+import type { AnnotationTask, AnnotationTaskFilter } from "@/lib/types";
 
 export default function AnnotationTaskTable({
   filter,

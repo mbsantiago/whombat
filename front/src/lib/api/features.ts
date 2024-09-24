@@ -1,24 +1,9 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "./common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
-export const FeatureFilterSchema = z.object({
-  search: z.string().optional(),
-});
-
-export type FeatureFilter = z.infer<typeof FeatureFilterSchema>;
-
-export const FeaturePageSchema = Page(z.string());
-
-export type FeaturePage = z.infer<typeof FeaturePageSchema>;
-
-export const GetFeatureQuerySchema = z.intersection(
-  FeatureFilterSchema,
-  GetManySchema,
-);
-
-export type GetFeatureQuery = z.infer<typeof GetFeatureQuerySchema>;
+import { GetMany, Page } from "./common";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/features/",
@@ -31,10 +16,12 @@ export function registerFeatureAPI({
   instance: AxiosInstance;
   endpoints?: typeof DEFAULT_ENDPOINTS;
 }) {
-  async function getMany(query: GetFeatureQuery): Promise<FeaturePage> {
-    const params = GetFeatureQuerySchema.parse(query);
+  async function getMany(
+    query: types.GetMany & types.FeatureFilter,
+  ): Promise<types.Page<types.Feature>> {
+    const params = GetMany(schemas.FeatureFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
-    return FeaturePageSchema.parse(data);
+    return Page(schemas.FeatureSchema).parse(data);
   }
 
   return {

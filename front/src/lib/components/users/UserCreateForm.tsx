@@ -9,8 +9,8 @@ import api from "@/app/api";
 import { Input, InputGroup } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 
-import { type UserCreate, UserCreateSchema } from "@/lib/api/user";
-import type { User } from "@/lib/types";
+import { UserCreateSchema } from "@/lib/schemas";
+import type { User, UserCreate } from "@/lib/types";
 
 export default function UserCreateForm(props: {
   onCreate?: (user: Promise<User>) => void;

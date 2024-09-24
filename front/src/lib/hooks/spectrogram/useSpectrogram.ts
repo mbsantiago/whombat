@@ -45,7 +45,6 @@ export default function useSpectrogram({
 
   const audio = useSpectrogramAudio({
     recording,
-    bounds,
     viewport,
     audioSettings,
   });

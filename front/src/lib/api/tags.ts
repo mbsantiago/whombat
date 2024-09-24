@@ -17,8 +17,8 @@ export function registerTagAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getTags(
-    query: types.GetMany<types.TagFilter>,
-  ): Promise<types.Paginated<types.Tag>> {
+    query: types.GetMany & types.TagFilter,
+  ): Promise<types.Page<types.Tag>> {
     const params = GetMany(schemas.TagFilterSchema).parse(query);
     const response = await instance.get(endpoints.get, {
       params: {
@@ -43,8 +43,8 @@ export function registerTagAPI(
   }
 
   async function getRecordingTags(
-    query: types.GetMany<types.RecordingTagFilter>,
-  ): Promise<types.Paginated<types.RecordingTag>> {
+    query: types.GetMany & types.RecordingTagFilter,
+  ): Promise<types.Page<types.RecordingTag>> {
     const params = GetMany(schemas.RecordingTagFilterSchema).parse(query);
     const response = await instance.get(endpoints.getRecordingTags, {
       params: {
@@ -62,8 +62,8 @@ export function registerTagAPI(
   }
 
   async function getClipAnnotationTags(
-    query: types.GetManyQuery & types.ClipAnnotationTagFilter,
-  ): Promise<types.Paginated<types.ClipAnnotationTag>> {
+    query: types.GetMany & types.ClipAnnotationTagFilter,
+  ): Promise<types.Page<types.ClipAnnotationTag>> {
     const params = GetMany(schemas.ClipAnnotationTagFilterSchema).parse(query);
     const response = await instance.get(endpoints.getClipAnnotationTags, {
       params: {
@@ -78,8 +78,8 @@ export function registerTagAPI(
   }
 
   async function getSoundEventTags(
-    query: types.GetManyQuery & types.SoundEventAnnotationTagFilter,
-  ): Promise<types.Paginated<types.SoundEventAnnotationTag>> {
+    query: types.GetMany & types.SoundEventAnnotationTagFilter,
+  ): Promise<types.Page<types.SoundEventAnnotationTag>> {
     const params = GetMany(schemas.SoundEventAnnotationTagFilterSchema).parse(
       query,
     );

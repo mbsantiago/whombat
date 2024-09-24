@@ -32,8 +32,8 @@ export function registerClipAnnotationsAPI(
   }
 
   async function getMany(
-    query: types.GetMany<types.ClipAnnotationFilter>,
-  ): Promise<types.Paginated<types.ClipAnnotation>> {
+    query: types.GetMany & types.ClipAnnotationFilter,
+  ): Promise<types.Page<types.ClipAnnotation>> {
     const params = GetMany(schemas.ClipAnnotationFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {

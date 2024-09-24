@@ -10,3 +10,11 @@ export const SoundEventSchema = z.object({
   features: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
+
+export const SoundEventCreateSchema = z.object({
+  geometry: GeometrySchema,
+});
+
+export const SoundEventUpdateSchema = z.object({
+  geometry: GeometrySchema,
+});

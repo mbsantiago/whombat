@@ -1,33 +1,8 @@
-import {
-  DEFAULT_CMAP,
-  DEFAULT_FILTER_ORDER,
-  DEFAULT_OVERLAP,
-  DEFAULT_SCALE,
-  DEFAULT_WINDOW,
-  DEFAULT_WINDOW_SIZE,
-  MIN_DB,
-} from "@/lib/constants";
-import { IntervalSchema, SpectrogramParametersSchema } from "@/lib/schemas";
-import type { Interval, SpectrogramParameters } from "@/lib/types";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   get: "/api/v1/spectrograms/",
-};
-
-export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
-  resample: false,
-  scale: DEFAULT_SCALE,
-  pcen: false,
-  window_size: DEFAULT_WINDOW_SIZE,
-  overlap: DEFAULT_OVERLAP,
-  cmap: DEFAULT_CMAP,
-  window: DEFAULT_WINDOW,
-  filter_order: DEFAULT_FILTER_ORDER,
-  normalize: false,
-  clamp: true,
-  min_dB: MIN_DB,
-  max_dB: 0,
-  channel: 0,
 };
 
 export function registerSpectrogramAPI({
@@ -43,10 +18,10 @@ export function registerSpectrogramAPI({
     ...rest
   }: {
     uuid: string;
-    interval: Interval;
-  } & SpectrogramParameters) {
-    const parsed_params = SpectrogramParametersSchema.parse(rest);
-    const parsed_segment = IntervalSchema.parse(interval);
+    interval: types.Interval;
+  } & types.SpectrogramParameters) {
+    const parsed_params = schemas.SpectrogramParametersSchema.parse(rest);
+    const parsed_segment = schemas.IntervalSchema.parse(interval);
 
     const query = {
       recording_uuid: uuid,

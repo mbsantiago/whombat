@@ -1,47 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  DateFilterSchema,
-  FeatureFilterSchema,
-  GeometrySchema,
-  RecordingSchema,
-  SoundEventSchema,
-} from "@/lib/schemas";
-import type { Feature, Recording, SoundEvent } from "@/lib/types";
-
-export const SoundEventCreateSchema = z.object({
-  geometry: GeometrySchema,
-});
-
-export type SoundEventCreate = z.input<typeof SoundEventCreateSchema>;
-
-export const SoundEventUpdateSchema = z.object({
-  geometry: GeometrySchema,
-});
-
-export type SoundEventUpdate = z.input<typeof SoundEventUpdateSchema>;
-
-export const SoundEventPageSchema = Page(SoundEventSchema);
-
-export type SoundEventPage = z.infer<typeof SoundEventPageSchema>;
-
-export const SoundEventFilterSchema = z.object({
-  geometry_type: z.string().optional(),
-  created_on: DateFilterSchema.optional(),
-  recording: RecordingSchema.optional(),
-  feature: FeatureFilterSchema.optional(),
-});
-
-export type SoundEventFilter = z.input<typeof SoundEventFilterSchema>;
-
-export const GetSoundEventQuerySchema = z.intersection(
-  GetManySchema,
-  SoundEventFilterSchema,
-);
-
-export type SoundEventQuery = z.input<typeof GetSoundEventQuerySchema>;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/sound_events/",
@@ -59,15 +20,17 @@ export function registerSoundEventAPI(
   axios: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function get(uuid: string): Promise<SoundEvent> {
+  async function get(uuid: string): Promise<types.SoundEvent> {
     const { data } = await axios.get(endpoints.get, {
       params: { sound_event_uuid: uuid },
     });
-    return SoundEventSchema.parse(data);
+    return schemas.SoundEventSchema.parse(data);
   }
 
-  async function getMany(query: SoundEventQuery): Promise<SoundEventPage> {
-    const params = GetSoundEventQuerySchema.parse(query);
+  async function getMany(
+    query: types.GetMany & types.SoundEventFilter,
+  ): Promise<types.Page<types.SoundEvent>> {
+    const params = GetMany(schemas.SoundEventFilterSchema).parse(query);
     const { data } = await axios.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -83,48 +46,55 @@ export function registerSoundEventAPI(
         feature__lt: params.feature?.lt,
       },
     });
-    return SoundEventPageSchema.parse(data);
+    return Page(schemas.SoundEventSchema).parse(data);
   }
 
-  async function getRecording(soundEvent: SoundEvent): Promise<Recording> {
+  async function getRecording(
+    soundEvent: types.SoundEvent,
+  ): Promise<types.Recording> {
     const { data } = await axios.get(endpoints.getRecording, {
       params: { sound_event_uuid: soundEvent.uuid },
     });
-    return RecordingSchema.parse(data);
+    return schemas.RecordingSchema.parse(data);
   }
 
   async function createSoundEvent(
-    recording: Recording,
-    data: SoundEventCreate,
-  ): Promise<SoundEvent> {
-    const body = SoundEventCreateSchema.parse(data);
+    recording: types.Recording,
+    data: types.SoundEventCreate,
+  ): Promise<types.SoundEvent> {
+    const body = schemas.SoundEventCreateSchema.parse(data);
     const { data: responseData } = await axios.post(endpoints.create, body, {
       params: { recording_uuid: recording.uuid },
     });
-    return SoundEventSchema.parse(responseData);
+    return schemas.SoundEventSchema.parse(responseData);
   }
 
   async function updateSoundEvent(
-    soundEvent: SoundEvent,
-    data: SoundEventUpdate,
-  ): Promise<SoundEvent> {
-    const body = SoundEventUpdateSchema.parse(data);
+    soundEvent: types.SoundEvent,
+    data: types.SoundEventUpdate,
+  ): Promise<types.SoundEvent> {
+    const body = schemas.SoundEventUpdateSchema.parse(data);
     const { data: responseData } = await axios.patch(endpoints.update, body, {
       params: { sound_event_uuid: soundEvent.uuid },
     });
-    return SoundEventSchema.parse(responseData);
+    return schemas.SoundEventSchema.parse(responseData);
   }
 
-  async function deleteSoundEvent(soundEvent: SoundEvent): Promise<SoundEvent> {
+  async function deleteSoundEvent(
+    soundEvent: types.SoundEvent,
+  ): Promise<types.SoundEvent> {
     const { data } = await axios.delete(endpoints.delete, {
       params: {
         sound_event_uuid: soundEvent.uuid,
       },
     });
-    return SoundEventSchema.parse(data);
+    return schemas.SoundEventSchema.parse(data);
   }
 
-  async function addFeature(soundEvent: SoundEvent, feature: Feature) {
+  async function addFeature(
+    soundEvent: types.SoundEvent,
+    feature: types.Feature,
+  ) {
     const { data } = await axios.post(
       endpoints.addFeature,
       {},
@@ -136,10 +106,13 @@ export function registerSoundEventAPI(
         },
       },
     );
-    return SoundEventSchema.parse(data);
+    return schemas.SoundEventSchema.parse(data);
   }
 
-  async function updateFeature(soundEvent: SoundEvent, feature: Feature) {
+  async function updateFeature(
+    soundEvent: types.SoundEvent,
+    feature: types.Feature,
+  ) {
     const { data } = await axios.patch(
       endpoints.updateFeature,
       {},
@@ -151,10 +124,13 @@ export function registerSoundEventAPI(
         },
       },
     );
-    return SoundEventSchema.parse(data);
+    return schemas.SoundEventSchema.parse(data);
   }
 
-  async function removeFeature(soundEvent: SoundEvent, feature: Feature) {
+  async function removeFeature(
+    soundEvent: types.SoundEvent,
+    feature: types.Feature,
+  ) {
     const { data } = await axios.delete(endpoints.removeFeature, {
       params: {
         sound_event_uuid: soundEvent.uuid,
@@ -162,7 +138,7 @@ export function registerSoundEventAPI(
         value: feature.value,
       },
     });
-    return SoundEventSchema.parse(data);
+    return schemas.SoundEventSchema.parse(data);
   }
 
   return {

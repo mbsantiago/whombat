@@ -11,3 +11,7 @@ export const ClipPredictionSchema = z.object({
   sound_events: z.array(SoundEventPredictionSchema).nullish(),
   created_on: z.coerce.date(),
 });
+
+export const ClipPredictionCreateSchema = z.object({
+  tags: z.array(PredictionTagSchema).optional(),
+});

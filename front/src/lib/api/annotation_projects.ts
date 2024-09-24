@@ -27,8 +27,8 @@ export function registerAnnotationProjectAPI(
   },
 ) {
   async function getMany(
-    query: types.GetManyQuery & types.AnnotationProjectFilter,
-  ): Promise<types.Paginated<types.AnnotationProject>> {
+    query: types.GetMany & types.AnnotationProjectFilter,
+  ): Promise<types.Page<types.AnnotationProject>> {
     const params = GetMany(schemas.AnnotationProjectFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, { params });
     return Page(schemas.AnnotationProjectSchema).parse(data);

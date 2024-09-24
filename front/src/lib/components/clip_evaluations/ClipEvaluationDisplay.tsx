@@ -1,40 +1,49 @@
-import ClipEvaluationSpectrogram from "@/lib/components/clip_evaluations/ClipEvaluationSpectrogram";
-import ClipEvaluationTags from "@/lib/components/clip_evaluations/ClipEvaluationTags";
+import type { FC } from "react";
 
-import type { ClipEvaluation, Interval } from "@/lib/types";
+import TagComparison from "@/lib/components/tags/TagComparison";
+
+import type { ClipEvaluation } from "@/lib/types";
 
 export default function ClipEvaluationDisplay(props: {
   clipEvaluation: ClipEvaluation;
-  threshold?: Interval;
+  threshold?: number;
   showAnnotations?: boolean;
   showPredictions?: boolean;
+  ClipEvaluationSpectrogram?: FC<{
+    clipEvaluation: ClipEvaluation;
+    threshold?: number;
+    showAnnotations?: boolean;
+    showPredictions?: boolean;
+  }>;
 }) {
   const { clipEvaluation, threshold } = props;
   return (
-    <div className="grid grid-cols-4">
-      <div className="col-span-3">
-        <ClipEvaluationSpectrogram
-          clipEvaluation={clipEvaluation}
-          threshold={threshold}
-          showAnnotations={props.showAnnotations}
-          showPredictions={props.showPredictions}
-        />
+    <div className="grid grid-cols-2 gap-8">
+      <div className="col-span-1">
+        {props.ClipEvaluationSpectrogram != null && (
+          <props.ClipEvaluationSpectrogram
+            clipEvaluation={clipEvaluation}
+            threshold={threshold}
+            showAnnotations={props.showAnnotations}
+            showPredictions={props.showPredictions}
+          />
+        )}
       </div>
       <div>
         <div className="flex flex-row gap-4 p-4">
           <div className="flex flex-col">
-            <span className="text-md font-bold text-stone-500">Clip Score</span>
+            <span className="font-bold text-md text-stone-500">Clip Score</span>
             <span className="text-lg">
               {(100 * clipEvaluation.score).toFixed(2)}
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-md font-bold text-stone-500">Metrics</span>
-            <span className="inline-flex flex-wrap">
+            <span className="font-bold text-md text-stone-500">Metrics</span>
+            <span className="inline-flex flex-wrap gap-4">
               {clipEvaluation.metrics?.map((metric) => (
                 <div
                   key={metric.name}
-                  className="flex flex-row items-center gap-2"
+                  className="flex flex-row gap-2 items-center"
                 >
                   <span className="text-sm text-stone-500">{metric.name}</span>
                   <span className="text-lg">
@@ -46,7 +55,11 @@ export default function ClipEvaluationDisplay(props: {
             </span>
           </div>
         </div>
-        <ClipEvaluationTags clipEvaluation={clipEvaluation} />
+        <TagComparison
+          tags={clipEvaluation.clip_annotation.tags || undefined}
+          predictedTags={clipEvaluation.clip_prediction.tags || undefined}
+          threshold={threshold}
+        />
       </div>
     </div>
   );

@@ -2,10 +2,12 @@ import { useCallback, useMemo, useState } from "react";
 
 import useClipPredictions from "@/app/hooks/api/useClipPredictions";
 
-import type { Filter } from "@/lib/hooks/utils/useFilter";
-
-import type { ClipPredictionFilter } from "@/lib/api/clip_predictions";
-import type { ClipPrediction, Interval } from "@/lib/types";
+import type {
+  ClipPrediction,
+  ClipPredictionFilter,
+  Filter,
+  Interval,
+} from "@/lib/types";
 
 type ExplorationState = {
   filter: Filter<ClipPredictionFilter>;
@@ -46,7 +48,7 @@ export default function useExploreClipPredictions(props: {
     filter,
     isLoading,
     isError,
-    pagination: { onSetPage: setPage, pageSize, page },
+    pagination: { setPage, pageSize, page },
   } = useClipPredictions({
     pageSize: 10,
     filter: props.filter,

@@ -53,7 +53,7 @@ export default function EvaluationSetComponent({
             </span>
           }
           value={
-            <span>
+            <span className="inline-flex gap-2 flex-wrap">
               {evaluationSet.tags
                 ?.slice(0, 10)
                 .map((tag) => (

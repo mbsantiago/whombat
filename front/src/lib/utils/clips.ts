@@ -1,5 +1,4 @@
-import { type ClipCreateMany } from "@/lib/api/clips";
-import type { Recording } from "@/lib/types";
+import type { ClipCreateMany, Recording } from "@/lib/types";
 import { getRandomSubarray } from "@/lib/utils/arrays";
 
 export type ClipExtraction = {

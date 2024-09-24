@@ -5,12 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
+import ModelRunActions from "@/app/components/model_runs/ModelRunActions";
+import ModelRunEvaluation from "@/app/components/model_runs/ModelRunEvaluations";
+import ModelRunUpdate from "@/app/components/model_runs/ModelRunUpdate";
+import ModelRunExplorer from "@/app/components/model_runs/ModelRunExplorer";
+
 import useModelRun from "@/app/hooks/api/useModelRun";
 
-import ModelRunDetail from "@/lib/components/model_runs/ModelRunDetail";
+import DetailLayout from "@/lib/components/layouts/Detail";
 import Loading from "@/lib/components/ui/Loading";
-
-import type { Evaluation, ModelRun } from "@/lib/types";
 
 import EvaluationSetContext from "../context";
 
@@ -38,28 +41,9 @@ export default function Page() {
     [returnToModelRuns],
   );
 
-  const onDelete = useCallback(
-    (modelRun: Promise<ModelRun>) => {
-      toast.promise(modelRun, {
-        loading: "Deleting model run...",
-        success: "Model run deleted",
-        error: "Failed to delete model run",
-      });
-
-      modelRun.then(() => {
-        returnToModelRuns();
-      });
-    },
-    [returnToModelRuns],
-  );
-
-  const handleEvaluate = useCallback((promise: Promise<Evaluation>) => {
-    toast.promise(promise, {
-      loading: "Evaluating the model run. Please wait...",
-      success: "Model run evaluated!",
-      error: "Failed to evaluate the model run.",
-    });
-  }, []);
+  const handleEvaluate = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const modelRun = useModelRun({
     uuid: modelRunUUID ?? "",
@@ -74,11 +58,27 @@ export default function Page() {
   }
 
   return (
-    <ModelRunDetail
-      modelRun={modelRun.data}
-      onDelete={onDelete}
-      evaluationSet={evaluationSet}
-      onEvaluate={handleEvaluate}
+    <DetailLayout
+      SideBar={<ModelRunUpdate modelRun={modelRun.data} />}
+      Actions={
+        <ModelRunActions
+          modelRun={modelRun.data}
+          onDeleteModelRun={returnToModelRuns}
+        />
+      }
+      MainContent={
+        <div className="flex flex-col gap-4">
+          <ModelRunEvaluation
+            modelRun={modelRun.data}
+            evaluationSet={evaluationSet}
+            onEvaluate={handleEvaluate}
+          />
+          <ModelRunExplorer
+            modelRun={modelRun.data}
+            evaluationSet={evaluationSet}
+          />
+        </div>
+      }
     />
   );
 }

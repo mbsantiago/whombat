@@ -4,8 +4,12 @@ import api from "@/app/api";
 
 import useObject from "@/lib/hooks/utils/useObject";
 
-import type { ModelRunUpdate } from "@/lib/api/model_runs";
-import type { Evaluation, EvaluationSet, ModelRun } from "@/lib/types";
+import type {
+  Evaluation,
+  EvaluationSet,
+  ModelRun,
+  ModelRunUpdate,
+} from "@/lib/types";
 
 export default function useModelRun({
   uuid,
@@ -29,7 +33,7 @@ export default function useModelRun({
     throw new Error("Model Run uuid does not match");
   }
 
-  const { query, useMutation, useDestruction } = useObject<ModelRun>({
+  const { query, useMutation, useQuery, useDestruction } = useObject<ModelRun>({
     id: uuid,
     initialData: modelRun,
     name: "model_run",
@@ -59,5 +63,6 @@ export default function useModelRun({
     update,
     delete: delete_,
     evaluate,
+    useQuery,
   };
 }

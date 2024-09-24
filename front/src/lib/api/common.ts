@@ -3,10 +3,6 @@ import axios from "axios";
 import { z } from "zod";
 
 import { GetManySchema } from "@/lib/schemas";
-import { Paginated } from "@/lib/types";
-
-// TODO: Will need to update other modules to import from the types and schemas
-export { GetManySchema, type Paginated };
 
 export const HOST = "http://localhost:5000";
 export const BASE_ROUTE = `/api/v1`;

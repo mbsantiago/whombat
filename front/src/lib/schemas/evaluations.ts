@@ -9,3 +9,8 @@ export const EvaluationSchema = z.object({
   metrics: z.array(FeatureSchema).nullish(),
   created_on: z.coerce.date(),
 });
+
+export const EvaluationCreateSchema = z.object({
+  task: z.string(),
+  score: z.number(),
+});

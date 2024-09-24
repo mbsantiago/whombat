@@ -1,54 +1,10 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import {
-  ClipSchema,
-  DatasetSchema,
-  FeatureFilterSchema,
-  NumberFilterSchema,
-  RecordingSchema,
-} from "@/lib/schemas";
-import type { Clip } from "@/lib/types";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
-import { GetManySchema, Page } from "./common";
-
-export const ClipCreateSchema = z
-  .object({
-    start_time: z.number(),
-    end_time: z.number(),
-  })
-  .refine((clip) => clip.start_time < clip.end_time, {
-    message: "Start time must be less than end time",
-  });
-
-export type ClipCreate = z.input<typeof ClipCreateSchema>;
-
-export const ClipCreateManySchema = z.array(
-  z.tuple([z.string().uuid(), ClipCreateSchema]),
-);
-
-export type ClipCreateMany = z.input<typeof ClipCreateManySchema>;
-
-export const ClipPageSchema = Page(ClipSchema);
-
-export type ClipPage = z.infer<typeof ClipPageSchema>;
-
-export const ClipFilterSchema = z.object({
-  recording: RecordingSchema.optional(),
-  dataset: DatasetSchema.optional(),
-  start_time: NumberFilterSchema.optional(),
-  end_time: NumberFilterSchema.optional(),
-  feature: FeatureFilterSchema.optional(),
-});
-
-export type ClipFilter = z.input<typeof ClipFilterSchema>;
-
-export const GetClipsQuerySchema = z.intersection(
-  GetManySchema,
-  ClipFilterSchema,
-);
-
-export type GetClipsQuery = z.input<typeof GetClipsQuerySchema>;
+import { GetMany, Page } from "./common";
 
 const DEFAULT_ENDPOINTS = {
   createMany: "/api/v1/clips/",
@@ -60,8 +16,10 @@ export function registerClipAPI(
   api: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function getMany(query: GetClipsQuery): Promise<ClipPage> {
-    const params = GetClipsQuerySchema.parse(query);
+  async function getMany(
+    query: types.GetMany & types.ClipFilter,
+  ): Promise<types.Page<types.Clip>> {
+    const params = GetMany(schemas.ClipFilterSchema).parse(query);
     const response = await api.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -78,19 +36,19 @@ export function registerClipAPI(
         feature__gt: params.feature?.gt,
       },
     });
-    return response.data;
+    return Page(schemas.ClipSchema).parse(response.data);
   }
 
-  async function createMany(data: ClipCreateMany): Promise<Clip[]> {
+  async function createMany(data: types.ClipCreateMany): Promise<types.Clip[]> {
     const response = await api.post(endpoints.createMany, data);
-    return response.data;
+    return z.array(schemas.ClipSchema).parse(response.data);
   }
 
-  async function deleteClip(clip: Clip): Promise<Clip> {
+  async function deleteClip(clip: types.Clip): Promise<types.Clip> {
     const response = await api.delete(endpoints.delete, {
       params: { clip_uuid: clip.uuid },
     });
-    return response.data;
+    return schemas.ClipSchema.parse(response.data);
   }
 
   return {

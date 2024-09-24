@@ -108,17 +108,18 @@ class ClipPredictionTag(Base):
         ),
     )
 
-    id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     clip_prediction_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_prediction.id"),
         primary_key=True,
         nullable=False,
     )
+
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         primary_key=True,
         nullable=False,
     )
+
     score: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
         default=1.0,

@@ -3,7 +3,7 @@ import api from "@/app/api";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 
-import { type ClipEvaluationFilter } from "@/lib/api/clip_evaluations";
+import { type ClipEvaluationFilter } from "@/lib/types";
 
 const _empty: ClipEvaluationFilter = {};
 const _fixed: (keyof ClipEvaluationFilter)[] = [];

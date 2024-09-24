@@ -155,16 +155,6 @@ function SecondaryNavigation({
           <HomeIcon className="w-6 h-6" />
         </SideMenuLink>
       </li>
-      <li className="px-3">
-        <SideMenuLink href="/plugins" tooltip={"Plugins"}>
-          <PluginIcon className="w-6 h-6" />
-        </SideMenuLink>
-      </li>
-      <li className="px-3">
-        <SideMenuLink href="/" tooltip={"Settings"}>
-          <SettingsIcon className="w-6 h-6" />
-        </SideMenuLink>
-      </li>
       <HorizontalDivider />
       <li className="px-3">
         <SideMenuButton tooltip={"Log Out"}>

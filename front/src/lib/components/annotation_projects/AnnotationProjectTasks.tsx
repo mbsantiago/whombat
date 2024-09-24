@@ -1,23 +1,19 @@
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
-import { FilterIcon, TasksIcon } from "@/lib/components/icons";
-import Toggle from "@/lib/components/inputs/Toggle";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
-import Button from "@/lib/components/ui/Button";
-import Card from "@/lib/components/ui/Card";
-import { H2, H3 } from "@/lib/components/ui/Headings";
-import Loading from "@/lib/components/ui/Loading";
+import * as icons from "@/lib/components/icons";
+import * as inputs from "@/lib/components/inputs";
+import * as ui from "@/lib/components/ui";
 
-import type { Dataset, RecordingFilter } from "@/lib/types";
+import type * as types from "@/lib/types";
 
 export default function AnnotationProjectTasks(props: {
-  dataset?: Dataset;
+  dataset?: types.Dataset;
   isLoading: boolean;
   numSelectedRecordings?: number;
   numSelectedClips?: number;
-  recordingFilter: RecordingFilter;
-  fixedFilterFields: (keyof RecordingFilter)[];
+  recordingFilter: types.RecordingFilter;
+  fixedFilterFields: (keyof types.RecordingFilter)[];
   subsampleRecordings?: boolean;
   maxRecordings?: number;
   shouldClip?: boolean;
@@ -25,9 +21,9 @@ export default function AnnotationProjectTasks(props: {
   clipOverlap?: number;
   subsampleClip?: boolean;
   maxClipsPerRecording?: number;
-  onSetFilterField?: <T extends keyof RecordingFilter>(
+  onSetFilterField?: <T extends keyof types.RecordingFilter>(
     field: T,
-    value: RecordingFilter[T],
+    value: types.RecordingFilter[T],
   ) => void;
   onToggleSubsample?: (subsample: boolean) => void;
   onSetMaxRecordings?: (maxRecordings: number) => void;
@@ -41,10 +37,10 @@ export default function AnnotationProjectTasks(props: {
 }) {
   return (
     <div className="flex flex-col gap-8">
-      <H2>
-        <TasksIcon className="inline-block mr-2 w-5 h-5 align-middle" />
+      <ui.H2>
+        <icons.TasksIcon className="inline-block mr-2 w-5 h-5 align-middle" />
         Add Tasks
-      </H2>
+      </ui.H2>
       <div className="flex flex-row gap-8">
         <div className="flex flex-col gap-y-6 max-w-prose">
           <p className="max-w-prose text-stone-500">
@@ -98,15 +94,15 @@ export default function AnnotationProjectTasks(props: {
 
 function SelectDataset({ DatasetSearch }: { DatasetSearch: JSX.Element }) {
   return (
-    <Card>
+    <ui.Card>
       <div>
-        <H3 className="text-lg">Select Dataset</H3>
+        <ui.H3 className="text-lg">Select Dataset</ui.H3>
         <p className="text-stone-500">
           Choose a dataset from which to source recordings.
         </p>
       </div>
       {DatasetSearch}
-    </Card>
+    </ui.Card>
   );
 }
 
@@ -121,26 +117,26 @@ function SelectRecordings({
 }: {
   subsample?: boolean;
   maxRecordings?: number;
-  filter?: RecordingFilter;
-  fixedFilterFields?: (keyof RecordingFilter)[];
-  onSetFilterField?: <T extends keyof RecordingFilter>(
+  filter?: types.RecordingFilter;
+  fixedFilterFields?: (keyof types.RecordingFilter)[];
+  onSetFilterField?: <T extends keyof types.RecordingFilter>(
     field: T,
-    value: RecordingFilter[T],
+    value: types.RecordingFilter[T],
   ) => void;
   onToggleSubsample?: (subsample: boolean) => void;
   onSetMaxRecordings?: (maxRecordings: number) => void;
 }) {
   return (
-    <Card>
+    <ui.Card>
       <div>
-        <H3 className="text-lg">Select Recordings</H3>
+        <ui.H3 className="text-lg">Select Recordings</ui.H3>
         <p className="text-stone-500">
           Pick recordings to extract clips for your annotation project.
           Optionally, filter and choose a subset for clip extraction.
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <InputGroup
+        <inputs.InputGroup
           name="recording-filter"
           label="Filter recordings"
           help="Select a subset for clip extraction by applying filters."
@@ -161,20 +157,23 @@ function SelectRecordings({
               button={
                 <>
                   Add filters{" "}
-                  <FilterIcon className="inline-block w-4 h-4 stroke-2" />
+                  <icons.FilterIcon className="inline-block w-4 h-4 stroke-2" />
                 </>
               }
             />
           </div>
-        </InputGroup>
-        <InputGroup
+        </inputs.InputGroup>
+        <inputs.InputGroup
           name="subsample"
           label="Subsample recordings"
           help="Set a maximum for clip extraction. A random subset will be selected; all if not specified."
         >
           <div className="inline-flex gap-3 items-center w-full">
-            <Toggle isSelected={subsample} onChange={onToggleSubsample} />
-            <Input
+            <inputs.Toggle
+              isSelected={subsample}
+              onChange={onToggleSubsample}
+            />
+            <inputs.Input
               className="grow"
               type="number"
               placeholder="Maximum number of recordings"
@@ -186,9 +185,9 @@ function SelectRecordings({
               disabled={!subsample}
             />
           </div>
-        </InputGroup>
+        </inputs.InputGroup>
       </div>
-    </Card>
+    </ui.Card>
   );
 }
 
@@ -216,58 +215,58 @@ function ExtractClips({
   onSetMaxClips?: (maxClips: number) => void;
 }) {
   return (
-    <Card>
+    <ui.Card>
       <div>
-        <H3>Clip Extraction</H3>
+        <ui.H3>Clip Extraction</ui.H3>
         <p className="text-stone-500">
           Customize how to extract clips from the selected recordings.
         </p>
       </div>
-      <InputGroup
+      <inputs.InputGroup
         name="clip"
         label="Should Clip"
         help="Enable to extract smaller clips from the recordings; disable to use the entire recording as a clip."
       >
-        <Toggle isSelected={shouldClip} onChange={onToggleClip} />
-      </InputGroup>
+        <inputs.Toggle isSelected={shouldClip} onChange={onToggleClip} />
+      </inputs.InputGroup>
       {shouldClip && (
         <>
-          <InputGroup
+          <inputs.InputGroup
             name="clipLength"
             label="Clip Length"
             help="Specify the duration of each clip in seconds."
           >
-            <Input
+            <inputs.Input
               type="number"
               value={clipLength}
               onChange={(e) => onSetClipLength?.(e.target.valueAsNumber)}
               required
               step={0.1}
             />
-          </InputGroup>
-          <InputGroup
+          </inputs.InputGroup>
+          <inputs.InputGroup
             name="overlap"
             label="Overlap"
             help="Define the overlap duration between clips in seconds."
           >
-            <Input
+            <inputs.Input
               type="number"
               value={clipOverlap}
               onChange={(e) => onSetClipOverlap?.(e.target.valueAsNumber)}
               required
             />
-          </InputGroup>
-          <InputGroup
+          </inputs.InputGroup>
+          <inputs.InputGroup
             name="subsample"
             label="Subsample clips"
             help="Set a maximum number of clips to extract from each recording. A random subset will be selected. Leave empty to use all clips."
           >
             <div className="inline-flex gap-3 items-center w-full">
-              <Toggle
+              <inputs.Toggle
                 isSelected={subsampleClip}
                 onChange={onSetClipSubsample}
               />
-              <Input
+              <inputs.Input
                 className="grow"
                 type="number"
                 placeholder="Maximum clips per recording"
@@ -277,10 +276,10 @@ function ExtractClips({
                 disabled={!subsampleClip}
               />
             </div>
-          </InputGroup>
+          </inputs.InputGroup>
         </>
       )}
-    </Card>
+    </ui.Card>
   );
 }
 
@@ -292,18 +291,18 @@ function ReviewClips({
   onAdd,
 }: {
   isLoading?: boolean;
-  dataset?: Dataset;
+  dataset?: types.Dataset;
   numClips?: number;
   numRecordings?: number;
   onAdd?: () => void;
 }) {
   return (
-    <Card>
-      <H3>Summary</H3>
+    <ui.Card>
+      <ui.H3>Summary</ui.H3>
       {dataset == null ? (
         <p className="text-stone-500">Select a dataset to continue.</p>
       ) : isLoading ? (
-        <Loading />
+        <ui.Loading />
       ) : (
         <>
           <ul className="list-disc list-inside">
@@ -324,9 +323,9 @@ function ReviewClips({
             Once satisfied with your selections, click the button below to add
             the chosen clips to the annotation project.
           </p>
-          <Button onClick={onAdd}>Add Clips</Button>
+          <ui.Button onClick={onAdd}>Add Clips</ui.Button>
         </>
       )}
-    </Card>
+    </ui.Card>
   );
 }

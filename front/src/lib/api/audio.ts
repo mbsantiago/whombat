@@ -1,47 +1,10 @@
-import { z } from "zod";
-
-import type { Recording } from "@/lib/types";
+import { DEFAULT_AUDIO_SETTINGS } from "@/lib/constants";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   download: "/api/v1/audio/download/",
   stream: "/api/v1/audio/stream/",
-};
-
-export const IntervalSchema = z
-  .object({
-    min: z.number(),
-    max: z.number(),
-  })
-  .refine((data) => data.min < data.max, {
-    message: "min must be less than max",
-    path: ["min"],
-  });
-
-export type Interval = z.input<typeof IntervalSchema>;
-
-export const AudioParametersSchema = z
-  .object({
-    resample: z.boolean().default(false),
-    samplerate: z.number().positive().int().optional(),
-    low_freq: z.number().positive().optional(),
-    high_freq: z.number().positive().optional(),
-    filter_order: z.number().positive().int().default(5),
-  })
-  .refine(
-    (data) => {
-      if (data.low_freq == null || data.high_freq == null) return true;
-      return data.low_freq < data.high_freq;
-    },
-    {
-      message: "low_freq must be less than high_freq",
-      path: ["low_freq"],
-    },
-  );
-
-export type AudioParameters = z.input<typeof AudioParametersSchema>;
-
-const DEFAULT_AUDIO_PARAMETERS: AudioParameters = {
-  resample: false,
 };
 
 export function registerAudioAPI({
@@ -57,7 +20,7 @@ export function registerAudioAPI({
     startTime,
     endTime,
   }: {
-    recording: Recording;
+    recording: types.Recording;
     speed?: number;
     startTime?: number;
     endTime?: number;
@@ -84,17 +47,17 @@ export function registerAudioAPI({
   function getDownloadUrl({
     recording,
     segment,
-    parameters = DEFAULT_AUDIO_PARAMETERS,
+    parameters = DEFAULT_AUDIO_SETTINGS,
   }: {
-    recording: Recording;
-    segment?: Interval;
-    parameters?: AudioParameters;
+    recording: types.Recording;
+    segment?: types.Interval;
+    parameters?: types.AudioSettings;
   }) {
     // Validate parameters
-    const parsed_params = AudioParametersSchema.parse(parameters);
+    const parsed_params = schemas.AudioSettingsSchema.parse(parameters);
 
     if (segment != null) {
-      segment = IntervalSchema.parse(segment);
+      segment = schemas.IntervalSchema.parse(segment);
     }
 
     // Construct query

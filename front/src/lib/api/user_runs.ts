@@ -1,35 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  EvaluationSetSchema,
-  NumberFilterSchema,
-  UserRunSchema,
-  UserSchema,
-} from "@/lib/schemas";
-import type { UserRun } from "@/lib/types";
-
-export const UserRunFilterSchema = z.object({
-  user: UserSchema.optional(),
-  evaluated: z.boolean().optional(),
-  score: NumberFilterSchema.optional(),
-  evaluation_set: EvaluationSetSchema.optional(),
-  has_evaluation: z.boolean().optional(),
-});
-
-export type UserRunFilter = z.input<typeof UserRunFilterSchema>;
-
-export const GetUserRunQuerySchema = z.intersection(
-  GetManySchema,
-  UserRunFilterSchema,
-);
-
-export type GetUserRunQuery = z.input<typeof GetUserRunQuerySchema>;
-
-export const UserRunPageSchema = Page(UserRunSchema);
-
-export type UserRunPage = z.infer<typeof UserRunPageSchema>;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/user_runs/",
@@ -42,13 +15,15 @@ export function registerUserRunAPI(
   instance: AxiosInstance,
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
-  async function createUserRun(): Promise<UserRun> {
+  async function createUserRun(): Promise<types.UserRun> {
     const response = await instance.post(endpoints.create);
-    return UserRunSchema.parse(response.data);
+    return schemas.UserRunSchema.parse(response.data);
   }
 
-  async function getManyUserRuns(query: GetUserRunQuery): Promise<UserRunPage> {
-    const params = GetUserRunQuerySchema.parse(query);
+  async function getManyUserRuns(
+    query: types.GetMany & types.UserRunFilter,
+  ): Promise<types.Page<types.UserRun>> {
+    const params = GetMany(schemas.UserRunFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -62,21 +37,21 @@ export function registerUserRunAPI(
         has_evaluation__eq: params.has_evaluation,
       },
     });
-    return UserRunPageSchema.parse(response.data);
+    return Page(schemas.UserRunSchema).parse(response.data);
   }
 
-  async function getUserRun(uuid: string): Promise<UserRun> {
+  async function getUserRun(uuid: string): Promise<types.UserRun> {
     const response = await instance.get(endpoints.get, {
       params: { user_run_uuid: uuid },
     });
-    return UserRunSchema.parse(response.data);
+    return schemas.UserRunSchema.parse(response.data);
   }
 
-  async function deleteUserRun(userRun: UserRun): Promise<UserRun> {
+  async function deleteUserRun(userRun: types.UserRun): Promise<types.UserRun> {
     const response = await instance.delete(endpoints.delete, {
       params: { user_run_uuid: userRun.uuid },
     });
-    return UserRunSchema.parse(response.data);
+    return schemas.UserRunSchema.parse(response.data);
   }
 
   return {

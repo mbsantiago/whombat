@@ -1,51 +1,9 @@
 import { AxiosInstance } from "axios";
 import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  AnnotationProjectSchema,
-  AnnotationTaskSchema,
-  ClipAnnotationSchema,
-  DatasetSchema,
-  TagSchema,
-  UserSchema,
-} from "@/lib/schemas";
-import type {
-  AnnotationProject,
-  AnnotationStatus,
-  AnnotationTask,
-  Clip,
-  ClipAnnotation,
-} from "@/lib/types";
-
-export const AnnotationTaskPageSchema = Page(AnnotationTaskSchema);
-
-export type AnnotationTaskPage = z.infer<typeof AnnotationTaskPageSchema>;
-
-export const AnnotationTaskFilterSchema = z.object({
-  dataset: DatasetSchema.optional(),
-  annotation_project: AnnotationProjectSchema.optional(),
-  recording_tag: TagSchema.optional(),
-  sound_event_annotation_tag: TagSchema.optional(),
-  pending: z.boolean().optional(),
-  assigned: z.boolean().optional(),
-  verified: z.boolean().optional(),
-  rejected: z.boolean().optional(),
-  completed: z.boolean().optional(),
-  assigned_to: UserSchema.optional(),
-  search_recordings: z.string().optional(),
-});
-
-export type AnnotationTaskFilter = z.input<typeof AnnotationTaskFilterSchema>;
-
-export const GetAnnotationTasksQuerySchema = z.intersection(
-  GetManySchema,
-  AnnotationTaskFilterSchema,
-);
-
-export type GetAnnotationTasksQuery = z.input<
-  typeof GetAnnotationTasksQuerySchema
->;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   createMany: "/api/v1/annotation_tasks/",
@@ -62,9 +20,9 @@ export function registerAnnotationTasksAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function createMany(
-    annotationProject: AnnotationProject,
-    clips: Clip[],
-  ): Promise<AnnotationTask[]> {
+    annotationProject: types.AnnotationProject,
+    clips: types.Clip[],
+  ): Promise<types.AnnotationTask[]> {
     const response = await instance.post(
       endpoints.createMany,
       clips.map((clip) => clip.uuid),
@@ -74,13 +32,13 @@ export function registerAnnotationTasksAPI(
         },
       },
     );
-    return z.array(AnnotationTaskSchema).parse(response.data);
+    return z.array(schemas.AnnotationTaskSchema).parse(response.data);
   }
 
   async function getMany(
-    query: GetAnnotationTasksQuery,
-  ): Promise<AnnotationTaskPage> {
-    const params = GetAnnotationTasksQuerySchema.parse(query);
+    query: types.GetMany & types.AnnotationTaskFilter,
+  ): Promise<types.Page<types.AnnotationTask>> {
+    const params = GetMany(schemas.AnnotationTaskFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -102,42 +60,42 @@ export function registerAnnotationTasksAPI(
         search_recordings: params.search_recordings,
       },
     });
-    return AnnotationTaskPageSchema.parse(response.data);
+    return Page(schemas.AnnotationTaskSchema).parse(response.data);
   }
 
-  async function getAnnotationTask(uuid: string): Promise<AnnotationTask> {
+  async function getAnnotationTask(uuid: string): Promise<types.AnnotationTask> {
     const response = await instance.get(endpoints.get, {
       params: { annotation_task_uuid: uuid },
     });
-    return AnnotationTaskSchema.parse(response.data);
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   async function getTaskAnnotations(
-    annotationTask: AnnotationTask,
-  ): Promise<ClipAnnotation> {
+    annotationTask: types.AnnotationTask,
+  ): Promise<types.ClipAnnotation> {
     const response = await instance.get(endpoints.getAnnotations, {
       params: {
         annotation_task_uuid: annotationTask.uuid,
       },
     });
-    return ClipAnnotationSchema.parse(response.data);
+    return schemas.ClipAnnotationSchema.parse(response.data);
   }
 
   async function deleteAnnotationTask(
-    annotationTask: AnnotationTask,
-  ): Promise<AnnotationTask> {
+    annotationTask: types.AnnotationTask,
+  ): Promise<types.AnnotationTask> {
     const response = await instance.delete(endpoints.delete, {
       params: {
         annotation_task_uuid: annotationTask.uuid,
       },
     });
-    return AnnotationTaskSchema.parse(response.data);
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   async function addBadge(
-    annotationTask: AnnotationTask,
-    state: AnnotationStatus,
-  ): Promise<AnnotationTask> {
+    annotationTask: types.AnnotationTask,
+    state: types.AnnotationStatus,
+  ): Promise<types.AnnotationTask> {
     const response = await instance.post(
       endpoints.addBadge,
       {},
@@ -148,20 +106,20 @@ export function registerAnnotationTasksAPI(
         },
       },
     );
-    return AnnotationTaskSchema.parse(response.data);
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   async function removeBadge(
-    annotationTask: AnnotationTask,
-    state: AnnotationStatus,
-  ): Promise<AnnotationTask> {
+    annotationTask: types.AnnotationTask,
+    state: types.AnnotationStatus,
+  ): Promise<types.AnnotationTask> {
     const response = await instance.delete(endpoints.removeBadge, {
       params: {
         annotation_task_uuid: annotationTask.uuid,
         state,
       },
     });
-    return AnnotationTaskSchema.parse(response.data);
+    return schemas.AnnotationTaskSchema.parse(response.data);
   }
 
   return {

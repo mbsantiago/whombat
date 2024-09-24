@@ -24,8 +24,8 @@ export function registerRecordingAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getMany(
-    query: types.GetManyQuery & types.RecordingFilter,
-  ): Promise<types.Paginated<types.Recording>> {
+    query: types.GetMany & types.RecordingFilter,
+  ): Promise<types.Page<types.Recording>> {
     const params = GetMany(schemas.RecordingFilterSchema).parse(query);
     const { data } = await instance.get(endpoints.getMany, {
       params: {

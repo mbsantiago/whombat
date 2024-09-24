@@ -1,12 +1,12 @@
 import PaginationBase from "@/lib/components/lists/Pagination";
 
-import type { Pagination } from "@/lib/hooks/utils/usePagedQuery";
+import type { PaginationController } from "@/lib/types";
 
 export default function Pagination({
   pagination,
   pageSizeOptions,
 }: {
-  pagination: Pagination;
+  pagination: PaginationController;
   pageSizeOptions?: number[];
 }) {
   return (

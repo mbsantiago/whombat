@@ -1,5 +1,9 @@
 /* Constants used throughout the application */
-import type { AudioSettings, SpectrogramSettings } from "@/lib/types";
+import type {
+  AudioSettings,
+  SpectrogramParameters,
+  SpectrogramSettings,
+} from "@/lib/types";
 
 /* Default values for the settings of the STFT computation
  */
@@ -46,4 +50,9 @@ export const DEFAULT_SPECTROGRAM_SETTINGS: SpectrogramSettings = {
   normalize: true,
   pcen: false,
   cmap: DEFAULT_CMAP,
+};
+
+export const DEFAULT_SPECTROGRAM_PARAMETERS: SpectrogramParameters = {
+  ...DEFAULT_AUDIO_SETTINGS,
+  ...DEFAULT_SPECTROGRAM_SETTINGS,
 };

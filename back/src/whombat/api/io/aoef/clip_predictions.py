@@ -120,6 +120,7 @@ async def _create_clip_prediction_tags(
     values = []
     for prediction in clip_predictions:
         prediction_db_id = mapping.get(prediction.uuid)
+
         if prediction_db_id is None:
             continue
 
@@ -133,7 +134,7 @@ async def _create_clip_prediction_tags(
 
             values.append(
                 {
-                    "sound_event_prediction_id": prediction_db_id,
+                    "clip_prediction_id": prediction_db_id,
                     "tag_id": tag_db_id,
                     "created_on": datetime.datetime.now(),
                     "score": score or 1,
@@ -144,13 +145,13 @@ async def _create_clip_prediction_tags(
         return
 
     stmt = select(
-        models.SoundEventPredictionTag.sound_event_prediction_id,
-        models.SoundEventPredictionTag.tag_id,
+        models.ClipPredictionTag.clip_prediction_id,
+        models.ClipPredictionTag.tag_id,
     ).where(
         tuple_(
-            models.SoundEventPredictionTag.sound_event_prediction_id,
-            models.SoundEventPredictionTag.tag_id,
-        ).in_({(v["sound_event_prediction_id"], v["tag_id"]) for v in values})
+            models.ClipPredictionTag.clip_prediction_id,
+            models.ClipPredictionTag.tag_id,
+        ).in_({(v["clip_prediction_id"], v["tag_id"]) for v in values})
     )
     result = await session.execute(stmt)
     existing = set(result.all())
@@ -158,11 +159,11 @@ async def _create_clip_prediction_tags(
     missing = [
         v
         for v in values
-        if (v["sound_event_prediction_id"], v["tag_id"]) not in existing
+        if (v["clip_prediction_id"], v["tag_id"]) not in existing
     ]
 
     if not missing:
         return
 
-    stmt = insert(models.SoundEventPredictionTag)
+    stmt = insert(models.ClipPredictionTag)
     await session.execute(stmt, missing)

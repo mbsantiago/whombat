@@ -1,43 +1,8 @@
 import { AxiosInstance } from "axios";
-import { z } from "zod";
 
-import { GetManySchema, Page } from "@/lib/api/common";
-import {
-  ClipAnnotationSchema,
-  ClipEvaluationSchema,
-  ClipPredictionSchema,
-  EvaluationSchema,
-  FeatureFilterSchema,
-  NumberFilterSchema,
-  PredictedTagFilterSchema,
-  TagSchema,
-} from "@/lib/schemas";
-import type { ClipEvaluation } from "@/lib/types";
-
-export const ClipEvaluationPageSchema = Page(ClipEvaluationSchema);
-
-export type ClipEvaluationPage = z.infer<typeof ClipEvaluationPageSchema>;
-
-export const ClipEvaluationFilterSchema = z.object({
-  clip_annotation: ClipAnnotationSchema.optional(),
-  clip_prediction: ClipPredictionSchema.optional(),
-  score: NumberFilterSchema.optional(),
-  evaluation: EvaluationSchema.optional(),
-  metric: FeatureFilterSchema.optional(),
-  prediction_tag: PredictedTagFilterSchema.optional(),
-  annotation_tag: TagSchema.optional(),
-});
-
-export type ClipEvaluationFilter = z.input<typeof ClipEvaluationFilterSchema>;
-
-export const GetClipEvaluationsQuerySchema = z.intersection(
-  GetManySchema,
-  ClipEvaluationFilterSchema,
-);
-
-export type GetClipEvaluationsQuery = z.input<
-  typeof GetClipEvaluationsQuerySchema
->;
+import { GetMany, Page } from "@/lib/api/common";
+import * as schemas from "@/lib/schemas";
+import type * as types from "@/lib/types";
 
 const DEFAULT_ENDPOINTS = {
   getMany: "/api/v1/clip_evaluations/",
@@ -49,9 +14,9 @@ export function registerClipEvaluationAPI(
   endpoints: typeof DEFAULT_ENDPOINTS = DEFAULT_ENDPOINTS,
 ) {
   async function getManyClipEvaluations(
-    query: GetClipEvaluationsQuery,
-  ): Promise<ClipEvaluationPage> {
-    const params = GetClipEvaluationsQuerySchema.parse(query);
+    query: types.GetMany & types.ClipEvaluationFilter,
+  ): Promise<types.Page<types.ClipEvaluation>> {
+    const params = GetMany(schemas.ClipEvaluationFilterSchema).parse(query);
     const response = await instance.get(endpoints.getMany, {
       params: {
         limit: params.limit,
@@ -73,14 +38,14 @@ export function registerClipEvaluationAPI(
         annotation_tag__value: params.annotation_tag?.value,
       },
     });
-    return ClipEvaluationPageSchema.parse(response.data);
+    return Page(schemas.ClipEvaluationSchema).parse(response.data);
   }
 
-  async function getClipEvaluation(uuid: string): Promise<ClipEvaluation> {
+  async function getClipEvaluation(uuid: string): Promise<types.ClipEvaluation> {
     const response = await instance.get(endpoints.get, {
       params: { clip_evaluation_uuid: uuid },
     });
-    return ClipEvaluationSchema.parse(response.data);
+    return schemas.ClipEvaluationSchema.parse(response.data);
   }
 
   return {
