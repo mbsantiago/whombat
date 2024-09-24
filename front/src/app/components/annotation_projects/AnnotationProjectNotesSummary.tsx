@@ -17,7 +17,7 @@ export default function AnnotationProjectNotesSummary({
   annotationProject: types.AnnotationProject;
 }) {
   const filter = useMemo(
-    () => ({ annotationProject, issues: { eq: true } }),
+    () => ({ annotation_project: annotationProject, issues: { eq: true } }),
     [annotationProject],
   );
 

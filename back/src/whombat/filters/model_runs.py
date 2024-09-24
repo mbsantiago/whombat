@@ -89,8 +89,6 @@ class EvaluationSetFilter(base.Filter):
         if self.eq is None:
             return query
 
-        print("Filtering!!!", self.eq)
-
         subquery = (
             select(models.ModelRun.id)
             .join(

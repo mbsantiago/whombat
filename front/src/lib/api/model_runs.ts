@@ -88,9 +88,6 @@ export function registerModelRunAPI(
     const file = data.model_run[0];
     formData.append("model_run", file);
     formData.append("evaluation_set_uuid", data.evaluation_set_uuid);
-    console.log({
-      evaluation_set_uui: data.evaluation_set_uuid,
-    });
     const { data: res } = await instance.post(endpoints.import, formData);
     return schemas.ModelRunSchema.parse(res);
   }
