@@ -14,9 +14,11 @@ from whombat.api.common.utils import (
     get_objects,
     get_objects_from_query,
     get_or_create_object,
+    insert_batched,
     remove_feature_from_object,
     remove_note_from_object,
     remove_tag_from_object,
+    select_batched,
     update_feature_on_object,
     update_object,
 )
@@ -35,9 +37,11 @@ __all__ = [
     "get_objects",
     "get_objects_from_query",
     "get_or_create_object",
+    "insert_batched",
     "remove_feature_from_object",
     "remove_note_from_object",
     "remove_tag_from_object",
+    "select_batched",
     "update_feature_on_object",
     "update_object",
 ]

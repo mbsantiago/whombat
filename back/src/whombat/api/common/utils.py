@@ -61,8 +61,13 @@ async def get_count(
     count_q = q.with_only_columns(func.count(pk)).order_by(None)
     result = await session.execute(count_q)
     count = result.scalar()
+
+    if count is None:
+        return 0
+
     if not isinstance(count, int):
         raise TypeError("Count query did not return an integer")
+
     return count
 
 
@@ -237,6 +242,7 @@ async def get_objects_from_query(
     options: Sequence[ExecutableOption] | None = None,
     filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
     sort_by: _ColumnExpressionArgument | str | None = None,
+    group_by: _ColumnExpressionArgument | None = None,
 ) -> tuple[Result[Any], int]:
     """Get a list of objects from a query.
 
@@ -274,6 +280,9 @@ async def get_objects_from_query(
     if options is not None:
         for option in options:
             query = query.options(option)
+
+    if group_by is not None:
+        query = query.group_by(group_by)
 
     count = await get_count(session, model, query)
 
@@ -522,6 +531,31 @@ async def get_objects_by_keys_batched(
         )
         created.extend(subset)
     return created
+
+
+async def select_batched(
+    session: AsyncSession,
+    statement: Select,
+    values: Sequence,
+    parameter: str = "values",
+    batch_size: int = 200,
+):
+    created = []
+    for batch in batched(values, batch_size):
+        results = await session.execute(statement, {parameter: batch})
+        created.extend(results.all())
+    return created
+
+
+async def insert_batched(
+    session: AsyncSession,
+    model: type[A],
+    values: Sequence,
+    batch_size: int = 200,
+):
+    for batch in batched(values, batch_size):
+        stmt = insert(model).values(batch)
+        await session.execute(stmt)
 
 
 async def delete_object(

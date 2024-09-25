@@ -3,9 +3,10 @@
 from typing import Any, Sequence
 
 from soundevent import data
-from sqlalchemy import and_, tuple_
+from sqlalchemy import and_, desc, func, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql._typing import _ColumnExpressionArgument
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
@@ -248,6 +249,135 @@ class TagAPI(
             )
             for obj in objs
         ], count
+
+    async def count_by_sound_event_annotation(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+    ) -> tuple[Sequence[schemas.TagCount], int]:
+        count_column = func.count(
+            models.SoundEventAnnotationTag.sound_event_annotation_id
+        ).label("counts")
+
+        query = select(models.Tag, count_column).join(
+            models.SoundEventAnnotationTag,
+            models.Tag.id == models.SoundEventAnnotationTag.tag_id,
+        )
+
+        if isinstance(sort_by, str):
+            if sort_by == "-counts":
+                sort_by = desc(count_column)
+            elif sort_by == "counts":
+                sort_by = count_column
+
+        results, total = await common.get_objects_from_query(
+            session,
+            model=models.Tag,
+            query=query,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            group_by=models.Tag.id,
+        )
+
+        return [
+            schemas.TagCount(
+                tag=schemas.Tag.model_validate(result[0]),
+                count=result[1],
+            )
+            for result in results
+        ], total
+
+    async def count_by_clip_annotation(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+    ) -> tuple[Sequence[schemas.TagCount], int]:
+        count_column = func.count(
+            models.ClipAnnotationTag.clip_annotation_id
+        ).label("counts")
+
+        query = select(models.Tag, count_column).join(
+            models.ClipAnnotationTag,
+            models.Tag.id == models.ClipAnnotationTag.tag_id,
+        )
+
+        if isinstance(sort_by, str):
+            if sort_by == "-counts":
+                sort_by = desc(count_column)
+            elif sort_by == "counts":
+                sort_by = count_column
+
+        results, total = await common.get_objects_from_query(
+            session,
+            model=models.Tag,
+            query=query,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            group_by=models.Tag.id,
+        )
+
+        return [
+            schemas.TagCount(
+                tag=schemas.Tag.model_validate(result[0]),
+                count=result[1],
+            )
+            for result in results
+        ], total
+
+    async def count_by_recording(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+    ) -> tuple[Sequence[schemas.TagCount], int]:
+        count_column = func.count(models.RecordingTag.recording_id).label(
+            "counts"
+        )
+
+        query = select(models.Tag, count_column).join(
+            models.RecordingTag,
+            models.Tag.id == models.RecordingTag.tag_id,
+        )
+
+        if isinstance(sort_by, str):
+            if sort_by == "-counts":
+                sort_by = desc(count_column)
+            elif sort_by == "counts":
+                sort_by = count_column
+
+        results, total = await common.get_objects_from_query(
+            session,
+            model=models.Tag,
+            query=query,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            group_by=models.Tag.id,
+        )
+
+        return [
+            schemas.TagCount(
+                tag=schemas.Tag.model_validate(result[0]),
+                count=result[1],
+            )
+            for result in results
+        ], total
 
 
 def find_tag(

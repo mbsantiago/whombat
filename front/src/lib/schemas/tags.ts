@@ -7,6 +7,11 @@ export const TagSchema = z.object({
   value: z.string(),
 });
 
+export const TagCountSchema = z.object({
+  tag: TagSchema,
+  count: z.number(),
+});
+
 export const PredictionTagSchema = z.object({
   tag: TagSchema,
   score: z.number(),

@@ -142,3 +142,93 @@ async def create_tag(
     tag = await api.tags.create(session, key=data.key, value=data.value)
     await session.commit()
     return tag
+
+
+@tags_router.get(
+    "/sound_event_annotation_counts/",
+    response_model=schemas.Page[schemas.TagCount],
+)
+async def sound_event_annotation_counts(
+    session: Session,
+    filter: Annotated[
+        SoundEventAnnotationTagFilter,  # type: ignore
+        Depends(SoundEventAnnotationTagFilter),
+    ],
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-counts",
+):
+    """Get the number of sound event annotations each tag is assigned to."""
+    tag_counts, total = await api.tags.count_by_sound_event_annotation(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tag_counts,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@tags_router.get(
+    "/clip_annotation_counts/",
+    response_model=schemas.Page[schemas.TagCount],
+)
+async def clip_annotation_counts(
+    session: Session,
+    filter: Annotated[
+        ClipAnnotationTagFilter,  # type: ignore
+        Depends(ClipAnnotationTagFilter),
+    ],
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-counts",
+):
+    """Get the number of clip annotations each tag is assigned to."""
+    tag_counts, total = await api.tags.count_by_clip_annotation(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tag_counts,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@tags_router.get(
+    "/recording_counts/",
+    response_model=schemas.Page[schemas.TagCount],
+)
+async def recording_counts(
+    session: Session,
+    filter: Annotated[
+        RecordingTagFilter,  # type: ignore
+        Depends(RecordingTagFilter),
+    ],
+    limit: Limit = 10,
+    offset: Offset = 0,
+    sort_by: str = "-counts",
+):
+    """Get the number of recordings each tag is assigned to."""
+    tag_counts, total = await api.tags.count_by_recording(
+        session,
+        limit=limit,
+        offset=offset,
+        filters=[filter],
+        sort_by=sort_by,
+    )
+    return schemas.Page(
+        items=tag_counts,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )

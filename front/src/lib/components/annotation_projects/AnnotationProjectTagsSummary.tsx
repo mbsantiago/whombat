@@ -1,6 +1,5 @@
 import { type ComponentProps, useMemo, useState } from "react";
 
-import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   AscendingIcon,
@@ -11,35 +10,30 @@ import ListSearch from "@/lib/components/lists/ListSearch";
 import TagComponent from "@/lib/components/tags/Tag";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
+import Empty from "@/lib/components/ui/Empty";
 import { H4 } from "@/lib/components/ui/Headings";
 import Help from "@/lib/components/ui/Help";
 import Loading from "@/lib/components/ui/Loading";
 
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
-import type {
-  AnnotationProject,
-  ClipAnnotationTag,
-  SoundEventAnnotationTag,
-  Tag,
-} from "@/lib/types";
+import type * as types from "@/lib/types";
 import { Color, getTagColor, getTagKey } from "@/lib/utils/tags";
 
-const _emptyClipList: ClipAnnotationTag[] = [];
-const _emptySEList: SoundEventAnnotationTag[] = [];
+const _emptyList: types.TagCount[] = [];
 
 export default function ProjectTagsSummary({
   annotationProject,
   isLoading = false,
-  clipTags = _emptyClipList,
-  soundEventTags = _emptySEList,
+  clipTags = _emptyList,
+  soundEventTags = _emptyList,
   onAddTags,
   ...props
 }: {
-  annotationProject: AnnotationProject;
+  annotationProject: types.AnnotationProject;
   isLoading?: boolean;
-  clipTags?: ClipAnnotationTag[];
-  soundEventTags?: SoundEventAnnotationTag[];
+  clipTags?: types.TagCount[];
+  soundEventTags?: types.TagCount[];
   onAddTags?: () => void;
 } & Omit<ComponentProps<typeof TagCounts>, "counts">) {
   const projectTags = useMemo(
@@ -89,12 +83,6 @@ function NoTags() {
   );
 }
 
-type TagCount = {
-  tag: Tag;
-  clipCount: number;
-  soundEventCount: number;
-};
-
 function TagCounts({
   counts,
   sortBy: initialSortBy = "clip",
@@ -102,15 +90,15 @@ function TagCounts({
   onClickTag,
   tagColorFn = getTagColor,
 }: {
-  counts: TagCount[];
+  counts: { tag: types.Tag; clipCount: number; soundEventCount: number }[];
   sortBy?: "clip" | "soundEvent" | "-clip" | "-soundEvent" | "tag" | "-tag";
   showMax?: number;
-  onClickTag?: (tag: Tag) => void;
-  tagColorFn?: (tag: Tag) => Color;
+  onClickTag?: (tag: types.Tag) => void;
+  tagColorFn?: (tag: types.Tag) => Color;
 }) {
   const [sortBy, setSortBy] = useState(initialSortBy);
 
-  const sortFn: (a: TagCount, b: TagCount) => number = useMemo(() => {
+  const sortFn: (a: TagRow, b: TagRow) => number = useMemo(() => {
     switch (sortBy) {
       case "clip":
         return (a, b) => (a.clipCount < b.clipCount ? 1 : -1);
@@ -131,7 +119,7 @@ function TagCounts({
 
   const sortedCount = useMemo(() => counts.sort(sortFn), [counts, sortFn]);
   const { items, setSearch, setLimit, limit } = useListWithSearch<{
-    tag: Tag;
+    tag: types.Tag;
     clipCount: number;
     soundEventCount: number;
   }>({
@@ -210,26 +198,26 @@ function NoAnnotationTags() {
   );
 }
 
+type TagRow = {
+  tag: types.Tag;
+  clipCount: number;
+  soundEventCount: number;
+};
+
 function getTagCount({
   projectTags,
   clipTags,
   soundEventTags,
 }: {
-  projectTags: Tag[];
-  clipTags: ClipAnnotationTag[];
-  soundEventTags: SoundEventAnnotationTag[];
-}): {
-  tag: Tag;
-  clipCount: number;
-  soundEventCount: number;
-}[] {
-  const mapping: Map<
-    string,
-    { tag: Tag; clipCount: number; soundEventCount: number }
-  > = new Map();
+  projectTags: types.Tag[];
+  clipTags: types.TagCount[];
+  soundEventTags: types.TagCount[];
+}): TagRow[] {
+  const mapping: Map<string, TagRow> = new Map();
 
   for (const projectTag of projectTags) {
     const key = getTagKey(projectTag);
+
     if (!mapping.has(key)) {
       mapping.set(key, {
         tag: projectTag,
@@ -241,26 +229,38 @@ function getTagCount({
 
   for (const clipTag of clipTags) {
     const key = getTagKey(clipTag.tag);
-    if (!mapping.has(key)) {
-      mapping.set(key, {
+
+    let prev = mapping.get(key);
+
+    if (prev === undefined) {
+      prev = {
         tag: clipTag.tag,
         clipCount: 0,
         soundEventCount: 0,
-      });
+      };
+
+      mapping.set(key, prev);
     }
-    mapping.get(key)!.clipCount++;
+
+    prev.clipCount += clipTag.count;
   }
 
   for (const soundEventTag of soundEventTags) {
     const key = getTagKey(soundEventTag.tag);
-    if (!mapping.has(key)) {
-      mapping.set(key, {
+
+    let prev = mapping.get(key);
+
+    if (prev === undefined) {
+      prev = {
         tag: soundEventTag.tag,
         clipCount: 0,
         soundEventCount: 0,
-      });
+      };
+
+      mapping.set(key, prev);
     }
-    mapping.get(key)!.soundEventCount++;
+
+    prev.soundEventCount += soundEventTag.count;
   }
 
   return Array.from(mapping.values());
@@ -275,13 +275,13 @@ function TagTable({
   onClickTag,
   tagColorFn = getTagColor,
 }: {
-  items: TagCount[];
+  items: TagRow[];
   sortBy: "clip" | "soundEvent" | "-clip" | "-soundEvent" | "tag" | "-tag";
   onSortByTag?: () => void;
   onSortByClip?: () => void;
   onSortBySoundEvent?: () => void;
-  onClickTag?: (tag: Tag) => void;
-  tagColorFn?: (tag: Tag) => Color;
+  onClickTag?: (tag: types.Tag) => void;
+  tagColorFn?: (tag: types.Tag) => Color;
 }) {
   return (
     <table className="min-w-full text-left table-fixed">

@@ -26,7 +26,7 @@ export default function DatasetTagsSummary({ dataset }: { dataset: Dataset }) {
     items: tags,
   } = usePagedQuery({
     name: "recording_tags",
-    queryFn: api.tags.getRecordingTags,
+    queryFn: api.tags.getRecordingCounts,
     filter,
     pageSize: -1,
   });

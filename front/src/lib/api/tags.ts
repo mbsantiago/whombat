@@ -9,6 +9,9 @@ const DEFAULT_ENDPOINTS = {
   getRecordingTags: "/api/v1/tags/recording_tags/",
   getClipAnnotationTags: "/api/v1/tags/clip_annotation_tags/",
   getSoundEventAnnotationTags: "/api/v1/tags/sound_event_annotation_tags/",
+  getRecordingCounts: "/api/v1/tags/recording_counts/",
+  getClipAnnotationCounts: "/api/v1/tags/clip_annotation_counts/",
+  getSoundEventAnnotationCounts: "/api/v1/tags/sound_event_annotation_counts/",
   create: "/api/v1/tags/",
 };
 
@@ -61,6 +64,25 @@ export function registerTagAPI(
     return Page(schemas.RecordingTagSchema).parse(response.data);
   }
 
+  async function getRecordingCounts(
+    query: types.GetMany & types.RecordingTagFilter,
+  ): Promise<types.Page<types.TagCount>> {
+    const params = GetMany(schemas.RecordingTagFilterSchema).parse(query);
+    const response = await instance.get(endpoints.getRecordingCounts, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        recording__eq: params.recording?.uuid,
+        dataset__eq: params.dataset?.uuid,
+        tag__key: params.tag?.key,
+        tag__value: params.tag?.value,
+        issue__eq: params.issue,
+      },
+    });
+    return Page(schemas.TagCountSchema).parse(response.data);
+  }
+
   async function getClipAnnotationTags(
     query: types.GetMany & types.ClipAnnotationTagFilter,
   ): Promise<types.Page<types.ClipAnnotationTag>> {
@@ -75,6 +97,22 @@ export function registerTagAPI(
       },
     });
     return Page(schemas.ClipAnnotationTagSchema).parse(response.data);
+  }
+
+  async function getClipAnnotationCounts(
+    query: types.GetMany & types.ClipAnnotationTagFilter,
+  ): Promise<types.Page<types.TagCount>> {
+    const params = GetMany(schemas.ClipAnnotationTagFilterSchema).parse(query);
+    const response = await instance.get(endpoints.getClipAnnotationCounts, {
+      params: {
+        limit: params.limit,
+        offset: params.offset,
+        sort_by: params.sort_by,
+        annotation_project__eq: params.annotation_project?.uuid,
+        evaluation_set__eq: params.evaluation_set?.uuid,
+      },
+    });
+    return Page(schemas.TagCountSchema).parse(response.data);
   }
 
   async function getSoundEventTags(
@@ -95,6 +133,27 @@ export function registerTagAPI(
     return Page(schemas.SoundEventAnnotationTagSchema).parse(response.data);
   }
 
+  async function getSoundEventAnnotationCounts(
+    query: types.GetMany & types.SoundEventAnnotationTagFilter,
+  ): Promise<types.Page<types.TagCount>> {
+    const params = GetMany(schemas.SoundEventAnnotationTagFilterSchema).parse(
+      query,
+    );
+    const response = await instance.get(
+      endpoints.getSoundEventAnnotationCounts,
+      {
+        params: {
+          limit: params.limit,
+          offset: params.offset,
+          sort_by: params.sort_by,
+          annotation_project__eq: params.annotation_project?.uuid,
+          evaluation_set__eq: params.evaluation_set?.uuid,
+        },
+      },
+    );
+    return Page(schemas.TagCountSchema).parse(response.data);
+  }
+
   async function createTag(data: types.Tag): Promise<types.Tag> {
     const response = await instance.post(endpoints.create, data);
     return schemas.TagSchema.parse(response.data);
@@ -106,5 +165,8 @@ export function registerTagAPI(
     getRecordingTags,
     getClipAnnotationTags,
     getSoundEventTags,
+    getRecordingCounts,
+    getClipAnnotationCounts,
+    getSoundEventAnnotationCounts,
   } as const;
 }

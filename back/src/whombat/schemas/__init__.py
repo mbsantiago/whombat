@@ -111,7 +111,13 @@ from whombat.schemas.spectrograms import (
     STFTParameters,
     Window,
 )
-from whombat.schemas.tags import PredictedTag, Tag, TagCreate, TagUpdate
+from whombat.schemas.tags import (
+    PredictedTag,
+    Tag,
+    TagCount,
+    TagCreate,
+    TagUpdate,
+)
 from whombat.schemas.user_runs import UserRun, UserRunCreate, UserRunUpdate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
@@ -195,6 +201,7 @@ __all__ = [
     "SoundEventUpdate",
     "SpectrogramParameters",
     "Tag",
+    "TagCount",
     "TagCreate",
     "TagUpdate",
     "User",

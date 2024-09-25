@@ -38,7 +38,7 @@ export default function AnnotationProjectTagsSummary({
     query: { isLoading: isLoadingClipTags },
   } = usePagedQuery({
     name: "clip_annotation_tags",
-    queryFn: api.tags.getClipAnnotationTags,
+    queryFn: api.tags.getClipAnnotationCounts,
     pageSize: -1,
     filter,
   });
@@ -48,7 +48,7 @@ export default function AnnotationProjectTagsSummary({
     query: { isLoading: isLoadingSoundEventTags },
   } = usePagedQuery({
     name: "sound_event_annotation_tags",
-    queryFn: api.tags.getSoundEventTags,
+    queryFn: api.tags.getSoundEventAnnotationCounts,
     pageSize: -1,
     filter,
   });

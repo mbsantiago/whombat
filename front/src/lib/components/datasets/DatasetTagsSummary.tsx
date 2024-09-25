@@ -1,15 +1,14 @@
-import { type ComponentProps, useMemo } from "react";
+import { type ComponentProps } from "react";
 
 import Loading from "@/app/loading";
 
-import Empty from "@/lib/components/ui/Empty";
 import { TagsIcon } from "@/lib/components/icons";
 import TagCount from "@/lib/components/tags/TagCount";
 import Card from "@/lib/components/ui/Card";
+import Empty from "@/lib/components/ui/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
 
-import type { RecordingTag, Tag } from "@/lib/types";
-import { getTagKey } from "@/lib/utils/tags";
+import type * as types from "@/lib/types";
 
 /**
  * Component to display a summary of tags for a dataset.
@@ -23,16 +22,9 @@ export default function DatasetTagsSummary({
   isLoading = false,
   ...props
 }: {
-  tags: RecordingTag[];
+  tags: types.TagCount[];
   isLoading?: boolean;
 } & Omit<ComponentProps<typeof TagCount>, "tagCount">) {
-  const tagCount: { tag: Tag; count: number }[] = useMemo(() => {
-    if (isLoading || tags == null) {
-      return [];
-    }
-    return getTagCount(tags);
-  }, [tags, isLoading]);
-
   return (
     <Card>
       <H3>
@@ -44,43 +36,13 @@ export default function DatasetTagsSummary({
       </p>
       {isLoading ? (
         <Loading />
-      ) : tagCount.length === 0 ? (
+      ) : tags.length === 0 ? (
         <NoTagsRecorded />
       ) : (
-        <TagCount tagCount={tagCount} {...props} />
+        <TagCount tagCount={tags} {...props} />
       )}
     </Card>
   );
-}
-
-/**
- * Counts the occurrences of unique tags and returns them in descending order
- * of frequency.
- *
- * @param tags - An array of tag instances.
- * @returns An array of tuples containing tags and their respective counts.
- */
-function getTagCount(tags: RecordingTag[]): {
-  tag: Tag;
-  count: number;
-}[] {
-  const tagCount = new Map<string, number>();
-  const tagMap = new Map<string, Tag>();
-
-  tags.forEach(({ tag }) => {
-    const key = getTagKey(tag);
-    if (!tagMap.has(key)) {
-      tagMap.set(key, tag);
-    }
-    tagCount.set(key, (tagCount.get(key) ?? 0) + 1);
-  });
-
-  return Array.from(tagCount.entries())
-    .sort((a, b) => b[1] - a[1])
-    .map(([id, count]) => ({
-      tag: tagMap.get(id) as Tag,
-      count,
-    }));
 }
 
 /**

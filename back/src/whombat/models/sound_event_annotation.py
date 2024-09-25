@@ -226,12 +226,20 @@ class SoundEventAnnotationTag(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+
     sound_event_annotation_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("sound_event_annotation.id")
+        ForeignKey("sound_event_annotation.id"),
+        index=True,
     )
-    tag_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("tag.id"))
+
+    tag_id: orm.Mapped[int] = orm.mapped_column(
+        ForeignKey("tag.id"),
+        index=True,
+    )
+
     created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
-        ForeignKey("user.id")
+        ForeignKey("user.id"),
+        index=True,
     )
 
     # Relationships
@@ -242,12 +250,14 @@ class SoundEventAnnotationTag(Base):
             repr=False,
         )
     )
+
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="sound_event_annotation_tags",
         lazy="joined",
         init=False,
         repr=False,
     )
+
     created_by: orm.Mapped[Optional[User]] = orm.relationship(
         back_populates="sound_event_annotation_tags",
         lazy="joined",

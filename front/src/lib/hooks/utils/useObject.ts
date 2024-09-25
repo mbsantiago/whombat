@@ -288,6 +288,7 @@ export default function useObject<T>({
   enabled = true,
   queryFn,
   onError,
+  staleTime = Infinity,
   ...rest
 }: UseObjectProps<T>): ObjectQuery<T> {
   const client = useQueryClient();
@@ -296,6 +297,7 @@ export default function useObject<T>({
     queryKey: [name, id],
     queryFn: () => queryFn(id),
     enabled,
+    staleTime,
     ...rest,
   });
 

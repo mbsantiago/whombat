@@ -6,10 +6,11 @@ from soundevent.io.aoef.clip_annotations import ClipAnnotationsObject
 from soundevent.io.aoef.sound_event_annotation import (
     SoundEventAnnotationObject,
 )
-from sqlalchemy import insert, select, tuple_
+from sqlalchemy import bindparam, insert, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
+from whombat.api import common
 from whombat.api.io.aoef.common import get_mapping
 from whombat.api.io.aoef.notes import import_notes
 
@@ -273,27 +274,33 @@ async def _create_sound_event_annotation_tags(
     if not values:
         return
 
-    stmt = select(
-        models.SoundEventAnnotationTag.sound_event_annotation_id,
-        models.SoundEventAnnotationTag.tag_id,
-    ).where(
-        tuple_(
+    result = await common.select_batched(
+        session,
+        statement=select(
             models.SoundEventAnnotationTag.sound_event_annotation_id,
             models.SoundEventAnnotationTag.tag_id,
-        ).in_([(v["sound_event_annotation_id"], v["tag_id"]) for v in values])
+        ).where(
+            tuple_(
+                models.SoundEventAnnotationTag.sound_event_annotation_id,
+                models.SoundEventAnnotationTag.tag_id,
+            ).in_(bindparam("values"))
+        ),
+        values=[(v["sound_event_annotation_id"], v["tag_id"]) for v in values],
     )
-    result = await session.execute(stmt)
 
     missing = [
         v
         for v in values
-        if (v["sound_event_annotation_id"], v["tag_id"]) not in result.all()
+        if (v["sound_event_annotation_id"], v["tag_id"]) not in result
     ]
     if not missing:
         return
 
-    stmt = insert(models.SoundEventAnnotationTag)
-    await session.execute(stmt, missing)
+    await common.insert_batched(
+        session,
+        model=models.SoundEventAnnotationTag,
+        values=missing,
+    )
 
 
 def get_clip_annotations_uuids(

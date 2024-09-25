@@ -32,7 +32,9 @@ export function computeAnnotationTasksProgress(
 
     if (isCompleted && !needsReview) {
       completed += 1;
-    } else {
+    }
+
+    if (!isCompleted) {
       missing += 1;
     }
 
