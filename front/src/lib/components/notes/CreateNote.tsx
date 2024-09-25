@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { IssueIcon, NotesIcon } from "@/lib/components/icons";
-import { InputGroup, TextArea } from "@/lib/components/inputs/index";
+import { Group, TextArea } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 
 import type { NoteCreate } from "@/lib/types";
@@ -15,7 +15,7 @@ export default function CreateNoteForm({
 
   return (
     <div className="flex flex-col p-4 w-full">
-      <InputGroup
+      <Group
         label="Add a note"
         name="message"
         help="Write the note message and click on the type of note you want to create."
@@ -26,7 +26,7 @@ export default function CreateNoteForm({
           placeholder="Type your note here..."
           onChange={(e) => setMessage(e.target.value)}
         />
-      </InputGroup>
+      </Group>
       <div className="flex flex-row gap-4 justify-end">
         <Button
           variant="danger"

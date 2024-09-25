@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 
-import TableCheckbox from "./TableCheckbox";
+import Checkbox from "./Checkbox";
 
-const meta: Meta<typeof TableCheckbox> = {
-  title: "Table/Checkbox",
-  component: TableCheckbox,
+const meta: Meta<typeof Checkbox> = {
+  title: "Inputs/Checkbox",
+  component: Checkbox,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof TableCheckbox>;
+type Story = StoryObj<typeof Checkbox>;
 
 export const Checked: Story = {
   args: {

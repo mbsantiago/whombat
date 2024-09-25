@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 
 import { CheckIcon, CloseIcon } from "@/lib/components/icons";
-import Checkbox from "@/lib/components/tables/TableCheckbox";
+import Checkbox from "@/lib/components/inputs/Checkbox";
 import TagSearchBar from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
 

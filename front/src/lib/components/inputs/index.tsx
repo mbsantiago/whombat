@@ -1,9 +1,11 @@
 export { default as Input } from "./Input";
-export { default as InputGroup } from "./InputGroup";
+export { default as Group } from "./InputGroup";
 export { default as Location } from "./Location";
 export { default as RangeSlider } from "./RangeSlider";
 export { default as Select } from "./Select";
 export { default as Slider } from "./Slider";
 export { default as Submit } from "./Submit";
+export { default as Checkbox } from "./Checkbox";
 export { default as TextArea } from "./TextArea";
 export { default as Toggle } from "./Toggle";
+export { default as ToggleButton } from "./ToggleButton";

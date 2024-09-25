@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { CloseIcon, DateIcon } from "@/lib/components/icons";
-import { Input, InputGroup } from "@/lib/components/inputs";
+import { Input, Group } from "@/lib/components/inputs";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import Popover from "@/lib/components/ui/Popover";
@@ -77,13 +77,13 @@ export default function RecordingDate({
     <Popover button={<DateButton date={date} />}>
       {() => (
         <Card className="bg-stone-100 dark:bg-stone-800">
-          <InputGroup
+          <Group
             name="date"
             label="Date"
             help="Change date of recording. Format: YYYY-MM-DD"
           >
             <Input type="date" {...register("date")} value={value} />
-          </InputGroup>
+          </Group>
           <Button
             mode="text"
             variant="danger"

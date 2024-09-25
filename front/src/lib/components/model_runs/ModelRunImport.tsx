@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs";
+import { Input, Group, Submit } from "@/lib/components/inputs";
 
 import { ModelRunImportSchema } from "@/lib/schemas";
 import type { EvaluationSet, ModelRunImport } from "@/lib/types";
@@ -39,14 +39,14 @@ export default function ModelRunImport({
       className="flex flex-col gap-4"
       onSubmit={handleSubmit(handleOnCreate)}
     >
-      <InputGroup
+      <Group
         name="model_run"
         label="Select an Model Run file to import"
         help="The file must be in AOEF format"
         error={errors.model_run?.message}
       >
         <Input type="file" {...register("model_run")} required />
-      </InputGroup>
+      </Group>
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import

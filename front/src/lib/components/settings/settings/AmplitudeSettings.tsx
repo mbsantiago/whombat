@@ -2,7 +2,7 @@ import { type Control, Controller } from "react-hook-form";
 
 import Select from "@/lib/components/inputs/Select";
 import Toggle from "@/lib/components/inputs/Toggle";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 
 import type { SpectrogramSettings } from "@/lib/types";
 
@@ -28,7 +28,7 @@ export default function AmplitudeSettings({
         name="scale"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="scale"
             label="Amplitude Scale"
             help="Select the amplitude scale to use for the spectrogram."
@@ -39,14 +39,14 @@ export default function AmplitudeSettings({
               onChange={field.onChange}
               options={Object.values(AMPLITUDE_SCALES)}
             />
-          </InputGroup>
+          </Group>
         )}
       />
       <Controller
         name="normalize"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="normalize"
             label="Normalize Amplitudes"
             help="Toggle to normalize amplitude values."
@@ -57,7 +57,7 @@ export default function AmplitudeSettings({
               isSelected={field.value}
               onChange={field.onChange}
             />
-          </InputGroup>
+          </Group>
         )}
       />
     </SettingsSection>

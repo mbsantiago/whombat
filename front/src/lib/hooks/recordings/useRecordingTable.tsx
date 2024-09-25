@@ -14,7 +14,7 @@ import {
   TimeIcon,
 } from "@/lib/components/icons";
 import TableCell from "@/lib/components/tables/TableCell";
-import Checkbox from "@/lib/components/tables/TableCheckbox";
+import Checkbox from "@/lib/components/inputs/Checkbox";
 import TableHeader from "@/lib/components/tables/TableHeader";
 import TableInput from "@/lib/components/tables/TableInput";
 import TableMap from "@/lib/components/tables/TableMap";

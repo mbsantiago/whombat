@@ -2,6 +2,24 @@ import { z } from "zod";
 
 import * as schemas from "@/lib/schemas";
 
+export type FilterField<T extends Object> = keyof T;
+
+export type FilterFieldSet<T extends Object> = <K extends keyof T>(
+  key: K,
+  value: T[K],
+  force?: boolean,
+) => void;
+
+export type FilterFieldGet<T extends Object> = <K extends keyof T>(
+  key: K,
+) => T[K];
+
+export type FilterFieldClear<T extends Object> = <K extends keyof T>(
+  key: K,
+) => void;
+
+export type FilterUpdate<T> = (value: Partial<T>) => void;
+
 /**
  * Represents a generic filter state object with various utility functions.
  */
@@ -14,24 +32,24 @@ export type Filter<T extends Object> = {
    * @param value - The value to set for the key.
    * @param force - If true, sets the value even if the key is fixed.
    */
-  set: <K extends keyof T>(key: K, value: T[K], force?: boolean) => void;
+  set: FilterFieldSet<T>;
   /**
    * Updates the filter state with a partial object.
    * @param value - The partial object to update the filter state with.
    * */
-  update: (value: Partial<T>) => void;
+  update: FilterUpdate<T>;
   /**
    * Gets the value for a specific key in the filter state.
    * @param key - The key to get.
    * @returns The value for the specified key.
    */
-  get: <K extends keyof T>(key: K) => T[K];
+  get: FilterFieldGet<T>;
   /**
    * Clears the value for a specific key in the filter state.
    * @param key - The key to clear.
    * @param force - If true, clears the value even if the key is fixed.
    */
-  clear: <K extends keyof T>(key: K, force?: boolean) => void;
+  clear: FilterFieldClear<T>;
   /** Resets the filter state to its default and fixed values. */
   reset: () => void;
   /** Submits the current filter state.

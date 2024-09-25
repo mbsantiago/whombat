@@ -4,7 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import {
   Input,
-  InputGroup,
+  Group,
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
@@ -38,23 +38,23 @@ export default function EvaluationSetCreateComponent({
 
   return (
     <form className="w-full" onSubmit={handleSubmit(submit)}>
-      <InputGroup
+      <Group
         label="Name"
         name="name"
         help="Give this evaluation set a descriptive name for easy reference."
         error={errors.name?.message}
       >
         <Input {...register("name")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Description"
         name="description"
         help="Briefly explain the goals and scope of this evaluation. What are you hoping to assess?"
         error={errors.description?.message}
       >
         <TextArea rows={6} {...register("description")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         name="predictionType"
         label="Select the prediction type to evaluate"
         help="Choose the type of task or objective you want to evaluate."
@@ -72,7 +72,7 @@ export default function EvaluationSetCreateComponent({
             />
           )}
         />
-      </InputGroup>
+      </Group>
       <Submit>Create Evaluation Set</Submit>
     </form>
   );

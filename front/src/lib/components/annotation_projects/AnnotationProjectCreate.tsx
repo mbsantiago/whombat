@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import {
   Input,
-  InputGroup,
+  Group,
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
@@ -33,30 +33,30 @@ export default function CreateProject({
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <InputGroup
+      <Group
         label="Name"
         name="name"
         help="Please provide a name for the Annotation Project."
         error={errors.name?.message}
       >
         <Input {...register("name")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Description"
         name="description"
         help="Describe the purpose of the project"
         error={errors.description?.message}
       >
         <TextArea rows={6} {...register("description")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Instructions"
         name="annotation_instructions"
         help="Write instructions for annotators."
         error={errors.annotation_instructions?.message}
       >
         <TextArea rows={10} {...register("annotation_instructions")} />
-      </InputGroup>
+      </Group>
       <Submit>Create Project</Submit>
     </form>
   );

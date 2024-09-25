@@ -2,7 +2,7 @@ import { type Control, Controller } from "react-hook-form";
 
 import Select from "@/lib/components/inputs/Select";
 import Slider from "@/lib/components/inputs/Slider";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 
 import {
   MAX_FFT_SIZE,
@@ -53,7 +53,7 @@ export default function STFTSettings({
         name="window_size"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="windowSize"
             label="Window size"
             help="Select the size of the window used for the STFT, in seconds."
@@ -67,14 +67,14 @@ export default function STFTSettings({
               maxValue={MAX_FFT_SIZE / samplerate}
               step={0.001}
             />
-          </InputGroup>
+          </Group>
         )}
       />
       <Controller
         name="overlap"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="overlap"
             label="Overlap"
             help="Select the fraction of window size to overlap between windows."
@@ -88,14 +88,14 @@ export default function STFTSettings({
               maxValue={MAX_HOP_FRACTION}
               step={0.01}
             />
-          </InputGroup>
+          </Group>
         )}
       />
       <Controller
         name="window"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="window"
             label="Window"
             help="Select the window function to use for the STFT."
@@ -106,7 +106,7 @@ export default function STFTSettings({
               onChange={field.onChange}
               options={Object.values(SPECTROGRAM_WINDOWS)}
             />
-          </InputGroup>
+          </Group>
         )}
       />
     </SettingsSection>

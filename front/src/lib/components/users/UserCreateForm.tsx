@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 
 import api from "@/app/api";
 
-import { Input, InputGroup } from "@/lib/components/inputs/index";
+import { Input, Group } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 
 import { UserCreateSchema } from "@/lib/schemas";
@@ -62,46 +62,46 @@ export default function UserCreateForm(props: {
 
   return (
     <form className="flex flex-col gap-1" onSubmit={handleSubmit(onSubmit)}>
-      <InputGroup
+      <Group
         label="Username"
         name="username"
         help="This name will be used to identify you in the app."
         error={errors.username?.message}
       >
         <Input {...register("username")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Name"
         name="name"
         error={errors.name?.message}
         help="Please provide your full name. This is especially helpful for sharing your annotations, ensuring correct attribution."
       >
         <Input {...register("name")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Email"
         name="email"
         error={errors.email?.message}
         help="Provide a valid email address. While not displayed in the app, it helps others contact you regarding annotated data."
       >
         <Input type="email" {...register("email")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Password"
         name="password"
         error={errors.password?.message}
         help="Create a strong password with at least 8 characters, including one number and one letter."
       >
         <Input type="password" {...register("password")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         label="Confirm password"
         name="password_confirm"
         error={errors.password_confirm?.message}
         help="Enter the same password again."
       >
         <Input type="password" {...register("password_confirm")} />
-      </InputGroup>
+      </Group>
       <div className="flex flex-row justify-center">
         <Button type="submit" variant="primary">
           Create account

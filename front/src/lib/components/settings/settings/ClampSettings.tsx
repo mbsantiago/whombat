@@ -1,7 +1,7 @@
 import { type Control, useController } from "react-hook-form";
 
 import RangeSlider from "@/lib/components/inputs/RangeSlider";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 
 import { MIN_DB } from "@/lib/constants";
 import type { SpectrogramSettings } from "@/lib/types";
@@ -25,7 +25,7 @@ export default function ClampSettings({
 
   return (
     <SettingsSection>
-      <InputGroup
+      <Group
         name="clampValues"
         label="Min and Max Amplitude values"
         help="Select the min and max amplitude values to clamp to."
@@ -45,7 +45,7 @@ export default function ClampSettings({
             maxDB.field.onChange(max);
           }}
         />
-      </InputGroup>
+      </Group>
     </SettingsSection>
   );
 }

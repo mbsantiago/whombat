@@ -1,12 +1,12 @@
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 
 import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import FilterBar from "@/lib/components/filters/FilterBar";
-import FilterMenu from "@/lib/components/filters/FilterMenu";
+import FilterButton from "@/lib/components/filters/FilterButton";
 import taskFilterDefs from "@/lib/components/filters/tasks";
-import { FilterIcon, NextIcon, PreviousIcon } from "@/lib/components/icons";
+import { NextIcon, PreviousIcon } from "@/lib/components/icons";
 import Toggle from "@/lib/components/inputs/Toggle";
-import Button, { getButtonClassName } from "@/lib/components/ui/Button";
+import Button from "@/lib/components/ui/Button";
 import Dialog from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
@@ -31,6 +31,7 @@ export default function AnnotationProgress({
   onPrevious,
   onSetFilterField,
   onClearFilterField,
+  FilterMenu,
 }: {
   instructions: string;
   tasks: AnnotationTask[];
@@ -44,6 +45,7 @@ export default function AnnotationProgress({
   current?: number | null;
   onNext?: () => void;
   onPrevious?: () => void;
+  FilterMenu?: FC<{ close: () => void }>;
 }) {
   const {
     missing: pending,
@@ -116,23 +118,11 @@ export default function AnnotationProgress({
             }}
           />
         </div>
-        <FilterMenu
-          filterDef={taskFilterDefs}
-          onSetFilterField={onSetFilterField}
-          className={getButtonClassName({
-            variant: "info",
-            mode: "text",
-            padding: "p-1",
-          })}
-          button={
-            <>
-              <FilterIcon className="inline-block mr-1 w-5 h-5" />
-              <span className="text-sm align-middle whitespace-nowrap">
-                Filters:
-              </span>
-            </>
+        <FilterButton title="Filter Tasks">
+          {({ close }) =>
+            FilterMenu == null ? null : <FilterMenu close={close} />
           }
-        />
+        </FilterButton>
         <div className="overflow-x-auto">
           <FilterBar
             filter={filter}

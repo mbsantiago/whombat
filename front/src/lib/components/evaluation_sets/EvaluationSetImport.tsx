@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
+import { Input, Group, Submit } from "@/lib/components/inputs/index";
 
 import { EvaluationSetImportSchema } from "@/lib/schemas";
 import { EvaluationSetImport } from "@/lib/types";
@@ -35,15 +35,15 @@ export default function EvaluationSetImportComponent({
       className="flex flex-col gap-4"
       onSubmit={handleSubmit(handleOnImport)}
     >
-      <InputGroup
+      <Group
         name="evaluation_set"
         label="Select an Evaluation Set file to import"
         help="The file must be in AOEF format"
         error={errors.evaluation_set?.message}
       >
         <Input type="file" {...register("evaluation_set")} required />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         name="predictionType"
         label="Select the prediction type to evaluate"
         help="Choose the type of task or objective you want to evaluate."
@@ -61,7 +61,7 @@ export default function EvaluationSetImportComponent({
             />
           )}
         />
-      </InputGroup>
+      </Group>
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import

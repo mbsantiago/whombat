@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import {
   Input,
-  InputGroup,
+  Group,
   Submit,
   TextArea,
 } from "@/lib/components/inputs/index";
@@ -38,30 +38,30 @@ export default function CreateDataset({
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <InputGroup
+      <Group
         name="name"
         label="Name"
         help="Please provide a name for the dataset."
         error={errors.name?.message}
       >
         <Input {...register("name")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         name="description"
         label="Description"
         help="Describe the dataset."
         error={errors.description?.message}
       >
         <TextArea {...register("description")} />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         name="audio_dir"
         label="Audio Directory"
         help="Provide the path to the folder where the dataset recordings reside."
         error={errors.name?.message}
       >
         <Input {...register("audio_dir")} />
-      </InputGroup>
+      </Group>
       <div className="mb-3">
         <Submit>Create Dataset</Submit>
       </div>

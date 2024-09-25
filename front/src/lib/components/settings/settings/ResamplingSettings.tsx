@@ -1,7 +1,7 @@
 import { type Control, Controller, useController } from "react-hook-form";
 
 import Toggle from "@/lib/components/inputs/Toggle";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
+import { Input, Group } from "@/lib/components/inputs/index";
 
 import { MAX_SAMPLERATE, MIN_SAMPLERATE } from "@/lib/constants";
 import type { AudioSettings } from "@/lib/types";
@@ -22,7 +22,7 @@ export default function ResamplingSettings({
 
   return (
     <SettingsSection>
-      <InputGroup
+      <Group
         name="resample"
         label="Resampling"
         help={
@@ -36,13 +36,13 @@ export default function ResamplingSettings({
           isSelected={resample.field.value ?? false}
           onChange={resample.field.onChange}
         />
-      </InputGroup>
+      </Group>
       {resample.field.value && (
         <Controller
           name="samplerate"
           control={control}
           render={({ field: { value, ...field }, fieldState }) => (
-            <InputGroup
+            <Group
               name="resampleRate"
               label="Target rate"
               help="Select the sampling rate you want to resample to, in Hertz."
@@ -55,7 +55,7 @@ export default function ResamplingSettings({
                 max={MAX_SAMPLERATE}
                 min={MIN_SAMPLERATE}
               />
-            </InputGroup>
+            </Group>
           )}
         />
       )}

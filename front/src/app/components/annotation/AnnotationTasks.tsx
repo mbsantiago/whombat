@@ -7,6 +7,7 @@ import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings"
 import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
 import AnnotationTaskBase from "@/lib/components/annotation/AnnotationTask";
 import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
+import AnnotationTaskFilter from "@/lib/components/filters/AnnotationTaskFilter";
 
 import useAnnotateTasks from "@/lib/hooks/annotation/useAnnotateTasks";
 import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
@@ -14,8 +15,8 @@ import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPale
 import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
-import ClipAnnotationSpectrogram from "./AnnotationClip";
 import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
+import ClipAnnotationSpectrogram from "./AnnotationClip";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";
 
@@ -85,6 +86,13 @@ export default function AnnotateTasks({
           fixedFilterFields={["annotation_project"]}
           onSetFilterField={tasks.setFilter}
           onClearFilterField={tasks.clearFilter}
+          FilterMenu={() => (
+            <AnnotationTaskFilter
+              filter={tasks.filter}
+              onChangeField={tasks.setFilter}
+              onClearField={tasks.clearFilter}
+            />
+          )}
         />
       }
       Context={

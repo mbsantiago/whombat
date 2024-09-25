@@ -8,7 +8,7 @@ import { z } from "zod";
 import api from "@/app/api";
 
 import { WhombatIcon } from "@/lib/components/icons";
-import { Input, InputGroup } from "@/lib/components/inputs/index";
+import { Input, Group } from "@/lib/components/inputs/index";
 import Info from "@/lib/components/ui/Info";
 import Link from "@/lib/components/ui/Link";
 
@@ -66,22 +66,22 @@ export default function LoginForm() {
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
-          <InputGroup
+          <Group
             label="Username"
             name="username"
             error={errors.username?.message}
           >
             <Input {...register("username")} />
-          </InputGroup>
+          </Group>
         </div>
         <div className="mb-3">
-          <InputGroup
+          <Group
             label="Password"
             name="password"
             error={errors.password?.message}
           >
             <Input type="password" {...register("password")} />
-          </InputGroup>
+          </Group>
         </div>
         <div>
           <Input type="submit" value="Sign in" />

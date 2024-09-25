@@ -136,7 +136,7 @@ function SelectRecordings({
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <inputs.InputGroup
+        <inputs.Group
           name="recording-filter"
           label="Filter recordings"
           help="Select a subset for clip extraction by applying filters."
@@ -162,8 +162,8 @@ function SelectRecordings({
               }
             />
           </div>
-        </inputs.InputGroup>
-        <inputs.InputGroup
+        </inputs.Group>
+        <inputs.Group
           name="subsample"
           label="Subsample recordings"
           help="Set a maximum for clip extraction. A random subset will be selected; all if not specified."
@@ -185,7 +185,7 @@ function SelectRecordings({
               disabled={!subsample}
             />
           </div>
-        </inputs.InputGroup>
+        </inputs.Group>
       </div>
     </ui.Card>
   );
@@ -222,16 +222,16 @@ function ExtractClips({
           Customize how to extract clips from the selected recordings.
         </p>
       </div>
-      <inputs.InputGroup
+      <inputs.Group
         name="clip"
         label="Should Clip"
         help="Enable to extract smaller clips from the recordings; disable to use the entire recording as a clip."
       >
         <inputs.Toggle isSelected={shouldClip} onChange={onToggleClip} />
-      </inputs.InputGroup>
+      </inputs.Group>
       {shouldClip && (
         <>
-          <inputs.InputGroup
+          <inputs.Group
             name="clipLength"
             label="Clip Length"
             help="Specify the duration of each clip in seconds."
@@ -243,8 +243,8 @@ function ExtractClips({
               required
               step={0.1}
             />
-          </inputs.InputGroup>
-          <inputs.InputGroup
+          </inputs.Group>
+          <inputs.Group
             name="overlap"
             label="Overlap"
             help="Define the overlap duration between clips in seconds."
@@ -255,8 +255,8 @@ function ExtractClips({
               onChange={(e) => onSetClipOverlap?.(e.target.valueAsNumber)}
               required
             />
-          </inputs.InputGroup>
-          <inputs.InputGroup
+          </inputs.Group>
+          <inputs.Group
             name="subsample"
             label="Subsample clips"
             help="Set a maximum number of clips to extract from each recording. A random subset will be selected. Leave empty to use all clips."
@@ -276,7 +276,7 @@ function ExtractClips({
                 disabled={!subsampleClip}
               />
             </div>
-          </inputs.InputGroup>
+          </inputs.Group>
         </>
       )}
     </ui.Card>

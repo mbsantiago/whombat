@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { type Control, useController } from "react-hook-form";
 
-import { InputGroup } from "@/lib/components/inputs";
+import { Group } from "@/lib/components/inputs";
 import RangeSlider from "@/lib/components/inputs/RangeSlider";
 
 import type { AudioSettings } from "@/lib/types";
@@ -71,7 +71,7 @@ export default function FilteringSettings({
 
   return (
     <SettingsSection>
-      <InputGroup
+      <Group
         name="filtering"
         label="Filtering"
         help="Select the range of frequencies to keep in the spectrogram."
@@ -85,7 +85,7 @@ export default function FilteringSettings({
           value={[lowFreq ?? 0, highFreq ?? maxFreq]}
           onChange={onChangeFreqs}
         />
-      </InputGroup>
+      </Group>
     </SettingsSection>
   );
 }

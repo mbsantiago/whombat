@@ -6,7 +6,7 @@ import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
 import AnnotationProjectSearch from "@/lib/components/annotation_projects/AnnotationProjectSearch";
 import { AddIcon, TasksIcon } from "@/lib/components/icons";
 import Toggle from "@/lib/components/inputs/Toggle";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H2, H3 } from "@/lib/components/ui/Headings";
@@ -73,7 +73,7 @@ function FilterAnnotations({
         filters:
       </p>
       <div>
-        <InputGroup
+        <Group
           label="Completed"
           name="completed"
           help="Only include clips that have been completely annotated."
@@ -88,8 +88,8 @@ function FilterAnnotations({
               }
             }}
           />
-        </InputGroup>
-        <InputGroup
+        </Group>
+        <Group
           label="Verified"
           name="verified"
           help="Only include clips that have been verified."
@@ -104,7 +104,7 @@ function FilterAnnotations({
               }
             }}
           />
-        </InputGroup>
+        </Group>
       </div>
     </Card>
   );

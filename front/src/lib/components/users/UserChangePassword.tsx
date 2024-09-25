@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import useActiveUser from "@/app/hooks/api/useActiveUser";
 
-import { Input, InputGroup } from "@/lib/components/inputs/index";
+import { Input, Group } from "@/lib/components/inputs/index";
 
 import type { User } from "@/lib/types";
 
@@ -41,22 +41,22 @@ export default function UserChangePassword(props: { user: User }) {
   return (
     <form onSubmit={handleSubmit(handleChangePassword)}>
       <div className="mb-3">
-        <InputGroup
+        <Group
           label="Password"
           name="password"
           error={errors.password?.message}
         >
           <Input type="password" {...register("password")} />
-        </InputGroup>
+        </Group>
       </div>
       <div className="mb-3">
-        <InputGroup
+        <Group
           label="Confirm Password"
           name="password2"
           error={errors.password2?.message}
         >
           <Input type="password" {...register("password2")} />
-        </InputGroup>
+        </Group>
       </div>
       <div>
         <Input type="submit" value="Change" />

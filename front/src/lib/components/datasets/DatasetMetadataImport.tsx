@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
+import { Input, Group, Submit } from "@/lib/components/inputs/index";
 
 const DatasetImportSchema = z.object({
   dataset: z.instanceof(FileList),
@@ -46,7 +46,7 @@ export default function DatasetImport({
       className="flex flex-col gap-4"
       onSubmit={handleSubmit(handleOnCreate)}
     >
-      <InputGroup
+      <Group
         name="dataset"
         label="Select a dataset file to import"
         help="The file must be in AOEF format"
@@ -59,8 +59,8 @@ export default function DatasetImport({
           multiple={false}
           accept="application/json"
         />
-      </InputGroup>
-      <InputGroup
+      </Group>
+      <Group
         name="audio_dir"
         label="Audio directory"
         help="Folder where all the dataset recordings are stored"
@@ -71,7 +71,7 @@ export default function DatasetImport({
           placeholder="Path to audio directory..."
           required
         />
-      </InputGroup>
+      </Group>
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import

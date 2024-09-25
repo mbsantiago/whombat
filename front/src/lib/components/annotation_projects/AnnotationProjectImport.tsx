@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, InputGroup, Submit } from "@/lib/components/inputs/index";
+import { Input, Group, Submit } from "@/lib/components/inputs/index";
 
 export default function AnnotationProjectImport({
   onImportAnnotationProject,
@@ -29,14 +29,14 @@ export default function AnnotationProjectImport({
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <InputGroup
+      <Group
         name="annotation_project"
         label="Select a project file to import"
         help="The file must be in AOEF format"
         error={errors.annotation_project?.message}
       >
         <Input type="file" {...register("annotation_project")} required />
-      </InputGroup>
+      </Group>
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />
         Import

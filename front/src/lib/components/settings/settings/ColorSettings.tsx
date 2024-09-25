@@ -1,7 +1,7 @@
 import { type Control, Controller } from "react-hook-form";
 
 import Select from "@/lib/components/inputs/Select";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 
 import type { SpectrogramSettings } from "@/lib/types";
 
@@ -37,7 +37,7 @@ export default function ColorSettings({
         name="cmap"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="colorMap"
             label="Color map"
             help="Select the color map to use for the spectrogram."
@@ -48,7 +48,7 @@ export default function ColorSettings({
               onChange={(colormap) => field.onChange(colormap)}
               options={Object.values(SPECTROGRAM_COLORMAPS)}
             />
-          </InputGroup>
+          </Group>
         )}
       />
     </SettingsSection>

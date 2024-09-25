@@ -1,7 +1,7 @@
 import { type Control, Controller } from "react-hook-form";
 
 import Toggle from "@/lib/components/inputs/Toggle";
-import { InputGroup } from "@/lib/components/inputs/index";
+import { Group } from "@/lib/components/inputs/index";
 
 import type { SpectrogramSettings } from "@/lib/types";
 
@@ -18,7 +18,7 @@ export default function DeNoiseSettings({
         name="pcen"
         control={control}
         render={({ field, fieldState }) => (
-          <InputGroup
+          <Group
             name="denoise"
             label="De-noise"
             help={
@@ -33,7 +33,7 @@ export default function DeNoiseSettings({
               isSelected={field.value ?? false}
               onChange={(denoise) => field.onChange(denoise)}
             />
-          </InputGroup>
+          </Group>
         )}
       />
     </SettingsSection>

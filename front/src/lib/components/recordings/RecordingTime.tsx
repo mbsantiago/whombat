@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { CloseIcon, TimeIcon } from "@/lib/components/icons";
-import { Input, InputGroup } from "@/lib/components/inputs";
+import { Input, Group } from "@/lib/components/inputs";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import Popover from "@/lib/components/ui/Popover";
@@ -82,13 +82,13 @@ export default function RecordingTime({
     <Popover button={<TimeButton time={time} />}>
       {() => (
         <Card className="bg-stone-100 dark:bg-stone-800">
-          <InputGroup name="time" label="Time" error={errors.time?.message}>
+          <Group name="time" label="Time" error={errors.time?.message}>
             <Input
               type="text"
               {...register("time")}
               pattern="^([0-9]{2}:)?[0-9]{2}:[0-9]{2}(\.[0-9]{3})?$"
             />
-          </InputGroup>
+          </Group>
           <Button
             mode="text"
             variant="danger"
