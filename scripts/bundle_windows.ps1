@@ -2,8 +2,8 @@
 cd back\
 
 # Make sure you have python 3.11 installed
-if (-not (python --version) -match "3.11") {
-    Write-Host "Please install python 3.11"
+if (-not (python --version) -match "3.12") {
+    Write-Host "Please install python 3.12"
     exit 1
 }
 
