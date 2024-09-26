@@ -7,3 +7,5 @@ front/tests-examples
 front/playwright-report
 front/test-results
 .backups
+build/whombat
+dist
