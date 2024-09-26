@@ -2,8 +2,8 @@
 # Description: Install whombat python dependencies as an editable package
 
 # Make sure you have python 3.11 installed
-if [[ ! $(python --version) =~ "3.11" ]]; then
-	echo "Please install python 3.11"
+if [[ ! $(python --version) =~ "3.12" ]]; then
+	echo "Please install python 3.12"
 	exit 1
 fi
 

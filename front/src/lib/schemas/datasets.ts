@@ -1,6 +1,7 @@
 "use client";
 
 import { z } from "zod";
+import { FileSchema } from "./common";
 
 export const DatasetSchema = z.object({
   uuid: z.string().uuid(),
@@ -24,6 +25,6 @@ export const DatasetUpdateSchema = z.object({
 });
 
 export const DatasetImportSchema = z.object({
-  dataset: z.instanceof(FileList),
+  dataset: FileSchema,
   audio_dir: z.string(),
 });

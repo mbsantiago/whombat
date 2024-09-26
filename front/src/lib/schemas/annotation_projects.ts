@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 
+import { FileSchema } from "./common";
 import { TagSchema } from "./tags";
 
 export const AnnotationProjectSchema = z.object({
@@ -26,5 +27,5 @@ export const AnnotationProjectUpdateSchema = z.object({
 });
 
 export const AnnotationProjectImportSchema = z.object({
-  annotation_project: z.instanceof(FileList),
+  annotation_project: FileSchema,
 });

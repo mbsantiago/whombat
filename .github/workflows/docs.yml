@@ -25,7 +25,8 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+      - name: Create cache key
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
 
       - name: Restore mkdocs cache
         uses: actions/cache@v3
@@ -47,7 +48,7 @@ jobs:
       - name: Install the project dependencies
         run: |
           cd back
-          uv sync --all-extras --dev
+          uv sync --dev
 
       - name: Build and Deploy Docs
         run: |

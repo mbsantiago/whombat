@@ -7,3 +7,7 @@ export const GetManySchema = z.object({
   offset: z.number().int().gte(0).optional(),
   sort_by: z.string().optional(),
 });
+
+export const FileSchema = z
+  .any()
+  .refine((files) => files?.length == 1, "File is required.");

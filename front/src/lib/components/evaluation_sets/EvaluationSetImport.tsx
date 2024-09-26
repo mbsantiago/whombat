@@ -39,7 +39,7 @@ export default function EvaluationSetImportComponent({
         name="evaluation_set"
         label="Select an Evaluation Set file to import"
         help="The file must be in AOEF format"
-        error={errors.evaluation_set?.message}
+        error={errors.evaluation_set?.message?.toString()}
       >
         <Input type="file" {...register("evaluation_set")} required />
       </Group>

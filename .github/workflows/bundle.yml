@@ -3,6 +3,7 @@ name: Bundle App
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   build-user-guide:
@@ -22,19 +23,26 @@ jobs:
         python-version:
           - "3.12"
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
           - windows-latest
-          - macos-11
+          - macos-12
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Set up uv
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: irm https://astral.sh/uv/install.ps1 | iex
+        shell: powershell
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Retrieve built frontend
         uses: actions/download-artifact@v4
@@ -56,21 +64,22 @@ jobs:
           mkdir dist/
           mv "back/dist/whombat.zip" "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
 
-      - name: Bundle app (Linux)
-        if: ${{ matrix.os == 'linux-latest' }}
+      - name: Bundle app (Linux/macOS)
+        if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == "macos-12" }}
         run: |
           bash scripts/bundle_linux.sh
-          mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
+          mv dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
 
-      - name: Bundle app (macOS)
-        if: ${{ matrix.os == 'macos-11' }}
-        run: |
-          bash scripts/bundle_macos.sh
-          mkdir dist/
-          mv back/dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
+      # Only run if triggered by user
+      - uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        with:
+          name: "${{ matrix.os }}-${{ github.ref_name }}" # Include ref_name for better organization
+          path: "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
 
+      # Only run if release
       - name: Upload release
+        if: ${{ github.event_name == 'release' }}
         uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}

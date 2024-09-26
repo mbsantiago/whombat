@@ -32,6 +32,8 @@ export const EvaluationSetUpdateSchema = z.object({
 });
 
 export const EvaluationSetImportSchema = z.object({
-  evaluation_set: z.instanceof(FileList),
+  evaluation_set: z
+    .any()
+    .refine((files) => files?.length == 1, "File is required."),
   task: z.string(),
 });

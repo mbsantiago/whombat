@@ -18,7 +18,7 @@ jobs:
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.12
         run: uv python install 3.12
 
       - name: Restore uv cache
