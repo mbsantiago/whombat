@@ -22,7 +22,7 @@ export default function Page() {
           <ExplorationCard
             title="Recordings"
             description="Explore the recordings, sort by metadata, discover recording locations on a map"
-            onClick={() => router.push("/exploration/recordings/gallery/")}
+            onClick={() => router.push("/exploration/recordings/list/")}
           />
           <ExplorationCard
             title="Clips"

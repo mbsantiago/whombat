@@ -17,16 +17,15 @@ export default function ExplorationTabs() {
     <SectionTabs
       tabs={[
         <Tab
-          key={"gallery"}
-          active={selectedLayoutSegment === "gallery"}
+          key={"list"}
+          active={selectedLayoutSegment === "list"}
           onClick={() => {
-            router.push(
-              `/exploration/recordings/gallery/?${params.toString()}`,
-            );
+            router.push(`/exploration/recordings/list/?${params.toString()}`);
           }}
-        >)
-          <icons.GalleryIcon className="w-5 h-5 align-middle" />
-          Gallery
+        >
+          )
+          <icons.ListIcon className="w-5 h-5 align-middle" />
+          List
         </Tab>,
         <Tab
           key={"map"}

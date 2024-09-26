@@ -8,6 +8,9 @@ import RecordingSpectrogram from "@/app/components/recordings/RecordingSpectrogr
 
 import useRecordings from "@/app/hooks/api/useRecordings";
 
+import FilterBar from "@/lib/components/filters/FilterBar";
+import FilterMenu from "@/lib/components/filters/FilterMenu";
+import recordingFilterDefs from "@/lib/components/filters/recordings";
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import ListCounts from "@/lib/components/lists/ListCounts";
 import RecordingItem from "@/lib/components/recordings/RecordingItem";
@@ -36,16 +39,34 @@ export default function Page() {
   const {
     items: recordings,
     total,
+    filter,
     pagination,
     isLoading,
   } = useRecordings({
     pageSize: 500,
     filter: initialFilter,
+    fixed: ["latitude", "longitude"],
   });
 
   return (
     <ExplorationLayout
       isLoading={isLoading}
+      Filtering={
+        <div className="flex flex-row">
+          <FilterMenu
+            filterDef={recordingFilterDefs}
+            button="Apply filters"
+            mode="text"
+            onSetFilterField={filter.set}
+          />
+          <FilterBar
+            filterDef={recordingFilterDefs}
+            filter={filter.filter}
+            onClearFilterField={filter.clear}
+            fixedFilterFields={filter.fixed}
+          />
+        </div>
+      }
       Pagination={
         <Pagination
           pagination={pagination}
