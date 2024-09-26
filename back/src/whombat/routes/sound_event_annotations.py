@@ -6,7 +6,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from whombat import api, schemas
-from whombat.api import sound_event_annotations
 from whombat.api.scatterplots.sound_event_annotations import (
     ScatterPlotData,
     get_scatterplot_data,

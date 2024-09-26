@@ -1,4 +1,4 @@
-"""Removed unnecessary id from clip prediction tag
+"""Removed unnecessary id from clip prediction tag.
 
 Revision ID: b9f0f5a64c37
 Revises: ef4af2e772f7
@@ -8,11 +8,8 @@ Create Date: 2024-09-24 16:36:17.757109
 
 from typing import Sequence, Union
 
-import fastapi_users_db_sqlalchemy.generics
 import sqlalchemy as sa
 from alembic import op
-
-import whombat.models.base
 
 # revision identifiers, used by Alembic.
 revision: str = "b9f0f5a64c37"

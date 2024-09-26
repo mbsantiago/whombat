@@ -1,4 +1,4 @@
-"""Removed unique restrinction from dataset audio_dir
+"""Removed unique restrinction from dataset audio_dir.
 
 Revision ID: ef4af2e772f7
 Revises: 03a1d239e06e
@@ -8,11 +8,7 @@ Create Date: 2024-09-18 22:17:23.612669
 
 from typing import Sequence, Union
 
-import fastapi_users_db_sqlalchemy.generics
-import sqlalchemy as sa
 from alembic import op
-
-import whombat.models.base
 
 # revision identifiers, used by Alembic.
 revision: str = "ef4af2e772f7"
