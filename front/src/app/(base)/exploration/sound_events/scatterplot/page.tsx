@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import Pagination from "@/app/components/Pagination";
@@ -12,7 +13,6 @@ import Error from "@/app/error";
 
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import ListCounts from "@/lib/components/lists/ListCounts";
-import SoundEventAnnotationsScatterPlot from "@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot";
 import Empty from "@/lib/components/ui/Empty";
 import Loading from "@/lib/components/ui/Loading";
 
@@ -20,6 +20,14 @@ import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
 
 import type { ScatterPlotData, SoundEventAnnotationFilter } from "@/lib/types";
+
+const SoundEventAnnotationsScatterPlot = dynamic(
+  () =>
+    import(
+      "@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot"
+    ),
+  { ssr: false },
+);
 
 export default function Page() {
   const [selectedSoundEvent, setSelectedSoundEvent] =

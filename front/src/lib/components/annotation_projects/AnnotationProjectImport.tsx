@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, Group, Submit } from "@/lib/components/inputs/index";
+import { Group, Input, Submit } from "@/lib/components/inputs/index";
+import { AnnotationProjectImportSchema } from "@/lib/schemas";
+import type { AnnotationProjectImport } from "@/lib/types";
 
 export default function AnnotationProjectImport({
   onImportAnnotationProject,
@@ -33,7 +34,7 @@ export default function AnnotationProjectImport({
         name="annotation_project"
         label="Select a project file to import"
         help="The file must be in AOEF format"
-        error={errors.annotation_project?.message}
+        error={errors.annotation_project?.message?.toString()}
       >
         <Input type="file" {...register("annotation_project")} required />
       </Group>
@@ -44,11 +45,3 @@ export default function AnnotationProjectImport({
     </form>
   );
 }
-
-export const AnnotationProjectImportSchema = z.object({
-  annotation_project: z.instanceof(FileList),
-});
-
-export type AnnotationProjectImport = z.infer<
-  typeof AnnotationProjectImportSchema
->;

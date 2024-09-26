@@ -43,7 +43,7 @@ export default function ModelRunImport({
         name="model_run"
         label="Select an Model Run file to import"
         help="The file must be in AOEF format"
-        error={errors.model_run?.message}
+        error={errors.model_run?.message?.toString()}
       >
         <Input type="file" {...register("model_run")} required />
       </Group>

@@ -45,7 +45,7 @@ export default function DatasetImportComponent({
         name="dataset"
         label="Select a dataset file to import"
         help="The file must be in AOEF format"
-        error={errors.dataset?.message}
+        error={errors.dataset?.message?.toString()}
       >
         <Input
           type="file"

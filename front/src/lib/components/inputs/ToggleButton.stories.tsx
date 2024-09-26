@@ -30,6 +30,6 @@ export const No: Story = {
 
 export const Unset: Story = {
   args: {
-    checked: null,
+    checked: undefined,
   },
 };
