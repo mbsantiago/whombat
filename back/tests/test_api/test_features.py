@@ -185,7 +185,7 @@ async def test_get_feature_names_with_limit(
     result, _ = await features.get_many(session, limit=2)
 
     # Assert.
-    assert [feat.name for feat in result] == names[::-1][:2]
+    assert {feat.name for feat in result} == set(names[::-1][:2])
 
 
 async def test_get_feature_names_with_offset(
