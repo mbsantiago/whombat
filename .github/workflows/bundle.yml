@@ -61,7 +61,6 @@ jobs:
         shell: pwsh
         run: |
           scripts/bundle_windows.ps1
-          mkdir dist/
           mv "back/dist/whombat.zip" "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
 
       - name: Bundle app (Linux/macOS)
