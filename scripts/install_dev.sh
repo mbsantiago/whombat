@@ -1,19 +1,14 @@
 #!/bin/bash
 
-# Make sure you have python 3.11 installed
-if [[ ! $(python --version) =~ "3.11" ]]; then
-	echo "Please install python 3.11"
-	exit 1
-fi
-
-# Install rye if not installed
-if ! command -v rye &>/dev/null; then
-	echo "Installing rye"
-    curl -sSf https://rye-up.com/get | bash
+# Make sure you have uv installed
+if ! command -v uv &>/dev/null; then
+    echo "Please install uv"
+    echo "See https://docs.astral.sh/uv/getting-started/installation/ for installation instructions."
+    exit 1
 fi
 
 # Go to the backend directory
 cd back
 
 # Install dependencies
-rye sync
+uv sync --with-dev
