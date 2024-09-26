@@ -65,7 +65,7 @@ jobs:
           mv "back/dist/whombat.zip" "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
 
       - name: Bundle app (Linux/macOS)
-        if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == "macos-12" }}
+        if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-12' }}
         run: |
           bash scripts/bundle_linux.sh
           mv dist/whombat.zip "dist/whombat-${{ matrix.os }}-${{ github.ref_name }}.zip"
