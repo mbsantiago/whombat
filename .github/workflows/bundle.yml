@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up uv
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-12' }}
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
       - name: Set up uv
