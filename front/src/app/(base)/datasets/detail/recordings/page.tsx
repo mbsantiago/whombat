@@ -1,19 +1,12 @@
 "use client";
+
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import DatasetRecordings from "@/components/datasets/DatasetRecordings";
-import { DatasetRecordingsNav } from "@/components/datasets/DatasetRecordingsNav";
+import DatasetRecordings from "@/app/components/datasets/DatasetRecordings";
+import DatasetRecordingSummary from "@/app/components/datasets/DatasetRecordingsSummary";
 
 import DatasetContext from "../context";
-
-import type { Recording } from "@/types";
-
-import "./page.css";
-
-function getRecordingLink(recording: Recording): string {
-  return `detail/?recording_uuid=${recording.uuid}`;
-}
 
 export default function Page() {
   const dataset = useContext(DatasetContext);
@@ -24,11 +17,8 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      <DatasetRecordingsNav dataset={dataset} />
-      <DatasetRecordings
-        dataset={dataset}
-        getRecordingLink={getRecordingLink}
-      />
+      <DatasetRecordingSummary dataset={dataset} />
+      <DatasetRecordings dataset={dataset} />
     </div>
   );
 }

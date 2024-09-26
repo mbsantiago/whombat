@@ -1,4 +1,6 @@
+import json
 from pathlib import Path
+from typing import BinaryIO
 
 from soundevent.io import aoef
 from sqlalchemy import tuple_
@@ -14,10 +16,16 @@ from whombat.api.io.aoef.users import import_users
 
 async def import_dataset(
     session: AsyncSession,
-    obj: dict,
+    src: Path | BinaryIO | str,
     dataset_dir: Path,
     audio_dir: Path,
 ) -> models.Dataset:
+    if isinstance(src, (Path, str)):
+        with open(src, "r") as file:
+            obj = json.load(file)
+    else:
+        obj = json.loads(src.read())
+
     if not isinstance(obj, dict):
         raise TypeError(f"Expected dict, got {type(obj)}")
 
@@ -38,7 +46,9 @@ async def import_dataset(
     dataset_object = aoef.DatasetObject.model_validate(data)
 
     tags = await import_tags(session, dataset_object.tags or [])
+
     users = await import_users(session, dataset_object.users or [])
+
     feature_names = await get_feature_names(
         session,
         dataset_object,

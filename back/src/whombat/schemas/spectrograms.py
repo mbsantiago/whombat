@@ -35,18 +35,18 @@ class STFTParameters(BaseModel):
     window_size: float = 0.025
     """Size of FFT window in seconds."""
 
-    hop_size: float = Field(default=0.5, gt=0.0, le=1.0)
-    """Hop size as a fraction of window size."""
+    overlap: float = Field(default=0.5, gt=0.0, le=1.0)
+    """Window overlap as a fraction of window size."""
 
     window: Window = "hann"
     """Window function."""
 
-    @field_validator("window_size", "hop_size")
+    @field_validator("window_size", "overlap")
     @classmethod
     def check_positive(cls, value):
         """Check that window size and hop size are positive."""
         if value <= 0:
-            raise ValueError("Window size and hop size must be positive.")
+            raise ValueError("Window size and overlap must be positive.")
         return value
 
 

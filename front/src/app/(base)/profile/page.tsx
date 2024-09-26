@@ -1,10 +1,13 @@
 "use client";
+
 import { useContext } from "react";
-import Card from "@/components/Card";
-import Hero from "@/components/Hero";
-import Center from "@/components/layouts/Center";
-import UserContext from "../context";
-import UserProfile from "@/components/users/UserProfile";
+
+import Center from "@/lib/components/layouts/Center";
+import Card from "@/lib/components/ui/Card";
+import Hero from "@/lib/components/ui/Hero";
+import UserProfile from "@/lib/components/users/UserProfile";
+
+import UserContext from "../../contexts/user";
 
 export default function Page() {
   const user = useContext(UserContext);

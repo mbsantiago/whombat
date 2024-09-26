@@ -1,0 +1,16 @@
+meta {
+  name: Sound Event Annotations Counts
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/tags/sound_event_annotation_counts/?limit=10&annotation_project__eq=b904b65f-da8f-5e81-be7c-6a2a3caf1c34
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 10
+  annotation_project__eq: b904b65f-da8f-5e81-be7c-6a2a3caf1c34
+}

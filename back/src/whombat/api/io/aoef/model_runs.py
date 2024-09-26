@@ -1,5 +1,7 @@
 import datetime
+import json
 from pathlib import Path
+from typing import BinaryIO
 from uuid import UUID
 
 from soundevent.io.aoef import ModelRunObject
@@ -21,11 +23,17 @@ from whombat.api.io.aoef.users import import_users
 
 async def import_model_run(
     session: AsyncSession,
-    data: dict,
+    src: Path | BinaryIO | str,
     audio_dir: Path,
     base_audio_dir: Path,
 ) -> models.ModelRun:
     """Import model run."""
+    if isinstance(src, (Path, str)):
+        with open(src, "r") as file:
+            data = json.load(file)
+    else:
+        data = json.loads(src.read())
+
     if not isinstance(data, dict):
         raise TypeError(f"Expected dict, got {type(data)}")
 

@@ -38,6 +38,7 @@ jobs:
 
       - name: Restore uv cache
         uses: actions/cache@v4
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
         with:
           path: /tmp/.uv-cache
           key: uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
@@ -55,7 +56,9 @@ jobs:
           cd back
           uv run ruff check src tests
 
-      - run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
+      - name: "Create cache key for documentation"
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
 
       - name: Check types
         uses: jakebailey/pyright-action@v2

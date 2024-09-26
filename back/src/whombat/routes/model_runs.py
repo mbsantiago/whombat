@@ -1,10 +1,9 @@
 """REST API routes for model runs."""
 
-import json
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Body, Depends, UploadFile
 
 from whombat import api, schemas
 from whombat.api.io import aoef
@@ -54,7 +53,26 @@ async def get_model_run(
     return await api.model_runs.get(session, model_run_uuid)
 
 
-@model_runs_router.put("/detail/", response_model=schemas.ModelRun)
+@model_runs_router.get("/detail/evaluation/", response_model=schemas.Evaluation)
+async def get_model_run_evaluation(
+    session: Session,
+    model_run_uuid: UUID,
+    evaluation_set_uuid: UUID,
+) -> schemas.Evaluation:
+    """Get the evaluation of the model run in the evaluation set."""
+    model_run = await api.model_runs.get(session, model_run_uuid)
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+    return await api.model_runs.get_evaluation(
+        session,
+        model_run,
+        evaluation_set,
+    )
+
+
+@model_runs_router.patch("/detail/", response_model=schemas.ModelRun)
 async def update_model_run(
     session: Session,
     model_run_uuid: UUID,
@@ -108,16 +126,30 @@ async def delete_model_run(
 async def import_model_run(
     session: Session,
     model_run: UploadFile,
+    evaluation_set_uuid: Annotated[UUID, Body()],
     settings: WhombatSettings,
 ) -> schemas.ModelRun:
     """Import model run."""
-    obj = json.loads(model_run.file.read())
+    evaluation_set = await api.evaluation_sets.get(
+        session,
+        evaluation_set_uuid,
+    )
+
     db_model_run = await aoef.import_model_run(
         session,
-        obj,
+        model_run.file,
         audio_dir=settings.audio_dir,
         base_audio_dir=settings.audio_dir,
     )
+
     await session.commit()
     await session.refresh(db_model_run)
-    return schemas.ModelRun.model_validate(db_model_run)
+    data = schemas.ModelRun.model_validate(db_model_run)
+
+    await api.evaluation_sets.add_model_run(
+        session,
+        evaluation_set,
+        data,
+    )
+    await session.commit()
+    return data

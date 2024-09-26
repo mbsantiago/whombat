@@ -1,4 +1,4 @@
-import createAPI from "@/api";
+import createAPI from "@/lib/api";
 
 const api = createAPI({
   baseURL: "http://localhost:5000",

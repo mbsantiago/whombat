@@ -22,13 +22,15 @@ from whombat.schemas.annotation_tasks import (
     AnnotationStatusBadgeUpdate,
     AnnotationTask,
     AnnotationTaskCreate,
+    AnnotationTaskNote,
     AnnotationTaskUpdate,
 )
 from whombat.schemas.audio import AudioParameters
-from whombat.schemas.base import Page
+from whombat.schemas.base import BaseSchema, Page
 from whombat.schemas.clip_annotations import (
     ClipAnnotation,
     ClipAnnotationCreate,
+    ClipAnnotationNote,
     ClipAnnotationTag,
     ClipAnnotationUpdate,
 )
@@ -75,12 +77,14 @@ from whombat.schemas.plugin import PluginInfo
 from whombat.schemas.recordings import (
     Recording,
     RecordingCreate,
+    RecordingNote,
     RecordingTag,
     RecordingUpdate,
 )
 from whombat.schemas.sound_event_annotations import (
     SoundEventAnnotation,
     SoundEventAnnotationCreate,
+    SoundEventAnnotationNote,
     SoundEventAnnotationTag,
     SoundEventAnnotationUpdate,
 )
@@ -107,7 +111,13 @@ from whombat.schemas.spectrograms import (
     STFTParameters,
     Window,
 )
-from whombat.schemas.tags import PredictedTag, Tag, TagCreate, TagUpdate
+from whombat.schemas.tags import (
+    PredictedTag,
+    Tag,
+    TagCount,
+    TagCreate,
+    TagUpdate,
+)
 from whombat.schemas.user_runs import UserRun, UserRunCreate, UserRunUpdate
 from whombat.schemas.users import SimpleUser, User, UserCreate, UserUpdate
 
@@ -120,11 +130,14 @@ __all__ = [
     "AnnotationStatusBadgeUpdate",
     "AnnotationTask",
     "AnnotationTaskCreate",
+    "AnnotationTaskNote",
     "AnnotationTaskUpdate",
     "AudioParameters",
+    "BaseSchema",
     "Clip",
     "ClipAnnotation",
     "ClipAnnotationCreate",
+    "ClipAnnotationNote",
     "ClipAnnotationTag",
     "ClipAnnotationUpdate",
     "ClipCreate",
@@ -160,10 +173,12 @@ __all__ = [
     "NoteCreate",
     "NoteUpdate",
     "Page",
+    "Page",
     "PluginInfo",
     "PredictedTag",
     "Recording",
     "RecordingCreate",
+    "RecordingNote",
     "RecordingTag",
     "RecordingUpdate",
     "STFTParameters",
@@ -172,6 +187,7 @@ __all__ = [
     "SoundEvent",
     "SoundEventAnnotation",
     "SoundEventAnnotationCreate",
+    "SoundEventAnnotationNote",
     "SoundEventAnnotationTag",
     "SoundEventAnnotationUpdate",
     "SoundEventCreate",
@@ -185,6 +201,7 @@ __all__ = [
     "SoundEventUpdate",
     "SpectrogramParameters",
     "Tag",
+    "TagCount",
     "TagCreate",
     "TagUpdate",
     "User",

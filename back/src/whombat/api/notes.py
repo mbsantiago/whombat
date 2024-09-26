@@ -1,13 +1,16 @@
 """API functions to interact with notes."""
 
+from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
+from sqlalchemy import orm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
-from whombat.api.common import BaseAPI
+from whombat.api import common
 from whombat.api.users import users
+from whombat.filters.base import Filter
 
 __all__ = [
     "NoteAPI",
@@ -16,7 +19,7 @@ __all__ = [
 
 
 class NoteAPI(
-    BaseAPI[
+    common.BaseAPI[
         UUID,
         models.Note,
         schemas.Note,
@@ -140,6 +143,99 @@ class NoteAPI(
             created_by=created_by,
             is_issue=obj.is_issue,
         )
+
+    async def get_recording_notes(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[list[schemas.RecordingNote], int]:
+        objs, count = await common.get_objects(
+            session,
+            models.RecordingNote,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            options=[
+                orm.joinedload(models.RecordingNote.recording).load_only(
+                    models.Recording.uuid
+                ),
+            ],
+        )
+        return [
+            schemas.RecordingNote(
+                recording_uuid=obj.recording.uuid,
+                note=schemas.Note.model_validate(obj.note),
+                created_on=obj.created_on,
+            )
+            for obj in objs
+        ], count
+
+    async def get_clip_annotation_notes(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[list[schemas.ClipAnnotationNote], int]:
+        objs, count = await common.get_objects(
+            session,
+            models.ClipAnnotationNote,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            options=[
+                orm.joinedload(
+                    models.ClipAnnotationNote.clip_annotation
+                ).load_only(models.ClipAnnotation.uuid),
+            ],
+        )
+        return [
+            schemas.ClipAnnotationNote(
+                clip_annotation_uuid=obj.clip_annotation.uuid,
+                note=schemas.Note.model_validate(obj.note),
+                created_on=obj.created_on,
+            )
+            for obj in objs
+        ], count
+
+    async def get_sound_event_annotation_notes(
+        self,
+        session: AsyncSession,
+        *,
+        limit: int | None = 1000,
+        offset: int | None = 0,
+        filters: Sequence[Filter] | None = None,
+        sort_by: str | None = "-created_on",
+    ) -> tuple[list[schemas.SoundEventAnnotationNote], int]:
+        objs, count = await common.get_objects(
+            session,
+            models.SoundEventAnnotationNote,
+            limit=limit,
+            offset=offset,
+            filters=filters,
+            sort_by=sort_by,
+            options=[
+                orm.joinedload(
+                    models.SoundEventAnnotationNote.sound_event_annotation
+                ).load_only(models.SoundEventAnnotation.uuid),
+            ],
+        )
+        return [
+            schemas.SoundEventAnnotationNote(
+                sound_event_annotation_uuid=obj.sound_event_annotation.uuid,
+                note=schemas.Note.model_validate(obj.note),
+                created_on=obj.created_on,
+            )
+            for obj in objs
+        ], count
 
 
 notes = NoteAPI()

@@ -5,6 +5,7 @@ from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
@@ -136,6 +137,35 @@ class ModelRunAPI(
                 uuid=data.uuid,
             )
         return await self.update_from_soundevent(session, model_run, data)
+
+    async def get_evaluation(
+        self,
+        session: AsyncSession,
+        data: schemas.ModelRun,
+        evaluation_set: schemas.EvaluationSet,
+    ) -> schemas.Evaluation:
+        stmt = (
+            select(models.Evaluation)
+            .join(
+                models.ModelRunEvaluation,
+                models.Evaluation.id
+                == models.ModelRunEvaluation.evaluation_id,
+            )
+            .filter(
+                models.ModelRunEvaluation.model_run_id == data.id,
+                models.ModelRunEvaluation.evaluation_set_id
+                == evaluation_set.id,
+            )
+        )
+        result = await session.execute(stmt)
+        obj = result.scalars().first()
+
+        if obj is None:
+            raise exceptions.NotFoundError(
+                f"Model run {data.uuid} has no evaluation."
+            )
+
+        return schemas.Evaluation.model_validate(obj)
 
     async def to_soundevent(
         self,

@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import type { EvaluationSet } from "@/types";
+import type { EvaluationSet } from "@/lib/types";
 
 const EvaluationSetContext = createContext<EvaluationSet>({
   name: "",
@@ -8,7 +8,7 @@ const EvaluationSetContext = createContext<EvaluationSet>({
   tags: [],
   uuid: "",
   created_on: new Date(),
-  task: "sound_event_detection",
+  task: "Sound Event Detection",
 });
 
 export default EvaluationSetContext;

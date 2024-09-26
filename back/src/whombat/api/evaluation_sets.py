@@ -29,6 +29,7 @@ from whombat.filters.model_runs import (
 from whombat.filters.user_runs import (
     EvaluationSetFilter as UserRunEvaluationSetFilter,
 )
+from whombat.schemas.evaluation_sets import PredictionTypes
 
 __all__ = [
     "EvaluationSetAPI",
@@ -52,7 +53,7 @@ class EvaluationSetAPI(
         session: AsyncSession,
         name: str,
         description: str | None = None,
-        task: str = "sound_event_detection",
+        task: PredictionTypes = PredictionTypes.sound_event_detection,
         **kwargs,
     ) -> schemas.EvaluationSet:
         """Create an evaluation set.
@@ -246,7 +247,6 @@ class EvaluationSetAPI(
             evaluation_set_id=obj.id,
             model_run_id=model_run.id,
         )
-
         return obj
 
     async def remove_model_run(

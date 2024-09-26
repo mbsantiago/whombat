@@ -84,6 +84,24 @@ def get_sound_event_annotations_router(settings: WhombatSettings) -> APIRouter:
         )
 
     @sound_event_annotations_router.get(
+        "/detail/annotation_task/",
+        response_model=schemas.AnnotationTask,
+    )
+    async def get_annotation_task(
+        session: Session,
+        sound_event_annotation_uuid: UUID,
+    ) -> schemas.AnnotationTask:
+        """Get an annotation annotation."""
+        sound_event_annotation = await api.sound_event_annotations.get(
+            session,
+            sound_event_annotation_uuid,
+        )
+        return await api.sound_event_annotations.get_annotation_task(
+            session,
+            sound_event_annotation,
+        )
+
+    @sound_event_annotations_router.get(
         "/",
         response_model=schemas.Page[schemas.SoundEventAnnotation],
     )

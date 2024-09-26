@@ -14,11 +14,6 @@ __all__ = [
     "RecordingTagFilter",
 ]
 
-# NOTE: The base query for recording tags already joins the recording
-# and tag tables. This means that we do not need to join them again in
-# the filters. See the `api.tags.get_recording_tags` method for more
-# details on how the query is constructed.
-
 
 class DatasetFilter(base.Filter):
     """Filter recordings by the dataset they are in."""
@@ -32,6 +27,10 @@ class DatasetFilter(base.Filter):
 
         return (
             query.join(
+                models.Recording,
+                models.Recording.id == models.RecordingTag.recording_id,
+            )
+            .join(
                 models.DatasetRecording,
                 models.Recording.id == models.DatasetRecording.recording_id,
             )

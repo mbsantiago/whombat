@@ -52,9 +52,6 @@ async def import_users(
             return_mapping[user.uuid] = mappings["name"][user.name].id
             continue
 
-        if not user.email:
-            raise ValueError("User has no email address.")
-
         username = user.username or user.name
         if not username:
             # If the user has no username, generate a random one.

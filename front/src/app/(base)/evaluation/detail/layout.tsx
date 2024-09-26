@@ -1,11 +1,13 @@
 "use client";
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 
+import useEvaluationSet from "@/app/hooks/api/useEvaluationSet";
+
+import EvaluationSetTabs from "@/app/(base)/evaluation/detail/components/EvaluationSetTabs";
 import Loading from "@/app/loading";
-import EvaluationSetHeader from "@/components/evaluation_sets/EvaluationSetHeader";
-import useEvaluationSet from "@/hooks/api/useEvaluationSet";
 
 import EvaluationSetContext from "./context";
 
@@ -20,7 +22,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     isError,
     data: evaluationSet,
   } = useEvaluationSet({
-    uuid: uuid || undefined,
+    uuid: uuid ?? "",
+    enabled: uuid != null,
   });
 
   if (uuid == null) {
@@ -40,7 +43,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <EvaluationSetContext.Provider value={evaluationSet}>
-      <EvaluationSetHeader evaluationSet={evaluationSet} />
+      <EvaluationSetTabs evaluationSet={evaluationSet} />
       <div className="p-4">{children}</div>
     </EvaluationSetContext.Provider>
   );

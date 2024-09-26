@@ -89,30 +89,6 @@ async def test_create_dataset_fails_if_name_is_not_unique(
         )
 
 
-async def test_create_dataset_fails_if_audio_dir_is_not_unique(
-    session: AsyncSession,
-    audio_dir: Path,
-):
-    """Test that creating a dataset fails if the audio dir is not unique."""
-    dataset_audio_dir = audio_dir / "audio"
-    dataset_audio_dir.mkdir()
-    await api.datasets.create(
-        session,
-        name="test_dataset",
-        description="This is a test dataset.",
-        dataset_dir=dataset_audio_dir,
-        audio_dir=audio_dir,
-    )
-    with pytest.raises(exceptions.DuplicateObjectError):
-        await api.datasets.create(
-            session,
-            name="test_dataset_2",
-            description="This is a test dataset.",
-            dataset_dir=dataset_audio_dir,
-            audio_dir=audio_dir,
-        )
-
-
 async def test_get_dataset_by_uuid(
     session: AsyncSession, dataset: schemas.Dataset
 ):

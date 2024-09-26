@@ -5,6 +5,7 @@ from pathlib import Path
 
 import soundfile as sf
 from soundevent import audio, data
+from soundevent.arrays import extend_dim
 from soundevent.audio.io import audio_to_bytes
 
 from whombat import schemas
@@ -72,8 +73,14 @@ def load_audio(
         end_time=end_time,
     )
 
+    if clip.start_time < 0:
+        clip.start_time = 0
+
     # Load audio.
     wave = audio.load_clip(clip)
+
+    if start_time < 0:
+        wave = extend_dim(wave, "time", start=start_time)
 
     # Resample audio.
     if audio_parameters.resample:

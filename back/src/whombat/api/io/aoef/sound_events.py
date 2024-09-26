@@ -8,7 +8,7 @@ from soundevent.io.aoef import (
     PredictionSetObject,
 )
 from soundevent.io.aoef.sound_event import SoundEventObject
-from sqlalchemy import insert, select, tuple_
+from sqlalchemy import bindparam, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
@@ -79,11 +79,16 @@ async def import_sound_events(
     )
 
     # Get existing sound events by UUID
-    stmt = select(models.SoundEvent.id, models.SoundEvent.uuid).where(
-        models.SoundEvent.uuid.in_({s.uuid for s in sound_events})
+    result = await common.select_batched(
+        session,
+        statement=select(models.SoundEvent.id, models.SoundEvent.uuid).where(
+            models.SoundEvent.uuid.in_(bindparam("uuid"))
+        ),
+        parameter="uuid",
+        values=list({s.uuid for s in sound_events}),
     )
-    result = await session.execute(stmt)
-    mapping = {r[1]: r[0] for r in result.all()}
+
+    mapping = {r[1]: r[0] for r in result}
 
     # Create sound event features
     await _create_sound_event_features(
@@ -136,18 +141,22 @@ async def _create_sound_event_features(
                 }
             )
 
-    stmt = select(
-        models.SoundEventFeature.sound_event_id,
-        models.SoundEventFeature.feature_name_id,
-    ).where(
-        tuple_(
+    result = await common.select_batched(
+        session,
+        statement=select(
             models.SoundEventFeature.sound_event_id,
             models.SoundEventFeature.feature_name_id,
-        ).in_([(v["sound_event_id"], v["feature_name_id"]) for v in values])
+        ).where(
+            tuple_(
+                models.SoundEventFeature.sound_event_id,
+                models.SoundEventFeature.feature_name_id,
+            ).in_(bindparam("values"))
+        ),
+        parameter="values",
+        values=[(v["sound_event_id"], v["feature_name_id"]) for v in values],
     )
-    result = await session.execute(stmt)
 
-    existing = set(result.all())
+    existing = set(result)
     missing = [
         v
         for v in values
@@ -156,5 +165,8 @@ async def _create_sound_event_features(
     if not missing:
         return
 
-    stmt = insert(models.SoundEventFeature).values(missing)
-    await session.execute(stmt)
+    await common.insert_batched(
+        session,
+        model=models.SoundEventFeature,
+        values=missing,
+    )

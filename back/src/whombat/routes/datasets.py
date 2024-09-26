@@ -1,7 +1,7 @@
 """REST API routes for datasets."""
 
 import datetime
-import json
+import logging
 from io import StringIO
 from typing import Annotated
 from uuid import UUID
@@ -22,6 +22,8 @@ __all__ = [
 ]
 
 dataset_router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 @dataset_router.get(
@@ -185,10 +187,9 @@ async def import_dataset(
     if not audio_dir.exists():
         raise FileNotFoundError(f"Audio directory {audio_dir} does not exist.")
 
-    obj = json.loads(dataset.file.read())
     db_dataset = await aoef.import_dataset(
         session,
-        obj,
+        dataset.file,
         dataset_dir=audio_dir,
         audio_dir=settings.audio_dir,
     )

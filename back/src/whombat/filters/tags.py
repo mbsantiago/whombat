@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import Select
+from sqlalchemy import Select, select
 
 from whombat import models
 from whombat.filters import base
@@ -36,8 +36,9 @@ class AnnotationProjectFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.AnnotationProjectTag,
                 models.AnnotationProjectTag.tag_id == models.Tag.id,
             )
@@ -46,8 +47,10 @@ class AnnotationProjectFilter(base.Filter):
                 models.AnnotationProject.id
                 == models.AnnotationProjectTag.annotation_project_id,
             )
-            .where(models.AnnotationProject.uuid == self.eq)
+            .filter(models.AnnotationProject.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class RecordingFilter(base.Filter):
@@ -60,8 +63,9 @@ class RecordingFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.RecordingTag,
                 models.RecordingTag.tag_id == models.Tag.id,
             )
@@ -71,6 +75,8 @@ class RecordingFilter(base.Filter):
             )
             .where(models.Recording.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class SoundEventAnnotationFilter(base.Filter):
@@ -83,8 +89,9 @@ class SoundEventAnnotationFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.SoundEventAnnotationTag,
                 models.SoundEventAnnotationTag.tag_id == models.Tag.id,
             )
@@ -93,8 +100,10 @@ class SoundEventAnnotationFilter(base.Filter):
                 models.SoundEventAnnotation.id
                 == models.SoundEventAnnotationTag.sound_event_annotation_id,
             )
-            .where(models.SoundEventAnnotation.uuid == self.eq)
+            .filter(models.SoundEventAnnotation.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class ClipAnnotationFilter(base.Filter):
@@ -107,8 +116,9 @@ class ClipAnnotationFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.ClipAnnotationTag,
                 models.ClipAnnotationTag.tag_id == models.Tag.id,
             )
@@ -117,8 +127,10 @@ class ClipAnnotationFilter(base.Filter):
                 models.ClipAnnotation.id
                 == models.ClipAnnotationTag.clip_annotation_id,
             )
-            .where(models.ClipAnnotation.uuid == self.eq)
+            .filter(models.ClipAnnotation.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class SoundEventPredictionFilter(base.Filter):
@@ -131,8 +143,9 @@ class SoundEventPredictionFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.SoundEventPredictionTag,
                 models.SoundEventPredictionTag.tag_id == models.Tag.id,
             )
@@ -143,6 +156,8 @@ class SoundEventPredictionFilter(base.Filter):
             )
             .where(models.SoundEventPrediction.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class ClipPredictionFilter(base.Filter):
@@ -155,8 +170,9 @@ class ClipPredictionFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.ClipPredictionTag,
                 models.ClipPredictionTag.tag_id == models.Tag.id,
             )
@@ -167,6 +183,8 @@ class ClipPredictionFilter(base.Filter):
             )
             .where(models.ClipPrediction.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class EvaluationSetFilter(base.Filter):
@@ -179,8 +197,9 @@ class EvaluationSetFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.EvaluationSetTag,
                 models.EvaluationSetTag.tag_id == models.Tag.id,
             )
@@ -189,8 +208,10 @@ class EvaluationSetFilter(base.Filter):
                 models.EvaluationSet.id
                 == models.EvaluationSetTag.evaluation_set_id,
             )
-            .where(models.EvaluationSet.uuid == self.eq)
+            .filter(models.EvaluationSet.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 class DatasetFilter(base.Filter):
@@ -203,8 +224,9 @@ class DatasetFilter(base.Filter):
         if self.eq is None:
             return query
 
-        return (
-            query.join(
+        subquery = (
+            select(models.Tag.id)
+            .join(
                 models.RecordingTag,
                 models.RecordingTag.tag_id == models.Tag.id,
             )
@@ -220,8 +242,10 @@ class DatasetFilter(base.Filter):
                 models.Dataset,
                 models.Dataset.id == models.DatasetRecording.dataset_id,
             )
-            .where(models.Dataset.uuid == self.eq)
+            .filter(models.Dataset.uuid == self.eq)
         )
+
+        return query.filter(models.Tag.id.in_(subquery))
 
 
 TagFilter = base.combine(
