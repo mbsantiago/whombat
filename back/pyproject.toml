@@ -29,6 +29,9 @@ Documentation = "https://mbsantiago.github.io/whombat/"
 "Isue Tracker" = "https://github.com/mbsantiago/whombat/issues"
 Releases = "https://github.com/mbsantiago/whombat/releases"
 
+[project.scripts]
+whombat = "whombat.__main__:main"
+
 [project.optional-dependencies]
 postgre = ["asyncpg>=0.29.0", "psycopg2-binary>=2.9.9"]
 
