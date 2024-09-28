@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: ["main"]
 jobs:
-  test:
+  test-backend:
     env:
       UV_CACHE_DIR: /tmp/.uv-cache
 
@@ -81,3 +81,28 @@ jobs:
 
       - name: Minimize uv cache
         run: uv cache prune --ci
+
+  test-frontend:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: |
+            front/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd front
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd front
+          npm run test
