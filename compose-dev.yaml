@@ -68,6 +68,9 @@ services:
         - action: sync
           path: back/docs
           target: /code/docs
+        - action: sync
+          path: back/mkdocs.yml
+          target: /code/mkdocs.yml
 
 networks:
   public:
