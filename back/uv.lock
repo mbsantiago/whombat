@@ -2369,7 +2369,7 @@ wheels = [
 
 [[package]]
 name = "whombat"
-version = "0.6.2"
+version = "0.6.3"
 source = { editable = "." }
 dependencies = [
     { name = "aiosqlite", marker = "python_full_version >= '3.12' and python_full_version < '4'" },
