@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Input, Group } from "@/lib/components/inputs";
+import { Group, Input } from "@/lib/components/inputs";
 
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
@@ -74,11 +74,7 @@ export default function LocationInput({
     <div className="flex flex-col">
       {!disabled && (
         <div className="flex flex-row gap-2 justify-center items-center p-2">
-          <Group
-            name="latitude"
-            label="lat"
-            error={errors.latitude?.message}
-          >
+          <Group name="latitude" label="lat" error={errors.latitude?.message}>
             <Input
               type="number"
               {...register("latitude")}
@@ -87,11 +83,7 @@ export default function LocationInput({
               step="any"
             />
           </Group>
-          <Group
-            name="longitude"
-            label="lon"
-            error={errors.longitude?.message}
-          >
+          <Group name="longitude" label="lon" error={errors.longitude?.message}>
             <Input
               type="number"
               {...register("longitude")}

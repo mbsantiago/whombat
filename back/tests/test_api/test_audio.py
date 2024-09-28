@@ -181,7 +181,9 @@ def test_stream_an_audio_clip(fmt: str, random_wav_factory):
             original_data = f.read(8_000)
         assert (streamed_data == original_data).all()
 
+
 CHUNK_SIZE = 1024 * 512
+
 
 def test_can_stream_a_real_audio_file(data_dir: Path):
     path = data_dir / "bats.wav"

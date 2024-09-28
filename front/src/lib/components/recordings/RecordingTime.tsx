@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { CloseIcon, TimeIcon } from "@/lib/components/icons";
-import { Input, Group } from "@/lib/components/inputs";
+import { Group, Input } from "@/lib/components/inputs";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import Popover from "@/lib/components/ui/Popover";

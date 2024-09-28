@@ -1,7 +1,7 @@
 import { type Control, Controller, useController } from "react-hook-form";
 
 import Toggle from "@/lib/components/inputs/Toggle";
-import { Input, Group } from "@/lib/components/inputs/index";
+import { Group, Input } from "@/lib/components/inputs/index";
 
 import { MAX_SAMPLERATE, MIN_SAMPLERATE } from "@/lib/constants";
 import type { AudioSettings } from "@/lib/types";

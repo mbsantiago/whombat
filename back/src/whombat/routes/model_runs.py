@@ -53,7 +53,9 @@ async def get_model_run(
     return await api.model_runs.get(session, model_run_uuid)
 
 
-@model_runs_router.get("/detail/evaluation/", response_model=schemas.Evaluation)
+@model_runs_router.get(
+    "/detail/evaluation/", response_model=schemas.Evaluation
+)
 async def get_model_run_evaluation(
     session: Session,
     model_run_uuid: UUID,

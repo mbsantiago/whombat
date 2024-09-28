@@ -7,8 +7,8 @@ import toast from "react-hot-toast";
 
 import ModelRunActions from "@/app/components/model_runs/ModelRunActions";
 import ModelRunEvaluation from "@/app/components/model_runs/ModelRunEvaluations";
-import ModelRunUpdate from "@/app/components/model_runs/ModelRunUpdate";
 import ModelRunExplorer from "@/app/components/model_runs/ModelRunExplorer";
+import ModelRunUpdate from "@/app/components/model_runs/ModelRunUpdate";
 
 import useModelRun from "@/app/hooks/api/useModelRun";
 

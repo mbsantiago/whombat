@@ -1,4 +1,3 @@
-import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   ModelIcon,
@@ -9,6 +8,7 @@ import {
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
+import Empty from "@/lib/components/ui/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
 

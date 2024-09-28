@@ -1,7 +1,7 @@
 import { ComponentProps } from "react";
 
-import Empty from "@/lib/components/ui/Empty";
 import NotesPanel from "@/lib/components/notes/NotesPanel";
+import Empty from "@/lib/components/ui/Empty";
 
 export default function ClipAnnotationNotes(
   props: Omit<ComponentProps<typeof NotesPanel>, "title" | "EmptyNotes">,

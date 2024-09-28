@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import Empty from "@/lib/components/ui/Empty";
 import {
   AddIcon,
   CompleteIcon,
@@ -10,6 +9,7 @@ import {
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
+import Empty from "@/lib/components/ui/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
 import MetricBadge from "@/lib/components/ui/MetricBadge";

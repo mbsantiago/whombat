@@ -1,8 +1,8 @@
 import { type ComponentProps, type FC } from "react";
 
-import Empty from "@/lib/components/ui/Empty";
 import { CheckIcon, IssuesIcon } from "@/lib/components/icons";
 import Card from "@/lib/components/ui/Card";
+import Empty from "@/lib/components/ui/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
 

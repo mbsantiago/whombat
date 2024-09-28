@@ -8,7 +8,7 @@ import { z } from "zod";
 import api from "@/app/api";
 
 import { WhombatIcon } from "@/lib/components/icons";
-import { Input, Group } from "@/lib/components/inputs/index";
+import { Group, Input } from "@/lib/components/inputs/index";
 import Info from "@/lib/components/ui/Info";
 import Link from "@/lib/components/ui/Link";
 

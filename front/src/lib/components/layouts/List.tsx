@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 
-import EmptyComponent from "@/lib/components/ui/Empty";
 import StackedList from "@/lib/components/lists/StackedList";
+import EmptyComponent from "@/lib/components/ui/Empty";
 import Loading from "@/lib/components/ui/Loading";
 
 export default function ListLayout({

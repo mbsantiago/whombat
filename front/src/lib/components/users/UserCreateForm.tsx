@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 
 import api from "@/app/api";
 
-import { Input, Group } from "@/lib/components/inputs/index";
+import { Group, Input } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
 
 import { UserCreateSchema } from "@/lib/schemas";
