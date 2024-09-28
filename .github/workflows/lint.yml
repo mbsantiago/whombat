@@ -1,0 +1,89 @@
+name: Lint
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-backend:
+    env:
+      UV_CACHE_DIR: /tmp/.uv-cache
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Restore uv cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.uv-cache
+          key: uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
+            uv-${{ runner.os }}
+
+      - name: Install dev dependencies
+        run: |
+          cd back
+          uv sync --all-extras --dev
+
+      - name: Run Ruff
+        run: |
+          cd back
+          uv run ruff check src tests
+
+      - name: Check Formatting
+        run: |
+          cd back
+          uv run ruff format --check src tests
+
+      - name: Run pyright
+        run: |
+          cd back
+          uv run pyright src tests
+
+      - name: Minimize uv cache
+        run: uv cache prune --ci
+
+  lint-frontend:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: |
+            front/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd front
+          npm ci
+
+      - name: Check formatting
+        run: |
+          cd front
+          npm run format-check
+
+      - name: Lint with Nextjs
+        run: |
+          cd front
+          npm run lint
+
+      - name: Lint with Typescript Compiler
+        run: |
+          cd front
+          npm run lint-tsc
