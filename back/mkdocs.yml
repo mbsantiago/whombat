@@ -14,12 +14,12 @@ nav:
   - Developer Guide:
       - developer_guide/index.md
       - Quickstart: developer_guide/quickstart.md
-      - Architecture: developer_guide/architecture.md
-      - Database Layer: developer_guide/database.md
-      - Python API: developer_guide/api.md
-      - HTTP REST API: developer_guide/rest_api.md
-      - Front End: developer_guide/front_end.md
-      - Plugins: developer_guide/plugins.md
+      # - Architecture: developer_guide/architecture.md
+      # - Database Layer: developer_guide/database.md
+      # - Python API: developer_guide/api.md
+      # - HTTP REST API: developer_guide/rest_api.md
+      # - Front End: developer_guide/front_end.md
+      # - Plugins: developer_guide/plugins.md
       - Contributing: CONTRIBUTING.md
       - Code of Conduct: CODE_OF_CONDUCT.md
   - Reference:
