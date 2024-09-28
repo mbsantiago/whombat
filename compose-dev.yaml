@@ -15,7 +15,7 @@ services:
         source: db-data
         target: /data
       - type: bind
-        source: example_data/audio
+        source: example_data/
         target: /audio
     ports:
       - 5000:5000
