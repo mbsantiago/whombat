@@ -1,6 +1,7 @@
 "use client";
 
 import { z } from "zod";
+
 import { FileSchema } from "./common";
 
 export const ModelRunSchema = z.object({
@@ -19,5 +20,5 @@ export const ModelRunUpdateSchema = z.object({
 
 export const ModelRunImportSchema = z.object({
   evaluation_set_uuid: z.string().uuid(),
-  model_run: FileSchema
+  model_run: FileSchema,
 });

@@ -41,7 +41,9 @@ export function registerClipEvaluationAPI(
     return Page(schemas.ClipEvaluationSchema).parse(response.data);
   }
 
-  async function getClipEvaluation(uuid: string): Promise<types.ClipEvaluation> {
+  async function getClipEvaluation(
+    uuid: string,
+  ): Promise<types.ClipEvaluation> {
     const response = await instance.get(endpoints.get, {
       params: { clip_evaluation_uuid: uuid },
     });

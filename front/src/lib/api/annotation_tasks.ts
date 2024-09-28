@@ -63,7 +63,9 @@ export function registerAnnotationTasksAPI(
     return Page(schemas.AnnotationTaskSchema).parse(response.data);
   }
 
-  async function getAnnotationTask(uuid: string): Promise<types.AnnotationTask> {
+  async function getAnnotationTask(
+    uuid: string,
+  ): Promise<types.AnnotationTask> {
     const response = await instance.get(endpoints.get, {
       params: { annotation_task_uuid: uuid },
     });

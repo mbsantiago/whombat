@@ -1,6 +1,5 @@
 import { type FC } from "react";
 
-import Empty from "@/lib/components/ui/Empty";
 import { DeleteIcon, TagsIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";
 import TagComponent from "@/lib/components/tags/Tag";
@@ -8,6 +7,7 @@ import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
+import Empty from "@/lib/components/ui/Empty";
 import { H4 } from "@/lib/components/ui/Headings";
 
 import type { Tag } from "@/lib/types";

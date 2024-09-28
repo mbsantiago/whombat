@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import useActiveUser from "@/app/hooks/api/useActiveUser";
 
-import { Input, Group } from "@/lib/components/inputs/index";
+import { Group, Input } from "@/lib/components/inputs/index";
 
 import type { User } from "@/lib/types";
 

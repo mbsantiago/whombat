@@ -9,6 +9,8 @@
     "coverage": "jest --coverage",
     "start": "next start",
     "format": "prettier --write .",
+    "format-check": "prettier --check .",
+    "lint-tsc": "tsc --noEmit -p .",
     "lint": "next lint",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test-ct": "playwright test -c playwright-ct.config.ts",

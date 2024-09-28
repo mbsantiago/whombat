@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { UploadIcon } from "@/lib/components/icons";
-import { Input, Group, Submit } from "@/lib/components/inputs/index";
+import { Group, Input, Submit } from "@/lib/components/inputs/index";
 
 import { EvaluationSetImportSchema } from "@/lib/schemas";
 import { EvaluationSetImport } from "@/lib/types";
