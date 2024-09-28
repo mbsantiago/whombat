@@ -3,13 +3,21 @@ import SoundEventAnnotationNotes from "@/lib/components/sound_event_annotations/
 import SoundEventAnnotationTags from "@/lib/components/sound_event_annotations/SoundEventAnnotationTags";
 import Card from "@/lib/components/ui/Card";
 
-import type { NoteCreate, SoundEventAnnotation, Tag } from "@/lib/types";
+import type {
+  Note,
+  NoteCreate,
+  NoteUpdate,
+  SoundEventAnnotation,
+  Tag,
+} from "@/lib/types";
 
 export default function SelectedSoundEventAnnotation({
   soundEventAnnotation,
   onAddSoundEventAnnotationTag,
   onDeleteSoundEventAnnotationTag,
   onCreateSoundEventAnnotationNote,
+  onUpdateSoundEventAnnotationNote,
+  onDeleteSoundEventAnnotationNote,
   onCreateTag,
   ...props
 }: {
@@ -17,6 +25,8 @@ export default function SelectedSoundEventAnnotation({
   onAddSoundEventAnnotationTag?: (tag: Tag) => void;
   onDeleteSoundEventAnnotationTag?: (tag: Tag) => void;
   onCreateSoundEventAnnotationNote?: (note: NoteCreate) => void;
+  onUpdateSoundEventAnnotationNote?: (note: Note, data: NoteUpdate) => void;
+  onDeleteSoundEventAnnotationNote?: (note: Note) => void;
   onCreateTag?: (tag: Tag) => void;
 } & Omit<
   Parameters<typeof SoundEventAnnotationTags>[0],
@@ -29,7 +39,7 @@ export default function SelectedSoundEventAnnotation({
           soundEventAnnotation={soundEventAnnotation}
         />
       </Card>
-      <Card>
+      <Card className="grow">
         <SoundEventAnnotationTags
           soundEventAnnotation={soundEventAnnotation}
           onAddTag={onAddSoundEventAnnotationTag}
@@ -41,6 +51,8 @@ export default function SelectedSoundEventAnnotation({
       <SoundEventAnnotationNotes
         soundEventAnnotation={soundEventAnnotation}
         onCreateNote={onCreateSoundEventAnnotationNote}
+        onDeleteNote={onDeleteSoundEventAnnotationNote}
+        onUpdateNote={onUpdateSoundEventAnnotationNote}
       />
     </div>
   );

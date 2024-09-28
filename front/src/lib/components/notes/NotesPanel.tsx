@@ -4,7 +4,7 @@ import Feed from "@/lib/components/notes/Feed";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 
-import type { Note, NoteCreate, User } from "@/lib/types";
+import type { Note, NoteCreate, NoteUpdate, User } from "@/lib/types";
 
 export default function NotesPanel({
   notes,
@@ -19,7 +19,7 @@ export default function NotesPanel({
   notes: Note[];
   currentUser?: User;
   onCreateNote?: (note: NoteCreate) => void;
-  onUpdateNote?: (note: Note, data: Partial<Note>) => void;
+  onUpdateNote?: (note: Note, data: NoteUpdate) => void;
   onDeleteNote?: (note: Note) => void;
   EmptyNotes?: JSX.Element;
 }) {

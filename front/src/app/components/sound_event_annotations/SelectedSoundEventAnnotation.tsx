@@ -15,10 +15,11 @@ export default function SelectedSoundEventAnnotation({
 }) {
   const tagColorFn = useStore((state) => state.getTagColor);
 
-  const { data, addTag, removeTag } = useSoundEventAnnotation({
-    uuid: soundEventAnnotation.uuid,
-    soundEventAnnotation,
-  });
+  const { data, addTag, removeTag, addNote, updateNote, removeNote } =
+    useSoundEventAnnotation({
+      uuid: soundEventAnnotation.uuid,
+      soundEventAnnotation,
+    });
 
   return (
     <SelectedSoundEventAnnotationBase
@@ -27,6 +28,11 @@ export default function SelectedSoundEventAnnotation({
       onDeleteSoundEventAnnotationTag={removeTag.mutate}
       TagSearchBar={ProjectTagSearch}
       tagColorFn={tagColorFn}
+      onCreateSoundEventAnnotationNote={addNote.mutate}
+      onUpdateSoundEventAnnotationNote={(note, data) =>
+        updateNote.mutate({ note, data })
+      }
+      onDeleteSoundEventAnnotationNote={removeNote.mutate}
     />
   );
 }

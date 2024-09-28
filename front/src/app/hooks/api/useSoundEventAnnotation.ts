@@ -1,4 +1,7 @@
-import { useQuery as useReactQuery } from "@tanstack/react-query";
+import {
+  useMutation as useReactMutation,
+  useQuery as useReactQuery,
+} from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback, useMemo } from "react";
 
@@ -8,6 +11,8 @@ import useObject from "@/lib/hooks/utils/useObject";
 
 import type {
   ClipAnnotation,
+  Note,
+  NoteUpdate,
   NoteCreate,
   Recording,
   SoundEventAnnotation,
@@ -162,6 +167,18 @@ export default function useSoundEventAnnotation({
     onSuccess: handleAddNote,
   });
 
+  const updateNote = useReactMutation({
+    mutationFn: ({ note, data }: { note: Note; data: NoteUpdate }) =>
+      api.notes.update(note, data),
+    onSuccess: () => {
+      query.refetch();
+    },
+  });
+
+  const removeNote = useMutation({
+    mutationFn: api.soundEventAnnotations.removeNote,
+  });
+
   return {
     ...query,
     update,
@@ -169,6 +186,8 @@ export default function useSoundEventAnnotation({
     addTag,
     removeTag,
     addNote,
+    updateNote,
+    removeNote,
     recording: recordingQuery,
   } as const;
 }
