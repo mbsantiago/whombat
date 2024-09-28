@@ -1,0 +1,75 @@
+services:
+  backend:
+    build:
+      context: back
+    container_name: whombat-backend
+    command: ["uv", "run", "whombat"]
+    environment:
+      - WHOMBAT_DEV=true
+      - WHOMBAT_DATA_DIR=/data/
+      - WHOMBAT_DB_URL=sqlite+aiosqlite:////data/whombat.db
+    networks:
+      - public
+    volumes:
+      - type: volume
+        source: db-data
+        target: /data
+      - type: bind
+        source: example_data/audio
+        target: /audio
+    ports:
+      - 5000:5000
+    develop:
+      watch:
+        - action: sync
+          path: back/src
+          target: /code/src
+  frontend:
+    build:
+      context: front
+      args:
+        - NODE_ENV=development
+    container_name: whombat-frontend
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - backend
+    networks:
+      - public
+    ports:
+      - 3000:3000
+    develop:
+      watch:
+        - action: sync
+          path: front
+          target: /code
+  storybook:
+    build:
+      context: front
+      args:
+        - NODE_ENV=development
+    container_name: whombat-storybook
+    command: ["npm", "run", "storybook"]
+    ports:
+      - 6006:6006
+    develop:
+      watch:
+        - action: sync
+          path: front
+          target: /code
+  docs:
+    build:
+      context: back
+    container_name: whombat-docs
+    ports:
+      - 8000:8000
+    command: ["uv", "run", "mkdocs", "serve", "-a", "0.0.0.0:8000"]
+    develop:
+      watch:
+        - action: sync
+          path: back/docs
+          target: /code/docs
+
+networks:
+  public:
+volumes:
+  db-data:
