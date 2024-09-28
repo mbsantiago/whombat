@@ -7,10 +7,10 @@ on:
 
 jobs:
   build-user-guide:
-    uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@dev
+    uses: mbsantiago/whombat/.github/workflows/build_user_guide.yml@main
 
   build-frontend:
-    uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@dev
+    uses: mbsantiago/whombat/.github/workflows/build_frontend.yml@main
 
   build:
     runs-on: ubuntu-latest
