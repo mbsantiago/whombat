@@ -12,8 +12,8 @@ import useObject from "@/lib/hooks/utils/useObject";
 import type {
   ClipAnnotation,
   Note,
-  NoteUpdate,
   NoteCreate,
+  NoteUpdate,
   Recording,
   SoundEventAnnotation,
   Tag,
