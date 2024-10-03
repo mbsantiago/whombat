@@ -1,12 +1,13 @@
 "use client";
+
 import { notFound } from "next/navigation";
 import { useContext } from "react";
 
-import AnnotationProjectTaskClips from "@/components/annotation_projects/AnnotationProjectTaskClips";
-import AnnotationProject from "../context";
+import AnnotationProjectTaskClips from "@/lib/components/annotation_projects/AnnotationProjectTaskClips";
 
-import type { AnnotationTask } from "@/types";
+import type { AnnotationTask } from "@/lib/types";
 
+import AnnotationProject from "../../../../contexts/annotationProject";
 import "./page.css";
 
 function getAnnotationTaskLink(annotationTask: AnnotationTask): string {

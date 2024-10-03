@@ -100,15 +100,17 @@ def get_database_url(
     URL
         The database url.
     """
-    if settings.dev:
-        return make_url(
+    db_url = settings.db_url
+
+    if settings.dev and db_url is None:
+        db_url = (
             "sqlite+aiosqlite:///whombat.db"
             if is_async
             else "sqlite:///whombat.db"
         )
 
-    if settings.db_url:
-        return make_url(settings.db_url)
+    if db_url:
+        return make_url(db_url)
 
     url = URL.create(
         drivername=settings.db_dialect,

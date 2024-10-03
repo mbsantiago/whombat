@@ -1,14 +1,16 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import api from "@/app/api";
-import { WhombatIcon } from "@/components/icons";
-import { Input, InputGroup } from "@/components/inputs/index";
-import Link from "@/components/Link";
-import Info from "@/components/Info";
+
+import { WhombatIcon } from "@/lib/components/icons";
+import { Group, Input } from "@/lib/components/inputs/index";
+import Info from "@/lib/components/ui/Info";
+import Link from "@/lib/components/ui/Link";
 
 const schema = z.object({
   username: z.string(),
@@ -64,22 +66,22 @@ export default function LoginForm() {
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
-          <InputGroup
+          <Group
             label="Username"
             name="username"
             error={errors.username?.message}
           >
             <Input {...register("username")} />
-          </InputGroup>
+          </Group>
         </div>
         <div className="mb-3">
-          <InputGroup
+          <Group
             label="Password"
             name="password"
             error={errors.password?.message}
           >
             <Input type="password" {...register("password")} />
-          </InputGroup>
+          </Group>
         </div>
         <div>
           <Input type="submit" value="Sign in" />

@@ -74,14 +74,18 @@ class Dataset(Base):
     __tablename__ = "dataset"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+
     name: orm.Mapped[str] = orm.mapped_column(unique=True)
+
     description: orm.Mapped[str] = orm.mapped_column(nullable=True)
-    audio_dir: orm.Mapped[Path] = orm.mapped_column(unique=True)
+
+    audio_dir: orm.Mapped[Path] = orm.mapped_column()
 
     # Relations
     recordings: orm.Mapped[list[Recording]] = orm.relationship(

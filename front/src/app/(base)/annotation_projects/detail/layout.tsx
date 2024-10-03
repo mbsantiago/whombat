@@ -1,13 +1,16 @@
 "use client";
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 
-import Loading from "@/app/loading";
-import ProjectHeader from "@/components/annotation_projects/AnnotationProjectHeader";
-import useAnnotationProject from "@/hooks/api/useAnnotationProject";
+import ProjectHeader from "@/app/components/annotation_projects/AnnotationProjectHeader";
 
-import AnnotationProjectContext from "./context";
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
+
+import Loading from "@/app/loading";
+
+import AnnotationProjectContext from "../../../contexts/annotationProject";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const params = useSearchParams();

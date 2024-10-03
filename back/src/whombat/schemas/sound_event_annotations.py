@@ -14,10 +14,12 @@ __all__ = [
     "SoundEventAnnotation",
     "SoundEventAnnotationCreate",
     "SoundEventAnnotationUpdate",
+    "SoundEventAnnotationTag",
+    "SoundEventAnnotationNote",
 ]
 
 
-class SoundEventAnnotationTag(BaseModel):
+class SoundEventAnnotationTag(BaseSchema):
     """Schema for a SoundEventAnnotationTag."""
 
     tag: Tag
@@ -25,6 +27,9 @@ class SoundEventAnnotationTag(BaseModel):
 
     created_by: SimpleUser | None
     """User who created this annotation."""
+
+    sound_event_annotation_uuid: UUID
+    """UUID of the SoundEventAnnotation this tag is attached to."""
 
 
 class SoundEventAnnotationCreate(BaseModel):
@@ -64,3 +69,13 @@ class SoundEventAnnotationUpdate(BaseSchema):
 
     geometry: Geometry = Field(..., discriminator="type")
     """Geometry of this annotation."""
+
+
+class SoundEventAnnotationNote(BaseSchema):
+    """Schema for a SoundEventAnnotationNote."""
+
+    note: Note
+    """Note attached to this annotation."""
+
+    sound_event_annotation_uuid: UUID
+    """UUID of the SoundEventAnnotation this note is attached to."""

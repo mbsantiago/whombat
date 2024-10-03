@@ -1,4 +1,5 @@
 "use client";
+
 /**
  * Layout component for rendering the structure of a dataset detail page.
  *
@@ -11,11 +12,12 @@ import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 import toast from "react-hot-toast";
 
-import Loading from "@/app/loading";
-import useDataset from "@/hooks/api/useDataset";
+import useDataset from "@/app/hooks/api/useDataset";
 
+import Loading from "@/app/loading";
+
+import DatasetTabs from "../../../components/datasets/DatasetTabs";
 import DatasetContext from "./context";
-import DatasetNavHeader from "./nav";
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -26,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   const dataset = useDataset({
     uuid: uuid,
-    onDelete: () => {
+    onDeleteDataset: () => {
       toast.success("Dataset deleted");
       router.push("/datasets/");
     },
@@ -47,7 +49,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <DatasetContext.Provider value={dataset.data}>
-      <DatasetNavHeader dataset={dataset.data} />
+      <DatasetTabs dataset={dataset.data} />
       <div className="py-4 px-8">{children}</div>
     </DatasetContext.Provider>
   );

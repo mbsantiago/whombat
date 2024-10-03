@@ -1,0 +1,16 @@
+meta {
+  name: List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/model_runs/detail/evaluation/?model_run_uuid=2eebcb42-c826-4916-92cb-88a3affb7774&evaluation_set_uuid=9c7f9e86-5b44-4a1a-b96d-f8df2d08a98f
+  body: none
+  auth: none
+}
+
+params:query {
+  model_run_uuid: 2eebcb42-c826-4916-92cb-88a3affb7774
+  evaluation_set_uuid: 9c7f9e86-5b44-4a1a-b96d-f8df2d08a98f
+}

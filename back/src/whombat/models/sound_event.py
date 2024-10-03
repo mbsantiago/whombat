@@ -86,15 +86,19 @@ class SoundEvent(Base):
     __tablename__ = "sound_event"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
     )
+
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
     )
+
     geometry_type: orm.Mapped[str] = orm.mapped_column(nullable=False)
+
     geometry: orm.Mapped[Geometry] = orm.mapped_column(nullable=False)
 
     # Relations
@@ -102,6 +106,7 @@ class SoundEvent(Base):
         init=False,
         repr=False,
     )
+
     features: orm.Mapped[list["SoundEventFeature"]] = orm.relationship(
         "SoundEventFeature",
         back_populates="sound_event",
@@ -120,6 +125,7 @@ class SoundEvent(Base):
             repr=False,
         )
     )
+
     sound_event_prediction: orm.Mapped[Optional["SoundEventPrediction"]] = (
         orm.relationship(
             back_populates="sound_event",

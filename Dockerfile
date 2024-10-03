@@ -1,67 +1,79 @@
-# == Build User Guide
+# === STEP 1 === Build User Guide
 
-FROM python:3.12 as guide_builder
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS guide_builder
 
 RUN mkdir /guide
-WORKDIR /back/
-COPY back/docs /back/docs
-COPY back/guide_requirements.txt /back/guide_requirements.txt
-COPY back/mkdocs-guide.yml /back/mkdocs-guide.yml
-RUN pip install -r guide_requirements.txt
-RUN mkdocs build -f mkdocs-guide.yml -d /guide
 
-# == Build Front End
+WORKDIR /guide
 
-FROM node:latest as web_builder
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=back/uv.lock,target=uv.lock \
+    --mount=type=bind,source=back/pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --dev
+
+COPY back/docs /guide/docs
+COPY back/mkdocs-guide.yml /guide/mkdocs-guide.yml
+
+RUN uv run mkdocs build -f mkdocs-guide.yml -d /guide/out/
+
+# === STEP 2 === Build Front End
+
+FROM node:latest AS frontend_builder
 
 RUN mkdir /statics
 
-WORKDIR /front/
+WORKDIR /front
 
-COPY front/ /front/
+COPY front/ /front
 
 RUN npm install
 
 RUN npm run build
 
-# == Run the web server
+# === STEP 3 === Build whombat
 
-FROM python:3.12
+# Run the web server
+# Use a Python image with uv pre-installed
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 
-WORKDIR back/
+# Install the project into `/app`
+WORKDIR /app
 
-# Install libsndfile1
-RUN apt-get update && apt-get install -y \
-    libsndfile1 \
-    build-essential \
-    libffi-dev \
-    python3-dev
+# Enable bytecode compilation
+ENV UV_COMPILE_BYTECODE=1
 
-# Set the working directory to /code
-WORKDIR /code
+# Copy from the cache instead of linking since it's a mounted volume
+ENV UV_LINK_MODE=copy
 
-# Copy the current directory contents into the container at /code
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=back/uv.lock,target=uv.lock \
+    --mount=type=bind,source=back/pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+
+# Then, add the rest of the project source code and install it
+# Installing separately from its dependencies allows optimal layer caching
+ADD back /app
 
 # Copy the guide
-COPY --from=guide_builder /guide/ /code/src/whombat/user_guide/
+COPY --from=guide_builder /guide/out/ /app/src/whombat/user_guide/
 
 # Copy the statics
-COPY --from=web_builder /front/out/ /code/src/whombat/statics/
+COPY --from=frontend_builder /front/out/ /app/src/whombat/statics/
 
-# Install the Python dependencies
-COPY back/requirements.txt /code/requirements.txt
-RUN pip install -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-# Copy the source code
-COPY back/src /code/src
-COPY back/app.py /code/app.py
-COPY back/pyproject.toml /code/pyproject.toml
-COPY back/alembic.ini /code/alembic.ini
-COPY back/README.md /code/README.md
-COPY back/LICENSE /code/LICENSE
+# === STEP 4 === Final Image
 
-# Install Whombat
-RUN pip install --no-deps .
+# Then, use a final image without uv
+FROM python:3.12-slim-bookworm
+
+# Copy the application from the builder
+COPY --from=builder --chown=app:app /app /app
+
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Create a directory for audio files
 RUN mkdir /audio
@@ -84,5 +96,8 @@ ENV WHOMBAT_DOMAIN "localhost"
 # Expose the port for the web server
 EXPOSE 5000
 
+# Reset the entrypoint, don't invoke `uv`
+ENTRYPOINT []
+
 # Run the command to start the web server
-CMD ["python", "app.py"]
+CMD ["whombat"]

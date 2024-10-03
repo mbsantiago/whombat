@@ -167,45 +167,6 @@ this page.
     Deleting a recording is also possible, but exercise caution as it will
     erase any annotations associated with this recording.
 
-## Navigating the Spectrogram
-
-Navigating a spectrogram might seem intricate, but Whombat simplifies the
-process with various tools tailored to customize the visualization according to
-your preferences.
-
-![Spectrogram](../assets/img/spectrogram.png)
-
-Typically, you'll only view a segment of the entire spectrogram due to the
-length of some recordings. To address this, use the controls (labeled **A** in
-the figure):
-
-- Activate the hand icon to move around by dragging inside the spectrogram
-  (default mode).
-- Opt for the zoom icon to draw a box for a closer look.
-- Click the home button to reset your view to the initial state.
-
-At the bottom of the spectrogram is the spectrogram bar (labeled **B**), acting
-like a scroll bar for swift navigation to distant parts of the spectrogram.
-
-??? tip "Mastering Keyboard Shortcuts"
-
-    Utilize ++shift+scroll++ to move left and right, and ++ctrl+scroll++ to zoom. Adding
-    the ++alt++ key to scrolling transforms it into a zoom function. Press ++z++ to enter
-    zoom mode and ++x++ to return to drag mode.
-
-Next, explore spectrogram settings (labeled **C**). Pressing this button reveals
-a side menu where you can modify spectrogram parameters to suit your specific
-recordings.
-
-!!! tip "Saving Parameters"
-
-    Changes to parameters apply only to the current spectrogram. To keep these
-    settings for all spectrograms, hit the save button on top.
-
-Finally, there's the audio player (labeled **D**). Control playback, pause, seek
-to any moment, and adjust the playback speed. You can also commence playback by
-double-clicking the spectrogram at your desired starting point.
-
 ## Ready to start annotating
 
 Now that you've registered a dataset and ensured its metadata is accurate,

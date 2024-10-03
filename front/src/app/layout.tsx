@@ -1,10 +1,12 @@
-import "./globals.css";
-import { StrictMode } from "react";
+import type { Metadata } from "next";
 import { Mulish } from "next/font/google";
+import { StrictMode } from "react";
 
 import { ClientProvider } from "@/app/client";
-import type { Metadata } from "next";
-import Notification from "@/components/Notification";
+
+import Notification from "@/lib/components/ui/Notification";
+
+import "./globals.css";
 
 const mulish = Mulish({ subsets: ["latin"] });
 

@@ -7,7 +7,8 @@ import uvicorn
 
 from whombat.system import get_logging_config, get_settings
 
-if __name__ == "__main__":
+
+def main():
     settings = get_settings()
     config = get_logging_config(settings)
     uvicorn.run(
@@ -18,3 +19,7 @@ if __name__ == "__main__":
         reload=settings.dev,
         log_config=config,
     )
+
+
+if __name__ == "__main__":
+    main()

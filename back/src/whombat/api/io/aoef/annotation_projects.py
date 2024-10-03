@@ -37,8 +37,11 @@ async def import_annotation_project(
     project = await get_or_create_annotation_project(session, obj)
 
     tags = await import_tags(session, obj.tags or [])
+
     users = await import_users(session, obj.users or [])
+
     feature_names = await get_feature_names(session, obj)
+
     recordings = await get_recordings(
         session,
         obj,
@@ -49,18 +52,21 @@ async def import_annotation_project(
         base_audio_dir=base_audio_dir,
         should_import=False,
     )
+
     clips = await get_clips(
         session,
         obj,
         recordings=recordings,
         feature_names=feature_names,
     )
+
     sound_events = await get_sound_events(
         session,
         obj,
         recordings=recordings,
         feature_names=feature_names,
     )
+
     clip_annotations = await get_clip_annotations(
         session,
         obj,
@@ -68,6 +74,7 @@ async def import_annotation_project(
         users=users,
         tags=tags,
     )
+
     await get_sound_event_annotations(
         session,
         obj,
@@ -76,6 +83,7 @@ async def import_annotation_project(
         users=users,
         tags=tags,
     )
+
     await get_annotation_tasks(
         session,
         obj,
@@ -84,6 +92,7 @@ async def import_annotation_project(
         users=users,
         clip_annotations=clip_annotations,
     )
+
     await add_annotation_tags(
         session,
         obj,

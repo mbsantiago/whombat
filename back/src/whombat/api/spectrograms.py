@@ -58,8 +58,8 @@ def compute_spectrogram(
 
     # The hop size is expressed as a fraction of the window size.
     hop_size = (
-        spectrogram_parameters.hop_size * spectrogram_parameters.window_size
-    )
+        1 - spectrogram_parameters.overlap
+    ) * spectrogram_parameters.window_size
 
     spectrogram = audio.compute_spectrogram(
         wav,

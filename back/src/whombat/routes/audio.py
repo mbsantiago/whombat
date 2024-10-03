@@ -15,7 +15,7 @@ __all__ = ["audio_router"]
 
 audio_router = APIRouter()
 
-CHUNK_SIZE = 1024 * 124
+CHUNK_SIZE = 1024 * 256
 
 
 @audio_router.get("/stream/")
@@ -53,11 +53,17 @@ async def stream_recording_audio(
     start, _ = range.replace("bytes=", "").split("-")
     start = int(start)
 
+    if start_time is not None:
+        start_time = start_time * recording.time_expansion
+
+    if end_time is not None:
+        end_time = end_time * recording.time_expansion
+
     data, start, end, filesize = api.load_clip_bytes(
         path=audio_dir / recording.path,
         start=start,
-        time_expansion=recording.time_expansion,
-        speed=speed,
+        frames=CHUNK_SIZE,
+        speed=speed * recording.time_expansion,
         start_time=start_time,
         end_time=end_time,
     )
@@ -123,7 +129,7 @@ async def download_recording_audio(
     )
 
     # Get the samplerate and recording ID.
-    samplerate = audio.attrs["samplerate"]
+    samplerate = int(1 / audio.time.attrs["step"])
     id = audio.attrs["recording_id"]
 
     # Write the audio to a buffer.

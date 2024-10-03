@@ -149,15 +149,18 @@ class SoundEventPredictionTag(Base):
         primary_key=True,
         nullable=False,
     )
+
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         primary_key=True,
         nullable=False,
     )
+
     score: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
         default=1.0,
     )
+
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="sound_event_prediction_tags",
         lazy="joined",

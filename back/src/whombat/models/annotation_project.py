@@ -98,6 +98,7 @@ class AnnotationProject(Base):
         default_factory=list,
         repr=False,
     )
+
     annotation_tasks: orm.Mapped[list["AnnotationTask"]] = orm.relationship(
         back_populates="annotation_project",
         default_factory=list,

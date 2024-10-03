@@ -1,4 +1,5 @@
 from io import BytesIO
+from pathlib import Path
 
 import pytest
 import soundfile as sf
@@ -179,3 +180,32 @@ def test_stream_an_audio_clip(fmt: str, random_wav_factory):
             f.seek(8_000)
             original_data = f.read(8_000)
         assert (streamed_data == original_data).all()
+
+
+CHUNK_SIZE = 1024 * 512
+
+
+def test_can_stream_a_real_audio_file(data_dir: Path):
+    path = data_dir / "bats.wav"
+
+    assert path.exists()
+
+    start = 0
+    filesize = None
+    buffer = BytesIO()
+    while True:
+        part, start, _, filesize = load_clip_bytes(
+            path=path,
+            start=start,
+            frames=CHUNK_SIZE,
+        )
+        buffer.write(part)
+        start = start + len(part)
+
+        if not part or start >= filesize:
+            break
+
+    streamed_data = buffer.getvalue()
+    original_data = path.read_bytes()
+
+    assert streamed_data == original_data

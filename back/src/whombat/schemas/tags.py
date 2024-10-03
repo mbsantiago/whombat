@@ -8,6 +8,7 @@ __all__ = [
     "Tag",
     "TagCreate",
     "TagUpdate",
+    "TagCount",
     "PredictedTag",
 ]
 
@@ -53,3 +54,13 @@ class PredictedTag(BaseSchema):
 
     score: float
     """The confidence score for the assignment of the tag."""
+
+
+class TagCount(BaseSchema):
+    """Schema for TagCount objects returned to the user."""
+
+    tag: Tag
+    """Tag object."""
+
+    count: int
+    """Count of the tag."""

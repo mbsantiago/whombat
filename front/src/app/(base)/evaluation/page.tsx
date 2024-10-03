@@ -1,28 +1,20 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import toast from "react-hot-toast";
 
-import EvaluationSetList from "@/components/evaluation_sets/EvaluationSetList";
-import Hero from "@/components/Hero";
+import EvaluationSetList from "@/app/components/evaluation_sets/EvaluationSetList";
 
-import type { EvaluationSet } from "@/types";
+import Hero from "@/lib/components/ui/Hero";
+
+import type { EvaluationSet } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();
 
-  const handleCreate = useCallback(
-    (evaluationSet: Promise<EvaluationSet>) => {
-      toast.promise(evaluationSet, {
-        loading:
-          "Creating evaluation set... This can take a while when importing a large file.",
-        success: "Evaluation set created!",
-        error: "Failed to create evaluation set.",
-      });
-
-      evaluationSet.then((data) =>
-        router.push(`/evaluation/detail/?evaluation_set_uuid=${data.uuid}`),
-      );
+  const handleCreateOrClick = useCallback(
+    (data: EvaluationSet) => {
+      router.push(`/evaluation/detail/?evaluation_set_uuid=${data.uuid}`);
     },
     [router],
   );
@@ -30,7 +22,10 @@ export default function Page() {
   return (
     <>
       <Hero text="Evaluation Sets" />
-      <EvaluationSetList onCreate={handleCreate} />
+      <EvaluationSetList
+        onClickEvaluationSet={handleCreateOrClick}
+        onCreateEvaluationSet={handleCreateOrClick}
+      />
     </>
   );
 }

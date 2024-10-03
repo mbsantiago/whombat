@@ -6,6 +6,7 @@ from uuid import UUID
 from soundevent import data
 from sqlalchemy import and_, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
@@ -52,6 +53,8 @@ class AnnotationTaskAPI(
     ) -> schemas.ClipAnnotation:
         """Get clip annotations for a task.
 
+        If the task does not have a clip annotation, one will be created.
+
         Parameters
         ----------
         session
@@ -76,10 +79,10 @@ class AnnotationTaskAPI(
         )
         results = await session.execute(stmt)
         uuid = results.scalars().first()
+
         if not uuid:
-            raise exceptions.NotFoundError(
-                "No clip annotation found for task {obj}"
-            )
+            return await self.create_clip_annotation(session, obj)
+
         return await clip_annotations.get(session, uuid)
 
     async def create(
@@ -114,6 +117,42 @@ class AnnotationTaskAPI(
             clip_id=clip.id,
             **kwargs,
         )
+
+    async def create_clip_annotation(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationTask,
+    ) -> schemas.ClipAnnotation:
+        """Create a clip annotation for a task."""
+        stmt = (
+            select(models.AnnotationTask)
+            .where(models.AnnotationTask.id == obj.id)
+            .options(
+                joinedload(models.AnnotationTask.clip),
+                joinedload(models.AnnotationTask.clip_annotation),
+            )
+        )
+        result = await session.execute(stmt)
+        task = result.scalars().first()
+
+        if task is None:
+            raise exceptions.NotFoundError(f"Task with ID {obj.id} not found")
+
+        if task.clip_annotation:
+            return await clip_annotations.get(
+                session, task.clip_annotation.uuid
+            )
+
+        clip = await clips.get(session, task.clip.uuid)
+
+        clip_annotation = await clip_annotations.create(
+            session,
+            clip=clip,
+        )
+
+        task.clip_annotation_id = clip_annotation.id
+        await session.commit()
+        return clip_annotation
 
     async def add_status_badge(
         self,

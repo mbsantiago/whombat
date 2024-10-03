@@ -1,4 +1,5 @@
 "use client";
+
 /**
  * Page module for displaying the list of datasets.
  *
@@ -10,27 +11,19 @@
  */
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
-import toast from "react-hot-toast";
 
-import DatasetList from "@/components/datasets/DatasetList";
-import Hero from "@/components/Hero";
+import DatasetList from "@/app/components/datasets/DatasetList";
 
-import type { Dataset } from "@/types";
+import Hero from "@/lib/components/ui/Hero";
+
+import type { Dataset } from "@/lib/types";
 
 export default function Page() {
   const router = useRouter();
 
-  const handleCreate = useCallback(
-    (dataset: Promise<Dataset>) => {
-      toast.promise(dataset, {
-        loading: "Creating dataset. Please wait as this may take a while...",
-        success: "Dataset created.",
-        error: "Failed to create dataset.",
-      });
-
-      dataset.then((data) => {
-        router.push(`/datasets/detail/?dataset_uuid=${data.uuid}`);
-      });
+  const goToDatasetDetail = useCallback(
+    (dataset: Dataset) => {
+      router.push(`/datasets/detail/?dataset_uuid=${dataset.uuid}`);
     },
     [router],
   );
@@ -38,7 +31,10 @@ export default function Page() {
   return (
     <>
       <Hero text="Datasets" />
-      <DatasetList onCreate={handleCreate} />
+      <DatasetList
+        onCreateDataset={goToDatasetDetail}
+        onClickDataset={goToDatasetDetail}
+      />
     </>
   );
 }

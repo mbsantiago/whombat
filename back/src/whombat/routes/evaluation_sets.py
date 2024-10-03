@@ -63,6 +63,7 @@ async def create_evaluation_set(
         session,
         name=data.name,
         description=data.description,
+        task=data.task,
     )
     await session.commit()
     return evaluation_set

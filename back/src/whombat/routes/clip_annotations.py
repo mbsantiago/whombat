@@ -86,6 +86,24 @@ def get_clip_annotations_router(settings: WhombatSettings) -> APIRouter:
         )
         return clip_annotation
 
+    @clip_annotations_router.get(
+        "/detail/annotation_task/",
+        response_model=schemas.AnnotationTask,
+    )
+    async def get_annotation_task(
+        session: Session,
+        clip_annotation_uuid: UUID,
+    ) -> schemas.AnnotationTask:
+        """Get an annotation annotation."""
+        clip_annotation = await api.clip_annotations.get(
+            session,
+            clip_annotation_uuid,
+        )
+        return await api.clip_annotations.get_annotation_task(
+            session,
+            clip_annotation,
+        )
+
     @clip_annotations_router.delete(
         "/detail/",
         response_model=schemas.ClipAnnotation,
