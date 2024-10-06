@@ -435,7 +435,7 @@ async def create_objects_without_duplicates(
     key_column: ColumnElement | InstrumentedAttribute,
     return_all: bool = False,
     rows_batch: int = 200,
-) -> Sequence[A]:
+) -> list[A]:
     """Create multiple objects.
 
     This function should be used when creating multiple objects at once, as it

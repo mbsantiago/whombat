@@ -1,7 +1,6 @@
 import webbrowser
 
 from colorama import Fore, Style, just_fix_windows_console
-from fastapi import FastAPI
 
 from whombat.system.database import (
     create_async_db_engine,
@@ -74,23 +73,30 @@ def print_dev_message(settings: Settings):
     )
 
 
-async def whombat_init(settings: Settings, _: FastAPI):
-    """Run at initialization."""
-    if settings.dev:
-        print_dev_message(settings)
+def is_dev_mode(settings: Settings) -> bool:
+    """Check if the application is running in development mode."""
+    return settings.dev
 
-    print("Please wait while the database is initialized...")
+
+def open_whombat_on_browser(settings: Settings) -> None:
+    webbrowser.open(f"http://{settings.host}:{settings.port}/")
+
+
+async def whombat_init(settings: Settings):
+    """Run at initialization."""
+    if is_dev_mode(settings):
+        print_dev_message(settings)
 
     await init_database(settings)
 
     if await is_first_run(settings):
         print_first_run_message(settings)
 
-        if settings.open_on_startup and not settings.dev:
-            webbrowser.open(f"http://{settings.host}:{settings.port}/first/")
+        if settings.open_on_startup:
+            open_whombat_on_browser(settings)
         return
 
     print_ready_message(settings)
 
-    if settings.open_on_startup and not settings.dev:
-        webbrowser.open(f"http://{settings.host}:{settings.port}/")
+    if settings.open_on_startup:
+        open_whombat_on_browser(settings)

@@ -157,10 +157,12 @@ class AnnotationProjectTag(Base):
         "AnnotationProject",
         back_populates="annotation_project_tags",
         init=False,
+        repr=False,
     )
     tag: orm.Mapped[Tag] = orm.relationship(
         "Tag",
         back_populates="annotation_project_tags",
         lazy="joined",
         init=False,
+        repr=False,
     )

@@ -3,6 +3,7 @@
 import logging
 from contextlib import asynccontextmanager
 from enum import Enum
+from pathlib import Path
 from typing import AsyncGenerator
 
 from alembic import script
@@ -14,7 +15,7 @@ from sqlalchemy.engine import URL, make_url
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
-    async_sessionmaker,  # type: ignore
+    async_sessionmaker,
     create_async_engine,
 )
 
@@ -47,6 +48,9 @@ class DatabaseState(int, Enum):
     NEEDS_CREATION = 2
     CANNOT_CONNECT = 3
     UNKNOWN = 4
+
+
+MIGRATIONS_PATH = Path(__file__).parent.parent / "migrations" / "versions"
 
 
 def validate_database_url(database_url: URL, is_async: bool = False) -> URL:
@@ -146,6 +150,7 @@ def create_async_db_engine(database_url: str | URL) -> AsyncEngine:
     """
     if not isinstance(database_url, URL):
         database_url = make_url(database_url)
+
     database_url = validate_database_url(database_url, is_async=True)
     return create_async_engine(database_url)
 

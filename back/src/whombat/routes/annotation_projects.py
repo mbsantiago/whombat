@@ -1,6 +1,5 @@
 """REST API routes for annotation projects."""
 
-import json
 from typing import Annotated
 from uuid import UUID
 
@@ -206,14 +205,12 @@ async def import_annotation_project(
     annotation_project: UploadFile,
 ):
     """Import an annotation project."""
-    obj = json.loads(annotation_project.file.read())
-
-    db_dataset = await aoef.import_annotation_project(
+    db_project = await aoef.import_annotation_project(
         session,
-        obj,
+        annotation_project.file,
         audio_dir=settings.audio_dir,
         base_audio_dir=settings.audio_dir,
     )
     await session.commit()
-    await session.refresh(db_dataset)
-    return schemas.AnnotationProject.model_validate(db_dataset)
+    await session.refresh(db_project)
+    return schemas.AnnotationProject.model_validate(db_project)
