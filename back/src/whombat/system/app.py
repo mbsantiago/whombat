@@ -31,14 +31,12 @@ def create_app(settings: Settings) -> FastAPI:
 
     app = FastAPI(lifespan=functools.partial(lifespan, settings))
 
-    allowed_origins = [
-        f"http://{settings.host}:{settings.port}",
-        *settings.cors_origins,
-    ]
+    print("Creating app")
+    print("settings cors origins", settings.cors_origins)
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=allowed_origins,
+        allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

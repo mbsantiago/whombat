@@ -1,0 +1,99 @@
+services:
+  reverse-proxy:
+    image: traefik:v3.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "${PORT}:80"
+      - "8080:8080"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+  whombat:
+    build:
+      context: .
+    volumes:
+      - ${AUDIO_DIR}:/audio
+    env_file:
+      - .env
+    environment:
+      - WHOMBAT_DB_DIALECT=postgresql
+      - WHOMBAT_DB_USERNAME=${POSTGRES_USER?Variable not set}
+      - WHOMBAT_DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - WHOMBAT_DB_NAME=${POSTGRES_DB?Variable not set}
+      - WHOMBAT_DB_URL=
+      - WHOMBAT_DB_HOST=db
+      - WHOMBAT_DB_PORT=5432
+      - WHOMBAT_HOST=0.0.0.0
+      - WHOMBAT_PORT=5000
+      - WHOMBAT_AUDIO_DIR=/audio
+    deploy:
+      mode: replicated
+      replicas: 3
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whombat.rule=Host(`${DOMAIN?Variable not set}`)"
+      - "traefik.http.routers.whombat.entrypoints=web"
+      - "traefik.http.services.whombat.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.testheader.headers.accesscontrolallowheaders=*"
+    depends_on:
+      db:
+        condition: service_healthy
+      prestart:
+        condition: service_completed_successfully
+    networks:
+      - public
+      - private
+  prestart:
+    build:
+      context: .
+    networks:
+      - private
+    depends_on:
+      db:
+        condition: service_healthy
+    command: alembic upgrade head
+    env_file:
+      - .env
+    environment:
+      - WHOMBAT_DB_DIALECT=postgresql
+      - WHOMBAT_DB_USERNAME=${POSTGRES_USER?Variable not set}
+      - WHOMBAT_DB_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - WHOMBAT_DB_NAME=${POSTGRES_DB?Variable not set}
+      - WHOMBAT_DB_URL=
+      - WHOMBAT_DB_HOST=db
+      - WHOMBAT_DB_PORT=5432
+      - WHOMBAT_HOST=0.0.0.0
+      - WHOMBAT_PORT=5000
+      - WHOMBAT_AUDIO_DIR=/audio
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - private
+volumes:
+  db-data:
+  letsencrypt:
+networks:
+  public:
+  private:

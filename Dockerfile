@@ -49,7 +49,7 @@ ENV UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=back/uv.lock,target=uv.lock \
     --mount=type=bind,source=back/pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
+    uv sync --frozen --no-install-project --no-dev --all-extras
 
 # Then, add the rest of the project source code and install it
 # Installing separately from its dependencies allows optimal layer caching
@@ -62,7 +62,7 @@ COPY --from=guide_builder /guide/out/ /app/src/whombat/user_guide/
 COPY --from=frontend_builder /front/out/ /app/src/whombat/statics/
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+    uv sync --frozen --no-dev --all-extras
 
 # === STEP 4 === Final Image
 
@@ -74,6 +74,8 @@ COPY --from=builder --chown=app:app /app /app
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
+
+WORKDIR /app
 
 # Create a directory for audio files
 RUN mkdir /audio

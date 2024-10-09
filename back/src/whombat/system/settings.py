@@ -101,14 +101,7 @@ class Settings(BaseSettings):
     Should be set to INFO in production.
     """
 
-    cors_origins: list[str] = [
-        "http://localhost",
-        "http://localhost:3000",
-        "http://localhost:5000",
-        "https://localhost",
-        "https://localhost:3000",
-        "https://localhost:5000",
-    ]
+    cors_origins: list[str] = ["*"]
     """Allowed origins for CORS."""
 
     open_on_startup: bool = True

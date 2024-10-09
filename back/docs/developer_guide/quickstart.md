@@ -117,7 +117,7 @@ cd whombat
 - **Backend and Frontend:**
 
   ```bash
-  docker-compose -f compose-dev.yaml up backend frontend
+  docker-compose -f compose.dev.yaml up backend frontend
   ```
 
   Access the Whombat development environment at http://localhost:3000
@@ -125,7 +125,7 @@ cd whombat
 - **Storybook:**
 
   ```bash
-  docker-compose -f compose-dev.yaml up storybook
+  docker-compose -f compose.dev.yaml up storybook
   ```
 
   Access Storybook at http://localhost:6006.
@@ -133,12 +133,12 @@ cd whombat
 - **Documentation Server:**
 
   ```bash
-  docker-compose -f compose-dev.yaml up docs
+  docker-compose -f compose.dev.yaml up docs
   ```
 
   View the documentation at http://localhost:8000.
 
 - **All Services:**
   ```bash
-  docker-compose -f compose-dev.yaml up
+  docker-compose -f compose.dev.yaml up
   ```

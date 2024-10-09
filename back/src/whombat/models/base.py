@@ -7,6 +7,7 @@ import datetime
 import uuid
 from pathlib import Path
 
+import sqlalchemy as sa
 import sqlalchemy.orm as orm
 import sqlalchemy.types as types
 from fastapi_users_db_sqlalchemy.generics import GUID
@@ -82,6 +83,9 @@ class Base(AsyncAttrs, orm.MappedAsDataclass, orm.DeclarativeBase):
         uuid.UUID: GUID,
         Path: PathType,
         data.Geometry: GeometryType,
+        datetime.datetime: sa.DateTime().with_variant(
+            sa.TIMESTAMP(timezone=True), "postgresql"
+        ),
     }
 
     # This is needed to make the default values work with
