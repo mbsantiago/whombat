@@ -74,11 +74,9 @@ class ClipAnnotationAPI(
         ----------
         session
             The database session.
-        clips
-            The clips to annotate.
-        **kwargs
-            Additional keyword arguments to pass to the creation
-            (e.g. `uuid`).
+        data
+            A list of dictionaries containing the data need to create the
+            clip annotations.
 
         Returns
         -------
@@ -225,9 +223,6 @@ class ClipAnnotationAPI(
             The clip annotation to remove the tag from.
         tag : schemas.Tag
             The tag to remove.
-        user : schemas.SimpleUser, optional
-            If provided, will remove the tag only if it was created by the
-            user, by default None
 
         Returns
         -------

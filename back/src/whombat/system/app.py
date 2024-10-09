@@ -18,9 +18,10 @@ ROOT_DIR = Path(__file__).parent.parent
 
 
 @asynccontextmanager
-async def lifespan(settings: Settings, app: FastAPI):
+async def lifespan(settings: Settings, _: FastAPI):
     """Context manager to run startup and shutdown events."""
-    await whombat_init(settings, app)
+    await whombat_init(settings)
+
     yield
 
 

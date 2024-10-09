@@ -133,7 +133,7 @@ class TagAPI(
             The soundevent tag object.
         """
         return data.Tag(
-            key=tag.key,
+            term=data.term_from_key(tag.key),
             value=tag.value,
         )
 

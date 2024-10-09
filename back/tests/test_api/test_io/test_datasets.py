@@ -15,7 +15,14 @@ async def test_can_import_a_dataset_with_user_without_email(
 
     recording = data.Recording.from_file(
         path,
-        owners=[data.User(name="Test user")],
+        owners=[
+            data.User(
+                name="Test user",
+                username=None,
+                email=None,
+                institution=None,
+            )
+        ],
     )
 
     dataset = data.Dataset(
@@ -35,3 +42,17 @@ async def test_can_import_a_dataset_with_user_without_email(
     )
 
     assert imported.name == dataset.name
+
+
+async def test_can_import_example_dataset(
+    session: AsyncSession,
+    example_dataset_path: Path,
+    example_audio_dir: Path,
+):
+    imported = await import_dataset(
+        session,
+        example_dataset_path,
+        dataset_dir=example_audio_dir,
+        audio_dir=example_audio_dir,
+    )
+    assert imported.name == "Example Dataset"

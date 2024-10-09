@@ -32,6 +32,22 @@ Whombat bridges this gap by focusing on the following key requirements:
 _Whombat_'s design prioritizes **careful, manual data curation**.
 We believe this emphasis on precision will enable the community to build gold-standard bioacoustic datasets, fueling the development of cutting-edge machine learning models.
 
+## New to Whombat?
+
+Get started quickly with these resources:
+
+1. **Install:** Follow the [installation instructions](user_guide/installation.md) to set up Whombat on your machine.
+2. **Explore:** Dive into the [user guide](user_guide/index.md) and familiarize yourself with Whombat's features, including:
+       - [Datasets](user_guide/datasets.md): Learn how to manage and organize your recordings and their metadata.
+       - [Annotation Projects](user_guide/annotation_projects.md): Create and manage annotation projects.
+       - [Evaluation Sets](user_guide/evaluation.md): Evaluate model and user predictions and compare against annotated data.
+       - [Exploration Tools](user_guide/exploration.md): Discover whombat's tools for data exploration.
+3. **Import Data:** Get hands-on with example data to experience Whombat's capabilities ([import guide](user_guide/import.md)).
+4. **Learn More:** Deepen your understanding with detailed guides:
+       - [Spectrogram Display](user_guide/spectrogram_display.md): Tune the spectrogram display to visualize your recordings.
+       - [Annotation Export](user_guide/export.md): Export your annotations for machine learning development.
+5. **Questions?** Check out the [FAQ](user_guide/faq.md).
+
 ## Learn more
 
 For those keen on delving into the internal workings of _Whombat_, integrating it with Python scripts, or contributing to its development, keep an eye on the upcoming [Developer Guide](developer_guide/index.md).

@@ -24,7 +24,7 @@ export default function AnnotationProjectUpdateComponent({
           <Loading />
         ) : (
           <dl className="divide-y divide-stone-500">
-            <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <div className="py-6 px-4 sm:px-0">
               <Description
                 name="Name"
                 value={annotationProject.name}
@@ -33,7 +33,7 @@ export default function AnnotationProjectUpdateComponent({
                 editable
               />
             </div>
-            <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <div className="py-6 px-4 sm:px-0">
               <Description
                 name="Description"
                 value={annotationProject.description}
@@ -44,7 +44,7 @@ export default function AnnotationProjectUpdateComponent({
                 editable
               />
             </div>
-            <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <div className="py-6 px-4 sm:px-0">
               <Description
                 name="Annotation Instructions"
                 value={annotationProject.annotation_instructions ?? ""}
@@ -55,7 +55,7 @@ export default function AnnotationProjectUpdateComponent({
                 editable
               />
             </div>
-            <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+            <div className="py-6 px-4 sm:px-0">
               <Description
                 name="Created On"
                 value={annotationProject.created_on}

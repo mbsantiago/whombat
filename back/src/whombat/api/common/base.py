@@ -366,7 +366,7 @@ class BaseAPI(
         self._cache.pop(pk, None)
 
     def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
-        column = self._model.uuid  # type: ignore
+        column = getattr(self._model, "uuid", None)
         if not column:
             raise NotImplementedError(
                 f"The model {self._model.__name__} does not have a column named"
@@ -375,7 +375,7 @@ class BaseAPI(
         return column == pk
 
     def _get_pk_from_obj(self, obj: WhombatSchema) -> PrimaryKey:
-        pk = obj.uuid  # type: ignore
+        pk = getattr(obj, "uuid", None)
         if not pk:
             raise NotImplementedError(
                 "The primary key could not be retrieved from the object. "

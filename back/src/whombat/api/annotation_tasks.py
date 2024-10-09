@@ -218,8 +218,8 @@ class AnnotationTaskAPI(
             SQLAlchemy AsyncSession.
         obj
             Task to remove the status badge from.
-        badge
-            Status badge to remove.
+        state
+            The state of the status badge to remove.
 
         Returns
         -------

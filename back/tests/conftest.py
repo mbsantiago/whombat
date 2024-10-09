@@ -1,10 +1,11 @@
-"""Common fixtures for Whombat tests.""" ""
+"""Common fixtures for Whombat tests."""
+
 import logging
 import os
 import random
 import shutil
 import string
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import AsyncGenerator, Optional
 
@@ -208,6 +209,16 @@ async def tag(session: AsyncSession) -> schemas.Tag:
         key="test_key",
         value="test_value",
     )
+
+
+@pytest.fixture
+async def tag_factory(
+    session: AsyncSession,
+) -> Callable[[str, str], Awaitable[schemas.Tag]]:
+    async def create_tag(key: str, value: str) -> schemas.Tag:
+        return await api.tags.create(session, key=key, value=value)
+
+    return create_tag
 
 
 @pytest.fixture

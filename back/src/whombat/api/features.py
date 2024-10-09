@@ -163,7 +163,7 @@ class FeatureNameAPI(
             The soundevent feature object.
         """
         return data.Feature(
-            name=feature.name,
+            term=data.term_from_key(feature.name),
             value=feature.value,
         )
 

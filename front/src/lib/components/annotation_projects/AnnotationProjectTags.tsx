@@ -3,16 +3,18 @@ import TagList from "@/lib/components/tags/TagList";
 import { H2, H3 } from "@/lib/components/ui/Headings";
 import Info from "@/lib/components/ui/Info";
 
-import type { AnnotationProject, Tag } from "@/lib/types";
+import type { AnnotationProject, Color, Tag } from "@/lib/types";
 
 export default function AnnotationProjectTags({
   annotationProject,
   onDeleteTag,
   TagSearchBar,
+  tagColorFn,
 }: {
   annotationProject: AnnotationProject;
   onDeleteTag?: (tag: Tag) => void;
   TagSearchBar?: JSX.Element;
+  tagColorFn?: (tag: Tag) => Color;
 }) {
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -56,6 +58,7 @@ export default function AnnotationProjectTags({
             <TagList
               tags={annotationProject.tags ?? []}
               onClick={onDeleteTag}
+              tagColorFn={tagColorFn}
             />
           </div>
         </div>

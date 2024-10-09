@@ -74,6 +74,7 @@ class Base(AsyncAttrs, orm.MappedAsDataclass, orm.DeclarativeBase):
         name="created_on",
         default_factory=lambda: datetime.datetime.now(datetime.timezone.utc),
         kw_only=True,
+        repr=False,
     )
 
     # Add a type annotation map to allow for custom types.

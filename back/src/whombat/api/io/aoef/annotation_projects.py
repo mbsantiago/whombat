@@ -1,12 +1,15 @@
 import datetime
+import json
 from pathlib import Path
+from typing import BinaryIO
 
 from soundevent.io import aoef
 from soundevent.io.aoef import AnnotationProjectObject
-from sqlalchemy import insert, select, tuple_
+from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import models
+from whombat.api.common import utils
 from whombat.api.io.aoef.annotation_tasks import get_annotation_tasks
 from whombat.api.io.aoef.clip_annotations import get_clip_annotations
 from whombat.api.io.aoef.clips import get_clips
@@ -22,10 +25,16 @@ from whombat.api.io.aoef.users import import_users
 
 async def import_annotation_project(
     session: AsyncSession,
-    data: dict,
+    src: Path | BinaryIO | str,
     audio_dir: Path,
     base_audio_dir: Path,
 ) -> models.AnnotationProject:
+    if isinstance(src, (Path, str)):
+        with open(src, "r") as file:
+            data = json.load(file)
+    else:
+        data = json.loads(src.read())
+
     if not isinstance(data, dict):
         raise TypeError(f"Expected dict, got {type(data)}")
 
@@ -99,6 +108,9 @@ async def import_annotation_project(
         project.id,
         tags,
     )
+
+    session.expire(project, ["tags"])
+
     return project
 
 
@@ -110,7 +122,7 @@ async def get_or_create_annotation_project(
         models.AnnotationProject.uuid == obj.uuid
     )
     result = await session.execute(stmt)
-    row = result.one_or_none()
+    row = result.unique().one_or_none()
     if row is not None:
         return row[0]
 
@@ -131,44 +143,34 @@ async def add_annotation_tags(
     project: AnnotationProjectObject,
     project_id: int,
     tags: dict[int, int],
-) -> None:
+) -> list[models.AnnotationProjectTag]:
     """Add annotation tags to a project."""
     proj_tags = project.project_tags or []
     if not proj_tags:
-        return
+        return []
 
-    values = []
-    for tag in proj_tags:
-        tag_bd_id = tags.get(tag)
-        if tag_bd_id is None:
-            continue
-        values.append(
-            {
-                "annotation_project_id": project_id,
-                "tag_id": tag_bd_id,
-                "created_on": datetime.datetime.now(),
-            }
-        )
-
-    stmt = select(
-        models.AnnotationProjectTag.annotation_project_id,
-        models.AnnotationProjectTag.tag_id,
-    ).where(
-        tuple_(
-            models.AnnotationProjectTag.annotation_project_id,
-            models.AnnotationProjectTag.tag_id,
-        ).in_([(v["annotation_project_id"], v["tag_id"]) for v in values])
-    )
-    result = await session.execute(stmt)
-    existing = set(result.all())
-
-    missing = [
-        v
-        for v in values
-        if (v["annotation_project_id"], v["tag_id"]) not in existing
+    values = [
+        {
+            "annotation_project_id": project_id,
+            "tag_id": tags[tag],
+            "created_on": datetime.datetime.now(),
+        }
+        for tag in proj_tags
+        if tag in tags
     ]
-    if not missing:
-        return
 
-    stmt = insert(models.AnnotationProjectTag).values(missing)
-    await session.execute(stmt)
+    if not values:
+        return []
+
+    return await utils.create_objects_without_duplicates(
+        session,
+        models.AnnotationProjectTag,
+        values,
+        key=lambda x: (x["annotation_project_id"], x["tag_id"]),
+        key_column=(
+            tuple_(
+                models.AnnotationProjectTag.annotation_project_id,
+                models.AnnotationProjectTag.tag_id,
+            )
+        ),
+    )

@@ -17,7 +17,6 @@ parts of the recording, and identify relevant sound events with greater
 ease.
 """
 
-from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 import sqlalchemy.orm as orm
@@ -28,9 +27,6 @@ from whombat.models.base import Base
 from whombat.models.feature import FeatureName
 from whombat.models.recording import Recording
 
-if TYPE_CHECKING:
-    pass
-
 __all__ = [
     "Clip",
     "ClipFeature",
@@ -38,38 +34,7 @@ __all__ = [
 
 
 class Clip(Base):
-    """Clip Model.
-
-    Attributes
-    ----------
-    id
-        The database id of the clip.
-    uuid
-        The UUID of the clip.
-    start_time
-        The start time of the clip in seconds.
-    end_time
-        The end time of the clip in seconds.
-    recording
-        The recording to which the clip belongs.
-    features
-        A list of features associated with the clip.
-    created_on
-        The date and time the clip was created.
-
-    Parameters
-    ----------
-    recording_id : int
-        The database id of the recording to which the clip belongs.
-    start_time : float
-        Start time of the clip in seconds, with respect to the start of
-        the recording.
-    end_time : float
-        End time of the clip in seconds, with respect to the start of
-        the recording.
-    uuid : UUID, optional
-        The UUID of the clip.
-    """
+    """Clip Model."""
 
     __tablename__ = "clip"
     __table_args__ = (
@@ -81,15 +46,23 @@ class Clip(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the clip."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4, kw_only=True, unique=True
     )
+    """The UUID of the clip."""
+
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"), nullable=False
     )
+    """The database id of the recording to which the clip belongs."""
+
     start_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The start time of the clip in seconds."""
+
     end_time: orm.Mapped[float] = orm.mapped_column(nullable=False)
-    score: orm.Mapped[Optional[float]] = orm.mapped_column(default=None)
+    """The end time of the clip in seconds."""
 
     # Relations
     recording: orm.Mapped[Recording] = orm.relationship(
@@ -98,6 +71,8 @@ class Clip(Base):
         init=False,
         repr=False,
     )
+    """The recording to which the clip belongs."""
+
     features: orm.Mapped[list["ClipFeature"]] = orm.relationship(
         "ClipFeature",
         lazy="joined",
@@ -106,27 +81,11 @@ class Clip(Base):
         cascade="all, delete-orphan",
         repr=False,
     )
+    """The features associated with the clip"""
 
 
 class ClipFeature(Base):
-    """Clip Feature Model.
-
-    Attributes
-    ----------
-    value : float
-        The value of the feature.
-    feature_name : FeatureName
-        The name of the feature.
-
-    Parameters
-    ----------
-    clip_id : int
-        The database id of the clip to which the feature belongs.
-    feature_name_id : int
-        The database id of the feature name.
-    value : float
-        The value of the feature.
-    """
+    """Clip Feature Model."""
 
     __tablename__ = "clip_feature"
     __table_args__ = (
@@ -141,17 +100,24 @@ class ClipFeature(Base):
         nullable=False,
         primary_key=True,
     )
+    """The database id of the clip to which the feature belongs."""
+
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
         primary_key=True,
     )
+    """The database id of the feature name of the feature."""
+
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the feature."""
+
     name: AssociationProxy[str] = association_proxy(
         "feature_name",
         "name",
         init=False,
     )
+    """The name of the feature."""
 
     # Relations
     feature_name: orm.Mapped[FeatureName] = orm.relationship(

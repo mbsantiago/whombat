@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+import { loremIpsum } from "lorem-ipsum";
 
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
@@ -73,6 +74,32 @@ export const WithProjects: Story = {
         uuid: "3",
         name: "Project 3",
         description: "Description of project 3",
+        created_on: new Date(),
+      },
+    ] as AnnotationProject[],
+    isLoading: false,
+  },
+};
+
+export const ManyProjects: Story = {
+  args: {
+    annotationProjects: [
+      {
+        uuid: "1",
+        name: "Project 1",
+        description: loremIpsum({ count: 3, units: "paragraphs" }),
+        created_on: new Date(),
+      },
+      {
+        uuid: "2",
+        name: "Project 2",
+        description: loremIpsum({ count: 3, units: "paragraphs" }),
+        created_on: new Date(),
+      },
+      {
+        uuid: "3",
+        name: "Project 3",
+        description: loremIpsum({ count: 3, units: "paragraphs" }),
         created_on: new Date(),
       },
     ] as AnnotationProject[],

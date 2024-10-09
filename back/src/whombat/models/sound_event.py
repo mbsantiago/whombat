@@ -55,29 +55,6 @@ __all__ = [
 class SoundEvent(Base):
     """Sound Event model.
 
-    Attributes
-    ----------
-    id
-        The database id of the sound event.
-    uuid
-        The UUID of the sound event.
-    geometry_type
-        The type of geometry used to mark the RoI of the sound event.
-    geometry
-        The geometry of the mark used to mark the RoI of the sound event.
-    features
-        A list of features associated with the sound event.
-
-    Parameters
-    ----------
-    recording_id : int
-        The id of the recording to which the sound event belongs.
-    geometry : Geometry
-        The geometry of the mark used to mark the RoI of the sound event.
-    uuid : UUID, optional
-        The UUID of the sound event. If not provided, a new UUID will be
-        generated.
-
     Notes
     -----
     The geometry attribute is stored as a JSON string in the database.
@@ -86,26 +63,32 @@ class SoundEvent(Base):
     __tablename__ = "sound_event"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the sound event."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
     )
+    """The UUID of the sound event."""
 
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
     )
+    """The id of the recording to which the sound event belongs."""
 
     geometry_type: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """The type of geometry used to mark the RoI of the sound event."""
 
     geometry: orm.Mapped[Geometry] = orm.mapped_column(nullable=False)
+    """The geometry of the mark used to mark the RoI of the sound event."""
 
     # Relations
     recording: orm.Mapped[Recording] = orm.relationship(
         init=False,
         repr=False,
     )
+    """The recording to which the sound event belongs."""
 
     features: orm.Mapped[list["SoundEventFeature"]] = orm.relationship(
         "SoundEventFeature",
@@ -116,6 +99,7 @@ class SoundEvent(Base):
         repr=False,
         default_factory=list,
     )
+    """The features of the sound event."""
 
     # Backrefs
     sound_event_annotation: orm.Mapped[Optional["SoundEventAnnotation"]] = (
@@ -136,24 +120,7 @@ class SoundEvent(Base):
 
 
 class SoundEventFeature(Base):
-    """Sound Event Feature model.
-
-    Attributes
-    ----------
-    feature_name
-        The name of the feature.
-    value
-        The value of the feature.
-
-    Parameters
-    ----------
-    sound_event_id : int
-        The id of the sound event to which the feature belongs.
-    feature_name_id : int
-        The id of the name of the feature.
-    value : float
-        The value of the feature.
-    """
+    """Sound Event Feature model."""
 
     __tablename__ = "sound_event_feature"
     __table_args__ = (
@@ -168,17 +135,24 @@ class SoundEventFeature(Base):
         nullable=False,
         primary_key=True,
     )
+    """The id of the sound event."""
+
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
         primary_key=True,
     )
+    """The id of the feature name."""
+
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the feature."""
+
     name: AssociationProxy[str] = association_proxy(
         "feature_name",
         "name",
         init=False,
     )
+    """The name of the feature."""
 
     # Relations
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(

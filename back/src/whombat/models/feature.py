@@ -39,25 +39,31 @@ __all__ = [
 
 
 class FeatureName(Base):
-    """Feature model.
+    """Feature Name Model.
 
-    Attributes
-    ----------
-    id
-        The database id of the feature name.
-    name
-        The feature name.
+    Represents the name of a feature.
 
-    Parameters
-    ----------
-    name
-        The feature name.
+    Features are numerical values associated with sound events, clips,
+    or recordings, providing additional information about these objects.
+    This model stores the unique names of those features.
+
+    Features can represent various aspects:
+
+    * **Sound Events:** Duration, bandwidth, or other characteristics extracted
+        via deep learning models.
+    * **Clips:** Acoustic properties like signal-to-noise ratio or acoustic
+        indices.
+    * **Recordings:** Contextual information like temperature, wind speed, or
+        recorder height.
     """
 
     __tablename__ = "feature_name"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the feature name"""
+
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    """The feature name."""
 
     # ========================================================================
     # Relationships (backrefs)

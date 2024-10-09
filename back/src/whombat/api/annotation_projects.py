@@ -13,6 +13,7 @@ from whombat.api import common
 from whombat.api.annotation_tasks import annotation_tasks
 from whombat.api.clip_annotations import clip_annotations
 from whombat.api.common import BaseAPI
+from whombat.api.tags import tags
 from whombat.filters.annotation_tasks import (
     AnnotationProjectFilter as AnnotationTaskAnnotationProjectFilter,
 )
@@ -321,6 +322,7 @@ class AnnotationProjectAPI(
             instructions=obj.annotation_instructions,
             created_on=obj.created_on,
             clip_annotations=se_clip_annotations,
+            annotation_tags=[tags.to_soundevent(tag) for tag in obj.tags],
             tasks=se_tasks,
         )
 

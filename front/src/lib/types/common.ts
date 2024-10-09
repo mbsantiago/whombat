@@ -11,3 +11,8 @@ export type Shortcut = {
   shortcut: string;
   description: string;
 };
+
+export type Color = {
+  color: string;
+  level: number;
+};

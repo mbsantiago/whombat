@@ -160,15 +160,16 @@ async def _create_clip_annotation_notes(
 
             values.append(
                 {
-                    "sound_event_annotation_id": annotation_db_id,
+                    "clip_annotation_id": annotation_db_id,
                     "note_id": note_db_id,
+                    "created_on": note.created_on,
                 }
             )
 
     if not values:
         return
 
-    stmt = insert(models.SoundEventAnnotationNote).values(values)
+    stmt = insert(models.ClipAnnotationNote).values(values)
     await session.execute(stmt)
 
 

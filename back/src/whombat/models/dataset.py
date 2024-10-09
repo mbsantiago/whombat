@@ -32,40 +32,9 @@ __all__ = [
 class Dataset(Base):
     """Dataset model for dataset table.
 
-    This model represents the dataset table in the database.
-
-    Attributes
-    ----------
-    id
-        The database id of the dataset.
-    uuid
-        The UUID of the dataset.
-    name
-        The name of the dataset.
-    description
-        A textual description of the dataset.
-    audio_dir
-        The path to the audio directory of the dataset.
-    created_on
-        The date and time the dataset was created.
-    recording_count
-        The number of recordings associated with the dataset.
-
-    Parameters
-    ----------
-    name : str
-        The name of the dataset.
-    description : str, optional
-        A textual description of the dataset.
-    audio_dir : Path
-        The path to the audio directory of the dataset.
-    uuid : UUID, optional
-        The UUID of the dataset. If not provided, a new UUID will be
-        generated.
-
     Notes
     -----
-    The audio_dir attribute is the path to the audio directory of the dataset.
+    The `audio_dir` attribute is the path to the audio directory of the dataset.
     This is the directory that contains all the recordings of the dataset. Only
     the relative path to the base audio directory is stored in the database.
     Note that we should NEVER store absolute paths in the database.
@@ -74,18 +43,23 @@ class Dataset(Base):
     __tablename__ = "dataset"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the dataset."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+    """The UUID of the dataset."""
 
     name: orm.Mapped[str] = orm.mapped_column(unique=True)
+    """The name of the dataset."""
 
     description: orm.Mapped[str] = orm.mapped_column(nullable=True)
+    """A textual description of the dataset."""
 
     audio_dir: orm.Mapped[Path] = orm.mapped_column()
+    """The path to the audio directory of the dataset."""
 
     # Relations
     recordings: orm.Mapped[list[Recording]] = orm.relationship(
@@ -116,23 +90,6 @@ class DatasetRecording(Base):
     A dataset recording is a link between a dataset and a recording. It
     contains the path to the recording within the dataset.
 
-    Attributes
-    ----------
-    path
-        The path to the recording within the dataset.
-    recording
-        The recording.
-    created_on
-        The date and time the dataset recording was created.
-
-    Parameters
-    ----------
-    dataset_id : int
-        The id of the dataset.
-    recording_id : int
-        The id of the recording.
-
-
     Notes
     -----
     The dataset recording model is a many-to-many relationship between the
@@ -151,12 +108,17 @@ class DatasetRecording(Base):
         nullable=False,
         primary_key=True,
     )
+    """The id of the dataset."""
+
     recording_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("recording.id"),
         nullable=False,
         primary_key=True,
     )
+    """The id of the recording."""
+
     path: orm.Mapped[Path]
+    """The path to the recording within the dataset."""
 
     # Relations
     dataset: orm.Mapped[Dataset] = orm.relationship(
@@ -164,6 +126,7 @@ class DatasetRecording(Base):
         repr=False,
         back_populates="dataset_recordings",
     )
+
     recording: orm.Mapped[Recording] = orm.relationship(
         Recording,
         init=False,

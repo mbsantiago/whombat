@@ -15,7 +15,7 @@ __all__ = [
 
 
 async def get_user_db(session: Session) -> AsyncGenerator[UserDatabase, None]:
-    """Get the user database.""" ""
+    """Get the user database."""
     yield UserDatabase(session, models.User)
 
 

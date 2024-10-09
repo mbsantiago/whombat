@@ -1,15 +1,18 @@
 site_name: Whombat
 site_url: https://mbsantiago.github.io/whombat/
+repo_url: https://github.com/mbsantiago/whombat
 nav:
   - Home: README.md
   - User Guide:
-      - user_guide/index.md
+      - Get Started: user_guide/index.md
       - Installation: user_guide/installation.md
-      - Datasets: user_guide/datasets.md
-      - Spectrogram Navigation: user_guide/spectrogram_display.md
-      - Annotation Projects: user_guide/annotation_projects.md
-      - Evaluation: user_guide/evaluation.md
-      - Data Exploration: user_guide/exploration.md
+      - Managing Datasets: user_guide/datasets.md
+      - Visualizing Audio with the Spectrogram: user_guide/spectrogram_display.md
+      - Creating Annotation Projects: user_guide/annotation_projects.md
+      - Evaluating Predictions: user_guide/evaluation.md
+      - Exploring Your Data: user_guide/exploration.md
+      - Importing Data into Whombat: user_guide/import.md
+      - Exporting Your Data: user_guide/export.md
       - FAQ: user_guide/faq.md
   - Developer Guide:
       - developer_guide/index.md
@@ -37,9 +40,14 @@ theme:
   favicon: assets/favicon.svg
   features:
     - content.code.copy
-    - navigation.tracking
+    - navigation.footer
     - navigation.indexes
+    - navigation.tabs
     - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
     - toc.follow
   palette:
     - scheme: default
@@ -81,6 +89,9 @@ plugins:
             docstring_options:
               ignore_init_summary: true
             merge_init_into_class: true
+            extensions:
+              - dataclasses
+              - griffe_fieldz
 watch:
   - docs
   - src
@@ -128,3 +139,7 @@ extra_javascript:
 extra_css:
   - stylesheets/jquery.json-viewer.css
   - css/mkdocstrings.css
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mbsantiago/whombat

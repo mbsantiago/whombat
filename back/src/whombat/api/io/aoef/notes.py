@@ -34,7 +34,7 @@ async def import_notes(
         if note.created_by:
             user_id = users.get(note.created_by)
             if user_id is not None:
-                value["created_by"] = user_id
+                value["created_by_id"] = user_id
 
         values.append(value)
 

@@ -31,39 +31,7 @@ __all__ = [
 
 
 class SoundEventPrediction(Base):
-    """Predicted Sound Event model.
-
-    Attributes
-    ----------
-    id
-        The database id of the sound event prediction.
-    uuid
-        The UUID of the sound event prediction.
-    sound_event
-        The sound event to which the sound event prediction belongs.
-    score
-        The confidence score assigned to the sound event prediction by the
-        model.
-    tags
-        A list of predicted tags associated with the sound event prediction.
-    created_on
-        The date and time when the sound event prediction was created.
-
-    Parameters
-    ----------
-    sound_event_id : int
-        The id of the sound event to which the sound event prediction
-        belongs.
-    clip_prediction_id : int
-        The id of the clip prediction to which the sound event prediction
-        belongs.
-    score : float
-        The confidence score assigned to the sound event prediction by the
-        model.
-    uuid : UUID, optional
-        The UUID of the sound event prediction. If not provided, a new UUID
-        will be generated.
-    """
+    """Predicted Sound Event model."""
 
     __tablename__ = "sound_event_prediction"
     __table_args__ = (
@@ -74,22 +42,37 @@ class SoundEventPrediction(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
+    """The database id of the sound event prediction."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
         unique=True,
     )
+    """The UUID of the sound event prediction."""
+
     sound_event_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event.id"),
         nullable=False,
     )
+    """The database id of the predicted sound event."""
+
     clip_prediction_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_prediction.id"),
         nullable=False,
     )
+    """The database id of the clip prediction to which the sound event belongs."""
+
     score: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
     )
+    """The confidence score assigned to the sound event prediction.
+
+    The confidence score assigned to the sound event prediction reflects the
+    model's confidence in the presence and location of the sound event, but not
+    in its identification. The individual score in each predicted tag provides
+    the confidence in the identification.
+    """
 
     # Relations
     sound_event: orm.Mapped[SoundEvent] = orm.relationship(
@@ -99,11 +82,15 @@ class SoundEventPrediction(Base):
         cascade="all, delete-orphan",
         single_parent=True,
     )
+    """The sound event being predicted."""
+
     clip_prediction: orm.Mapped["ClipPrediction"] = orm.relationship(
         back_populates="sound_events",
         init=False,
         repr=False,
     )
+    """The clip prediction to which the sound event prediction belongs."""
+
     tags: orm.Mapped[list["SoundEventPredictionTag"]] = orm.relationship(
         "SoundEventPredictionTag",
         cascade="all, delete-orphan",
@@ -112,29 +99,11 @@ class SoundEventPrediction(Base):
         repr=False,
         default_factory=list,
     )
+    """The tags associated with the sound event prediction."""
 
 
 class SoundEventPredictionTag(Base):
-    """Sound Event Prediction Tag model.
-
-    Attributes
-    ----------
-    tag
-        The tag associated with the sound event prediction.
-    score
-        The confidence score assigned to the tag by the model.
-    created_on
-        The date and time when the tag was created.
-
-    Parameters
-    ----------
-    sound_event_prediction_id : int
-        The id of the sound event prediction to which the tag belongs.
-    tag_id : int
-        The id of the tag associated with the sound event prediction.
-    score : float
-        The confidence score assigned to the tag by the model.
-    """
+    """Sound Event Prediction Tag model."""
 
     __tablename__ = "sound_event_prediction_tag"
     __table_args__ = (
@@ -149,17 +118,20 @@ class SoundEventPredictionTag(Base):
         primary_key=True,
         nullable=False,
     )
+    """The database id of the sound event prediction associated with the"""
 
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         primary_key=True,
         nullable=False,
     )
+    """The database id of the tag associated with the sound event."""
 
     score: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
         default=1.0,
     )
+    """The confidence score assigned to the tag."""
 
     tag: orm.Mapped[Tag] = orm.relationship(
         back_populates="sound_event_prediction_tags",
@@ -167,3 +139,4 @@ class SoundEventPredictionTag(Base):
         init=False,
         repr=False,
     )
+    """The tag associated with the sound event prediction."""
