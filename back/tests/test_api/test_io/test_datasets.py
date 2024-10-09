@@ -15,7 +15,14 @@ async def test_can_import_a_dataset_with_user_without_email(
 
     recording = data.Recording.from_file(
         path,
-        owners=[data.User(name="Test user")],
+        owners=[
+            data.User(
+                name="Test user",
+                username=None,
+                email=None,
+                institution=None,
+            )
+        ],
     )
 
     dataset = data.Dataset(
