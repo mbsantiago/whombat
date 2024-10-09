@@ -19,6 +19,7 @@ import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
 import ClipAnnotationSpectrogram from "./AnnotationClip";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";
+import TagSearchBar from "../tags/TagSearchBar";
 
 export default function AnnotateTasks({
   annotationProject,
@@ -63,6 +64,10 @@ export default function AnnotateTasks({
     description: "Mark current task as verified",
   });
 
+  useHotkeys("c", () => tagPalette.clearTags(), {
+    description: "Clear all tags from the tag palette",
+  });
+
   return (
     <AnnotationTaskBase
       selectedTask={tasks.task}
@@ -91,6 +96,7 @@ export default function AnnotateTasks({
               filter={tasks.filter}
               onChangeField={tasks.setFilter}
               onClearField={tasks.clearFilter}
+              TagSearchBar={TagSearchBar}
             />
           )}
         />

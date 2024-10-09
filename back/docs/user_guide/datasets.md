@@ -1,32 +1,31 @@
 # Managing Datasets and Recordings
 
-In Whombat, you have the flexibility to efficiently manage multiple recording
-datasets.
+In Whombat, you have the flexibility to efficiently manage multiple recording datasets.
 
-!!! info "What is a dataset?"
-
-    A dataset, simply put, is a collection of recordings. However, these
-    recordings typically share a common context, whether it's from a single research
-    project, a specific field season, or files downloaded from a particular website.
-    While you can structure your datasets as you prefer, creating coherent datasets
-    is generally considered good practice.
+A **dataset**, simply put, is a collection of recordings.
+However, these recordings typically share a common context, whether it's from a single research project, a specific field season, or files downloaded from a particular website.
+While you can structure your datasets as you prefer, creating coherent datasets is generally considered good practice.
 
 Navigate to the dataset list using the sidebar or the cards on the homepage.
+
+!!! tip "Explore Whombat with Example Data"
+
+    Curious to see how a fully populated dataset looks in Whombat? Import the example dataset, complete with rich metadata and recordings, to explore its features and functionalities.
+    The [import data guide](import.md) provides step-by-step instructions.
 
 ## Selecting a Dataset to Work On
 
 On the dataset list page, you'll find an overview of all available datasets.
-Clicking on the name of a dataset takes you to a dedicated page where you can
-explore its details and the recordings it contains.
+Clicking on the name of a dataset takes you to a dedicated page where you can explore its details and the recordings it contains.
 
 ![Dataset List](../assets/img/dataset_list.png)
 
 ## Create a dataset
 
-To create a new dataset, click the **+Create** button. You'll be prompted to
-provide a name and a description for your dataset. Additionally, paste the full
-path of the folder containing the recordings you want to add. Whombat will scan
-the folder and automatically include all available audio files it can find.
+To create a new dataset, click the **+Create** button.
+You'll be prompted to provide a name and a description for your dataset.
+Additionally, paste the full path of the folder containing the recordings you want to add.
+Whombat will scan the folder and automatically include all available audio files it can find.
 
 ??? info "Supported Audio Formats"
 
@@ -46,23 +45,18 @@ the folder and automatically include all available audio files it can find.
     an external hard drive, copy the recordings you wish to annotate into your home
     folder. If you wish to modify this configuration, feel free to reach out.
 
-Whombat automatically extracts fundamental information from each discovered
-file, such as recording **duration**, **sampling rate**, and the number of
-**audio channels**. While Whombat can store additional details like date, time,
-and location of the recording, automatic extraction is not applied due to the
-diverse formats in which this information can be stored. Manual input is
-required for these specific details.
+Whombat automatically extracts fundamental information from each discovered file, such as recording **duration**, **sampling rate**, and the number of **audio channels**.
+While Whombat can store additional details like date, time, and location of the recording, automatic extraction is not applied due to the diverse formats in which this information can be stored.
+Manual input is required for these specific details.
 
 ## Import a dataset
 
-Whombat offers a convenient option to import all dataset information from a
-file. Currently, we support datasets in a JSON-based format known as AOEF. Refer
-to this [link](https://mbsantiago.github.io/soundevent/) for comprehensive
-information about the AOEF format.
+Whombat offers a convenient option to import all dataset information from a file.
+Currently, we support datasets in a JSON-based format known as AOEF.
+Refer to this [link](https://mbsantiago.github.io/soundevent/) for comprehensive information about the AOEF format.
 
-To import a dataset, simply click the **import** button. Select the JSON file
-you want to upload and provide the path to the directory where the recordings
-are stored.
+To import a dataset, simply click the **import** button.
+Select the JSON file you want to upload and provide the path to the directory where the recordings are stored.
 
 ??? note "What path should I provide?"
 
@@ -73,22 +67,18 @@ are stored.
 
 ## Dataset Home Page
 
-Upon selecting or creating a dataset, you'll be directed to the dataset detail
-page, offering a comprehensive overview of your dataset. Here, you'll find key
-statistics, including the total number of recordings. Additionally, the page
-provides insights into potential issues with files or their metadata, along with
-a detailed breakdown of the recording count.
+Upon selecting or creating a dataset, you'll be directed to the dataset detail page, offering a comprehensive overview of your dataset.
+Here, you'll find key statistics, including the total number of recordings.
+Additionally, the page provides insights into potential issues with files or their metadata, along with a detailed breakdown of the recording count.
 
 ![Dataset Dashboard](../assets/img/dataset_dashboard.png)
 
-From this dashboard, you can easily handle your dataset in various ways. **A)**
-shows the total number of recordings, while **B)** points out any issues found
-for specific recordings. **C)** Highlights recordings that were initially
-registered but are currently missing from your files, offering essential
-visibility. **D)** Gives a breakdown of the recordings based on tags, helping
-you organize efficiently. **E)** Showcases the latest recording issues and
-notes. Lastly, **F)** provides detailed information about the dataset and allows
-for easy editing.
+From this dashboard, you can easily handle your dataset in various ways.
+**A)** shows the total number of recordings, while **B)** points out any issues found for specific recordings.
+**C)** Highlights recordings that were initially registered but are currently missing from your files, offering essential visibility.
+**D)** Gives a breakdown of the recordings based on tags, helping you organize efficiently.
+**E)** Showcases the latest recording issues and notes.
+Lastly, **F)** provides detailed information about the dataset and allows for easy editing.
 
 !!! warning "Deleting the dataset"
 
@@ -109,11 +99,9 @@ for easy editing.
 
 ## Manage the Recordings Metadata
 
-To access the table of recordings, simply click on the Recordings button in the
-navigation header. Within this table, you can conveniently edit the metadata of
-your recordings in a tabular format. This includes manually inputting the date
-and time of recording, specifying the location where the recording was made, and
-most importantly, adding any number of tags to your recordings.
+To access the table of recordings, simply click on the Recordings button in the navigation header.
+Within this table, you can conveniently edit the metadata of your recordings in a tabular format.
+This includes manually inputting the date and time of recording, specifying the location where the recording was made, and most importantly, adding any number of tags to your recordings.
 
 ![Recording Table](../assets/img/recordings_table.png)
 
@@ -147,11 +135,9 @@ most importantly, adding any number of tags to your recordings.
 
 ## See the Recording Spectrogram
 
-If you want to view the spectrogram of a recording, simply click on the path of
-the recording. This will lead you to a dedicated page where you can access all
-the recording information, visualize the spectrogram, and play the recording.
-Additionally, you have the option to edit the recording metadata directly from
-this page.
+If you want to view the spectrogram of a recording, simply click on the path of the recording.
+This will lead you to a dedicated page where you can access all the recording information, visualize the spectrogram, and play the recording.
+Additionally, you have the option to edit the recording metadata directly from this page.
 
 ![Recording Detail](../assets/img/recording_detail.png)
 
@@ -169,6 +155,5 @@ this page.
 
 ## Ready to start annotating
 
-Now that you've registered a dataset and ensured its metadata is accurate,
-you're all set to begin annotating your audio material. Head to the next section
-to learn how to create and manage an annotation project.
+Now that you've registered a dataset and ensured its metadata is accurate, you're all set to begin annotating your audio material.
+Head to the next section to learn how to create and manage an annotation project.

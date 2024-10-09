@@ -1,5 +1,6 @@
 site_name: Whombat User Guide
 site_url: "http://localhost:5000/docs/"
+repo_url: https://github.com/mbsantiago/whombat
 nav:
   - user_guide/index.md
   - Installation: user_guide/installation.md
@@ -9,6 +10,7 @@ nav:
   - Evaluation: user_guide/evaluation.md
   - Data Exploration: user_guide/exploration.md
   - Data Export: user_guide/export.md
+  - Data Import: user_guide/import.md
   - FAQ: user_guide/faq.md
   - About the Project:
       - Authors: AUTHORS.md
@@ -21,9 +23,14 @@ theme:
   favicon: assets/favicon.svg
   features:
     - content.code.copy
-    - navigation.tracking
+    - navigation.footer
     - navigation.indexes
+    - navigation.tabs
     - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
     - toc.follow
   palette:
     - scheme: default
@@ -81,3 +88,7 @@ extra_javascript:
   - javascripts/json-viewer.js
 extra_css:
   - stylesheets/jquery.json-viewer.css
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mbsantiago/whombat

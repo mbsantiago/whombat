@@ -16,7 +16,7 @@ export default function EvaluationSetUpdateForm({
       </div>
       <div className="mt-4 border-t border-stone-300 dark:border-stone-700">
         <dl className="divide-y divide-stone-500">
-          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:px-0">
             <ui.Description
               name="Name"
               value={evaluationSet?.name ?? ""}
@@ -25,7 +25,7 @@ export default function EvaluationSetUpdateForm({
               editable
             />
           </div>
-          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:px-0">
             <ui.Description
               name="Description"
               value={evaluationSet?.description ?? ""}
@@ -34,7 +34,7 @@ export default function EvaluationSetUpdateForm({
               editable
             />
           </div>
-          <div className="py-6 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <div className="py-6 px-4 sm:px-0">
             <ui.Description
               name="Created On"
               value={evaluationSet?.created_on}

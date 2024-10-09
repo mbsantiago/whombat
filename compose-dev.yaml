@@ -7,7 +7,8 @@ services:
     environment:
       - WHOMBAT_DEV=true
       - WHOMBAT_DATA_DIR=/data/
-      - WHOMBAT_DB_URL=sqlite+aiosqlite:////data/whombat.db
+      - WHOMBAT_DB_URL=sqlite+aiosqlite:////data/whombat_new.db
+      # - WHOMBAT_DB_URL=sqlite+aiosqlite:////data/whombat.db
     networks:
       - public
     volumes:

@@ -1,5 +1,6 @@
 import type {
   Box,
+  Color,
   Dimensions,
   SoundEventAnnotation,
   SoundEventPrediction,
@@ -14,6 +15,8 @@ import {
   scaleBBoxToViewport,
   scaleTimeToViewport,
 } from "@/lib/utils/geometry";
+
+export { Color };
 
 export const COLOR_NAMES = [
   "slate",
@@ -41,11 +44,6 @@ export const COLOR_NAMES = [
 ];
 
 export const LEVELS = [1, 2, 3, 4, 5, 6];
-
-export type Color = {
-  color: string;
-  level: number;
-};
 
 export type TagElement = {
   tag: Tag;

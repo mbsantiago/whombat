@@ -80,8 +80,11 @@ export default function AnnotationProgress({
             variant="info"
             title="Annotation Instructions"
             label="Instructions"
+            width="max-w-prose"
           >
-            {() => <p>{instructions}</p>}
+            {() => (
+              <p className="max-w-prose whitespace-pre-wrap">{instructions}</p>
+            )}
           </Dialog>
           <span className="inline-flex gap-1 items-center text-sm whitespace-nowrap">
             <span className="text-stone-500">#:</span>

@@ -1,13 +1,18 @@
 ---
-jupyter: py11
+title: "Using exported data for training models"
 format:
+  html:
+    toc: true
+    toc-depth: 3
   pdf:
+    documentclass: scrartcl
     toc: true
     number-sections: true
     colorlinks: true
+jupyter: py11
+execute:
+  warning: false
 ---
-
-# Using Exported Data For Training Models
 
 **Whombat** is degined to facilitate the generation of high-quality labeled audio data.
 But the real power comes from using that data to train machine learning models.
@@ -66,7 +71,8 @@ def task_is_complete(task: data.AnnotationTask) -> bool:
 
 # Create a dictionary mapping clip UUIDs to their completion status.
 clip_status = {
-    task.clip.uuid: task_is_complete(task) for task in annotation_project.tasks
+    task.clip.uuid: task_is_complete(task)
+    for task in annotation_project.tasks
 }
 
 
@@ -85,7 +91,8 @@ def clip_annotation_has_issues(annotation: data.ClipAnnotation) -> bool:
     return any(note.is_issue for note in annotation.notes)
 
 
-# Filter the clip annotations to include only those that are complete and have no issues.
+# Filter the clip annotations to include only those that are complete and have
+# no issues.
 annotated_clips = [
     annotation
     for annotation in annotation_project.clip_annotations
@@ -117,7 +124,9 @@ from sklearn.model_selection import train_test_split
 
 example_annotation = annotated_clips[0]
 recording = example_annotation.clip.recording
-print(recording.tags)
+
+for tag in recording.tags:
+    print(repr(tag))
 ```
 
 Next, we'll determine the species of each clip and count how many examples we have per species.
@@ -164,9 +173,9 @@ This set can be saved to a file and shared, enabling others to evaluate their mo
 To create an evaluation set, we need to define:
 
 - **Target sounds**: The specific sounds or categories we want to evaluate.
-                          In this case, our target is the "species" tag.
+                            In this case, our target is the "species" tag.
 - **Examples**: The specific annotated clips that will be used for evaluation.
-                          Here, we'll use the `test_clips` we created earlier.
+                            Here, we'll use the `test_clips` we created earlier.
 
 ```{python}
 evaluation_tags = {
@@ -246,7 +255,10 @@ def get_features(sound_event: data.SoundEvent) -> tuple[float, float, float]:
     )
 
 
-X_train = [get_features(annotation.sound_event) for annotation in train_sound_events]
+X_train = [
+    get_features(annotation.sound_event)
+    for annotation in train_sound_events
+]
 ```
 
 ### Extracting Species Labels
@@ -255,7 +267,8 @@ Now, let's extract the corresponding species label for each sound event.
 
 ```{python}
 y_train = [
-    data.find_tag(annotation.tags, "species").value for annotation in train_sound_events
+    data.find_tag(annotation.tags, "species").value
+    for annotation in train_sound_events
 ]
 ```
 
@@ -316,7 +329,8 @@ def process_clip(clip_annotation: data.ClipAnnotation):
 
 
 predictions = [
-    process_clip(clip_annotation) for clip_annotation in evaluation_set.clip_annotations
+    process_clip(clip_annotation)
+    for clip_annotation in evaluation_set.clip_annotations
 ]
 ```
 

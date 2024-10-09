@@ -37,7 +37,7 @@ export default function AnnotationProject({
             {annotationProject.name}
           </Button>
         </h3>
-        <p className="mt-1 w-full text-sm leading-5 text-stone-600 dark:text-stone-400">
+        <p className="mt-1 text-sm whitespace-pre-wrap leading-5 text-stone-600 dark:text-stone-400">
           {annotationProject.description}
         </p>
       </div>

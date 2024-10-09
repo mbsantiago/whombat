@@ -1,5 +1,6 @@
 site_name: Whombat
 site_url: https://mbsantiago.github.io/whombat/
+repo_url: https://github.com/mbsantiago/whombat
 nav:
   - Home: README.md
   - User Guide:
@@ -10,6 +11,7 @@ nav:
       - Annotation Projects: user_guide/annotation_projects.md
       - Evaluation: user_guide/evaluation.md
       - Data Exploration: user_guide/exploration.md
+      - Data Import: user_guide/import.md
       - Data Export: user_guide/export.md
       - FAQ: user_guide/faq.md
   - Developer Guide:
@@ -38,9 +40,14 @@ theme:
   favicon: assets/favicon.svg
   features:
     - content.code.copy
-    - navigation.tracking
+    - navigation.footer
     - navigation.indexes
+    - navigation.tabs
     - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
     - toc.follow
   palette:
     - scheme: default
@@ -129,3 +136,7 @@ extra_javascript:
 extra_css:
   - stylesheets/jquery.json-viewer.css
   - css/mkdocstrings.css
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mbsantiago/whombat

@@ -1,6 +1,5 @@
 import datetime
 
-from soundevent.geometry import GeometricFeature
 from soundevent.io.aoef import (
     AnnotationSetObject,
     EvaluationObject,
@@ -22,7 +21,7 @@ async def get_feature_names(
         | RecordingSetObject
     ),
 ) -> dict[str, int]:
-    names: set[str] = set(feat.value for feat in GeometricFeature)
+    names: set[str] = set()
 
     recordings = obj.recordings or []
     for recording in recordings:

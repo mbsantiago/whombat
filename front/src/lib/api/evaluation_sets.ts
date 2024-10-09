@@ -173,7 +173,7 @@ export function registerEvaluationSetAPI(
     const file = data.evaluation_set[0];
     formData.append("evaluation_set", file);
     formData.append("task", data.task);
-    const { data: res } = await instance.post(endpoints.import, data);
+    const { data: res } = await instance.post(endpoints.import, formData);
     return schemas.EvaluationSetSchema.parse(res);
   }
 

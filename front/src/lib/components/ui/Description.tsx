@@ -19,7 +19,7 @@ export function DescriptionData({
   return (
     <dd
       className={classNames(
-        "mt-1 text-sm leading-6 text-stone-700 dark:text-stone-400 sm:col-span-2 sm:mt-0",
+        "mt-1 w-full text-sm leading-6 text-stone-700 dark:text-stone-400 sm:col-span-2 sm:mt-0",
         className,
       )}
       {...rest}
@@ -43,7 +43,7 @@ export function DescriptionTerm({
   return (
     <dt
       className={classNames(
-        "text-sm font-medium leading-6 text-stone-900 dark:text-stone-300",
+        "text-sm w-full font-medium leading-6 text-stone-900 dark:text-stone-300",
         className,
       )}
       {...rest}
@@ -77,7 +77,9 @@ export function EditableDescriptionData<T extends string | number | Date>({
   if (!editing) {
     return (
       <DescriptionData className="flex flex-row justify-between">
+        <p className="whitespace-pre-wrap">
         {value?.toLocaleString() ?? ""}
+        </p>
         <button
           onClick={() => setEditing(true)}
           className="ml-2 text-sm underline text-stone-500"
@@ -202,18 +204,18 @@ export default function Description<T extends string | number | Date>({
 }) {
   if (!editable) {
     return (
-      <>
+      <div className="flex flex-col w-full">
         <DescriptionTerm>{name}</DescriptionTerm>
         <DescriptionData>{value?.toLocaleString() ?? ""}</DescriptionData>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="flex flex-col w-full">
       <DescriptionTerm>{name}</DescriptionTerm>
       <EditableDescriptionData value={value} type={type} onChange={onChange} />
-    </>
+    </div>
   );
 }
 
