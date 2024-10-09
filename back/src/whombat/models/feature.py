@@ -39,25 +39,15 @@ __all__ = [
 
 
 class FeatureName(Base):
-    """Feature model.
-
-    Attributes
-    ----------
-    id
-        The database id of the feature name.
-    name
-        The feature name.
-
-    Parameters
-    ----------
-    name
-        The feature name.
-    """
+    """Feature model."""
 
     __tablename__ = "feature_name"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the feature name"""
+
     name: orm.Mapped[str] = orm.mapped_column(nullable=False, unique=True)
+    """The feature name."""
 
     # ========================================================================
     # Relationships (backrefs)

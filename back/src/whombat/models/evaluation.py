@@ -39,44 +39,35 @@ __all__ = [
 
 
 class Evaluation(Base):
-    """Evaluation model.
+    """Evaluation.
 
-    Attributes
-    ----------
-    id
-        The database id of the evaluation.
-    uuid
-        The UUID of the evaluation.
-    score
-        The overall score of the evaluation.
-    metrics
-        A list of metrics associated with the evaluation.
-    clip_evaluations
-        A list of clip evaluations associated with the evaluation.
-    created_on
-        The date and time the evaluation was created.
-    task
-        The evaluated task.
+    Represents a complete evaluation of a model's predictions.
 
-    Parameters
-    ----------
-    score : float
-        The overall score of the evaluation.
-    uuid : UUID, optional
-        The UUID of the evaluation.
+    This class stores high-level information about the evaluation of a
+    set of predictions compared to ground truth annotations. It includes
+    an overall score, aggregated metrics, and a breakdown of individual
+    clip evaluations. This provides a comprehensive overview of the model's
+    performance on a specific task (e.g., sound event detection).
     """
 
     __tablename__ = "evaluation"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the evaluation."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         nullable=False,
         kw_only=True,
         unique=True,
         default_factory=uuid4,
     )
+    """A unique UUID for the evaluation."""
+
     task: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """The specific task that was evaluated (e.g., 'sound_event_detection')."""
+
     score: orm.Mapped[float] = orm.mapped_column(nullable=False, default=0)
+    """The overall score of the evaluation."""
 
     # Relationships
     metrics: orm.Mapped[list["EvaluationMetric"]] = orm.relationship(
@@ -86,6 +77,8 @@ class Evaluation(Base):
         init=False,
         repr=False,
     )
+    """A list of metrics associated with the overall evaluation."""
+
     clip_evaluations: orm.Mapped[list[ClipEvaluation]] = orm.relationship(
         back_populates="evaluation",
         default_factory=list,
@@ -93,30 +86,19 @@ class Evaluation(Base):
         init=False,
         repr=False,
     )
+    """The list of clip evaluations that make up this overall evaluation."""
 
 
 class EvaluationMetric(Base):
-    """Evaluation metric model.
+    """Evaluation Metric.
 
-    Attributes
-    ----------
-    id
-        The database id of the metric.
-    feature_name
-        The feature name of the metric.
-    value
-        The value of the metric.
-    created_on
-        The date and time the metric was created.
+    Represents a specific metric associated with an overall evaluation.
 
-    Parameters
-    ----------
-    evaluation_id : int
-        The database id of the evaluation.
-    feature_name_id : int
-        The database id of the feature name.
-    value : float
-        The value of the metric.
+    This class stores the value of an evaluation metric
+    (e.g., overall accuracy, macro F1-score) calculated for an Evaluation.
+    It links the metric value to its name (from the FeatureName table) and
+    the corresponding evaluation, providing insights into the model's
+    performance on a broader level.
     """
 
     __tablename__ = "evaluation_metric"
@@ -128,20 +110,29 @@ class EvaluationMetric(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database ID of the metric."""
+
     evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("evaluation.id"),
         nullable=False,
     )
+    """The ID of the evaluation to which this metric belongs."""
+
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
     )
+    """The ID of the feature name associated with this metric."""
+
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the metric."""
+
     name: AssociationProxy[str] = association_proxy(
         "feature_name",
         "name",
         init=False,
     )
+    """The name of the metric (accessed via the FeatureName relationship)."""
 
     # Relationships
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
@@ -149,8 +140,11 @@ class EvaluationMetric(Base):
         repr=False,
         lazy="joined",
     )
+    """The FeatureName object associated with this metric."""
+
     evaluation: orm.Mapped[Evaluation] = orm.relationship(
         back_populates="metrics",
         init=False,
         repr=False,
     )
+    """The Evaluation object to which this metric belongs."""

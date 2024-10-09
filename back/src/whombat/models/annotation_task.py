@@ -42,58 +42,38 @@ __all__ = [
 
 
 class AnnotationTask(Base):
-    """Annotation Task model.
-
-    Attributes
-    ----------
-    id
-        The database id of the task.
-    uuid
-        The UUID of the task.
-    project
-        The annotation project to which the task belongs.
-    clip
-        The audio clip to be annotated.
-    clip_annotation
-        The clip annotation created for the task.
-    created_on
-        The date and time the task was created.
-
-    Parameters
-    ----------
-    project_id : int
-        The database id of the annotation project to which the task belongs.
-    clip_id : int
-        The database id of the audio clip to be annotated.
-    uuid : UUID, optional
-        The UUID of the task.
-    """
+    """Annotation Task model."""
 
     __tablename__ = "annotation_task"
     __table_args__ = (UniqueConstraint("annotation_project_id", "clip_id"),)
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the task."""
 
     annotation_project_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("annotation_project.id"),
         nullable=False,
     )
+    """The id of the project to which the task belongs."""
 
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
     )
+    """The id of the clip to be annotated."""
 
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id"),
         nullable=True,
     )
+    """The id of the annotation created for the task."""
 
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
         unique=True,
     )
+    """The UUID of the task."""
 
     # Relationships
     annotation_project: orm.Mapped["AnnotationProject"] = orm.relationship(
@@ -101,11 +81,13 @@ class AnnotationTask(Base):
         init=False,
         repr=False,
     )
+    """The project to which the task belongs."""
 
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
         repr=False,
     )
+    """The clip that needs to be annotated to complete this task."""
 
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="annotation_task",
@@ -113,6 +95,7 @@ class AnnotationTask(Base):
         init=False,
         single_parent=True,
     )
+    """The annotations of the clip this task pertains to."""
 
     status_badges: orm.Mapped[list["AnnotationStatusBadge"]] = (
         orm.relationship(
@@ -124,33 +107,11 @@ class AnnotationTask(Base):
             default_factory=list,
         )
     )
+    """The status badges associated with the task."""
 
 
 class AnnotationStatusBadge(Base):
-    """Annotation status badge model.
-
-    Attributes
-    ----------
-    id
-        The database id of the status badge.
-    state
-        The annotation status to which the badge refers.
-    task
-        The task to which the status badge belongs.
-    user
-        The user to whom the status badge refers.
-    created_on
-        The date and time the status badge was created.
-
-    Parameters
-    ----------
-    annotation_task_id : int
-        The database id of the task to which the status badge belongs.
-    state : soundevent.data.AnnotationState
-        The annotation status to which the badge refers.
-    user_id : int, optional
-        The database id of the user to whom the status badge refers.
-    """
+    """Annotation status badge model."""
 
     __tablename__ = "annotation_status_badge"
     __table_args__ = (
@@ -161,23 +122,33 @@ class AnnotationStatusBadge(Base):
         primary_key=True,
         init=False,
     )
+    """The database id of the status badge."""
+
     annotation_task_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("annotation_task.id"),
         nullable=False,
     )
+    """The id of the task to which the status badge belongs."""
+
     user_id: orm.Mapped[Optional[UUID]] = orm.mapped_column(
         ForeignKey("user.id"),
     )
+    """The id of the user to whom the status badge refers."""
+
     state: orm.Mapped[data.AnnotationState]
+    """The state of annotation attached to the badge."""
 
     # Relationships
     annotation_task: orm.Mapped[AnnotationTask] = orm.relationship(
         back_populates="status_badges",
         init=False,
     )
+    """The task to which the status badge belongs."""
+
     user: orm.Mapped[Optional[User]] = orm.relationship(
         User,
         init=False,
         repr=False,
         lazy="joined",
     )
+    """The user to whom the status badge refers."""

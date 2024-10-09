@@ -22,53 +22,32 @@ if TYPE_CHECKING:
 
 
 class ClipAnnotation(Base):
-    """Clip Annotation Model.
-
-    Attributes
-    ----------
-    id
-        The database id of the annotation.
-    uuid
-        The uuid of the annotation.
-    sound_events
-        The sound events annotated in the clip.
-    tags
-        The tags attached to the annotation.
-
-    Notes
-    -----
-        The notes attached to the annotation.
-    clip
-        The clip to which the annotation belongs.
-    created_on
-        The date and time the annotation was created.
-
-    Parameters
-    ----------
-    clip_id : int
-        The database id of the clip to which the annotation belongs.
-    uuid : UUID, optional
-        The UUID of the annotation.
-    """
+    """Clip Annotation Model."""
 
     __tablename__ = "clip_annotation"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the annotation."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+    """The UUID of the annotation."""
+
     clip_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip.id"),
         nullable=False,
     )
+    """The database id of the clip being annotated."""
 
     # Relations
     clip: orm.Mapped[Clip] = orm.relationship(
         init=False,
         lazy="joined",
     )
+    """The clip being annotated."""
 
     sound_events: orm.Mapped[list[SoundEventAnnotation]] = orm.relationship(
         "SoundEventAnnotation",
@@ -79,6 +58,7 @@ class ClipAnnotation(Base):
         repr=False,
         init=False,
     )
+    """The sound events annotated in the clip."""
 
     tags: orm.Mapped[list[Tag]] = orm.relationship(
         secondary="clip_annotation_tag",
@@ -88,6 +68,7 @@ class ClipAnnotation(Base):
         repr=False,
         init=False,
     )
+    """The tags attached to the annotation."""
 
     notes: orm.Mapped[list[Note]] = orm.relationship(
         secondary="clip_annotation_note",
@@ -100,6 +81,7 @@ class ClipAnnotation(Base):
         init=False,
         order_by=Note.created_on.desc(),
     )
+    """The notes attached to the annotation."""
 
     # Secondary relations
     clip_annotation_notes: orm.Mapped[list["ClipAnnotationNote"]] = (
@@ -145,29 +127,7 @@ class ClipAnnotation(Base):
 
 
 class ClipAnnotationTag(Base):
-    """Clip Annotation Tag Model.
-
-    Attributes
-    ----------
-    id
-        The database id of the annotation tag.
-    tag
-        The tag attached to the annotation.
-    created_by
-        The user who created the annotation tag.
-    created_on
-        The date and time the annotation tag was created.
-
-    Parameters
-    ----------
-    clip_annotation_id : int
-        The database id of the annotation to which the annotation tag
-        belongs.
-    tag_id : int
-        The database id of the tag attached to the annotation.
-    created_by_id : int
-        The database id of the user who created the annotation tag.
-    """
+    """Clip Annotation Tag Model."""
 
     __tablename__ = "clip_annotation_tag"
     __table_args__ = (
@@ -179,13 +139,20 @@ class ClipAnnotationTag(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the annotation tag."""
+
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id")
     )
+    """The database id of the annotation to which the tag belongs"""
+
     tag_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("tag.id"))
+    """The database id of the tag attached to the annotation."""
+
     created_by_id: orm.Mapped[Optional[int]] = orm.mapped_column(
         ForeignKey("user.id")
     )
+    """The database id of the user who tagged the annotation."""
 
     # Relations
     tag: orm.Mapped[Tag] = orm.relationship(
@@ -193,36 +160,25 @@ class ClipAnnotationTag(Base):
         repr=False,
         lazy="joined",
     )
+    """The tag attached to the annotation."""
+
     created_by: orm.Mapped[Optional[User]] = orm.relationship(
         init=False,
         repr=False,
         lazy="joined",
     )
+    """The user who tagged the annotation."""
+
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         back_populates="clip_annotation_tags",
         init=False,
         repr=False,
     )
+    """The annotation being tagged."""
 
 
 class ClipAnnotationNote(Base):
-    """Clip Annotation Note Model.
-
-    Attributes
-    ----------
-    note
-        The note attached to the annotation.
-    created_on
-        The date and time the annotation note was created.
-
-    Parameters
-    ----------
-    clip_annotation_id : int
-        The database id of the annotation to which the annotation note
-        belongs.
-    note_id : int
-        The database id of the note attached to the annotation.
-    """
+    """Clip Annotation Note Model."""
 
     __tablename__ = "clip_annotation_note"
     __table_args__ = (
@@ -233,10 +189,15 @@ class ClipAnnotationNote(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the annotation note."""
+
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id")
     )
+    """The database id of the annotation to which the note belongs."""
+
     note_id: orm.Mapped[int] = orm.mapped_column(ForeignKey("note.id"))
+    """The database id of the note attached to the annotation."""
 
     # Relations
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
@@ -244,9 +205,12 @@ class ClipAnnotationNote(Base):
         init=False,
         repr=False,
     )
+    """The annotation to which the note belongs to."""
+
     note: orm.Mapped[Note] = orm.relationship(
         back_populates="clip_annotation_note",
         init=False,
         repr=False,
         lazy="joined",
     )
+    """The note associated with the annotation."""

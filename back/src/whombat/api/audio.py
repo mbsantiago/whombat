@@ -126,20 +126,23 @@ def load_clip_bytes(
 
     Parameters
     ----------
-    clip
-        The clip to load audio from.
+    path
+        The path to the audio file.
     start
         Start byte.
-    end
-        End byte.
     speed
-        Speed of the audio.
+        The factor by which to speed up or slow down the audio.
+        By default, it is 1.
+    frames
+        The number of audio frames to read at a time.
     time_expansion
-        Time expansion factor.
+        Time expansion factor of the audio. By default, it is 1.
     start_time
-        Start time in seconds.
+        The time in seconds at which to start reading the audio.
     end_time
-        End time in seconds.
+        The time in seconds at which to stop reading the audio.
+    bit_depth
+        The bit depth of the resulting audio. By default, it is 16 bits.
 
     Returns
     -------

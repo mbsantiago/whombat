@@ -22,71 +22,56 @@ __all__ = [
 
 
 class SoundEventEvaluation(Base):
-    """Evaluated Sound Event model.
+    """Sound Event Evaluation.
 
-    Attributes
-    ----------
-    id
-        The database id of the sound event evaluation.
-    uuid
-        The UUID of the sound event evaluation.
-    source
-        The sound event prediction to which the sound event evaluation belongs.
-    target
-        The sound event annotation to which the sound event evaluation belongs.
-    affinity
-        The affinity between the sound event prediction geometry and the sound
-        event annotation geometry. Does not take into account any semantic
-        information.
-    score
-        The overall score of the sound event evaluation.
-    metrics
-        A list of metrics associated with the sound event evaluation.
+    Represents the evaluation of a predicted sound event against a ground truth
+    annotation.
 
-    Parameters
-    ----------
-    clip_evaluation_id : int
-        The id of the clip evaluation to which the sound event evaluation
-        belongs.
-    source_id : int, optional
-        The id of the sound event prediction to which the sound event
-        evaluation belongs.
-    target_id : int, optional
-        The id of the sound event annotation to which the sound event
-        evaluation belongs.
-    affinity : float
-        The affinity between the sound event prediction geometry and the sound
-        event annotation geometry. Does not take into account any semantic
-        information.
-    score : float
-        The overall score of the sound event evaluation.
-    uuid : UUID, optional
-        The UUID of the sound event evaluation. If not provided, a new UUID
-        will be generated.
+    This class stores the results of comparing a predicted sound event (from a
+    model or user) to a corresponding annotated sound event (ground truth). It
+    includes various metrics and scores to quantify the accuracy of the
+    prediction.
     """
 
     __tablename__ = "sound_event_evaluation"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the sound event evaluation."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+    """A unique UUID for the sound event evaluation."""
+
     clip_evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_evaluation.id"),
         nullable=False,
     )
+    """The ID of the clip evaluation to which this evaluation belongs."""
+
     source_id: orm.Mapped[int | None] = orm.mapped_column(
         ForeignKey("sound_event_prediction.id"),
         nullable=True,
     )
+    """The id of the predicted sound event."""
+
     target_id: orm.Mapped[int | None] = orm.mapped_column(
         ForeignKey("sound_event_annotation.id"),
         nullable=True,
     )
+    """The ID of the target (ground truth) sound event annotation."""
+
     affinity: orm.Mapped[float]
+    """The affinity score between the prediction and the ground truth.
+
+    This score measures the geometric similarity between the predicted 
+    and true sound event regions, without considering semantic information.
+    """
+
     score: orm.Mapped[float]
+    """The overall score of the match between prediction and ground truth."""
 
     # Relationships
     source: orm.Mapped[Optional[SoundEventPrediction]] = orm.relationship(
@@ -94,11 +79,15 @@ class SoundEventEvaluation(Base):
         repr=False,
         lazy="joined",
     )
+    """The predicted sound event object."""
+
     target: orm.Mapped[Optional[SoundEventAnnotation]] = orm.relationship(
         init=False,
         repr=False,
         lazy="joined",
     )
+    """The target (ground truth) sound event annotation object."""
+
     metrics: orm.Mapped[list["SoundEventEvaluationMetric"]] = orm.relationship(
         cascade="all, delete-orphan",
         lazy="joined",
@@ -106,6 +95,7 @@ class SoundEventEvaluation(Base):
         repr=False,
         default_factory=list,
     )
+    """A list of metrics associated with this sound event evaluation."""
 
     # Backrefs
     clip_evaluation: orm.Mapped["ClipEvaluation"] = orm.relationship(
@@ -118,21 +108,12 @@ class SoundEventEvaluation(Base):
 class SoundEventEvaluationMetric(Base):
     """Sound Event Evaluation Metric model.
 
-    Attributes
-    ----------
-    feature_name
-        The name of the feature.
-    value
-        The value of the feature.
+    Represents a specific metric used to evaluate a sound event prediction.
 
-    Parameters
-    ----------
-    sound_event_evaluation_id : int
-        The id of the sound event evaluation to which the metric belongs.
-    feature_name_id : int
-        The id of the name of the feature.
-    value : float
-        The value of the feature.
+    This class stores the value of a single evaluation metric
+    (e.g., precision, recall, F1-score) calculated for a
+    SoundEventEvaluation. It links the metric value to its name
+    (stored in the FeatureName table) and the corresponding evaluation.
     """
 
     __tablename__ = "sound_event_evaluation_metric"
@@ -144,22 +125,31 @@ class SoundEventEvaluationMetric(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database ID of the metric."""
+
     sound_event_evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("sound_event_evaluation.id"),
         nullable=False,
     )
+    """The ID of the sound event evaluation to which this metric belongs."""
+
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
     )
+    """The ID of the feature name associated with this metric."""
+
     value: orm.Mapped[float] = orm.mapped_column(
         nullable=False,
     )
+    """The value of the metric."""
+
     name: AssociationProxy[str] = association_proxy(
         "feature_name",
         "name",
         init=False,
     )
+    """The name of the metric (accessed via the FeatureName relationship)."""
 
     # Relations
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
@@ -167,6 +157,8 @@ class SoundEventEvaluationMetric(Base):
         repr=False,
         lazy="joined",
     )
+    """The FeatureName object associated with this metric."""
+
     sound_event_evaluation: orm.Mapped[SoundEventEvaluation] = (
         orm.relationship(
             back_populates="metrics",
@@ -174,3 +166,4 @@ class SoundEventEvaluationMetric(Base):
             repr=False,
         )
     )
+    """The SoundEventEvaluation object to which this metric belongs."""

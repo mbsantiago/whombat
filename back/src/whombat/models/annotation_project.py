@@ -41,53 +41,30 @@ __all__ = [
 
 
 class AnnotationProject(Base):
-    """Annotation Project model.
-
-    Attributes
-    ----------
-    id
-        The database id of the annotation project.
-    uuid
-        The UUID of the annotation project.
-    name
-        The name of the annotation project.
-    description
-        The description of the annotation project.
-    annotation_instructions
-        The instructions for annotators.
-    tags
-        A list of tags associated with the annotation project.
-        Annotations created for this project can only use these tags.
-    annotation_tasks
-        The list of annotation tasks associated with the annotation project.
-    created_on
-        The date and time the annotation project was created.
-
-    Parameters
-    ----------
-    name : str
-        The name of the annotation project.
-    description : str
-        The description of the annotation project.
-    annotation_instructions : str, optional
-        The instructions for annotators.
-    uuid : UUID, optional
-        The UUID of the annotation project.
-    """
+    """Annotation Project model."""
 
     __tablename__ = "annotation_project"
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the annotation project."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         kw_only=True,
         unique=True,
     )
+    """The UUID of the annotation project."""
+
     name: orm.Mapped[str] = orm.mapped_column(unique=True)
+    """The name of the annotation project."""
+
     description: orm.Mapped[str]
+    """The description of the annotation project."""
+
     annotation_instructions: orm.Mapped[str | None] = orm.mapped_column(
         default=None
     )
+    """The instructions for annotators."""
 
     # Relationships
     tags: orm.Mapped[list[Tag]] = orm.relationship(
@@ -98,6 +75,7 @@ class AnnotationProject(Base):
         default_factory=list,
         repr=False,
     )
+    """The tags associated with the annotation project."""
 
     annotation_tasks: orm.Mapped[list["AnnotationTask"]] = orm.relationship(
         back_populates="annotation_project",
@@ -116,22 +94,7 @@ class AnnotationProject(Base):
 
 
 class AnnotationProjectTag(Base):
-    """Annotation Project Tag model.
-
-    Attributes
-    ----------
-    annotation_project
-        The annotation project associated with the tag.
-    tag
-        The tag associated with the annotation project.
-
-    Parameters
-    ----------
-    annotation_project_id : int
-        The database id of the annotation project.
-    tag_id : int
-        The database id of the tag.
-    """
+    """Annotation Project Tag model."""
 
     __tablename__ = "annotation_project_tag"
     __table_args__ = (
@@ -146,11 +109,14 @@ class AnnotationProjectTag(Base):
         nullable=False,
         primary_key=True,
     )
+    """The database id of the annotation project associated with the tag."""
+
     tag_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("tag.id"),
         nullable=False,
         primary_key=True,
     )
+    """The database id of the tag."""
 
     # Relationships
     annotation_project: orm.Mapped[AnnotationProject] = orm.relationship(
@@ -159,6 +125,8 @@ class AnnotationProjectTag(Base):
         init=False,
         repr=False,
     )
+    """The annotation project associated with the tag."""
+
     tag: orm.Mapped[Tag] = orm.relationship(
         "Tag",
         back_populates="annotation_project_tags",
@@ -166,3 +134,4 @@ class AnnotationProjectTag(Base):
         init=False,
         repr=False,
     )
+    """The tag associated with the annotation project."""

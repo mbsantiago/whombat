@@ -25,38 +25,12 @@ __all__ = [
 class ClipEvaluation(Base):
     """Clip Evaluation Model.
 
-    Attributes
-    ----------
-    id
-        The database id of the clip evaluation.
-    uuid
-        The UUID of the clip evaluation.
-    clip_annotation
-        The clip annotations to use as ground truth
-        for the evaluation.
-    clip_prediction
-        The clip prediction to be evaluated.
-    score
-        The overall score of the evaluation.
-    metrics
-        A list of metrics associated with the evaluation.
-    sound_event_evaluations
-        A list of sound event evaluations associated with the clip evaluation.
-    created_on
-        The date and time the clip evaluation was created.
+    Represents the evaluation of a clip-level prediction against ground truth.
 
-    Parameters
-    ----------
-    clip_annotation_id : int
-        The database id of the clip annotation to use as ground truth.
-    clip_prediction_id : int
-        The database id of the clip prediction to be evaluated.
-    evaluation_id : int
-        The database id of the evaluation to which the clip evaluation belongs.
-    score : float
-        The overall score of the evaluation.
-    uuid : UUID, optional
-        The UUID of the clip evaluation.
+    This class compares a prediction made on an audio clip to the corresponding
+    ground truth annotation for that clip. It considers both clip-level tags
+    and sound event predictions within the clip, providing an overall score and
+    detailed metrics for the evaluation.
     """
 
     __tablename__ = "clip_evaluation"
@@ -69,34 +43,49 @@ class ClipEvaluation(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database ID of the clip evaluation."""
+
     uuid: orm.Mapped[UUID] = orm.mapped_column(
         default_factory=uuid4,
         unique=True,
         kw_only=True,
     )
+    """A unique UUID for the clip evaluation."""
+
     evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("evaluation.id"),
         nullable=False,
     )
+    """The ID of the overall evaluation to which this clip evaluation belongs."""
+
     clip_annotation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_annotation.id"),
         nullable=False,
     )
+    """The ID of the ground truth clip annotation."""
+
     clip_prediction_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_prediction.id"),
         nullable=False,
     )
+    """The ID of the clip prediction."""
+
     score: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The overall score of the clip prediction."""
 
     # Relationships
     clip_annotation: orm.Mapped[ClipAnnotation] = orm.relationship(
         init=False,
         lazy="selectin",
     )
+    """The ground truth clip annotation object."""
+
     clip_prediction: orm.Mapped[ClipPrediction] = orm.relationship(
         init=False,
         lazy="selectin",
     )
+    """The clip prediction object."""
+
     sound_event_evaluations: orm.Mapped[list[SoundEventEvaluation]] = (
         orm.relationship(
             back_populates="clip_evaluation",
@@ -107,6 +96,8 @@ class ClipEvaluation(Base):
             default_factory=list,
         )
     )
+    """The list of sound event evaluations associated with this clip evaluation."""
+
     metrics: orm.Mapped[list["ClipEvaluationMetric"]] = orm.relationship(
         back_populates="clip_evaluation",
         cascade="all",
@@ -115,6 +106,7 @@ class ClipEvaluation(Base):
         repr=False,
         default_factory=list,
     )
+    """A list of metrics associated with this clip evaluation."""
 
     # Backrefs
     evaluation: orm.Mapped["Evaluation"] = orm.relationship(
@@ -122,34 +114,18 @@ class ClipEvaluation(Base):
         init=False,
         repr=False,
     )
+    """The overall evaluation object to which this clip evaluation belongs."""
 
 
 class ClipEvaluationMetric(Base):
-    """Clip Evaluation Metric Model.
+    """Clip Evaluation Metric.
 
-    Attributes
-    ----------
-    id : int
-        The database id of the metric.
-    value : float
-        The value of the metric.
-    feature_name: FeatureName
-        The name of the metric.
-    created_on : datetime
-        The date and time the metric was created.
+    Represents a specific metric used to evaluate a clip-level prediction.
 
-    Parameters
-    ----------
-    clip_evaluation_id : int
-        The database id of the clip evaluation to which the metric belongs.
-    feature_name_id : int
-        The database id of the feature name.
-    value : float
-        The value of the metric.
-
-    Notes
-    -----
-    We are reusing the FeatureName model for the metric name.
+    This class stores the value of a single evaluation metric
+    (e.g., accuracy, precision, recall) calculated for a ClipEvaluation.
+    It links the metric value to its name (stored in the FeatureName table)
+    and the corresponding clip evaluation.
     """
 
     __tablename__ = "clip_evaluation_metric"
@@ -161,20 +137,29 @@ class ClipEvaluationMetric(Base):
     )
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database ID of the metric."""
+
     clip_evaluation_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("clip_evaluation.id"),
         nullable=False,
     )
+    """The ID of the clip evaluation to which this metric belongs."""
+
     feature_name_id: orm.Mapped[int] = orm.mapped_column(
         ForeignKey("feature_name.id"),
         nullable=False,
     )
+    """The ID of the feature name associated with this metric."""
+
     value: orm.Mapped[float] = orm.mapped_column(nullable=False)
+    """The value of the metric."""
+
     name: AssociationProxy[str] = association_proxy(
         "feature_name",
         "name",
         init=False,
     )
+    """The name of the metric (accessed via the FeatureName relationship)."""
 
     # Relationships
     feature_name: orm.Mapped[FeatureName] = orm.relationship(
@@ -182,6 +167,7 @@ class ClipEvaluationMetric(Base):
         repr=False,
         lazy="joined",
     )
+    """The FeatureName object associated with this metric."""
 
     # Backrefs
     clip_evaluation: orm.Mapped[ClipEvaluation] = orm.relationship(
@@ -189,3 +175,4 @@ class ClipEvaluationMetric(Base):
         init=False,
         repr=False,
     )
+    """The clip evaluation to which the metric belongs."""

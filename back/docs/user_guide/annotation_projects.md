@@ -238,7 +238,7 @@ This contextual information aids in interpreting the sounds present in the displ
 The **Clip Spectrogram** is a critical component with dedicated controls.
 This section displays the spectrogram of the assigned clip for annotation, along with any existing sound event annotations.
 The controls provided allow you to navigate, playback, and create new sound event annotations.
-For detailed information on navigating the spectrogram, refer to the [Navigating the Spectrogram](datasets.md#navigating-the-spectrogram) section.
+For detailed information on navigating the spectrogram, refer to the [Navigating the Spectrogram](spectrogram_display.md) section.
 In the annotation interface, additional controls are available for creating annotations.
 These include Select, Create, and Delete options.
 

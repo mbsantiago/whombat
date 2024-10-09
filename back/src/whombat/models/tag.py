@@ -50,32 +50,23 @@ __all__ = [
 
 
 class Tag(Base):
-    """Tag model for tag table.
-
-    Attributes
-    ----------
-    id
-        The database id of the tag.
-    key
-        The key of the tag. The key serves as a way to group tags into
-        coherent categories, similar to a namespace.
-    value
-        The value of the tag, the actual content of the tag.
-
-    Parameters
-    ----------
-    key : str
-        The key of the tag.
-    value : str
-        The value of the tag.
-    """
+    """Tag model for tag table."""
 
     __tablename__ = "tag"
     __table_args__ = (UniqueConstraint("key", "value"),)
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
+    """The database id of the tag."""
+
     key: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """The key of the tag.
+
+    The key serves as a way to group tags into coherent categories, similar
+    to the concept of a namespace.
+    """
+
     value: orm.Mapped[str] = orm.mapped_column(nullable=False)
+    """The value of the tag."""
 
     # ========================================================================
     # Relationships (backrefs)
