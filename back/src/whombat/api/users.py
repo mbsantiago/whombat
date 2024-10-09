@@ -257,6 +257,7 @@ class UserAPI(
             username=obj.username,
             email=obj.email,
             name=obj.name,
+            institution=None,
         )
 
     def _get_pk_condition(self, pk: UUID):

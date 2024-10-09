@@ -29,7 +29,7 @@ async def test_dataset_is_stored_with_relative_audio_dir(
     session: AsyncSession,
     audio_dir: Path,
 ):
-    """Test that a dataset is stored with a relative audio dir.""" ""
+    """Test that a dataset is stored with a relative audio dir."""
     dataset_audio_dir = audio_dir / "dataset_audio_dir"
     dataset_audio_dir.mkdir()
     dataset = await api.datasets.create(
