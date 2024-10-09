@@ -6,7 +6,7 @@ BACK_DIR := back
 .PHONY: dev dev-front dev-back dev-docs storybook install-dev build-frontend build-guide bundle publish clean
 
 dev:
-	docker-compose -f compose-dev.yaml up --watch --build frontend backend
+	docker-compose -f compose.dev.yaml up --watch --build frontend backend
 
 dev-front:
 	cd $(FRONT_DIR) && npm run dev

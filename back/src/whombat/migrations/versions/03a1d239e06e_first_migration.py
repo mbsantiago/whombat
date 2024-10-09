@@ -32,7 +32,13 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("annotation_instructions", sa.String(), nullable=True),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_annotation_project")),
         sa.UniqueConstraint("name", name=op.f("uq_annotation_project_name")),
         sa.UniqueConstraint("uuid", name=op.f("uq_annotation_project_uuid")),
@@ -46,7 +52,13 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=True),
         sa.Column("audio_dir", whombat.models.base.PathType(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_dataset")),
         sa.UniqueConstraint("audio_dir", name=op.f("uq_dataset_audio_dir")),
         sa.UniqueConstraint("name", name=op.f("uq_dataset_name")),
@@ -60,7 +72,13 @@ def upgrade() -> None:
         ),
         sa.Column("task", sa.String(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_evaluation")),
         sa.UniqueConstraint("uuid", name=op.f("uq_evaluation_uuid")),
     )
@@ -73,7 +91,13 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("task", sa.String(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_evaluation_set")),
         sa.UniqueConstraint("name", name=op.f("uq_evaluation_set_name")),
         sa.UniqueConstraint("uuid", name=op.f("uq_evaluation_set_uuid")),
@@ -82,7 +106,13 @@ def upgrade() -> None:
         "feature_name",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_feature_name")),
         sa.UniqueConstraint("name", name=op.f("uq_feature_name_name")),
     )
@@ -95,7 +125,13 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=False),
         sa.Column("version", sa.String(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_model_run")),
         sa.UniqueConstraint("name", "version", name=op.f("uq_model_run_name")),
         sa.UniqueConstraint("uuid", name=op.f("uq_model_run_uuid")),
@@ -117,7 +153,13 @@ def upgrade() -> None:
         sa.Column("longitude", sa.Float(), nullable=True),
         sa.Column("time_expansion", sa.Float(), nullable=False),
         sa.Column("rights", sa.String(), nullable=True),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_recording")),
         sa.UniqueConstraint("uuid", name=op.f("uq_recording_uuid")),
     )
@@ -132,7 +174,13 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("key", sa.String(), nullable=False),
         sa.Column("value", sa.String(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_tag")),
         sa.UniqueConstraint("key", "value", name=op.f("uq_tag_key")),
     )
@@ -148,7 +196,13 @@ def upgrade() -> None:
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("is_superuser", sa.Boolean(), nullable=False),
         sa.Column("is_verified", sa.Boolean(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_user")),
         sa.UniqueConstraint("username", name=op.f("uq_user_username")),
     )
@@ -161,7 +215,13 @@ def upgrade() -> None:
             fastapi_users_db_sqlalchemy.generics.GUID(),
             nullable=False,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["user.id"],
@@ -174,7 +234,13 @@ def upgrade() -> None:
         "annotation_project_tag",
         sa.Column("annotation_project_id", sa.Integer(), nullable=False),
         sa.Column("tag_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["annotation_project_id"],
             ["annotation_project.id"],
@@ -208,7 +274,13 @@ def upgrade() -> None:
         sa.Column("start_time", sa.Float(), nullable=False),
         sa.Column("end_time", sa.Float(), nullable=False),
         sa.Column("score", sa.Float(), nullable=True),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["recording_id"],
             ["recording.id"],
@@ -228,7 +300,13 @@ def upgrade() -> None:
         sa.Column("dataset_id", sa.Integer(), nullable=False),
         sa.Column("recording_id", sa.Integer(), nullable=False),
         sa.Column("path", whombat.models.base.PathType(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["dataset_id"],
             ["dataset.id"],
@@ -255,7 +333,13 @@ def upgrade() -> None:
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_id"],
             ["evaluation.id"],
@@ -277,7 +361,13 @@ def upgrade() -> None:
         "evaluation_set_model_run",
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("model_run_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_set_id"],
             ["evaluation_set.id"],
@@ -305,7 +395,13 @@ def upgrade() -> None:
         "evaluation_set_tag",
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("tag_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_set_id"],
             ["evaluation_set.id"],
@@ -332,7 +428,13 @@ def upgrade() -> None:
         sa.Column("model_run_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_id"],
             ["evaluation.id"],
@@ -375,7 +477,13 @@ def upgrade() -> None:
         sa.Column(
             "uuid", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["created_by_id"],
             ["user.id"],
@@ -389,7 +497,13 @@ def upgrade() -> None:
         sa.Column("recording_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["feature_name_id"],
             ["feature_name.id"],
@@ -420,7 +534,13 @@ def upgrade() -> None:
             fastapi_users_db_sqlalchemy.generics.GUID(),
             nullable=False,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["recording_id"],
             ["recording.id"],
@@ -444,7 +564,13 @@ def upgrade() -> None:
         "recording_tag",
         sa.Column("recording_id", sa.Integer(), nullable=False),
         sa.Column("tag_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["recording_id"],
             ["recording.id"],
@@ -473,7 +599,13 @@ def upgrade() -> None:
         sa.Column(
             "geometry", whombat.models.base.GeometryType(), nullable=False
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["recording_id"],
             ["recording.id"],
@@ -492,7 +624,13 @@ def upgrade() -> None:
             fastapi_users_db_sqlalchemy.generics.GUID(),
             nullable=False,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["user_id"], ["user.id"], name=op.f("fk_user_run_user_id_user")
         ),
@@ -506,7 +644,13 @@ def upgrade() -> None:
             "uuid", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
         ),
         sa.Column("clip_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_id"],
             ["clip.id"],
@@ -520,7 +664,13 @@ def upgrade() -> None:
         sa.Column("clip_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_id"], ["clip.id"], name=op.f("fk_clip_feature_clip_id_clip")
         ),
@@ -543,7 +693,13 @@ def upgrade() -> None:
             "uuid", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
         ),
         sa.Column("clip_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_id"],
             ["clip.id"],
@@ -556,7 +712,13 @@ def upgrade() -> None:
         "evaluation_set_user_run",
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("user_run_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_set_id"],
             ["evaluation_set.id"],
@@ -584,7 +746,13 @@ def upgrade() -> None:
         "recording_note",
         sa.Column("recording_id", sa.Integer(), nullable=False),
         sa.Column("note_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["note_id"],
             ["note.id"],
@@ -609,7 +777,13 @@ def upgrade() -> None:
         sa.Column("sound_event_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["feature_name_id"],
             ["feature_name.id"],
@@ -636,7 +810,13 @@ def upgrade() -> None:
         sa.Column("user_run_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("evaluation_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["evaluation_id"],
             ["evaluation.id"],
@@ -675,7 +855,13 @@ def upgrade() -> None:
         sa.Column(
             "uuid", fastapi_users_db_sqlalchemy.generics.GUID(), nullable=False
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["annotation_project_id"],
             ["annotation_project.id"],
@@ -706,7 +892,13 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("clip_annotation_id", sa.Integer(), nullable=False),
         sa.Column("note_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_annotation_id"],
             ["clip_annotation.id"],
@@ -736,7 +928,13 @@ def upgrade() -> None:
             fastapi_users_db_sqlalchemy.generics.GUID(),
             nullable=True,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_annotation_id"],
             ["clip_annotation.id"],
@@ -772,7 +970,13 @@ def upgrade() -> None:
         sa.Column("clip_annotation_id", sa.Integer(), nullable=False),
         sa.Column("clip_prediction_id", sa.Integer(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_annotation_id"],
             ["clip_annotation.id"],
@@ -803,7 +1007,13 @@ def upgrade() -> None:
         sa.Column("clip_prediction_id", sa.Integer(), nullable=False),
         sa.Column("tag_id", sa.Integer(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_prediction_id"],
             ["clip_prediction.id"],
@@ -832,7 +1042,13 @@ def upgrade() -> None:
         "evaluation_set_annotation",
         sa.Column("evaluation_set_id", sa.Integer(), nullable=False),
         sa.Column("clip_annotation_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_annotation_id"],
             ["clip_annotation.id"],
@@ -862,7 +1078,13 @@ def upgrade() -> None:
         "model_run_prediction",
         sa.Column("model_run_id", sa.Integer(), nullable=False),
         sa.Column("clip_prediction_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_prediction_id"],
             ["clip_prediction.id"],
@@ -899,7 +1121,13 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.Column("sound_event_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_annotation_id"],
             ["clip_annotation.id"],
@@ -931,7 +1159,13 @@ def upgrade() -> None:
         sa.Column("sound_event_id", sa.Integer(), nullable=False),
         sa.Column("clip_prediction_id", sa.Integer(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_prediction_id"],
             ["clip_prediction.id"],
@@ -958,7 +1192,13 @@ def upgrade() -> None:
         "user_run_prediction",
         sa.Column("user_run_id", sa.Integer(), nullable=False),
         sa.Column("clip_prediction_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_prediction_id"],
             ["clip_prediction.id"],
@@ -1002,7 +1242,13 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["annotation_task_id"],
             ["annotation_task.id"],
@@ -1029,7 +1275,13 @@ def upgrade() -> None:
         sa.Column("clip_evaluation_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_evaluation_id"],
             ["clip_evaluation.id"],
@@ -1055,7 +1307,13 @@ def upgrade() -> None:
         "sound_event_annotation_note",
         sa.Column("sound_event_annotation_id", sa.Integer(), nullable=False),
         sa.Column("note_id", sa.Integer(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["note_id"],
             ["note.id"],
@@ -1091,7 +1349,13 @@ def upgrade() -> None:
             fastapi_users_db_sqlalchemy.generics.GUID(),
             nullable=True,
         ),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["created_by_id"],
             ["user.id"],
@@ -1132,7 +1396,13 @@ def upgrade() -> None:
         sa.Column("target_id", sa.Integer(), nullable=True),
         sa.Column("affinity", sa.Float(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["clip_evaluation_id"],
             ["clip_evaluation.id"],
@@ -1164,7 +1434,13 @@ def upgrade() -> None:
         sa.Column("sound_event_prediction_id", sa.Integer(), nullable=False),
         sa.Column("tag_id", sa.Integer(), nullable=False),
         sa.Column("score", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["sound_event_prediction_id"],
             ["sound_event_prediction.id"],
@@ -1196,7 +1472,13 @@ def upgrade() -> None:
         sa.Column("sound_event_evaluation_id", sa.Integer(), nullable=False),
         sa.Column("feature_name_id", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
-        sa.Column("created_on", sa.DateTime(), nullable=False),
+        sa.Column(
+            "created_on",
+            sa.DateTime().with_variant(
+                sa.TIMESTAMP(timezone=True), "postgresql"
+            ),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["feature_name_id"],
             ["feature_name.id"],
