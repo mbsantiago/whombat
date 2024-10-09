@@ -16,10 +16,10 @@ import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";
 import ClipAnnotationTags from "../clip_annotations/ClipAnnotationTags";
+import TagSearchBar from "../tags/TagSearchBar";
 import ClipAnnotationSpectrogram from "./AnnotationClip";
 import AnnotationContext from "./AnnotationContext";
 import AnnotationTagPalette from "./AnnotationTagPalette";
-import TagSearchBar from "../tags/TagSearchBar";
 
 export default function AnnotateTasks({
   annotationProject,

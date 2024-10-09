@@ -77,9 +77,7 @@ export function EditableDescriptionData<T extends string | number | Date>({
   if (!editing) {
     return (
       <DescriptionData className="flex flex-row justify-between">
-        <p className="whitespace-pre-wrap">
-        {value?.toLocaleString() ?? ""}
-        </p>
+        <p className="whitespace-pre-wrap">{value?.toLocaleString() ?? ""}</p>
         <button
           onClick={() => setEditing(true)}
           className="ml-2 text-sm underline text-stone-500"
