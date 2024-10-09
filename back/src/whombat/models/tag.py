@@ -50,23 +50,36 @@ __all__ = [
 
 
 class Tag(Base):
-    """Tag model for tag table."""
+    """Tag Model.
+
+    Represents a tag with a key-value structure.
+
+    Tags are used to categorize and annotate various elements,
+    such as audio clips or sound events. The key-value structure
+    provides a flexible way to organize and manage tags, with the
+    "key" acting as a category or namespace and the "value"
+    representing the specific tag within that category.
+    """
 
     __tablename__ = "tag"
     __table_args__ = (UniqueConstraint("key", "value"),)
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True, init=False)
-    """The database id of the tag."""
+    """The database ID of the tag."""
 
     key: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """The key of the tag.
+    """
+    The key of the tag (e.g., "instrument", "genre", "mood").
 
-    The key serves as a way to group tags into coherent categories, similar
-    to the concept of a namespace.
+    This serves as a category or namespace for organizing tags.
     """
 
     value: orm.Mapped[str] = orm.mapped_column(nullable=False)
-    """The value of the tag."""
+    """
+    The value of the tag (e.g., "guitar", "rock", "happy").
+
+    This represents the specific tag within the category defined by the key.
+    """
 
     # ========================================================================
     # Relationships (backrefs)

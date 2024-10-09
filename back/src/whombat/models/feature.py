@@ -39,7 +39,23 @@ __all__ = [
 
 
 class FeatureName(Base):
-    """Feature model."""
+    """Feature Name Model.
+
+    Represents the name of a feature.
+
+    Features are numerical values associated with sound events, clips,
+    or recordings, providing additional information about these objects.
+    This model stores the unique names of those features.
+
+    Features can represent various aspects:
+
+    * **Sound Events:** Duration, bandwidth, or other characteristics extracted
+        via deep learning models.
+    * **Clips:** Acoustic properties like signal-to-noise ratio or acoustic
+        indices.
+    * **Recordings:** Contextual information like temperature, wind speed, or
+        recorder height.
+    """
 
     __tablename__ = "feature_name"
 

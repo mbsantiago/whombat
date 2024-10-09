@@ -27,37 +27,21 @@ __all__ = [
 
 
 class User(Base):
-    """Model for a user.
+    """User Model.
 
-    Attributes
-    ----------
-    id
-        The unique identifier for the user.
-    email
-        The email address of the user.
-    hashed_password
-        The hashed password of the user.
-    username
-        The username of the user.
-    name
-        The full name of the user.
-    is_active
-        Whether the user is active. Inactive users cannot log in.
-    is_superuser
-        Whether the user is a superuser. Superusers have all permissions.
-    is_verified
-        Whether the user is verified.
+    Represents a user in the system.
+
+    This model stores information about a user, including their email, hashed
+    password, username, full name, and status (active, superuser, verified).
 
     Notes
     -----
-    We are using the fastapi-users package to handle user authentication. This
-    package is built on top of SQLAlchemy. The User class inherits from the
-    SQLAlchemyBaseUserTableUUID class, which provides the id, email,
-    hashed_password, is_active, and is_superuser attributes. The username and
-    name attribute is added to the User class.
+    This class inherits from `SQLAlchemyBaseUserTableUUID`
+    (provided by `fastapi-users`) which defines the `id`, `email`,
+    `hashed_password`, `is_active`, and `is_superuser` attributes.
 
-    Do not instantiate this class directly. Instead, use the create_user
-    function of the `whombat.api.users` module.
+    Important: Do not create instances of this class directly.
+    Use the `create_user` function in the `whombat.api.users` module instead.
     """
 
     __tablename__ = "user"
@@ -67,15 +51,30 @@ class User(Base):
         unique=True,
         index=True,
     )
+    """The email address of the user."""
+
     hashed_password: orm.Mapped[str] = orm.mapped_column(String(length=1024))
+    """The hashed password of the user."""
+
     username: orm.Mapped[str] = orm.mapped_column(unique=True)
+    """The username of the user."""
+
     id: orm.Mapped[UUID] = orm.mapped_column(
         primary_key=True, default_factory=uuid4, kw_only=False
     )
+    """The unique identifier for the user."""
+
     name: orm.Mapped[Optional[str]] = orm.mapped_column(default=None)
+    """The full name of the user."""
+
     is_active: orm.Mapped[bool] = orm.mapped_column(default=True)
+    """Whether the user is active."""
+
     is_superuser: orm.Mapped[bool] = orm.mapped_column(default=False)
+    """Whether the user is a superuser."""
+
     is_verified: orm.Mapped[bool] = orm.mapped_column(default=False)
+    """Whether the user is verified."""
 
     # Back references
 

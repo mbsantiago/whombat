@@ -4,15 +4,15 @@ repo_url: https://github.com/mbsantiago/whombat
 nav:
   - Home: README.md
   - User Guide:
-      - user_guide/index.md
+      - Get Started: user_guide/index.md
       - Installation: user_guide/installation.md
-      - Datasets: user_guide/datasets.md
-      - Spectrogram Navigation: user_guide/spectrogram_display.md
-      - Annotation Projects: user_guide/annotation_projects.md
-      - Evaluation: user_guide/evaluation.md
-      - Data Exploration: user_guide/exploration.md
-      - Data Import: user_guide/import.md
-      - Data Export: user_guide/export.md
+      - Managing Datasets: user_guide/datasets.md
+      - Visualizing Audio with the Spectrogram: user_guide/spectrogram_display.md
+      - Creating Annotation Projects: user_guide/annotation_projects.md
+      - Evaluating Predictions: user_guide/evaluation.md
+      - Exploring Your Data: user_guide/exploration.md
+      - Importing Data into Whombat: user_guide/import.md
+      - Exporting Your Data: user_guide/export.md
       - FAQ: user_guide/faq.md
   - Developer Guide:
       - developer_guide/index.md
@@ -89,6 +89,9 @@ plugins:
             docstring_options:
               ignore_init_summary: true
             merge_init_into_class: true
+            extensions:
+              - dataclasses
+              - griffe_fieldz
 watch:
   - docs
   - src

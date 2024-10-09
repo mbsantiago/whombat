@@ -71,6 +71,7 @@ dev-dependencies = [
   "mkdocstrings[python]>=0.26.0",
   "pytest-cov>=5.0.0",
   "black>=24.8.0",
+  "griffe-fieldz>=0.2.0",
 ]
 
 [tool.pyright]
