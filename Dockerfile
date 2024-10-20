@@ -98,7 +98,10 @@ ENV WHOMBAT_LOG_LEVEL "info"
 ENV WHOMBAT_LOG_TO_STDOUT "true"
 ENV WHOMBAT_LOG_TO_FILE "false"
 ENV WHOMBAT_OPEN_ON_STARTUP "false"
-ENV WHOMBAT_DOMAIN "localhost"
+
+# Optionally set the domain during build time
+ARG WHOMBAT_DOMAIN_ARG=localhost
+ENV WHOMBAT_DOMAIN=${WHOMBAT_DOMAIN_ARG}
 
 # Expose the port for the web server
 EXPOSE 5000
