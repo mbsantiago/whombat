@@ -7,7 +7,6 @@ import { GetManySchema } from "@/lib/schemas";
 export const HOST = `${process.env.NEXT_PUBLIC_BACKEND_HOST}`;
 export const BASE_ROUTE = `/api/v1`;
 
-
 export const instance = axios.create({
   withCredentials: true,
   baseURL: HOST,
