@@ -69,6 +69,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Then, use a final image without uv
 FROM python:3.12-slim-bookworm
 
+# Install system dependencies, including libexpat1 and clean up the cache
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libexpat1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the application from the builder
 COPY --from=builder --chown=app:app /app /app
 
