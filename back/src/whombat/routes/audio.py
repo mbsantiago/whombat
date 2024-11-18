@@ -18,6 +18,10 @@ audio_router = APIRouter()
 CHUNK_SIZE = 1024 * 256
 
 
+# app.py or the appropriate module
+
+import fsspec
+
 @audio_router.get("/stream/")
 async def stream_recording_audio(
     session: Session,
@@ -28,28 +32,11 @@ async def stream_recording_audio(
     speed: float = 1,
     range: str = Header(None),
 ) -> Response:
-    """Stream the audio of a recording.
-
-    Parameters
-    ----------
-    session
-        Database session.
-    settings
-        Whombat settings.
-    recording_uuid
-        The ID of the recording.
-
-    Returns
-    -------
-    Response
-        The audio file.
-    """
+    """Stream the audio of a recording."""
     audio_dir = settings.audio_dir
-    recording = await api.recordings.get(
-        session,
-        recording_uuid,
-    )
+    recording = await api.recordings.get(session, recording_uuid)
 
+    # Calculate start byte
     start, _ = range.replace("bytes=", "").split("-")
     start = int(start)
 
@@ -59,13 +46,14 @@ async def stream_recording_audio(
     if end_time is not None:
         end_time = end_time * recording.time_expansion
 
-    data, start, end, filesize = api.load_clip_bytes(
-        path=audio_dir / recording.path,
+    data, start, end, filesize = await api.load_clip_bytes(
+        path=f"{audio_dir}/{recording.path}",
         start=start,
         frames=CHUNK_SIZE,
         speed=speed * recording.time_expansion,
         start_time=start_time,
         end_time=end_time,
+        settings=settings,
     )
 
     headers = {
@@ -79,6 +67,7 @@ async def stream_recording_audio(
         media_type="audio/wav",
         headers=headers,
     )
+
 
 
 @audio_router.get("/download/")

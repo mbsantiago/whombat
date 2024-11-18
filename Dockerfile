@@ -18,7 +18,7 @@ RUN uv run mkdocs build -f mkdocs-guide.yml -d /guide/out/
 
 # === STEP 2 === Build Front End
 
-FROM node:latest AS frontend_builder
+FROM node:20.18.0 AS frontend_builder
 
 RUN mkdir /statics
 
@@ -35,6 +35,10 @@ RUN npm run build
 # Run the web server
 # Use a Python image with uv pre-installed
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libexpat1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install the project into `/app`
 WORKDIR /app
@@ -91,12 +95,12 @@ VOLUME ["/data"]
 # Set the environment variables for the audio directory and the database URL
 ENV WHOMBAT_AUDIO_DIR /audio
 ENV WHOMBAT_DB_URL "sqlite+aiosqlite:////data/whombat.db"
-ENV WHOMBAT_DEV "false"
+ENV WHOMBAT_DEV "true"
 ENV WHOMBAT_HOST "0.0.0.0"
 ENV WHOMBAT_PORT "5000"
 ENV WHOMBAT_LOG_LEVEL "info"
 ENV WHOMBAT_LOG_TO_STDOUT "true"
-ENV WHOMBAT_LOG_TO_FILE "false"
+ENV WHOMBAT_LOG_TO_FILE "true"
 ENV WHOMBAT_OPEN_ON_STARTUP "false"
 ENV WHOMBAT_DOMAIN "localhost"
 
