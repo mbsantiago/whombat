@@ -327,6 +327,7 @@ class SoundEventAPI(
             The updated sound event.
         """
         geom_features = compute_geometric_features(sound_event.geometry)
+
         for feature in geom_features:
             try:
                 sound_event = await self.update_feature(
@@ -341,7 +342,9 @@ class SoundEventAPI(
                     schemas.Feature(name=feature.name, value=feature.value),
                 )
 
-        feature_mapping = {f.name: f for f in geom_features}
+        feature_mapping = {
+            f.name: schemas.Feature.model_validate(f) for f in geom_features
+        }
         sound_event = sound_event.model_copy(
             update=dict(
                 features=[
