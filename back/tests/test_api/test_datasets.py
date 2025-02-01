@@ -5,10 +5,12 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from soundevent.io.aoef import to_aeof
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, exceptions, models, schemas
+from whombat.api.io import aoef
 
 
 async def test_created_dataset_is_stored_in_the_database(
@@ -761,3 +763,33 @@ async def test_create_dataset_registers_all_recordings(
 
     all_recordings, _ = await api.recordings.get_many(session)
     assert len(all_recordings) == 2
+
+
+async def test_exported_datasets_paths_are_not_absolute(
+    session: AsyncSession,
+    example_data_dir: Path,
+):
+    example_dataset = example_data_dir / "example_dataset.json"
+    assert example_dataset.is_file()
+
+    audio_dir = example_data_dir / "audio"
+    assert audio_dir.is_dir()
+
+    db_dataset = await aoef.import_dataset(
+        session,
+        example_dataset,
+        dataset_dir=audio_dir,
+        audio_dir=audio_dir,
+    )
+
+    await session.commit()
+    await session.refresh(db_dataset)
+
+    whombat_dataset = await api.datasets.get(session, db_dataset.uuid)
+    dataset = await api.datasets.to_soundevent(session, whombat_dataset)
+
+    exported = to_aeof(dataset)
+
+    for recording in exported.data.recordings or []:
+        assert not recording.path.is_absolute()
+        assert recording.path.is_relative_to(audio_dir)
