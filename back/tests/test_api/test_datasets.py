@@ -5,12 +5,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from soundevent.io.aoef import to_aeof
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, exceptions, models, schemas
-from whombat.api.io import aoef
 
 
 async def test_created_dataset_is_stored_in_the_database(
