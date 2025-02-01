@@ -775,20 +775,13 @@ async def test_exported_datasets_paths_are_not_absolute(
     audio_dir = example_data_dir / "audio"
     assert audio_dir.is_dir()
 
-    db_dataset = await aoef.import_dataset(
+    whombat_dataset = await api.datasets.import_dataset(
         session,
         example_dataset,
-        dataset_dir=audio_dir,
+        dataset_audio_dir=audio_dir,
         audio_dir=audio_dir,
     )
-
-    await session.commit()
-    await session.refresh(db_dataset)
-
-    whombat_dataset = await api.datasets.get(session, db_dataset.uuid)
-    dataset = await api.datasets.to_soundevent(session, whombat_dataset)
-
-    exported = to_aeof(dataset)
+    exported = await api.datasets.export_dataset(session, whombat_dataset)
 
     for recording in exported.data.recordings or []:
         assert not recording.path.is_absolute()
