@@ -784,5 +784,8 @@ async def test_exported_datasets_paths_are_not_absolute(
     exported = await api.datasets.export_dataset(session, whombat_dataset)
 
     for recording in exported.data.recordings or []:
+        # Check that paths are not absolute (full paths)
         assert not recording.path.is_absolute()
-        assert recording.path.is_relative_to(audio_dir)
+
+        # Check that paths were exported relative to the dataset audio_dir
+        assert (audio_dir / recording.path).is_file()
