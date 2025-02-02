@@ -761,3 +761,29 @@ async def test_create_dataset_registers_all_recordings(
 
     all_recordings, _ = await api.recordings.get_many(session)
     assert len(all_recordings) == 2
+
+
+async def test_exported_datasets_paths_are_not_absolute(
+    session: AsyncSession,
+    example_data_dir: Path,
+):
+    example_dataset = example_data_dir / "example_dataset.json"
+    assert example_dataset.is_file()
+
+    audio_dir = example_data_dir / "audio"
+    assert audio_dir.is_dir()
+
+    whombat_dataset = await api.datasets.import_dataset(
+        session,
+        example_dataset,
+        dataset_audio_dir=audio_dir,
+        audio_dir=audio_dir,
+    )
+    exported = await api.datasets.export_dataset(session, whombat_dataset)
+
+    for recording in exported.data.recordings or []:
+        # Check that paths are not absolute (full paths)
+        assert not recording.path.is_absolute()
+
+        # Check that paths were exported relative to the dataset audio_dir
+        assert (audio_dir / recording.path).is_file()

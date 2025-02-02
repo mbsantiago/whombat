@@ -24,62 +24,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up uv
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-      - name: Set up uv
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: irm https://astral.sh/uv/install.ps1 | iex
-        shell: powershell
-
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Restore uv cache
-        uses: actions/cache@v4
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
-          path: /tmp/.uv-cache
-          key: uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-${{ hashFiles('back/uv.lock') }}
-            uv-${{ runner.os }}
-
-      - name: Restore uv cache
-        uses: actions/cache@v4
-        if: ${{ matrix.os == 'windows-latest' }}
-        with:
-          path: /tmp/.uv-cache
-          key: uv-${{ runner.os }}-${{ hashFiles('back\uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-${{ hashFiles('back\uv.lock') }}
-            uv-${{ runner.os }}
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "back/uv.lock"
+          pyproject-file: "back/pyproject.toml"
 
       - name: Install the project dependencies
         run: |
           cd back
           uv sync --all-extras --dev
 
-      - name: Lint
+      - name: Run Linter
         run: |
           cd back
           uv run ruff check src tests
 
-      - name: "Create cache key for documentation"
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
+      - name: Check Formatting
+        run: |
+          cd back
+          uv run ruff format --check src tests
 
       - name: Check types
-        uses: jakebailey/pyright-action@v2
-        with:
-          working-directory: back/
-          extra-args: src
+        run: |
+          cd back
+          uv run pyright src
 
       - name: Run tests
         run: |
           cd back
           uv run pytest --cov=src/whombat --cov-report=xml -n auto
+
+      - name: "Create cache key for documentation"
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
 
       - name: Upload coverage reports to Codecov
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -88,9 +68,6 @@ jobs:
           files: back/coverage.xml
           fail_ci_if_error: true
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Minimize uv cache
-        run: uv cache prune --ci
 
   test-frontend:
     runs-on: "ubuntu-latest"
@@ -111,6 +88,21 @@ jobs:
         run: |
           cd front
           npm ci
+
+      - name: Check formatting
+        run: |
+          cd front
+          npm run format-check
+
+      - name: Lint with Nextjs
+        run: |
+          cd front
+          npm run lint
+
+      - name: Lint with Typescript Compiler
+        run: |
+          cd front
+          npm run lint-tsc
 
       - name: Run tests
         run: |

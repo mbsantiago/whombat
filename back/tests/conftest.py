@@ -27,6 +27,16 @@ logging.getLogger("passlib").setLevel(logging.WARNING)
 
 
 @pytest.fixture
+def repo_root() -> Path:
+    return Path(__file__).parent.parent.parent
+
+
+@pytest.fixture
+def example_data_dir(repo_root: Path) -> Path:
+    return repo_root / "example_data"
+
+
+@pytest.fixture
 def data_dir() -> Path:
     """Return the path to the data directory."""
     return Path(__file__).parent / "data"

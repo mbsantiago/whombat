@@ -9,10 +9,9 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from pydantic import DirectoryPath
-from soundevent.io.aoef import DatasetObject, to_aeof
+from soundevent.io.aoef import DatasetObject
 
 from whombat import api, schemas
-from whombat.api.io import aoef
 from whombat.filters.datasets import DatasetFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -140,9 +139,8 @@ async def download_dataset_json(
 ):
     """Export a dataset."""
     whombat_dataset = await api.datasets.get(session, dataset_uuid)
-    dataset = await api.datasets.to_soundevent(session, whombat_dataset)
-    obj = to_aeof(dataset)
-    filename = f"{dataset.name}_{obj.created_on.isoformat()}.json"
+    obj = await api.datasets.export_dataset(session, whombat_dataset)
+    filename = f"{whombat_dataset.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(),
         media_type="application/json",
@@ -187,12 +185,9 @@ async def import_dataset(
     if not audio_dir.exists():
         raise FileNotFoundError(f"Audio directory {audio_dir} does not exist.")
 
-    db_dataset = await aoef.import_dataset(
+    return await api.datasets.import_dataset(
         session,
         dataset.file,
-        dataset_dir=audio_dir,
+        dataset_audio_dir=audio_dir,
         audio_dir=settings.audio_dir,
     )
-    await session.commit()
-    await session.refresh(db_dataset)
-    return schemas.Dataset.model_validate(db_dataset)

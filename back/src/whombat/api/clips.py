@@ -72,8 +72,8 @@ class ClipAPI(
             **kwargs,
         )
 
-        features = await self._create_clip_features(session, [clip])
-        clip = clip.model_copy(update=dict(features=features[0]))
+        feats = await self._create_clip_features(session, [clip])
+        clip = clip.model_copy(update=dict(features=feats[0]))
         self._update_cache(clip)
         return clip
 
@@ -111,8 +111,8 @@ class ClipAPI(
 
         clip_features = await self._create_clip_features(session, clips)
         return [
-            clip.model_copy(update=dict(features=features))
-            for clip, features in zip(clips, clip_features, strict=False)
+            clip.model_copy(update=dict(features=feats))
+            for clip, feats in zip(clips, clip_features, strict=False)
         ]
 
     async def add_feature(
@@ -308,8 +308,8 @@ class ClipAPI(
 
         create_values = [
             (clip.id, feature.name, feature.value)
-            for clip, features in zip(clips, clip_features, strict=False)
-            for feature in features
+            for clip, feats in zip(clips, clip_features, strict=False)
+            for feature in feats
         ]
 
         # Get feature names

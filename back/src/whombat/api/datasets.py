@@ -4,16 +4,18 @@ import datetime
 import uuid
 import warnings
 from pathlib import Path
-from typing import Sequence
+from typing import BinaryIO, Sequence
 
 import pandas as pd
 from soundevent import data
+from soundevent.io.aoef import AOEFObject, to_aeof
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
 from whombat.api.common import BaseAPI
+from whombat.api.io import aoef
 from whombat.api.recordings import recordings
 from whombat.core import files
 from whombat.filters.base import Filter
@@ -728,6 +730,35 @@ class DatasetAPI(
                 for rec in recordings
             ]
         )
+
+    async def import_dataset(
+        self,
+        session: AsyncSession,
+        dataset: Path | BinaryIO | str,
+        dataset_audio_dir: Path,
+        audio_dir: Path | None = None,
+    ) -> schemas.Dataset:
+        db_dataset = await aoef.import_dataset(
+            session,
+            dataset,
+            dataset_dir=dataset_audio_dir,
+            audio_dir=audio_dir or Path.cwd(),
+        )
+        await session.commit()
+        await session.refresh(db_dataset)
+        return schemas.Dataset.model_validate(db_dataset)
+
+    async def export_dataset(
+        self,
+        session: AsyncSession,
+        dataset: schemas.Dataset,
+    ) -> AOEFObject:
+        soundevent_dataset = await self.to_soundevent(
+            session,
+            dataset,
+            audio_dir=dataset.audio_dir,
+        )
+        return to_aeof(soundevent_dataset, audio_dir=dataset.audio_dir)
 
 
 datasets = DatasetAPI()
