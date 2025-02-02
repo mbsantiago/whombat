@@ -30,20 +30,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: "back/uv.lock"
+          pyproject-file: "back/pyproject.toml"
 
       - name: Install the project dependencies
         run: |
           cd back
           uv sync --all-extras --dev
-
-      - name: Lint
-        run: |
-          cd back
-          uv run ruff check src tests
-
-      - name: "Create cache key for documentation"
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
 
       - name: Run Linter
         run: |
@@ -64,6 +56,10 @@ jobs:
         run: |
           cd back
           uv run pytest --cov=src/whombat --cov-report=xml -n auto
+
+      - name: "Create cache key for documentation"
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: echo "$PWD/back/.venv/bin" >> $GITHUB_PATH
 
       - name: Upload coverage reports to Codecov
         if: ${{ matrix.os == 'ubuntu-latest' }}
