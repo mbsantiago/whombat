@@ -777,7 +777,7 @@ async def test_exported_datasets_paths_are_not_absolute(
         session,
         example_dataset,
         dataset_audio_dir=audio_dir,
-        audio_dir=audio_dir,
+        audio_dir=example_data_dir,
     )
     exported = await api.datasets.export_dataset(session, whombat_dataset)
 
