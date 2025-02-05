@@ -136,10 +136,15 @@ async def delete_dataset(
 async def download_dataset_json(
     session: Session,
     dataset_uuid: UUID,
+    settings: WhombatSettings,
 ):
     """Export a dataset."""
     whombat_dataset = await api.datasets.get(session, dataset_uuid)
-    obj = await api.datasets.export_dataset(session, whombat_dataset)
+    obj = await api.datasets.export_dataset(
+        session,
+        whombat_dataset,
+        audio_dir=settings.audio_dir,
+    )
     filename = f"{whombat_dataset.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(),

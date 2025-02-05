@@ -752,13 +752,19 @@ class DatasetAPI(
         self,
         session: AsyncSession,
         dataset: schemas.Dataset,
+        audio_dir: Path | None = None,
     ) -> AOEFObject:
+        if audio_dir is None:
+            audio_dir = get_settings().audio_dir
+
+        dataset_audio_dir = audio_dir / dataset.audio_dir
+
         soundevent_dataset = await self.to_soundevent(
             session,
             dataset,
-            audio_dir=dataset.audio_dir,
+            audio_dir=audio_dir,
         )
-        return to_aeof(soundevent_dataset, audio_dir=dataset.audio_dir)
+        return to_aeof(soundevent_dataset, audio_dir=dataset_audio_dir)
 
 
 datasets = DatasetAPI()
