@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { mergeProps } from "react-aria";
 
 import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
@@ -17,6 +17,7 @@ import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
 import useElementSize from "@/lib/hooks/utils/useElementSize";
 
+import { drawCursor } from "@/lib/draw/cursor";
 import drawOnset from "@/lib/draw/onset";
 import type {
   AnnotationState,
@@ -25,6 +26,7 @@ import type {
   CanvasProps,
   ClipAnnotation,
   Geometry,
+  Position,
   Recording,
   SoundEventAnnotation,
   SpectrogramSettings,
@@ -65,6 +67,11 @@ export default function ClipAnnotationCanvas({
   enabled?: boolean;
 }) {
   const { size: dimensions, ref } = useElementSize<HTMLCanvasElement>();
+
+  const [cursorPosition, setCursorPosition] = useState<Position>({
+    time: 0,
+    freq: 0,
+  });
 
   const {
     data = clipAnnotation,
@@ -213,6 +220,7 @@ export default function ClipAnnotationCanvas({
       drawSelect(ctx);
       drawDelete(ctx);
       drawEdit(ctx);
+      drawCursor(ctx, cursorPosition, viewport);
     },
     [
       audio.currentTime,
@@ -223,6 +231,7 @@ export default function ClipAnnotationCanvas({
       drawSelect,
       drawEdit,
       drawDelete,
+      cursorPosition,
     ],
   );
 
@@ -246,6 +255,7 @@ export default function ClipAnnotationCanvas({
         height={height}
         drawFn={drawFn}
         canvasRef={ref}
+        onHover={({ position }) => setCursorPosition(position)}
         {...canvasProps}
       />
     </SpectrogramTags>
