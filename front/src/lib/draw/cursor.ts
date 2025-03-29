@@ -31,7 +31,11 @@ export function drawCursor(
   ctx.lineTo(x, ctx.canvas.height);
   ctx.stroke();
 
-  setFontStyle(ctx, { fontColor: "black", textBaseline: "bottom", fontSize: 14 });
+  setFontStyle(ctx, {
+    fontColor: "black",
+    textBaseline: "bottom",
+    fontSize: 14,
+  });
   ctx.fillText(`${position.freq.toFixed(2)} Hz`, x + buffer, y - buffer);
   const height = ctx.measureText(
     `${position.freq.toFixed(2)} Hz`,
