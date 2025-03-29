@@ -139,7 +139,7 @@ async def create_tag(
     data: schemas.TagCreate,
 ):
     """Create a new tag."""
-    tag = await api.tags.create(session, key=data.key, value=data.value)
+    tag = await api.tags.get_or_create(session, key=data.key, value=data.value)
     await session.commit()
     return tag
 
