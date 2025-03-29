@@ -1,17 +1,17 @@
-import { ComponentProps, useContext, useMemo } from "react";
+import { ComponentProps, useCallback, useContext, useMemo } from "react";
 
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 
 import AnnotationProjectContext from "@/app/contexts/annotationProject";
 
+import { type Tag } from "@/lib/types";
+
 import TagSearchBar from "./TagSearchBar";
 
-export default function ProjectTagSearch(
-  props: Omit<
-    ComponentProps<typeof TagSearchBar>,
-    "onCreateTag" | "filter" | "fixed"
-  >,
-) {
+export default function ProjectTagSearch({
+  onCreateTag,
+  ...props
+}: Omit<ComponentProps<typeof TagSearchBar>, "filter" | "fixed">) {
   const annotationProject = useContext(AnnotationProjectContext);
 
   const { data, addTag } = useAnnotationProject({
@@ -26,9 +26,17 @@ export default function ProjectTagSearch(
     [data, annotationProject],
   );
 
+  const handleCreateTag = useCallback(
+    (tag: Tag) => {
+      addTag.mutate(tag);
+      onCreateTag?.(tag);
+    },
+    [addTag, onCreateTag],
+  );
+
   return (
     <TagSearchBar
-      onCreateTag={(tag) => addTag.mutate(tag)}
+      onCreateTag={handleCreateTag}
       filter={filter}
       fixed={["annotation_project"]}
       {...props}
