@@ -36,6 +36,7 @@ export default function AnnotationTagPalette({
       tagColorFn={tagColorFn}
       onSelectTag={onAddTag}
       onRemoveTag={onRemoveTag}
+      onCreateTag={onAddTag}
       onClick={(tag) =>
         addClipAnnotationTag.mutate(tag, {
           onSuccess: () => toast.success("Tag added."),
