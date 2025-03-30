@@ -21,6 +21,7 @@ import {
 
 import { Input } from "@/lib/components/inputs/index";
 import Tag from "@/lib/components/tags/Tag";
+import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 
 import type { Tag as TagType } from "@/lib/types";
@@ -44,8 +45,10 @@ function ComboBoxSection({ children }: { children: React.ReactNode }) {
  */
 function CreateNewTag({
   tag,
+  onCreateTag,
 }: {
   tag: { key: string | null; value: string | null };
+  onCreateTag?: () => void;
 }) {
   if (tag.key == null || tag.value == null) {
     return (
@@ -62,17 +65,27 @@ function CreateNewTag({
   return (
     <ComboBoxSection>
       <div className="relative py-2 px-4 cursor-default select-none">
-        Create the tag{" "}
-        <Tag
-          disabled
-          tag={{
-            key: tag.key,
-            value: tag.value,
-          }}
-          color="emerald"
-          level={3}
-        />{" "}
-        by pressing <KeyboardKey keys={["Shift", "Enter"]} />
+        <span>
+          Create the tag{" "}
+          <Tag
+            disabled
+            tag={{
+              key: tag.key,
+              value: tag.value,
+            }}
+            color="emerald"
+            level={3}
+          />{" "}
+          by pressing <KeyboardKey keys={["Shift", "Enter"]} /> or{" "}
+          <Button
+            onClick={onCreateTag}
+            mode="text"
+            className="inline-flex"
+            padding="p-1"
+          >
+            click here
+          </Button>
+        </span>
       </div>
     </ComboBoxSection>
   );
@@ -242,7 +255,14 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
               </ComboBoxSection>
             )}
             {canCreate && (
-              <CreateNewTag tag={{ key: query.key, value: query.value }} />
+              <CreateNewTag
+                tag={{ key: query.key, value: query.value }}
+                onCreateTag={() => {
+                  if (query.key && query.value) {
+                    onCreateTag?.({ key: query.key, value: query.value });
+                  }
+                }}
+              />
             )}
           </Combobox.Options>
         </Float>
