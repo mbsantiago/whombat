@@ -10,6 +10,7 @@ import useActiveUser from "@/app/hooks/api/useActiveUser";
 import Loading from "@/app/loading";
 
 import { WhombatIcon } from "@/lib/components/icons";
+import { Footer } from "@/lib/components/navigation/Footer";
 import { NavBar } from "@/lib/components/navigation/NavBar";
 import { SideMenu } from "@/lib/components/navigation/SideMenu";
 
@@ -69,12 +70,15 @@ function Contents({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <div className="flex flex-row w-full max-w-full h-full">
+    <div className="flex flex-row w-full max-w-full h-full min-h-screen">
       <SideMenu user={user} onLogout={handleLogout} />
-      <main className="w-full max-w-full h-full overflow-x-clip">
-        <NavBar user={user} onLogout={handleLogout} />
-        {children}
-      </main>
+      <div className="flex flex-col w-full max-w-full min-h-screen">
+        <main className="flex-grow w-full max-w-full h-full overflow-x-clip">
+          <NavBar user={user} onLogout={handleLogout} />
+          {children}
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
