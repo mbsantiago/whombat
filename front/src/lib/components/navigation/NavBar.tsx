@@ -12,7 +12,7 @@ import type { User } from "@/lib/types";
 function Brand() {
   return (
     <a href="/" className="flex items-center">
-      <span className="self-center whitespace-nowrap text-2xl font-bold text-emerald-500 underline decoration-4">
+      <span className="self-center text-2xl font-bold text-emerald-500 underline whitespace-nowrap decoration-4">
         Whombat
       </span>
     </a>
@@ -21,8 +21,8 @@ function Brand() {
 
 function UserDetail({ user }: { user?: User }) {
   return (
-    <div className="m-2 flex flex-row justify-center rounded bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-200">
-      <UserIcon className="h-6 w-6" />
+    <div className="flex flex-row justify-center m-2 rounded bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-200">
+      <UserIcon className="w-6 h-6" />
       <span className="ml-2 text-sm">{user?.username}</span>
     </div>
   );
@@ -34,8 +34,8 @@ function UserMenu({ user, onLogout }: { user?: User; onLogout?: () => void }) {
   } = useActiveUser({ user, onLogout });
 
   return (
-    <Menu as="div" className="relative z-10 inline-block text-left">
-      <Menu.Button className="inline-flex w-full justify-center rounded-md">
+    <Menu as="div" className="inline-block relative z-10 text-left">
+      <Menu.Button className="inline-flex justify-center w-full rounded-md">
         User
       </Menu.Button>
       <Transition
@@ -47,7 +47,7 @@ function UserMenu({ user, onLogout }: { user?: User; onLogout?: () => void }) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="origin-to-right absolute right-0 z-50 mt-2 w-44 space-y-1 rounded-md bg-stone-200 p-1 shadow-lg dark:bg-stone-700">
+        <Menu.Items className="absolute right-0 z-50 p-1 mt-2 space-y-1 w-44 rounded-md shadow-lg origin-to-right bg-stone-200 dark:bg-stone-700">
           <Menu.Item>
             <UserDetail user={user} />
           </Menu.Item>
@@ -93,7 +93,7 @@ function NavItem({ href, label }: { href: string; label: string }) {
     <li>
       <a
         href={href}
-        className="block rounded py-2 pl-3 pr-4 md:bg-transparent md:p-0"
+        className="block py-2 pr-4 pl-3 rounded md:p-0 md:bg-transparent"
         aria-current="page"
       >
         {label}
@@ -110,7 +110,7 @@ function Navigation() {
   ];
   return (
     <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-      <ul className="mt-4 flex flex-col rounded-lg border p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:p-0">
+      <ul className="flex flex-col p-4 mt-4 font-medium rounded-lg border md:flex-row md:p-0 md:mt-0 md:space-x-8 md:border-0">
         {navItems.map((link) => (
           <NavItem key={link.href} href={link.href} label={link.label} />
         ))}
@@ -128,7 +128,7 @@ export function NavBar({
 }) {
   return (
     <nav>
-      <div className="z-50 flex max-w-screen-xl flex-wrap items-center justify-between p-4">
+      <div className="flex z-50 flex-wrap justify-between items-center p-4">
         <Brand />
         <Navigation />
         <UserMenu user={user} onLogout={onLogout} />
