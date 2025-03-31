@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from uuid import UUID
 
+from soundevent.audio import compute_md5_checksum
 from soundevent.io.aoef import (
     AnnotationSetObject,
     EvaluationObject,
@@ -97,7 +98,9 @@ async def import_recordings(
         rec
         for rec in recordings
         if check_recording(
-            rec, audio_dir=audio_dir, base_audio_dir=base_audio_dir
+            rec,
+            audio_dir=audio_dir,
+            base_audio_dir=base_audio_dir,
         )
     ]
 
@@ -206,6 +209,18 @@ async def _get_existing_recordings_by_path(
     }
 
 
+def _get_recording_hash(
+    rec: RecordingObject,
+    audio_dir: Path,
+    base_audio_dir: Path,
+) -> str:
+    if rec.hash:
+        return rec.hash
+
+    path = base_audio_dir / audio_dir / rec.path
+    return compute_md5_checksum(path)
+
+
 async def _create_recordings(
     session: AsyncSession,
     recordings: list[RecordingObject],
@@ -215,7 +230,7 @@ async def _create_recordings(
     values = [
         {
             "uuid": rec.uuid,
-            "hash": rec.hash,
+            "hash": _get_recording_hash(rec, audio_dir, base_audio_dir),
             "path": normalize_audio_path(rec, audio_dir, base_audio_dir),
             "time_expansion": rec.time_expansion or 1,
             "duration": rec.duration,
