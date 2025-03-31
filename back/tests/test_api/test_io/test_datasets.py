@@ -56,3 +56,44 @@ async def test_can_import_example_dataset(
         audio_dir=example_audio_dir,
     )
     assert imported.name == "Example Dataset"
+
+
+async def test_can_import_dataset_with_missing_hashes(
+    session: AsyncSession,
+    random_wav_factory,
+    audio_dir: Path,
+):
+    path = random_wav_factory()
+
+    recording = data.Recording.from_file(
+        path,
+        owners=[
+            data.User(
+                name="Test user",
+                username=None,
+                email=None,
+                institution=None,
+            )
+        ],
+    )
+
+    # Remove the hash
+    recording.hash = None
+
+    dataset = data.Dataset(
+        name="Test dataset",
+        description="Test description",
+        recordings=[recording],
+    )
+
+    aoef_file = "test_dataset.aoef"
+    io.save(dataset, audio_dir / aoef_file, audio_dir=audio_dir)
+
+    imported = await import_dataset(
+        session,
+        audio_dir / aoef_file,
+        dataset_dir=audio_dir,
+        audio_dir=audio_dir,
+    )
+
+    assert imported.name == dataset.name
