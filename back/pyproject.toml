@@ -79,13 +79,15 @@ dev-dependencies = [
 venvPath = "."
 venv = ".venv"
 include = ["src"]
+pythonVersion = "3.11"
+pythonPlatform = "All"
 
 [tool.pydocstyle]
 convention = "numpy"
 
 [tool.ruff]
 line-length = 79
-target-version = "py312"
+target-version = "py311"
 
 [tool.ruff.format]
 docstring-code-format = true
