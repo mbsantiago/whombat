@@ -151,8 +151,7 @@ class AnnotationProjectAPI(
                 break
         else:
             raise exceptions.NotFoundError(
-                f"Tag {tag.id} does not exist in annotation "
-                f"project {obj.id}"
+                f"Tag {tag.id} does not exist in annotation project {obj.id}"
             )
 
         await common.delete_object(
@@ -170,6 +169,21 @@ class AnnotationProjectAPI(
             )
         )
         self._update_cache(obj)
+        return obj
+
+    async def add_task(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationProject,
+        clip: schemas.Clip,
+    ) -> schemas.AnnotationProject:
+        clip_annotation = await clip_annotations.create(session, clip)
+        await annotation_tasks.create(
+            session,
+            obj,
+            clip,
+            clip_annotation_id=clip_annotation.id,
+        )
         return obj
 
     async def get_annotations(

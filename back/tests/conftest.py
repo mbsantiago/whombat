@@ -13,6 +13,7 @@ import numpy as np
 import pytest
 import soundevent
 import soundfile as sf
+from alembic.util import obfuscate_url_pw
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -309,10 +310,17 @@ async def sound_event(
 
 
 @pytest.fixture
-async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
-    """Create a dataset for testing."""
+async def dataset_dir(audio_dir: Path) -> Path:
     dataset_dir = audio_dir / "test_dataset" / "audio"
-    dataset_dir.mkdir(parents=True)
+    dataset_dir.mkdir(parents=True, exist_ok=True)
+    return dataset_dir
+
+
+@pytest.fixture
+async def dataset(
+    session: AsyncSession, audio_dir: Path, dataset_dir: Path
+) -> schemas.Dataset:
+    """Create a dataset for testing."""
     return await api.datasets.create(
         session,
         name="test_dataset",
@@ -320,6 +328,23 @@ async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
         dataset_dir=dataset_dir,
         audio_dir=audio_dir,
     )
+
+
+@pytest.fixture
+async def dataset_recording(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+    audio_dir: Path,
+    dataset_dir: Path,
+    random_wav_factory: Callable[..., Path],
+):
+    recording = await api.recordings.create(
+        session,
+        path=random_wav_factory(path=dataset_dir / "test_audio.wav"),
+        audio_dir=audio_dir,
+    )
+    await api.datasets.add_recording(session, dataset, recording)
+    return recording
 
 
 @pytest.fixture
