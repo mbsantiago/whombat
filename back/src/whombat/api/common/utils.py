@@ -2,8 +2,7 @@
 
 import re
 from dataclasses import MISSING, fields
-from itertools import batched
-from typing import Any, Callable, Sequence, TypeVar
+from typing import Any, Callable, Generator, Iterable, Sequence, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import Result, Select, func, insert, select
@@ -18,6 +17,25 @@ from sqlalchemy.sql.expression import ColumnElement
 from whombat import exceptions, models
 from whombat.core.common import remove_duplicates
 from whombat.filters.base import Filter
+
+try:
+    from itertools import batched  # type: ignore
+except ImportError:
+    from itertools import islice
+
+    A = TypeVar("A")
+
+    def batched(
+        iterable: Iterable[A], n: int, *, strict: bool = False
+    ) -> Generator[tuple[A, ...], None, None]:
+        if n < 1:
+            raise ValueError("n must be at least one")
+        iterator = iter(iterable)
+        while batch := tuple(islice(iterator, n)):
+            if strict and len(batch) != n:
+                raise ValueError("batched(): incomplete batch")
+            yield batch
+
 
 __all__ = [
     "add_feature_to_object",
