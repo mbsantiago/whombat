@@ -509,3 +509,20 @@ async def test_update_clip_feature(
     feature = api.find_feature(clip.features, feature_name.name)
     assert feature is not None
     assert feature.value == 20
+
+
+async def test_clip_is_deleted_if_recording_is_deleted(
+    session: AsyncSession,
+    recording: schemas.Recording,
+    clip: schemas.Clip,
+):
+    # Check the clip exists in the database
+    await api.clips.get(session, clip.uuid)
+
+    await api.recordings.delete(session, recording)
+
+    with pytest.raises(exceptions.NotFoundError):
+        await api.clips.get(session, clip.uuid)
+
+
+
