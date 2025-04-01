@@ -523,6 +523,3 @@ async def test_clip_is_deleted_if_recording_is_deleted(
 
     with pytest.raises(exceptions.NotFoundError):
         await api.clips.get(session, clip.uuid)
-
-
-
