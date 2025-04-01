@@ -54,7 +54,7 @@ class Clip(Base):
     """The UUID of the clip."""
 
     recording_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("recording.id"), nullable=False
+        ForeignKey("recording.id", ondelete="CASCADE"), nullable=False
     )
     """The database id of the recording to which the clip belongs."""
 
