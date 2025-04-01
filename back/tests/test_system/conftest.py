@@ -24,6 +24,7 @@ def test_settings(
 ) -> Settings:
     return Settings(
         dev=True,
+        db_dialect="sqlite",
         db_name=test_db_path,
         audio_dir=test_audio_dir,
         log_to_file=False,

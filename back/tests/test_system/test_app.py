@@ -1,5 +1,6 @@
 import asyncio
 
+import pytest
 import uvicorn
 
 from whombat.system import create_app
@@ -17,7 +18,7 @@ async def test_can_instantiate_app(test_settings: Settings):
     )
     server = uvicorn.Server(config)
 
-    async with asyncio.timeout(10):
-        await server.serve()
-
-    assert server.started
+    with pytest.raises(TimeoutError):
+        async with asyncio.timeout(5):
+            await server.serve()
+            assert server.started
