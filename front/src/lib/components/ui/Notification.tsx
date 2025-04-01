@@ -20,7 +20,9 @@ export default function Notification() {
         >
           <ToastIcon toast={t} />
           <div className="pl-4 max-w-lg font-normal">
-            <p className="px-2 whitespace-pre-line">{resolveValue(t.message, t)}</p>
+            <p className="px-2 whitespace-pre-line">
+              {resolveValue(t.message, t)}
+            </p>
           </div>
         </Transition>
       )}
