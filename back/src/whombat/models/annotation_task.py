@@ -57,7 +57,7 @@ class AnnotationTask(Base):
     """The id of the project to which the task belongs."""
 
     clip_id: orm.Mapped[int] = orm.mapped_column(
-        ForeignKey("clip.id"),
+        ForeignKey("clip.id", ondelete="RESTRICT"),
         nullable=False,
     )
     """The id of the clip to be annotated."""
