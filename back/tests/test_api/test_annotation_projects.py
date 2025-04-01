@@ -325,7 +325,10 @@ async def test_dataset_cant_be_deleted_if_used_in_an_annotation_project(
         start_time=0,
         end_time=0.5,
     )
+
     await api.annotation_projects.add_task(session, annotation_project, clip)
+
+    await session.commit()
 
     with pytest.raises(IntegrityError):
         await api.datasets.delete(session, dataset)
