@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from sqlalchemy import event
-from sqlalchemy.dialects.sqlite.aiosqlite import SQLiteDialect_aiosqlite
 from sqlalchemy.engine import URL, Engine
 from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.ext.asyncio import AsyncSession
