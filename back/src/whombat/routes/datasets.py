@@ -10,8 +10,9 @@ from fastapi import APIRouter, Body, Depends, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from pydantic import DirectoryPath
 from soundevent.io.aoef import DatasetObject
+from sqlalchemy.exc import IntegrityError
 
-from whombat import api, schemas
+from whombat import api, exceptions, schemas
 from whombat.filters.datasets import DatasetFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -124,7 +125,17 @@ async def delete_dataset(
 ):
     """Delete a dataset."""
     dataset = await api.datasets.get(session, dataset_uuid)
-    deleted = await api.datasets.delete(session, dataset)
+
+    try:
+        deleted = await api.datasets.delete(session, dataset)
+    except IntegrityError as error:
+        raise exceptions.DataIntegrityError(
+            "Cannot delete this dataset because it is currently in use. "
+            "This dataset may be associated with active annotation projects "
+            "or other processes. Please ensure that the dataset is not being "
+            "used in any active tasks before attempting to delete it."
+        ) from error
+
     await session.commit()
     return deleted
 

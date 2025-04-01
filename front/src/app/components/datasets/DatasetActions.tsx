@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 import useDataset from "@/app/hooks/api/useDataset";
 
 import DatasetActionsBase from "@/lib/components/datasets/DatasetActions";
@@ -19,8 +21,30 @@ export default function DatasetActions({
   return (
     <DatasetActionsBase
       dataset={dataset}
-      onDeleteDataset={() => deleteDataset.mutate(dataset)}
-      onDownloadDataset={() => download("json")}
+      onDeleteDataset={async () =>
+        toast.promise(
+          deleteDataset.mutateAsync(dataset),
+          {
+            loading: "Deleting...",
+            success: "Dataset deleted successfuly!",
+            error: (err) =>
+              `Could not delete dataset.\n\nError: ${err.response.data.message}`,
+          },
+          {
+            id: "delete-dataset",
+            error: {
+              duration: 10000,
+            },
+          },
+        )
+      }
+      onDownloadDataset={async () =>
+        await toast.promise(download("json"), {
+          loading: "Downloading...",
+          success: "Download complete",
+          error: "Failed to download dataset",
+        })
+      }
     />
   );
 }

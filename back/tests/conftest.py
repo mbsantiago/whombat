@@ -309,10 +309,17 @@ async def sound_event(
 
 
 @pytest.fixture
-async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
-    """Create a dataset for testing."""
+async def dataset_dir(audio_dir: Path) -> Path:
     dataset_dir = audio_dir / "test_dataset" / "audio"
-    dataset_dir.mkdir(parents=True)
+    dataset_dir.mkdir(parents=True, exist_ok=True)
+    return dataset_dir
+
+
+@pytest.fixture
+async def dataset(
+    session: AsyncSession, audio_dir: Path, dataset_dir: Path
+) -> schemas.Dataset:
+    """Create a dataset for testing."""
     return await api.datasets.create(
         session,
         name="test_dataset",
@@ -320,6 +327,23 @@ async def dataset(session: AsyncSession, audio_dir: Path) -> schemas.Dataset:
         dataset_dir=dataset_dir,
         audio_dir=audio_dir,
     )
+
+
+@pytest.fixture
+async def dataset_recording(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+    audio_dir: Path,
+    dataset_dir: Path,
+    random_wav_factory: Callable[..., Path],
+):
+    recording = await api.recordings.create(
+        session,
+        path=random_wav_factory(path=dataset_dir / "test_audio.wav"),
+        audio_dir=audio_dir,
+    )
+    await api.datasets.add_recording(session, dataset, recording)
+    return recording
 
 
 @pytest.fixture
@@ -370,12 +394,14 @@ async def annotation_task(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
     clip: schemas.Clip,
+    clip_annotation: schemas.ClipAnnotation,
 ) -> schemas.AnnotationTask:
     """Create a task for testing."""
     return await api.annotation_tasks.create(
         session,
         annotation_project=annotation_project,
         clip=clip,
+        clip_annotation_id=clip_annotation.id,
     )
 
 

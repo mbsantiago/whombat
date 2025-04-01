@@ -6,7 +6,7 @@ from soundevent import data
 from sqlalchemy import and_, desc, func, select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from sqlalchemy.sql._typing import _ColumnExpressionArgument
+from sqlalchemy.sql import ColumnExpressionArgument
 
 from whombat import exceptions, models, schemas
 from whombat.api import common
@@ -257,7 +257,7 @@ class TagAPI(
         limit: int | None = 1000,
         offset: int | None = 0,
         filters: Sequence[Filter] | None = None,
-        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+        sort_by: ColumnExpressionArgument | str | None = "-counts",
     ) -> tuple[Sequence[schemas.TagCount], int]:
         count_column = func.count(
             models.SoundEventAnnotationTag.sound_event_annotation_id
@@ -300,7 +300,7 @@ class TagAPI(
         limit: int | None = 1000,
         offset: int | None = 0,
         filters: Sequence[Filter] | None = None,
-        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+        sort_by: ColumnExpressionArgument | str | None = "-counts",
     ) -> tuple[Sequence[schemas.TagCount], int]:
         count_column = func.count(
             models.ClipAnnotationTag.clip_annotation_id
@@ -343,7 +343,7 @@ class TagAPI(
         limit: int | None = 1000,
         offset: int | None = 0,
         filters: Sequence[Filter] | None = None,
-        sort_by: _ColumnExpressionArgument | str | None = "-counts",
+        sort_by: ColumnExpressionArgument | str | None = "-counts",
     ) -> tuple[Sequence[schemas.TagCount], int]:
         count_column = func.count(models.RecordingTag.recording_id).label(
             "counts"

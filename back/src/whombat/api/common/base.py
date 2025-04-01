@@ -7,7 +7,7 @@ import cachetools
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy.sql._typing import _ColumnExpressionArgument
+from sqlalchemy.sql import ColumnExpressionArgument
 from sqlalchemy.sql.expression import ColumnElement
 
 from whombat import models
@@ -86,7 +86,7 @@ class BaseAPI(
     async def find(
         self,
         session: AsyncSession,
-        filters: Sequence[Filter | _ColumnExpressionArgument],
+        filters: Sequence[Filter | ColumnExpressionArgument],
     ) -> WhombatSchema:
         obj = await find_object(
             session,
@@ -102,8 +102,8 @@ class BaseAPI(
         *,
         limit: int | None = 1000,
         offset: int | None = 0,
-        filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
-        sort_by: _ColumnExpressionArgument | str | None = "-created_on",
+        filters: Sequence[Filter | ColumnExpressionArgument] | None = None,
+        sort_by: ColumnExpressionArgument | str | None = "-created_on",
     ) -> tuple[Sequence[WhombatSchema], int]:
         """Get many objects.
 
@@ -365,7 +365,7 @@ class BaseAPI(
         pk = self._get_pk_from_obj(obj)
         self._cache.pop(pk, None)
 
-    def _get_pk_condition(self, pk: PrimaryKey) -> _ColumnExpressionArgument:
+    def _get_pk_condition(self, pk: PrimaryKey) -> ColumnExpressionArgument:
         column = getattr(self._model, "uuid", None)
         if not column:
             raise NotImplementedError(

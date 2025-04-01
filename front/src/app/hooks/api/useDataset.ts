@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useCallback } from "react";
-import toast from "react-hot-toast";
 
 import api from "@/app/api";
 
@@ -49,7 +48,6 @@ export default function useDataset({
   const update = useMutation<DatasetUpdate>({
     mutationFn: api.datasets.update,
     onSuccess: (data) => {
-      toast.success("Dataset updated");
       onUpdateDataset?.(data);
     },
   });
@@ -57,7 +55,6 @@ export default function useDataset({
   const delete_ = useMutation({
     mutationFn: api.datasets.delete,
     onSuccess: (data) => {
-      toast.success("Dataset deleted");
       onDeleteDataset?.(data);
     },
   });
@@ -70,11 +67,7 @@ export default function useDataset({
 
   const download = useCallback(
     async (format: "csv" | "json") => {
-      await toast.promise(api.datasets.download(uuid, format), {
-        loading: "Downloading...",
-        success: "Download complete",
-        error: "Failed to download dataset",
-      });
+      return await api.datasets.download(uuid, format);
     },
     [uuid],
   );

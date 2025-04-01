@@ -21,3 +21,11 @@ class DuplicateObjectError(RuntimeError):
 
 class MissingDatabaseError(RuntimeError):
     """Raised when the database is not available."""
+
+
+class DataIntegrityError(RuntimeError):
+    """Raised if the operation is canceled due to database constraints.
+
+    These could be caused by cascading deletes clashing with foreign keys
+    restrictions.
+    """

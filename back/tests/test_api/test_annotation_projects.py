@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, exceptions, models, schemas
@@ -310,3 +311,24 @@ async def test_remove_tag_from_project_fails_if_tag_not_present(
         await api.annotation_projects.remove_tag(
             session, annotation_project, tag
         )
+
+
+async def test_dataset_cant_be_deleted_if_used_in_an_annotation_project(
+    session: AsyncSession,
+    annotation_project: schemas.AnnotationProject,
+    dataset: schemas.Dataset,
+    dataset_recording: schemas.Recording,
+):
+    clip = await api.clips.create(
+        session,
+        dataset_recording,
+        start_time=0,
+        end_time=0.5,
+    )
+
+    await api.annotation_projects.add_task(session, annotation_project, clip)
+
+    await session.commit()
+
+    with pytest.raises(IntegrityError):
+        await api.datasets.delete(session, dataset)

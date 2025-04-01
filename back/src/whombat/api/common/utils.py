@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import InstrumentedAttribute
-from sqlalchemy.sql._typing import _ColumnExpressionArgument
+from sqlalchemy.sql import ColumnExpressionArgument
 from sqlalchemy.sql.base import ExecutableOption
 from sqlalchemy.sql.expression import ColumnElement
 
@@ -132,7 +132,7 @@ def get_values(
 async def get_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
 ) -> A:
     """Get an object by some condition.
 
@@ -142,7 +142,7 @@ async def get_object(
         The database session.
     model : type[A]
         The model to query.
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     Returns
@@ -171,7 +171,7 @@ async def get_object(
 async def find_object(
     session: AsyncSession,
     model: type[A],
-    filters: Sequence[Filter | _ColumnExpressionArgument],
+    filters: Sequence[Filter | ColumnExpressionArgument],
 ) -> A:
     """Find an object by some filters.
 
@@ -215,7 +215,7 @@ async def find_object(
 def get_sort_by_col_from_str(
     model: type[A],
     sort_by: str,
-) -> _ColumnExpressionArgument:
+) -> ColumnExpressionArgument:
     """Get a column from a model by name.
 
     Parameters
@@ -228,7 +228,7 @@ def get_sort_by_col_from_str(
 
     Returns
     -------
-    _ColumnExpressionArgument
+    ColumnExpressionArgument
         The column.
     """
     descending = sort_by.startswith("-")
@@ -258,9 +258,9 @@ async def get_objects_from_query(
     limit: int | None = 1000,
     offset: int | None = 0,
     options: Sequence[ExecutableOption] | None = None,
-    filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
-    sort_by: _ColumnExpressionArgument | str | None = None,
-    group_by: _ColumnExpressionArgument | None = None,
+    filters: Sequence[Filter | ColumnExpressionArgument] | None = None,
+    sort_by: ColumnExpressionArgument | str | None = None,
+    group_by: ColumnExpressionArgument | None = None,
 ) -> tuple[Result[Any], int]:
     """Get a list of objects from a query.
 
@@ -325,9 +325,9 @@ async def get_objects(
     *,
     limit: int | None = 1000,
     offset: int | None = 0,
-    filters: Sequence[Filter | _ColumnExpressionArgument] | None = None,
+    filters: Sequence[Filter | ColumnExpressionArgument] | None = None,
     options: Sequence[ExecutableOption] | None = None,
-    sort_by: _ColumnExpressionArgument | str | None = None,
+    sort_by: ColumnExpressionArgument | str | None = None,
 ) -> tuple[Sequence[A], int]:
     """Get all objects.
 
@@ -579,7 +579,7 @@ async def insert_batched(
 async def delete_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
 ) -> A:
     """Delete an object based on some condition.
 
@@ -591,7 +591,7 @@ async def delete_object(
     model : type[A]
         The model of the object to delete.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     Raises
@@ -608,7 +608,7 @@ async def delete_object(
 async def get_or_create_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     data: BaseModel,
 ) -> A:
     """Get or create an object.
@@ -621,7 +621,7 @@ async def get_or_create_object(
     model : type[A]
         The model of the object to get or create.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     data : BaseModel
@@ -641,7 +641,7 @@ async def get_or_create_object(
 async def update_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     data: BaseModel | None = None,
     **kwargs: Any,
 ) -> A:
@@ -655,7 +655,7 @@ async def update_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     data : BaseModel
@@ -703,7 +703,7 @@ async def update_object(
 async def add_note_to_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     note_id: int,
 ) -> A:
     """Add a note to an object.
@@ -716,7 +716,7 @@ async def add_note_to_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     note_id : int
@@ -766,7 +766,7 @@ async def add_note_to_object(
 async def add_tag_to_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     tag_id: int,
 ) -> A:
     """Add a tag to an object.
@@ -779,7 +779,7 @@ async def add_tag_to_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     tag_id : int
@@ -829,7 +829,7 @@ async def add_tag_to_object(
 async def add_feature_to_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     feature_name_id: int,
     value: float,
 ) -> A:
@@ -843,7 +843,7 @@ async def add_feature_to_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     feature_name_id : int
@@ -897,7 +897,7 @@ async def add_feature_to_object(
 async def update_feature_on_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     feature_name_id: int,
     value: float,
 ) -> A:
@@ -911,7 +911,7 @@ async def update_feature_on_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     feature_name_id : int
@@ -957,7 +957,7 @@ async def update_feature_on_object(
 async def remove_tag_from_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     tag_id: int,
 ) -> A:
     """Remove a tag from an object.
@@ -970,7 +970,7 @@ async def remove_tag_from_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     tag_id : int
@@ -1012,7 +1012,7 @@ async def remove_tag_from_object(
 async def remove_note_from_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     note_id: int,
 ) -> A:
     """Remove a note from an object.
@@ -1025,7 +1025,7 @@ async def remove_note_from_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     note_id : int
@@ -1068,7 +1068,7 @@ async def remove_note_from_object(
 async def remove_feature_from_object(
     session: AsyncSession,
     model: type[A],
-    condition: _ColumnExpressionArgument,
+    condition: ColumnExpressionArgument,
     feature_name_id: int,
 ) -> A:
     """Remove a feature from an object.
@@ -1081,7 +1081,7 @@ async def remove_feature_from_object(
     model : type[A]
         The model of the object to update.
 
-    condition : _ColumnExpressionArgument
+    condition : ColumnExpressionArgument
         The condition to use.
 
     feature_name_id : int

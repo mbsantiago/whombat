@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 import useDataset from "@/app/hooks/api/useDataset";
 
 import DatasetUpdateBase from "@/lib/components/datasets/DatasetUpdate";
@@ -12,7 +14,13 @@ export default function DatasetUpdate({ dataset }: { dataset: Dataset }) {
   return (
     <DatasetUpdateBase
       dataset={data || dataset}
-      onChangeDataset={update.mutate}
+      onChangeDataset={async (data) =>
+        toast.promise(update.mutateAsync(data), {
+          loading: "Updating...",
+          success: "Dataset updated!",
+          error: (err) => `Something went wrong. Error: ${err.toString()}`,
+        })
+      }
     />
   );
 }
