@@ -10,8 +10,9 @@ from alembic import script
 from alembic.command import stamp, upgrade
 from alembic.config import Config
 from alembic.runtime import migration
-from sqlalchemy import Connection, Engine, create_engine
+from sqlalchemy import Connection, Engine, create_engine, event
 from sqlalchemy.engine import URL, make_url
+from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -262,6 +263,21 @@ async def get_async_session(
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
     async with async_session_maker() as session:
         yield session
+
+
+def is_sqlite(dbapi_connection: DBAPIConnection) -> bool:
+    dbapi = getattr(dbapi_connection, "dbapi", None)
+    return dbapi is not None and hasattr(dbapi, "sqlite_version")
+
+
+@event.listens_for(Engine, "connect")
+def enable_foreign_key_support_sqlite(dbapi_connection: DBAPIConnection, _):
+    if not is_sqlite(dbapi_connection):
+        return
+
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 async def init_database(settings: Settings) -> None:
