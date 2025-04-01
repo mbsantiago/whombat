@@ -19,8 +19,8 @@ export default function Notification() {
           leaveTo="opacity-0 scale-75"
         >
           <ToastIcon toast={t} />
-          <div className="pl-4 text-sm font-normal">
-            <p className="px-2">{resolveValue(t.message, t)}</p>
+          <div className="pl-4 max-w-lg font-normal">
+            <p className="px-2 whitespace-pre-line">{resolveValue(t.message, t)}</p>
           </div>
         </Transition>
       )}
