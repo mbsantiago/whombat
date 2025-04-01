@@ -3,7 +3,10 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from sqlalchemy.engine import URL
+from sqlalchemy import event
+from sqlalchemy.dialects.sqlite.aiosqlite import SQLiteDialect_aiosqlite
+from sqlalchemy.engine import URL, Engine
+from sqlalchemy.engine.interfaces import DBAPIConnection
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat.system import database
@@ -15,6 +18,17 @@ __all__ = [
 
 DEFAULT_DB_URL = "sqlite+aiosqlite://"
 """Default database URL to use if none is provided."""
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection: DBAPIConnection, _):
+    dbapi = getattr(dbapi_connection, "dbapi", None)
+    if not dbapi or not hasattr(dbapi, "sqlite_version"):
+        return
+
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 @asynccontextmanager
