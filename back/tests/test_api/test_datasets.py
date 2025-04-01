@@ -787,3 +787,37 @@ async def test_exported_datasets_paths_are_not_absolute(
 
         # Check that paths were exported relative to the dataset audio_dir
         assert (audio_dir / recording.path).is_file()
+
+
+async def test_recording_is_deleted_if_it_does_not_belong_to_a_dataset(
+    session: AsyncSession,
+    dataset: schemas.Dataset,
+    dataset_recording: schemas.Recording,
+):
+    await api.recordings.get(session, dataset_recording.uuid)
+
+    await api.datasets.delete(session, dataset)
+
+    with pytest.raises(exceptions.NotFoundError):
+        await api.recordings.get(session, dataset_recording.uuid)
+
+
+async def test_recordings_belonging_to_multiple_datastes_are_not_deleted(
+    session: AsyncSession,
+    dataset_recording: schemas.Recording,
+    audio_dir: Path,
+    dataset_dir: Path,
+):
+    await api.recordings.get(session, dataset_recording.uuid)
+
+    dataset2 = await api.datasets.create(
+        session,
+        name="other_dataset",
+        description="other dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+    )
+
+    await api.datasets.add_recording(session, dataset2, dataset_recording)
+
+    await api.recordings.get(session, dataset_recording.uuid)
