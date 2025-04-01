@@ -13,7 +13,6 @@ import numpy as np
 import pytest
 import soundevent
 import soundfile as sf
-from alembic.util import obfuscate_url_pw
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -395,12 +394,14 @@ async def annotation_task(
     session: AsyncSession,
     annotation_project: schemas.AnnotationProject,
     clip: schemas.Clip,
+    clip_annotation: schemas.ClipAnnotation,
 ) -> schemas.AnnotationTask:
     """Create a task for testing."""
     return await api.annotation_tasks.create(
         session,
         annotation_project=annotation_project,
         clip=clip,
+        clip_annotation_id=clip_annotation.id,
     )
 
 
