@@ -136,7 +136,6 @@ async def delete_dataset(
             "used in any active tasks before attempting to delete it."
         ) from error
 
-
     await session.commit()
     return deleted
 
