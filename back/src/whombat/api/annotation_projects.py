@@ -176,15 +176,14 @@ class AnnotationProjectAPI(
         session: AsyncSession,
         obj: schemas.AnnotationProject,
         clip: schemas.Clip,
-    ) -> schemas.AnnotationProject:
+    ) -> schemas.AnnotationTask:
         clip_annotation = await clip_annotations.create(session, clip)
-        await annotation_tasks.create(
+        return await annotation_tasks.create(
             session,
             obj,
             clip,
             clip_annotation_id=clip_annotation.id,
         )
-        return obj
 
     async def get_annotations(
         self,
