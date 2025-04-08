@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import List, Sequence
+from typing import Sequence
 from uuid import UUID
 
 from soundevent import data
@@ -20,7 +20,6 @@ from whombat.filters.annotation_tasks import (
 )
 from whombat.filters.base import Filter
 from whombat.filters.clip_annotations import AnnotationProjectFilter
-from whombat.models.dataset import DatasetRecording
 from whombat.system.settings import get_settings
 
 __all__ = [
