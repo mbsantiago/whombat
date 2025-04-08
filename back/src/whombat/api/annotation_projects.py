@@ -1,7 +1,8 @@
 """Python API for annotation projects."""
 
+import os
 from pathlib import Path
-from typing import Sequence
+from typing import List, Sequence
 from uuid import UUID
 
 from soundevent import data
@@ -19,6 +20,8 @@ from whombat.filters.annotation_tasks import (
 )
 from whombat.filters.base import Filter
 from whombat.filters.clip_annotations import AnnotationProjectFilter
+from whombat.models.dataset import DatasetRecording
+from whombat.system.settings import get_settings
 
 __all__ = [
     "AnnotationProjectAPI",
@@ -37,6 +40,43 @@ class AnnotationProjectAPI(
 ):
     _model = models.AnnotationProject
     _schema = schemas.AnnotationProject
+
+    async def get_base_dir(
+        self,
+        session: AsyncSession,
+        obj: schemas.AnnotationProject,
+    ) -> Path:
+        """Get the base directory from which to export recordings."""
+        stmt = (
+            select(models.Dataset.audio_dir)
+            .join(
+                models.DatasetRecording,
+                models.DatasetRecording.dataset_id == models.Dataset.id,
+            )
+            .join(
+                models.Recording,
+                models.Recording.id == models.DatasetRecording.recording_id,
+            )
+            .join(models.Clip, models.Clip.recording_id == models.Recording.id)
+            .join(
+                models.AnnotationTask,
+                models.AnnotationTask.clip_id == models.Clip.id,
+            )
+            .join(
+                models.AnnotationProject,
+                models.AnnotationProject.id
+                == models.AnnotationTask.annotation_project_id,
+            )
+            .filter(models.AnnotationProject.uuid == obj.uuid)
+            .distinct()
+        )
+        result = await session.execute(stmt)
+        paths = result.fetchall()
+
+        if not paths:
+            return get_settings().audio_dir
+
+        return Path(os.path.commonpath([p[0] for p in paths]))
 
     async def create(
         self,
