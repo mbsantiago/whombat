@@ -185,7 +185,10 @@ async def download_annotation_project(
     project = await api.annotation_projects.to_soundevent(
         session, whombat_project
     )
-    obj = to_aeof(project)
+    base_dir = await api.annotation_projects.get_base_dir(
+        session, whombat_project
+    )
+    obj = to_aeof(project, audio_dir=base_dir)
     filename = f"{project.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(),
