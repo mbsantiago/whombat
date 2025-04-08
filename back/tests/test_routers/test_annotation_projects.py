@@ -1,5 +1,7 @@
 """Test the Annotation Project endpoints."""
 
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 from soundevent.io import aoef
 
@@ -9,6 +11,7 @@ from whombat import schemas
 def test_exported_annotation_projects_paths_are_relative(
     client: TestClient,
     annotation_project: schemas.AnnotationProject,
+    audio_dir: Path,
     clip: schemas.Clip,
     cookies: dict[str, str],
 ):
@@ -42,3 +45,4 @@ def test_exported_annotation_projects_paths_are_relative(
 
     recording = content.data.recordings[0]
     assert not recording.path.is_absolute()
+    assert (audio_dir / recording.path).exists()
