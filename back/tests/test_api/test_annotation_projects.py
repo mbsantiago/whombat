@@ -1,5 +1,7 @@
 """Test suite for annotation project API."""
 
+from pathlib import Path
+from typing import Callable
 from uuid import uuid4
 
 import pytest
@@ -332,3 +334,68 @@ async def test_dataset_cant_be_deleted_if_used_in_an_annotation_project(
 
     with pytest.raises(IntegrityError):
         await api.datasets.delete(session, dataset)
+
+
+async def test_can_get_base_dir_from_project_with_single_dataset(
+    session: AsyncSession,
+    annotation_project: schemas.AnnotationProject,
+    dataset: schemas.Dataset,
+    dataset_recording: schemas.Recording,
+):
+    clip = await api.clips.create(
+        session,
+        dataset_recording,
+        start_time=0,
+        end_time=0.5,
+    )
+    await api.annotation_projects.add_task(session, annotation_project, clip)
+
+    path = await api.annotation_projects.get_base_dir(
+        session, annotation_project
+    )
+    assert path == dataset.audio_dir
+
+
+async def test_can_get_base_dir_from_project_with_multiple_datasets(
+    session: AsyncSession,
+    annotation_project: schemas.AnnotationProject,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    common_dir = audio_dir / "common"
+
+    for i in range(2):
+        dataset_name = f"dataset{i}"
+        dataset_dir = common_dir / dataset_name
+        dataset_dir.mkdir(parents=True, exist_ok=True)
+        dataset = await api.datasets.create(
+            session,
+            name=dataset_name,
+            description=dataset_name,
+            dataset_dir=dataset_dir,
+            audio_dir=audio_dir,
+        )
+        path = random_wav_factory(dataset_dir / f"recording{i}.wav")
+        dataset_recording = await api.datasets.add_file(
+            session,
+            dataset,
+            path=path,
+            audio_dir=audio_dir,
+        )
+        clip = await api.clips.create(
+            session,
+            dataset_recording.recording,
+            start_time=0,
+            end_time=0.5,
+        )
+        await api.annotation_projects.add_task(
+            session,
+            annotation_project,
+            clip,
+        )
+
+    path = await api.annotation_projects.get_base_dir(
+        session,
+        annotation_project,
+    )
+    assert path == common_dir.relative_to(audio_dir)
