@@ -2,4 +2,4 @@
 
 __author__ = """Santiago Martinez Balvanera"""
 __email__ = "santiago.balvanera.20@ucl.ac.uk"
-__version__ = "0.8.3"
+__version__ = "0.8.4"
