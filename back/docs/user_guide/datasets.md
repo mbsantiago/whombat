@@ -11,7 +11,7 @@ Navigate to the dataset list using the sidebar or the cards on the homepage.
 !!! tip "Explore Whombat with Example Data"
 
     Curious to see how a fully populated dataset looks in Whombat? Import the example dataset, complete with rich metadata and recordings, to explore its features and functionalities.
-    The [import data guide](import.md) provides step-by-step instructions.
+    The [import data guide](guides/import.md) provides step-by-step instructions.
 
 ## Selecting a Dataset to Work On
 

@@ -190,6 +190,6 @@ Navigate effortlessly through different clips with the controls in section **C**
 Move to the next or previous clip, or opt for a random selection by clicking the central button.
 
 The explorer presents the clip's spectrogram, showcasing predictions and annotations.
-Refer to the [Navigating the Spectrogram](spectrogram_display.md) section for guidance on moving around the spectrogram.
+Refer to the [Navigating the Spectrogram](guides/spectrogram_display.md) section for guidance on moving around the spectrogram.
 
 Individual clip scores and additional metrics are detailed in section **E**, while predicted and ground truth tags are displayed for easy comparison in section **F**.

@@ -11,7 +11,7 @@ You'll typically only view a segment of the full recording spectrogram to focus 
 Whombat offers several ways to move around your spectrogram.
 We'll cover each method below, with the labeled spectrogram as your guide.
 
-![Spectrogram](../assets/img/spectrogram.png)
+![Spectrogram](../../assets/img/spectrogram.png)
 
 ## Dragging
 

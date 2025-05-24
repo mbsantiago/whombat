@@ -18,7 +18,7 @@ In this section, we will guide you through various topics:
 !!! tip "Explore Whombat with Example Data"
 
     Want to see Whombat in action without starting from scratch? Import the example dataset and annotation project to explore the interface and functionality with pre-populated data.
-    Check out the [import data guide](import.md) for step-by-step instructions.
+    Check out the [import data guide](guides/import.md) for step-by-step instructions.
 
 ## Understanding Annotation
 
@@ -238,7 +238,7 @@ This contextual information aids in interpreting the sounds present in the displ
 The **Clip Spectrogram** is a critical component with dedicated controls.
 This section displays the spectrogram of the assigned clip for annotation, along with any existing sound event annotations.
 The controls provided allow you to navigate, playback, and create new sound event annotations.
-For detailed information on navigating the spectrogram, refer to the [Navigating the Spectrogram](spectrogram_display.md) section.
+For detailed information on navigating the spectrogram, refer to the [Navigating the Spectrogram](guides/spectrogram_display.md) section.
 In the annotation interface, additional controls are available for creating annotations.
 These include Select, Create, and Delete options.
 
