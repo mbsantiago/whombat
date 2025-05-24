@@ -4,15 +4,17 @@ repo_url: https://github.com/mbsantiago/whombat
 nav:
   - Home: README.md
   - User Guide:
-      - Get Started: user_guide/index.md
+      - user_guide/index.md
       - Installation: user_guide/installation.md
       - Managing Datasets: user_guide/datasets.md
-      - Visualizing Audio with the Spectrogram: user_guide/spectrogram_display.md
       - Creating Annotation Projects: user_guide/annotation_projects.md
       - Evaluating Predictions: user_guide/evaluation.md
       - Exploring Your Data: user_guide/exploration.md
-      - Importing Data into Whombat: user_guide/import.md
-      - Exporting Your Data: user_guide/export.md
+      - Practical Guides & Advanced Use Cases:
+          - user_guide/guides/index.md
+          - Importing Data into Whombat: user_guide/guides/import.md
+          - Visualizing Audio with the Spectrogram: user_guide/guides/spectrogram_display.md
+          - Export Annotations for ML Development: user_guide/guides/export.md
       - FAQ: user_guide/faq.md
   - Developer Guide:
       - developer_guide/index.md

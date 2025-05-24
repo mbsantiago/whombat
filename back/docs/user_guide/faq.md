@@ -23,7 +23,7 @@ If you know your target sounds fall within a specific frequency range, you can a
 To do this:
 
 1. **Access Spectrogram Settings**: Locate the Spectrogram Settings within the annotation interface.
-      (You may need to refer to the [Spectrogram Settings](spectrogram_display.md#spectrogram-settings) section of the documentation for the precise location).
+      (You may need to refer to the [Spectrogram Settings](guides/spectrogram_display.md#spectrogram-settings) section of the documentation for the precise location).
 2. **Apply Bandpass Filter**: Adjust the filter settings to define your desired frequency range.
 
 !!! tip "Additional tips"
