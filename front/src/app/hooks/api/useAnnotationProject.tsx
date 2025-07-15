@@ -1,5 +1,6 @@
 import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import ErrorToast from "@/lib/components/ui/ErrorToast";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
@@ -91,7 +92,9 @@ export default function useAnnotationProject({
     await toast.promise(api.annotationProjects.download(uuid), {
       loading: "Downloading...",
       success: "Download complete",
-      error: "Failed to download dataset",
+      error: (error) => (
+        <ErrorToast error={error} message="Failed to download dataset" />
+      ),
     });
   }, [uuid]);
 
