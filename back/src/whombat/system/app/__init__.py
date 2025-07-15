@@ -15,5 +15,5 @@ def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(lifespan=functools.partial(lifespan, settings))
     add_middlewares(app, settings)
     add_routes(app, settings)
-    add_error_handlers(app)
+    add_error_handlers(app, settings)
     return app
