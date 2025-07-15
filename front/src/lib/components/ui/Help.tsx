@@ -53,7 +53,9 @@ export default function Help({
           </svg>
           <span className="sr-only">Help</span>
           <div>
-            {title != null ?? <span className="font-medium">Help</span>}{" "}
+            <span className="font-medium">
+              {title == null ? "Help" : title}
+            </span>{" "}
             {children}
           </div>
         </div>
