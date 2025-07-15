@@ -12,6 +12,7 @@ from whombat.api.io import aoef
 from whombat.filters.annotation_projects import AnnotationProjectFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
+from whombat.system.settings import get_settings
 
 __all__ = [
     "annotation_projects_router",
@@ -177,18 +178,28 @@ async def remove_tag_from_annotation_project(
 async def download_annotation_project(
     session: Session,
     annotation_project_uuid: UUID,
+    settings: WhombatSettings,
 ):
     """Export an annotation project."""
+    audio_dir = settings.audio_dir
+
     whombat_project = await api.annotation_projects.get(
-        session, annotation_project_uuid
+        session,
+        annotation_project_uuid,
     )
-    project = await api.annotation_projects.to_soundevent(
-        session, whombat_project
-    )
+
     base_dir = await api.annotation_projects.get_base_dir(
-        session, whombat_project
+        session,
+        whombat_project,
     )
-    obj = to_aeof(project, audio_dir=base_dir)
+
+    project = await api.annotation_projects.to_soundevent(
+        session,
+        whombat_project,
+        audio_dir=audio_dir / base_dir,
+    )
+
+    obj = to_aeof(project, audio_dir=audio_dir / base_dir)
     filename = f"{project.name}_{obj.created_on.isoformat()}.json"
     return Response(
         obj.model_dump_json(),
