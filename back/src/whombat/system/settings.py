@@ -38,6 +38,13 @@ class Settings(BaseSettings):
     when changes are made to the source code.
     """
 
+    debug: bool = False
+    """True if application is running in debug mode.
+
+    In debug mode logging will be printed to the console instead of the
+    log files.
+    """
+
     db_dialect: str = "sqlite"
     """Database dialect."""
 
@@ -156,9 +163,7 @@ def load_settings_from_file() -> Settings:
 
 def store_default_settings() -> None:
     """Store the default settings to a file."""
-    default_settings = Settings(
-        db_name=str(get_whombat_db_file()),
-    )
+    default_settings = Settings(db_name=str(get_whombat_db_file()))
     write_settings_to_file(default_settings)
 
 
