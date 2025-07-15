@@ -13,7 +13,7 @@ __all__ = ["create_app", "ROOT_DIR"]
 
 def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(lifespan=functools.partial(lifespan, settings))
-    add_middlewares(app, settings)
     add_routes(app, settings)
     add_error_handlers(app, settings)
+    add_middlewares(app, settings)
     return app
