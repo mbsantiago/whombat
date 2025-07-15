@@ -25,12 +25,12 @@ export default function EvaluationSetActions({
   });
 
   const handleDownload = useCallback(async () => {
-    await toast.promise(api.evaluationSets.download(evaluationSet.uuid), {
+    (await toast.promise(api.evaluationSets.download(evaluationSet.uuid), {
       loading: "Preparing download, please wait...",
       success: "Downloaded!",
       error: "Failed to download",
     }),
-      onDownload?.();
+      onDownload?.());
   }, [onDownload, evaluationSet.uuid]);
 
   const handleDelete = useCallback(async () => {

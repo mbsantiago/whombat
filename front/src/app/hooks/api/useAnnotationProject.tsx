@@ -1,10 +1,11 @@
 import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import ErrorToast from "@/lib/components/ui/ErrorToast";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
+
+import ErrorToast from "@/lib/components/ui/ErrorToast";
 
 import useObject from "@/lib/hooks/utils/useObject";
 

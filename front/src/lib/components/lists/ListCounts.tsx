@@ -10,7 +10,8 @@ export default function ListCounts(props: {
         <span className="font-bold">
           {props.startIndex} - {props.endIndex}
         </span>{" "}
-        out of <span className="font-bold text-emerald-500">{props.total}</span>{" "}
+        out of{" "}
+        <span className="font-bold text-emerald-500">{props.total}</span>{" "}
       </span>
     </div>
   );

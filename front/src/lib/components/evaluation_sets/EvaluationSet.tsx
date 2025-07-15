@@ -54,16 +54,14 @@ export default function EvaluationSetComponent({
           }
           value={
             <span className="inline-flex gap-2 flex-wrap">
-              {evaluationSet.tags
-                ?.slice(0, 10)
-                .map((tag) => (
-                  <TagComponent
-                    key={getTagKey(tag)}
-                    tag={tag}
-                    onClick={() => onClickEvaluationSetTag?.(tag)}
-                    {...tagColorFn(tag)}
-                  />
-                ))}
+              {evaluationSet.tags?.slice(0, 10).map((tag) => (
+                <TagComponent
+                  key={getTagKey(tag)}
+                  tag={tag}
+                  onClick={() => onClickEvaluationSetTag?.(tag)}
+                  {...tagColorFn(tag)}
+                />
+              ))}
             </span>
           }
         />
