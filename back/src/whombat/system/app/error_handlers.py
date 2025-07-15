@@ -9,30 +9,6 @@ from whombat.system.settings import Settings
 __all__ = ["add_error_handlers"]
 
 
-async def debug_exception_handler(request: Request, exc: Exception):
-    """Handle exceptions in debug mode.
-
-    Parameters
-    ----------
-    request : Request
-        The request that caused the exception.
-    exc : Exception
-        The exception that was raised.
-
-    Returns
-    -------
-    JSONResponse
-        A JSON response with the exception and traceback.
-    """
-    return JSONResponse(
-        status_code=500,
-        content={
-            "exception": f"{type(exc).__name__}: {exc}",
-            "traceback": traceback.format_exc(),
-        },
-    )
-
-
 async def not_found_error_handler(_, exc: exceptions.NotFoundError):
     """Handle not found errors.
 
@@ -111,9 +87,6 @@ def add_error_handlers(app: FastAPI, settings: Settings):
     settings : Settings
         The application settings.
     """
-    if settings.debug:
-        app.exception_handler(Exception)(debug_exception_handler)
-
     app.exception_handler(exceptions.NotFoundError)(not_found_error_handler)
     app.exception_handler(exceptions.DuplicateObjectError)(
         duplicate_object_error_handler
