@@ -10,14 +10,18 @@ __all__ = ["add_error_handlers"]
 
 
 async def debug_exception_handler(request: Request, exc: Exception):
-    """
-    Handle exceptions in debug mode.
+    """Handle exceptions in debug mode.
 
-    Args:
-        request: The request that caused the exception.
-        exc: The exception that was raised.
+    Parameters
+    ----------
+    request : Request
+        The request that caused the exception.
+    exc : Exception
+        The exception that was raised.
 
-    Returns:
+    Returns
+    -------
+    JSONResponse
         A JSON response with the exception and traceback.
     """
     return JSONResponse(
@@ -30,6 +34,20 @@ async def debug_exception_handler(request: Request, exc: Exception):
 
 
 async def not_found_error_handler(_, exc: exceptions.NotFoundError):
+    """Handle not found errors.
+
+    Parameters
+    ----------
+    _ : Request
+        The request that caused the exception (unused).
+    exc : exceptions.NotFoundError
+        The exception that was raised.
+
+    Returns
+    -------
+    JSONResponse
+        A JSON response with a 404 status code and an error message.
+    """
     return JSONResponse(
         status_code=404,
         content={"message": str(exc)},
@@ -39,6 +57,20 @@ async def not_found_error_handler(_, exc: exceptions.NotFoundError):
 async def duplicate_object_error_handler(
     _, exc: exceptions.DuplicateObjectError
 ):
+    """Handle duplicate object errors.
+
+    Parameters
+    ----------
+    _ : Request
+        The request that caused the exception (unused).
+    exc : exceptions.DuplicateObjectError
+        The exception that was raised.
+
+    Returns
+    -------
+    JSONResponse
+        A JSON response with a 409 status code and an error message.
+    """
     return JSONResponse(
         status_code=409,
         content={"message": str(exc)},
@@ -49,6 +81,20 @@ async def data_integrity_error_handler(
     _,
     exc: exceptions.DataIntegrityError,
 ):
+    """Handle data integrity errors.
+
+    Parameters
+    ----------
+    _ : Request
+        The request that caused the exception (unused).
+    exc : exceptions.DataIntegrityError
+        The exception that was raised.
+
+    Returns
+    -------
+    JSONResponse
+        A JSON response with a 409 status code and an error message.
+    """
     return JSONResponse(
         status_code=409,
         content={"message": str(exc)},
@@ -56,6 +102,15 @@ async def data_integrity_error_handler(
 
 
 def add_error_handlers(app: FastAPI, settings: Settings):
+    """Add error handlers to the FastAPI application.
+
+    Parameters
+    ----------
+    app : FastAPI
+        The FastAPI application instance.
+    settings : Settings
+        The application settings.
+    """
     if settings.debug:
         app.exception_handler(Exception)(debug_exception_handler)
 
