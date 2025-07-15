@@ -1,6 +1,4 @@
-import traceback
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from whombat import exceptions

@@ -12,7 +12,6 @@ from whombat.api.io import aoef
 from whombat.filters.annotation_projects import AnnotationProjectFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
-from whombat.system.settings import get_settings
 
 __all__ = [
     "annotation_projects_router",
