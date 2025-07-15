@@ -343,6 +343,7 @@ async def dataset_recording(
         audio_dir=audio_dir,
     )
     await api.datasets.add_recording(session, dataset, recording)
+    await session.commit()
     return recording
 
 
