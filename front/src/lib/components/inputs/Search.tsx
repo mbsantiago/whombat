@@ -27,7 +27,7 @@ export default function Search({
   /** Optional icon to display in the search input. */
   icon?: ReactElement;
 } & SearchFieldProps &
-  Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "spellCheck">) {
   const state = useSearchFieldState({ label, ...props });
   const ref = useRef(null);
 

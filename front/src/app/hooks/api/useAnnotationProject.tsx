@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 
 import api from "@/app/api";
 
+import ErrorToast from "@/lib/components/ui/ErrorToast";
+
 import useObject from "@/lib/hooks/utils/useObject";
 
 import type {
@@ -91,7 +93,9 @@ export default function useAnnotationProject({
     await toast.promise(api.annotationProjects.download(uuid), {
       loading: "Downloading...",
       success: "Download complete",
-      error: "Failed to download dataset",
+      error: (error) => (
+        <ErrorToast error={error} message="Failed to download dataset" />
+      ),
     });
   }, [uuid]);
 

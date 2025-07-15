@@ -75,6 +75,7 @@ export default function useSoundEventAnnotation({
     };
   }, [query.data, withRecording]);
 
+  // @ts-ignore
   const recordingQuery = useQuery<Recording>({
     secondaryName: "recording",
     queryFn: getRecordingFn,
