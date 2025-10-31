@@ -308,6 +308,7 @@ class EvaluationAPI(
         model_run: schemas.ModelRun,
         evaluation_set: schemas.EvaluationSet,
         audio_dir: Path,
+        user: schemas.SimpleUser,
     ) -> schemas.Evaluation:
         model_run_se = await model_runs.to_soundevent(
             session,
@@ -329,6 +330,7 @@ class EvaluationAPI(
             obj.model_dump(),
             audio_dir=audio_dir,
             base_audio_dir=audio_dir,
+            imported_by=user,
         )
 
         # Create model run evaluation

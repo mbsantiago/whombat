@@ -14,7 +14,7 @@ from whombat.routes.datasets import dataset_router
 from whombat.routes.evaluation_sets import get_evaluation_sets_router
 from whombat.routes.evaluations import evaluations_router
 from whombat.routes.features import features_router
-from whombat.routes.model_runs import model_runs_router
+from whombat.routes.model_runs import get_model_runs_router
 from whombat.routes.notes import notes_router
 from whombat.routes.plugins import plugin_router
 from whombat.routes.recordings import get_recording_router
@@ -149,6 +149,7 @@ def get_main_router(settings: Settings):
         prefix="/clip_predictions",
         tags=["Clip Predictions"],
     )
+    model_runs_router = get_model_runs_router(settings)
     main_router.include_router(
         model_runs_router,
         prefix="/model_runs",

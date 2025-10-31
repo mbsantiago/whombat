@@ -390,7 +390,7 @@ class EvaluationSetAPI(
         """Create an evaluation set from an object in `soundevent` format."""
         obj = await self.create(
             session,
-            name=data.name,
+            name=data.name or "",
             description=data.description,
             uuid=data.uuid,
             created_on=data.created_on,

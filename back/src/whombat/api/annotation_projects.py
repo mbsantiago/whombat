@@ -297,7 +297,7 @@ class AnnotationProjectAPI(
         except exceptions.NotFoundError:
             annotation_project = await self.create(
                 session,
-                name=data.name,
+                name=data.name or "",
                 description=data.description or "",
                 annotation_instructions=data.instructions or "",
                 uuid=data.uuid,

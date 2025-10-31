@@ -109,7 +109,7 @@ async def get_or_create_model_run(
 
     db_obj = models.ModelRun(
         uuid=obj.uuid,
-        name=obj.name,
+        name=obj.name or "",
         version=obj.version or "",
         description=obj.description or "",
         created_on=obj.created_on or datetime.datetime.now(),
