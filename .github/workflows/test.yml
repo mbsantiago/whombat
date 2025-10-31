@@ -31,7 +31,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
           cache-dependency-glob: "back/uv.lock"
-          python-version-file: "back/pyproject.toml"
+          version-file: "back/pyproject.toml"
 
       - name: Install the project dependencies
         run: |
