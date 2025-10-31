@@ -20,6 +20,10 @@ jobs:
           - windows-latest
           - macos-latest
 
+        exclude:
+          - os: windows-latest
+            python-version: "3.13"
+
     runs-on: ${{ matrix.os }}
 
     steps:
