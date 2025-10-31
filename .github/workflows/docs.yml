@@ -22,7 +22,7 @@ jobs:
           python-version: 3.13
           enable-cache: true
           cache-dependency-glob: "back/uv.lock"
-          pyproject-file: "back/pyproject.toml"
+          python-version-file: "back/pyproject.toml"
 
       - name: Restore mkdocs cache
         uses: actions/cache@v3
