@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from whombat.routes.annotation_projects import annotation_projects_router
+from whombat.routes.annotation_projects import get_annotation_projects_router
 from whombat.routes.annotation_tasks import get_annotation_tasks_router
 from whombat.routes.audio import audio_router
 from whombat.routes.auth import get_auth_router
@@ -11,10 +11,10 @@ from whombat.routes.clip_evaluations import clip_evaluations_router
 from whombat.routes.clip_predictions import clip_predictions_router
 from whombat.routes.clips import clips_router
 from whombat.routes.datasets import dataset_router
-from whombat.routes.evaluation_sets import evaluation_sets_router
+from whombat.routes.evaluation_sets import get_evaluation_sets_router
 from whombat.routes.evaluations import evaluations_router
 from whombat.routes.features import features_router
-from whombat.routes.model_runs import model_runs_router
+from whombat.routes.model_runs import get_model_runs_router
 from whombat.routes.notes import notes_router
 from whombat.routes.plugins import plugin_router
 from whombat.routes.recordings import get_recording_router
@@ -131,6 +131,7 @@ def get_main_router(settings: Settings):
         prefix="/annotation_tasks",
         tags=["Annotation Tasks"],
     )
+    annotation_projects_router = get_annotation_projects_router(settings)
     main_router.include_router(
         annotation_projects_router,
         prefix="/annotation_projects",
@@ -148,6 +149,7 @@ def get_main_router(settings: Settings):
         prefix="/clip_predictions",
         tags=["Clip Predictions"],
     )
+    model_runs_router = get_model_runs_router(settings)
     main_router.include_router(
         model_runs_router,
         prefix="/model_runs",
@@ -171,6 +173,7 @@ def get_main_router(settings: Settings):
         prefix="/clip_evaluations",
         tags=["Clip Evaluations"],
     )
+    evaluation_sets_router = get_evaluation_sets_router(settings)
     main_router.include_router(
         evaluation_sets_router,
         prefix="/evaluation_sets",

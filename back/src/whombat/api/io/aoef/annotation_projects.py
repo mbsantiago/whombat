@@ -21,6 +21,7 @@ from whombat.api.io.aoef.sound_event_annotations import (
 from whombat.api.io.aoef.sound_events import get_sound_events
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users
+from whombat.schemas.users import SimpleUser
 
 
 async def import_annotation_project(
@@ -28,6 +29,7 @@ async def import_annotation_project(
     src: Path | BinaryIO | str,
     audio_dir: Path,
     base_audio_dir: Path,
+    imported_by: SimpleUser,
 ) -> models.AnnotationProject:
     if isinstance(src, (Path, str)):
         with open(src, "r") as file:
@@ -82,6 +84,7 @@ async def import_annotation_project(
         clips=clips,
         users=users,
         tags=tags,
+        user=imported_by,
     )
 
     await get_sound_event_annotations(
@@ -91,6 +94,7 @@ async def import_annotation_project(
         clip_annotations=clip_annotations,
         users=users,
         tags=tags,
+        user=imported_by,
     )
 
     await get_annotation_tasks(
@@ -128,7 +132,7 @@ async def get_or_create_annotation_project(
 
     db_obj = models.AnnotationProject(
         uuid=obj.uuid,
-        name=obj.name,
+        name=obj.name or "",
         description=obj.description or "",
         annotation_instructions=obj.instructions,
         created_on=obj.created_on or datetime.datetime.now(),

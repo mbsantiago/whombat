@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import models
 from whombat.api.io.aoef.common import get_mapping
 from whombat.api.io.aoef.notes import import_notes
+from whombat.schemas.users import SimpleUser
 
 
 async def get_clip_annotations(
@@ -17,6 +18,7 @@ async def get_clip_annotations(
     clips: dict[UUID, int],
     users: dict[UUID, UUID],
     tags: dict[int, int],
+    user: SimpleUser,
 ) -> dict[UUID, int]:
     clip_annotations = obj.clip_annotations or []
     if clip_annotations:
@@ -26,6 +28,7 @@ async def get_clip_annotations(
             clips=clips,
             users=users,
             tags=tags,
+            imported_by=user,
         )
 
     if isinstance(obj, AnnotationSetObject):
@@ -53,6 +56,7 @@ async def import_clip_annotations(
     clips: dict[UUID, int],
     users: dict[UUID, UUID],
     tags: dict[int, int],
+    imported_by: SimpleUser,
 ) -> dict[UUID, int]:
     if not clip_annotations:
         return {}
@@ -75,6 +79,7 @@ async def import_clip_annotations(
         clip_annotations,
         mapping,
         tags,
+        created_by=imported_by,
     )
 
     return mapping
@@ -178,6 +183,7 @@ async def _create_clip_annotation_tags(
     clip_annotations: list[ClipAnnotationsObject],
     mapping: dict[UUID, int],
     tags: dict[int, int],
+    created_by: SimpleUser,
 ) -> None:
     """Create clip annotation tags."""
     values = []
@@ -196,8 +202,9 @@ async def _create_clip_annotation_tags(
 
             values.append(
                 {
-                    "sound_event_annotation_id": annotation_db_id,
+                    "clip_annotation_id": annotation_db_id,
                     "tag_id": tag_db_id,
+                    "created_by_id": created_by.id,
                     "created_on": annotation.created_on
                     or datetime.datetime.now(),
                 }
@@ -206,5 +213,5 @@ async def _create_clip_annotation_tags(
     if not values:
         return
 
-    stmt = insert(models.SoundEventAnnotationTag).values(values)
+    stmt = insert(models.ClipAnnotationTag).values(values)
     await session.execute(stmt)

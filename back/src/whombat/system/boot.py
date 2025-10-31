@@ -98,5 +98,5 @@ async def whombat_init(settings: Settings):
 
     print_ready_message(settings)
 
-    if settings.open_on_startup:
+    if settings.open_on_startup and not is_dev_mode(settings):
         open_whombat_on_browser(settings)

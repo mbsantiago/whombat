@@ -60,11 +60,11 @@ export function useObjectDestruction<T>({
   return useMutation<T, AxiosError, void>({
     ...rest,
     mutationFn: trueMutationFn,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       client.removeQueries({
         queryKey: [name, id],
       });
-      onSuccess?.(data, variables, context);
+      onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 }
@@ -148,11 +148,11 @@ export function useObjectMutation<T, K, J = T>({
   return useMutation<J, AxiosError, K>({
     ...rest,
     mutationFn: trueMutationFn,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       if (withUpdate) {
         client.setQueryData([name, id], data);
       }
-      onSuccess?.(data, variables, context);
+      onSuccess?.(data, variables, onMutateResult, context);
     },
   });
 }

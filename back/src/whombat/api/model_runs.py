@@ -131,7 +131,7 @@ class ModelRunAPI(
             model_run = await self.create(
                 session,
                 created_on=data.created_on,
-                name=data.name,
+                name=data.name or "",
                 version=data.version or "",
                 description=data.description,
                 uuid=data.uuid,
@@ -179,8 +179,13 @@ class ModelRunAPI(
         return data.ModelRun(
             uuid=obj.uuid,
             created_on=obj.created_on,
+            model=data.Model(
+                info=data.ModelInfo(
+                    name=obj.name,
+                ),
+                version=obj.version,
+            ),
             name=obj.name,
-            version=obj.version,
             description=obj.description,
             clip_predictions=[
                 await clip_predictions.to_soundevent(

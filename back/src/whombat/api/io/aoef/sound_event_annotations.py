@@ -13,6 +13,7 @@ from whombat import models
 from whombat.api import common
 from whombat.api.io.aoef.common import get_mapping
 from whombat.api.io.aoef.notes import import_notes
+from whombat.schemas.users import SimpleUser
 
 
 async def get_sound_event_annotations(
@@ -22,6 +23,7 @@ async def get_sound_event_annotations(
     clip_annotations: dict[UUID, int],
     users: dict[UUID, UUID],
     tags: dict[int, int],
+    user: SimpleUser,
 ) -> dict[UUID, int]:
     sound_event_annotations = obj.sound_event_annotations or []
     clip_annotations_objs = obj.clip_annotations or []
@@ -42,6 +44,7 @@ async def get_sound_event_annotations(
             clip_annotations=clip_annotations,
             users=users,
             tags=tags,
+            imported_by=user,
         )
 
     uuids = set()
@@ -70,6 +73,7 @@ async def import_sound_event_annotations(
     clip_annotations: dict[UUID, int],
     users: dict[UUID, UUID],
     tags: dict[int, int],
+    imported_by: SimpleUser,
 ) -> dict[UUID, int]:
     if not sound_events_annotations:
         return {}
@@ -101,6 +105,7 @@ async def import_sound_event_annotations(
         sound_events_annotations,
         mapping,
         tags,
+        created_by=imported_by,
     )
 
     return mapping
@@ -240,6 +245,7 @@ async def _create_sound_event_annotation_tags(
     sound_events_annotations: list[SoundEventAnnotationObject],
     mapping: dict[UUID, int],
     tags: dict[int, int],
+    created_by: SimpleUser,
 ) -> None:
     values = []
     dedups = set()
@@ -262,10 +268,13 @@ async def _create_sound_event_annotation_tags(
 
             dedups.add((annotation_db_id, tag_db_id))
 
+            print(annotation)
+
             values.append(
                 {
                     "sound_event_annotation_id": annotation_db_id,
                     "tag_id": tag_db_id,
+                    "created_by_id": created_by.id,
                     "created_on": annotation.created_on
                     or datetime.datetime.now(),
                 }

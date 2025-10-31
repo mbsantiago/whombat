@@ -146,8 +146,7 @@ class SoundEventPredictionAPI(
                 break
         else:
             raise exceptions.NotFoundError(
-                f"Tag {tag} does not exist in sound event "
-                f"prediction {obj.id}"
+                f"Tag {tag} does not exist in sound event prediction {obj.id}"
             )
 
         await common.delete_object(
