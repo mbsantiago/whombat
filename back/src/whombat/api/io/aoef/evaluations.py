@@ -27,6 +27,7 @@ from whombat.api.io.aoef.sound_event_predictions import (
 from whombat.api.io.aoef.sound_events import get_sound_events
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users
+from whombat.schemas.users import SimpleUser
 
 
 async def import_evaluation(
@@ -34,6 +35,7 @@ async def import_evaluation(
     obj: dict,
     audio_dir: Path,
     base_audio_dir: Path,
+    imported_by: SimpleUser,
 ) -> models.Evaluation:
     if not isinstance(obj, dict):
         raise TypeError(f"Expected dict, got {type(obj)}")
@@ -78,6 +80,7 @@ async def import_evaluation(
         clips=clips,
         users=users,
         tags=tags,
+        user=imported_by,
     )
     clip_predictions = await get_clip_predictions(
         session,
@@ -92,6 +95,7 @@ async def import_evaluation(
         clip_annotations=clip_annotations,
         users=users,
         tags=tags,
+        user=imported_by,
     )
     sound_event_predictions = await get_sound_event_predictions(
         session,

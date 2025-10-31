@@ -17,6 +17,7 @@ from whombat.api.io.aoef.sound_event_annotations import (
 from whombat.api.io.aoef.sound_events import get_sound_events
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users
+from whombat.schemas.users import SimpleUser
 
 
 async def import_evaluation_set(
@@ -25,6 +26,7 @@ async def import_evaluation_set(
     task: str,
     audio_dir: Path,
     base_audio_dir: Path,
+    imported_by: SimpleUser,
 ) -> models.EvaluationSet:
     if not isinstance(obj, dict):
         raise TypeError(f"Expected dict, got {type(obj)}")
@@ -75,6 +77,7 @@ async def import_evaluation_set(
         clips=clips,
         users=users,
         tags=tags,
+        user=imported_by,
     )
     await get_sound_event_annotations(
         session,
@@ -83,6 +86,7 @@ async def import_evaluation_set(
         clip_annotations=clip_annotations,
         users=users,
         tags=tags,
+        user=imported_by,
     )
     await add_clip_annotations(
         session,
@@ -114,7 +118,7 @@ async def get_or_create_evaluation_set(
 
     db_obj = models.EvaluationSet(
         uuid=obj.uuid,
-        name=obj.name,
+        name=obj.name or "",
         task=task,
         description=obj.description or "",
         created_on=obj.created_on or datetime.datetime.now(),
