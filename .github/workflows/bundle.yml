@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.12"
+          - "3.13"
         os:
           - ubuntu-22.04
           - windows-latest
@@ -30,19 +30,15 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Set up uv
-        if: ${{ matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13' }}
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-      - name: Set up uv
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: irm https://astral.sh/uv/install.ps1 | iex
-        shell: powershell
-
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "back/uv.lock"
+          pyproject-file: "back/pyproject.toml"
 
       - name: Retrieve built frontend
         uses: actions/download-artifact@v4
