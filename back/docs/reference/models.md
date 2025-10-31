@@ -16,20 +16,20 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.User
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Tags
 
 ::: whombat.models.Tag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Features
 
 ::: whombat.models.FeatureName
     options:
-        members: None
+        members: []
         heading_level: 4
 
 ### Notes
@@ -37,7 +37,7 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.Note
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ## Audio Content
 
@@ -46,39 +46,39 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.Recording
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.RecordingTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.RecordingNote
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.RecordingFeature
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.RecordingOwner
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Datasets
 
 ::: whombat.models.Dataset
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.DatasetRecording
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ## Acoustic Objects
 
@@ -87,24 +87,24 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.SoundEvent
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.SoundEventFeature
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Clips
 
 ::: whombat.models.Clip
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.ClipFeature
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ## Annotation
 
@@ -113,58 +113,58 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.SoundEventAnnotation
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.SoundEventAnnotationTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.SoundEventAnnotationNote
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Clip Annotation
 
 ::: whombat.models.ClipAnnotation
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.ClipAnnotationTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.ClipAnnotationNote
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Annotation Task
 
 ::: whombat.models.AnnotationTask
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.AnnotationStatusBadge
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Annotation Project
 
 ::: whombat.models.AnnotationProject
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.AnnotationProjectTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ## Prediction
 
@@ -173,38 +173,38 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.SoundEventPrediction
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.SoundEventPredictionTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Clip Prediction
 
 ::: whombat.models.ClipPrediction
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.ClipPredictionTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Model Run
 
 ::: whombat.models.ModelRun
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### User Run
 
 ::: whombat.models.UserRun
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ## Evaluation
 
@@ -213,50 +213,50 @@ consistent, it's essential to note that some minor differences do exist.
 ::: whombat.models.SoundEventEvaluation
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.SoundEventEvaluationMetric
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Clip Evaluation
 
 ::: whombat.models.ClipEvaluation
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.ClipEvaluationMetric
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Evaluation
 
 ::: whombat.models.Evaluation
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.EvaluationMetric
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ### Evaluation Set
 
 ::: whombat.models.EvaluationSet
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.EvaluationSetTag
     options:
         heading_level: 4
-        members: None
+        members: []
 
 ::: whombat.models.EvaluationSetAnnotation
     options:
         heading_level: 4
-        members: None
+        members: []
