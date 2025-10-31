@@ -1,12 +1,86 @@
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 
+from soundevent import data, io, terms
 from soundevent.io.aoef import to_aeof
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import api, filters, schemas
 from whombat.api.io.aoef.annotation_projects import import_annotation_project
 from whombat.api.io.aoef.datasets import import_dataset
+
+
+async def test_can_import_clip_annotation_with_tags(
+    audio_dir: Path,
+    random_wav_factory,
+    session: AsyncSession,
+):
+    path = random_wav_factory()
+
+    recording = data.Recording.from_file(
+        path,
+        owners=[
+            data.User(
+                name="Test user",
+                username=None,
+                email=None,
+                institution=None,
+            )
+        ],
+    )
+
+    dataset = data.Dataset(
+        name="Test dataset",
+        description="Test description",
+        recordings=[recording],
+    )
+
+    aoef_file = "test_dataset.aoef"
+    io.save(dataset, audio_dir / aoef_file, audio_dir=audio_dir)
+
+    imported = await import_dataset(
+        session,
+        audio_dir / aoef_file,
+        dataset_dir=audio_dir,
+        audio_dir=audio_dir,
+    )
+
+    clip = data.Clip(
+        recording=recording,
+        start_time=0,
+        end_time=1,
+    )
+
+    clip_annotation = data.ClipAnnotation(
+        clip=clip,
+        tags=[
+            data.Tag(
+                term=terms.scientific_name,
+                value="Test species",
+            )
+        ],
+    )
+
+    task = data.AnnotationTask(clip=clip)
+
+    annotation_project = data.AnnotationProject(
+        name="Test project",
+        description="Test description",
+        tasks=[task],
+        clip_annotations=[clip_annotation],
+    )
+
+    aoef_file = "test_annotation_project.aoef"
+    io.save(annotation_project, audio_dir / aoef_file, audio_dir=audio_dir)
+
+    imported = await import_annotation_project(
+        session,
+        audio_dir / aoef_file,
+        audio_dir=audio_dir,
+        base_audio_dir=audio_dir,
+    )
+
+    assert imported.name == annotation_project.name
 
 
 async def test_exports_annotation_tags(
