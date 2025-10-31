@@ -18,7 +18,6 @@ jobs:
           python-version: 3.13
           enable-cache: true
           cache-dependency-glob: "back/uv.lock"
-          version-file: "back/pyproject.toml"
 
       - name: Install the project dependencies
         run: |
