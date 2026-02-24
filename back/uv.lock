@@ -2896,7 +2896,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
     { name = "pytest-xdist", marker = "extra == 'dev'", specifier = ">=3.6.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.3" },
-    { name = "setuptools", specifier = ">=75.1.0" },
+    { name = "setuptools", specifier = ">=75.1.0,<82.0.0" },
     { name = "soundevent", extras = ["all"], specifier = ">=2.1.1" },
     { name = "tox", marker = "extra == 'dev'", specifier = ">=4.18.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30.6" },
