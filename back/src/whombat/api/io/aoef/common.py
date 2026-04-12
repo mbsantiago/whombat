@@ -5,10 +5,11 @@ from uuid import UUID
 
 from pydantic import ValidationError
 from soundevent.io.aoef import AOEFObject
-from sqlalchemy import select
+from sqlalchemy import bindparam, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models
+from whombat.api import common
 
 
 async def get_mapping(
@@ -19,10 +20,15 @@ async def get_mapping(
     if not uuids:
         return {}
 
-    values = [str(uuid) for uuid in uuids]
-    stmt = select(model.id, model.uuid).where(model.uuid.in_(values))  # type: ignore
-    result = await session.execute(stmt)
-    return {r[1]: r[0] for r in result.all()}
+    result = await common.select_batched(
+        session,
+        statement=select(model.id, model.uuid).where(  # type: ignore
+            model.uuid.in_(bindparam("uuids"))  # type: ignore
+        ),
+        parameter="uuids",
+        values=list(uuids),
+    )
+    return {r[1]: r[0] for r in result}
 
 
 def parse_aoef_object(src: Path | BinaryIO | str) -> AOEFObject:

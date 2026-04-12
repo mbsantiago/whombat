@@ -8,7 +8,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models
-from whombat.api.common import create_objects_without_duplicates
+from whombat.api.common import (
+    create_objects_without_duplicates,
+    insert_batched,
+)
 from whombat.api.io.aoef.common import get_mapping
 
 
@@ -134,8 +137,11 @@ async def _create_annotation_tasks(
         return mapping
 
     try:
-        stmt = insert(models.AnnotationTask).values(values)
-        await session.execute(stmt)
+        await insert_batched(
+            session,
+            model=models.AnnotationTask,
+            values=values,
+        )
     except IntegrityError as e:
         raise exceptions.DataIntegrityError(
             "Duplicated tasks: Failed to create annotation tasks because "
