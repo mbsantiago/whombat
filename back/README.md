@@ -28,7 +28,7 @@ git clone https://github.com/mbsantiago/whombat.git
 Install the package:
 
 ```bash
-cd whombat/backend
+cd whombat/back
 pip install .
 ```
 
@@ -52,25 +52,27 @@ docker run -p 5000:5000 whombat
 
 We manage Whombat's development with `uv`.
 
-1. Follow the official [installation instructions](https://docs.astral.sh/uv/#highlights) to get `uv` on your machine.
+1. Follow the official [installation instructions](https://docs.astral.sh/uv/#highlights) to get `uv` on your machine.
 
-2. Clone the repository:
+2. Install [`just`](https://github.com/casey/just#installation) to use the local task runner.
+
+3. Clone the repository:
 
 ```bash
 git clone https://github.com/mbsantiago/whombat.git
 ```
 
-3. Navigate to the backend directory and install dependencies:
+4. Navigate to the backend directory and install dependencies:
 
 ```bash
 cd whombat/back
-uv sync
+uv sync --all-extras --dev --locked
 ```
 
-4. Start the development server:
+5. Start the development server:
 
 ```bash
-make serve-dev
+just serve
 ```
 
 or

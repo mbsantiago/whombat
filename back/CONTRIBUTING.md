@@ -57,11 +57,14 @@ Ready to contribute? Here's how to set up `whombat` for local development.
        ```
 
 3. We recommend the use of [uv](https://docs.astral.sh/uv/#highlights) to manage the
-   dev environment. Once uv is installed
+   dev environment, and [`just`](https://github.com/casey/just#installation)
+   to run local tasks. Once they are installed, move into the backend
+   directory and install the backend dependencies:
 
-       ```{bash}
-       uv sync
-       ```
+        ```{bash}
+        cd whombat/back
+        uv sync --all-extras --dev --locked
+        ```
 
 4. Create a branch for local development
 
@@ -74,10 +77,9 @@ Ready to contribute? Here's how to set up `whombat` for local development.
 5. When you're done making changes, check that your changes pass all lints and
    tests.
 
-       ```{bash}
-       make test
-       make lint
-       ```
+        ```{bash}
+        just check
+        ```
 
 6. Commit your changes and push your branch to GitHub
 
@@ -96,7 +98,7 @@ Before you submit a pull request, check that it meets these guidelines:
 1. The pull request should include tests.
 2. If the pull request adds functionality, the docs should be updated. Put your
    new functionality into a function with a docstring, and add the feature to
-   the list in README.rst.
+   the list in README.md.
 3. The pull request should work for Python 3.12.
 
 ## Tips
@@ -104,5 +106,5 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests
 
 ```{bash}
-uv run pytest tests.test_api
+uv run pytest tests/test_api/test_datasets.py -k <expr>
 ```

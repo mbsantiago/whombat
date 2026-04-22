@@ -1,16 +1,18 @@
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+  Write-Host "Please install uv"
+  exit 1
+}
+
+if (-not (Get-Command just -ErrorAction SilentlyContinue)) {
+  Write-Host "Please install just"
+  exit 1
+}
+
 # Move to the root directory of the backend
 cd back
 
-# Make sure there is a virtual environment
-if (-not (Test-Path .venv)) {
-  python -m venv .venv
-}
-
-# Activate virtual environment
-.venv\Scripts\activate
-
-# Install necessary packages
-pip install .[docs]
+# Make sure all development dependencies are installed
+uv sync --all-extras --dev --locked
 
 # Build the user guide
-make build-guide
+just build-guide

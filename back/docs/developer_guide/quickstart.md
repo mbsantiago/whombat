@@ -27,10 +27,13 @@ Before setting up your Whombat development environment, ensure you have the foll
       Download Python 3.12 [here](https://www.python.org/downloads/release/python-3117/).
 
 2. **uv**: UV is a Python package dependency manager that we use to manage dependencies for the Python part of Whombat.
-      Download uv [uv](https://docs.astral.sh/uv/#highlights).
+       Download uv [uv](https://docs.astral.sh/uv/#highlights).
 
 3. **Node.js**: We use Node.js to develop and bundle the final JavaScript code for the Whombat frontend.
-      Download the latest version [here](https://nodejs.org/dist/v20.11.0/node-v20.11.0-linux-x64.tar.xz).
+       Download the latest version [here](https://nodejs.org/dist/v20.11.0/node-v20.11.0-linux-x64.tar.xz).
+
+4. **just**: We use `just` to wrap the common development tasks for this repo.
+       Install it by following the instructions [here](https://github.com/casey/just#installation).
 
 ### Set Up
 
@@ -42,18 +45,11 @@ After confirming that you have all the prerequisites ready, follow these steps t
 git clone https://github.com/mbsantiago/whombat.git
 ```
 
-2. Navigate to the backend directory and install dependencies:
+2. Navigate to the project directory and install the backend and frontend dependencies:
 
 ```bash
-cd whombat/back
-uv sync --dev
-```
-
-3. Move to the frontend directory and install all dependencies:
-
-```bash
-cd ../front
-npm install
+cd whombat
+just install
 ```
 
 These instructions ensure you have the necessary tools and dependencies to kickstart Whombat development on your local machine.
@@ -63,13 +59,13 @@ These instructions ensure you have the necessary tools and dependencies to kicks
 - **Backend**: To initiate the backend server, run the following command from the project's root directory:
 
 ```bash
-make serve-back
+just dev-back
 ```
 
 - **Frontend**: To start the frontend development server, run:
 
 ```bash
-make serve-front
+just dev-front
 ```
 
 Once both servers are running, navigate to [http://localhost:3000](http://localhost:3000) in your web browser to access the Whombat development environment.
@@ -77,7 +73,7 @@ Once both servers are running, navigate to [http://localhost:3000](http://localh
 - **Storybook:**
 
   ```bash
-  make storybook
+  just storybook
   ```
 
   Access Storybook at http://localhost:6006.
@@ -85,7 +81,7 @@ Once both servers are running, navigate to [http://localhost:3000](http://localh
 - **Documentation Server:**
 
   ```bash
-  make dev-docs
+  just docs
   ```
 
   View the documentation at http://localhost:8000.
@@ -117,7 +113,7 @@ cd whombat
 - **Backend and Frontend:**
 
   ```bash
-  docker-compose -f compose.dev.yaml up backend frontend
+  just dev
   ```
 
   Access the Whombat development environment at http://localhost:3000

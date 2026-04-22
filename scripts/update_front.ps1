@@ -12,7 +12,7 @@ if (Test-Path src/whombat/statics/*) {
 cd ../front
 
 # Install the dependencies
-npm install
+npm ci
 
 # Run the build script
 npm run build
@@ -24,4 +24,3 @@ if (-not (Test-Path "../back/src/whombat/statics")) {
 
 # Move the static files to the backend
 Move-Item -Path out/* -Destination ../back/src/whombat/statics/ -Force
-

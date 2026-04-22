@@ -10,7 +10,7 @@ fi
 cd front
 
 # Install the dependencies
-npm install
+npm ci
 
 # Run the build script
 npm run build
