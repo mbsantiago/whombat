@@ -135,16 +135,13 @@ class Filter(ABC, BaseModel):
         ...
 
 
-F = TypeVar("F", bound=Filter)
-
-
 def create_filter_from_field_and_model(
     field: MappedColumn | InstrumentedAttribute,
-    model: Type[F],
-) -> Type[F]:
+    model: type[Filter],
+) -> type[Filter]:
     """Create a filter from a field and model."""
 
-    class _Filter(model):
+    class _Filter(model):  # ty: ignore[unsupported-base]
         """A filter for a field."""
 
         def filter(self, query: Select) -> Select:
@@ -159,7 +156,7 @@ def create_filter_from_field_and_model(
 
             return query
 
-    return _Filter  # type: ignore
+    return _Filter
 
 
 class IntegerFilter(Filter):
@@ -176,7 +173,7 @@ def integer_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[IntegerFilter]:
     """Create a filter for integers."""
-    return create_filter_from_field_and_model(field, IntegerFilter)
+    return create_filter_from_field_and_model(field, IntegerFilter)  # ty: ignore
 
 
 class OptionalIntegerFilter(Filter):
@@ -194,7 +191,7 @@ def optional_integer_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalIntegerFilter]:
     """Create a filter for an optional integer column."""
-    return create_filter_from_field_and_model(field, OptionalIntegerFilter)
+    return create_filter_from_field_and_model(field, OptionalIntegerFilter)  # ty: ignore
 
 
 class FloatFilter(Filter):
@@ -208,7 +205,7 @@ def float_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[FloatFilter]:
     """Create a filter for floats."""
-    return create_filter_from_field_and_model(field, FloatFilter)
+    return create_filter_from_field_and_model(field, FloatFilter)  # ty: ignore
 
 
 class OptionalFloatFilter(Filter):
@@ -225,7 +222,7 @@ def optional_float_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalFloatFilter]:
     """Create a filter for optional floats."""
-    return create_filter_from_field_and_model(field, OptionalFloatFilter)
+    return create_filter_from_field_and_model(field, OptionalFloatFilter)  # ty: ignore
 
 
 class DateFilter(Filter):
@@ -241,7 +238,7 @@ def date_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[DateFilter]:
     """Create a filter for dates."""
-    return create_filter_from_field_and_model(field, DateFilter)
+    return create_filter_from_field_and_model(field, DateFilter)  # ty: ignore
 
 
 class OptionalDateFilter(Filter):
@@ -255,7 +252,7 @@ def optional_date_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalDateFilter]:
     """Create a filter for optional dates."""
-    return create_filter_from_field_and_model(field, OptionalDateFilter)
+    return create_filter_from_field_and_model(field, OptionalDateFilter)  # ty: ignore
 
 
 class TimeFilter(Filter):
@@ -267,7 +264,7 @@ def time_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[TimeFilter]:
     """Create a filter for times."""
-    return create_filter_from_field_and_model(field, TimeFilter)
+    return create_filter_from_field_and_model(field, TimeFilter)  # ty: ignore
 
 
 class OptionalTimeFilter(Filter):
@@ -280,7 +277,7 @@ def optional_time_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalTimeFilter]:
     """Create a filter for optional times."""
-    return create_filter_from_field_and_model(field, OptionalTimeFilter)
+    return create_filter_from_field_and_model(field, OptionalTimeFilter)  # ty: ignore
 
 
 class StringFilter(Filter):
@@ -294,7 +291,7 @@ def string_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[StringFilter]:
     """Create a filter for strings."""
-    return create_filter_from_field_and_model(field, StringFilter)
+    return create_filter_from_field_and_model(field, StringFilter)  # ty: ignore
 
 
 class OptionalStringFilter(Filter):
@@ -309,7 +306,7 @@ def optional_string_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalStringFilter]:
     """Create a filter for optional strings."""
-    return create_filter_from_field_and_model(field, OptionalStringFilter)
+    return create_filter_from_field_and_model(field, OptionalStringFilter)  # ty: ignore
 
 
 class UUIDFilter(Filter):
@@ -324,7 +321,7 @@ def uuid_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[UUIDFilter]:
     """Create a filter for UUIDs."""
-    return create_filter_from_field_and_model(field, UUIDFilter)
+    return create_filter_from_field_and_model(field, UUIDFilter)  # ty: ignore
 
 
 class BooleanFilter(Filter):
@@ -337,7 +334,7 @@ def boolean_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[BooleanFilter]:
     """Create a filter for booleans."""
-    return create_filter_from_field_and_model(field, BooleanFilter)
+    return create_filter_from_field_and_model(field, BooleanFilter)  # ty: ignore
 
 
 class OptionalBooleanFilter(Filter):
@@ -351,7 +348,7 @@ def optional_boolean_filter(
     field: MappedColumn | InstrumentedAttribute,
 ) -> Type[OptionalBooleanFilter]:
     """Create a filter for optional booleans."""
-    return create_filter_from_field_and_model(field, OptionalBooleanFilter)
+    return create_filter_from_field_and_model(field, OptionalBooleanFilter)  # ty: ignore
 
 
 class SearchFilter(Filter):
@@ -424,10 +421,10 @@ def combine(
             field_mapping[field_name] = original_field_name
             filter_mapping[field_name] = filter_num
 
-    combined_model = create_model(
+    combined_model = create_model(  # ty: ignore
         "CombinedFilter",
         __base__=Filter,
-        **field_definitions,  # type: ignore
+        **field_definitions,
     )
 
     class CombinedFilter(combined_model):

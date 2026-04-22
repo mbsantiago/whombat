@@ -13,14 +13,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from whombat import models
 from whombat.system.settings import Settings
 
-TokenDatabase = AccessTokenDatabase[models.AccessToken]  # type: ignore
+TokenDatabase = AccessTokenDatabase[models.AccessToken]
 
 
 def get_access_token_db(session: AsyncSession):
     """Get the access token database."""
     return SQLAlchemyAccessTokenDatabase(
         session,
-        models.AccessToken,  # type: ignore
+        models.AccessToken,
     )
 
 
@@ -29,7 +29,7 @@ def get_database_strategy(
 ) -> DatabaseStrategy:
     """Get the database strategy."""
     return DatabaseStrategy(
-        access_token_db,  # type: ignore
+        access_token_db,
         lifetime_seconds=24 * 3600,
     )
 

@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from soundevent.io.aoef.note import NoteObject
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,10 +20,10 @@ async def import_notes(
     if not users:
         users = {}
 
-    values = []
+    values: list[dict[str, Any]] = []
 
     for note in notes:
-        value = {
+        value: dict[str, Any] = {
             "uuid": note.uuid,
             "message": note.message,
             "is_issue": note.is_issue,

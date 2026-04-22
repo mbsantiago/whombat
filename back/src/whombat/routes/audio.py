@@ -87,7 +87,7 @@ async def download_recording_audio(
     settings: WhombatSettings,
     recording_uuid: UUID,
     audio_parameters: Annotated[
-        schemas.AudioParameters,  # type: ignore
+        schemas.AudioParameters,
         Depends(schemas.AudioParameters),
     ],
     start_time: float | None = None,
