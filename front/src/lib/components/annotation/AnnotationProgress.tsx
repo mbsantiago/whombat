@@ -76,7 +76,7 @@ function SearchTask({
       mode="text"
       variant="info"
       title="Search Task"
-      label="Seach"
+      label="Search"
       width="max-w-prose"
     >
       {() => (
