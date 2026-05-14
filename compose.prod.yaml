@@ -71,7 +71,7 @@ services:
       - WHOMBAT_PORT=5000
       - WHOMBAT_AUDIO_DIR=/audio
   db:
-    image: postgres
+    image: postgres:17
     restart: always
     user: postgres
     volumes:
