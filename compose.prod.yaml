@@ -12,6 +12,8 @@ services:
     volumes:
       - letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - public
   whombat:
     build:
       context: .
@@ -36,6 +38,7 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=whombat_public"
       - "traefik.http.routers.whombat.rule=Host(`${DOMAIN?Variable not set}`)"
       - "traefik.http.routers.whombat.entrypoints=web"
       - "traefik.http.services.whombat.loadbalancer.server.port=5000"
