@@ -47,6 +47,9 @@ If you are proposing a feature:
 
 ## Get Started
 
+This guide focuses on backend development. If you are working across both the
+backend and frontend, use the root-level workflows in the repository `README.md`.
+
 Ready to contribute? Here's how to set up `whombat` for local development.
 
 1. Fork the `whombat` repo on GitHub.
@@ -66,6 +69,14 @@ Ready to contribute? Here's how to set up `whombat` for local development.
         uv sync --all-extras --dev --locked
         ```
 
+   If you are working across the full repository, you can instead install all
+   backend and frontend dependencies from the repository root:
+
+        ```{bash}
+        cd whombat
+        just install
+        ```
+
 4. Create a branch for local development
 
        ```{bash}
@@ -79,6 +90,12 @@ Ready to contribute? Here's how to set up `whombat` for local development.
 
         ```{bash}
         just check
+        ```
+
+   To run only backend type checks:
+
+        ```{bash}
+        just typecheck
         ```
 
 6. Commit your changes and push your branch to GitHub
@@ -108,3 +125,8 @@ To run a subset of tests
 ```{bash}
 uv run pytest tests/test_api/test_datasets.py -k <expr>
 ```
+
+## Additional Notes
+
+- `scripts/install_dev.sh` installs backend development dependencies only.
+- Frontend dependencies are installed separately from `front/` with `npm ci`, or together with backend dependencies via `just install` from the repository root.

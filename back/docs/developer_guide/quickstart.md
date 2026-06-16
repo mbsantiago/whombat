@@ -23,14 +23,14 @@ This guide provides two ways to set up your _Whombat_ development environment:
 
 Before setting up your Whombat development environment, ensure you have the following tools installed:
 
-1. **Python 3.12**: We developed Whombat using this version, but any version greater or equal to 3.11 should be compatible.
-      Download Python 3.12 [here](https://www.python.org/downloads/release/python-3117/).
+1. **Python 3.12**: Use Python 3.12 for local development. The backend configuration targets Python 3.12.
+      Download Python [here](https://www.python.org/downloads/).
 
-2. **uv**: UV is a Python package dependency manager that we use to manage dependencies for the Python part of Whombat.
-       Download uv [uv](https://docs.astral.sh/uv/#highlights).
+2. **uv**: We use `uv` to manage Python dependencies for the backend.
+       Install it by following the official instructions [here](https://docs.astral.sh/uv/#highlights).
 
-3. **Node.js**: We use Node.js to develop and bundle the final JavaScript code for the Whombat frontend.
-       Download the latest version [here](https://nodejs.org/dist/v20.11.0/node-v20.11.0-linux-x64.tar.xz).
+3. **Node.js**: We use Node.js to develop and bundle the frontend.
+       Install it using your preferred version manager or from the official website: https://nodejs.org/
 
 4. **just**: We use `just` to wrap the common development tasks for this repo.
        Install it by following the instructions [here](https://github.com/casey/just#installation).
@@ -52,7 +52,7 @@ cd whombat
 just install
 ```
 
-These instructions ensure you have the necessary tools and dependencies to kickstart Whombat development on your local machine.
+These instructions ensure you have the necessary tools and dependencies to start local Whombat development.
 
 ### Running the Development Servers
 
@@ -85,6 +85,21 @@ Once both servers are running, navigate to [http://localhost:3000](http://localh
   ```
 
   View the documentation at http://localhost:8000.
+
+### Running Checks
+
+From the repository root, run all main checks with:
+
+```bash
+just check
+```
+
+For backend-only checks, run:
+
+```bash
+cd back
+just check
+```
 
 ## Option 2: Docker Compose
 
@@ -121,7 +136,7 @@ cd whombat
 - **Storybook:**
 
   ```bash
-  docker-compose -f compose.dev.yaml up storybook
+  docker compose -f compose.dev.yaml up storybook
   ```
 
   Access Storybook at http://localhost:6006.
@@ -129,12 +144,12 @@ cd whombat
 - **Documentation Server:**
 
   ```bash
-  docker-compose -f compose.dev.yaml up docs
+  docker compose -f compose.dev.yaml up docs
   ```
 
   View the documentation at http://localhost:8000.
 
 - **All Services:**
   ```bash
-  docker-compose -f compose.dev.yaml up
+  docker compose -f compose.dev.yaml up
   ```

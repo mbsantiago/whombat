@@ -32,6 +32,9 @@ cd whombat/back
 pip install .
 ```
 
+If you want to contribute to the backend rather than only install the package,
+use the development environment instructions below.
+
 ### With Docker
 
 Run Whombat inside a Docker container.
@@ -50,7 +53,8 @@ docker run -p 5000:5000 whombat
 
 ### Development Environment
 
-We manage Whombat's development with `uv`.
+Backend development uses `uv` for dependency management and `just` for common
+tasks.
 
 1. Follow the official [installation instructions](https://docs.astral.sh/uv/#highlights) to get `uv` on your machine.
 
@@ -75,8 +79,15 @@ uv sync --all-extras --dev --locked
 just serve
 ```
 
-or
+Common backend commands:
 
 ```bash
-WHOMBAT_DEV=true uv run python -m whombat
+just check
+just typecheck
+just test
+just docs
+just guide
 ```
+
+If you are working across both backend and frontend, use the repository root
+workflows described in the main `README.md`.
