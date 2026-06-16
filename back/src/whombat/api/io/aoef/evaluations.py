@@ -184,12 +184,12 @@ async def add_evaluation_metrics(
             }
         )
 
-    names = {v["name"] for v in values}
+    names = {str(v["name"]) for v in values}
     feature_names = await import_feature_names(session, list(names))
 
     values = [
         {
-            "feature_name_id": feature_names[v["name"]],
+            "feature_name_id": feature_names[str(v["name"])],
             "value": v["value"],
             "evaluation_id": v["evaluation_id"],
             "created_on": datetime.datetime.now(),

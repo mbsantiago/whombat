@@ -1,0 +1,57 @@
+set shell := ["bash", "-eu", "-o", "pipefail", "-c"]
+
+default:
+    @just --list
+
+install:
+    uv sync --all-extras --dev --locked
+
+format:
+    uv run ruff format src tests
+
+format-check:
+    uv run ruff format --check src tests
+
+lint:
+    uv run ruff check src tests
+
+typecheck:
+    uv run ty check src tests
+
+test:
+    uv run pytest -n auto
+
+check:
+    uv run ruff check src tests
+    uv run ruff format --check src tests
+    uv run ty check src tests
+    uv run pytest --cov=src/whombat --cov-report=xml -n auto
+
+coverage:
+    uv run coverage run --source whombat -m pytest
+    uv run coverage report -m
+    uv run coverage html
+
+build-docs:
+    uv run mkdocs build
+
+docs:
+    uv run mkdocs serve --open
+
+build-guide:
+    uv run mkdocs build -f mkdocs-guide.yml -d src/whombat/user_guide
+
+guide:
+    uv run mkdocs serve -f mkdocs-guide.yml --open
+
+serve:
+    WHOMBAT_DEV=true uv run python -m whombat
+
+clean:
+    rm -rf build dist .eggs .coverage htmlcov .pytest_cache site
+    find . -name '*.egg-info' -exec rm -rf {} +
+    find . -name '*.egg' -exec rm -f {} +
+    find . -name '*.pyc' -exec rm -f {} +
+    find . -name '*.pyo' -exec rm -f {} +
+    find . -name '*~' -exec rm -f {} +
+    find . -name '__pycache__' -exec rm -rf {} +

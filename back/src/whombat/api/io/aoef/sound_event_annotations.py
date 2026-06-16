@@ -189,7 +189,7 @@ async def _create_sound_event_annotations(
     # Get the IDs of the newly created annotations.
     created = await get_mapping(
         session,
-        {v["uuid"] for v in values},
+        {v["uuid"] for v in values},  # type: ignore
         models.SoundEventAnnotation,
     )
     mapping.update(created)

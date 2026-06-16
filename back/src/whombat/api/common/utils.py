@@ -19,15 +19,15 @@ from whombat.core.common import remove_duplicates
 from whombat.filters.base import Filter
 
 try:
-    from itertools import batched  # type: ignore
+    from itertools import batched
 except ImportError:
     from itertools import islice
 
-    A = TypeVar("A")
+    C = TypeVar("C")
 
     def batched(
-        iterable: Iterable[A], n: int, *, strict: bool = False
-    ) -> Generator[tuple[A, ...], None, None]:
+        iterable: Iterable[C], n: int, *, strict: bool = False
+    ) -> Generator[tuple[C, ...], None, None]:
         if n < 1:
             raise ValueError("n must be at least one")
         iterator = iter(iterable)
@@ -75,7 +75,7 @@ async def get_count(
 
     Modified from https://gist.github.com/hest/8798884.
     """
-    pk = inspect(model).primary_key[0]  # type: ignore
+    pk = inspect(model).primary_key[0]
     count_q = q.with_only_columns(func.count(pk)).order_by(None)
     result = await session.execute(count_q)
     count = result.scalar()
@@ -755,8 +755,8 @@ async def add_note_to_object(
             "note_id": note.id,
             foreign_key: obj.id,  # type: ignore
         }
-    )  # type: ignore
-    getattr(obj, relation_field_name).append(object_tag)  # type: ignore
+    )
+    getattr(obj, relation_field_name).append(object_tag)
     session.add(obj)
     await session.flush()
     await session.refresh(obj)
@@ -819,7 +819,7 @@ async def add_tag_to_object(
         foreign_key: obj.id,  # type: ignore
     }
     object_tag = association_model(**data)
-    getattr(obj, relation_field_name).append(object_tag)  # type: ignore
+    getattr(obj, relation_field_name).append(object_tag)
     session.add(obj)
     await session.flush()
     await session.refresh(obj)
@@ -884,8 +884,8 @@ async def add_feature_to_object(
     feature = association_model(
         **{
             foreign_key: obj.id,  # type: ignore
-            "feature_name_id": feature_name.id,  # type: ignore
-            "value": value,  # type: ignore
+            "feature_name_id": feature_name.id,
+            "value": value,
         }
     )
     obj.features.append(feature)  # type: ignore

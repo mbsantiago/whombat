@@ -40,6 +40,42 @@ There you will be able to see all the features provided by Whombat, as well as c
 As a open source project we are incredibly excited for having contributions from the community.
 Head over to the [Contributions](https://mbsantiago.github.io/whombat/CONTRIBUTING/) section of the documentation to see how you can contribute.
 
+## Development
+
+This repository contains two apps:
+
+- `back/`: the Python backend, managed with `uv`
+- `front/`: the Next.js frontend, managed with `npm`
+
+Common development tasks are available from the repository root with `just`.
+
+Install all development dependencies:
+
+```bash
+just install
+```
+
+Run the backend and frontend in development mode:
+
+```bash
+just dev
+```
+
+Run the main checks for both apps:
+
+```bash
+just check
+```
+
+Useful commands:
+
+```bash
+just dev-back
+just dev-front
+just docs
+just storybook
+```
+
 ## Citation
 
 If you want to use Whombat for your research, please cite as:

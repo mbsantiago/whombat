@@ -103,7 +103,7 @@ async def _create_clip_predictions(
 
     created = await get_mapping(
         session,
-        {v["uuid"] for v in values},
+        {v["uuid"] for v in values},  # type: ignore
         models.ClipPrediction,
     )
     mapping.update(created)

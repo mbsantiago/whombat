@@ -43,7 +43,7 @@ def get_auth_backend(
 def get_users_api(settings: WhombatSettings):
     """Get the users API."""
     auth_backend = get_auth_backend(settings)
-    return FastAPIUsers[models.User, UUID](  # type: ignore
+    return FastAPIUsers[models.User, UUID](
         get_user_manager,
         [auth_backend],
     )

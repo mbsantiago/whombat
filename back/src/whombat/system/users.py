@@ -59,7 +59,7 @@ class UserDatabase(SQLAlchemyUserDatabase):
 
 class UserManager(
     UUIDIDMixin,
-    BaseUserManager[models.User, UUID],  # type: ignore
+    BaseUserManager[models.User, UUID],
 ):
     """UserManager class.
 
@@ -67,7 +67,7 @@ class UserManager(
     BaseUserManager class from the fastapi-users package.
     """
 
-    user_db: UserDatabase  # type: ignore
+    user_db: UserDatabase
 
     def __init__(
         self,

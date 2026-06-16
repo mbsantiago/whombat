@@ -146,7 +146,7 @@ async def _create_sound_event_evaluations(
 
     created = await get_mapping(
         session,
-        {v["uuid"] for v in values},
+        {v["uuid"] for v in values},  # type: ignore
         models.SoundEventEvaluation,
     )
     mapping.update(created)
@@ -179,12 +179,12 @@ async def _create_sound_event_evaluation_metrics(
     if not values:
         return
 
-    names = {v["name"] for v in values}
+    names = {str(v["name"]) for v in values}
     feature_names = await import_feature_names(session, list(names))
 
     values = [
         {
-            "feature_name_id": feature_names[v["name"]],
+            "feature_name_id": feature_names[str(v["name"])],
             "value": v["value"],
             "sound_event_evaluation_id": v["sound_event_evaluation_id"],
             "created_on": datetime.datetime.now(),
