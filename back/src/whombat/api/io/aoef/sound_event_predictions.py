@@ -150,7 +150,7 @@ async def _create_sound_event_predictions(
     # Get the IDs of the newly created predictions.
     created = await get_mapping(
         session,
-        {v["uuid"] for v in values},
+        {v["uuid"] for v in values},  # type: ignore
         models.SoundEventPrediction,
     )
     mapping.update(created)

@@ -145,7 +145,9 @@ async def _create_annotation_tasks(
 
     # Get the IDs of the newly created annotations.
     created = await get_mapping(
-        session, {v["uuid"] for v in values}, models.AnnotationTask
+        session,
+        {v["uuid"] for v in values},  # type: ignore
+        models.AnnotationTask,
     )
     mapping.update(created)
 

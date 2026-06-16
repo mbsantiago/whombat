@@ -23,11 +23,11 @@ try:
 except ImportError:
     from itertools import islice
 
-    A = TypeVar("A")
+    C = TypeVar("C")
 
     def batched(
-        iterable: Iterable[A], n: int, *, strict: bool = False
-    ) -> Generator[tuple[A, ...], None, None]:
+        iterable: Iterable[C], n: int, *, strict: bool = False
+    ) -> Generator[tuple[C, ...], None, None]:
         if n < 1:
             raise ValueError("n must be at least one")
         iterator = iter(iterable)
