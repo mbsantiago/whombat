@@ -47,7 +47,7 @@ async def get_sound_event_annotations(
             imported_by=user,
         )
 
-    uuids = set()
+    uuids: set[UUID] = set()
     for clip_annotation in clip_annotations_objs:
         if not clip_annotation.sound_events:
             continue
@@ -57,6 +57,8 @@ async def get_sound_event_annotations(
 
     if isinstance(obj, EvaluationObject):
         for match in obj.matches or []:
+            if match.target is None:
+                continue
             uuids.add(match.target)
 
     if not uuids:

@@ -32,7 +32,7 @@ async def import_annotation_project(
 ) -> models.AnnotationProject:
     obj = parse_aoef_object(src)
 
-    if obj.data.collection_type != "annotation_project":
+    if not isinstance(obj.data, AnnotationProjectObject):
         raise exceptions.DataFormatError(
             message=(
                 "Invalid Annotation Project file. "

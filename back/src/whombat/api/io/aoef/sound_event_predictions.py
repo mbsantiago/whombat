@@ -50,6 +50,9 @@ async def get_sound_event_predictions(
 
     if isinstance(obj, EvaluationObject):
         for match in obj.matches or []:
+            if match.target is None:
+                continue
+
             uuids.add(match.target)
 
     if not uuids:
