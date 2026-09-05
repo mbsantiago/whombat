@@ -4,15 +4,14 @@
 
 ### I'm having trouble logging in. What should I do?
 
-If you're logging into Whombat for the first time, you might not have a personalized username and password yet.
-Don't worry, Whombat automatically sets up a default user during initialization.
+Whombat does not create a default account, so there is no standard username and password to fall back on.
+Instead, the first person to open a fresh Whombat instance creates their own account:
 
-To get started:
+1. **Open Whombat in your browser**: If no account exists yet, follow the **Create account** link on the login page, which takes you to the `/first` page.
+      The startup message in the terminal points to the same address.
+2. **Enter your details and choose a password**: This first account is automatically granted administrator rights.
 
-- Username: **admin**
-- Password: **admin**
-
-After your initial login, head over to your user profile to customize both your username and password to something more personalized and secure.
+If your instance already has users and you don't have an account, ask the person administering the instance to create one for you.
 
 ## Focusing on sounds
 
