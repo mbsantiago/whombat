@@ -1,5 +1,5 @@
 import { withActions } from "storybook/actions/decorator";
-import type { Preview } from "@storybook/nextjs";
+import type { Preview } from "@storybook/nextjs-vite";
 import { themes } from "storybook/theming";
 
 import "@/app/globals.css";

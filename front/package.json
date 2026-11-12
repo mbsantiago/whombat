@@ -60,7 +60,6 @@
     "@storybook/addon-onboarding": "^10.6.7",
     "@storybook/addon-styling-webpack": "^3.0.2",
     "@storybook/addon-themes": "^10.6.7",
-    "@storybook/nextjs": "^10.6.7",
     "@storybook/react": "^10.6.7",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
@@ -81,6 +80,8 @@
     "ts-prune": "^0.10.3",
     "typescript-language-server": "^4.4.1",
     "vite-plus": "^1.6.0",
-    "webpack": "^5.112.2"
+    "webpack": "^5.112.2",
+    "@storybook/nextjs-vite": "10.6.7",
+    "vite": "^7.0.0"
   }
 }

@@ -5,6 +5,7 @@ import { defineConfig } from "vite-plus";
 export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    tsconfigPaths: true,
   },
   fmt: {
     printWidth: 80,

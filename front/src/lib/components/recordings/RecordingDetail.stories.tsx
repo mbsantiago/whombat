@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import Player from "@/lib/components/audio/Player";
 import RecordingDetail from "@/lib/components/recordings/RecordingDetail";
