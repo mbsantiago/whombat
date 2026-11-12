@@ -41,7 +41,11 @@ function FilterCombobox<T extends object>({
         fields={["name", "prefix"]}
         getOptionKey={(filter) => filter.name}
         onSelect={onChange}
-        empty={<div className="w-full text-center text-stone-500">No filters found</div>}
+        empty={
+          <div className="w-full text-center text-stone-500">
+            No filters found
+          </div>
+        }
         autoFocus
       />
     </>
@@ -55,11 +59,16 @@ function FilterPanel<T extends object>({
   filterDefs: FilterDef<T>[];
   onSetFilterField?: <K extends keyof T>(name: K, value: T[K]) => void;
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<FilterDef<T> | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<FilterDef<T> | null>(
+    null,
+  );
 
   if (selectedFilter == null) {
     return (
-      <FilterCombobox filterDefs={filterDefs} onChange={(filter) => setSelectedFilter(filter)} />
+      <FilterCombobox
+        filterDefs={filterDefs}
+        onChange={(filter) => setSelectedFilter(filter)}
+      />
     );
   }
 
@@ -72,7 +81,11 @@ function FilterPanel<T extends object>({
             {selectedFilter.name}
           </span>
         </div>
-        <Button mode="text" variant="warning" onClick={() => setSelectedFilter(null)}>
+        <Button
+          mode="text"
+          variant="warning"
+          onClick={() => setSelectedFilter(null)}
+        >
           <BackIcon className="h-5 w-5 group-hover:stroke-3" />
         </Button>
       </div>
@@ -126,7 +139,10 @@ export default function FilterPopover<T extends object>({
         className="ring-opacity-5 z-50 w-96 divide-y divide-stone-100 rounded-md border border-stone-200 bg-stone-50 shadow-md ring-1 ring-stone-900 transition duration-100 ease-out focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 dark:border-stone-500 dark:bg-stone-700 dark:shadow-stone-800"
       >
         <div className="p-4">
-          <FilterPanel onSetFilterField={onSetFilterField} filterDefs={filterDef} />
+          <FilterPanel
+            onSetFilterField={onSetFilterField}
+            filterDefs={filterDef}
+          />
         </div>
       </PopoverPanel>
     </Popover>

@@ -1,4 +1,9 @@
-import { type Datum, type Layout, type Scatter3dData, type PlotMouseEvent } from "plotly.js";
+import {
+  type Datum,
+  type Layout,
+  type Scatter3dData,
+  type PlotMouseEvent,
+} from "plotly.js";
 import { useCallback, useMemo } from "react";
 
 import useTheme from "@/lib/hooks/useTheme";
@@ -27,7 +32,9 @@ function newTrace(
     z: [],
     customdata: [],
     hovertemplate:
-      `<b>${xLabel}</b>: %{x}<br>` + `<b>${yLabel}</b>: %{y}<br>` + `<b>${zLabel}</b>: %{z}`,
+      `<b>${xLabel}</b>: %{x}<br>` +
+      `<b>${yLabel}</b>: %{y}<br>` +
+      `<b>${zLabel}</b>: %{z}`,
     type: "scatter3d",
     mode: "markers",
     name: key,
@@ -79,7 +86,9 @@ export default function useScatterPlot({
       (traces[groupKey].z as number[]).push(z);
 
       // @ts-ignore
-      traces[groupKey].customdata?.push(annotation as unknown as Datum & Datum[]);
+      traces[groupKey].customdata?.push(
+        annotation as unknown as Datum & Datum[],
+      );
     });
 
     return Object.values(traces);
