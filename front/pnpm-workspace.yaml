@@ -3,3 +3,6 @@ allowBuilds:
   es5-ext: true
   esbuild: true
   sharp: true
+overrides:
+  vite@*: npm:@voidzero-dev/vite-plus-core@1.5.1
+  vitest@*: 5.1.0
