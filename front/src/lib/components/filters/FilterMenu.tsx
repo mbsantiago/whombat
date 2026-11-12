@@ -1,4 +1,3 @@
-import { Float } from "@headlessui-float/react";
 import { Popover } from "@headlessui/react";
 import { type ReactNode, useState } from "react";
 
@@ -129,36 +128,22 @@ export default function FilterPopover<T extends Object>({
 
   return (
     <Popover as="div" className="inline-block relative text-left">
-      <Float
-        autoPlacement
-        portal={true}
-        offset={4}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+      <Popover.Button className={className}>
+        {button != null ? button : <FilterIcon className="w-4 h-4 stroke-2" />}
+      </Popover.Button>
+      <Popover.Panel
+        anchor={{ to: "bottom start", gap: 4 }}
+        transition
+        unmount
+        className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-none divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800 transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
       >
-        <Popover.Button className={className}>
-          {button != null ? (
-            button
-          ) : (
-            <FilterIcon className="w-4 h-4 stroke-2" />
-          )}
-        </Popover.Button>
-        <Popover.Panel
-          unmount
-          className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-none divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800"
-        >
-          <div className="p-4">
-            <FilterPanel
-              onSetFilterField={onSetFilterField}
-              filterDefs={filterDef}
-            />
-          </div>
-        </Popover.Panel>
-      </Float>
+        <div className="p-4">
+          <FilterPanel
+            onSetFilterField={onSetFilterField}
+            filterDefs={filterDef}
+          />
+        </div>
+      </Popover.Panel>
     </Popover>
   );
 }

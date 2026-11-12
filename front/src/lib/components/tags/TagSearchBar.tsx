@@ -6,7 +6,6 @@
  * Additionally, it allows the user to create new tags by typing the tag in the
  * format `key:value` and pressing `Shift`+`Enter`.
  */
-import { Float } from "@headlessui-float/react";
 import { Combobox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import {
@@ -25,6 +24,11 @@ import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import type { Tag as TagType } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
+
+type Anchor = Extract<
+  NonNullable<ComponentProps<typeof Combobox.Options>["anchor"]>,
+  string
+>;
 
 /**
  * ComboBoxSection component wraps its children with a div that has specific
@@ -127,9 +131,7 @@ export type TagSearchBarProps = {
   /** Callback function for selecting a tag. */
   onSelectTag?: (tag: TagType) => void;
   /** Placement of the dropdown menu. */
-  placement?: ComponentProps<typeof Float>["placement"];
-  /** Flag indicating if the placement should be automatically adjusted. */
-  autoPlacement?: ComponentProps<typeof Float>["autoPlacement"];
+  placement?: `${"top" | "bottom" | "left" | "right"}${"" | "-start" | "-end"}`;
 };
 
 type TagSearchBarExpandedProps = TagSearchBarProps & {
@@ -202,19 +204,12 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
     );
 
     return (
-      <Combobox onChange={(tag: TagType) => onSelectTag?.(tag)}>
-        <Float
-          offset={8}
-          enter="transition duration-200 ease-out"
-          enterFrom="scale-95 opacity-0"
-          enterTo="scale-100 opacity-100"
-          leave="transition duration-150 ease-in"
-          leaveFrom="scale-100 opacity-100"
-          leaveTo="scale-95 opacity-0"
-          placement={placement}
-          autoPlacement={props.autoPlacement}
-          portal={true}
-        >
+      <Combobox
+        onChange={(tag: TagType | null) => {
+          if (tag != null) onSelectTag?.(tag);
+        }}
+      >
+        <div className="w-full">
           <div className="relative w-full text-left cursor-default">
             <Combobox.Input
               as={Input}
@@ -228,7 +223,11 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
               <ChevronUpDownIcon className="w-5 h-5" aria-hidden="true" />
             </Combobox.Button>
           </div>
-          <Combobox.Options className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600">
+          <Combobox.Options
+            anchor={{ to: placement.replace("-", " ") as Anchor, gap: 8 }}
+            transition
+            className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+          >
             {tags.length === 0 ? (
               <NoTagsFound />
             ) : (
@@ -264,7 +263,7 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
               />
             )}
           </Combobox.Options>
-        </Float>
+        </div>
       </Combobox>
     );
   },

@@ -1,16 +1,19 @@
-import { Float } from "@headlessui-float/react";
 import { Popover as HeadlessPopover } from "@headlessui/react";
-import type { ReactElement, ReactNode } from "react";
+import type { ComponentProps, ReactElement, ReactNode } from "react";
+
+type Anchor = Extract<
+  NonNullable<ComponentProps<typeof HeadlessPopover.Panel>["anchor"]>,
+  string
+>;
 
 export default function Popover({
   button,
   children,
   placement = "bottom",
   offset = 4,
-  autoPlacement = false,
 }: {
   button: ReactNode;
-  children: ({ close }: { close: () => void }) => ReactElement;
+  children: ({ close }: { close: () => void }) => ReactElement<any>;
   placement?:
     | "top"
     | "bottom"
@@ -24,29 +27,20 @@ export default function Popover({
     | "left-end"
     | "right-start"
     | "right-end";
-  autoPlacement?: boolean;
   offset?: number;
 }) {
   return (
     <HeadlessPopover as="div" className="inline-block text-left">
-      <Float
-        zIndex={10}
-        placement={placement}
-        offset={offset}
-        enter="transition duration-200 ease-out"
-        enterFrom="scale-95 opacity-0"
-        enterTo="scale-100 opacity-100"
-        leave="transition duration-150 ease-in"
-        leaveFrom="scale-100 opacity-100"
-        leaveTo="scale-95 opacity-0"
-        portal={true}
-        autoPlacement={autoPlacement}
+      <HeadlessPopover.Button as="div">{button}</HeadlessPopover.Button>
+      <HeadlessPopover.Panel
+        anchor={{ to: placement.replace("-", " ") as Anchor, gap: offset }}
+        className="z-10 w-72 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+        focus
+        unmount
+        transition
       >
-        <HeadlessPopover.Button as="div">{button}</HeadlessPopover.Button>
-        <HeadlessPopover.Panel className="w-72" focus unmount>
-          {({ close }) => children({ close })}
-        </HeadlessPopover.Panel>
-      </Float>
+        {({ close }) => children({ close })}
+      </HeadlessPopover.Panel>
     </HeadlessPopover>
   );
 }
