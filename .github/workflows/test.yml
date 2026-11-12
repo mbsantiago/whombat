@@ -79,35 +79,29 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: pnpm/setup@v3
         with:
-          node-version: 24
-          cache: "npm"
-          cache-dependency-path: |
-            front/package-lock.json
-
-      - name: Install frontend dependencies
-        run: |
-          cd front
-          npm ci
+          version: 12
+          runtime: node@26
+          working-directory: front
+          cache: true
 
       - name: Check formatting
         run: |
           cd front
-          npm run format-check
+          pnpm run format-check
 
       - name: Lint with Nextjs
         run: |
           cd front
-          npm run lint
+          pnpm run lint
 
       - name: Lint with Typescript Compiler
         run: |
           cd front
-          npm run lint-tsc
+          pnpm run lint-tsc
 
       - name: Run tests
         run: |
           cd front
-          npm run test
+          pnpm run test

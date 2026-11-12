@@ -7,7 +7,7 @@ install-back:
     cd back && just install
 
 install-front:
-    cd front && npm ci
+    cd front && pnpm install
 
 install: install-back install-front
     @:
@@ -19,19 +19,19 @@ dev-back:
     cd back && just serve
 
 dev-front:
-    cd front && npm run dev
+    cd front && pnpm run dev
 
 docs:
     cd back && just docs
 
 storybook:
-    cd front && npm run storybook
+    cd front && pnpm run storybook
 
 test-back:
     cd back && just test
 
 test-front:
-    cd front && npm run test
+    cd front && pnpm run test
 
 test: test-back test-front
     @:
@@ -40,7 +40,7 @@ check-back:
     cd back && just check
 
 check-front:
-    cd front && npm run format-check && npm run lint && npm run lint-tsc && npm run test
+    cd front && pnpm run format-check && pnpm run lint && pnpm run lint-tsc && pnpm run test
 
 check: check-back check-front
     @:
