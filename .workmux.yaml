@@ -115,10 +115,11 @@ windows:
   - name: backend
     panes:
       - command: cd back && nvim .
+      - split: horizontal
   - name: frontend
     panes:
       - command: cd front && nvim .
-  - name: shell
+      - split: horizontal
 
 # Auto-apply agent status icons to tmux window format.
 # Default: true
@@ -201,13 +202,13 @@ post_create:
 
 # File operations when creating a local worktree.
 files:
-#   # Files to copy (useful for .env files that need to be unique).
-#   copy:
-#     - .env.local
-#
-#   # Files/directories to symlink (saves disk space, shares caches).
-#   # Default: None.
-#   # Use "<global>" to inherit from global config.
+  #   # Files to copy (useful for .env files that need to be unique).
+  #   copy:
+  #     - .env.local
+  #
+  #   # Files/directories to symlink (saves disk space, shares caches).
+  #   # Default: None.
+  #   # Use "<global>" to inherit from global config.
   symlink:
     - "<global>"
     - front/node_modules/
