@@ -105,7 +105,7 @@ function CurrentTask({ currentTask }: { currentTask?: AnnotationTask }) {
               </span>
             </div>
             <div className="relative group">
-              <code className="block p-2 font-mono leading-relaxed text-blue-500 break-all rounded border bg-stone-100 border-stone-200 dark:bg-stone-800 dark:border-stone-700">
+              <code className="block p-2 font-mono leading-relaxed text-blue-500 break-all rounded-sm border bg-stone-100 border-stone-200 dark:bg-stone-800 dark:border-stone-700">
                 {currentTask?.uuid}
               </code>
             </div>

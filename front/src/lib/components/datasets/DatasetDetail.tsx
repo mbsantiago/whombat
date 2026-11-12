@@ -1,6 +1,6 @@
-import DetailLayout from "@/lib/components/layouts/Detail";
-
 import type { JSX } from "react";
+
+import DetailLayout from "@/lib/components/layouts/Detail";
 
 /**
   * DatasetDetail component renders the detailed view of a dataset.

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "storybook/test";
 import { loremIpsum } from "lorem-ipsum";
+import { fn } from "storybook/test";
 
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";

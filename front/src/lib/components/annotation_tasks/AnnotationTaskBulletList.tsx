@@ -40,7 +40,7 @@ function AnnotationTaskBullet({
       onClick={onClick}
       className={classNames(
         "w-6 h-6 rounded-full transition-all duration-200",
-        "flex items-center justify-center shrink-0 shadow-sm",
+        "flex items-center justify-center shrink-0 shadow-xs",
         CLASS_NAMES.filled[variant],
         CLASS_NAMES.filled.common,
         {

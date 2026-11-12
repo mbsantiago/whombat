@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "storybook/test";
 import type { AxiosError } from "axios";
+import { fn } from "storybook/test";
 
 import ErrorModal from "./ErrorModal";
 

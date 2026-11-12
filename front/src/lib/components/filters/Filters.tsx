@@ -55,7 +55,7 @@ function FloatField({
           type="number"
           id={name}
           name={name}
-          className="block py-1 pr-14 pl-14 w-full rounded-md border-0 ring-1 ring-inset outline-none sm:text-sm sm:leading-6 focus:ring-2 focus:ring-inset focus:ring-emerald-600 bg-stone-50 text-stone-900 ring-stone-300 placeholder:text-stone-400 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-800"
+          className="block py-1 pr-14 pl-14 w-full rounded-md border-0 ring-1 ring-inset outline-hidden sm:text-sm sm:leading-6 focus:ring-2 focus:ring-inset focus:ring-emerald-600 bg-stone-50 text-stone-900 ring-stone-300 placeholder:text-stone-400 dark:bg-stone-900 dark:text-stone-300 dark:ring-stone-800"
           value={value}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -96,7 +96,7 @@ function IsNullField({
       </label>
       <Checkbox
         id={`${name}-isnull`}
-        className="text-emerald-500 rounded shadow-sm dark:text-emerald-500 focus:ring focus:ring-emerald-300 focus:ring-opacity-50 focus:ring-offset-0 form-checkbox"
+        className="text-emerald-500 rounded-sm shadow-xs dark:text-emerald-500 focus:ring-3 focus:ring-emerald-300 focus:ring-opacity-50 focus:ring-offset-0 form-checkbox"
         checked={value === true}
         indeterminate={value === false}
         onChange={() => {

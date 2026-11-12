@@ -61,7 +61,7 @@ export default function Select<T>({
             gap: 4,
           }}
           transition
-          className="max-h-60 w-[var(--button-width)] overflow-auto rounded-lg bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm transition duration-100 ease-in data-closed:opacity-0"
+          className="max-h-60 w-(--button-width) overflow-auto rounded-lg bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-hidden sm:text-sm transition duration-100 ease-in data-closed:opacity-0"
         >
           {options.map((option) => (
             <Listbox.Option

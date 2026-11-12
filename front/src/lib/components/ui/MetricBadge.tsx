@@ -20,7 +20,7 @@ export default function MetricBadge({
       <button className="flex-none cursor-pointer" onClick={onClick}>
         {icon}
       </button>
-      <div className="flex-grow-0">
+      <div className="grow-0">
         <div className="inline-flex items-baseline gap-2">
           {isLoading ? (
             <Spinner className="h-5 w-5" variant="primary" />

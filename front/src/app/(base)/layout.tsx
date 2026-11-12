@@ -71,7 +71,7 @@ function Contents({ children }: { children: ReactNode }) {
     <div className="flex flex-row w-full max-w-full h-full min-h-screen">
       <SideMenu user={user} onLogout={handleLogout} />
       <div className="flex flex-col w-full max-w-full min-h-screen">
-        <main className="flex-grow w-full max-w-full h-full overflow-x-clip">
+        <main className="grow w-full max-w-full h-full overflow-x-clip">
           <NavBar user={user} onLogout={handleLogout} />
           {children}
         </main>

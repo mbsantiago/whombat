@@ -23,7 +23,7 @@ export default function ListLayout({
   return (
     <div className="flex flex-col p-8 space-y-2 w-full">
       <div className="flex flex-row space-x-4">
-        <div className="flex-grow">{Search}</div>
+        <div className="grow">{Search}</div>
         {Actions?.map((action, index) => (
           <div className="h-full" key={index}>
             {action}

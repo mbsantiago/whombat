@@ -71,7 +71,7 @@ export default function SearchMenu<
   };
 
   const optionsClassName =
-    "w-(--input-width) rounded-md border bg-stone-50 dark:bg-stone-700 border-stone-200 dark:border-stone-600 py-2 px-1 overflow-auto shadow-lg focus:outline-none";
+    "w-(--input-width) rounded-md border bg-stone-50 dark:bg-stone-700 border-stone-200 dark:border-stone-600 py-2 px-1 overflow-auto shadow-lg focus:outline-hidden";
 
   if (isStatic) {
     return (
@@ -197,7 +197,7 @@ function MenuContents<T>({
           onClick={() => setLimit(total)}
         >
           <div className="flex w-full flex-row items-center justify-between text-stone-500">
-            <span className="flex-grow text-left">Show all</span>
+            <span className="grow text-left">Show all</span>
             <span>{total - options.length} more</span>
           </div>
         </Button>
@@ -208,7 +208,7 @@ function MenuContents<T>({
           onClick={() => setLimit(initialLimit)}
         >
           <div className="flex w-full flex-row items-center justify-between text-stone-500">
-            <span className="flex-grow text-left">Show less</span>
+            <span className="grow text-left">Show less</span>
           </div>
         </Button>
       ) : null}

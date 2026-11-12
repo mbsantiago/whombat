@@ -31,7 +31,7 @@ import {
 import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 
 const COMMON_BUTTON_CLASSES =
-  "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
+  "focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 rounded-full";
 
 /**
  * Player component represents the audio player.
@@ -158,7 +158,7 @@ function SelectSpeed({
         <Listbox.Options
           anchor={{ to: "bottom", gap: 4 }}
           transition
-          className="overflow-auto py-1 w-[var(--button-width)] max-h-60 text-base rounded-md ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none bg-stone-50 ring-stone-900 dark:bg-stone-700 dark:ring-stone-600 transition duration-100 ease-in data-closed:opacity-0"
+          className="overflow-auto py-1 w-(--button-width) max-h-60 text-base rounded-md ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-hidden bg-stone-50 ring-stone-900 dark:bg-stone-700 dark:ring-stone-600 transition duration-100 ease-in data-closed:opacity-0"
         >
           {options.map((option) => (
             <Listbox.Option
@@ -222,8 +222,8 @@ function PlayerThumb({
   return (
     <div
       {...thumbProps}
-      className={classNames("w-3 h-3 rounded-full shadow cursor-pointer", {
-        "focus:ring-4 focus:outline-none focus:ring-emerald-500/50":
+      className={classNames("w-3 h-3 rounded-full shadow-sm cursor-pointer", {
+        "focus:ring-4 focus:outline-hidden focus:ring-emerald-500/50":
           isFocusVisible,
         "bg-emerald-700 dark:bg-emerald-300": isDragging,
         "bg-emerald-500": !isDragging,

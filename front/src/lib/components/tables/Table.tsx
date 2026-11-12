@@ -89,13 +89,13 @@ export default function Table<S>({
           return (
             <tr
               key={row.id}
-              className="max-h-40 h-min hover:dark:bg-stone-800 hover:bg-stone-200"
+              className="max-h-40 h-min dark:hover:bg-stone-800 hover:bg-stone-200"
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td
                     role="gridcell"
-                    className="max-h-40 border outline-none focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600"
+                    className="max-h-40 border outline-hidden focus:ring-1 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-transparent border-stone-300 dark:border-stone-600"
                     tabIndex={-1}
                     key={cell.id}
                     onKeyDown={(event) => {

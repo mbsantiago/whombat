@@ -21,7 +21,7 @@ export default function SpectrogramPredictedTags({
   threshold?: Interval;
 }) {
   return (
-    <div className="overflow-hidden relative w-full h-full rounded">
+    <div className="overflow-hidden relative w-full h-full rounded-sm">
       {children}
       {tags.map((group) => (
         <TagGroupComponent
@@ -64,7 +64,7 @@ export function SpectrogramPredictedTag({
   }, [score]);
 
   return (
-    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 dark:hover:bg-stone-800">
       <span className={classNames(DOT_CLASS, tagClassNames.background)}></span>
       <span
         className={classNames(DOT_CLASS, confidenceClassNames.background)}

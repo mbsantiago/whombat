@@ -15,7 +15,7 @@ export default function Portal({ children }: PortalProps) {
   }, []);
 
   return createPortal(
-    <div className="relative z-[999]">{children}</div>,
+    <div className="relative z-999">{children}</div>,
     document.body,
   );
 }

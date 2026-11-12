@@ -41,7 +41,7 @@ export default function TableInput({
   return (
     <input
       ref={ref}
-      className="block w-full border-transparent bg-inherit px-2 outline-transparent focus:border-gray-500 focus:ring-0 hover:dark:bg-stone-700"
+      className="block w-full border-transparent bg-inherit px-2 outline-transparent focus:border-gray-500 focus:ring-0 dark:hover:bg-stone-700"
       value={value as string}
       placeholder={initialValue}
       onChange={(e) => setValue(e.target.value)}

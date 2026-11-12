@@ -18,7 +18,7 @@ export default function FilterBadge({
       <span>{operation}</span>
       <span>{value}</span>
       <button
-        className="ml-1 hover:bg-blue-200 rounded p-1"
+        className="ml-1 hover:bg-blue-200 rounded-sm p-1"
         onClick={() => {
           onRemove?.();
         }}

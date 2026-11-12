@@ -87,7 +87,7 @@ export function DialogOverlay({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <HeadlessDialog.Panel className="overflow-hidden p-6 w-full text-left align-middle rounded-2xl shadow-xl transition-all transform max-w-fit bg-stone-50 text-stone-700 z-[99999] dark:bg-stone-700 dark:text-stone-300">
+              <HeadlessDialog.Panel className="overflow-hidden p-6 w-full text-left align-middle rounded-2xl shadow-xl transition-all transform max-w-fit bg-stone-50 text-stone-700 z-99999 dark:bg-stone-700 dark:text-stone-300">
                 <HeadlessDialog.Title
                   as="div"
                   className="flex flex-row gap-4 justify-between items-center mb-4"

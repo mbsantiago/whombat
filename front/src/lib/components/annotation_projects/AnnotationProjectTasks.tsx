@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import recordingFilterDefs from "@/lib/components/filters/recordings";
@@ -5,8 +7,6 @@ import * as icons from "@/lib/components/icons";
 import * as inputs from "@/lib/components/inputs";
 import * as ui from "@/lib/components/ui";
 import type * as types from "@/lib/types";
-
-import type { JSX } from "react";
 
 export default function AnnotationProjectTasks(props: {
   dataset?: types.Dataset;

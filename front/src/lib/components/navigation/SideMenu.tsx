@@ -46,7 +46,7 @@ function SideMenuLink({
         className={classnames(
           isActive
             ? "bg-stone-200 dark:bg-stone-900"
-            : "hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+            : "hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-900 dark:hover:text-stone-300",
         )}
         {...props}
       >
@@ -79,7 +79,7 @@ function SideMenuButton({
         className={classnames(
           isActive
             ? "bg-stone-200 dark:bg-stone-900"
-            : "hover:bg-stone-200 hover:text-stone-700 hover:dark:bg-stone-900 hover:dark:text-stone-300",
+            : "hover:bg-stone-200 hover:text-stone-700 dark:hover:bg-stone-900 dark:hover:text-stone-300",
         )}
         {...props}
       >
@@ -174,10 +174,10 @@ export function SideMenu({
   return (
     <aside
       id="side-menu"
-      className="sticky left-0 top-0 z-40 flex h-screen w-16 flex-shrink-0 flex-col shadow-md"
+      className="sticky left-0 top-0 z-40 flex h-screen w-16 shrink-0 flex-col shadow-md"
       aria-label="Sidebar"
     >
-      <div className="flex flex-grow flex-col justify-between overflow-y-auto overflow-x-hidden bg-stone-50 dark:bg-stone-800">
+      <div className="flex grow flex-col justify-between overflow-y-auto overflow-x-hidden bg-stone-50 dark:bg-stone-800">
         <div className="flex flex-col items-center">
           <div className="px-2 py-4">
             <WhombatIcon width={46} height={46} />

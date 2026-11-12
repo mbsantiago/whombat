@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "storybook/test";
 import { loremIpsum } from "lorem-ipsum";
+import { fn } from "storybook/test";
 
 import EvaluationSetCreate from "@/lib/components/evaluation_sets/EvaluationSetCreate";
 import EvaluationSetImport from "@/lib/components/evaluation_sets/EvaluationSetImport";

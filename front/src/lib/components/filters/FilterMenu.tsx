@@ -117,7 +117,7 @@ export default function FilterPopover<T extends Object>({
 }: {
   filterDef: FilterDef<T>[];
   button?: ReactNode;
-  mode?: "filled" | "outline" | "text";
+  mode?: "filled" | "outline-solid" | "text";
   variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";
   className?: string;
   onSetFilterField?: <K extends keyof T>(field: K, value: T[K]) => void;
@@ -135,7 +135,7 @@ export default function FilterPopover<T extends Object>({
         anchor={{ to: "bottom start", gap: 4 }}
         transition
         unmount
-        className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-none divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800 transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+        className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-hidden divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800 transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
       >
         <div className="p-4">
           <FilterPanel

@@ -60,7 +60,7 @@ export default function AnnotationTaskTable({
         filterDef={annotationTaskFilterDefs}
       />
       <div className="w-full">
-        <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
+        <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline-solid outline-1 outline-stone-200 dark:outline-stone-800">
           <Table table={table} />
         </div>
       </div>

@@ -37,7 +37,7 @@ export default function SpectrogramTags({
   }, [soundEvents, viewport]);
 
   return (
-    <div className="relative w-full h-full rounded" ref={ref}>
+    <div className="relative w-full h-full rounded-sm" ref={ref}>
       {children}
       {soundEventsInWindow.map((soundEvent) => (
         <SoundEventTags
@@ -111,7 +111,7 @@ export function SpectrogramTag({
     return `bg-${color.color}-500`;
   }, [color]);
   return (
-    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 hover:dark:bg-stone-800">
+    <span className="flex flex-row gap-1 items-center px-2 -my-2 rounded-full transition-all group bg-stone-200/0 dark:bg-stone-800/0 hover:bg-stone-200 dark:hover:bg-stone-800">
       <span
         className={`inline-block my-2 w-2 h-2 rounded-full ${className} ring-1 ring-stone-900 opacity-100`}
       ></span>

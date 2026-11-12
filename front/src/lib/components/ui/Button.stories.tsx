@@ -57,7 +57,7 @@ export const Info: Story = {
 export const Outline: Story = {
   args: {
     children: "Button",
-    mode: "outline",
+    mode: "outline-solid",
   },
 };
 

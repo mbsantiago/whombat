@@ -55,14 +55,14 @@ export default function SpectrogramBar({
   return (
     <div
       draggable={false}
-      className="flex relative flex-row items-center w-full h-8 rounded-md cursor-pointer select-none group outline outline-1 outline-stone-300 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700"
+      className="flex relative flex-row items-center w-full h-8 rounded-md cursor-pointer select-none group outline-solid outline-1 outline-stone-300 bg-stone-200 dark:bg-stone-800 dark:outline-stone-700"
       ref={ref}
       {...props}
     >
       <div
         draggable={false}
         tabIndex={0}
-        className="absolute bg-emerald-300 rounded-md border border-emerald-500 cursor-pointer dark:bg-emerald-700 focus:ring-4 focus:outline-none group-hover:bg-emerald-500/80 hover:bg-emerald-500/80 focus:ring-emerald-500/50"
+        className="absolute bg-emerald-300 rounded-md border border-emerald-500 cursor-pointer dark:bg-emerald-700 focus:ring-4 focus:outline-hidden group-hover:bg-emerald-500/80 hover:bg-emerald-500/80 focus:ring-emerald-500/50"
         style={position}
       />
     </div>

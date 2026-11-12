@@ -6,4 +6,4 @@ export type Variant =
   | "warning"
   | "info";
 
-export type Mode = "filled" | "outline" | "text";
+export type Mode = "filled" | "outline-solid" | "text";

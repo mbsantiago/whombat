@@ -226,7 +226,7 @@ const TagSearchBar = forwardRef<HTMLInputElement, TagSearchBarExpandedProps>(
           <Combobox.Options
             anchor={{ to: placement.replace("-", " ") as Anchor, gap: 8 }}
             transition
-            className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+            className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-hidden divide-stone-200 bg-stone-50 ring-stone-300 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
           >
             {tags.length === 0 ? (
               <NoTagsFound />

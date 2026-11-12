@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { fn } from "storybook/test";
 import { loremIpsum } from "lorem-ipsum";
+import { fn } from "storybook/test";
 
 import { DatasetIcon } from "@/lib/components/icons";
 import Search from "@/lib/components/inputs/Search";

@@ -63,7 +63,7 @@ export default function ErrorModal({
   const jsonOutput = JSON.stringify(technicalDetails, null, 2);
 
   return (
-    <div className="flex fixed inset-0 z-50 justify-center items-center p-4 bg-stone-900/60 backdrop-blur-sm">
+    <div className="flex fixed inset-0 z-50 justify-center items-center p-4 bg-stone-900/60 backdrop-blur-xs">
       {/* Modal Container */}
       <div className="overflow-hidden p-6 w-full max-w-3xl text-left rounded-2xl shadow-xl transition-all transform bg-stone-50 text-stone-700 dark:bg-stone-700 dark:text-stone-300">
         {/* Header */}

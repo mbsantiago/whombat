@@ -25,7 +25,7 @@ export default function ListBox<T extends object>(
   return (
     <ul
       {...listBoxProps}
-      className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none text-stone-800 divide-stone-200 bg-stone-50 ring-stone-300 dark:text-stone-200 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600"
+      className="overflow-y-auto py-1 max-w-sm text-base rounded-md divide-y ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-hidden text-stone-800 divide-stone-200 bg-stone-50 ring-stone-300 dark:text-stone-200 dark:divide-stone-600 dark:bg-stone-700 dark:ring-stone-600"
       ref={listBoxRef}
     >
       {Array.from(listState.collection, (item) =>
@@ -58,7 +58,7 @@ export function Option<T>({
       {...optionProps}
       ref={ref}
       className={classNames(
-        "cursor-pointer text-stone-800 dark:text-stone-200 py-2 pl-4 pr-2 outline-none",
+        "cursor-pointer text-stone-800 dark:text-stone-200 py-2 pl-4 pr-2 outline-hidden",
         {
           "outline-2 outline-emerald-500 outline-offset-0": isFocused,
           "bg-stone-300 dark:bg-stone-800 text-stone-500 dark:text-stone-500":

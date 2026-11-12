@@ -69,7 +69,7 @@ export default function Tooltip({
             ref={overlayRef}
             id={id}
             role="tooltip"
-            className="z-50 rounded p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 text-sm pointer-events-none"
+            className="z-50 rounded-sm p-2 shadow-lg bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 text-sm pointer-events-none"
           >
             {tooltip}
           </div>
