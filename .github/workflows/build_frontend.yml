@@ -13,23 +13,16 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: pnpm/setup@v3
         with:
-          node-version: 24
-          cache: "npm"
-          cache-dependency-path: |
-            front/package-lock.json
-
-      - name: Install frontend dependencies
-        run: |
-          cd front
-          npm ci
+          runtime: node@26
+          working-directory: front
+          cache: true
 
       - name: Build frontend app
         run: |
           cd front
-          npm run build
+          pnpm run build
 
       - name: Upload build
         uses: actions/upload-artifact@v4
