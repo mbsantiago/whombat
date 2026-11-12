@@ -17,7 +17,7 @@ export default function useHoveredAnnotations({
   viewport,
   dimensions,
   annotations,
-  enabled: enabled = true,
+  enabled = true,
 }: {
   viewport: SpectrogramWindow;
   dimensions: Dimensions;

@@ -40,7 +40,7 @@ export default function createEditHook<J, T>(
     dimensions,
     object,
     enabled,
-    style: style = EDIT_STYLE,
+    style = EDIT_STYLE,
     onChange,
     onDrop,
     onDeselect,
