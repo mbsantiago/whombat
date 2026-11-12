@@ -10,7 +10,7 @@
     "start": "next start",
     "format": "prettier --write src",
     "format-check": "prettier --check src",
-    "lint-tsc": "tsc --noEmit -p src",
+    "lint-tsc": "tsc --noEmit -p .",
     "lint": "next lint",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test-ct": "playwright test -c playwright-ct.config.ts",
