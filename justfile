@@ -7,7 +7,7 @@ install-back:
     cd back && just install
 
 install-front:
-    cd front && npm ci
+    cd front && npm install
 
 install: install-back install-front
     @:
