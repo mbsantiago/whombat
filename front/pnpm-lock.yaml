@@ -24,8 +24,8 @@ importers:
         specifier: ^7.0.6
         version: 7.0.6(ajv@6.15.0)(react-hook-form@7.91.0(@types/react@19.3.0)(react@19.3.1))(zod@3.25.76)
       '@table-nav/react':
-        specifier: ^0.0.7
-        version: 0.0.7(@table-nav/core@0.0.7)
+        specifier: ^0.0.10
+        version: 0.0.10(@table-nav/core@0.0.10)
       '@tailwindcss/forms':
         specifier: ^0.5.11
         version: 0.5.11(tailwindcss@4.3.5)
@@ -2192,14 +2192,13 @@ packages:
   '@swc/helpers@0.5.24':
     resolution: {integrity: sha512-6tcXo4kA8HgGO7AVmawB57RYi/piBPYVHVcO6dXjX+SZw8GoHmi262sp4v2Ha2kNP9Cx84qei27yT+fjS1lxgg==}
 
-  '@table-nav/core@0.0.7':
-    resolution: {integrity: sha512-pCh18jHDRe3tw9sJZXfKi4cSD6VjHbn40CYdqhp5X91SIX7rakDEQAsTx6F7Fv9TUv265l+5rUDcYNaJ0N0cqQ==}
-    deprecated: Bad workplace dependencies
+  '@table-nav/core@0.0.10':
+    resolution: {integrity: sha512-URSdbDF4KiQP0Jq9B6iinv3+FbVm/agHpVhqnfrVPCjULnCczu4hgl6B8pPh1j+xzPVZCcXJe1AJwSocDXQMvw==}
 
-  '@table-nav/react@0.0.7':
-    resolution: {integrity: sha512-S+DsD/qDqp50Z4dqt5tZFMWA3sRu0OOT/grMQuq/z/52jPEKJB+b9t+YSH8Ms55vCJOJ0DxuYldJpYrJLMG5ew==}
+  '@table-nav/react@0.0.10':
+    resolution: {integrity: sha512-WIi2aKkRNggaD/v0rQ+3l/FJ+P4oN3BZ6T4o9LhkXl1vmev5aiP6Lp8rDwQ8QIN9Vb5lrTMX/2Lfo68NZd0uTg==}
     peerDependencies:
-      '@table-nav/core': ^0.0.7
+      '@table-nav/core': ^0.0.10
 
   '@tailwindcss/forms@0.5.11':
     resolution: {integrity: sha512-h9wegbZDPurxG22xZSoWtdzc41/OlNEUQERNqI/0fOwa2aVlWGu7C35E/x6LDyD3lgtztFSSjKZyuVM0hxhbgA==}
@@ -7921,11 +7920,11 @@ snapshots:
 
   '@swc/helpers@0.5.24': {}
 
-  '@table-nav/core@0.0.7': {}
+  '@table-nav/core@0.0.10': {}
 
-  '@table-nav/react@0.0.7(@table-nav/core@0.0.7)':
+  '@table-nav/react@0.0.10(@table-nav/core@0.0.10)':
     dependencies:
-      '@table-nav/core': 0.0.7
+      '@table-nav/core': 0.0.10
 
   '@tailwindcss/forms@0.5.11(tailwindcss@4.3.5)':
     dependencies:
