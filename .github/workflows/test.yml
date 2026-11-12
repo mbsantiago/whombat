@@ -81,6 +81,7 @@ jobs:
 
       - uses: pnpm/setup@v3
         with:
+          version: 12
           runtime: node@26
           working-directory: front
           cache: true
