@@ -10,8 +10,6 @@ import {
   ExplorationIcon,
   HomeIcon,
   LogOutIcon,
-  PluginIcon,
-  SettingsIcon,
   WhombatIcon,
 } from "@/lib/components/icons";
 import { HorizontalDivider } from "@/lib/components/layouts/Divider";

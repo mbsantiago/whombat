@@ -1,5 +1,4 @@
 import { IssueIcon, RecordingsIcon, WarningIcon } from "@/lib/components/icons";
-import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import MetricBadge from "@/lib/components/ui/MetricBadge";
