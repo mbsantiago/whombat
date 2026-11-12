@@ -5,6 +5,8 @@ import Dialog from "@/lib/components/ui/Dialog";
 import Empty from "@/lib/components/ui/Empty";
 import type { AnnotationProject } from "@/lib/types";
 
+import type { JSX } from "react";
+
 export default function AnnotationProjectList({
   annotationProjects,
   isLoading = false,

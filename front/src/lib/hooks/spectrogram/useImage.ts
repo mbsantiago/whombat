@@ -10,7 +10,7 @@ const DEFAULT_TIMEOUT = 30_000;
 
 export type ImageStatus = {
   /** The image element reference. */
-  image: RefObject<HTMLImageElement>;
+  image: RefObject<HTMLImageElement | null>;
   /** Indicates if the image is currently loading. */
   isLoading: boolean;
   /** The error object if an error occurred, otherwise null. */

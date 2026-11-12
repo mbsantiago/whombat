@@ -1,5 +1,7 @@
 import DetailLayout from "@/lib/components/layouts/Detail";
 
+import type { JSX } from "react";
+
 /**
   * DatasetDetail component renders the detailed view of a dataset.
   * It uses the DetailLayout component to structure the layout.

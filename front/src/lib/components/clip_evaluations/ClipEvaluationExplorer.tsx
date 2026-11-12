@@ -2,6 +2,8 @@ import Slider from "@/lib/components/inputs/Slider";
 import Toggle from "@/lib/components/inputs/Toggle";
 import * as ui from "@/lib/components/ui";
 
+import type { JSX } from "react";
+
 export default function ClipEvaluationExplorer(props: {
   isLoading?: boolean;
   isEmpty?: boolean;

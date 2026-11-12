@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import Player from "@/lib/components/audio/Player";
 import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";

@@ -4,6 +4,8 @@ import type { AnnotationTask } from "@/lib/types";
 
 import DetailLayout from "../layouts/Detail";
 
+import type { JSX } from "react";
+
 export default function AnnotationTask(props: {
   selectedTask: AnnotationTask | null;
   isLoading?: boolean;

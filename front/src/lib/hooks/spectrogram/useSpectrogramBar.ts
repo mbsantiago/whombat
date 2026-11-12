@@ -41,7 +41,7 @@ export default function useSpectrogramBar({
 }): {
   position: React.CSSProperties;
   props: React.DOMAttributes<HTMLDivElement>;
-  ref: React.RefObject<HTMLDivElement>;
+  ref: React.RefObject<HTMLDivElement | null>;
 } {
   const { ref, size } = useElementSize<HTMLDivElement>();
 

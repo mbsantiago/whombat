@@ -64,9 +64,9 @@ export default function useCanvas({
   onPress?: PressHandler;
   onScroll?: ScrollHandler;
   onDoubleClick?: DoublePressHandler;
-  canvasRef?: React.RefObject<HTMLCanvasElement>;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }): {
-  ref: React.RefObject<HTMLCanvasElement>;
+  ref: React.RefObject<HTMLCanvasElement | null>;
   props: React.DOMAttributes<HTMLCanvasElement>;
 } {
   const ref = useRef<HTMLCanvasElement>(null);

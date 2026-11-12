@@ -6,6 +6,8 @@ import type { Dataset } from "@/lib/types";
 
 import ListLayout from "../layouts/List";
 
+import type { JSX } from "react";
+
 /**
  * Component to display a list of datasets along with search functionality,
  * create and import links.

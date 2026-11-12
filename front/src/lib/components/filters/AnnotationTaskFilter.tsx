@@ -4,6 +4,8 @@ import type * as types from "@/lib/types";
 
 import { TagSearchBarProps } from "../tags/TagSearchBar";
 
+import type { JSX } from "react";
+
 export default function AnnotationTaskFilter({
   filter,
   onChangeField,

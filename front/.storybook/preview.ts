@@ -1,6 +1,6 @@
-import { withActions } from "@storybook/addon-actions/decorator";
-import type { Preview } from "@storybook/react";
-import { themes } from "@storybook/theming";
+import { withActions } from "storybook/actions/decorator";
+import type { Preview } from "@storybook/nextjs";
+import { themes } from "storybook/theming";
 
 import "@/app/globals.css";
 

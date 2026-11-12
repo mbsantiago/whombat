@@ -6,6 +6,8 @@ import * as inputs from "@/lib/components/inputs";
 import * as ui from "@/lib/components/ui";
 import type * as types from "@/lib/types";
 
+import type { JSX } from "react";
+
 export default function AnnotationProjectTasks(props: {
   dataset?: types.Dataset;
   isLoading: boolean;

@@ -6,6 +6,8 @@ import type { EvaluationSet, Tag } from "@/lib/types";
 
 import ListLayout from "../layouts/List";
 
+import type { JSX } from "react";
+
 export default function EvaluationSets({
   evaluationSets,
   isLoading = false,

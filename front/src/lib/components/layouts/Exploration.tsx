@@ -1,5 +1,7 @@
 import Loading from "@/lib/components/ui/Loading";
 
+import type { JSX } from "react";
+
 export default function ExplorationLayout(props: {
   isLoading?: boolean;
   description?: string;

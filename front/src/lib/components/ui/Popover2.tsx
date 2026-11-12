@@ -36,7 +36,7 @@ export function Popover({
       <div {...underlayProps} className="fixed inset-0" />
       <div
         {...popoverProps}
-        ref={props.popoverRef as React.RefObject<HTMLDivElement>}
+        ref={props.popoverRef as React.RefObject<HTMLDivElement | null>}
         className="p-2 rounded border shadow-lg bg-stone-100 border-stone-200 text-stone-800 dark:bg-stone-800 dark:border-stone-700 dark:text-stone-200"
       >
         <svg

@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import StackedList from "@/lib/components/lists/StackedList";
 import EmptyComponent from "@/lib/components/ui/Empty";

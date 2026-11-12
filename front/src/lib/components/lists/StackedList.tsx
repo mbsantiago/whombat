@@ -1,6 +1,6 @@
 import { type Key, type ReactElement } from "react";
 
-type ElementWithKey = ReactElement & { key: Key | null };
+type ElementWithKey = ReactElement<any> & { key: Key | null };
 
 /**
   * StackedList component renders a list of React elements with keys.

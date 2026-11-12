@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 
 import RecordingMap from "@/lib/components/recordings/RecordingMap";
 import type { Recording } from "@/lib/types";

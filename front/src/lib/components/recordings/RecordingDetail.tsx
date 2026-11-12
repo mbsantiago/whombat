@@ -1,5 +1,7 @@
 import DetailLayout from "../layouts/Detail";
 
+import type { JSX } from "react";
+
 /**
  * RecordingDetail component renders the detailed view of a recording.
  *

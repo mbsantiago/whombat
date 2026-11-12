@@ -1,6 +1,6 @@
 import type { CollectionChildren } from "@react-types/shared";
 import classNames from "classnames";
-import { type RefObject, useRef } from "react";
+import { type RefObject, useRef, type JSX } from "react";
 import {
   type AriaListBoxProps,
   useListBox,
@@ -12,7 +12,7 @@ import { type ListState, type Node, useListState } from "react-stately";
 export default function ListBox<T extends object>(
   props: {
     listState?: ListState<T>;
-    listBoxRef?: RefObject<HTMLUListElement>;
+    listBoxRef?: RefObject<HTMLUListElement | null>;
     children?: CollectionChildren<T>;
     renderEmptyState?: () => JSX.Element;
   } & Omit<AriaListBoxProps<T>, "children">,

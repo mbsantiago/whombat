@@ -1,4 +1,4 @@
-import { type FC } from "react";
+import { type FC, type JSX } from "react";
 
 import { DeleteIcon, TagsIcon } from "@/lib/components/icons";
 import AddTagButton from "@/lib/components/tags/AddTagButton";

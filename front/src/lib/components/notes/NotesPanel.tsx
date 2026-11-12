@@ -5,6 +5,8 @@ import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import type { Note, NoteCreate, NoteUpdate, User } from "@/lib/types";
 
+import type { JSX } from "react";
+
 export default function NotesPanel({
   notes,
   title = "Notes",

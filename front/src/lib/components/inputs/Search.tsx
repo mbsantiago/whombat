@@ -25,7 +25,7 @@ export default function Search({
   /** Flag to indicate if the search is in a loading state. */
   isLoading?: boolean;
   /** Optional icon to display in the search input. */
-  icon?: ReactElement;
+  icon?: ReactElement<any>;
 } & SearchFieldProps &
   Omit<InputHTMLAttributes<HTMLInputElement>, "onChange" | "spellCheck">) {
   const state = useSearchFieldState({ label, ...props });

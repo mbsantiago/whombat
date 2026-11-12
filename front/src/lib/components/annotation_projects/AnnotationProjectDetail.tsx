@@ -1,5 +1,7 @@
 import DetailLayout from "../layouts/Detail";
 
+import type { JSX } from "react";
+
 export default function AnnotationProjectDetail(props: {
   AnnotationProjectProgress: JSX.Element;
   AnnotationProjectTagsSummary: JSX.Element;
