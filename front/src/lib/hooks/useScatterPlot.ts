@@ -1,9 +1,4 @@
-import {
-  type Datum,
-  type Layout,
-  type PlotData,
-  type PlotMouseEvent,
-} from "plotly.js";
+import { type Datum, type Layout, type Scatter3dData, type PlotMouseEvent } from "plotly.js";
 import { useCallback, useMemo } from "react";
 
 import useTheme from "@/lib/hooks/useTheme";
@@ -25,16 +20,14 @@ function newTrace(
   xLabel: string,
   yLabel: string,
   zLabel: string,
-): Partial<PlotData> {
+): Partial<Scatter3dData> {
   return {
     x: [],
     y: [],
     z: [],
     customdata: [],
     hovertemplate:
-      `<b>${xLabel}</b>: %{x}<br>` +
-      `<b>${yLabel}</b>: %{y}<br>` +
-      `<b>${zLabel}</b>: %{z}`,
+      `<b>${xLabel}</b>: %{x}<br>` + `<b>${yLabel}</b>: %{y}<br>` + `<b>${zLabel}</b>: %{z}`,
     type: "scatter3d",
     mode: "markers",
     name: key,
@@ -64,8 +57,8 @@ export default function useScatterPlot({
   zFeature = "low_freq",
   onClick: onSoundEventAnnotationClick,
 }: UseScatterPlotProps) {
-  const data = useMemo<Partial<PlotData>[]>(() => {
-    const traces: { [key: string]: Partial<PlotData> } = {};
+  const data = useMemo<Partial<Scatter3dData>[]>(() => {
+    const traces: { [key: string]: Partial<Scatter3dData> } = {};
 
     initialData.forEach((annotation) => {
       const groupKey = groupBy(annotation);
@@ -85,9 +78,8 @@ export default function useScatterPlot({
       (traces[groupKey].y as number[]).push(y);
       (traces[groupKey].z as number[]).push(z);
 
-      traces[groupKey].customdata?.push(
-        annotation as unknown as Datum & Datum[],
-      );
+      // @ts-ignore
+      traces[groupKey].customdata?.push(annotation as unknown as Datum & Datum[]);
     });
 
     return Object.values(traces);
