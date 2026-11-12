@@ -4,9 +4,10 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import type { Mode, Variant } from "@/lib/components/common";
 
-const FOCUS_STYLE = "focus:ring-4 focus:ring-emerald-500/50 focus:outline-none";
+const FOCUS_STYLE =
+  "focus:ring-4 focus:ring-emerald-500/50 focus:outline-hidden";
 
-export const CLASS_NAMES = {
+export const CLASS_NAMES: Record<Mode, any> = {
   filled: {
     primary:
       "border-emerald-500 bg-emerald-300 hover:bg-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:ring-offset-opacity-50 disabled:bg-emerald-300 dark:disabled:bg-emerald-700",

@@ -9,7 +9,6 @@ import TagComponent from "@/lib/components/tags/Tag";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
 import type { Tag } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
 

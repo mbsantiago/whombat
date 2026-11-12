@@ -1,17 +1,16 @@
 import { FC, FormEvent, useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterButton from "@/lib/components/filters/FilterButton";
 import taskFilterDefs from "@/lib/components/filters/tasks";
 import { NextIcon, PreviousIcon } from "@/lib/components/icons";
+import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import Button from "@/lib/components/ui/Button";
 import Dialog from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
-
 import type {
   AnnotationTask,
   AnnotationTaskFilter,
@@ -106,7 +105,7 @@ function CurrentTask({ currentTask }: { currentTask?: AnnotationTask }) {
               </span>
             </div>
             <div className="relative group">
-              <code className="block p-2 font-mono leading-relaxed text-blue-500 break-all rounded border bg-stone-100 border-stone-200 dark:bg-stone-800 dark:border-stone-700">
+              <code className="block p-2 font-mono leading-relaxed text-blue-500 break-all rounded-sm border bg-stone-100 border-stone-200 dark:bg-stone-800 dark:border-stone-700">
                 {currentTask?.uuid}
               </code>
             </div>

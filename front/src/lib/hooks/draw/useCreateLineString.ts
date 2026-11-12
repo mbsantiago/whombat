@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
-import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
-
 import drawGeometry from "@/lib/draw/geometry";
 import { DEFAULT_LINESTRING_STYLE } from "@/lib/draw/linestring";
 import type { BorderStyle } from "@/lib/draw/styles";
+import useWindowMotions from "@/lib/hooks/window/useWindowMotions";
 import type {
   Coordinates,
   Dimensions,

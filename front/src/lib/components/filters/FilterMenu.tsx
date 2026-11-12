@@ -1,13 +1,13 @@
-import { Float } from "@headlessui-float/react";
-import { Popover } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { type ReactNode, useState } from "react";
 
+import type { Mode } from "@/lib/components/common";
 import type { SetFilter } from "@/lib/components/filters/Filters";
 import { BackIcon, FilterIcon } from "@/lib/components/icons";
 import SearchMenu from "@/lib/components/search/SearchMenu";
 import Button, { getButtonClassName } from "@/lib/components/ui/Button";
 
-export type FilterDef<T extends Object> = {
+export type FilterDef<T extends object> = {
   field: keyof T;
   name: string;
   description?: string;
@@ -16,7 +16,7 @@ export type FilterDef<T extends Object> = {
   render: (renderProps: { value: any; clear: () => void }) => ReactNode;
 };
 
-function FilterCombobox<T extends Object>({
+function FilterCombobox<T extends object>({
   filterDefs,
   onChange,
 }: {
@@ -25,7 +25,7 @@ function FilterCombobox<T extends Object>({
 }) {
   return (
     <>
-      <div className="mb-2 underline text-stone-700 underline-offset-2 decoration-amber-500 decoration-2 dark:text-stone-300">
+      <div className="mb-2 text-stone-700 underline decoration-amber-500 decoration-2 underline-offset-2 dark:text-stone-300">
         Apply Filter
       </div>
       <SearchMenu
@@ -52,7 +52,7 @@ function FilterCombobox<T extends Object>({
   );
 }
 
-function FilterPanel<T extends Object>({
+function FilterPanel<T extends object>({
   filterDefs,
   onSetFilterField,
 }: {
@@ -74,10 +74,10 @@ function FilterPanel<T extends Object>({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center mb-2">
+      <div className="mb-2 flex flex-row items-center justify-between">
         <div>
           <span className="mr-2 text-stone-500">Filter by</span>
-          <span className="underline text-stone-700 underline-offset-2 decoration-amber-500 decoration-2 dark:text-stone-300">
+          <span className="text-stone-700 underline decoration-amber-500 decoration-2 underline-offset-2 dark:text-stone-300">
             {selectedFilter.name}
           </span>
         </div>
@@ -86,7 +86,7 @@ function FilterPanel<T extends Object>({
           variant="warning"
           onClick={() => setSelectedFilter(null)}
         >
-          <BackIcon className="w-5 h-5 group-hover:stroke-3" />
+          <BackIcon className="h-5 w-5 group-hover:stroke-3" />
         </Button>
       </div>
       {selectedFilter.description != null ? (
@@ -108,7 +108,7 @@ function FilterPanel<T extends Object>({
   );
 }
 
-export default function FilterPopover<T extends Object>({
+export default function FilterPopover<T extends object>({
   filterDef,
   button,
   mode = "filled",
@@ -118,7 +118,7 @@ export default function FilterPopover<T extends Object>({
 }: {
   filterDef: FilterDef<T>[];
   button?: ReactNode;
-  mode?: "filled" | "outline" | "text";
+  mode?: Mode;
   variant?: "primary" | "secondary" | "danger" | "success" | "warning" | "info";
   className?: string;
   onSetFilterField?: <K extends keyof T>(field: K, value: T[K]) => void;
@@ -128,37 +128,23 @@ export default function FilterPopover<T extends Object>({
   }
 
   return (
-    <Popover as="div" className="inline-block relative text-left">
-      <Float
-        autoPlacement
-        portal={true}
-        offset={4}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+    <Popover as="div" className="relative inline-block text-left">
+      <PopoverButton className={className}>
+        {button != null ? button : <FilterIcon className="h-4 w-4 stroke-2" />}
+      </PopoverButton>
+      <PopoverPanel
+        anchor={{ to: "bottom start", gap: 4 }}
+        transition
+        unmount
+        className="ring-opacity-5 z-50 w-96 divide-y divide-stone-100 rounded-md border border-stone-200 bg-stone-50 shadow-md ring-1 ring-stone-900 transition duration-100 ease-out focus:outline-hidden data-closed:scale-95 data-closed:opacity-0 dark:border-stone-500 dark:bg-stone-700 dark:shadow-stone-800"
       >
-        <Popover.Button className={className}>
-          {button != null ? (
-            button
-          ) : (
-            <FilterIcon className="w-4 h-4 stroke-2" />
-          )}
-        </Popover.Button>
-        <Popover.Panel
-          unmount
-          className="z-50 w-96 rounded-md border divide-y ring-1 ring-opacity-5 shadow-md focus:outline-none divide-stone-100 bg-stone-50 border-stone-200 ring-stone-900 dark:bg-stone-700 dark:border-stone-500 dark:shadow-stone-800"
-        >
-          <div className="p-4">
-            <FilterPanel
-              onSetFilterField={onSetFilterField}
-              filterDefs={filterDef}
-            />
-          </div>
-        </Popover.Panel>
-      </Float>
+        <div className="p-4">
+          <FilterPanel
+            onSetFilterField={onSetFilterField}
+            filterDefs={filterDef}
+          />
+        </div>
+      </PopoverPanel>
     </Popover>
   );
 }

@@ -1,15 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { type Control, useController, useForm } from "react-hook-form";
+import { useController, useForm } from "react-hook-form";
 
 import { Group, RangeSlider, Slider } from "@/lib/components/inputs";
 import SettingsSection from "@/lib/components/settings/settings/SettingsSection";
-
 import { ViewSettingsSchema } from "@/lib/schemas";
-import type { ViewSettings } from "@/lib/types";
+import type {
+  ViewSettings,
+  ViewSettingsControl,
+  ViewSettingsInput,
+} from "@/lib/types";
 import { debounce } from "@/lib/utils/debounce";
-
-import { InputHelp } from "../inputs/InputGroup";
 
 interface ViewSettingsProps {
   settings: ViewSettings;
@@ -24,7 +25,11 @@ export default function ViewSettings({
   onChange,
   debounceTime = 300,
 }: ViewSettingsProps) {
-  const { handleSubmit, watch, control } = useForm({
+  const { handleSubmit, watch, control } = useForm<
+    ViewSettingsInput,
+    unknown,
+    ViewSettings
+  >({
     resolver: zodResolver(ViewSettingsSchema),
     mode: "onChange",
     reValidateMode: "onChange",
@@ -60,7 +65,7 @@ function MinMaxFreqSettings({
   control,
   samplerate,
 }: {
-  control: Control<ViewSettings>;
+  control: ViewSettingsControl;
   samplerate: number;
 }) {
   const minFreq = useController({
@@ -101,7 +106,7 @@ function MinMaxFreqSettings({
   );
 }
 
-function DurationSettings({ control }: { control: Control<ViewSettings> }) {
+function DurationSettings({ control }: { control: ViewSettingsControl }) {
   const duration = useController({
     control,
     name: "duration",

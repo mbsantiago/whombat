@@ -20,7 +20,7 @@ export default function useCaptureScroll<T extends HTMLElement>({
 }: {
   /** A React ref object  referencing the HTML element on which to capture
    * scroll events.*/
-  ref: React.RefObject<T>;
+  ref: React.RefObject<T | null>;
 }) {
   useEffect(() => {
     const element = ref.current;

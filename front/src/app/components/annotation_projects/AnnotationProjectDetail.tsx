@@ -1,5 +1,4 @@
 import AnnotationProjectDetailBase from "@/lib/components/annotation_projects/AnnotationProjectDetail";
-
 import type { AnnotationProject } from "@/lib/types";
 
 import AnnotationProjectActions from "./AnnotationProjectActions";

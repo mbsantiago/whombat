@@ -43,7 +43,7 @@ export default function Help({
           role="contentinfo"
         >
           <svg
-            className="inline flex-shrink-0 mr-3 w-4 h-4"
+            className="inline shrink-0 mr-3 w-4 h-4"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"

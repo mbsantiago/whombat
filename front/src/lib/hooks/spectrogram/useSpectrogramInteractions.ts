@@ -4,7 +4,6 @@ import {
 } from "@/lib/hooks/spectrogram/useSpectrogramMotions";
 import useSpectrogramSeek from "@/lib/hooks/spectrogram/useSpectrogramSeek";
 import useSpectrogramZoom from "@/lib/hooks/spectrogram/useSpectrogramZoom";
-
 import type {
   AudioController,
   SpectrogramMode,

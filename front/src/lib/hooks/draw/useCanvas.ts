@@ -12,14 +12,14 @@ export default function useCanvas({
   onClear,
   onError,
 }: {
-  ref: RefObject<HTMLCanvasElement>;
+  ref: RefObject<HTMLCanvasElement | null>;
   draw: DrawFunction;
   onMount?: (ctx: CanvasRenderingContext2D) => void;
   onResize?: (ctx: CanvasRenderingContext2D) => void;
   onDraw?: (ctx: CanvasRenderingContext2D) => void;
   onClear?: (ctx: CanvasRenderingContext2D) => void;
   onError?: (canvas: HTMLCanvasElement) => void;
-}): RefObject<HTMLCanvasElement> {
+}): RefObject<HTMLCanvasElement | null> {
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
 
   // Initialize canvas context

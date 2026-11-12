@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "storybook/test";
 
 import SoundEventAnnotationsScatterPlot from "@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot";
-
 import type { ScatterPlotData, Tag } from "@/lib/types";
 
 const meta: Meta<typeof SoundEventAnnotationsScatterPlot> = {

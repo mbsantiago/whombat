@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { DivIcon } from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 import { useMemo } from "react";
 import { MapContainer } from "react-leaflet/MapContainer";
@@ -9,7 +10,6 @@ import { TileLayer } from "react-leaflet/TileLayer";
 
 import * as icons from "@/lib/components/icons";
 import Tag from "@/lib/components/tags/Tag";
-
 import type * as types from "@/lib/types";
 import {
   Color,

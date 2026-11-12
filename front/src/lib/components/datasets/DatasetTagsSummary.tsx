@@ -1,13 +1,11 @@
 import { type ComponentProps } from "react";
 
 import Loading from "@/app/loading";
-
 import { TagsIcon } from "@/lib/components/icons";
 import TagCount from "@/lib/components/tags/TagCount";
 import Card from "@/lib/components/ui/Card";
 import Empty from "@/lib/components/ui/Empty";
 import { H3 } from "@/lib/components/ui/Headings";
-
 import type * as types from "@/lib/types";
 
 /**

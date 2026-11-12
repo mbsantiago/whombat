@@ -18,7 +18,7 @@ export default function PluginInfo({
   thumbnail?: string;
 }) {
   return (
-    <div className="flex flex-col items-center bg-white rounded-lg border shadow md:flex-row md:max-w-xl border-stone-200 dark:bg-stone-800 dark:border-stone-700">
+    <div className="flex flex-col items-center bg-white rounded-lg border shadow-sm md:flex-row md:max-w-xl border-stone-200 dark:bg-stone-800 dark:border-stone-700">
       {thumbnail && (
         <img
           className="object-cover w-96 h-full md:w-48 md:h-auto md:rounded-none pl-4"

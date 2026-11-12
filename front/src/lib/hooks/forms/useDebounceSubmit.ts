@@ -8,17 +8,20 @@ import type {
 
 import { debounce } from "@/lib/utils/debounce";
 
-export default function useDebounceSubmit<T extends FieldValues>({
+export default function useDebounceSubmit<
+  TInput extends FieldValues,
+  TOutput extends FieldValues,
+>({
   watch,
   handleSubmit,
   onSubmit,
   value,
   timeout = 300,
 }: {
-  value?: T;
-  watch: UseFormWatch<T>;
-  handleSubmit: UseFormHandleSubmit<T>;
-  onSubmit?: SubmitHandler<T>;
+  value?: TOutput;
+  watch: UseFormWatch<TInput>;
+  handleSubmit: UseFormHandleSubmit<TInput, TOutput>;
+  onSubmit?: SubmitHandler<TOutput>;
   timeout?: number;
 }) {
   useEffect(() => {

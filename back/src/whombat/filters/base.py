@@ -3,7 +3,7 @@
 import datetime
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Any, Type, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, create_model
@@ -12,6 +12,9 @@ from sqlalchemy import Select, or_
 from sqlalchemy.orm import InstrumentedAttribute, MappedColumn
 
 from whombat.models.base import Base
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeForm
 
 __all__ = [
     "Filter",
@@ -384,7 +387,7 @@ def combine(
     as a FastAPI dependency, and it will deserialize the query parameters into
     the correct filter types and apply them to the query.
     """
-    field_definitions: dict[str, tuple[type, FieldInfo]] = {}
+    field_definitions: dict[str, tuple[TypeForm[Any], FieldInfo]] = {}
     field_mapping: dict[str, str] = {}
     filter_mapping: dict[str, int] = {}
 

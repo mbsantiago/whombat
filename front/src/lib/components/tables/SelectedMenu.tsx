@@ -6,7 +6,6 @@ import TagSearchBarBase, {
 } from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
 import Popover from "@/lib/components/ui/Popover";
-
 import { type Tag } from "@/lib/types";
 
 /**

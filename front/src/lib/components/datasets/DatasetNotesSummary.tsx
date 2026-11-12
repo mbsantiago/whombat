@@ -5,7 +5,6 @@ import NoteComponent from "@/lib/components/notes/Note";
 import Card from "@/lib/components/ui/Card";
 import { H3 } from "@/lib/components/ui/Headings";
 import Loading from "@/lib/components/ui/Loading";
-
 import type * as types from "@/lib/types";
 
 /**

@@ -2,9 +2,7 @@ import { useMemo } from "react";
 
 import ListSearch from "@/lib/components/lists/ListSearch";
 import TagComponent from "@/lib/components/tags/Tag";
-
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
-
 import type { Tag } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
 import { getTagKey } from "@/lib/utils/tags";

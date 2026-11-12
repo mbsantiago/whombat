@@ -1,10 +1,10 @@
-import { type Control, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
+import { Group } from "@/lib/components/inputs/index";
 import Select from "@/lib/components/inputs/Select";
 import Toggle from "@/lib/components/inputs/Toggle";
-import { Group } from "@/lib/components/inputs/index";
-
-import type { SpectrogramSettings } from "@/lib/types";
+import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
+import type { SpectrogramSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
@@ -20,7 +20,7 @@ const AMPLITUDE_SCALES: Record<
 export default function AmplitudeSettings({
   control,
 }: {
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
 }) {
   return (
     <SettingsSection>
@@ -35,7 +35,11 @@ export default function AmplitudeSettings({
             error={fieldState.error?.message}
           >
             <Select
-              selected={AMPLITUDE_SCALES[field.value]}
+              selected={
+                AMPLITUDE_SCALES[
+                  field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.scale
+                ]
+              }
               onChange={field.onChange}
               options={Object.values(AMPLITUDE_SCALES)}
             />

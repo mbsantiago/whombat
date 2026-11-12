@@ -7,13 +7,11 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import useStore from "@/app/store";
-
 import StatusBadge from "@/lib/components/annotation_tasks/StatusBadge";
 import { SunIcon } from "@/lib/components/icons";
 import TableCell from "@/lib/components/tables/TableCell";
 import TableHeader from "@/lib/components/tables/TableHeader";
 import TagComponent from "@/lib/components/tags/Tag";
-
 import type {
   AnnotationStatusBadge,
   AnnotationTask,

@@ -1,7 +1,6 @@
 "use client";
 
 import usePlugins from "@/app/hooks/api/usePlugins";
-
 import PluginInfo from "@/lib/components/PluginInfo";
 import Hero from "@/lib/components/ui/Hero";
 

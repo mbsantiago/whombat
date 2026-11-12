@@ -1,6 +1,5 @@
-import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { CheckIcon, ExpandIcon } from "@/lib/components/icons";
 import { Submit } from "@/lib/components/inputs/index";
@@ -24,21 +23,15 @@ export default function Select<T>({
   onChange: (value: T) => void;
   options: Option<T>[];
   placement?:
-    "top-end" | "top-start" | "bottom-end" | "bottom-start" | "bottom";
+    | "top-end"
+    | "top-start"
+    | "bottom-end"
+    | "bottom-start"
+    | "bottom";
 }) {
   return (
     <Listbox value={selected.value} onChange={onChange}>
-      <Float
-        as="div"
-        className="relative"
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-        placement={placement}
-        offset={4}
-        flip={true}
-        floatingAs={Fragment}
-      >
+      <div className="relative">
         <Listbox.Button as="div" className="inline-flex gap-2 w-full">
           {label ? (
             <div className="my-auto inline-block">
@@ -57,7 +50,19 @@ export default function Select<T>({
             </span>
           </Submit>
         </Listbox.Button>
-        <Listbox.Options className="max-h-60 w-full overflow-auto rounded-lg bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-none sm:text-sm">
+        <Listbox.Options
+          anchor={{
+            to: placement.replace("-", " ") as
+              | "top end"
+              | "top start"
+              | "bottom end"
+              | "bottom start"
+              | "bottom",
+            gap: 4,
+          }}
+          transition
+          className="max-h-60 w-(--button-width) overflow-auto rounded-lg bg-stone-50 dark:bg-stone-700 py-1 text-base shadow-lg ring-1 ring-stone-900 dark:ring-stone-600 ring-opacity-5 focus:outline-hidden sm:text-sm transition duration-100 ease-in data-closed:opacity-0"
+        >
           {options.map((option) => (
             <Listbox.Option
               key={option.id}
@@ -89,7 +94,7 @@ export default function Select<T>({
             </Listbox.Option>
           ))}
         </Listbox.Options>
-      </Float>
+      </div>
     </Listbox>
   );
 }

@@ -6,7 +6,7 @@ import { type KeyboardModifiers } from "react-hotkeys-hook/src/types";
  */
 export function KBD({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-block px-1 font-mono rounded border bg-stone-900 border-stone-800 text-stone-300 dark:bg-stone-300 dark:border-stone-400 dark:text-stone-900">
+    <kbd className="inline-block px-1 font-mono rounded-sm border bg-stone-900 border-stone-800 text-stone-300 dark:bg-stone-300 dark:border-stone-400 dark:text-stone-900">
       {children}
     </kbd>
   );

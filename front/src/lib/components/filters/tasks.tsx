@@ -12,7 +12,6 @@ import {
   TagIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-
 import type { AnnotationTaskFilter } from "@/lib/types";
 
 const tasksFilterDefs: FilterDef<AnnotationTaskFilter>[] = [

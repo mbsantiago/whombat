@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 import DetailLayout from "@/lib/components/layouts/Detail";
 
 /**

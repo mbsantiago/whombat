@@ -1,10 +1,9 @@
 import { useCallback, useMemo } from "react";
-import { type Control, useController } from "react-hook-form";
+import { useController } from "react-hook-form";
 
 import { Group } from "@/lib/components/inputs";
 import RangeSlider from "@/lib/components/inputs/RangeSlider";
-
-import type { AudioSettings } from "@/lib/types";
+import type { AudioSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
@@ -13,7 +12,7 @@ export default function FilteringSettings({
   control,
 }: {
   samplerate: number;
-  control: Control<AudioSettings>;
+  control: AudioSettingsControl;
 }) {
   const {
     field: { value: lowFreq, onChange: onChangeLowFreq },

@@ -2,7 +2,7 @@ import classnames from "classnames";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 const BASE_CLASS =
-  "whitespace-nowrap rounded-lg bg-stone-50 p-2 text-center text-sm font-medium dark:bg-stone-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/50 flex gap-1 items-center";
+  "whitespace-nowrap rounded-lg bg-stone-50 p-2 text-center text-sm font-medium dark:bg-stone-800 focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 flex gap-1 items-center";
 
 const ACTIVE_CLASS = "text-emerald-500";
 

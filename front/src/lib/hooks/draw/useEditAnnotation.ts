@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from "react";
 
-import useEditGeometry from "@/lib/hooks/draw/useEditGeometry";
-
 import { type Style } from "@/lib/draw/styles";
+import useEditGeometry from "@/lib/hooks/draw/useEditGeometry";
 import type {
   Dimensions,
   Geometry,

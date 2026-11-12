@@ -1,9 +1,7 @@
 import type { AxiosError } from "axios";
 
 import api from "@/app/api";
-
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type { Evaluation } from "@/lib/types";
 
 export default function useEvaluation({

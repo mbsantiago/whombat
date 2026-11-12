@@ -1,9 +1,8 @@
-import { Float } from "@headlessui-float/react";
-import { Combobox } from "@headlessui/react";
+import { Combobox, ComboboxInput, ComboboxOptions } from "@headlessui/react";
 import Fuse from "fuse.js";
-import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
-import Search from "@/lib/components/inputs/Search";
+import Input from "@/lib/components/inputs/Input";
 import Button from "@/lib/components/ui/Button";
 
 /** A search menu.
@@ -29,7 +28,7 @@ export default function SearchMenu<
   displayValue,
   onChange,
   initialQuery = "",
-  as = Search,
+  as = Input,
   empty,
 }: {
   options: T[];
@@ -67,22 +66,25 @@ export default function SearchMenu<
     return fuse.search(query, { limit }).map((result) => result.item);
   }, [query, fuse, options, limit]);
 
+  const handleSelect = (selected: T | null) => {
+    if (selected != null) onSelect?.(selected);
+  };
+
   const optionsClassName =
-    "w-full rounded-md border bg-stone-50 dark:bg-stone-700 border-stone-200 dark:border-stone-600 py-2 px-1 overflow-auto shadow-lg focus:outline-none";
+    "w-(--input-width) rounded-md border bg-stone-50 dark:bg-stone-700 border-stone-200 dark:border-stone-600 py-2 px-1 overflow-auto shadow-lg focus:outline-hidden";
 
   if (isStatic) {
     return (
-      <Combobox value={value} onChange={onSelect}>
+      <Combobox value={value} onChange={handleSelect}>
         {({ value, open }) => (
-          <div className="relative">
-            <Combobox.Input
+          <div className="relative w-full">
+            <ComboboxInput
               as={as}
               autoFocus={autoFocus}
               value={!open && value != null ? displayValue?.(value) : undefined}
-              // @ts-ignore
-              onChange={(value) => setQuery(value)}
+              onChange={(event) => setQuery(event.target.value)}
             />
-            <Combobox.Options
+            <ComboboxOptions
               static={isStatic}
               className={`absolute mt-1 ${optionsClassName}`}
             >
@@ -96,7 +98,7 @@ export default function SearchMenu<
                 setLimit={setLimit}
                 empty={empty}
               />
-            </Combobox.Options>
+            </ComboboxOptions>
           </div>
         )}
       </Combobox>
@@ -104,46 +106,32 @@ export default function SearchMenu<
   }
 
   return (
-    <div className="flex flex-row w-full">
-      <Combobox value={value} onChange={onSelect}>
-        <Float
-          offset={8}
-          as="div"
-          className="relative w-full"
-          enter="transition duration-200 ease-out"
-          enterFrom="scale-95 opacity-0"
-          enterTo="scale-100 opacity-100"
-          leave="transition duration-150 ease-in"
-          leaveFrom="scale-100 opacity-100"
-          leaveTo="scale-95 opacity-0"
-          placement="bottom"
-          autoPlacement
-          floatingAs={Fragment}
-        >
-          <div className="w-full">
-            <Combobox.Input
-              as={as}
-              autoFocus={autoFocus}
-              value={value != null ? displayValue?.(value) : undefined}
-              // @ts-ignore
-              onChange={(value) => setQuery(value)}
+    <div className="flex w-full flex-row">
+      <Combobox value={value} onChange={handleSelect}>
+        <div className="relative w-full">
+          <ComboboxInput
+            as={as}
+            autoFocus={autoFocus}
+            value={value != null ? displayValue?.(value) : undefined}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <ComboboxOptions
+            anchor={{ to: "bottom", gap: 8 }}
+            transition
+            className={`${optionsClassName} transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0 empty:invisible`}
+          >
+            <MenuContents
+              options={filteredOptions}
+              total={options.length}
+              limit={limit}
+              initialLimit={initialLimit}
+              renderOption={renderOption}
+              getOptionKey={getOptionKey}
+              setLimit={setLimit}
+              empty={empty}
             />
-          </div>
-          <div className="w-full">
-            <Combobox.Options className={`${optionsClassName}`}>
-              <MenuContents
-                options={filteredOptions}
-                total={options.length}
-                limit={limit}
-                initialLimit={initialLimit}
-                renderOption={renderOption}
-                getOptionKey={getOptionKey}
-                setLimit={setLimit}
-                empty={empty}
-              />
-            </Combobox.Options>
-          </div>
-        </Float>
+          </ComboboxOptions>
+        </div>
       </Combobox>
     </div>
   );
@@ -208,8 +196,8 @@ function MenuContents<T>({
           className="w-full cursor-default"
           onClick={() => setLimit(total)}
         >
-          <div className="flex flex-row w-full justify-between items-center text-stone-500">
-            <span className="flex-grow text-left">Show all</span>
+          <div className="flex w-full flex-row items-center justify-between text-stone-500">
+            <span className="grow text-left">Show all</span>
             <span>{total - options.length} more</span>
           </div>
         </Button>
@@ -219,8 +207,8 @@ function MenuContents<T>({
           className="w-full cursor-default"
           onClick={() => setLimit(initialLimit)}
         >
-          <div className="flex flex-row w-full justify-between items-center text-stone-500">
-            <span className="flex-grow text-left">Show less</span>
+          <div className="flex w-full flex-row items-center justify-between text-stone-500">
+            <span className="grow text-left">Show less</span>
           </div>
         </Button>
       ) : null}

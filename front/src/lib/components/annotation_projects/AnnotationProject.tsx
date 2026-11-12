@@ -2,7 +2,6 @@ import { type ReactNode } from "react";
 
 import { AnnotationProjectIcon, CalendarIcon } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
-
 import type { AnnotationProject as AnnotationProjectType } from "@/lib/types";
 
 function Atom({ label, value }: { label: ReactNode; value: string }) {

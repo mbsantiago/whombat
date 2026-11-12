@@ -1,9 +1,8 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import * as icons from "@/lib/components/icons";
 import TagList from "@/lib/components/tags/TagList";
 import * as ui from "@/lib/components/ui";
-
 import type * as types from "@/lib/types";
 
 export default function EvaluationSetTags({

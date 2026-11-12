@@ -1,6 +1,10 @@
-import { Float } from "@headlessui-float/react";
 import { Popover } from "@headlessui/react";
 import { type ComponentProps, type FC, memo } from "react";
+
+type Anchor = Extract<
+  NonNullable<ComponentProps<typeof Popover.Panel>["anchor"]>,
+  string
+>;
 
 import { AddIcon } from "@/lib/components/icons";
 import TagSearchBarBase, {
@@ -41,7 +45,7 @@ const AddTagButton = memo(function AddTagButton({
   /** The text to display inside the button. */
   text?: string;
   /** The placement of the popover relative to the button. */
-  placement?: ComponentProps<typeof Float>["placement"];
+  placement?: TagSearchBarProps["placement"];
   /** The variant of the button. */
   variant?: "primary" | "secondary" | "danger";
   /** The tag search bar component to render inside the popover. */
@@ -49,39 +53,31 @@ const AddTagButton = memo(function AddTagButton({
 } & TagSearchBarProps) {
   return (
     <Popover as="div" className="inline-block text-left">
-      <Float
-        zIndex={20}
-        placement={placement}
-        offset={4}
-        enter="transition duration-200 ease-out"
-        enterFrom="scale-95 opacity-0"
-        enterTo="scale-100 opacity-100"
-        leave="transition duration-150 ease-in"
-        leaveFrom="scale-100 opacity-100"
-        leaveTo="scale-95 opacity-0"
-        portal={true}
+      <Popover.Button as="div">
+        <Button mode="text" variant={variant} padding="py-1">
+          <AddIcon className="inline-block w-5 h-5 align-middle" />
+          {text}
+        </Button>
+      </Popover.Button>
+      <Popover.Panel
+        anchor={{ to: placement.replace("-", " ") as Anchor, gap: 4 }}
+        className="z-20 w-72 transition duration-200 ease-out data-closed:scale-95 data-closed:opacity-0"
+        focus
+        transition
       >
-        <Popover.Button as="div">
-          <Button mode="text" variant={variant} padding="py-1">
-            <AddIcon className="inline-block w-5 h-5 align-middle" />
-            {text}
-          </Button>
-        </Popover.Button>
-        <Popover.Panel className="w-72" focus>
-          {({ close }) => (
-            <TagSearchBar
-              onKeyDown={(event) => {
-                if (event.key === "Escape") {
-                  close();
-                  return;
-                }
-                onKeyDown?.(event);
-              }}
-              {...props}
-            />
-          )}
-        </Popover.Panel>
-      </Float>
+        {({ close }) => (
+          <TagSearchBar
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                close();
+                return;
+              }
+              onKeyDown?.(event);
+            }}
+            {...props}
+          />
+        )}
+      </Popover.Panel>
     </Popover>
   );
 });

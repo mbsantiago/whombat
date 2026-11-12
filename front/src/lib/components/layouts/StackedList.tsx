@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 /*
  * StackedList component renders a list of React elements with keys.
  */

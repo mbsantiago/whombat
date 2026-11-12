@@ -9,7 +9,6 @@ import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
 import { H4 } from "@/lib/components/ui/Headings";
 import Tooltip from "@/lib/components/ui/Tooltip";
-
 import type { Tag } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
 

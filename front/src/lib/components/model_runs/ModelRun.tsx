@@ -1,7 +1,6 @@
 import { GoToIcon } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
 import Card from "@/lib/components/ui/Card";
-
 import type { ModelRun } from "@/lib/types";
 
 export default function ModelRun({

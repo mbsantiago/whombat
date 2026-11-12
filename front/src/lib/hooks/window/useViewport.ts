@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 
 import useLifoQueue from "@/lib/hooks/utils/useLifoQueue";
-
 import type {
   Interval,
   Position,

@@ -13,7 +13,6 @@ import useViewportPress from "@/lib/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/lib/hooks/interactions/useViewportScroll";
 import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
 import useElementSize from "@/lib/hooks/utils/useElementSize";
-
 import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
 import { getViewportPosition } from "@/lib/utils/windows";
 
@@ -42,7 +41,7 @@ export default function useSpectrogramBar({
 }): {
   position: React.CSSProperties;
   props: React.DOMAttributes<HTMLDivElement>;
-  ref: React.RefObject<HTMLDivElement>;
+  ref: React.RefObject<HTMLDivElement | null>;
 } {
   const { ref, size } = useElementSize<HTMLDivElement>();
 

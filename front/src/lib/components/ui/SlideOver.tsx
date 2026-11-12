@@ -53,7 +53,7 @@ export default function SlideOver({
                     <div className="absolute left-0 top-0 -ml-8 flex pr-2 pt-4 sm:-ml-10 sm:pr-4">
                       <button
                         type="button"
-                        className="relative rounded-md text-red-400 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-500/50"
+                        className="relative rounded-md text-red-400 hover:text-white focus:outline-hidden focus:ring-4 focus:ring-red-500/50"
                         onClick={() => onClose?.()}
                       >
                         <span className="absolute -inset-2.5" />

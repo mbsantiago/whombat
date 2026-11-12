@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 /**
  * A layout component for displaying content with a sidebar.
  *

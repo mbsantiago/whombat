@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Item } from "react-stately";
+import { fn } from "storybook/test";
 
 import Search from "@/lib/components/search/Search";
 

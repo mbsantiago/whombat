@@ -8,7 +8,7 @@ export default function useElementSize<T extends HTMLElement>({
   onResize?: (size: { width: number; height: number }) => void;
 } = {}): {
   size: { width: number; height: number };
-  ref: React.RefObject<T>;
+  ref: React.RefObject<T | null>;
 } {
   const ref = useRef<T>(null);
 

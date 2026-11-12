@@ -2,9 +2,7 @@
 
 import Pagination from "@/app/components/Pagination";
 import SoundEventAnnotationSpectrogram from "@/app/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
-
 import useSoundEventAnnotations from "@/app/hooks/api/useSoundEventAnnotations";
-
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";
 import soundEventAnnotationFilterDefs from "@/lib/components/filters/sound_event_annotations";

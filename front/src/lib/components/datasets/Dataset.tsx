@@ -6,7 +6,6 @@ import {
   RecordingsIcon,
 } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
-
 import type { Dataset as DatasetType } from "@/lib/types";
 
 export function Atom({ label, value }: { label: ReactNode; value: ReactNode }) {

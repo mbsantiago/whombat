@@ -1,8 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "storybook/test";
 
 import RecordingTable from "@/lib/components/recordings/RecordingTable";
-
 import type { Note, Recording } from "@/lib/types";
 
 import TagSearchBar, { type TagSearchBarProps } from "../tags/TagSearchBar";

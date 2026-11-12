@@ -1,10 +1,9 @@
 import { useCallback } from "react";
 import { mergeProps, usePress } from "react-aria";
 
-import useHoveredAnnotation from "@/lib/hooks/annotation/useHoveredAnnotation";
-
 import drawGeometry from "@/lib/draw/geometry";
 import { RED } from "@/lib/draw/styles";
+import useHoveredAnnotation from "@/lib/hooks/annotation/useHoveredAnnotation";
 import type {
   Dimensions,
   SoundEventAnnotation,

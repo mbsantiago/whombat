@@ -1,8 +1,6 @@
 import api from "@/app/api";
-
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-
 import type { ClipAnnotationFilter } from "@/lib/types";
 
 const _empty: ClipAnnotationFilter = {};

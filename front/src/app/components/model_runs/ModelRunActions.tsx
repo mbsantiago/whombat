@@ -2,9 +2,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import useModelRun from "@/app/hooks/api/useModelRun";
-
 import ModelRunActionsBase from "@/lib/components/model_runs/ModelRunActions";
-
 import type { ModelRun } from "@/lib/types";
 
 export default function ModelRunActions({

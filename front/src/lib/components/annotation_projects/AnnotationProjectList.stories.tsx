@@ -1,13 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { loremIpsum } from "lorem-ipsum";
+import { fn } from "storybook/test";
 
 import AnnotationProjectCreate from "@/lib/components/annotation_projects/AnnotationProjectCreate";
 import AnnotationProjectImport from "@/lib/components/annotation_projects/AnnotationProjectImport";
 import { AnnotationProjectIcon } from "@/lib/components/icons";
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
-
 import type { AnnotationProject } from "@/lib/types";
 
 import AnnotationProjectList from "./AnnotationProjectList";

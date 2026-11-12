@@ -40,7 +40,7 @@ export default function ToggleButton({
   onClear?: () => void;
 }) {
   return (
-    <div className="inline-flex rounded-md shadow-sm" role="group">
+    <div className="inline-flex rounded-md shadow-xs" role="group">
       <button
         type="button"
         onClick={onClear}

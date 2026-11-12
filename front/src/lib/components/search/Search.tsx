@@ -18,7 +18,6 @@ import { type ComboBoxState, useComboBoxState } from "react-stately";
 import { SearchIcon } from "@/lib/components/icons";
 import { Input } from "@/lib/components/inputs";
 import Loading from "@/lib/components/ui/Loading";
-
 import useListWithSearch from "@/lib/hooks/lists/useListWithSearch";
 
 function EmptyMessage({}: { state: ComboBoxState<any> }) {
@@ -46,7 +45,7 @@ export default function Search<T extends object>({
   fields: FuseOptionKey<T>[];
   showMax?: number;
   isLoading?: boolean;
-  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement;
+  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement<any>;
   onSelect?: (value: T) => void;
   onChangeSearch?: (value: string) => void;
   getOptionKey: (value: T) => string;
@@ -156,8 +155,8 @@ function ListBox<T>({
   ...props
 }: AriaListBoxOptions<T> & {
   state: ComboBoxState<T>;
-  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement;
-  listBoxRef: RefObject<HTMLUListElement>;
+  emptyMessage?: ({ state }: { state: ComboBoxState<T> }) => ReactElement<any>;
+  listBoxRef: RefObject<HTMLUListElement | null>;
 }) {
   let { listBoxProps } = useListBox(props, state, listBoxRef);
 
@@ -223,7 +222,7 @@ function Popover({
           width: triggerRef.current?.clientWidth,
           ...popoverProps.style,
         }}
-        ref={props.popoverRef as React.RefObject<HTMLDivElement>}
+        ref={props.popoverRef as React.RefObject<HTMLDivElement | null>}
       >
         {children}
         <DismissButton onDismiss={state.close} />

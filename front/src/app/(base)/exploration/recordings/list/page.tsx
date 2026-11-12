@@ -2,9 +2,7 @@
 
 import Pagination from "@/app/components/Pagination";
 import RecordingSpectrogram from "@/app/components/recordings/RecordingSpectrogram";
-
 import useRecordings from "@/app/hooks/api/useRecordings";
-
 import RecordingGallery from "@/lib/components/exploration/RecordingGallery";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterMenu from "@/lib/components/filters/FilterMenu";

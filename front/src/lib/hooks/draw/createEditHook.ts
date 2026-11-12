@@ -2,12 +2,11 @@ import { useCallback, useMemo, useState } from "react";
 import type { DOMAttributes } from "react";
 import { mergeProps, usePress } from "react-aria";
 
+import { type EditableElement, drawEditableElement } from "@/lib/draw/edit";
+import type { Style } from "@/lib/draw/styles";
 import useElementHover from "@/lib/hooks/draw/useElementHover";
 import useDrag from "@/lib/hooks/utils/useDrag";
 import type { EventKeys } from "@/lib/hooks/utils/useDrag";
-
-import { type EditableElement, drawEditableElement } from "@/lib/draw/edit";
-import type { Style } from "@/lib/draw/styles";
 import type { Dimensions, Pixel } from "@/lib/types";
 
 interface UseEditObjectProps<J> {
@@ -41,7 +40,7 @@ export default function createEditHook<J, T>(
     dimensions,
     object,
     enabled,
-    style: style = EDIT_STYLE,
+    style = EDIT_STYLE,
     onChange,
     onDrop,
     onDeselect,

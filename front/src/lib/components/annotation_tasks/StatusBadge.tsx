@@ -7,7 +7,6 @@ import {
   UserIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-
 import type { AnnotationStatusBadge } from "@/lib/types";
 
 const ICONS = {
@@ -45,7 +44,7 @@ export default function StatusBadge({
     >
       <button
         type="button"
-        className="group focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-md"
+        className="group focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 rounded-md"
         disabled={onClick == null}
         onClick={onClick}
       >
@@ -67,7 +66,7 @@ export default function StatusBadge({
       {onRemove != null && (
         <button
           type="button"
-          className="ml-1 group focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-md"
+          className="ml-1 group focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 rounded-md"
           onClick={onRemove}
         >
           <CloseIcon className="transition-all w-4 h-4 group-hover:stroke-3" />

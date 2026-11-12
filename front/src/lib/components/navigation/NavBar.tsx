@@ -4,9 +4,7 @@ import classnames from "classnames";
 import { Fragment } from "react";
 
 import useActiveUser from "@/app/hooks/api/useActiveUser";
-
 import { HorizontalDivider } from "@/lib/components/layouts/Divider";
-
 import type { User } from "@/lib/types";
 
 function Brand() {
@@ -21,7 +19,7 @@ function Brand() {
 
 function UserDetail({ user }: { user?: User }) {
   return (
-    <div className="flex flex-row justify-center m-2 rounded bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-200">
+    <div className="flex flex-row justify-center m-2 rounded-sm bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-200">
       <UserIcon className="w-6 h-6" />
       <span className="ml-2 text-sm">{user?.username}</span>
     </div>
@@ -93,7 +91,7 @@ function NavItem({ href, label }: { href: string; label: string }) {
     <li>
       <a
         href={href}
-        className="block py-2 pr-4 pl-3 rounded md:p-0 md:bg-transparent"
+        className="block py-2 pr-4 pl-3 rounded-sm md:p-0 md:bg-transparent"
         aria-current="page"
       >
         {label}

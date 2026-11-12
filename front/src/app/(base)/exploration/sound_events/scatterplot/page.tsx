@@ -3,22 +3,17 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
+import api from "@/app/api";
 import Pagination from "@/app/components/Pagination";
 import SoundEventAnnotationSpectrogram from "@/app/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
-
-import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
-
-import api from "@/app/api";
 import Error from "@/app/error";
-
+import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import ListCounts from "@/lib/components/lists/ListCounts";
 import Empty from "@/lib/components/ui/Empty";
 import Loading from "@/lib/components/ui/Loading";
-
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-
 import type { ScatterPlotData, SoundEventAnnotationFilter } from "@/lib/types";
 
 const SoundEventAnnotationsScatterPlot = dynamic(

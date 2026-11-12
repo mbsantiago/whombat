@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, type JSX } from "react";
 
 import Card from "@/lib/components/ui/Card";
 

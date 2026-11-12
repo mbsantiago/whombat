@@ -3,7 +3,6 @@ import { useState } from "react";
 import { IssueIcon, NotesIcon } from "@/lib/components/icons";
 import { Group, TextArea } from "@/lib/components/inputs/index";
 import Button from "@/lib/components/ui/Button";
-
 import type { NoteCreate } from "@/lib/types";
 
 export default function CreateNoteForm({

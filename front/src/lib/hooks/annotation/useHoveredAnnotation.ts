@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import useWindowHover from "@/lib/hooks/window/useWindowHover";
-
 import type {
   Dimensions,
   Position,
@@ -18,7 +17,7 @@ export default function useHoveredAnnotations({
   viewport,
   dimensions,
   annotations,
-  enabled: enabled = true,
+  enabled = true,
 }: {
   viewport: SpectrogramWindow;
   dimensions: Dimensions;

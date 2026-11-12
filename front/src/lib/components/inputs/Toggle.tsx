@@ -16,7 +16,7 @@ export default function Toggle({
     <button
       {...buttonProps}
       className={classNames(
-        "relative inline-flex items-center h-5 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-emerald-500/50 focus-visible:ring-4 focus-visible:ring-emeral-500/50",
+        "relative inline-flex items-center h-5 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 focus-visible:ring-4 focus-visible:ring-emeral-500/50",
         {
           "bg-emerald-600 dark:bg-emerald-500": state.isSelected,
           "bg-emerald-900 dark:bg-emerald-800": !state.isSelected,

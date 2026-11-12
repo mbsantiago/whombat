@@ -1,9 +1,7 @@
 import { ComponentProps, useCallback, useContext, useMemo } from "react";
 
-import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
-
 import AnnotationProjectContext from "@/app/contexts/annotationProject";
-
+import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 import { type Tag } from "@/lib/types";
 
 import TagSearchBar from "./TagSearchBar";

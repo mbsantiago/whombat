@@ -5,7 +5,6 @@ import { HelpIcon } from "@/lib/components/icons";
 import Button from "@/lib/components/ui/Button";
 import { DialogOverlay } from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
-
 import type { Shortcut } from "@/lib/types";
 
 export default function ShortcutHelper({

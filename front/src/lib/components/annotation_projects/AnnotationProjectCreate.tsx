@@ -3,9 +3,8 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 import { Group, Input, Submit, TextArea } from "@/lib/components/inputs/index";
-
 import { AnnotationProjectCreateSchema } from "@/lib/schemas";
-import type { AnnotationProject, AnnotationProjectCreate } from "@/lib/types";
+import type { AnnotationProjectCreate } from "@/lib/types";
 
 export default function CreateProject({
   onCreateAnnotationProject,
@@ -16,7 +15,7 @@ export default function CreateProject({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AnnotationProject>({
+  } = useForm<AnnotationProjectCreate>({
     resolver: zodResolver(AnnotationProjectCreateSchema),
     mode: "onChange",
   });

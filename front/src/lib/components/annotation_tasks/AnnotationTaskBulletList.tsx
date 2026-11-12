@@ -1,7 +1,6 @@
 import classNames from "classnames";
 
 import { CLASS_NAMES } from "@/lib/components/ui/Button";
-
 import type { AnnotationTask } from "@/lib/types";
 import { getAnnotationTaskStatus } from "@/lib/utils/annotation_tasks";
 
@@ -41,7 +40,7 @@ function AnnotationTaskBullet({
       onClick={onClick}
       className={classNames(
         "w-6 h-6 rounded-full transition-all duration-200",
-        "flex items-center justify-center shrink-0 shadow-sm",
+        "flex items-center justify-center shrink-0 shadow-xs",
         CLASS_NAMES.filled[variant],
         CLASS_NAMES.filled.common,
         {

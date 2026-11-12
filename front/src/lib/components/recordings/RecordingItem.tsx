@@ -2,7 +2,6 @@ import { FC } from "react";
 
 import RecordingHeader from "@/lib/components/recordings/RecordingHeader";
 import RecordingTagBar from "@/lib/components/recordings/RecordingTagBar";
-
 import type { Recording, SpectrogramProps } from "@/lib/types";
 
 export default function RecordingItem(

@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
+import { describe, expect, test, vi } from "vite-plus/test";
 
 import useViewport from "@/lib/hooks/window/useViewport";
-
 import type { SpectrogramWindow } from "@/lib/types";
 
 describe("useViewport hook", () => {
@@ -127,7 +127,7 @@ describe("useViewport hook", () => {
   });
 
   test("calls onChange callback on viewport change", () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { result } = renderHook(() =>
       useViewport({ initial: initialViewport, bounds, onChange }),
     );

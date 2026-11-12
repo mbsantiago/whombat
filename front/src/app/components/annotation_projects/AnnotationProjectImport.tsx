@@ -5,12 +5,10 @@ import toast from "react-hot-toast";
 
 import api from "@/app/api";
 import { copyErrorToClipboard } from "@/app/lib/errors";
-
 import AnnotationProjectImportBase from "@/lib/components/annotation_projects/AnnotationProjectImport";
 import ErrorModal from "@/lib/components/ui/ErrorModal";
 import ErrorToast from "@/lib/components/ui/ErrorToast";
 import Portal from "@/lib/components/ui/Portal";
-
 import type { AnnotationProject, AnnotationProjectImport } from "@/lib/types";
 
 export default function AnnotationProjectImport({

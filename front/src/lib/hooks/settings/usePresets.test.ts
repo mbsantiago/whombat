@@ -1,4 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vite-plus/test";
 
 import usePresets from "./usePresets";
 
@@ -47,7 +48,7 @@ describe("usePresets Hook", () => {
   });
 
   it("saves a new preset", () => {
-    const onSaveMock = jest.fn();
+    const onSaveMock = vi.fn();
     const { result } = renderHook(() => usePresets({ onSave: onSaveMock }));
 
     const newPreset = { value: 30 };
@@ -65,7 +66,7 @@ describe("usePresets Hook", () => {
   });
 
   it("overwrites an existing preset", () => {
-    const onSaveMock = jest.fn();
+    const onSaveMock = vi.fn();
     const { result } = renderHook(() =>
       usePresets({ presets: initialPresets, onSave: onSaveMock }),
     );
@@ -83,7 +84,7 @@ describe("usePresets Hook", () => {
   });
 
   it("deletes a preset", () => {
-    const onDeleteMock = jest.fn();
+    const onDeleteMock = vi.fn();
     const { result } = renderHook(() =>
       usePresets({ presets: initialPresets, onDelete: onDeleteMock }),
     );

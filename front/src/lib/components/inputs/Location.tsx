@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Group, Input } from "@/lib/components/inputs";
-
 import useDebounceSubmit from "@/lib/hooks/forms/useDebounceSubmit";
 
 // NOTE: The use of dynamic imports is necessary to avoid
@@ -55,7 +54,7 @@ export default function LocationInput({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.input<typeof schema>, unknown, Location>({
     mode: "onBlur",
     values: value,
     resolver: zodResolver(schema),
@@ -68,7 +67,7 @@ export default function LocationInput({
     handleSubmit,
   });
 
-  const position: Location = watch();
+  const position: Location = schema.safeParse(watch()).data ?? {};
 
   return (
     <div className="flex flex-col">

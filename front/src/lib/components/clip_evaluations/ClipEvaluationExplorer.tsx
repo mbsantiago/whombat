@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 import Slider from "@/lib/components/inputs/Slider";
 import Toggle from "@/lib/components/inputs/Toggle";
 import * as ui from "@/lib/components/ui";

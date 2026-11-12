@@ -1,13 +1,12 @@
 import {
   type Datum,
   type Layout,
-  type PlotData,
+  type Scatter3dData,
   type PlotMouseEvent,
 } from "plotly.js";
 import { useCallback, useMemo } from "react";
 
 import useTheme from "@/lib/hooks/useTheme";
-
 import type { ScatterPlotData } from "@/lib/types";
 
 type GroupKey = string;
@@ -26,7 +25,7 @@ function newTrace(
   xLabel: string,
   yLabel: string,
   zLabel: string,
-): Partial<PlotData> {
+): Partial<Scatter3dData> {
   return {
     x: [],
     y: [],
@@ -65,8 +64,8 @@ export default function useScatterPlot({
   zFeature = "low_freq",
   onClick: onSoundEventAnnotationClick,
 }: UseScatterPlotProps) {
-  const data = useMemo<Partial<PlotData>[]>(() => {
-    const traces: { [key: string]: Partial<PlotData> } = {};
+  const data = useMemo<Partial<Scatter3dData>[]>(() => {
+    const traces: { [key: string]: Partial<Scatter3dData> } = {};
 
     initialData.forEach((annotation) => {
       const groupKey = groupBy(annotation);
@@ -86,6 +85,7 @@ export default function useScatterPlot({
       (traces[groupKey].y as number[]).push(y);
       (traces[groupKey].z as number[]).push(z);
 
+      // @ts-ignore
       traces[groupKey].customdata?.push(
         annotation as unknown as Datum & Datum[],
       );

@@ -4,15 +4,12 @@ import { useHotkeys } from "react-hotkeys-hook";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
 import useViewSettings from "@/app/hooks/settings/useViewSettings";
-
 import AnnotationProgress from "@/lib/components/annotation/AnnotationProgress";
 import AnnotationTaskBase from "@/lib/components/annotation/AnnotationTask";
 import AnnotationTaskStatus from "@/lib/components/annotation_tasks/AnnotationTaskStatus";
 import AnnotationTaskFilter from "@/lib/components/filters/AnnotationTaskFilter";
-
 import useAnnotateTasks from "@/lib/hooks/annotation/useAnnotateTasks";
 import useAnnotationTagPallete from "@/lib/hooks/annotation/useAnnotationTagPalette";
-
 import type { AnnotationProject, AnnotationTask } from "@/lib/types";
 
 import ClipAnnotationNotes from "../clip_annotations/ClipAnnotationNotes";

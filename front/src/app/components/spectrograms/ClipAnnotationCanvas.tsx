@@ -2,12 +2,11 @@ import { useCallback, useMemo, useState } from "react";
 import { mergeProps } from "react-aria";
 
 import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
-
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-
 import CanvasBase from "@/lib/components/spectrograms/Canvas";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
-
+import { drawCursor } from "@/lib/draw/cursor";
+import drawOnset from "@/lib/draw/onset";
 import useAnnotationCreate from "@/lib/hooks/annotation/useAnnotationCreate";
 import useAnnotationDelete from "@/lib/hooks/annotation/useAnnotationDelete";
 import useSoundEventDraw from "@/lib/hooks/annotation/useAnnotationDraw";
@@ -16,9 +15,6 @@ import useAnnotationSelect from "@/lib/hooks/annotation/useAnnotationSelect";
 import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
 import useElementSize from "@/lib/hooks/utils/useElementSize";
-
-import { drawCursor } from "@/lib/draw/cursor";
-import drawOnset from "@/lib/draw/onset";
 import type {
   AnnotationState,
   AudioController,

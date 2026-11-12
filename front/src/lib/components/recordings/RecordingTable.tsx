@@ -10,9 +10,7 @@ import Table from "@/lib/components/tables/Table";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
-
 import type { Recording, RecordingFilter, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
 
@@ -152,7 +150,7 @@ export default function RecordingTable({
         onClearFilterField={onClearFilterField}
       />
       <div className="w-full">
-        <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline outline-1 outline-stone-200 dark:outline-stone-800">
+        <div className="overflow-x-auto overflow-y-auto w-full max-h-screen rounded-md outline-solid outline-1 outline-stone-200 dark:outline-stone-800">
           <Table table={table} onCellKeyDown={onCellKeyDown} />
         </div>
       </div>

@@ -4,11 +4,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext } from "react";
 
 import AnnotateTasks from "@/app/components/annotation/AnnotationTasks";
-
 import useAnnotationTask from "@/app/hooks/api/useAnnotationTask";
-
 import Loading from "@/lib/components/ui/Loading";
-
 import type { AnnotationTask } from "@/lib/types";
 
 import AnnotationProjectContext from "../../../../contexts/annotationProject";

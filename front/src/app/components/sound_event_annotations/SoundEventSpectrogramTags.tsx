@@ -1,7 +1,5 @@
 import useSoundEventAnnotation from "@/app/hooks/api/useSoundEventAnnotation";
-
 import useStore from "@/app/store";
-
 import {
   SoundEventSpectrogramTagsBase,
   SoundEventSpectrogramTagsProps,

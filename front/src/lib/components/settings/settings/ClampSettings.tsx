@@ -1,17 +1,16 @@
-import { type Control, useController } from "react-hook-form";
+import { useController } from "react-hook-form";
 
-import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import { Group } from "@/lib/components/inputs/index";
-
-import { MIN_DB } from "@/lib/constants";
-import type { SpectrogramSettings } from "@/lib/types";
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
+import { DEFAULT_SPECTROGRAM_SETTINGS, MIN_DB } from "@/lib/constants";
+import type { SpectrogramSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
 export default function ClampSettings({
   control,
 }: {
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
 }) {
   const minDB = useController({
     control,
@@ -38,7 +37,10 @@ export default function ClampSettings({
           minValue={MIN_DB}
           maxValue={0}
           step={2}
-          value={[minDB.field.value, maxDB.field.value]}
+          value={[
+            minDB.field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.min_dB,
+            maxDB.field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.max_dB,
+          ]}
           onChange={(value) => {
             const [min, max] = value as number[];
             minDB.field.onChange(min);

@@ -1,5 +1,4 @@
 import useCanvas from "@/lib/hooks/canvas/useCanvas";
-
 import type { CanvasProps, DrawFn, SpectrogramWindow } from "@/lib/types";
 
 /**
@@ -30,7 +29,7 @@ export default function Canvas({
   viewport: SpectrogramWindow;
   /** The height of the canvas. */
   height: number | string;
-  canvasRef?: React.RefObject<HTMLCanvasElement>;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 } & CanvasProps) {
   const { ref, props } = useCanvas({
     drawFn,

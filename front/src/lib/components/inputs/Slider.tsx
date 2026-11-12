@@ -35,9 +35,9 @@ export function Thumb({
     <div
       {...thumbProps}
       className={classNames(
-        "w-4 h-4 mt-0.5 rounded-full shadow cursor-pointer",
+        "w-4 h-4 mt-0.5 rounded-full shadow-sm cursor-pointer",
         {
-          "ring-4 outline-none ring-emerald-500/50": isFocusVisible,
+          "ring-4 outline-hidden ring-emerald-500/50": isFocusVisible,
           "bg-emerald-700 dark:bg-emerald-300": isDragging,
           "bg-emerald-500": !isDragging,
         },

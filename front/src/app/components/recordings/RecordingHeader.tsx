@@ -1,10 +1,7 @@
-import useRecording from "@/app/hooks/api/useRecording";
-
 import Error from "@/app/error";
+import useRecording from "@/app/hooks/api/useRecording";
 import Loading from "@/app/loading";
-
 import RecordingHeaderBase from "@/lib/components/recordings/RecordingHeader";
-
 import type { Recording } from "@/lib/types";
 
 export default function RecordingHeader({

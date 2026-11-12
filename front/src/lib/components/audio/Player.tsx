@@ -6,10 +6,9 @@
  * @module
  * @exports Player
  */
-import { Float } from "@headlessui-float/react";
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
 import {
   VisuallyHidden,
   mergeProps,
@@ -29,11 +28,10 @@ import {
   PlayIcon,
   SpeedIcon,
 } from "@/lib/components/icons";
-
 import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 
 const COMMON_BUTTON_CLASSES =
-  "focus:outline-none focus:ring-4 focus:ring-emerald-500/50 rounded-full";
+  "focus:outline-hidden focus:ring-4 focus:ring-emerald-500/50 rounded-full";
 
 /**
  * Player component represents the audio player.
@@ -144,17 +142,7 @@ function SelectSpeed({
 }) {
   return (
     <Listbox value={speed} onChange={onChange}>
-      <Float
-        as="div"
-        className="relative"
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-        placement="bottom"
-        offset={4}
-        flip={true}
-        floatingAs={Fragment}
-      >
+      <div className="relative">
         <Listbox.Button
           className={classNames(
             COMMON_BUTTON_CLASSES,
@@ -167,7 +155,11 @@ function SelectSpeed({
             <ExpandIcon className="w-5 h-5" aria-hidden="true" />
           </span>
         </Listbox.Button>
-        <Listbox.Options className="overflow-auto py-1 w-full max-h-60 text-base rounded-md ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-none bg-stone-50 ring-stone-900 dark:bg-stone-700 dark:ring-stone-600">
+        <Listbox.Options
+          anchor={{ to: "bottom", gap: 4 }}
+          transition
+          className="overflow-auto py-1 w-(--button-width) max-h-60 text-base rounded-md ring-1 ring-opacity-5 shadow-lg sm:text-sm focus:outline-hidden bg-stone-50 ring-stone-900 dark:bg-stone-700 dark:ring-stone-600 transition duration-100 ease-in data-closed:opacity-0"
+        >
           {options.map((option) => (
             <Listbox.Option
               key={option.value.toString()}
@@ -194,7 +186,7 @@ function SelectSpeed({
             </Listbox.Option>
           ))}
         </Listbox.Options>
-      </Float>
+      </div>
     </Listbox>
   );
 }
@@ -230,8 +222,8 @@ function PlayerThumb({
   return (
     <div
       {...thumbProps}
-      className={classNames("w-3 h-3 rounded-full shadow cursor-pointer", {
-        "focus:ring-4 focus:outline-none focus:ring-emerald-500/50":
+      className={classNames("w-3 h-3 rounded-full shadow-sm cursor-pointer", {
+        "focus:ring-4 focus:outline-hidden focus:ring-emerald-500/50":
           isFocusVisible,
         "bg-emerald-700 dark:bg-emerald-300": isDragging,
         "bg-emerald-500": !isDragging,

@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import EvaluationSetList from "@/app/components/evaluation_sets/EvaluationSetList";
-
 import Hero from "@/lib/components/ui/Hero";
-
 import type { EvaluationSet } from "@/lib/types";
 
 export default function Page() {

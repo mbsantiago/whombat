@@ -1,22 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import ClipEvaluationSpectrogram from "@/app/components/clip_evaluation/ClipEvaluationSpectrogram";
-
-import useClipEvaluations from "@/app/hooks/api/useClipEvaluations";
-
 import api from "@/app/api";
-
+import ClipEvaluationSpectrogram from "@/app/components/clip_evaluation/ClipEvaluationSpectrogram";
+import useClipEvaluations from "@/app/hooks/api/useClipEvaluations";
 import ClipEvaluationDisplay from "@/lib/components/clip_evaluations/ClipEvaluationDisplay";
 import ClipEvaluationExplorer, {
   FilterControls,
 } from "@/lib/components/clip_evaluations/ClipEvaluationExplorer";
 import NavigationControls from "@/lib/components/lists/Navigation";
 import { Empty, Loading } from "@/lib/components/ui";
-
 import useExplorationSettings from "@/lib/hooks/evaluation/useExplorationSettings";
 import useListSelection from "@/lib/hooks/lists/useListSelection";
-
 import type {
   ClipEvaluation,
   ClipEvaluationFilter,

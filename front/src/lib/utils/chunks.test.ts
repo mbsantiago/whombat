@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vite-plus/test";
+
 import { calculateSpectrogramChunkIntervals } from "./chunks";
 
 describe("calculateSpectrogramChunkIntervals", () => {

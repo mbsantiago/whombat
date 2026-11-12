@@ -2,10 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-
 import useFilter from "@/lib/hooks/utils/useFilter";
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-
 import type { AnnotationProject, AnnotationProjectFilter } from "@/lib/types";
 
 const emptyFilter: AnnotationProjectFilter = {};

@@ -7,9 +7,11 @@ import ClampSettings from "@/lib/components/settings/settings/ClampSettings";
 import ColorSettings from "@/lib/components/settings/settings/ColorSettings";
 import DeNoiseSettings from "@/lib/components/settings/settings/DeNoiseSettings";
 import STFTSettings from "@/lib/components/settings/settings/STFTSettings";
-
 import { SpectrogramSettingsSchema } from "@/lib/schemas";
-import type { SpectrogramSettings } from "@/lib/types";
+import type {
+  SpectrogramSettings,
+  SpectrogramSettingsInput,
+} from "@/lib/types";
 import { debounce } from "@/lib/utils/debounce";
 
 export default function SpectrogramSettings({
@@ -23,7 +25,11 @@ export default function SpectrogramSettings({
   onChange?: (parameters: SpectrogramSettings) => void;
   debounceTime?: number;
 }) {
-  const { handleSubmit, watch, control } = useForm({
+  const { handleSubmit, watch, control } = useForm<
+    SpectrogramSettingsInput,
+    unknown,
+    SpectrogramSettings
+  >({
     resolver: zodResolver(SpectrogramSettingsSchema),
     values: settings,
   });

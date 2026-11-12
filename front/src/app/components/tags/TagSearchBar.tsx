@@ -1,13 +1,10 @@
 import { useCallback } from "react";
 
 import useTags from "@/app/hooks/api/useTags";
-
 import useStore from "@/app/store";
-
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
 import type { Tag } from "@/lib/types";
 
 /**

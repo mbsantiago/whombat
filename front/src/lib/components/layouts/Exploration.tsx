@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 import Loading from "@/lib/components/ui/Loading";
 
 export default function ExplorationLayout(props: {

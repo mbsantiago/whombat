@@ -5,9 +5,7 @@ import { type ReactNode } from "react";
 import { toast } from "react-hot-toast";
 
 import ProjectHeader from "@/app/components/annotation_projects/AnnotationProjectHeader";
-
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
-
 import Loading from "@/app/loading";
 
 import AnnotationProjectContext from "../../../contexts/annotationProject";

@@ -4,9 +4,7 @@ import { useCallback, useMemo } from "react";
 import useClipAnnotations from "@/app/hooks/api/useClipAnnotations";
 import useModelRuns from "@/app/hooks/api/useModelRuns";
 import useUserRuns from "@/app/hooks/api/useUserRuns";
-
 import EvaluationSetOverviewBase from "@/lib/components/evaluation_sets/EvaluationSetOverview";
-
 import type { EvaluationSet } from "@/lib/types";
 
 export default function EvaluationSetOverview({

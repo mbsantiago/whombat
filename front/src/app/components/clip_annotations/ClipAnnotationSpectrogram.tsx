@@ -4,22 +4,18 @@ import ClipAnnotationCanvas from "@/app/components/spectrograms/ClipAnnotationCa
 import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
 import ViewportBar from "@/app/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
-
 import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 import useAnnotationHotkeys from "@/app/hooks/hotkeys/useAnnotationHotkeys";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-
 import AnnotationControls from "@/lib/components/annotation/AnnotationControls";
 import ClipAnnotationSpectrogramBase from "@/lib/components/clip_annotations/ClipAnnotationSpectrogram";
 import Empty from "@/lib/components/ui/Empty";
-
 import useAnnotationState from "@/lib/hooks/annotation/useAnnotationState";
 import useViewSettings from "@/lib/hooks/settings/useViewSettings";
 import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
 import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useClipViewport from "@/lib/hooks/window/useClipViewport";
-
 import type { ClipAnnotation } from "@/lib/types";
 
 export default function ClipAnnotationSpectrogram({
