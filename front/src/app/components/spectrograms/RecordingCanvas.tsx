@@ -1,12 +1,10 @@
 import { useCallback, useState } from "react";
 
 import CanvasBase from "@/lib/components/spectrograms/Canvas";
-
-import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
-import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
-
 import { drawCursor } from "@/lib/draw/cursor";
 import drawOnset from "@/lib/draw/onset";
+import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
+import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
 import type {
   AudioController,
   AudioSettings,

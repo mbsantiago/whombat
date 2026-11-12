@@ -4,7 +4,6 @@ import FilterBadge, {
 import { type FilterDef } from "@/lib/components/filters/FilterMenu";
 import { FloatFilter, TagFilter } from "@/lib/components/filters/Filters";
 import { ScoreIcon, TagIcon } from "@/lib/components/icons";
-
 import type { ClipEvaluationFilter } from "@/lib/types";
 
 const clipEvaluationFilterDef: FilterDef<ClipEvaluationFilter>[] = [

@@ -2,9 +2,7 @@
 
 import Pagination from "@/app/components/Pagination";
 import SoundEventAnnotationSpectrogram from "@/app/components/sound_event_annotations/SoundEventAnnotationSpectrogram";
-
 import useSoundEventAnnotations from "@/app/hooks/api/useSoundEventAnnotations";
-
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import StackedList from "@/lib/components/layouts/StackedList";
 import ListCounts from "@/lib/components/lists/ListCounts";

@@ -2,10 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useCallback } from "react";
 
 import Canvas from "@/lib/components/spectrograms/Canvas";
-
-import useViewport from "@/lib/hooks/window/useViewport";
-
 import drawImage from "@/lib/draw/image";
+import useViewport from "@/lib/hooks/window/useViewport";
 import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
 
 const meta: Meta<typeof Canvas> = {

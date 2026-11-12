@@ -5,9 +5,7 @@ import { useCallback, useContext } from "react";
 import toast from "react-hot-toast";
 
 import AnnotationProjectTasks from "@/app/components/annotation_projects/AnnotationProjectTasks";
-
 import AnnotationProjectContext from "@/app/contexts/annotationProject";
-
 import Center from "@/lib/components/layouts/Center";
 
 export default function Page() {

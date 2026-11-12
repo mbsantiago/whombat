@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
 import useClipPredictions from "@/app/hooks/api/useClipPredictions";
-
 import type {
   ClipPrediction,
   ClipPredictionFilter,

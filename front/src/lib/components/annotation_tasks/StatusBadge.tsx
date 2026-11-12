@@ -7,7 +7,6 @@ import {
   UserIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-
 import type { AnnotationStatusBadge } from "@/lib/types";
 
 const ICONS = {

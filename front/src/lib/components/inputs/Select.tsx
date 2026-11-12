@@ -24,7 +24,11 @@ export default function Select<T>({
   onChange: (value: T) => void;
   options: Option<T>[];
   placement?:
-    "top-end" | "top-start" | "bottom-end" | "bottom-start" | "bottom";
+    | "top-end"
+    | "top-start"
+    | "bottom-end"
+    | "bottom-start"
+    | "bottom";
 }) {
   return (
     <Listbox value={selected.value} onChange={onChange}>

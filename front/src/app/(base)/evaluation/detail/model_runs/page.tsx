@@ -3,11 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useMemo } from "react";
 
-import Pagination from "@/app/components/Pagination";
 import ModelRunImport from "@/app/components/model_runs/ModelRunImport";
-
+import Pagination from "@/app/components/Pagination";
 import useModelRuns from "@/app/hooks/api/useModelRuns";
-
 import {
   AddIcon,
   ModelIcon,
@@ -18,7 +16,6 @@ import Search from "@/lib/components/inputs/Search";
 import ListLayout from "@/lib/components/layouts/List";
 import ModelRun from "@/lib/components/model_runs/ModelRun";
 import { Dialog, Empty } from "@/lib/components/ui";
-
 import type * as types from "@/lib/types";
 
 import EvaluationSetContext from "../context";

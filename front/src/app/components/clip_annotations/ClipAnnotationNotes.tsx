@@ -1,12 +1,9 @@
 import { useContext } from "react";
 import toast from "react-hot-toast";
 
-import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
-
 import UserContext from "@/app/contexts/user";
-
+import useClipAnnotation from "@/app/hooks/api/useClipAnnotation";
 import ClipAnnotationNotesBase from "@/lib/components/clip_annotations/ClipAnnotationNotes";
-
 import type { ClipAnnotation } from "@/lib/types";
 
 export default function ClipAnnotationNotes({

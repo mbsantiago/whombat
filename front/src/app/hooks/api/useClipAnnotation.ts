@@ -2,9 +2,7 @@ import { useMutation as useQueryMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 import api from "@/app/api";
-
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type {
   ClipAnnotation,
   Geometry,

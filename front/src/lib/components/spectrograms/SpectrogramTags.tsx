@@ -3,9 +3,7 @@ import { useMemo } from "react";
 import type { ComponentProps, FC, ReactNode } from "react";
 
 import { CloseIcon } from "@/lib/components/icons";
-
 import useElementSize from "@/lib/hooks/utils/useElementSize";
-
 import type {
   Dimensions,
   SoundEventAnnotation,

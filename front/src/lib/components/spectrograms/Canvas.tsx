@@ -1,5 +1,4 @@
 import useCanvas from "@/lib/hooks/canvas/useCanvas";
-
 import type { CanvasProps, DrawFn, SpectrogramWindow } from "@/lib/types";
 
 /**

@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 
 import useSpectrogramBox from "@/lib/hooks/spectrogram/useSpectrogramBBox";
-
 import type { SpectrogramWindow, ViewportController } from "@/lib/types";
 
 export const VALID_STYLE = {

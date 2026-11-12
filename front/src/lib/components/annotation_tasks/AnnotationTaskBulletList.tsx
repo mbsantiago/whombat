@@ -1,7 +1,6 @@
 import classNames from "classnames";
 
 import { CLASS_NAMES } from "@/lib/components/ui/Button";
-
 import type { AnnotationTask } from "@/lib/types";
 import { getAnnotationTaskStatus } from "@/lib/utils/annotation_tasks";
 

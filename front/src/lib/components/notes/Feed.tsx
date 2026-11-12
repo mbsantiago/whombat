@@ -1,7 +1,6 @@
 import React from "react";
 
 import NoteComponent from "@/lib/components/notes/Note";
-
 import type { Note, User } from "@/lib/types";
 
 export default function Feed({

@@ -4,7 +4,6 @@ import { type Control, useController, useForm } from "react-hook-form";
 
 import { Group, RangeSlider, Slider } from "@/lib/components/inputs";
 import SettingsSection from "@/lib/components/settings/settings/SettingsSection";
-
 import { ViewSettingsSchema } from "@/lib/schemas";
 import type { ViewSettings } from "@/lib/types";
 import { debounce } from "@/lib/utils/debounce";

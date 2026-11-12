@@ -2,9 +2,7 @@ import { useRouter } from "next/navigation";
 import { ComponentProps, useCallback, useMemo } from "react";
 
 import useModelRuns from "@/app/hooks/api/useModelRuns";
-
 import ModelEvaluationSummaryBase from "@/lib/components/evaluation_sets/ModelEvaluationSummary";
-
 import type { EvaluationSet, ModelRun } from "@/lib/types";
 
 export default function ModelEvaluationSummary({

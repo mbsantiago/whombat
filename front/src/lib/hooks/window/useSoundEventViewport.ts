@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react";
 
 import useViewport from "@/lib/hooks/window/useViewport";
-
 import type { Recording, SoundEvent } from "@/lib/types";
 import { getGeometryViewingWindow } from "@/lib/utils/windows";
 

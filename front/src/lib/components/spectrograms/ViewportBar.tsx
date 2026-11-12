@@ -6,7 +6,6 @@ import type {
 } from "react-aria";
 
 import useSpectrogramBar from "@/lib/hooks/spectrogram/useSpectrogramBar";
-
 import type { Position, ScrollEvent, SpectrogramWindow } from "@/lib/types";
 
 /**

@@ -5,7 +5,6 @@ import classnames from "classnames";
 import { type HTMLProps } from "react";
 
 import { CloseIcon } from "@/lib/components/icons";
-
 import type { Tag } from "@/lib/types";
 import { COLOR_NAMES, LEVELS, getTagClassNames } from "@/lib/utils/tags";
 

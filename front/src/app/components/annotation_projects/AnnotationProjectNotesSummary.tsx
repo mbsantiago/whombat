@@ -1,14 +1,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
-import Note from "@/app/components/notes/Note";
-
 import api from "@/app/api";
-
+import Note from "@/app/components/notes/Note";
 import AnnotationProjectNotesSummaryBase from "@/lib/components/annotation_projects/AnnotationProjectNotesSummary";
-
 import usePagedQuery from "@/lib/hooks/utils/usePagedQuery";
-
 import type * as types from "@/lib/types";
 
 export default function AnnotationProjectNotesSummary({

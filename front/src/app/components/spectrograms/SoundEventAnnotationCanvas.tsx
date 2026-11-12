@@ -2,15 +2,12 @@ import { useCallback, useMemo } from "react";
 import { mergeProps } from "react-aria";
 
 import SoundEventSpectrogramTags from "@/app/components/sound_event_annotations/SoundEventSpectrogramTags";
-
 import CanvasBase from "@/lib/components/spectrograms/Canvas";
 import SpectrogramTags from "@/lib/components/spectrograms/SpectrogramTags";
-
+import drawOnset from "@/lib/draw/onset";
 import useSoundEventDraw from "@/lib/hooks/annotation/useAnnotationDraw";
 import useSpectrogramImages from "@/lib/hooks/spectrogram/useSpectrogramImages";
 import useSpectrogramInteractions from "@/lib/hooks/spectrogram/useSpectrogramInteractions";
-
-import drawOnset from "@/lib/draw/onset";
 import type {
   AudioController,
   AudioSettings,

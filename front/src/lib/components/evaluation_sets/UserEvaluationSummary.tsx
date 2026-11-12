@@ -1,6 +1,5 @@
 import * as icons from "@/lib/components/icons";
 import * as ui from "@/lib/components/ui";
-
 import type * as types from "@/lib/types";
 
 export default function UserEvaluationSummary(props: {

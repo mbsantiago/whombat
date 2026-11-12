@@ -65,7 +65,12 @@ export type MultiPolygon = {
 };
 
 export type BasicGeometry =
-  Point | MultiPoint | LineString | MultiLineString | Polygon | MultiPolygon;
+  | Point
+  | MultiPoint
+  | LineString
+  | MultiLineString
+  | Polygon
+  | MultiPolygon;
 
 export type GeometryCollection = {
   type: "GeometryCollection";

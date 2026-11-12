@@ -3,18 +3,14 @@ import RecordingCanvas from "@/app/components/spectrograms/RecordingCanvas";
 import SettingsMenu from "@/app/components/spectrograms/SettingsMenu";
 import ViewportBar from "@/app/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/app/components/spectrograms/ViewportToolbar";
-
 import useSpectrogramHotkeys from "@/app/hooks/hotkeys/useSpectrogramHotkeys";
 import useAudioSettings from "@/app/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/app/hooks/settings/useSpectrogramSettings";
-
 import RecordingSpectrogram from "@/lib/components/recordings/RecordingSpectrogram";
-
 import useViewSettings from "@/lib/hooks/settings/useViewSettings";
 import useSpectrogramAudio from "@/lib/hooks/spectrogram/useSpectrogramAudio";
 import useSpectrogramState from "@/lib/hooks/spectrogram/useSpectrogramState";
 import useClipViewport from "@/lib/hooks/window/useClipViewport";
-
 import type { ClipEvaluation, SpectrogramProps } from "@/lib/types";
 
 export default function ClipEvaluationSpectrogram(

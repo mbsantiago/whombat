@@ -7,7 +7,6 @@ import AnnotationProjectImport from "@/lib/components/annotation_projects/Annota
 import { AnnotationProjectIcon } from "@/lib/components/icons";
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
-
 import type { AnnotationProject } from "@/lib/types";
 
 import AnnotationProjectList from "./AnnotationProjectList";

@@ -4,7 +4,6 @@ import recordingFilterDefs from "@/lib/components/filters/recordings";
 import * as icons from "@/lib/components/icons";
 import * as inputs from "@/lib/components/inputs";
 import * as ui from "@/lib/components/ui";
-
 import type * as types from "@/lib/types";
 
 export default function AnnotationProjectTasks(props: {

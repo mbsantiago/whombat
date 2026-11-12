@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import AnnotationProjectList from "@/app/components/annotation_projects/AnnotationProjectList";
-
 import Hero from "@/lib/components/ui/Hero";
-
 import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjects() {

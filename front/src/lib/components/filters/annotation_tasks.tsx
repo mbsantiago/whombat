@@ -7,7 +7,6 @@ import {
   NeedsReviewIcon,
   VerifiedIcon,
 } from "@/lib/components/icons";
-
 import type { AnnotationTaskFilter } from "@/lib/types";
 
 // TODO: Create custom filter for integer, date, time, tags and boolean values

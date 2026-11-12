@@ -1,10 +1,8 @@
 "use client";
 
-import Pagination from "@/app/components/Pagination";
 import ClipAnnotationSpectrogram from "@/app/components/clip_annotations/ClipAnnotationSpectrogram";
-
+import Pagination from "@/app/components/Pagination";
 import useClipAnnotations from "@/app/hooks/api/useClipAnnotations";
-
 import ExplorationLayout from "@/lib/components/layouts/Exploration";
 import GalleryLayout from "@/lib/components/layouts/Gallery";
 import ListCounts from "@/lib/components/lists/ListCounts";

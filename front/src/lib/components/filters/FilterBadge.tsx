@@ -1,5 +1,4 @@
 import { CloseIcon } from "@/lib/components/icons";
-
 import type { NumberFilter } from "@/lib/types";
 
 export default function FilterBadge({

@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import useStore from "@/app/store";
-
 import useAudioSettings from "@/lib/hooks/settings/useAudioSettings";
 import useSpectrogramSettings from "@/lib/hooks/settings/useSpectrogramSettings";
 

@@ -1,7 +1,6 @@
 import type { FC } from "react";
 
 import TagComparison from "@/lib/components/tags/TagComparison";
-
 import type { ClipEvaluation } from "@/lib/types";
 
 export default function ClipEvaluationDisplay(props: {

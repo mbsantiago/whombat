@@ -4,13 +4,10 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
-
 import { copyErrorToClipboard } from "@/app/lib/errors";
-
 import AnnotationProjectActionsBase from "@/lib/components/annotation_projects/AnnotationProjectActions";
 import ErrorModal from "@/lib/components/ui/ErrorModal";
 import ErrorToast from "@/lib/components/ui/ErrorToast";
-
 import type { AnnotationProject } from "@/lib/types";
 
 export default function AnnotationProjectActions({

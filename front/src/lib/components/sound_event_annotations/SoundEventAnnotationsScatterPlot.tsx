@@ -2,7 +2,6 @@ import Plot from "react-plotly.js";
 import { useMount } from "react-use";
 
 import useScatterPlot from "@/lib/hooks/useScatterPlot";
-
 import type { ScatterPlotData } from "@/lib/types";
 
 export default function AnnotationsScatterPlot(props: {

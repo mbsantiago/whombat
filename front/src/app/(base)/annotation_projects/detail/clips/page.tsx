@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { useContext } from "react";
 
 import AnnotationProjectTaskClips from "@/lib/components/annotation_projects/AnnotationProjectTaskClips";
-
 import type { AnnotationTask } from "@/lib/types";
 
 import AnnotationProject from "../../../../contexts/annotationProject";
+
 import "./page.css";
 
 function getAnnotationTaskLink(annotationTask: AnnotationTask): string {

@@ -7,7 +7,6 @@ import {
 import { useCallback, useMemo } from "react";
 
 import useTheme from "@/lib/hooks/useTheme";
-
 import type { ScatterPlotData } from "@/lib/types";
 
 type GroupKey = string;

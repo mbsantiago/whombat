@@ -4,9 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 import api from "@/app/api";
-
 import useObject from "@/lib/hooks/utils/useObject";
-
 import type {
   AnnotationProject,
   AnnotationTask,

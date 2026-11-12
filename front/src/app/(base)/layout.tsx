@@ -6,9 +6,7 @@ import toast from "react-hot-toast";
 import { HotkeysProvider } from "react-hotkeys-hook";
 
 import useActiveUser from "@/app/hooks/api/useActiveUser";
-
 import Loading from "@/app/loading";
-
 import { WhombatIcon } from "@/lib/components/icons";
 import { Footer } from "@/lib/components/navigation/Footer";
 import { NavBar } from "@/lib/components/navigation/NavBar";

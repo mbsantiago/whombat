@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 
-import useViewport from "@/lib/hooks/window/useViewport";
-
 import {
   DEFAULT_SPECTROGRAM_SETTINGS,
   DEFAULT_VIEW_SETTINGS,
 } from "@/lib/constants";
+import useViewport from "@/lib/hooks/window/useViewport";
 import type { Recording, SpectrogramSettings, ViewSettings } from "@/lib/types";
 import { getInitialViewingWindow } from "@/lib/utils/windows";
 

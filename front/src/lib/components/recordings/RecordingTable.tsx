@@ -10,9 +10,7 @@ import Table from "@/lib/components/tables/Table";
 import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
 import useRecordingTable from "@/lib/hooks/recordings/useRecordingTable";
-
 import type { Recording, RecordingFilter, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
 

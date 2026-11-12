@@ -1,17 +1,16 @@
 import { FC, FormEvent, useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
-import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterButton from "@/lib/components/filters/FilterButton";
 import taskFilterDefs from "@/lib/components/filters/tasks";
 import { NextIcon, PreviousIcon } from "@/lib/components/icons";
+import ShortcutHelper from "@/lib/components/ShortcutHelper";
 import Button from "@/lib/components/ui/Button";
 import Dialog from "@/lib/components/ui/Dialog";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import ProgressBar from "@/lib/components/ui/ProgressBar";
 import Tooltip from "@/lib/components/ui/Tooltip";
-
 import type {
   AnnotationTask,
   AnnotationTaskFilter,

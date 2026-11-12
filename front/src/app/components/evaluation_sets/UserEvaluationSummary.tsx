@@ -1,9 +1,7 @@
 import { ComponentProps, useMemo } from "react";
 
 import useUserRuns from "@/app/hooks/api/useUserRuns";
-
 import UserEvaluationSummaryBase from "@/lib/components/evaluation_sets/UserEvaluationSummary";
-
 import type { EvaluationSet } from "@/lib/types";
 
 export default function UserEvaluationSummary({

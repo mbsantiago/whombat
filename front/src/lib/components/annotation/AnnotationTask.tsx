@@ -1,6 +1,5 @@
 import Empty from "@/lib/components/ui/Empty";
 import Loading from "@/lib/components/ui/Loading";
-
 import type { AnnotationTask } from "@/lib/types";
 
 import DetailLayout from "../layouts/Detail";

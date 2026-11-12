@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import useWindowHover from "@/lib/hooks/window/useWindowHover";
-
 import type {
   Dimensions,
   Position,

@@ -1,16 +1,12 @@
 import useAnnotationTasks from "@/app/hooks/api/useAnnotationTasks";
-
 import Loading from "@/app/loading";
-
+import annotationTaskFilterDefs from "@/lib/components/filters/annotation_tasks";
 import FilterBar from "@/lib/components/filters/FilterBar";
 import FilterPopover from "@/lib/components/filters/FilterMenu";
-import annotationTaskFilterDefs from "@/lib/components/filters/annotation_tasks";
 import Search from "@/lib/components/inputs/Search";
 import Pagination from "@/lib/components/lists/Pagination";
 import Table from "@/lib/components/tables/Table";
-
 import useAnnotationTaskTable from "@/lib/hooks/useAnnotationTaskTable";
-
 import type { AnnotationTask, AnnotationTaskFilter } from "@/lib/types";
 
 export default function AnnotationTaskTable({

@@ -5,7 +5,6 @@ import {
   TimeIcon,
 } from "@/lib/components/icons";
 import Card from "@/lib/components/ui/Card";
-
 import type { Recording } from "@/lib/types";
 
 function Label({ label }: { label: string }) {

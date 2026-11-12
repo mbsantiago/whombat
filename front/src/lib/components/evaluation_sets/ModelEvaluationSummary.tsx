@@ -1,7 +1,6 @@
 import * as icons from "@/lib/components/icons";
 import ModelRunItem from "@/lib/components/model_runs/ModelRunItem";
 import * as ui from "@/lib/components/ui";
-
 import type * as types from "@/lib/types";
 
 export default function ModelEvaluationSummary({

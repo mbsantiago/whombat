@@ -29,7 +29,6 @@ import {
   PlayIcon,
   SpeedIcon,
 } from "@/lib/components/icons";
-
 import type { SpeedOption } from "@/lib/hooks/settings/useAudioSettings";
 
 const COMMON_BUTTON_CLASSES =

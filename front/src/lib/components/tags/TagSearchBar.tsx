@@ -23,7 +23,6 @@ import { Input } from "@/lib/components/inputs/index";
 import Tag from "@/lib/components/tags/Tag";
 import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
-
 import type { Tag as TagType } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
 

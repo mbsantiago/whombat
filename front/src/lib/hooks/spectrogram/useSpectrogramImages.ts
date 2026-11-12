@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
 import api from "@/app/api";
-
 import drawFreqAxis from "@/lib/draw/freqAxis";
 import drawImage from "@/lib/draw/image";
 import drawTimeAxis from "@/lib/draw/timeAxis";

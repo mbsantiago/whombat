@@ -1,5 +1,4 @@
 import useStore from "@/app/store";
-
 import useSpectrogramSettingsBase from "@/lib/hooks/settings/useSpectrogramSettings";
 
 export default function useSpectrogramSettings() {

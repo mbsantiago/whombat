@@ -1,7 +1,6 @@
 import { FC } from "react";
 
 import RecordingItem from "@/lib/components/recordings/RecordingItem";
-
 import type { Recording, SpectrogramProps } from "@/lib/types";
 
 export default function RecordingsGallery(

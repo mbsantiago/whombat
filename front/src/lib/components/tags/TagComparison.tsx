@@ -2,7 +2,6 @@ import { useMemo } from "react";
 
 import TagComponent from "@/lib/components/tags/Tag";
 import Empty from "@/lib/components/ui/Empty";
-
 import type { PredictionTag, Tag } from "@/lib/types";
 import { Color, getTagColor, getTagKey } from "@/lib/utils/tags";
 

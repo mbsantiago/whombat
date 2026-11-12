@@ -14,7 +14,6 @@ import Select from "@/lib/components/inputs/Select";
 import Button from "@/lib/components/ui/Button";
 import KeyboardKey from "@/lib/components/ui/KeyboardKey";
 import Tooltip from "@/lib/components/ui/Tooltip";
-
 import type { AnnotationMode, GeometryType } from "@/lib/types";
 
 type Node = {

@@ -1,7 +1,6 @@
 import { type AxiosError } from "axios";
 
 import Button from "@/lib/components/ui/Button";
-
 import { ErrorSchema } from "@/lib/schemas/error";
 
 import { CloseIcon } from "../icons";

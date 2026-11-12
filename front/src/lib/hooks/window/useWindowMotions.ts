@@ -3,7 +3,6 @@ import { mergeProps } from "react-aria";
 
 import type { EventKeys } from "@/lib/hooks/utils/useDrag";
 import useWindowDrag from "@/lib/hooks/window/useWindowDrag";
-
 import type { Position, SpectrogramWindow } from "@/lib/types";
 import { scalePixelsToWindow } from "@/lib/utils/geometry";
 

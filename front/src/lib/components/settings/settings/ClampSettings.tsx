@@ -1,8 +1,7 @@
 import { type Control, useController } from "react-hook-form";
 
-import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import { Group } from "@/lib/components/inputs/index";
-
+import RangeSlider from "@/lib/components/inputs/RangeSlider";
 import { MIN_DB } from "@/lib/constants";
 import type { SpectrogramSettings } from "@/lib/types";
 

@@ -3,9 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import useActiveUser from "@/app/hooks/api/useActiveUser";
-
 import { Group, Input } from "@/lib/components/inputs/index";
-
 import type { User } from "@/lib/types";
 
 const schema = z

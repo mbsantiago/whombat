@@ -8,7 +8,6 @@ import useViewportPosition from "@/lib/hooks/interactions/useViewportPosition";
 import useViewportPress from "@/lib/hooks/interactions/useViewportPress";
 import useViewportScroll from "@/lib/hooks/interactions/useViewportScroll";
 import useCaptureScroll from "@/lib/hooks/utils/useCaptureScroll";
-
 import type {
   DoublePressHandler,
   DrawFn,

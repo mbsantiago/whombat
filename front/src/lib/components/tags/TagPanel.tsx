@@ -9,7 +9,6 @@ import TagSearchBarBase, {
 import Button from "@/lib/components/ui/Button";
 import Empty from "@/lib/components/ui/Empty";
 import { H4 } from "@/lib/components/ui/Headings";
-
 import type { Tag } from "@/lib/types";
 import { type Color, getTagColor } from "@/lib/utils/tags";
 

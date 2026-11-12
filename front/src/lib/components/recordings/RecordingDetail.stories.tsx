@@ -6,7 +6,6 @@ import SettingsMenu from "@/lib/components/settings/SettingsMenu";
 import Canvas from "@/lib/components/spectrograms/Canvas";
 import ViewportBar from "@/lib/components/spectrograms/ViewportBar";
 import ViewportToolbar from "@/lib/components/spectrograms/ViewportToolbar";
-
 import {
   DEFAULT_AUDIO_SETTINGS,
   DEFAULT_SPECTROGRAM_SETTINGS,

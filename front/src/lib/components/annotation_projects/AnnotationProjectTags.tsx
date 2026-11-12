@@ -2,7 +2,6 @@ import { TagsIcon } from "@/lib/components/icons";
 import TagList from "@/lib/components/tags/TagList";
 import { H2, H3 } from "@/lib/components/ui/Headings";
 import Info from "@/lib/components/ui/Info";
-
 import type { AnnotationProject, Color, Tag } from "@/lib/types";
 
 export default function AnnotationProjectTags({

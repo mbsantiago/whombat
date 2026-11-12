@@ -23,7 +23,6 @@ import TagSearchBarBase, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
 import Button from "@/lib/components/ui/Button";
-
 import type { Note, Recording, RecordingUpdate, Tag } from "@/lib/types";
 import { type Color } from "@/lib/utils/tags";
 

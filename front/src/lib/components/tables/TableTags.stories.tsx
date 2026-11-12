@@ -4,7 +4,6 @@ import { fn } from "@storybook/test";
 import TagSearchBar, {
   type TagSearchBarProps,
 } from "@/lib/components/tags/TagSearchBar";
-
 import type { Tag } from "@/lib/types";
 
 import TableTags from "./TableTags";
