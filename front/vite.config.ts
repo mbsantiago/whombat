@@ -9,4 +9,14 @@ export default defineConfig({
       newlinesBetween: true,
     },
   },
+  lint: {
+    plugins: ["nextjs", "react", "import"],
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+    rules: {
+      'typescript/unbound-method': "off",
+    },
+  },
 });
