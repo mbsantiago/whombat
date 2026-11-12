@@ -54,7 +54,7 @@ export default function LocationInput({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<z.input<typeof schema>, unknown, Location>({
     mode: "onBlur",
     values: value,
     resolver: zodResolver(schema),
@@ -67,7 +67,7 @@ export default function LocationInput({
     handleSubmit,
   });
 
-  const position: Location = watch();
+  const position: Location = schema.safeParse(watch()).data ?? {};
 
   return (
     <div className="flex flex-col">

@@ -1,9 +1,9 @@
-import { type Control, Controller, useController } from "react-hook-form";
+import { Controller, useController } from "react-hook-form";
 
 import { Group, Input } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";
 import { MAX_SAMPLERATE, MIN_SAMPLERATE } from "@/lib/constants";
-import type { AudioSettings } from "@/lib/types";
+import type { AudioSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
@@ -12,7 +12,7 @@ export default function ResamplingSettings({
   control,
 }: {
   samplerate: number;
-  control: Control<AudioSettings>;
+  control: AudioSettingsControl;
 }) {
   const resample = useController({
     name: "resample",

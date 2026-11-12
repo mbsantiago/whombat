@@ -1,15 +1,15 @@
-import { type Control, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 import { Group } from "@/lib/components/inputs/index";
 import Toggle from "@/lib/components/inputs/Toggle";
-import type { SpectrogramSettings } from "@/lib/types";
+import type { SpectrogramSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
 export default function DeNoiseSettings({
   control,
 }: {
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
 }) {
   return (
     <SettingsSection>

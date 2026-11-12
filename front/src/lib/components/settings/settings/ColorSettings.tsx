@@ -1,8 +1,9 @@
-import { type Control, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 import { Group } from "@/lib/components/inputs/index";
 import Select from "@/lib/components/inputs/Select";
-import type { SpectrogramSettings } from "@/lib/types";
+import { DEFAULT_SPECTROGRAM_SETTINGS } from "@/lib/constants";
+import type { SpectrogramSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
@@ -28,7 +29,7 @@ const SPECTROGRAM_COLORMAPS: Record<
 export default function ColorSettings({
   control,
 }: {
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
 }) {
   return (
     <SettingsSection>
@@ -43,7 +44,11 @@ export default function ColorSettings({
             error={fieldState.error?.message}
           >
             <Select
-              selected={SPECTROGRAM_COLORMAPS[field.value]}
+              selected={
+                SPECTROGRAM_COLORMAPS[
+                  field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.cmap
+                ]
+              }
               onChange={(colormap) => field.onChange(colormap)}
               options={Object.values(SPECTROGRAM_COLORMAPS)}
             />

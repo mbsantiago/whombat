@@ -20,8 +20,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
-    "@hookform/resolvers": "^3.10.0",
-    "@react-types/shared": "^3.37.0",
+    "@hookform/resolvers": "^7.0.6",
     "@table-nav/react": "^0.0.7",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4.3.5",
@@ -32,7 +31,7 @@
     "axios": "^1.21.1",
     "classnames": "^2.5.1",
     "fuse.js": "^7.5.0",
-    "immer": "^10.2.0",
+    "immer": "^11.2.10",
     "leaflet": "^1.9.4",
     "plotly.js": "^4.3.0",
     "react": "19.3.1",
@@ -53,6 +52,7 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@react-types/shared": "^3.37.0",
     "@chromatic-com/storybook": "^5.6.0",
     "@playwright/experimental-ct-react": "^1.62.1",
     "@storybook/addon-docs": "^10.6.7",

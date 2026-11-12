@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { AudioSettingsSchema } from "@/lib/schemas";
-import type { AudioSettings } from "@/lib/types";
+import type { AudioSettings, AudioSettingsInput } from "@/lib/types";
 import { debounce } from "@/lib/utils/debounce";
 
 import FilteringSettings from "./settings/FilteringSettings";
@@ -20,7 +20,11 @@ export default function AudioSettings({
   onChange?: (settings: AudioSettings) => void;
   debounceTime?: number;
 }) {
-  const { handleSubmit, watch, control } = useForm({
+  const { handleSubmit, watch, control } = useForm<
+    AudioSettingsInput,
+    unknown,
+    AudioSettings
+  >({
     resolver: zodResolver(AudioSettingsSchema),
     mode: "onChange",
     reValidateMode: "onChange",

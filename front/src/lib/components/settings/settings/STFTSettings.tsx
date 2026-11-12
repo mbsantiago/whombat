@@ -1,11 +1,15 @@
-import { type Control, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
 import { Group } from "@/lib/components/inputs/index";
 import LogSlider from "@/lib/components/inputs/LogSlider";
 import Select from "@/lib/components/inputs/Select";
 import Slider from "@/lib/components/inputs/Slider";
-import { MAX_HOP_FRACTION, MIN_HOP_FRACTION } from "@/lib/constants";
-import type { SpectrogramSettings } from "@/lib/types";
+import {
+  DEFAULT_SPECTROGRAM_SETTINGS,
+  MAX_HOP_FRACTION,
+  MIN_HOP_FRACTION,
+} from "@/lib/constants";
+import type { SpectrogramSettingsControl } from "@/lib/types";
 
 import SettingsSection from "./SettingsSection";
 
@@ -39,7 +43,7 @@ function WindowSize({
   control,
   samplerate,
 }: {
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
   samplerate: number;
 }) {
   return (
@@ -61,7 +65,10 @@ function WindowSize({
             }}
             base={2}
             label="Window size"
-            defaultValue={Math.log2(field.value * samplerate)}
+            defaultValue={Math.log2(
+              (field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.window_size) *
+                samplerate,
+            )}
             onChangeEnd={(value) => {
               if (typeof value !== "number") {
                 let seconds = value.map((v) => v / samplerate);
@@ -87,7 +94,7 @@ export default function STFTSettings({
   control,
 }: {
   samplerate: number;
-  control: Control<SpectrogramSettings>;
+  control: SpectrogramSettingsControl;
 }) {
   return (
     <SettingsSection>
@@ -124,7 +131,11 @@ export default function STFTSettings({
             error={fieldState.error?.message}
           >
             <Select
-              selected={SPECTROGRAM_WINDOWS[field.value]}
+              selected={
+                SPECTROGRAM_WINDOWS[
+                  field.value ?? DEFAULT_SPECTROGRAM_SETTINGS.window
+                ]
+              }
               onChange={field.onChange}
               options={Object.values(SPECTROGRAM_WINDOWS)}
             />
