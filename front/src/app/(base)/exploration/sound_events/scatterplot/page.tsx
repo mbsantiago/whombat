@@ -23,9 +23,7 @@ import type { ScatterPlotData, SoundEventAnnotationFilter } from "@/lib/types";
 
 const SoundEventAnnotationsScatterPlot = dynamic(
   () =>
-    import(
-      "@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot"
-    ),
+    import("@/lib/components/sound_event_annotations/SoundEventAnnotationsScatterPlot"),
   { ssr: false },
 );
 
