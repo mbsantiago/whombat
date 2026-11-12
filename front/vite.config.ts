@@ -1,6 +1,11 @@
+import { fileURLToPath } from "node:url";
+
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
   fmt: {
     printWidth: 80,
     singleQuote: false,
@@ -16,7 +21,10 @@ export default defineConfig({
       typeCheck: true,
     },
     rules: {
-      'typescript/unbound-method': "off",
+      "typescript/unbound-method": "off",
     },
+  },
+  test: {
+    environment: "jsdom",
   },
 });

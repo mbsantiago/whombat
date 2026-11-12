@@ -1,14 +1,23 @@
 import { act, renderHook } from "@testing-library/react";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vite-plus/test";
 
 import useImage from "./useImage";
 
 describe("useImage hook", () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.clearAllTimers();
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   test("should initially be in loading state", () => {
@@ -18,7 +27,7 @@ describe("useImage hook", () => {
   });
 
   test("should set loading to false and call onLoad callback on successful load", async () => {
-    const onLoad = jest.fn();
+    const onLoad = vi.fn();
     const { result } = renderHook(() =>
       useImage({ url: "success.jpg", onLoad }),
     );
@@ -33,7 +42,7 @@ describe("useImage hook", () => {
   });
 
   test("should set error state and call onError callback on error", async () => {
-    const onError = jest.fn();
+    const onError = vi.fn();
     const { result } = renderHook(() =>
       useImage({ url: "error.jpg", onError }),
     );
@@ -48,13 +57,13 @@ describe("useImage hook", () => {
   });
 
   test("should set timeout error and call onTimeout callback on timeout", async () => {
-    const onTimeout = jest.fn();
+    const onTimeout = vi.fn();
     const { result } = renderHook(() =>
       useImage({ url: "timeout.jpg", timeout: 1000, onTimeout }),
     );
 
     act(() => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     expect(result.current.isLoading).toBe(false);
@@ -90,13 +99,13 @@ describe("useImage hook", () => {
     const { unmount } = renderHook(() => useImage({ url: "test.jpg" }));
 
     act(() => {
-      jest.advanceTimersByTime(500);
+      vi.advanceTimersByTime(500);
     });
 
     unmount();
 
     act(() => {
-      jest.runAllTimers();
+      vi.runAllTimers();
     });
   });
 });
