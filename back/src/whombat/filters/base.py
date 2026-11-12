@@ -3,16 +3,18 @@
 import datetime
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Type, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, create_model
 from pydantic.fields import FieldInfo
 from sqlalchemy import Select, or_
 from sqlalchemy.orm import InstrumentedAttribute, MappedColumn
-from typing_extensions import TypeForm
 
 from whombat.models.base import Base
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeForm
 
 __all__ = [
     "Filter",
