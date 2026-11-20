@@ -11,6 +11,7 @@ from whombat.api.io.aoef.features import get_feature_names
 from whombat.api.io.aoef.recordings import import_recordings
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users
+from whombat.core.files import resolve_within_root
 
 
 async def import_dataset(
@@ -40,11 +41,8 @@ async def import_dataset(
         # Assume relative to audio_dir
         dataset_dir = audio_dir / dataset_dir
 
-    if not dataset_dir.is_relative_to(audio_dir):
-        raise ValueError(
-            f"Dataset directory {dataset_dir} is not relative "
-            f"to audio directory {audio_dir}"
-        )
+    audio_dir = audio_dir.resolve()
+    dataset_dir = resolve_within_root(dataset_dir, audio_dir)
 
     tags = await import_tags(session, dataset_object.tags or [])
 

@@ -16,6 +16,8 @@ __all__ = [
     "DatasetUpdate",
     "DatasetRecordingCreate",
     "FileState",
+    "DatasetDirectory",
+    "DatasetDirectoryBrowse",
 ]
 
 
@@ -105,6 +107,35 @@ class DatasetFile(BaseModel):
 
     state: FileState
     """The state of the file."""
+
+
+class DatasetDirectory(BaseModel):
+    """A child directory available in the audio directory."""
+
+    name: str
+    """The directory name."""
+
+    path: str
+    """The directory path relative to the audio root."""
+
+    absolute: str
+    """The absolute path of the directory."""
+
+
+class DatasetDirectoryBrowse(BaseModel):
+    """A directory listing within the audio directory."""
+
+    path: str
+    """The listed path relative to the audio root."""
+
+    absolute: str
+    """The absolute path of the listed directory."""
+
+    parent: str | None
+    """The parent path relative to the audio root."""
+
+    directories: list[DatasetDirectory]
+    """Immediate child directories."""
 
 
 class DatasetRecordingCreate(BaseModel):

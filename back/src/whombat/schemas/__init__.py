@@ -49,6 +49,8 @@ from whombat.schemas.clips import Clip, ClipCreate, ClipUpdate
 from whombat.schemas.datasets import (
     Dataset,
     DatasetCreate,
+    DatasetDirectory,
+    DatasetDirectoryBrowse,
     DatasetFile,
     DatasetRecording,
     DatasetRecordingCreate,
@@ -152,6 +154,8 @@ __all__ = [
     "Dataset",
     "DatasetCreate",
     "DatasetFile",
+    "DatasetDirectory",
+    "DatasetDirectoryBrowse",
     "DatasetRecording",
     "DatasetRecordingCreate",
     "DatasetUpdate",

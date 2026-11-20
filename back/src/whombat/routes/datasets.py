@@ -6,13 +6,14 @@ from io import StringIO
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, UploadFile
+from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from pydantic import DirectoryPath
 from soundevent.io.aoef import DatasetObject
 from sqlalchemy.exc import IntegrityError
 
 from whombat import api, exceptions, schemas
+from whombat.core.files import is_within_root, resolve_within_root
 from whombat.filters.datasets import DatasetFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -24,6 +25,55 @@ __all__ = [
 dataset_router = APIRouter()
 
 logger = logging.getLogger(__name__)
+
+
+@dataset_router.get(
+    "/browse/",
+    response_model=schemas.DatasetDirectoryBrowse,
+)
+async def browse_dataset_directories(
+    settings: WhombatSettings,
+    path: str = "",
+):
+    """Browse directories within the configured audio directory."""
+    root = settings.audio_dir.resolve()
+    try:
+        directory = resolve_within_root(root / path, root)
+        if not directory.is_dir():
+            raise HTTPException(
+                status_code=400, detail="Path is not an existing directory"
+            )
+        directories = sorted(
+            (
+                schemas.DatasetDirectory(
+                    name=child.name,
+                    path=child.relative_to(root).as_posix(),
+                    absolute=str(child),
+                )
+                for child in directory.iterdir()
+                if child.is_dir() and is_within_root(child, root)
+            ),
+            key=lambda child: child.name.casefold(),
+        )
+    except (exceptions.PathOutsideRootError, OSError, RuntimeError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+
+    relative_path = directory.relative_to(root).as_posix()
+    if relative_path == ".":
+        relative_path = ""
+    parent = (
+        directory.parent.relative_to(root).as_posix()
+        if directory != root
+        else None
+    )
+    if parent == ".":
+        parent = ""
+    return schemas.DatasetDirectoryBrowse(
+        path=relative_path,
+        absolute=str(directory),
+        parent=parent,
+        directories=directories,
+    )
 
 
 @dataset_router.get(

@@ -74,16 +74,10 @@ class DatasetAPI(
             audio_dir = get_settings().audio_dir
 
         if data.audio_dir is not None:
-            if not data.audio_dir.is_relative_to(audio_dir):
-                raise ValueError(
-                    "The audio directory must be relative to the root audio "
-                    "directory."
-                    f"\n\tRoot audio directory: {audio_dir}"
-                    f"\n\tAudio directory: {data.audio_dir}"
-                )
+            resolved = files.resolve_within_root(data.audio_dir, audio_dir)
 
             # If the audio directory has changed, update the path.
-            data.audio_dir = data.audio_dir.relative_to(audio_dir)
+            data.audio_dir = resolved.relative_to(audio_dir.resolve())
 
         return await super().update(session, obj, data)
 
