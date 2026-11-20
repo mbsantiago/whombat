@@ -32,5 +32,10 @@ export default function DatasetCreate({
     [mutateAsync],
   );
 
-  return <DatasetCreateBase onCreateDataset={handleCreateProject} />;
+  return (
+    <DatasetCreateBase
+      onCreateDataset={handleCreateProject}
+      browseDirectories={api.datasets.browse}
+    />
+  );
 }

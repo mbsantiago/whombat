@@ -29,3 +29,16 @@ export const DatasetImportSchema = z.object({
   dataset: FileSchema,
   audio_dir: z.string(),
 });
+
+export const DatasetDirectorySchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  absolute: z.string(),
+});
+
+export const DatasetDirectoryBrowseSchema = z.object({
+  path: z.string(),
+  absolute: z.string(),
+  parent: z.string().nullable(),
+  directories: z.array(DatasetDirectorySchema),
+});

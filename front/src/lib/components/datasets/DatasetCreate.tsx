@@ -1,20 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
+import FolderPicker from "@/lib/components/inputs/FolderPicker";
 import { Group, Input, Submit, TextArea } from "@/lib/components/inputs/index";
 import { DatasetCreateSchema } from "@/lib/schemas";
-import type { DatasetCreate } from "@/lib/types";
+import type { DatasetCreate, DatasetDirectoryBrowse } from "@/lib/types";
 
 /**
  * Component for creating a new dataset.
  */
 export default function CreateDataset({
   onCreateDataset,
+  browseDirectories,
 }: {
   onCreateDataset?: (dataset: DatasetCreate) => void;
+  browseDirectories?: (path: string) => Promise<DatasetDirectoryBrowse>;
 }) {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -51,10 +55,24 @@ export default function CreateDataset({
       <Group
         name="audio_dir"
         label="Audio Directory"
-        help="Provide the path to the folder where the dataset recordings reside."
-        error={errors.name?.message}
+        help="Pick the folder where the dataset recordings reside."
+        error={errors.audio_dir?.message}
       >
-        <Input {...register("audio_dir")} />
+        {browseDirectories ? (
+          <Controller
+            control={control}
+            name="audio_dir"
+            render={({ field }) => (
+              <FolderPicker
+                value={field.value}
+                onChange={field.onChange}
+                browseDirectories={browseDirectories}
+              />
+            )}
+          />
+        ) : (
+          <Input {...register("audio_dir")} />
+        )}
       </Group>
       <div className="mb-3">
         <Submit>Create Dataset</Submit>
