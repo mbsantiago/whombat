@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -20,10 +21,13 @@ def add_routes(app: FastAPI, settings: Settings):
     main_router = get_main_router(settings)
     app.include_router(main_router)
 
-    # Load plugins.
+    # Load plugins. A broken plugin must not stop the app from starting.
     for name, plugin in load_plugins():
-        add_plugin_routes(app, name, plugin)
-        add_plugin_pages(app, name, plugin)
+        try:
+            add_plugin_routes(app, name, plugin)
+            add_plugin_pages(app, name, plugin)
+        except Exception:
+            warnings.warn(f"Plugin {name} failed to load.", stacklevel=2)
 
     # Make sure the user guide directory exists.
     # Otherwise app initialization will fail.
