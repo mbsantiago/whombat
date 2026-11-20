@@ -57,9 +57,7 @@ describe("FolderPicker", () => {
 
   it("emits the absolute path of the current folder", async () => {
     const onChange = vi.fn();
-    const browse = vi.fn(async () =>
-      makeListing("drill", "/audio/drill"),
-    );
+    const browse = vi.fn(async () => makeListing("drill", "/audio/drill"));
 
     render(<FolderPicker onChange={onChange} browseDirectories={browse} />);
 
