@@ -116,6 +116,7 @@ async def build_export(
     tag_map = profile["tag_key_to_category"]
     category_counts: Counter = Counter()
     session_categories: dict[str, set[str]] = defaultdict(set)
+    sessions_per_category: dict[str, set[str]] = defaultdict(set)
     skipped = Counter()
     archive = io.BytesIO()
 
@@ -180,6 +181,9 @@ async def build_export(
                 wave = wave[:TARGET_SAMPLES]
                 if len(wave) < TARGET_SAMPLES:
                     wave = np.pad(wave, (0, TARGET_SAMPLES - len(wave)))
+                # Resampling can overshoot past full scale; clamp before the
+                # 16-bit write so loud input does not clip.
+                wave = np.clip(wave, -1.0, 1.0)
                 wav = io.BytesIO()
                 sf.write(
                     wav, wave, TARGET_RATE, format="WAV", subtype="PCM_16"
@@ -219,6 +223,7 @@ async def build_export(
             )
             category_counts[categories[0]] += 1
             session_categories[session_id].add(categories[0])
+            sessions_per_category[categories[0]].add(session_id)
         zipped.writestr(
             "audio_manifest.csv", csv_bytes.getvalue().encode("utf-8")
         )
@@ -235,6 +240,13 @@ async def build_export(
             category
             for category in category_order
             if category_counts[category] < 3
+        ],
+        # create_splits groups by session_id and stratifies by category, so a
+        # category needs at least two sessions or sklearn refuses to split.
+        "categories_below_two_sessions": [
+            category
+            for category in category_order
+            if len(sessions_per_category[category]) < 2
         ],
         "sessions_spanning_multiple_categories": sorted(
             key for key, value in session_categories.items() if len(value) > 1

@@ -123,6 +123,7 @@ async def test_export_manifest_audio_and_report(
         assert abs(samples).max() > 0
 
     assert "drill" in result.report["categories_below_three_clips"]
+    assert "drill" in result.report["categories_below_two_sessions"]
     assert create_app(settings)
 
 
