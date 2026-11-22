@@ -53,7 +53,7 @@ function UserMenu({ user, onLogout }: { user?: User; onLogout?: () => void }) {
           <Menu.Item>
             {({ active }) => (
               <a
-                href={"profile"}
+                href={"/profile/"}
                 className={classnames(
                   active
                     ? "bg-stone-300 text-stone-900 dark:bg-stone-800 dark:text-stone-100"
