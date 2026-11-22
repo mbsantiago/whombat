@@ -1,10 +1,10 @@
 """API functions for interacting with recordings."""
 
+import asyncio
 import datetime
 import logging
-from functools import partial
-from multiprocessing import Pool
 from pathlib import Path
+from time import perf_counter
 from typing import Sequence
 from uuid import UUID
 
@@ -32,6 +32,7 @@ __all__ = [
 ]
 
 logger = logging.getLogger(__name__)
+_RECORDING_WORKERS = 8
 
 
 class RecordingAPI(
@@ -256,15 +257,25 @@ class RecordingAPI(
             key=lambda x: x.path,
         )
 
-        with Pool() as pool:
-            results = pool.map_async(
-                partial(_assemble_recording_data, audio_dir=audio_dir),
-                validated_data,
+        started = perf_counter()
+        all_data: list[dict | None] = []
+        for offset in range(0, len(validated_data), _RECORDING_WORKERS):
+            batch = validated_data[offset : offset + _RECORDING_WORKERS]
+            all_data.extend(
+                await asyncio.gather(
+                    *(
+                        asyncio.to_thread(
+                            _assemble_recording_data, item, audio_dir
+                        )
+                        for item in batch
+                    )
+                )
             )
-            # NOTE: This will block until all results are ready. Might
-            # want to change this in the future as it could be very
-            # slow for large numbers of files or large files.
-            all_data: list[dict | None] = results.get()
+        logger.info(
+            "Processed %d recordings in %.2f seconds",
+            len(validated_data),
+            perf_counter() - started,
+        )
 
         recordings = await common.create_objects_without_duplicates(
             session,
