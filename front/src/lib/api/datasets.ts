@@ -17,6 +17,7 @@ const DEFAULT_ENDPOINTS = {
   downloadCsv: "/api/v1/datasets/detail/download/csv/",
   import: "/api/v1/datasets/import/",
   browse: "/api/v1/datasets/browse/",
+  complete: "/api/v1/datasets/complete/",
 };
 
 export function registerDatasetAPI({
@@ -54,6 +55,15 @@ export function registerDatasetAPI({
       params: { path },
     });
     return schemas.DatasetDirectoryBrowseSchema.parse(data);
+  }
+
+  async function completeDirectories(
+    path: string,
+  ): Promise<types.DatasetDirectory[]> {
+    const { data } = await instance.get(endpoints.complete, {
+      params: { path },
+    });
+    return z.array(schemas.DatasetDirectorySchema).parse(data);
   }
 
   async function getDatasetState(
@@ -133,5 +143,6 @@ export function registerDatasetAPI({
     download: downloadDataset,
     import: importDataset,
     browse: browseDirectories,
+    complete: completeDirectories,
   } as const;
 }

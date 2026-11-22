@@ -6,7 +6,11 @@ import { UploadIcon } from "@/lib/components/icons";
 import FolderPicker from "@/lib/components/inputs/FolderPicker";
 import { Group, Input, Submit } from "@/lib/components/inputs/index";
 import { DatasetImportSchema } from "@/lib/schemas";
-import type { DatasetDirectoryBrowse, DatasetImport } from "@/lib/types";
+import type {
+  DatasetDirectory,
+  DatasetDirectoryBrowse,
+  DatasetImport,
+} from "@/lib/types";
 
 /**
  * Component for importing a dataset.
@@ -18,9 +22,11 @@ import type { DatasetDirectoryBrowse, DatasetImport } from "@/lib/types";
 export default function DatasetImportComponent({
   onImportDataset,
   browseDirectories,
+  completeDirectories,
 }: {
   onImportDataset?: (dataset: DatasetImport) => void;
   browseDirectories?: (path: string) => Promise<DatasetDirectoryBrowse>;
+  completeDirectories?: (path: string) => Promise<DatasetDirectory[]>;
 }) {
   const {
     control,
@@ -61,7 +67,7 @@ export default function DatasetImportComponent({
       <Group
         name="audio_dir"
         label="Audio directory"
-        help="Pick the folder where all the dataset recordings are stored"
+        help="Pick the audio root used by the dataset's relative recording paths."
         error={errors.audio_dir?.message}
       >
         {browseDirectories ? (
@@ -73,6 +79,7 @@ export default function DatasetImportComponent({
                 value={field.value}
                 onChange={field.onChange}
                 browseDirectories={browseDirectories}
+                completeDirectories={completeDirectories}
               />
             )}
           />

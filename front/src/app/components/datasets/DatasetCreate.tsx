@@ -36,6 +36,7 @@ export default function DatasetCreate({
     <DatasetCreateBase
       onCreateDataset={handleCreateProject}
       browseDirectories={api.datasets.browse}
+      completeDirectories={api.datasets.complete}
     />
   );
 }

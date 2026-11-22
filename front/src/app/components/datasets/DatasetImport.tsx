@@ -60,6 +60,7 @@ export default function DatasetImport({
       <DatasetImportBase
         onImportDataset={handleImportProject}
         browseDirectories={api.datasets.browse}
+        completeDirectories={api.datasets.complete}
       />
       {detailedError != null && (
         <Portal>

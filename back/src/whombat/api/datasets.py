@@ -1,5 +1,6 @@
 """API functions for interacting with datasets."""
 
+import asyncio
 import datetime
 import uuid
 import warnings
@@ -426,7 +427,11 @@ class DatasetAPI(
             audio_dir = get_settings().audio_dir
 
         # Get the files in the dataset directory.
-        file_list = files.get_audio_files_in_folder(
+        # shortcut: this view always scans recursively, so a dataset created
+        # with include_subfolders=False reports nested files as unregistered.
+        # Upgrade if non-recursive datasets become common.
+        file_list = await asyncio.to_thread(
+            files.get_audio_files_in_folder,
             audio_dir / obj.audio_dir,
             relative=True,
         )
@@ -569,6 +574,8 @@ class DatasetAPI(
         dataset_dir: Path,
         description: str | None = None,
         audio_dir: Path | None = None,
+        tag_recordings_by_folder: bool = False,
+        include_subfolders: bool = True,
         **kwargs,
     ) -> schemas.Dataset:
         """Create a dataset.
@@ -590,6 +597,9 @@ class DatasetAPI(
         audio_dir
             The root audio directory, by default None. If None, the root audio
             directory from the settings will be used.
+        include_subfolders
+            Whether to also register audio files found in subdirectories, by
+            default True.
         **kwargs
             Additional keyword arguments to pass to the creation function.
 
@@ -607,14 +617,10 @@ class DatasetAPI(
         if audio_dir is None:
             audio_dir = get_settings().audio_dir
 
-        # Make sure the path is relative to the root audio directory.
-        if not dataset_dir.is_relative_to(audio_dir):
-            raise ValueError(
-                "The audio directory must be relative to the root audio "
-                "directory."
-                f"\n\tRoot audio directory: {audio_dir}"
-                f"\n\tAudio directory: {dataset_dir}"
-            )
+        audio_dir = audio_dir.expanduser().resolve()
+        dataset_dir = files.resolve_within_root(
+            dataset_dir.expanduser(), audio_dir
+        )
 
         # Validate the creation data.
         data = schemas.DatasetCreate(
@@ -623,19 +629,22 @@ class DatasetAPI(
             audio_dir=dataset_dir,
         )
 
-        obj = await self.create_from_data(
-            session,
-            data.model_copy(
-                update=dict(audio_dir=data.audio_dir.relative_to(audio_dir))
-            ),
-            **kwargs,
+        creation_data = data.model_dump(
+            exclude={
+                "tag_recordings_by_folder",
+                "include_subfolders",
+            },
+            mode="python",
         )
+        creation_data["audio_dir"] = data.audio_dir.relative_to(audio_dir)
+        obj = await self.create_from_data(session, creation_data, **kwargs)
 
-        file_list = files.get_audio_files_in_folder(
+        file_list = await asyncio.to_thread(
+            files.get_audio_files_in_folder,
             dataset_dir,
             relative=False,
+            recursive=include_subfolders,
         )
-
         recording_list = await recordings.create_many(
             session,
             [dict(path=file) for file in file_list],
@@ -648,6 +657,45 @@ class DatasetAPI(
         dataset_recordigns = await self.add_recordings(
             session, obj, recording_list
         )
+
+        if tag_recordings_by_folder:
+            folders = {
+                recording.path.parent.relative_to(obj.audio_dir)
+                for recording in recording_list
+                if recording.path.parent.relative_to(obj.audio_dir)
+                != Path(".")
+            }
+            folder_tags = await common.create_objects_without_duplicates(
+                session,
+                models.Tag,
+                [
+                    {"key": "folder", "value": folder.as_posix()}
+                    for folder in folders
+                ],
+                key=lambda value: (value["key"], value["value"]),
+                key_column=tuple_(models.Tag.key, models.Tag.value),
+                return_all=True,
+            )
+            folder_tag_ids = {Path(tag.value): tag.id for tag in folder_tags}
+            recording_tags = [
+                {
+                    "recording_id": recording.id,
+                    "tag_id": folder_tag_ids[folder],
+                }
+                for recording in recording_list
+                if (folder := recording.path.parent.relative_to(obj.audio_dir))
+                in folder_tag_ids
+            ]
+            await common.create_objects_without_duplicates(
+                session,
+                models.RecordingTag,
+                recording_tags,
+                key=lambda value: (value["recording_id"], value["tag_id"]),
+                key_column=tuple_(
+                    models.RecordingTag.recording_id,
+                    models.RecordingTag.tag_id,
+                ),
+            )
 
         obj = obj.model_copy(
             update=dict(recording_count=len(dataset_recordigns))
@@ -732,11 +780,17 @@ class DatasetAPI(
         dataset_audio_dir: Path,
         audio_dir: Path | None = None,
     ) -> schemas.Dataset:
+        if audio_dir is None:
+            audio_dir = get_settings().audio_dir
+        audio_dir = audio_dir.expanduser().resolve()
+        dataset_audio_dir = files.resolve_within_root(
+            dataset_audio_dir.expanduser(), audio_dir
+        )
         db_dataset = await aoef.import_dataset(
             session,
             dataset,
             dataset_dir=dataset_audio_dir,
-            audio_dir=audio_dir or Path.cwd(),
+            audio_dir=audio_dir,
         )
         await session.commit()
         await session.refresh(db_dataset)

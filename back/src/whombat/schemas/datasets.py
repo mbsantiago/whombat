@@ -33,6 +33,12 @@ class DatasetCreate(BaseModel):
     description: str | None = Field(None)
     """The description of the dataset."""
 
+    tag_recordings_by_folder: bool = False
+    """Tag recordings by their relative parent folder when importing."""
+
+    include_subfolders: bool = True
+    """Whether to look for audio files in subdirectories too."""
+
 
 class Dataset(BaseSchema):
     """Schema for Dataset objects returned to the user."""

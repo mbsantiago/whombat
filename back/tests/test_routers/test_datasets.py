@@ -220,6 +220,21 @@ class TestExportDataset:
             "Expected a JSON file in AOEF format" in response.json()["message"]
         )
 
+    def test_rejects_missing_audio_directory(
+        self,
+        client: TestClient,
+        audio_dir: Path,
+        cookies: dict[str, str],
+    ):
+        response = client.post(
+            "/api/v1/datasets/import/",
+            files={"dataset": BytesIO(b"")},
+            data={"audio_dir": str(audio_dir / "missing")},
+            cookies=cookies,
+        )
+
+        assert response.status_code == 400
+
     def test_fails_when_aoef_collection_type_is_mismatched(
         self,
         client: TestClient,
@@ -319,6 +334,51 @@ class TestBrowseDatasetDirectories:
 
         assert response.status_code == 400
 
+
+class TestCompleteDatasetDirectories:
+    def test_completes_case_insensitive_nested_prefix(
+        self, client: TestClient, audio_dir: Path
+    ):
+        (audio_dir / "Birds" / "Night").mkdir(parents=True)
+        (audio_dir / "Birds" / "Nest").mkdir()
+        (audio_dir / "Other").mkdir()
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": "birds/n"}
+        )
+
+        assert response.status_code == 200
+        assert [entry["path"] for entry in response.json()] == [
+            "Birds/Nest",
+            "Birds/Night",
+        ]
+
+        response = client.get(
+            "/api/v1/datasets/complete/",
+            params={"path": "Birds/*ight"},
+        )
+        assert response.status_code == 200
+        assert [entry["path"] for entry in response.json()] == ["Birds/Night"]
+
+    def test_completion_is_confined_and_limited(
+        self, client: TestClient, audio_dir: Path
+    ):
+        for index in range(21):
+            (audio_dir / f"entry{index:02}").mkdir()
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": ""}
+        )
+        assert response.status_code == 200
+        assert len(response.json()) == 20
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": "../"}
+        )
+        assert response.status_code == 400
+
+
+class TestBrowseDatasetDirectoryEdgeCases:
     def test_symlink_escape_is_not_listed(
         self, client: TestClient, audio_dir: Path, tmp_path: Path
     ):

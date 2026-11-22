@@ -76,11 +76,11 @@ def is_within_root(candidate: Path, root: Path) -> bool:
 
 
 def get_audio_files_in_folder(
-    audio_dir: Path, relative: bool = True
+    audio_dir: Path, relative: bool = True, recursive: bool = True
 ) -> list[Path]:
-    """Get all path to audio files in a directory recursively.
+    """Get the paths to audio files in a directory.
 
-    Only files with a .wav extension are considered recordings.
+    Only supported audio file formats are considered recordings.
 
     Parameters
     ----------
@@ -89,14 +89,17 @@ def get_audio_files_in_folder(
     relative: bool, optional
         If True, the returned paths will be relative to the audio_dir path.
         By default True.
+    recursive: bool, optional
+        If True, also search subdirectories. By default True.
 
     Returns
     -------
     recordings: list[Path]
     """
+    paths = audio_dir.rglob("*") if recursive else audio_dir.glob("*")
     return [
         path.relative_to(audio_dir) if relative else path.absolute()
-        for path in audio_dir.rglob("*")
+        for path in paths
         if path.is_file() and is_audio_file(path)
     ]
 

@@ -18,6 +18,8 @@ export const DatasetCreateSchema = z.object({
   name: z.string().min(1),
   audio_dir: z.string(),
   description: z.string().optional(),
+  tag_recordings_by_folder: z.boolean().default(false),
+  include_subfolders: z.boolean().default(true),
 });
 
 export const DatasetUpdateSchema = z.object({
