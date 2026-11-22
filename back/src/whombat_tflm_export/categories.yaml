@@ -1,9 +1,0 @@
-categories:
-  - id: drill
-    tag_keys: [drill]
-  - id: spray
-    tag_keys: [spray]
-  - id: door
-    tag_keys: [door]
-  - id: background
-    tag_keys: []
