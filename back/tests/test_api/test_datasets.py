@@ -902,7 +902,7 @@ async def test_create_dataset_tags_nested_recordings_by_folder(
     )
 
     assert [(tag.key, tag.value) for tag in nested.tags] == [
-        ("folder", "birds/night")
+        ("folder", "birds")
     ]
     assert root.tags == []
     assert dataset.recording_count == 2
@@ -921,6 +921,9 @@ async def test_create_dataset_reuses_folder_tags_for_recordings(
     random_wav_factory(first_folder / "one.wav")
     random_wav_factory(first_folder / "two.wav")
     random_wav_factory(second_folder / "three.wav")
+    nested_folder = first_folder / "night"
+    nested_folder.mkdir()
+    random_wav_factory(nested_folder / "four.wav")
 
     await api.datasets.create(
         session,
@@ -939,6 +942,8 @@ async def test_create_dataset_reuses_folder_tags_for_recordings(
         "one.wav": [("folder", "birds")],
         "two.wav": [("folder", "birds")],
         "three.wav": [("folder", "mammals")],
+        # Nested folders collapse to the first segment below the root.
+        "four.wav": [("folder", "birds")],
     }
 
 

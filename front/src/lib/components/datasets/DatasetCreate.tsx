@@ -27,6 +27,7 @@ export default function CreateDataset({
     control,
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<DatasetCreate>({
@@ -38,15 +39,14 @@ export default function CreateDataset({
     },
   });
   const includeSubfolders = watch("include_subfolders");
+  // "Include sub-folders" is the single source of truth: turning it off
+  // clears the folder tag option so the two can never disagree.
+  const { onChange: onIncludeSubfoldersChange, ...includeSubfoldersField } =
+    register("include_subfolders");
 
   const onSubmit = useCallback(
     (data: DatasetCreate) => {
-      onCreateDataset?.({
-        ...data,
-        // Without subfolders there is nothing to tag by folder.
-        tag_recordings_by_folder:
-          data.include_subfolders && data.tag_recordings_by_folder,
-      });
+      onCreateDataset?.(data);
     },
     [onCreateDataset],
   );
@@ -96,10 +96,16 @@ export default function CreateDataset({
         <input
           type="checkbox"
           className="mt-0.5 accent-slate-800"
-          {...register("include_subfolders")}
+          {...includeSubfoldersField}
+          onChange={(event) => {
+            onIncludeSubfoldersChange(event);
+            if (!event.target.checked) {
+              setValue("tag_recordings_by_folder", false);
+            }
+          }}
         />
         <span>
-          Include subfolders
+          Include sub-folders
           <span className="block text-xs text-slate-600">
             Also register audio files found in nested folders.
           </span>
@@ -117,9 +123,9 @@ export default function CreateDataset({
           {...register("tag_recordings_by_folder")}
         />
         <span>
-          Group recordings by folder
+          Add folder tag
           <span className="block text-xs text-slate-600">
-            Add folder names as tags when creating recordings.
+            Tag each recording with the name of its top-level folder.
           </span>
         </span>
       </label>

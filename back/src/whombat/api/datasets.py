@@ -659,32 +659,34 @@ class DatasetAPI(
         )
 
         if tag_recordings_by_folder:
-            folders = {
-                recording.path.parent.relative_to(obj.audio_dir)
-                for recording in recording_list
-                if recording.path.parent.relative_to(obj.audio_dir)
-                != Path(".")
-            }
+            # Only the first folder below the dataset root is used, so
+            # "drill/site1" and "drill/site2" share one "drill" tag. Files
+            # directly in the dataset root stay untagged.
+            recording_folders: dict[int, str] = {}
+            for recording in recording_list:
+                relative = recording.path.parent.relative_to(obj.audio_dir)
+                if relative == Path("."):
+                    continue
+                recording_folders[recording.id] = relative.parts[0]
+
             folder_tags = await common.create_objects_without_duplicates(
                 session,
                 models.Tag,
                 [
-                    {"key": "folder", "value": folder.as_posix()}
-                    for folder in folders
+                    {"key": "folder", "value": folder}
+                    for folder in sorted(set(recording_folders.values()))
                 ],
                 key=lambda value: (value["key"], value["value"]),
                 key_column=tuple_(models.Tag.key, models.Tag.value),
                 return_all=True,
             )
-            folder_tag_ids = {Path(tag.value): tag.id for tag in folder_tags}
+            folder_tag_ids = {tag.value: tag.id for tag in folder_tags}
             recording_tags = [
                 {
-                    "recording_id": recording.id,
+                    "recording_id": recording_id,
                     "tag_id": folder_tag_ids[folder],
                 }
-                for recording in recording_list
-                if (folder := recording.path.parent.relative_to(obj.audio_dir))
-                in folder_tag_ids
+                for recording_id, folder in recording_folders.items()
             ]
             await common.create_objects_without_duplicates(
                 session,
