@@ -5,6 +5,7 @@ import api from "@/app/api";
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
 import AnnotationProjectTasksBase from "@/lib/components/annotation_projects/AnnotationProjectTasks";
+import AnnotationProjectTaskList from "@/lib/components/annotation_projects/AnnotationProjectTaskList";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import type {
   AnnotationProject,
@@ -93,6 +94,7 @@ export default function AnnotationProjectTasks({
           onSelect={(dataset) => filter.set("dataset", dataset)}
         />
       }
+      TaskList={<AnnotationProjectTaskList annotationProject={initialData} />}
       onSetFilterField={filter.set}
       onToggleSubsample={(subsample) =>
         setState((prev) => ({ ...prev, subsampleRecordings: subsample }))

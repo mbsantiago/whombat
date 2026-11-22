@@ -25,9 +25,10 @@ const meta: Meta<typeof AnnotationProjectTasks> = {
 export default meta;
 
 type Story = StoryObj<typeof AnnotationProjectTasks>;
+const taskList = <div>Existing annotation tasks</div>;
 
 export const NoDatasetSeletected: Story = {
-  args: {},
+  args: { TaskList: taskList },
 };
 
 const dataset = {
@@ -58,6 +59,7 @@ export const SelectedDataset: Story = {
     numSelectedRecordings: 100,
     numSelectedClips: 300,
     DatasetSearch: datasetSearch,
+    TaskList: taskList,
   },
 };
 
@@ -69,6 +71,7 @@ export const WithRecordingSubsample: Story = {
     numSelectedRecordings: 20,
     numSelectedClips: 60,
     DatasetSearch: datasetSearch,
+    TaskList: taskList,
   },
 };
 
@@ -80,5 +83,6 @@ export const WithClipSubsample: Story = {
     numSelectedRecordings: 100,
     numSelectedClips: 60,
     DatasetSearch: datasetSearch,
+    TaskList: taskList,
   },
 };

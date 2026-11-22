@@ -30,11 +30,24 @@ export default function AnnotationProjectProgress({
     );
   }, [router, annotationProject.uuid]);
 
+  const handleClickStatus = useCallback(
+    (status: string) => {
+      router.push(
+        `/annotation_projects/detail/tasks/?annotation_project_uuid=${annotationProject.uuid}&${status}=true`,
+      );
+    },
+    [router, annotationProject.uuid],
+  );
+
   return (
     <AnnotationProjectProgressBase
       isLoading={isLoading}
       annotationTasks={items}
       onAddTasks={handleClickAddTag}
+      onClickPending={() => handleClickStatus("pending")}
+      onClickReview={() => handleClickStatus("rejected")}
+      onClickCompleted={() => handleClickStatus("completed")}
+      onClickVerified={() => handleClickStatus("verified")}
     />
   );
 }

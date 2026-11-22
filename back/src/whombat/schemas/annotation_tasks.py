@@ -51,6 +51,9 @@ class AnnotationTask(BaseSchema):
     status_badges: list[AnnotationStatusBadge]
     """Status badges for the task."""
 
+    dataset_name: str | None = None
+    """Name of the first dataset containing the task recording, when listed."""
+
 
 class AnnotationTaskUpdate(BaseModel):
     """Schema for updating a task."""

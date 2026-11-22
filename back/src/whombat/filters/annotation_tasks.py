@@ -251,7 +251,14 @@ class SearchRecordingsFilter(base.Filter):
         fields = [models.Recording.path]
 
         term = f"%{self.search_recordings}%"
-        return query.where(or_(*[field.ilike(term) for field in fields]))
+        conditions = [field.ilike(term) for field in fields]
+        try:
+            task_uuid = UUID(self.search_recordings)
+        except (ValueError, TypeError):
+            pass
+        else:
+            conditions.append(models.AnnotationTask.uuid == task_uuid)
+        return query.where(or_(*conditions))
 
 
 class SoundEventAnnotationTagFilter(base.Filter):
