@@ -10,6 +10,8 @@ import Button from "@/lib/components/ui/Button";
 import { UserCreateSchema } from "@/lib/schemas";
 import type { User, UserCreate } from "@/lib/types";
 
+import { userCreateErrorMessage } from "./userCreateError";
+
 export default function UserCreateForm(props: {
   onCreate?: (user: Promise<User>) => void;
   onAuthenticationError?: (error: AxiosError) => void;
@@ -47,7 +49,7 @@ export default function UserCreateForm(props: {
               break;
             default:
               setError("username", {
-                message: "Unknown error",
+                message: userCreateErrorMessage(error),
               });
               break;
           }
