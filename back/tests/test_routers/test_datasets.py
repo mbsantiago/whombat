@@ -1,4 +1,5 @@
 import json
+import shutil
 from collections.abc import Callable
 from io import BytesIO
 from pathlib import Path, PurePosixPath, PureWindowsPath
@@ -8,6 +9,38 @@ from soundevent import data
 from soundevent.io import aoef
 
 from whombat import schemas
+
+
+class TestCreateDataset:
+    def test_reports_dedup_counts(
+        self,
+        client: TestClient,
+        audio_dir: Path,
+        random_wav_factory: Callable[..., Path],
+        cookies: dict[str, str],
+    ):
+        dataset_dir = audio_dir / "router_duplicates"
+        dataset_dir.mkdir(parents=True)
+        original = random_wav_factory(path=dataset_dir / "a.wav")
+        shutil.copy(original, dataset_dir / "b.wav")
+
+        response = client.post(
+            "/api/v1/datasets/",
+            json={
+                "name": "router_duplicates",
+                "audio_dir": str(dataset_dir),
+            },
+            cookies=cookies,
+        )
+
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["dataset"]["name"] == "router_duplicates"
+        assert body["files_found"] == 2
+        assert body["duplicates_in_selection"] == 1
+        assert body["already_known"] == 0
+        assert body["recordings_created"] == 1
+        assert body["recordings_attached"] == 1
 
 
 class TestExportDataset:

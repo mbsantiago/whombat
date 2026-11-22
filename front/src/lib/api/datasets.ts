@@ -35,10 +35,12 @@ export function registerDatasetAPI({
     return Page(schemas.DatasetSchema).parse(data);
   }
 
-  async function create(data: types.DatasetCreate): Promise<types.Dataset> {
+  async function create(
+    data: types.DatasetCreate,
+  ): Promise<types.DatasetCreateResult> {
     const body = schemas.DatasetCreateSchema.parse(data);
     const { data: res } = await instance.post(endpoints.create, body);
-    return schemas.DatasetSchema.parse(res);
+    return schemas.DatasetCreateResultSchema.parse(res);
   }
 
   async function get(uuid: string): Promise<types.Dataset> {

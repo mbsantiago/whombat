@@ -13,6 +13,7 @@ __all__ = [
     "Dataset",
     "DatasetRecording",
     "DatasetCreate",
+    "DatasetCreated",
     "DatasetUpdate",
     "DatasetRecordingCreate",
     "FileState",
@@ -60,6 +61,31 @@ class Dataset(BaseSchema):
 
     recording_count: int = 0
     """The number of recordings in the dataset."""
+
+
+class DatasetCreated(BaseModel):
+    """Result of creating a dataset from a folder."""
+
+    dataset: Dataset
+    """The created dataset."""
+
+    files_found: int = 0
+    """Audio files selected for registration."""
+
+    unreadable: int = 0
+    """Files whose media information could not be read."""
+
+    duplicates_in_selection: int = 0
+    """Files whose content already appeared earlier in the same selection."""
+
+    already_known: int = 0
+    """Files whose content was already registered in the database."""
+
+    recordings_created: int = 0
+    """New recordings registered by this import."""
+
+    recordings_attached: int = 0
+    """Recordings linked to the dataset, new or already registered."""
 
 
 class DatasetUpdate(BaseModel):

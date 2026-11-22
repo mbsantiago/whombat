@@ -1,6 +1,7 @@
 """Test suite for the datasets API module."""
 
 import importlib
+import shutil
 import uuid
 from collections.abc import Callable
 from pathlib import Path
@@ -876,6 +877,68 @@ async def test_create_dataset_can_skip_subfolders(
     ]
 
 
+async def test_create_dataset_attaches_already_registered_recordings(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    """Test that a second dataset over the same folder is not empty."""
+    dataset_dir = audio_dir / "shared_folder"
+    dataset_dir.mkdir(parents=True)
+    random_wav_factory(path=dataset_dir / "one.wav")
+    random_wav_factory(path=dataset_dir / "two.wav")
+
+    await api.datasets.create(
+        session,
+        name="first_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+    )
+
+    stats: dict = {}
+    second = await api.datasets.create(
+        session,
+        name="second_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        stats=stats,
+    )
+
+    recordings, _ = await api.datasets.get_recordings(session, second)
+    assert len(recordings) == 2
+    assert stats["already_known"] == 2
+    assert stats["recordings_created"] == 0
+    assert stats["recordings_attached"] == 2
+
+
+async def test_create_dataset_reports_duplicate_files(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    """Test that duplicate content in one folder is counted, not registered."""
+    dataset_dir = audio_dir / "duplicate_folder"
+    dataset_dir.mkdir(parents=True)
+    original = random_wav_factory(path=dataset_dir / "a.wav")
+    shutil.copy(original, dataset_dir / "b.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="duplicate_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        stats=stats,
+    )
+
+    recordings, _ = await api.datasets.get_recordings(session, dataset)
+    assert len(recordings) == 1
+    assert stats["files_found"] == 2
+    assert stats["duplicates_in_selection"] == 1
+    assert stats["recordings_created"] == 1
+    assert stats["recordings_attached"] == 1
+
+
 async def test_create_dataset_tags_nested_recordings_by_folder(
     session: AsyncSession,
     random_wav_factory: Callable[..., Path],
@@ -1002,6 +1065,9 @@ async def test_recordings_belonging_to_multiple_datastes_are_not_deleted(
         audio_dir=audio_dir,
     )
 
-    await api.datasets.add_recording(session, dataset2, dataset_recording)
+    # Creating a dataset over an already registered folder attaches the
+    # existing recordings, so no explicit add is needed to share them.
+    shared, _ = await api.datasets.get_recordings(session, dataset2)
+    assert [rec.uuid for rec in shared] == [dataset_recording.uuid]
 
     await api.recordings.get(session, dataset_recording.uuid)

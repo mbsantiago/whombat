@@ -12,7 +12,7 @@ import cachetools
 import soundfile as sf
 from soundevent import data
 from soundevent.audio import MediaInfo, compute_md5_checksum, get_media_info
-from sqlalchemy import and_
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from whombat import exceptions, models, schemas
@@ -215,6 +215,8 @@ class RecordingAPI(
         session: AsyncSession,
         data: Sequence[dict],
         audio_dir: Path | None = None,
+        return_existing: bool = False,
+        stats: dict | None = None,
     ) -> None | Sequence[schemas.Recording]:
         """Create recordings.
 
@@ -231,11 +233,21 @@ class RecordingAPI(
         audio_dir
             The root directory for audio files. If not given, it will
             default to the value of `settings.audio_dir`.
+        return_existing
+            Whether to also return recordings whose file content is already
+            registered. By default False, so only new recordings are returned.
+        stats
+            Optional dictionary that is filled with counts describing what
+            happened: ``files_found``, ``unreadable``,
+            ``duplicates_in_selection``, ``already_known`` and
+            ``recordings_created``. Pass a dict to report these to the caller
+            without hashing the files again.
 
         Returns
         -------
         recordings : list[schemas.recordings.Recording]
-            The created recordings.
+            The created recordings, plus the already registered ones when
+            ``return_existing`` is True.
 
         Notes
         -----
@@ -277,13 +289,35 @@ class RecordingAPI(
             perf_counter() - started,
         )
 
+        usable = [rec for rec in all_data if rec is not None]
+        hashes = {rec["hash"] for rec in usable}
+        known = 0
+        if hashes:
+            known = (
+                await session.scalar(
+                    select(func.count())
+                    .select_from(models.Recording)
+                    .where(models.Recording.hash.in_(hashes))
+                )
+            ) or 0
+
         recordings = await common.create_objects_without_duplicates(
             session,
             models.Recording,
-            [rec for rec in all_data if rec is not None],
+            usable,
             key=lambda recording: recording.get("hash"),
             key_column=models.Recording.hash,
+            return_all=return_existing,
         )
+
+        if stats is not None:
+            stats.update(
+                files_found=len(validated_data),
+                unreadable=len(validated_data) - len(usable),
+                duplicates_in_selection=len(usable) - len(hashes),
+                already_known=known,
+                recordings_created=len(hashes) - known,
+            )
 
         return [schemas.Recording.model_validate(rec) for rec in recordings]
 

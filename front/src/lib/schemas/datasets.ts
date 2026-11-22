@@ -22,6 +22,16 @@ export const DatasetCreateSchema = z.object({
   include_subfolders: z.boolean().default(true),
 });
 
+export const DatasetCreateResultSchema = z.object({
+  dataset: DatasetSchema,
+  files_found: z.number().int().default(0),
+  unreadable: z.number().int().default(0),
+  duplicates_in_selection: z.number().int().default(0),
+  already_known: z.number().int().default(0),
+  recordings_created: z.number().int().default(0),
+  recordings_attached: z.number().int().default(0),
+});
+
 export const DatasetUpdateSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),

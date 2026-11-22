@@ -34,9 +34,11 @@ export default function useDatasets({
 
   const create = useMutation({
     mutationFn: api.datasets.create,
-    onSuccess: (data) => {
-      toast.success(`Dataset ${data.name} created`);
-      onCreateDataset?.(data);
+    onSuccess: (result) => {
+      toast.success(
+        `Dataset ${result.dataset.name} created (${result.recordings_attached} files)`,
+      );
+      onCreateDataset?.(result.dataset);
       query.refetch();
     },
   });

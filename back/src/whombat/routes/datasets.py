@@ -136,13 +136,14 @@ async def get_datasets(
 
 @dataset_router.post(
     "/",
-    response_model=schemas.Dataset,
+    response_model=schemas.DatasetCreated,
 )
 async def create_dataset(
     session: Session,
     dataset: schemas.DatasetCreate,
 ):
     """Create a new dataset."""
+    stats: dict = {}
     try:
         created = await api.datasets.create(
             session,
@@ -151,6 +152,7 @@ async def create_dataset(
             dataset_dir=dataset.audio_dir,
             tag_recordings_by_folder=dataset.tag_recordings_by_folder,
             include_subfolders=dataset.include_subfolders,
+            stats=stats,
         )
     except exceptions.DuplicateObjectError as error:
         raise HTTPException(status_code=409, detail=str(error)) from error
@@ -167,7 +169,7 @@ async def create_dataset(
             status_code=500, detail="Dataset creation failed"
         ) from error
     await session.commit()
-    return created
+    return schemas.DatasetCreated(dataset=created, **stats)
 
 
 @dataset_router.patch(

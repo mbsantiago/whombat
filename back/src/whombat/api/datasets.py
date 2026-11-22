@@ -576,6 +576,7 @@ class DatasetAPI(
         audio_dir: Path | None = None,
         tag_recordings_by_folder: bool = False,
         include_subfolders: bool = True,
+        stats: dict | None = None,
         **kwargs,
     ) -> schemas.Dataset:
         """Create a dataset.
@@ -600,6 +601,11 @@ class DatasetAPI(
         include_subfolders
             Whether to also register audio files found in subdirectories, by
             default True.
+        stats
+            Optional dictionary filled with counts describing the import:
+            ``files_found``, ``unreadable``, ``duplicates_in_selection``,
+            ``already_known``, ``recordings_created``,
+            ``recordings_attached``.
         **kwargs
             Additional keyword arguments to pass to the creation function.
 
@@ -645,14 +651,21 @@ class DatasetAPI(
             relative=False,
             recursive=include_subfolders,
         )
+        file_stats: dict = {}
         recording_list = await recordings.create_many(
             session,
             [dict(path=file) for file in file_list],
             audio_dir=audio_dir,
+            return_existing=True,
+            stats=file_stats,
         )
 
         if recording_list is None:
             raise RuntimeError("No recordings were created.")
+
+        if stats is not None:
+            stats.update(file_stats)
+            stats["recordings_attached"] = len(recording_list)
 
         dataset_recordigns = await self.add_recordings(
             session, obj, recording_list
