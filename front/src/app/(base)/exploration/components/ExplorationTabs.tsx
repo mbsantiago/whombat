@@ -37,7 +37,7 @@ export default function ExplorationTabs() {
           active={selectedLayoutSegment === "recordings"}
           onClick={() => {
             router.push(
-              `/exploration/recordings/gallery/?${params.toString()}`,
+              `/exploration/recordings/list/?${params.toString()}`,
             );
           }}
         >
