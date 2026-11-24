@@ -15,6 +15,7 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
+from whombat.exceptions import SettingsError
 from whombat.system.data import get_whombat_db_file, get_whombat_settings_file
 
 __all__ = [
@@ -129,6 +130,16 @@ class Settings(BaseSettings):
             file_secret_settings,
             init_settings,
         )
+
+
+def load_settings_from_path(path: str | Path) -> Settings:
+    """Load and validate an explicitly selected Whombat settings file."""
+    try:
+        return Settings.model_validate_json(Path(path).read_text())
+    except (OSError, ValueError) as exc:
+        raise SettingsError(
+            f"Cannot load Whombat settings from {path}"
+        ) from exc
 
 
 @lru_cache()

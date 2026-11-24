@@ -8,6 +8,8 @@ These guides cover specific tasks and advanced workflows – sometimes including
 
 Here's what's currently available:
 
+- [**Manage Whombat from the command line**](command_line.md): Start the app and manage user accounts from a terminal.
+
 - [**Import Example Data**](https://www.google.com/search?q=../import.md): Get a quick, hands-on tour with pre-loaded data.
 - [**Navigating the Spectrogram**](https://www.google.com/search?q=spectrogram_display.md): Master viewing and interacting with spectrograms.
 - [**Export Annotations for ML Development**](export.md): Prepare and export your data for training ML models.
