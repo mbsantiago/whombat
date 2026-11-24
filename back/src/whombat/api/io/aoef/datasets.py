@@ -8,7 +8,10 @@ from whombat import exceptions, models
 from whombat.api import common
 from whombat.api.io.aoef.common import parse_aoef_object
 from whombat.api.io.aoef.features import get_feature_names
-from whombat.api.io.aoef.recordings import import_recordings
+from whombat.api.io.aoef.recordings import (
+    check_multi_platform_path,
+    import_recordings,
+)
 from whombat.api.io.aoef.tags import import_tags
 from whombat.api.io.aoef.users import import_users
 from whombat.core.files import resolve_within_root
@@ -44,6 +47,21 @@ async def import_dataset(
     audio_dir = audio_dir.resolve()
     dataset_dir = resolve_within_root(dataset_dir, audio_dir)
 
+    path_mapping = {}
+    for recording in dataset_object.recordings or []:
+        path = check_multi_platform_path(recording.path, dataset_dir)
+        candidate = path or dataset_dir / recording.path
+        try:
+            resolved = resolve_within_root(candidate, dataset_dir)
+        except exceptions.PathOutsideRootError as error:
+            raise exceptions.DataFormatError(
+                message="Recording path is outside the selected audio directory.",
+                format="aoef-dataset",
+                details=str(error),
+            ) from error
+        if path is not None:
+            path_mapping[recording.uuid] = resolved.relative_to(dataset_dir)
+
     tags = await import_tags(session, dataset_object.tags or [])
 
     users = await import_users(session, dataset_object.users or [])
@@ -62,6 +80,14 @@ async def import_dataset(
         audio_dir=dataset_dir,
         base_audio_dir=audio_dir,
     )
+    if dataset_object.recordings and not recordings:
+        raise exceptions.DataFormatError(
+            message=(
+                "No recordings were found in the selected audio directory. "
+                "Select the folder containing the paths in the AOEF file."
+            ),
+            format="aoef-dataset",
+        )
 
     try:
         dataset = await common.get_object(
@@ -69,6 +95,16 @@ async def import_dataset(
             models.Dataset,
             models.Dataset.uuid == dataset_object.uuid,
         )
+        if dataset.audio_dir != dataset_dir.relative_to(audio_dir):
+            if dataset.recording_count:
+                raise exceptions.DataFormatError(
+                    message=(
+                        "This dataset already has recordings in a different "
+                        "audio directory."
+                    ),
+                    format="aoef-dataset",
+                )
+            dataset.audio_dir = dataset_dir.relative_to(audio_dir)
     except exceptions.NotFoundError:
         dataset = await common.create_object(
             session,
@@ -78,11 +114,6 @@ async def import_dataset(
             audio_dir=dataset_dir.relative_to(audio_dir),
             uuid=dataset_object.uuid,
         )
-
-    path_mapping = {
-        recording.uuid: normalize_path(recording.path, dataset_dir)
-        for recording in dataset_object.recordings or []
-    }
 
     # Create dataset recordings
     values = [
@@ -105,10 +136,3 @@ async def import_dataset(
     )
 
     return dataset
-
-
-def normalize_path(path: Path, dataset_dir: Path) -> Path:
-    """Normalize a path to a dataset directory."""
-    if path.is_absolute():
-        return path.relative_to(dataset_dir)
-    return path

@@ -87,6 +87,9 @@ class DatasetCreated(BaseModel):
     recordings_attached: int = 0
     """Recordings linked to the dataset, new or already registered."""
 
+    folder_tag_warning: str | None = None
+    """Notice when folder tagging was absent, uniform, or ambiguous."""
+
 
 class DatasetUpdate(BaseModel):
     """Schema for Dataset objects updated by the user."""

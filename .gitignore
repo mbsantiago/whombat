@@ -10,3 +10,17 @@ front/test-results
 build/whombat
 dist
 .env
+# CocoIndex Code (ccc)
+/.cocoindex_code/
+.slim/deepwork/
+
+# Local agent context
+/.ignore
+/CLAUDE.md
+/interview/
+/wiki/
+
+# BEGIN oh-my-opencode-slim worktrees
+.slim/worktrees/
+.slim/worktrees.json
+# END oh-my-opencode-slim worktrees

@@ -288,6 +288,7 @@ class DatasetAPI(
         session: AsyncSession,
         obj: schemas.Dataset,
         recordings: Sequence[schemas.Recording],
+        paths_by_hash: dict[str, list[Path]] | None = None,
     ) -> list[schemas.DatasetRecording]:
         """Add recordings to a dataset.
 
@@ -301,10 +302,19 @@ class DatasetAPI(
             The dataset to add the recordings to.
         recordings
             The recordings to add to the dataset.
+        paths_by_hash
+            Selected file paths by recording hash, when different from the
+            stored recording paths.
         """
         data = []
         for recording in recordings:
-            if not recording.path.is_relative_to(obj.audio_dir):
+            # shortcut: one link per hash, revisit if multiple paths are supported.
+            path = (
+                paths_by_hash[recording.hash][0]
+                if paths_by_hash is not None
+                else recording.path
+            )
+            if not path.is_relative_to(obj.audio_dir):
                 warnings.warn(
                     "The recording is not part of the dataset audio "
                     f"directory. \ndataset = {obj}\nrecording = {recording}",
@@ -316,7 +326,7 @@ class DatasetAPI(
                 dict(
                     dataset_id=obj.id,
                     recording_id=recording.id,
-                    path=recording.path.relative_to(obj.audio_dir),
+                    path=path.relative_to(obj.audio_dir),
                 )
             )
 
@@ -652,12 +662,14 @@ class DatasetAPI(
             recursive=include_subfolders,
         )
         file_stats: dict = {}
+        paths_by_hash: dict[str, list[Path]] = {}
         recording_list = await recordings.create_many(
             session,
             [dict(path=file) for file in file_list],
             audio_dir=audio_dir,
             return_existing=True,
             stats=file_stats,
+            paths_by_hash=paths_by_hash,
         )
 
         if recording_list is None:
@@ -668,7 +680,7 @@ class DatasetAPI(
             stats["recordings_attached"] = len(recording_list)
 
         dataset_recordigns = await self.add_recordings(
-            session, obj, recording_list
+            session, obj, recording_list, paths_by_hash=paths_by_hash
         )
 
         if tag_recordings_by_folder:
@@ -676,11 +688,18 @@ class DatasetAPI(
             # "drill/site1" and "drill/site2" share one "drill" tag. Files
             # directly in the dataset root stay untagged.
             recording_folders: dict[int, str] = {}
+            ambiguous = 0
             for recording in recording_list:
-                relative = recording.path.parent.relative_to(obj.audio_dir)
-                if relative == Path("."):
-                    continue
-                recording_folders[recording.id] = relative.parts[0]
+                folders: set[str | None] = set()
+                for path in paths_by_hash[recording.hash]:
+                    relative = path.relative_to(obj.audio_dir)
+                    folders.add(
+                        relative.parts[0] if len(relative.parts) > 1 else None
+                    )
+                if len(folders) > 1:
+                    ambiguous += 1
+                elif None not in folders:
+                    recording_folders[recording.id] = next(iter(folders))
 
             folder_tags = await common.create_objects_without_duplicates(
                 session,
@@ -711,6 +730,27 @@ class DatasetAPI(
                     models.RecordingTag.tag_id,
                 ),
             )
+            if stats is not None:
+                if ambiguous:
+                    stats["folder_tag_warning"] = (
+                        f"{ambiguous} recording(s) occur in different folders "
+                        "with identical content; their folder tags were skipped."
+                    )
+                elif not recording_folders:
+                    stats["folder_tag_warning"] = (
+                        "No folder tags were added: no recordings were found "
+                        "in subfolders."
+                    )
+                elif (
+                    len(recording_folders) == len(recording_list)
+                    and len(set(recording_folders.values())) == 1
+                ):
+                    folder = next(iter(recording_folders.values()))
+                    stats["folder_tag_warning"] = (
+                        f"All recordings received folder:{folder}. "
+                        "Select a deeper audio directory if you expected "
+                        "different folder tags."
+                    )
 
         obj = obj.model_copy(
             update=dict(recording_count=len(dataset_recordigns))

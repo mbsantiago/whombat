@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { DatasetDirectory, DatasetDirectoryBrowse } from "@/lib/types";
 
+import Input from "./Input";
+
 /**
  * Browse the server's audio root one level at a time and pick a folder.
  *
@@ -191,7 +193,7 @@ export default function FolderPicker({
           >
             Type a folder path
           </label>
-          <input
+          <Input
             id="folder-path"
             type="text"
             value={query}
@@ -267,7 +269,6 @@ export default function FolderPicker({
                 ? `folder-suggestion-${activeSuggestion}`
                 : undefined
             }
-            className="w-full rounded border px-2 py-1 font-mono text-xs"
             placeholder="Start typing a path…"
           />
           {suggestionsOpen && suggestions.length > 0 && (

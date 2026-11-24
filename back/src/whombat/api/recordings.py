@@ -217,6 +217,7 @@ class RecordingAPI(
         audio_dir: Path | None = None,
         return_existing: bool = False,
         stats: dict | None = None,
+        paths_by_hash: dict[str, list[Path]] | None = None,
     ) -> None | Sequence[schemas.Recording]:
         """Create recordings.
 
@@ -242,6 +243,9 @@ class RecordingAPI(
             ``duplicates_in_selection``, ``already_known`` and
             ``recordings_created``. Pass a dict to report these to the caller
             without hashing the files again.
+        paths_by_hash
+            Optional output mapping from content hash to selected file paths.
+            Used when a recording already exists at another path.
 
         Returns
         -------
@@ -290,6 +294,9 @@ class RecordingAPI(
         )
 
         usable = [rec for rec in all_data if rec is not None]
+        if paths_by_hash is not None:
+            for rec in usable:
+                paths_by_hash.setdefault(rec["hash"], []).append(rec["path"])
         hashes = {rec["hash"] for rec in usable}
         known = 0
         if hashes:

@@ -1010,6 +1010,135 @@ async def test_create_dataset_reuses_folder_tags_for_recordings(
     }
 
 
+async def test_create_dataset_tags_reused_recording_from_selected_folder(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    original = random_wav_factory(audio_dir / "outside.wav")
+    await api.recordings.create(session, original, audio_dir=audio_dir)
+    dataset_dir = audio_dir / "selected"
+    folder = dataset_dir / "background"
+    folder.mkdir(parents=True)
+    selected = folder / "copy.wav"
+    shutil.copy(original, selected)
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="selected",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+
+    links = (
+        (
+            await session.execute(
+                select(models.DatasetRecording).where(
+                    models.DatasetRecording.dataset_id == dataset.id
+                )
+            )
+        )
+        .unique()
+        .scalars()
+        .all()
+    )
+    assert len(links) == dataset.recording_count == 1
+    assert links[0].path == Path("background/copy.wav")
+    assert stats["already_known"] == stats["recordings_attached"] == 1
+    recording = await api.recordings.get_by_path(
+        session, original.relative_to(audio_dir)
+    )
+    assert [(tag.key, tag.value) for tag in recording.tags] == [
+        ("folder", "background")
+    ]
+
+
+async def test_create_dataset_with_folder_tags_and_no_subfolders(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "flat"
+    dataset_dir.mkdir()
+    random_wav_factory(dataset_dir / "root.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="flat",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    recording = await api.recordings.get_by_path(
+        session, Path("flat/root.wav")
+    )
+    assert dataset.recording_count == 1
+    assert recording.tags == []
+    assert "No folder tags were added" in stats["folder_tag_warning"]
+
+
+async def test_create_dataset_skips_ambiguous_duplicate_folder_tags(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "ambiguous"
+    first = dataset_dir / "first"
+    second = dataset_dir / "second"
+    first.mkdir(parents=True)
+    second.mkdir()
+    original = random_wav_factory(first / "one.wav")
+    shutil.copy(original, second / "two.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="ambiguous",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    assert dataset.recording_count == 1
+    assert stats["duplicates_in_selection"] == 1
+    assert "different folders" in stats["folder_tag_warning"]
+    recording = await api.recordings.get_by_path(
+        session, original.relative_to(audio_dir)
+    )
+    assert recording.tags == []
+
+
+async def test_create_dataset_warns_when_root_is_too_high(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "repository"
+    folder = dataset_dir / "recordings"
+    (folder / "birds").mkdir(parents=True)
+    (folder / "mammals").mkdir()
+    random_wav_factory(folder / "birds" / "one.wav")
+    random_wav_factory(folder / "mammals" / "two.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="repository",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    assert dataset.recording_count == 2
+    assert "folder:recordings" in stats["folder_tag_warning"]
+    assert "deeper audio directory" in stats["folder_tag_warning"]
+
+
 async def test_exported_datasets_paths_are_not_absolute(
     session: AsyncSession,
     example_data_dir: Path,

@@ -36,7 +36,7 @@ export default function DatasetCreate({
           if (result.unreadable) {
             parts.push(`${result.unreadable} unreadable`);
           }
-          return `Dataset created: ${parts.join(", ")}`;
+          return `Dataset created: ${parts.join(", ")}${result.folder_tag_warning ? `. ${result.folder_tag_warning}` : ""}`;
         },
         error: "Failed to create dataset",
       });

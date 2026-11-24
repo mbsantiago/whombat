@@ -30,6 +30,7 @@ export const DatasetCreateResultSchema = z.object({
   already_known: z.number().int().default(0),
   recordings_created: z.number().int().default(0),
   recordings_attached: z.number().int().default(0),
+  folder_tag_warning: z.string().nullable().default(null),
 });
 
 export const DatasetUpdateSchema = z.object({

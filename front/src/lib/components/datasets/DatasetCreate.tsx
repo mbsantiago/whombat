@@ -125,7 +125,8 @@ export default function CreateDataset({
         <span>
           Add folder tag
           <span className="block text-xs text-slate-600">
-            Tag each recording with the name of its top-level folder.
+            Tag each recording with the name of its top-level folder. Recording
+            tags are shared across datasets.
           </span>
         </span>
       </label>
