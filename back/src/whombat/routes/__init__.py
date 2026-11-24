@@ -14,6 +14,7 @@ from whombat.routes.datasets import dataset_router
 from whombat.routes.evaluation_sets import get_evaluation_sets_router
 from whombat.routes.evaluations import evaluations_router
 from whombat.routes.features import features_router
+from whombat.routes.health import health_router
 from whombat.routes.model_runs import get_model_runs_router
 from whombat.routes.notes import notes_router
 from whombat.routes.plugins import plugin_router
@@ -41,6 +42,7 @@ __all__ = [
 
 def get_main_router(settings: Settings):
     main_router = APIRouter(prefix="/api/v1")
+    main_router.include_router(health_router)
 
     # Admin
     auth_router = get_auth_router(settings)

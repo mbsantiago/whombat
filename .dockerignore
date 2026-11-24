@@ -1,0 +1,35 @@
+# Version control and local tooling
+.git
+.github
+.idea
+.vscode
+
+# Python caches and environments
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+**/venv/
+
+# Frontend dependencies and generated output
+front/node_modules/
+front/.next/
+front/out/
+front/coverage/
+
+# Build and test artifacts
+**/build/
+**/dist/
+**/htmlcov/
+**/.coverage*
+
+# Local environment and logs
+**/.env
+**/.env.*
+**/*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db

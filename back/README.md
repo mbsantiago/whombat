@@ -45,11 +45,39 @@ git clone https://github.com/mbsantiago/whombat.git
 docker build -t whombat .
 ```
 
-Once the build is complete, run the container with:
+Once the build is complete, run the container with persistent database and
+audio directories mounted from the host:
 
 ```bash
-docker run -p 5000:5000 whombat
+docker run -p 5000:5000 \\
+  -v "$PWD/whombat-data:/data" \\
+  -v "$PWD/whombat-audio:/audio" \\
+  whombat
 ```
+
+The container runs as the non-root `app` user. The host directories mounted at
+`/data` and `/audio` must be writable by that user. Docker does not change the
+ownership or permissions of mounted files automatically.
+
+Find the `app` user's numeric user and group IDs with:
+
+```bash
+docker run --rm --entrypoint id whombat app
+```
+
+Create the host directories and set their ownership to those IDs. For example,
+if the command reports `uid=999(app) gid=999(app)`:
+
+```bash
+mkdir -p whombat-data whombat-audio
+sudo chown -R 999:999 whombat-data whombat-audio
+```
+
+Replace `999:999` with the IDs reported by your image. This changes ownership
+of those host directories and everything inside them. The files remain in
+place, but your host account may lose access unless it has permission through
+a group or other access rule. Choose directories dedicated to Whombat and check
+their ownership before running `chown`.
 
 ### Development Environment
 
