@@ -110,9 +110,7 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD python -c "import os; from urllib.request import urlopen; urlopen(f\"http://127.0.0.1:{os.environ.get('WHOMBAT_PORT', '5000')}/api/v1/health\", timeout=3)" || exit 1
 
-# Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT []
-
+# Run the application as an unprivileged user.
 USER app
 
 # Run the command to start the web server
