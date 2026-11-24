@@ -11,6 +11,17 @@ from whombat.cli.app import app as cli
 from whombat.system.settings import Settings
 
 
+class TestHelp:
+    def test_root_help_explains_default_launch(self, capsys):
+        """New users can discover how to start the web app."""
+        with pytest.raises(SystemExit) as result:
+            cli(["--help"])
+        assert result.value.code == 0
+        output = capsys.readouterr().out
+        assert "Run whombat on its own to start the web app" in output
+        assert "Keep this terminal open" in output
+
+
 class TestConfiguration:
     def test_explicit_config_selects_user_database(
         self, database_url, capsys, tmp_path, monkeypatch

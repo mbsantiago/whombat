@@ -16,7 +16,7 @@ class Common:
     """Shared command-line configuration."""
 
     config_path: Path | None = None
-    """Path to a Whombat settings file."""
+    """Use settings from this Whombat JSON file for the command."""
 
     @cached_property
     def settings(self) -> Settings:

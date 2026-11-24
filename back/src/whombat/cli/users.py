@@ -14,7 +14,7 @@ from sqlalchemy import or_
 from whombat import api, models, schemas
 from whombat.cli.common import Common
 
-app = App(name="users", help="Manage Whombat users.")
+app = App(name="users", help="Manage Whombat user accounts.")
 
 
 @app.command
@@ -24,7 +24,18 @@ def list(
     format: Literal["table", "json"] = "table",
     common: Common | None = None,
 ) -> None:
-    """List users."""
+    """Show user IDs, usernames, email addresses, and admin status.
+
+    By default, show all accounts in a readable table. Use --admins-only
+    to show administrators, or --format json for machine-readable output.
+
+    Parameters
+    ----------
+    admins_only
+        Show only administrator accounts.
+    format
+        Choose a readable table or JSON output.
+    """
     settings = (common or Common()).settings
 
     async def query_users():
@@ -54,7 +65,16 @@ def list(
 
 @app.command
 def password(user: str, *, common: Common | None = None) -> None:
-    """Change a user's password by email or username."""
+    """Set a new password for an existing user.
+
+    Identify the account by email address or username. Enter the new password
+    twice when prompted; the password is hidden while you type.
+
+    Parameters
+    ----------
+    user
+        Email address or username of the account to update.
+    """
     settings = (common or Common()).settings
 
     async def resolve_user():
