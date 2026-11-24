@@ -1,4 +1,5 @@
 import json
+import shutil
 from collections.abc import Callable
 from io import BytesIO
 from pathlib import Path, PurePosixPath, PureWindowsPath
@@ -8,6 +9,38 @@ from soundevent import data
 from soundevent.io import aoef
 
 from whombat import schemas
+
+
+class TestCreateDataset:
+    def test_reports_dedup_counts(
+        self,
+        client: TestClient,
+        audio_dir: Path,
+        random_wav_factory: Callable[..., Path],
+        cookies: dict[str, str],
+    ):
+        dataset_dir = audio_dir / "router_duplicates"
+        dataset_dir.mkdir(parents=True)
+        original = random_wav_factory(path=dataset_dir / "a.wav")
+        shutil.copy(original, dataset_dir / "b.wav")
+
+        response = client.post(
+            "/api/v1/datasets/",
+            json={
+                "name": "router_duplicates",
+                "audio_dir": str(dataset_dir),
+            },
+            cookies=cookies,
+        )
+
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["dataset"]["name"] == "router_duplicates"
+        assert body["files_found"] == 2
+        assert body["duplicates_in_selection"] == 1
+        assert body["already_known"] == 0
+        assert body["recordings_created"] == 1
+        assert body["recordings_attached"] == 1
 
 
 class TestExportDataset:
@@ -220,6 +253,21 @@ class TestExportDataset:
             "Expected a JSON file in AOEF format" in response.json()["message"]
         )
 
+    def test_rejects_missing_audio_directory(
+        self,
+        client: TestClient,
+        audio_dir: Path,
+        cookies: dict[str, str],
+    ):
+        response = client.post(
+            "/api/v1/datasets/import/",
+            files={"dataset": BytesIO(b"")},
+            data={"audio_dir": str(audio_dir / "missing")},
+            cookies=cookies,
+        )
+
+        assert response.status_code == 400
+
     def test_fails_when_aoef_collection_type_is_mismatched(
         self,
         client: TestClient,
@@ -247,3 +295,148 @@ class TestExportDataset:
             "Detected object type: 'annotation_project'"
             in response.json()["message"]
         )
+
+
+class TestBrowseDatasetDirectories:
+    def test_lists_audio_root(self, client: TestClient, audio_dir: Path):
+        (audio_dir / "zeta").mkdir()
+        (audio_dir / "Alpha").mkdir()
+        (audio_dir / "recording.wav").touch()
+
+        response = client.get("/api/v1/datasets/browse/")
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "path": "",
+            "absolute": str(audio_dir.resolve()),
+            "parent": None,
+            "directories": [
+                {
+                    "name": "Alpha",
+                    "path": "Alpha",
+                    "absolute": str(audio_dir.resolve() / "Alpha"),
+                },
+                {
+                    "name": "zeta",
+                    "path": "zeta",
+                    "absolute": str(audio_dir.resolve() / "zeta"),
+                },
+            ],
+        }
+
+    def test_lists_nested_directory(self, client: TestClient, audio_dir: Path):
+        nested = audio_dir / "sub" / "dir"
+        (nested / "child").mkdir(parents=True)
+        (nested / "file.txt").touch()
+
+        response = client.get(
+            "/api/v1/datasets/browse/", params={"path": "sub/dir"}
+        )
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "path": "sub/dir",
+            "absolute": str(nested.resolve()),
+            "parent": "sub",
+            "directories": [
+                {
+                    "name": "child",
+                    "path": "sub/dir/child",
+                    "absolute": str((nested / "child").resolve()),
+                }
+            ],
+        }
+
+    def test_rejects_escaping_paths(self, client: TestClient, audio_dir: Path):
+        for path in ("..", "../outside"):
+            response = client.get(
+                "/api/v1/datasets/browse/", params={"path": path}
+            )
+            assert response.status_code == 400
+
+    def test_rejects_symlink_escape(
+        self, client: TestClient, audio_dir: Path, tmp_path: Path
+    ):
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        (audio_dir / "escape").symlink_to(outside, target_is_directory=True)
+
+        response = client.get(
+            "/api/v1/datasets/browse/", params={"path": "escape"}
+        )
+
+        assert response.status_code == 400
+
+
+class TestCompleteDatasetDirectories:
+    def test_completes_case_insensitive_nested_prefix(
+        self, client: TestClient, audio_dir: Path
+    ):
+        (audio_dir / "Birds" / "Night").mkdir(parents=True)
+        (audio_dir / "Birds" / "Nest").mkdir()
+        (audio_dir / "Other").mkdir()
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": "birds/n"}
+        )
+
+        assert response.status_code == 200
+        assert [entry["path"] for entry in response.json()] == [
+            "Birds/Nest",
+            "Birds/Night",
+        ]
+
+        response = client.get(
+            "/api/v1/datasets/complete/",
+            params={"path": "Birds/*ight"},
+        )
+        assert response.status_code == 200
+        assert [entry["path"] for entry in response.json()] == ["Birds/Night"]
+
+    def test_completion_is_confined_and_limited(
+        self, client: TestClient, audio_dir: Path
+    ):
+        for index in range(21):
+            (audio_dir / f"entry{index:02}").mkdir()
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": ""}
+        )
+        assert response.status_code == 200
+        assert len(response.json()) == 20
+
+        response = client.get(
+            "/api/v1/datasets/complete/", params={"path": "../"}
+        )
+        assert response.status_code == 400
+
+
+class TestBrowseDatasetDirectoryEdgeCases:
+    def test_symlink_escape_is_not_listed(
+        self, client: TestClient, audio_dir: Path, tmp_path: Path
+    ):
+        outside = tmp_path / "outside"
+        outside.mkdir()
+        (audio_dir / "escape").symlink_to(outside, target_is_directory=True)
+        (audio_dir / "inside").mkdir()
+
+        response = client.get("/api/v1/datasets/browse/")
+
+        names = [entry["name"] for entry in response.json()["directories"]]
+        assert names == ["inside"]
+
+    def test_rejects_nonexistent_directory(self, client: TestClient):
+        response = client.get(
+            "/api/v1/datasets/browse/", params={"path": "missing"}
+        )
+
+        assert response.status_code == 400
+
+    def test_rejects_file_path(self, client: TestClient, audio_dir: Path):
+        (audio_dir / "file.txt").touch()
+
+        response = client.get(
+            "/api/v1/datasets/browse/", params={"path": "file.txt"}
+        )
+
+        assert response.status_code == 400

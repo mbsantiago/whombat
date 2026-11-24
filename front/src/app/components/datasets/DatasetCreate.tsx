@@ -17,7 +17,7 @@ export default function DatasetCreate({
   const { mutateAsync } = useMutation({
     mutationFn: api.datasets.create,
     onError: onError,
-    onSuccess: onCreateDataset,
+    onSuccess: (result) => onCreateDataset?.(result.dataset),
   });
 
   const handleCreateProject = useCallback(
@@ -25,12 +25,30 @@ export default function DatasetCreate({
       toast.promise(mutateAsync(data), {
         loading:
           "Creating dataset. Scanning files and creating metadata, please wait...",
-        success: "Dataset created",
+        success: (result) => {
+          const parts = [`${result.recordings_attached} files`];
+          if (result.already_known) {
+            parts.push(`${result.already_known} already known`);
+          }
+          if (result.duplicates_in_selection) {
+            parts.push(`${result.duplicates_in_selection} duplicates`);
+          }
+          if (result.unreadable) {
+            parts.push(`${result.unreadable} unreadable`);
+          }
+          return `Dataset created: ${parts.join(", ")}${result.folder_tag_warning ? `. ${result.folder_tag_warning}` : ""}`;
+        },
         error: "Failed to create dataset",
       });
     },
     [mutateAsync],
   );
 
-  return <DatasetCreateBase onCreateDataset={handleCreateProject} />;
+  return (
+    <DatasetCreateBase
+      onCreateDataset={handleCreateProject}
+      browseDirectories={api.datasets.browse}
+      completeDirectories={api.datasets.complete}
+    />
+  );
 }

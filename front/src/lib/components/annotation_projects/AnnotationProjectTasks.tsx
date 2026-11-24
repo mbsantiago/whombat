@@ -35,6 +35,7 @@ export default function AnnotationProjectTasks(props: {
   onSetClipSubsample?: (subsample: boolean) => void;
   onSetMaxClips?: (maxClips: number) => void;
   DatasetSearch: JSX.Element;
+  TaskList?: JSX.Element;
 }) {
   return (
     <div className="flex flex-col gap-8">
@@ -89,6 +90,7 @@ export default function AnnotationProjectTasks(props: {
           </div>
         </div>
       </div>
+      {props.TaskList}
     </div>
   );
 }

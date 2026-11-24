@@ -13,9 +13,12 @@ __all__ = [
     "Dataset",
     "DatasetRecording",
     "DatasetCreate",
+    "DatasetCreated",
     "DatasetUpdate",
     "DatasetRecordingCreate",
     "FileState",
+    "DatasetDirectory",
+    "DatasetDirectoryBrowse",
 ]
 
 
@@ -30,6 +33,12 @@ class DatasetCreate(BaseModel):
 
     description: str | None = Field(None)
     """The description of the dataset."""
+
+    tag_recordings_by_folder: bool = False
+    """Tag recordings by their relative parent folder when importing."""
+
+    include_subfolders: bool = True
+    """Whether to look for audio files in subdirectories too."""
 
 
 class Dataset(BaseSchema):
@@ -52,6 +61,34 @@ class Dataset(BaseSchema):
 
     recording_count: int = 0
     """The number of recordings in the dataset."""
+
+
+class DatasetCreated(BaseModel):
+    """Result of creating a dataset from a folder."""
+
+    dataset: Dataset
+    """The created dataset."""
+
+    files_found: int = 0
+    """Audio files selected for registration."""
+
+    unreadable: int = 0
+    """Files whose media information could not be read."""
+
+    duplicates_in_selection: int = 0
+    """Files whose content already appeared earlier in the same selection."""
+
+    already_known: int = 0
+    """Files whose content was already registered in the database."""
+
+    recordings_created: int = 0
+    """New recordings registered by this import."""
+
+    recordings_attached: int = 0
+    """Recordings linked to the dataset, new or already registered."""
+
+    folder_tag_warning: str | None = None
+    """Notice when folder tagging was absent, uniform, or ambiguous."""
 
 
 class DatasetUpdate(BaseModel):
@@ -105,6 +142,35 @@ class DatasetFile(BaseModel):
 
     state: FileState
     """The state of the file."""
+
+
+class DatasetDirectory(BaseModel):
+    """A child directory available in the audio directory."""
+
+    name: str
+    """The directory name."""
+
+    path: str
+    """The directory path relative to the audio root."""
+
+    absolute: str
+    """The absolute path of the directory."""
+
+
+class DatasetDirectoryBrowse(BaseModel):
+    """A directory listing within the audio directory."""
+
+    path: str
+    """The listed path relative to the audio root."""
+
+    absolute: str
+    """The absolute path of the listed directory."""
+
+    parent: str | None
+    """The parent path relative to the audio root."""
+
+    directories: list[DatasetDirectory]
+    """Immediate child directories."""
 
 
 class DatasetRecordingCreate(BaseModel):

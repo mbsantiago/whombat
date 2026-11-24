@@ -6,6 +6,7 @@ __all__ = [
     "MissingDatabaseError",
     "DataIntegrityError",
     "DataFormatError",
+    "PathOutsideRootError",
 ]
 
 
@@ -50,3 +51,7 @@ class DataFormatError(RuntimeError):
         self.format = format
         self.name = name
         self.details = details
+
+
+class PathOutsideRootError(ValueError):
+    """Raised when a path resolves outside its permitted root."""

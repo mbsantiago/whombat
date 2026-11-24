@@ -1,11 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { UploadIcon } from "@/lib/components/icons";
+import FolderPicker from "@/lib/components/inputs/FolderPicker";
 import { Group, Input, Submit } from "@/lib/components/inputs/index";
 import { DatasetImportSchema } from "@/lib/schemas";
-import type { DatasetImport } from "@/lib/types";
+import type {
+  DatasetDirectory,
+  DatasetDirectoryBrowse,
+  DatasetImport,
+} from "@/lib/types";
 
 /**
  * Component for importing a dataset.
@@ -16,10 +21,15 @@ import type { DatasetImport } from "@/lib/types";
  */
 export default function DatasetImportComponent({
   onImportDataset,
+  browseDirectories,
+  completeDirectories,
 }: {
   onImportDataset?: (dataset: DatasetImport) => void;
+  browseDirectories?: (path: string) => Promise<DatasetDirectoryBrowse>;
+  completeDirectories?: (path: string) => Promise<DatasetDirectory[]>;
 }) {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -57,14 +67,29 @@ export default function DatasetImportComponent({
       <Group
         name="audio_dir"
         label="Audio directory"
-        help="Folder where all the dataset recordings are stored"
+        help="Pick the audio root used by the dataset's relative recording paths."
         error={errors.audio_dir?.message}
       >
-        <Input
-          {...register("audio_dir")}
-          placeholder="Path to audio directory..."
-          required
-        />
+        {browseDirectories ? (
+          <Controller
+            control={control}
+            name="audio_dir"
+            render={({ field }) => (
+              <FolderPicker
+                value={field.value}
+                onChange={field.onChange}
+                browseDirectories={browseDirectories}
+                completeDirectories={completeDirectories}
+              />
+            )}
+          />
+        ) : (
+          <Input
+            {...register("audio_dir")}
+            placeholder="Path to audio directory..."
+            required
+          />
+        )}
       </Group>
       <Submit>
         <UploadIcon className="inline-block mr-2 w-6 h-6 align-middle" />

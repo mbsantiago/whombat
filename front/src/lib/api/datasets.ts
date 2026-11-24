@@ -16,6 +16,8 @@ const DEFAULT_ENDPOINTS = {
   downloadJson: "/api/v1/datasets/detail/download/json/",
   downloadCsv: "/api/v1/datasets/detail/download/csv/",
   import: "/api/v1/datasets/import/",
+  browse: "/api/v1/datasets/browse/",
+  complete: "/api/v1/datasets/complete/",
 };
 
 export function registerDatasetAPI({
@@ -33,10 +35,12 @@ export function registerDatasetAPI({
     return Page(schemas.DatasetSchema).parse(data);
   }
 
-  async function create(data: types.DatasetCreate): Promise<types.Dataset> {
+  async function create(
+    data: types.DatasetCreate,
+  ): Promise<types.DatasetCreateResult> {
     const body = schemas.DatasetCreateSchema.parse(data);
     const { data: res } = await instance.post(endpoints.create, body);
-    return schemas.DatasetSchema.parse(res);
+    return schemas.DatasetCreateResultSchema.parse(res);
   }
 
   async function get(uuid: string): Promise<types.Dataset> {
@@ -44,6 +48,24 @@ export function registerDatasetAPI({
       params: { dataset_uuid: uuid },
     });
     return schemas.DatasetSchema.parse(data);
+  }
+
+  async function browseDirectories(
+    path = "",
+  ): Promise<types.DatasetDirectoryBrowse> {
+    const { data } = await instance.get(endpoints.browse, {
+      params: { path },
+    });
+    return schemas.DatasetDirectoryBrowseSchema.parse(data);
+  }
+
+  async function completeDirectories(
+    path: string,
+  ): Promise<types.DatasetDirectory[]> {
+    const { data } = await instance.get(endpoints.complete, {
+      params: { path },
+    });
+    return z.array(schemas.DatasetDirectorySchema).parse(data);
   }
 
   async function getDatasetState(
@@ -122,5 +144,7 @@ export function registerDatasetAPI({
     delete: deleteDataset,
     download: downloadDataset,
     import: importDataset,
+    browse: browseDirectories,
+    complete: completeDirectories,
   } as const;
 }

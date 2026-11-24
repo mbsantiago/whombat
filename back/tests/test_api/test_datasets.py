@@ -1,5 +1,7 @@
 """Test suite for the datasets API module."""
 
+import importlib
+import shutil
 import uuid
 from collections.abc import Callable
 from pathlib import Path
@@ -61,6 +63,90 @@ async def test_create_empty_dataset(session: AsyncSession, audio_dir: Path):
     assert isinstance(dataset, schemas.Dataset)
     assert dataset.name == "test_dataset"
     assert dataset.description == "This is a test dataset."
+
+
+async def test_create_dataset_expands_tilde_paths(
+    session: AsyncSession, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
+    root = tmp_path / "audio"
+    dataset_dir = root / "tilde_dataset"
+    dataset_dir.mkdir(parents=True)
+
+    dataset = await api.datasets.create(
+        session,
+        name="tilde_dataset",
+        dataset_dir=Path("~/audio/tilde_dataset"),
+        audio_dir=Path("~/audio"),
+    )
+
+    assert dataset.audio_dir == Path("tilde_dataset")
+
+
+async def test_create_dataset_rejects_symlink_outside_audio_root(
+    session: AsyncSession, audio_dir: Path, tmp_path: Path
+):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    link = audio_dir / "outside_link"
+    try:
+        link.symlink_to(outside, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        pytest.skip("Directory symlinks are unavailable")
+
+    with pytest.raises(exceptions.PathOutsideRootError):
+        await api.datasets.create(
+            session,
+            name="outside_dataset",
+            dataset_dir=link,
+            audio_dir=audio_dir,
+        )
+
+
+async def test_import_dataset_rejects_audio_dir_outside_root(
+    session: AsyncSession, audio_dir: Path, tmp_path: Path
+):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+
+    with pytest.raises(exceptions.PathOutsideRootError):
+        await api.datasets.import_dataset(
+            session,
+            "unused.aoef",
+            dataset_audio_dir=outside,
+            audio_dir=audio_dir,
+        )
+
+
+async def test_import_dataset_expands_tilde_paths(
+    session: AsyncSession,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
+    root = tmp_path / "audio"
+    dataset_dir = root / "imported"
+    dataset_dir.mkdir(parents=True)
+
+    async def check_resolved_paths(*args, **kwargs):
+        assert kwargs["dataset_dir"] == dataset_dir.resolve()
+        assert kwargs["audio_dir"] == root.resolve()
+        raise RuntimeError("stop after path validation")
+
+    monkeypatch.setattr(
+        importlib.import_module("whombat.api.datasets").aoef,
+        "import_dataset",
+        check_resolved_paths,
+    )
+    with pytest.raises(RuntimeError, match="stop after path validation"):
+        await api.datasets.import_dataset(
+            session,
+            "unused.aoef",
+            dataset_audio_dir=Path("~/audio/imported"),
+            audio_dir=Path("~/audio"),
+        )
 
 
 async def test_create_dataset_fails_if_name_is_not_unique(
@@ -763,6 +849,296 @@ async def test_create_dataset_registers_all_recordings(
     assert len(all_recordings) == 2
 
 
+async def test_create_dataset_can_skip_subfolders(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    """Test that nested audio is excluded when subfolders are disabled."""
+    dataset_audio_dir = audio_dir / "skip_subfolders"
+    dataset_audio_dir.mkdir(parents=True, exist_ok=True)
+
+    root_file = random_wav_factory(path=dataset_audio_dir / "root.wav")
+    subdirectory = dataset_audio_dir / "nested"
+    subdirectory.mkdir()
+    random_wav_factory(path=subdirectory / "nested.wav")
+
+    dataset = await api.datasets.create(
+        session,
+        name="skip_subfolders",
+        dataset_dir=dataset_audio_dir,
+        audio_dir=audio_dir,
+        include_subfolders=False,
+    )
+
+    dataset_recordings, _ = await api.datasets.get_recordings(session, dataset)
+    assert [rec.path for rec in dataset_recordings] == [
+        root_file.relative_to(audio_dir)
+    ]
+
+
+async def test_create_dataset_attaches_already_registered_recordings(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    """Test that a second dataset over the same folder is not empty."""
+    dataset_dir = audio_dir / "shared_folder"
+    dataset_dir.mkdir(parents=True)
+    random_wav_factory(path=dataset_dir / "one.wav")
+    random_wav_factory(path=dataset_dir / "two.wav")
+
+    await api.datasets.create(
+        session,
+        name="first_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+    )
+
+    stats: dict = {}
+    second = await api.datasets.create(
+        session,
+        name="second_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        stats=stats,
+    )
+
+    recordings, _ = await api.datasets.get_recordings(session, second)
+    assert len(recordings) == 2
+    assert stats["already_known"] == 2
+    assert stats["recordings_created"] == 0
+    assert stats["recordings_attached"] == 2
+
+
+async def test_create_dataset_reports_duplicate_files(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    """Test that duplicate content in one folder is counted, not registered."""
+    dataset_dir = audio_dir / "duplicate_folder"
+    dataset_dir.mkdir(parents=True)
+    original = random_wav_factory(path=dataset_dir / "a.wav")
+    shutil.copy(original, dataset_dir / "b.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="duplicate_dataset",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        stats=stats,
+    )
+
+    recordings, _ = await api.datasets.get_recordings(session, dataset)
+    assert len(recordings) == 1
+    assert stats["files_found"] == 2
+    assert stats["duplicates_in_selection"] == 1
+    assert stats["recordings_created"] == 1
+    assert stats["recordings_attached"] == 1
+
+
+async def test_create_dataset_tags_nested_recordings_by_folder(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "folder_tags"
+    nested_dir = dataset_dir / "birds" / "night"
+    nested_dir.mkdir(parents=True)
+    random_wav_factory(dataset_dir / "root.wav")
+    random_wav_factory(nested_dir / "nested.wav")
+
+    dataset = await api.datasets.create(
+        session,
+        name="folder_tags",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+    )
+    nested = await api.recordings.get_by_path(
+        session, Path("folder_tags/birds/night/nested.wav")
+    )
+    root = await api.recordings.get_by_path(
+        session, Path("folder_tags/root.wav")
+    )
+
+    assert [(tag.key, tag.value) for tag in nested.tags] == [
+        ("folder", "birds")
+    ]
+    assert root.tags == []
+    assert dataset.recording_count == 2
+
+
+async def test_create_dataset_reuses_folder_tags_for_recordings(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "folder_tags_batch"
+    first_folder = dataset_dir / "birds"
+    second_folder = dataset_dir / "mammals"
+    first_folder.mkdir(parents=True)
+    second_folder.mkdir()
+    random_wav_factory(first_folder / "one.wav")
+    random_wav_factory(first_folder / "two.wav")
+    random_wav_factory(second_folder / "three.wav")
+    nested_folder = first_folder / "night"
+    nested_folder.mkdir()
+    random_wav_factory(nested_folder / "four.wav")
+
+    await api.datasets.create(
+        session,
+        name="folder_tags_batch",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+    )
+
+    recordings, _ = await api.recordings.get_many(session)
+    tags_by_path = {
+        recording.path.name: [(tag.key, tag.value) for tag in recording.tags]
+        for recording in recordings
+    }
+    assert tags_by_path == {
+        "one.wav": [("folder", "birds")],
+        "two.wav": [("folder", "birds")],
+        "three.wav": [("folder", "mammals")],
+        # Nested folders collapse to the first segment below the root.
+        "four.wav": [("folder", "birds")],
+    }
+
+
+async def test_create_dataset_tags_reused_recording_from_selected_folder(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    original = random_wav_factory(audio_dir / "outside.wav")
+    await api.recordings.create(session, original, audio_dir=audio_dir)
+    dataset_dir = audio_dir / "selected"
+    folder = dataset_dir / "background"
+    folder.mkdir(parents=True)
+    selected = folder / "copy.wav"
+    shutil.copy(original, selected)
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="selected",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+
+    links = (
+        (
+            await session.execute(
+                select(models.DatasetRecording).where(
+                    models.DatasetRecording.dataset_id == dataset.id
+                )
+            )
+        )
+        .unique()
+        .scalars()
+        .all()
+    )
+    assert len(links) == dataset.recording_count == 1
+    assert links[0].path == Path("background/copy.wav")
+    assert stats["already_known"] == stats["recordings_attached"] == 1
+    recording = await api.recordings.get_by_path(
+        session, original.relative_to(audio_dir)
+    )
+    assert [(tag.key, tag.value) for tag in recording.tags] == [
+        ("folder", "background")
+    ]
+
+
+async def test_create_dataset_with_folder_tags_and_no_subfolders(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "flat"
+    dataset_dir.mkdir()
+    random_wav_factory(dataset_dir / "root.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="flat",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    recording = await api.recordings.get_by_path(
+        session, Path("flat/root.wav")
+    )
+    assert dataset.recording_count == 1
+    assert recording.tags == []
+    assert "No folder tags were added" in stats["folder_tag_warning"]
+
+
+async def test_create_dataset_skips_ambiguous_duplicate_folder_tags(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "ambiguous"
+    first = dataset_dir / "first"
+    second = dataset_dir / "second"
+    first.mkdir(parents=True)
+    second.mkdir()
+    original = random_wav_factory(first / "one.wav")
+    shutil.copy(original, second / "two.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="ambiguous",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    assert dataset.recording_count == 1
+    assert stats["duplicates_in_selection"] == 1
+    assert "different folders" in stats["folder_tag_warning"]
+    recording = await api.recordings.get_by_path(
+        session, original.relative_to(audio_dir)
+    )
+    assert recording.tags == []
+
+
+async def test_create_dataset_warns_when_root_is_too_high(
+    session: AsyncSession,
+    random_wav_factory: Callable[..., Path],
+    audio_dir: Path,
+):
+    dataset_dir = audio_dir / "repository"
+    folder = dataset_dir / "recordings"
+    (folder / "birds").mkdir(parents=True)
+    (folder / "mammals").mkdir()
+    random_wav_factory(folder / "birds" / "one.wav")
+    random_wav_factory(folder / "mammals" / "two.wav")
+
+    stats: dict = {}
+    dataset = await api.datasets.create(
+        session,
+        name="repository",
+        dataset_dir=dataset_dir,
+        audio_dir=audio_dir,
+        tag_recordings_by_folder=True,
+        stats=stats,
+    )
+    assert dataset.recording_count == 2
+    assert "folder:recordings" in stats["folder_tag_warning"]
+    assert "deeper audio directory" in stats["folder_tag_warning"]
+
+
 async def test_exported_datasets_paths_are_not_absolute(
     session: AsyncSession,
     example_data_dir: Path,
@@ -818,6 +1194,9 @@ async def test_recordings_belonging_to_multiple_datastes_are_not_deleted(
         audio_dir=audio_dir,
     )
 
-    await api.datasets.add_recording(session, dataset2, dataset_recording)
+    # Creating a dataset over an already registered folder attaches the
+    # existing recordings, so no explicit add is needed to share them.
+    shared, _ = await api.datasets.get_recordings(session, dataset2)
+    assert [rec.uuid for rec in shared] == [dataset_recording.uuid]
 
     await api.recordings.get(session, dataset_recording.uuid)

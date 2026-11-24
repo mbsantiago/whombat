@@ -5,10 +5,12 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from soundevent.data import AnnotationState
+from sqlalchemy import select
 
 from whombat import api, schemas
 from whombat.filters.annotation_tasks import AnnotationTaskFilter
 from whombat.filters.clips import UUIDFilter as ClipUUIDFilter
+from whombat.models import AnnotationTask, Clip, Dataset, DatasetRecording
 from whombat.routes.dependencies import Session, get_current_user_dependency
 from whombat.routes.dependencies.settings import WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -86,6 +88,23 @@ def get_annotation_tasks_router(settings: WhombatSettings) -> APIRouter:
             filters=[filter],
             sort_by=sort_by,
         )
+        if tasks:
+            rows = await session.execute(
+                select(AnnotationTask.uuid, Dataset.name)
+                .join(Clip, AnnotationTask.clip_id == Clip.id)
+                .join(
+                    DatasetRecording,
+                    DatasetRecording.recording_id == Clip.recording_id,
+                )
+                .join(Dataset, Dataset.id == DatasetRecording.dataset_id)
+                .where(AnnotationTask.uuid.in_([task.uuid for task in tasks]))
+                .order_by(Dataset.id)
+            )
+            dataset_names = {}
+            for task_uuid, dataset_name in rows:
+                dataset_names.setdefault(task_uuid, dataset_name)
+            for task in tasks:
+                task.dataset_name = dataset_names.get(task.uuid)
         return schemas.Page(
             items=tasks,
             total=total,

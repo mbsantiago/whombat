@@ -126,11 +126,7 @@ async def import_recordings(
     mapping.update(recs_by_path)
 
     # Create all missing recordings
-    missing_recordings = [
-        rec
-        for rec in recordings
-        if rec.uuid not in mapping and rec.hash not in mapping
-    ]
+    missing_recordings = [rec for rec in recordings if rec.uuid not in mapping]
     new_recordings = await _create_recordings(
         session,
         missing_recordings,
@@ -182,9 +178,14 @@ async def _get_existing_recordings_by_hash(
     existing_recordings = await session.execute(
         select(models.Recording).filter(models.Recording.hash.in_(hashes))
     )
-    return {
-        rec.uuid: rec.id
+    by_hash = {
+        rec.hash: rec.id
         for rec in existing_recordings.unique().scalars().all()
+    }
+    return {
+        rec.uuid: by_hash[rec.hash]
+        for rec in recordings
+        if rec.hash in by_hash
     }
 
 
@@ -203,9 +204,15 @@ async def _get_existing_recordings_by_path(
     existing_recordings = await session.execute(
         select(models.Recording).filter(models.Recording.path.in_(paths))
     )
-    return {
-        rec.uuid: rec.id
+    by_path = {
+        rec.path: rec.id
         for rec in existing_recordings.unique().scalars().all()
+    }
+    return {
+        rec.uuid: by_path[path]
+        for rec in recordings
+        if (path := normalize_audio_path(rec, audio_dir, base_audio_dir))
+        in by_path
     }
 
 

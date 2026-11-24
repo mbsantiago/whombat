@@ -32,7 +32,13 @@ def load_plugins() -> Generator[tuple[str, ModuleType], None, None]:
         if not name.startswith("whombat_"):
             continue
 
-        module = importlib.import_module(name)
+        try:
+            module = importlib.import_module(name)
+        except Exception:
+            warnings.warn(
+                f"Plugin {name} could not be imported.", stacklevel=2
+            )
+            continue
 
         if not hasattr(module, "__description__"):
             warnings.warn(
@@ -67,11 +73,10 @@ def add_plugin_routes(app: FastAPI, name: str, plugin: ModuleType) -> None:
     `APIRouter` instance. If this attribute is not present, or is not
     an `APIRouter` instance, the plugin's routes will not be added.
     """
-    if not hasattr(plugin.module, "router") or not isinstance(
-        plugin.module.router, APIRouter
-    ):
+    router = getattr(plugin, "router", None)
+    if not isinstance(router, APIRouter):
         return
-    app.include_router(plugin.module.router, prefix=f"/plugins/routes/{name}")
+    app.include_router(router, prefix=f"/plugins/routes/{name}")
 
 
 def get_plugin_page_url(name: str) -> str:
@@ -109,7 +114,7 @@ def plugin_has_pages(plugin: ModuleType) -> bool:
     If this is the case it is assumed that the plugin has a `statics`
     directory that contains the plugin's pages.
     """
-    return getattr(plugin.module, "has_pages", False)
+    return bool(getattr(plugin, "has_pages", False))
 
 
 def add_plugin_pages(app: FastAPI, name: str, plugin: ModuleType) -> None:
@@ -136,6 +141,6 @@ def add_plugin_pages(app: FastAPI, name: str, plugin: ModuleType) -> None:
 
     app.mount(
         get_plugin_page_url(name),
-        StaticFiles(packages=[name], html=True),
+        StaticFiles(packages=[(plugin.__name__, "statics")], html=True),
         name=f"{name}",
     )

@@ -11,21 +11,76 @@ from soundevent.audio import (
     is_audio_file,
 )
 
+from whombat import exceptions
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
     "get_audio_files_in_folder",
     "get_file_info",
     "FileInfo",
+    "resolve_within_root",
+    "is_within_root",
 ]
 
 
-def get_audio_files_in_folder(
-    audio_dir: Path, relative: bool = True
-) -> list[Path]:
-    """Get all path to audio files in a directory recursively.
+def resolve_within_root(candidate: Path, root: Path) -> Path:
+    """Resolve a path and ensure it is contained within a root directory.
 
-    Only files with a .wav extension are considered recordings.
+    Parameters
+    ----------
+    candidate: Path
+        The path to resolve.
+    root: Path
+        The permitted root directory.
+
+    Returns
+    -------
+    Path
+        The resolved candidate path.
+
+    Raises
+    ------
+    PathOutsideRootError
+        If the resolved candidate is outside the resolved root.
+    """
+    resolved_candidate = candidate.resolve()
+    resolved_root = root.resolve()
+    if not resolved_candidate.is_relative_to(resolved_root):
+        raise exceptions.PathOutsideRootError(
+            f"Path {resolved_candidate} is outside root {resolved_root}"
+        )
+    return resolved_candidate
+
+
+def is_within_root(candidate: Path, root: Path) -> bool:
+    """Check whether a path resolves inside a root directory.
+
+    Parameters
+    ----------
+    candidate: Path
+        The path to check.
+    root: Path
+        The permitted root directory.
+
+    Returns
+    -------
+    bool
+        True if the resolved candidate is inside the resolved root.
+    """
+    try:
+        resolve_within_root(candidate, root)
+    except exceptions.PathOutsideRootError:
+        return False
+    return True
+
+
+def get_audio_files_in_folder(
+    audio_dir: Path, relative: bool = True, recursive: bool = True
+) -> list[Path]:
+    """Get the paths to audio files in a directory.
+
+    Only supported audio file formats are considered recordings.
 
     Parameters
     ----------
@@ -34,14 +89,17 @@ def get_audio_files_in_folder(
     relative: bool, optional
         If True, the returned paths will be relative to the audio_dir path.
         By default True.
+    recursive: bool, optional
+        If True, also search subdirectories. By default True.
 
     Returns
     -------
     recordings: list[Path]
     """
+    paths = audio_dir.rglob("*") if recursive else audio_dir.glob("*")
     return [
         path.relative_to(audio_dir) if relative else path.absolute()
-        for path in audio_dir.rglob("*")
+        for path in paths
         if path.is_file() and is_audio_file(path)
     ]
 

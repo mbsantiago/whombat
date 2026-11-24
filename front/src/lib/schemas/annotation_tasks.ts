@@ -21,6 +21,7 @@ export const AnnotationTaskSchema = z.object({
   uuid: z.string().uuid(),
   status_badges: z.array(AnnotationStatusBadgeSchema).nullish(),
   created_on: z.coerce.date(),
+  dataset_name: z.string().nullish(),
   clip: ClipSchema.nullish(),
   clip_annotation: ClipAnnotationSchema.nullish(),
 });

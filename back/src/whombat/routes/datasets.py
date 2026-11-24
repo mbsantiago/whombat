@@ -1,18 +1,21 @@
 """REST API routes for datasets."""
 
+import asyncio
 import datetime
 import logging
+from fnmatch import fnmatchcase
 from io import StringIO
+from pathlib import Path
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, UploadFile
+from fastapi import APIRouter, Body, Depends, HTTPException, UploadFile
 from fastapi.responses import Response, StreamingResponse
-from pydantic import DirectoryPath
 from soundevent.io.aoef import DatasetObject
 from sqlalchemy.exc import IntegrityError
 
 from whombat import api, exceptions, schemas
+from whombat.core.files import is_within_root, resolve_within_root
 from whombat.filters.datasets import DatasetFilter
 from whombat.routes.dependencies import Session, WhombatSettings
 from whombat.routes.types import Limit, Offset
@@ -24,6 +27,70 @@ __all__ = [
 dataset_router = APIRouter()
 
 logger = logging.getLogger(__name__)
+
+
+@dataset_router.get(
+    "/browse/",
+    response_model=schemas.DatasetDirectoryBrowse,
+)
+async def browse_dataset_directories(
+    settings: WhombatSettings,
+    path: str = "",
+):
+    """Browse directories within the configured audio directory."""
+    try:
+        result = await asyncio.to_thread(
+            _browse_directories, settings.audio_dir, path
+        )
+    except (exceptions.PathOutsideRootError, OSError, RuntimeError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        logger.exception("Unexpected dataset directory browse failure")
+        raise HTTPException(
+            status_code=500, detail="Could not browse dataset directories"
+        ) from error
+    if isinstance(result, str):
+        raise HTTPException(status_code=400, detail=result)
+    directory, root, directories = result
+
+    relative_path = directory.relative_to(root).as_posix()
+    if relative_path == ".":
+        relative_path = ""
+    parent = (
+        directory.parent.relative_to(root).as_posix()
+        if directory != root
+        else None
+    )
+    if parent == ".":
+        parent = ""
+    return schemas.DatasetDirectoryBrowse(
+        path=relative_path,
+        absolute=str(directory),
+        parent=parent,
+        directories=directories,
+    )
+
+
+def _browse_directories(root: Path, path: str):
+    root = root.expanduser().resolve()
+    requested = Path(path).expanduser()
+    candidate = requested if requested.is_absolute() else root / requested
+    directory = resolve_within_root(candidate, root)
+    if not directory.is_dir():
+        return "Path is not an existing directory"
+    directories = sorted(
+        (
+            schemas.DatasetDirectory(
+                name=child.name,
+                path=child.relative_to(root).as_posix(),
+                absolute=str(child),
+            )
+            for child in directory.iterdir()
+            if child.is_dir() and is_within_root(child, root)
+        ),
+        key=lambda child: child.name.casefold(),
+    )
+    return directory, root, directories
 
 
 @dataset_router.get(
@@ -69,21 +136,40 @@ async def get_datasets(
 
 @dataset_router.post(
     "/",
-    response_model=schemas.Dataset,
+    response_model=schemas.DatasetCreated,
 )
 async def create_dataset(
     session: Session,
     dataset: schemas.DatasetCreate,
 ):
     """Create a new dataset."""
-    created = await api.datasets.create(
-        session,
-        name=dataset.name,
-        description=dataset.description,
-        dataset_dir=dataset.audio_dir,
-    )
+    stats: dict = {}
+    try:
+        created = await api.datasets.create(
+            session,
+            name=dataset.name,
+            description=dataset.description,
+            dataset_dir=dataset.audio_dir,
+            tag_recordings_by_folder=dataset.tag_recordings_by_folder,
+            include_subfolders=dataset.include_subfolders,
+            stats=stats,
+        )
+    except exceptions.DuplicateObjectError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
+    except IntegrityError as error:
+        raise HTTPException(
+            status_code=409, detail="Dataset name or directory already exists"
+        ) from error
+    except (ValueError, OSError) as error:
+        logger.warning("Invalid dataset creation request: %s", error)
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        logger.exception("Unexpected dataset creation failure")
+        raise HTTPException(
+            status_code=500, detail="Dataset creation failed"
+        ) from error
     await session.commit()
-    return created
+    return schemas.DatasetCreated(dataset=created, **stats)
 
 
 @dataset_router.patch(
@@ -166,6 +252,48 @@ async def download_dataset_json(
 
 
 @dataset_router.get(
+    "/complete/",
+    response_model=list[schemas.DatasetDirectory],
+)
+async def complete_dataset_directories(
+    settings: WhombatSettings,
+    path: str = "",
+):
+    """Complete a partial directory path within the audio root."""
+    normalized = path.replace("\\", "/")
+    if normalized.endswith("/"):
+        parent, prefix = normalized.rstrip("/"), ""
+    else:
+        parent, _, prefix = normalized.rpartition("/")
+
+    try:
+        result = await asyncio.to_thread(
+            _browse_directories, settings.audio_dir, parent
+        )
+    except (exceptions.PathOutsideRootError, OSError, RuntimeError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        logger.exception("Unexpected dataset directory completion failure")
+        raise HTTPException(
+            status_code=500, detail="Could not complete dataset directories"
+        ) from error
+    if isinstance(result, str):
+        raise HTTPException(status_code=400, detail=result)
+
+    _, _, directories = result
+    prefix = prefix.casefold()
+    return [
+        directory
+        for directory in directories
+        if (
+            fnmatchcase(directory.name.casefold(), prefix)
+            if any(character in prefix for character in "*?")
+            else directory.name.casefold().startswith(prefix)
+        )
+    ][:20]
+
+
+@dataset_router.get(
     "/detail/download/csv/",
 )
 async def download_dataset_csv(
@@ -195,11 +323,21 @@ async def import_dataset(
     settings: WhombatSettings,
     session: Session,
     dataset: UploadFile,
-    audio_dir: Annotated[DirectoryPath, Body()],
+    audio_dir: Annotated[Path, Body()],
 ):
     """Import a dataset."""
-    if not audio_dir.exists():
-        raise FileNotFoundError(f"Audio directory {audio_dir} does not exist.")
+    try:
+        audio_dir = resolve_within_root(
+            audio_dir.expanduser(),
+            settings.audio_dir.expanduser(),
+        )
+    except (exceptions.PathOutsideRootError, OSError, RuntimeError) as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    if not audio_dir.is_dir():
+        raise HTTPException(
+            status_code=400,
+            detail=f"Audio directory {audio_dir} does not exist.",
+        )
 
     return await api.datasets.import_dataset(
         session,
