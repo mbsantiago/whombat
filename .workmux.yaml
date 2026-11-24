@@ -23,13 +23,13 @@
 
 # The primary branch to merge into.
 # Default: Auto-detected from remote HEAD, falls back to main/master.
-# main_branch: main
+main_branch: dev
 
 # Default base branch/commit to branch from when creating new worktrees.
 # Use "auto" to branch from main_branch or the locally detected main/master branch.
 # The --base CLI flag always overrides this.
 # Default: The currently checked out branch.
-# base_branch: auto
+base_branch: auto
 
 # Default merge strategy for `workmux merge`.
 # Options: merge (default), rebase, squash
@@ -107,6 +107,8 @@ windows:
     panes:
       - command: <agent>
         focus: true
+      - split: horizontal
+        command: tuicr
   - name: servers
     panes:
       - command: just dev-back
@@ -116,10 +118,12 @@ windows:
     panes:
       - command: cd back && nvim .
       - split: horizontal
+        command: cd back
   - name: frontend
     panes:
       - command: cd front && nvim .
       - split: horizontal
+        command: cd front
 
 # Auto-apply agent status icons to tmux window format.
 # Default: true
@@ -211,8 +215,6 @@ files:
   #   # Use "<global>" to inherit from global config.
   symlink:
     - "<global>"
-    - front/node_modules/
-    - back/.venv/
 
 # Supplemental uploads for remote workspaces. No files are sent by default.
 # Uses the same glob and "<global>" conventions as files, independently.

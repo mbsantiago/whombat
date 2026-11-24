@@ -6,7 +6,12 @@ __all__ = [
     "MissingDatabaseError",
     "DataIntegrityError",
     "DataFormatError",
+    "SettingsError",
 ]
+
+
+class SettingsError(RuntimeError):
+    """Raised when a Whombat settings file cannot be loaded."""
 
 
 class NotFoundError(RuntimeError):
