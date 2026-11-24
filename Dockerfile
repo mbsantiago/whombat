@@ -89,7 +89,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
 
-VOLUME ["/data"]
+VOLUME ["/data", "/audio"]
 
 # Set the environment variables for the audio directory and the database URL
 ENV WHOMBAT_AUDIO_DIR=/audio \
@@ -108,7 +108,7 @@ EXPOSE 5000
 
 # Check the API health endpoint using Python's standard library.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD python -c "from urllib.request import urlopen; urlopen('http://127.0.0.1:5000/api/v1/health', timeout=3)" || exit 1
+    CMD python -c "import os; from urllib.request import urlopen; urlopen(f\"http://127.0.0.1:{os.environ.get('WHOMBAT_PORT', '5000')}/api/v1/health\", timeout=3)" || exit 1
 
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
