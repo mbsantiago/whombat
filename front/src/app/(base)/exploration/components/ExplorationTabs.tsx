@@ -36,9 +36,7 @@ export default function ExplorationTabs() {
           key={"recordings"}
           active={selectedLayoutSegment === "recordings"}
           onClick={() => {
-            router.push(
-              `/exploration/recordings/list/?${params.toString()}`,
-            );
+            router.push(`/exploration/recordings/list/?${params.toString()}`);
           }}
         >
           <RecordingIcon className="w-4 h-4 align-middle" />

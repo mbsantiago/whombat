@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import api from "@/app/api";
 import DatasetSearch from "@/app/components/datasets/DatasetSearch";
 import useAnnotationProject from "@/app/hooks/api/useAnnotationProject";
-import AnnotationProjectTasksBase from "@/lib/components/annotation_projects/AnnotationProjectTasks";
 import AnnotationProjectTaskList from "@/lib/components/annotation_projects/AnnotationProjectTaskList";
+import AnnotationProjectTasksBase from "@/lib/components/annotation_projects/AnnotationProjectTasks";
 import useFilter from "@/lib/hooks/utils/useFilter";
 import type {
   AnnotationProject,

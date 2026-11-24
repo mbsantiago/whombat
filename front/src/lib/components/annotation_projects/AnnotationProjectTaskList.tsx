@@ -60,37 +60,64 @@ export default function AnnotationProjectTaskList({
               </thead>
               <tbody>
                 {tasks.items.map((task) => (
-                  <tr key={task.uuid} className="border-t border-stone-200 dark:border-stone-700">
-                    <td className="px-3 py-2 font-mono whitespace-nowrap">{task.uuid}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{task.created_on.toLocaleDateString()}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{task.dataset_name ?? "—"}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      {task.status_badges?.length ? task.status_badges.map((badge, i) => (
-                        <StatusBadge key={`${badge.state}-${i}`} badge={badge} />
-                      )) : <span>Pending</span>}
+                  <tr
+                    key={task.uuid}
+                    className="border-t border-stone-200 dark:border-stone-700"
+                  >
+                    <td className="px-3 py-2 font-mono whitespace-nowrap">
+                      {task.uuid}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
-                      <ui.Dialog label="Delete" title="Delete annotation task?" variant="danger">
+                      {task.created_on.toLocaleDateString()}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {task.dataset_name ?? "—"}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      {task.status_badges?.length ? (
+                        task.status_badges.map((badge, i) => (
+                          <StatusBadge
+                            key={`${badge.state}-${i}`}
+                            badge={badge}
+                          />
+                        ))
+                      ) : (
+                        <span>Pending</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <ui.Dialog
+                        label="Delete"
+                        title="Delete annotation task?"
+                        variant="danger"
+                      >
                         {({ close }) => (
                           <div className="flex flex-col gap-4">
                             <p className="rounded-md border border-amber-400 p-3 text-amber-700">
-                              This also deletes the clip annotation associated with this task.
+                              This also deletes the clip annotation associated
+                              with this task.
                             </p>
                             <div className="flex justify-end gap-2">
-                              <ui.Button variant="secondary" onClick={close}>Cancel</ui.Button>
+                              <ui.Button variant="secondary" onClick={close}>
+                                Cancel
+                              </ui.Button>
                               <ui.Button
                                 variant="danger"
                                 onClick={async () => {
                                   try {
                                     await api.annotationTasks.delete(task);
-                                    await queryClient.invalidateQueries({ queryKey: ["annotation_tasks"] });
+                                    await queryClient.invalidateQueries({
+                                      queryKey: ["annotation_tasks"],
+                                    });
                                     toast.success("Task deleted");
                                     close();
                                   } catch {
                                     toast.error("Could not delete task");
                                   }
                                 }}
-                              >Delete</ui.Button>
+                              >
+                                Delete
+                              </ui.Button>
                             </div>
                           </div>
                         )}

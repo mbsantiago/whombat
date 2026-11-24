@@ -182,10 +182,7 @@ export default function FolderPicker({
   const breadcrumbParts = (listing?.path ?? "").split("/").filter(Boolean);
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-col gap-2 text-sm"
-    >
+    <div ref={containerRef} className="flex flex-col gap-2 text-sm">
       {completeDirectories && (
         <div className="relative">
           <label
@@ -388,7 +385,7 @@ export default function FolderPicker({
             Use this folder
           </button>
         </div>
-        </div>
+      </div>
     </div>
   );
 }

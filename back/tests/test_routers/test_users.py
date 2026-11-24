@@ -75,7 +75,8 @@ def test_first_user_invalid_password_returns_safe_validation_detail(
 
 
 def test_first_user_unexpected_error_is_not_exposed(
-    client: TestClient, caplog,
+    client: TestClient,
+    caplog,
 ):
     set_manager(client, manager_that_raises(RuntimeError("database secret")))
 

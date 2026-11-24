@@ -4,6 +4,7 @@ import Pagination from "@/lib/components/lists/Pagination";
 import Table from "@/lib/components/tables/Table";
 import useAnnotationTaskTable from "@/lib/hooks/useAnnotationTaskTable";
 import type { AnnotationTask, AnnotationTaskFilter } from "@/lib/types";
+
 import AnnotationTaskFilters from "./AnnotationTaskFilters";
 
 export default function AnnotationTaskTable({

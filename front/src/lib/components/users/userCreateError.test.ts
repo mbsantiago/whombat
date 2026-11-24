@@ -13,20 +13,28 @@ function makeError(data?: unknown, status?: number): AxiosError {
 
 describe("userCreateErrorMessage", () => {
   it("uses a string detail", () => {
-    expect(userCreateErrorMessage(makeError({ detail: "Invalid password" }, 400)))
-      .toBe("Invalid password");
+    expect(
+      userCreateErrorMessage(makeError({ detail: "Invalid password" }, 400)),
+    ).toBe("Invalid password");
   });
 
   it("extracts validation messages without exposing the full payload", () => {
     expect(
       userCreateErrorMessage(
-        makeError({ detail: [{ loc: ["body", "email"], msg: "Invalid email" }] }, 422),
+        makeError(
+          { detail: [{ loc: ["body", "email"], msg: "Invalid email" }] },
+          422,
+        ),
       ),
     ).toBe("Invalid email");
   });
 
   it("falls back to a status or a network message", () => {
-    expect(userCreateErrorMessage(makeError({}, 500))).toBe("Request failed (500)");
-    expect(userCreateErrorMessage(makeError())).toBe("Could not connect to the server.");
+    expect(userCreateErrorMessage(makeError({}, 500))).toBe(
+      "Request failed (500)",
+    );
+    expect(userCreateErrorMessage(makeError())).toBe(
+      "Could not connect to the server.",
+    );
   });
 });
