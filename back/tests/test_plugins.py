@@ -14,8 +14,8 @@ from whombat.system.settings import Settings
 def make_plugin(**attributes) -> ModuleType:
     """Create a fake plugin module."""
     module = ModuleType("whombat_testplugin")
-    module.__version__ = "0.1.0"
-    module.__description__ = "A test plugin."
+    module.__dict__["__version__"] = "0.1.0"
+    module.__dict__["__description__"] = "A test plugin."
     for name, value in attributes.items():
         setattr(module, name, value)
     return module
@@ -31,14 +31,16 @@ def test_add_plugin_routes_mounts_router():
     app = FastAPI()
     plugins.add_plugin_routes(app, "testplugin", make_plugin(router=router))
 
-    paths = {route.path for route in app.routes}
+    paths = {getattr(route, "path", "") for route in app.routes}
     assert "/plugins/routes/testplugin/hello/" in paths
 
 
 def test_add_plugin_routes_ignores_plugin_without_router():
     app = FastAPI()
     plugins.add_plugin_routes(app, "testplugin", make_plugin())
-    assert not any("/plugins/routes" in route.path for route in app.routes)
+    assert not any(
+        "/plugins/routes" in getattr(route, "path", "") for route in app.routes
+    )
 
 
 def test_add_plugin_routes_ignores_non_router_attribute():
@@ -46,7 +48,9 @@ def test_add_plugin_routes_ignores_non_router_attribute():
     plugins.add_plugin_routes(
         app, "testplugin", make_plugin(router="not a router")
     )
-    assert not any("/plugins/routes" in route.path for route in app.routes)
+    assert not any(
+        "/plugins/routes" in getattr(route, "path", "") for route in app.routes
+    )
 
 
 def test_plugin_has_pages_without_attribute():

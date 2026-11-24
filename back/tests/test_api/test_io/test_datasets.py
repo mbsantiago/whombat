@@ -206,7 +206,7 @@ async def test_reimport_corrects_empty_dataset_directory(
     io.save(dataset, aoef_file, audio_dir=recordings_dir)
     empty = models.Dataset(
         name=dataset.name,
-        description=None,
+        description="",
         audio_dir=Path("."),
         uuid=dataset.uuid,
     )

@@ -1,7 +1,9 @@
 """Test the user endpoints."""
 
 from types import SimpleNamespace
+from typing import cast
 
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from fastapi_users import exceptions as fastapi_users_exceptions
 
@@ -12,7 +14,9 @@ def set_manager(client: TestClient, manager: object) -> None:
     async def override_manager():
         yield manager
 
-    client.app.dependency_overrides[get_user_manager] = override_manager
+    cast(FastAPI, client.app).dependency_overrides[get_user_manager] = (
+        override_manager
+    )
 
 
 def manager_that_raises(error: Exception):

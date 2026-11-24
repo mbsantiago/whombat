@@ -653,7 +653,7 @@ class DatasetAPI(
             mode="python",
         )
         creation_data["audio_dir"] = data.audio_dir.relative_to(audio_dir)
-        obj = await self.create_from_data(session, creation_data, **kwargs)
+        obj = await self.create_from_data(session, **creation_data, **kwargs)
 
         file_list = await asyncio.to_thread(
             files.get_audio_files_in_folder,
@@ -698,8 +698,8 @@ class DatasetAPI(
                     )
                 if len(folders) > 1:
                     ambiguous += 1
-                elif None not in folders:
-                    recording_folders[recording.id] = next(iter(folders))
+                elif folder := next(iter(folders - {None}), None):
+                    recording_folders[recording.id] = folder
 
             folder_tags = await common.create_objects_without_duplicates(
                 session,
