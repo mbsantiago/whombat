@@ -56,3 +56,6 @@ bundle:
 
 clean:
     rm -rf dist build
+
+build-docker:
+    docker build -t whombat:latest .
