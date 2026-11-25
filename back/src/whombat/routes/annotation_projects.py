@@ -1,6 +1,7 @@
 """REST API routes for annotation projects."""
 
 from typing import Annotated
+from urllib.parse import quote
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, UploadFile
@@ -206,7 +207,9 @@ def get_annotation_projects_router(settings: WhombatSettings) -> APIRouter:
             media_type="application/json",
             status_code=200,
             headers={
-                "Content-Disposition": f"attachment; filename={filename}"
+                "Content-Disposition": (
+                    f"attachment; filename*=UTF-8''{quote(filename, safe='')}"
+                )
             },
         )
 

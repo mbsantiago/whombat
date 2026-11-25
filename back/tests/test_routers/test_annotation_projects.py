@@ -29,6 +29,14 @@ class TestExportAnnotationProject:
         )
         assert response.status_code == 200
 
+        response = client.patch(
+            "/api/v1/annotation_projects/detail/",
+            params={"annotation_project_uuid": str(annotation_project.uuid)},
+            json={"name": "Sentry – novembro"},
+            cookies=cookies,
+        )
+        assert response.status_code == 200
+
         # Download
         response = client.get(
             "/api/v1/annotation_projects/detail/download/",
@@ -39,6 +47,9 @@ class TestExportAnnotationProject:
         )
 
         assert response.status_code == 200
+        assert response.headers["content-disposition"].startswith(
+            "attachment; filename*=UTF-8''Sentry%20%E2%80%93%20novembro_"
+        )
 
         content = aoef.AOEFObject.model_validate(response.json())
 
